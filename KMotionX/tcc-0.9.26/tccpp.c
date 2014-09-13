@@ -2998,6 +2998,9 @@ ST_FUNC void next(void)
         (parse_flags & PARSE_FLAG_TOK_NUM)) {
         parse_number((char *)tokc.cstr->data);
     }
+#ifdef ASSEMBLY_LISTING_C67
+	//printf("                                     %s\n", get_tok_str(tok, &tokc));
+#endif
 }
 
 /* push back current token and set current token to 'last_tok'. Only

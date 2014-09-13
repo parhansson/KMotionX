@@ -49,15 +49,15 @@ int FindCoffSymbolIndex(const char *func_name);
 int nb_syms;
 
 typedef struct {
-    long tag;
-    long size;
-    long fileptr;
-    long nextsym;
+    int32_t tag;
+    int32_t size;
+    int32_t fileptr;
+    int32_t nextsym;
     short int dummy;
 } AUXFUNC;
 
 typedef struct {
-    long regmask;
+    int32_t regmask;
     unsigned short lineno;
     unsigned short nentries;
     int localframe;
@@ -66,7 +66,7 @@ typedef struct {
 } AUXBF;
 
 typedef struct {
-    long dummy;
+    int32_t dummy;
     unsigned short lineno;
     unsigned short dummy1;
     int dummy2;
@@ -90,6 +90,9 @@ ST_FUNC int tcc_output_coff(TCCState *s1, FILE *f)
     stext = FindSection(s1, ".text");
     sdata = FindSection(s1, ".data");
     sbss = FindSection(s1, ".bss");
+
+    //Set entry point
+	C67_main_entry_point = (int)tcc_get_symbol(s1, "main");
 
     nb_syms = symtab_section->data_offset / sizeof(Elf32_Sym);
     coff_nb_syms = FindCoffSymbolIndex("XXXXXXXXXX1");

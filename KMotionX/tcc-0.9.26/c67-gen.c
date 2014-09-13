@@ -1633,7 +1633,11 @@ void load(int r, SValue * sv)
 		C67_LDDW_PTR(v, r);	// LDDW  *v,r
 	    }
 
-	    C67_NOP(4);		// NOP 4
+		if (size==8)
+			C67_NOP(5);		 	  // NOP 5
+		else
+			C67_NOP(4);		 	  // NOP 4
+
 	    return;
 	} else if (fr & VT_SYM) {
 	    greloc(cur_text_section, sv->sym, ind, R_C60LO16);	// rem the inst need to be patched
@@ -1660,7 +1664,10 @@ void load(int r, SValue * sv)
 		C67_LDDW_PTR(C67_A0, r);	// LDDW  *A0,r
 	    }
 
-	    C67_NOP(4);		// NOP 4
+		if (size==8)
+			C67_NOP(5);		 	  // NOP 5
+		else
+			C67_NOP(4);		 	  // NOP 4
 	    return;
 	} else {
 	    element = size;
@@ -1685,8 +1692,10 @@ void load(int r, SValue * sv)
 		C67_LDDW_SP_A0(r);	// LDDW  r, SP[A0]
 	    }
 
-
-	    C67_NOP(4);		// NOP 4
+		if (size==8)
+			C67_NOP(5);		 	  // NOP 5
+		else
+			C67_NOP(4);		 	  // NOP 4
 	    return;
 	}
     } else {
@@ -1891,6 +1900,8 @@ void gfunc_call(int nb_args)
 	// handle more than 10, put some on the stack
     }
 
+    //TODO PH do argmuments in reverse order
+    vtop -= (nb_args-1);
     for (i = 0; i < nb_args; i++) {
 	if ((vtop->type.t & VT_BTYPE) == VT_STRUCT) {
 	    ALWAYS_ASSERT(FALSE);
@@ -1925,8 +1936,13 @@ void gfunc_call(int nb_args)
 	    }
 	    args_sizes[i] = size;
 	}
-	vtop--;
+    //PH
+	vtop++;
+	//vtop--;
     }
+    //PH added
+    vtop -= (nb_args+1);
+
     // POP all the params on the stack into registers for the
     // immediate call (in reverse order)
 

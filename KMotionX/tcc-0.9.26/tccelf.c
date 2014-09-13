@@ -244,7 +244,13 @@ ST_FUNC int add_elf_sym(Section *s, addr_t value, unsigned long size,
                 printf("new_bind=%x new_shndx=%x new_vis=%x old_bind=%x old_shndx=%x old_vis=%x\n",
                        sym_bind, sh_num, new_vis, esym_bind, esym->st_shndx, esym_vis);
 #endif
+#ifdef TCC_TARGET_C67
+                /* NOTE: C67 Doesn't accept */
+                if (s != tcc_state->dynsymtab_section)
+                    tcc_error("'%s' defined twice", name);
+#else
                 tcc_error_noabort("'%s' defined twice", name);
+#endif
             }
         } else {
         do_patch:
@@ -461,7 +467,11 @@ ST_FUNC void relocate_syms(TCCState *s1, int do_resolve)
             if (sym_bind == STB_WEAK) {
                 sym->st_value = 0;
             } else {
+#ifdef TCC_TARGET_C67            
+            	tcc_error("undefined symbol '%s'", name);
+#else            	
                 tcc_error_noabort("undefined symbol '%s'", name);
+#endif
             }
         } else if (sh_num < SHN_LORESERVE) {
             /* add section base */
@@ -1393,15 +1403,21 @@ ST_FUNC void tcc_add_linker_symbols(TCCState *s1)
                 bss_section->data_offset, 0,
                 ELFW(ST_INFO)(STB_GLOBAL, STT_NOTYPE), 0,
                 bss_section->sh_num, "_end");
+#ifndef TCC_TARGET_C67
     /* horrible new standard ldscript defines */
     add_init_array_defines(s1, ".preinit_array");
     add_init_array_defines(s1, ".init_array");
     add_init_array_defines(s1, ".fini_array");
-    
+#endif
     /* add start and stop symbols for sections whose name can be
        expressed in C */
     for(i = 1; i < s1->nb_sections; i++) {
         s = s1->sections[i];
+
+#ifdef TCC_TARGET_C67  // for c67 do all the sections
+        if ((s->sh_type == SHT_PROGBITS || s->sh_type == SHT_NOBITS) &&
+            (s->sh_flags & SHF_ALLOC)) {
+#else
         if (s->sh_type == SHT_PROGBITS &&
             (s->sh_flags & SHF_ALLOC)) {
             const char *p;
@@ -1417,6 +1433,7 @@ ST_FUNC void tcc_add_linker_symbols(TCCState *s1)
                     goto next_sec;
                 p++;
             }
+#endif
             snprintf(buf, sizeof(buf), "__start_%s", s->name);
             add_elf_sym(symtab_section, 
                         0, 0,
@@ -1428,7 +1445,9 @@ ST_FUNC void tcc_add_linker_symbols(TCCState *s1)
                         ELFW(ST_INFO)(STB_GLOBAL, STT_NOTYPE), 0,
                         s->sh_num, buf);
         }
+#ifndef TCC_TARGET_C67  // for c67 do all the sections
     next_sec: ;
+#endif
     }
 }
 
@@ -1574,6 +1593,18 @@ static int elf_output_file(TCCState *s1, const char *filename)
     if (file_type != TCC_OUTPUT_OBJ) {
         relocate_common_syms();
 
+#ifdef TCC_TARGET_COFF
+		// now that we have allocated global .bss symbols
+		// update end symbol so user can calc space for bss
+        //Helps with debug sections but not neccessary without -g flag
+/*
+        int sym_bss_end_index = find_elf_sym(symtab_section, "__stop_.bss");
+	    Elf32_Sym *sym;
+        sym = &((Elf32_Sym *)symtab_section->data)[sym_bss_end_index];
+		sym->st_value=bss_section->data_offset;
+*/
+#endif
+
         tcc_add_linker_symbols(s1);
 
         if (!s1->static_link) {
@@ -1684,7 +1715,11 @@ static int elf_output_file(TCCState *s1, const char *filename)
                             if (ELFW(ST_BIND)(sym->st_info) == STB_WEAK ||
                                 !strcmp(name, "_fp_hw")) {
                             } else {
+#ifdef TCC_TARGET_C67
+                            	tcc_error("undefined symbol '%s'", name);
+#else
                                 tcc_error_noabort("undefined symbol '%s'", name);
+#endif
                             }
                         }
                     } else if (s1->rdynamic && 
@@ -1994,7 +2029,11 @@ static int elf_output_file(TCCState *s1, const char *filename)
                     if ((addr & (s1->section_align - 1)) != 0)
                         addr += s1->section_align;
                 } else {
-                    addr = (addr + s1->section_align - 1) & ~(s1->section_align - 1);
+                	//This alignment breaks COFF files
+                	//maybe we need some other aligment sometimes
+#ifndef TCC_TARGET_COFF
+                	addr = (addr + s1->section_align - 1) & ~(s1->section_align - 1);
+#endif
                     file_offset = (file_offset + s1->section_align - 1) &
                         ~(s1->section_align - 1);
                 }
@@ -2190,7 +2229,11 @@ static int elf_output_file(TCCState *s1, const char *filename)
 
         /* get entry point address */
         if (file_type == TCC_OUTPUT_EXE)
+#ifdef TCC_TARGET_C67
+        	ehdr.e_entry = get_elf_sym_addr(s1, "main", 1);
+#else
             ehdr.e_entry = get_elf_sym_addr(s1, "_start", 1);
+#endif
         else
             ehdr.e_entry = text_section->sh_addr; /* XXX: is it correct ? */
     }
