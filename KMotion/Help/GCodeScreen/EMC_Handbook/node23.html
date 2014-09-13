@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>6.2 Configuring EMC </TITLE>
+<META NAME="description" CONTENT="6.2 Configuring EMC ">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node25.html">
+<LINK REL="previous" HREF="node21.html">
+<LINK REL="up" HREF="node20.html">
+<LINK REL="next" HREF="node24.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html610"
+  HREF="node24.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html604"
+  HREF="node20.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html598"
+  HREF="node22.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html606"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html608"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html611"
+  HREF="node24.html">Machine Configuration file emc.ini</A>
+<B> Up:</B> <A NAME="tex2html605"
+  HREF="node20.html">6. Hardware</A>
+<B> Previous:</B> <A NAME="tex2html599"
+  HREF="node22.html">6.1.1 Setting up Stepper</A>
+ &nbsp; <B>  <A NAME="tex2html607"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html609"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION03120000000000000000">
+6.2 Configuring EMC </A>
+</H1>
+
+<P>
+The EMC is configured with files that are read at startup and used
+to override the compiled defaults. No real controller will likely
+use the compiled defaults, so you will certainly need to edit at least
+some of these files to reflect the specifics of your machine. 
+
+<P>
+There are four files: emc.ini, emc.nml, tool.tbl, and emc.var. The
+first, emc.ini, contains all the machine parameters such as servo
+gains, scale factors, cycle times, units, etc. and will certainly
+need to be edited. emc.nml contains communication settings for shared
+memory and network ports you may need to override on your system,
+although it is likely that you can leave these settings alone. tool.tbl
+contains the tool information such as which pocket contains which
+tool, and the length and diameter for each tool. rs274ngc.var contains
+variables specific to the RS-274-NGC dialect of NC code, notably for
+setting the persistent numeric variables for the nine work coordinate
+systems.
+
+<P>
+The specific formats of each of these files is detailed in the following
+sections.
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html612"
+  HREF="node24.html">Machine Configuration file emc.ini</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html610"
+  HREF="node24.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html604"
+  HREF="node20.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html598"
+  HREF="node22.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html606"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html608"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html611"
+  HREF="node24.html">Machine Configuration file emc.ini</A>
+<B> Up:</B> <A NAME="tex2html605"
+  HREF="node20.html">6. Hardware</A>
+<B> Previous:</B> <A NAME="tex2html599"
+  HREF="node22.html">6.1.1 Setting up Stepper</A>
+ &nbsp; <B>  <A NAME="tex2html607"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html609"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

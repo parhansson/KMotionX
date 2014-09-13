@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Example 5 - Iterated Run</TITLE>
+<META NAME="description" CONTENT="Example 5 - Iterated Run">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="previous" HREF="node108.html">
+<LINK REL="up" HREF="node104.html">
+<LINK REL="next" HREF="node110.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1974"
+  HREF="node110.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1968"
+  HREF="node104.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1964"
+  HREF="node108.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1970"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1972"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1975"
+  HREF="node110.html">14. Remote GUIs</A>
+<B> Up:</B> <A NAME="tex2html1969"
+  HREF="node104.html">13.5 Sample Variable Programs</A>
+<B> Previous:</B> <A NAME="tex2html1965"
+  HREF="node108.html">Example 4 - Milling</A>
+ &nbsp; <B>  <A NAME="tex2html1971"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1973"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION04455000000000000000">
+Example 5 - Iterated Run</A>
+</H2>
+
+<P>
+As we have already seen in example 2, the EMC's interpreter allows
+for the setting of variables during program code execution. That example
+reset the loop variable at the start of each program run. But the
+value of a variable persists throughout the life of an EMC run so
+that it's incremented value can be accessed by pressing the &lt;run&gt;
+button to start the next loop.
+
+<P>
+Variable #1000 is a explicit variable. It is also the loop variable.
+By making #1000 explicit the machine operator can reset the loop
+to zero by reloading the parameter file from the TclTk parameter edit
+window when all of the loops through the program have been completed.
+This code shows a simple drilling operation that uses successive coordinate
+systems for each run.
+
+<P>
+This line is placed in the variable file. 1000 1001 The code below
+shows a simple drilling operation that uses successive coordinate
+systems each time the run button is pressed. It is line number n150
+that does the work of incrementing explicit loop variable #1000.
+The work done by the machine could be expanded with the addition of
+lines of code before line 150 to as large a program as needed at each
+coordinate position.
+
+<P>
+<TT><FONT SIZE="-1">Incremented program that uses the &lt;run&gt; button
+for loop and &lt;load variable file&gt; to reset the loop</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N10 (sample loop program with &lt;run&gt; press for
+each interation)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N20 #1001 = 54 (variables to reference coordinate
+systems)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N30 #1002 = 55</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N40 #1003 = 56</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N50 #1004 = 57</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N60 #1005 = 58</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N70 #1006 = 59</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N80 #1007 = 59.1</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N90 #1008 = 59.2</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N100 #1009 = 59.3</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N110 G0 X0 Y0 Z0 (move to known location)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N120 G#[#1000 + 1001] X0 Y0 (pick up new
+coordinates)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N130 G1 F5 Z1 (drill)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N140 G0 Z0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N150 #1000 = [#1000 + 1] Increment the
+loop variable)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N160 M2</FONT></TT>
+<P>
+
+
+<P>
+This kind of program might be used with a setup that had a number
+of vices on the milling table with the same part in each. The same
+thing could be achieved using a single program with incrementing between
+each and an option stop (m0). Such a program would be much longer
+and would require &lt;restart&gt; rather than &lt;run&gt;.
+
+<P>
+As the EMC interpreter exists now, there is no good way to know which
+coordinate system will be used next without looking at the machine
+or remembering the offsets as loaded into each coordinate system.
+This code will also cause an error message if you attempt to run it
+after the nineth time. Since the loop variable is explicit, it can
+be reset at any time before the EMC is shut down by reloading the
+variable file.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1974"
+  HREF="node110.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1968"
+  HREF="node104.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1964"
+  HREF="node108.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1970"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1972"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1975"
+  HREF="node110.html">14. Remote GUIs</A>
+<B> Up:</B> <A NAME="tex2html1969"
+  HREF="node104.html">13.5 Sample Variable Programs</A>
+<B> Previous:</B> <A NAME="tex2html1965"
+  HREF="node108.html">Example 4 - Milling</A>
+ &nbsp; <B>  <A NAME="tex2html1971"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1973"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

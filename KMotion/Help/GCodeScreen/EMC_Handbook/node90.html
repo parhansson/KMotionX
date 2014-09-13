@@ -1,0 +1,210 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Programming Errors and Limitations </TITLE>
+<META NAME="description" CONTENT="Programming Errors and Limitations ">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="previous" HREF="node89.html">
+<LINK REL="up" HREF="node83.html">
+<LINK REL="next" HREF="node91.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1697"
+  HREF="node91.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1691"
+  HREF="node83.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1687"
+  HREF="node89.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1693"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1695"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1698"
+  HREF="node91.html">First Move</A>
+<B> Up:</B> <A NAME="tex2html1692"
+  HREF="node83.html">12.2.1 Cutter Radius Compensation</A>
+<B> Previous:</B> <A NAME="tex2html1688"
+  HREF="node89.html">Tool Path Contour</A>
+ &nbsp; <B>  <A NAME="tex2html1694"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1696"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION04321700000000000000">
+Programming Errors and Limitations </A>
+</H3>
+
+<P>
+The interpreter will issue the following messages involving cutter
+radius compensation.
+
+<P>
+
+<OL>
+<LI>Cannot change axis offsets with cutter radius comp
+</LI>
+<LI>Cannot change units with cutter radius comp
+</LI>
+<LI>Cannot turn cutter radius comp on out of XY-plane
+</LI>
+<LI>Cannot turn cutter radius comp on when already on
+</LI>
+<LI>Cannot use G28 or G30 with cutter radius comp
+</LI>
+<LI>Cannot use G53 with cutter radius comp
+</LI>
+<LI>Cannot use XZ plane with cutter radius comp
+</LI>
+<LI>Cannot use YZ plane with cutter radius comp
+</LI>
+<LI>Concave corner with cutter radius comp
+</LI>
+<LI>Cutter gouging with cutter radius comp
+</LI>
+<LI>D word on line with no cutter comp on (G41 or G42) command
+</LI>
+<LI>Tool radius index too big
+</LI>
+<LI>Tool radius not less than arc radius with cutter radius comp
+</LI>
+<LI>Two G codes used from same modal group.
+</LI>
+</OL>
+For some of these messages additional explanation is given below.
+
+<P>
+Changing a tool while cutter radius compensation is on is not treated
+as an error, although it is unlikely this would be done intentionally.
+The radius used when cutter radius compensation was first turned on
+will continue to be used until compensation is turned off, even though
+a new tool is actually being used.
+
+<P>
+<TABLE  WIDTH="0%">
+<TR><TD>
+When cutter radius compensation is on, it must be physically
+possible for a circle whose radius is the half the diameter given
+in the tool table to be tangent to the contour at all points of the
+contour.
+<P>
+
+
+<P>
+</TD></TR>
+</TABLE>
+
+<TABLE  WIDTH="0%">
+<TR><TD>
+<!-- MATH
+ $\resizebox*{3in}{!}{\includegraphics{/usr/share/lyx/EMC_images/Image10.eps}}$
+ -->
+<IMG
+ WIDTH="345" HEIGHT="138" ALIGN="BOTTOM" BORDER="0"
+ SRC="img30.gif"
+ ALT="\resizebox*{3in}{!}{\includegraphics{/usr/share/lyx/EMC_images/Image10.eps}}"> 
+
+<P>
+</TD></TR>
+</TABLE>
+
+<P>
+<BR>
+
+<P>
+In particular, the interpreter treats concave corners and concave
+arcs into which the circle will not fit as errors, since the circle
+cannot be kept tangent to the contour in these situations. This error
+detection does not limit the shapes which can be cut, but it does
+require that the programmer specify the actual shape to be cut (or
+path to be followed), not an approximation. In this respect, the interpreter
+differs from interpreters used with many other controllers, which
+often allow these errors silently and either gouge the part or round
+the corner. If cutter radius compensation has already been turned
+on, it cannot be turned on again. It must be turned off first; then
+it can be turned on again. It is not necessary to move the cutter
+between turning compensation off and back on, but the move after turning
+it back on will be treated as a first move, as described below.
+
+<P>
+It is not possible to change from one cutter radius index to another
+while compensation is on because of the combined effect of rules 4
+and 11. It is also not possible to switch compensation from one side
+to another while compensation is on. If the tool is already covering
+up the next XY destination point when cutter radius compensation is
+turned on, the gouging message is given when the line of NC code which
+gives the point is reached. In this situation, the tool is already
+cutting into material it should not cut.
+
+<P>
+If a D word is programmed that is larger than the number of tool carrousel
+slots, an error message is given. In the current implementation, the
+number of slots is 68.
+
+<P>
+The error message. &#34;two G Codes Used from Same Modal Group,&#34;
+is a generic message used for many sets of G codes. As applied to
+cutter radius compensation, it means that more than one of G40, G41,
+and G42 appears on a line of NC code. This is not allowed.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1697"
+  HREF="node91.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1691"
+  HREF="node83.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1687"
+  HREF="node89.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1693"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1695"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1698"
+  HREF="node91.html">First Move</A>
+<B> Up:</B> <A NAME="tex2html1692"
+  HREF="node83.html">12.2.1 Cutter Radius Compensation</A>
+<B> Previous:</B> <A NAME="tex2html1688"
+  HREF="node89.html">Tool Path Contour</A>
+ &nbsp; <B>  <A NAME="tex2html1694"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1696"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

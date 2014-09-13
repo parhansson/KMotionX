@@ -1,0 +1,229 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>9.1 Hints for EMC users</TITLE>
+<META NAME="description" CONTENT="9.1 Hints for EMC users">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node43.html">
+<LINK REL="previous" HREF="node41.html">
+<LINK REL="up" HREF="node41.html">
+<LINK REL="next" HREF="node43.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html879"
+  HREF="node43.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html873"
+  HREF="node41.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html867"
+  HREF="node41.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html875"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html877"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html880"
+  HREF="node43.html">9.2 configuration file</A>
+<B> Up:</B> <A NAME="tex2html874"
+  HREF="node41.html">9. Using the Strip</A>
+<B> Previous:</B> <A NAME="tex2html868"
+  HREF="node41.html">9. Using the Strip</A>
+ &nbsp; <B>  <A NAME="tex2html876"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html878"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION03410000000000000000">
+9.1 Hints for EMC users</A>
+</H1>
+
+<P>
+Click on the graph with the left mouse button to bring up the &#34;key&#34;.
+
+<P>
+The horizontal scale is indicated with the little black tick marks.
+The distance between ticks is approximately 1 second.
+
+<P>
+The vertical scale is different for each variable. The top is the
+value that variable would have to have to be plotted at the top of
+the scale, the bottom is the value the variable would have to have
+to be plotted at the bottom. Initially the top and bottom equal the
+maximum and minimum from the configuration file, however if the maximum
+or minimum are exceeded the scale will change to keep the plot in
+the visible part of the graph.
+
+<P>
+The file emcstrip.conf.ferror configures emstripchart to plot the
+following errors and high marks for the following errors.
+
+<P>
+The normal build will skip this utility, to build it cd emc/src/stripchart
+and run &#34;make&#34;.
+
+<P>
+To make generic.run or ?.run start it every time you start EMC, base
+your run script on a version of generic.run that is newer than April
+1, 2000 and add the following section to your .ini:
+
+<P>
+<TT><FONT SIZE="-1">; section for emc stripchart parameters -----------------</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">[EMCSTRIP]</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">; Name of strip chart display program e.g. emcstripchart</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">; if not found then none will run</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">EMCSTRIP =&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;emcstripchart</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">; OPTIONS for emcstripchart usually -f something.conf</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">; This file says which</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">; variables to plot, colors etc. -u changes
+the update rate.</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">OPTIONS = -f emcstrip.conf.position</FONT></TT>
+<P>
+
+
+<P>
+Licensing: Most of EMC was written at NIST and is public domain. However,
+Stripchart is distributed under the GNU General Public License.
+
+<P>
+GNOME Stripchart Documentation The GNOME stripchart program charts
+various user-specified parameters as a function of time. Its main
+use is to chart system performance parameters such as CPU load, CPU
+utilization, network traffic levels, and the like. Other more ingenious
+uses are left as an exercise for the interested user. 
+
+<P>
+The gstripchart program periodically reads data from a file, extracts
+a value, and displays these values in one of several formats. The
+default format is a graphical display similar to that of a stripchart
+recorder. Hence the name, &#34;gstripchart&#34;. 
+
+<P>
+On systems such as Linux, in which the system parameters are available
+in human-readable form in the /proc directory, the gstripchart program
+makes a dandy performance monitoring tool, similar to but more versatile
+than xload. 
+
+<P>
+Instead of being limited to a few standard performance parameters,
+the gstripchart program can plot any time-variant parameter than can
+be read from a file or pipe. This ability to read data from a pipe
+provides a very versatile and easy to use method of setting up custom
+displays. 
+
+<P>
+The gstripchart program determines the parameters to display by reading
+a configuration file. The gstripchart program will first look for
+a configuration file specified on the command line, then look for
+a file named gstripchart.conf in the current directory, then look
+for a file named .gstripchart.conf in the users home directory, then
+look for a file named /etc/gstripchart.conf. If no configuration file
+is found, the program is terminated.&nbsp; 
+
+<P>
+Options There are a few command line switches that can be used to
+alter the behavior of the program. 
+
+<P>
+<TT><FONT SIZE="-1">-f, -config-file=FILE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;configuration
+file</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">-g, -geometry=GEOMETRY&nbsp;&nbsp;&nbsp;&nbsp;geometry</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">-i, -chart-interval=SECS&nbsp;&nbsp;chart update
+interval</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">-I, -chart-filter=SECS&nbsp;&nbsp;&nbsp;&nbsp;chart low-pass
+filter time constant</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">-j, -slider-interval=SECS&nbsp;slider update
+interval</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">-J, -slider-filter=SECS&nbsp;&nbsp;&nbsp;slider low-pass
+filter time constant</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">-M, -menubar&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add
+menubar</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">-S, -omit-slider&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;omit
+slider</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">-t, -display-type=TYPE&nbsp;&nbsp;&nbsp;&nbsp;type of display</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">&nbsp;&nbsp;none:&nbsp;&nbsp;&nbsp;no display is produced (for debugging);</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">&nbsp;&nbsp;text:&nbsp;&nbsp;&nbsp;a textual numeric display is
+produced;</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">&nbsp;&nbsp;graph:&nbsp;&nbsp;a textual graphic display is produced;</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">&nbsp;&nbsp;gtk:&nbsp;&nbsp;&nbsp;&nbsp;use the default gtk-based graphic
+display.</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">-class=CLASS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FIXME</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">-display=DISPLAY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;X display to
+use</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">-gxid_host=HOST&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FIXME</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">-gxid_port=PORT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FIXME</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">-name=NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FIXME</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">-no-xshm&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Don't
+use X shared memory extension</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">-xim-preedit=STYLE&nbsp;&nbsp;&nbsp;&nbsp;FIXME</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">-xim-status=STYLE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FIXME</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">-u, -update-interval=SECS update interval
+to poll data</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">-?, -help&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Give this
+help list</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">-usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Give a
+short usage message</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">-V, -version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Print program
+version</FONT></TT>
+<P>
+
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html879"
+  HREF="node43.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html873"
+  HREF="node41.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html867"
+  HREF="node41.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html875"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html877"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html880"
+  HREF="node43.html">9.2 configuration file</A>
+<B> Up:</B> <A NAME="tex2html874"
+  HREF="node41.html">9. Using the Strip</A>
+<B> Previous:</B> <A NAME="tex2html868"
+  HREF="node41.html">9. Using the Strip</A>
+ &nbsp; <B>  <A NAME="tex2html876"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html878"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

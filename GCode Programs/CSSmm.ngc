@@ -1,0 +1,10 @@
+G90 G21				(Absolute Inches)
+G00 X50.8 Y0 Z50.8	(Rapid to starting position)
+G96 M3 D2500 S159.6 (CSS should be 1000RPM at R=25.4mm)
+G1 X2.54 Z25.4 F350 (Change X - radius)
+G1 X50.8 Z0
+M05 				(Spindle off)
+G0 Z50.8
+G97 M3 S500 		(Run at normal RPM Mode)
+G4 P3
+M2 

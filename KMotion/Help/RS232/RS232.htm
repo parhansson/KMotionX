@@ -1,0 +1,151 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>RS232 with KFLop</title>
+</head>
+
+<body>
+
+<p><i><b><font size="5" face="Arial">KFLOP - </font></b></i><b><i>
+<font face="Arial" size="5">RS232</font></i></b></p>
+<p><font face="Arial">KFLOP contains a UART that can allow KFLOP User C Programs 
+to perform serial communication with other 3rd party devices.</font></p>
+<p><font face="Arial">KFLOP itself contains the serial communication UART but 
+does not have the circuitry to drive or receive the signals at the +3 to 25V to 
+-3 to -25V voltages levels specified by the RS232 standard.&nbsp; The transmit 
+and receive signals to/from KFLOP are 3.3V LVTTL logic signals.&nbsp; Where a 
+low logic level (&lt;0.4V) represents the RS232 Space Level (&gt;+3V)&nbsp; and a high 
+logic level represents the RS232 Mark Level (&lt; -3V).&nbsp; </font></p>
+<p><i><font face="Arial"><b>Note that the signals that the signals coming 
+directly from KFLOP are not RS232 compatible.&nbsp; Connecting KFLOP inputs 
+directly to RS232 is likely to cause damage.</b></font></i></p>
+<p><font face="Arial">Some serial devices may be compatible with 3.3V logic.&nbsp; 
+Also many 3rd party converters are available.&nbsp; A Internet search found this 
+one (we haven't tested it).&nbsp; </font></p>
+<p><font face="Arial">
+<a href="http://www.commfront.com/TTL-RS232-RS485-Serial-Converters/RS232-TTL3.3V-Converter.htm">
+http://www.commfront.com/TTL-RS232-RS485-Serial-Converters/RS232-TTL3.3V-Converter.htm</a></font></p>
+<p><font face="Arial">Our Kanalog board has a LVTTL to converter on board (see 
+next section below). </font></p>
+<p><font face="Arial">
+<img border="0" src="RS232KFLOPJ7.png" width="563" height="413"></font></p>
+<p><font face="Arial">&nbsp;<img border="0" src="../SchematicsKFLOP/JP7Photo.JPG" width="418" height="139"></font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><i><b><font size="5" face="Arial">KFLOP + Kanalog - </font></b></i><b><i>
+<font face="Arial" size="5">RS232</font></i></b></p>
+<p><font face="Arial">Kanalog contains circuitry to convert the KFLOP UART logic 
+levels to standard RS232 voltage levels.&nbsp; The RS232 signals are accessible 
+from JP10 which is a standard RJ12 phone jack.</font></p>
+<p><font face="Arial">The pinout is shown below.&nbsp; The pinout is designed to 
+be 1:1 compatible with certain PLC devices.&nbsp; Note that a phone cable with 
+all 6 wires populated is required in order to make the pin 1 ground connection.</font></p>
+<p><font face="Arial">
+<img border="0" src="RS232KanalogJP10.png" width="364" height="260"></font></p>
+<p>&nbsp;</p>
+<p><i><b><font size="5" face="Arial">KFLOP </font></b></i><b><i>
+<font face="Arial" size="5">UART Software</font></i></b></p>
+<p><font face="Arial">The KFLOP FPGA implements a programmable baud rate UART 
+with double buffering of 1 character on transmit and receive.&nbsp; Currently a 
+KFLOP User C program must be used to make use of the UART.&nbsp; It is up to the 
+User to program whatever is necessary to control any specific device.&nbsp;
+</font></p>
+<p><font face="Arial">KFlop User Programs with 1 active thread execute every 
+180us. (See <a href="../Multitasking.htm">here</a> for more info).&nbsp; This 
+allows rates up t0 38400 baud without loss if a character is read every time 
+slice&nbsp; (10 bits at 38400Hz =&nbsp; 260us).&nbsp;&nbsp; Data transmitted and 
+received is always 8 bits.&nbsp; If parity is required it should be handled by 
+the User C program.</font></p>
+<p><font face="Arial">To set the baud rate write a defined 8-bit baud rate 
+divisor to an FPGA Register (RS232_BAUD_REG )</font></p>
+<p><font face="Arial">To transmit a character an 8-bit character is written to 
+an FPGA register (RS232_DATA).</font></p>
+<p><font face="Arial">To receive a character read an 8-bit value from an FPGA 
+register (RS232_DATA )</font></p>
+<p><font face="Arial">A status register (RS232_STATUS) provides 2 bits of status 
+that can be used to determine if a character has been received 
+(RS232_DATA_READY) and if it is possible to transmit a character 
+(RS232_TRANSMIT_FULL)</font></p>
+<p><font face="Arial">The following definitions have been added to the 
+KMotionDef.h file.</font></p>
+<p><font face="Courier New">//RS232 FPGA Register Definitions<br>
+<br>
+#define RS232_STATUS 0xc1 // Status Reg Address<br>
+#define RS232_DATA 0xc0 // 8 bit data read/write reg address<br>
+#define RS232_DATA_READY 0x01 // Data ready to read status mask<br>
+#define RS232_TRANSMIT_FULL 0x02// Transmit buffer full status mask<br>
+<br>
+#define RS232_BAUD_REG 0xc1 // Set Baud rate 8-bit divisor Reg Address <br>
+#define RS232_BAUD_115200 ((16666666/115200/16)-1)// 8-bit divisor value to set 
+115200 baud<br>
+#define RS232_BAUD_57600 ((16666666/57600/16)-1) // 8-bit divisor value to set 
+57600 baud<br>
+#define RS232_BAUD_38400 ((16666666/38400/16)-1) // 8-bit divisor value to set 
+38400 baud<br>
+#define RS232_BAUD_19200 ((16666666/19200/16)-1) // 8-bit divisor value to set 
+19200 baud<br>
+#define RS232_BAUD_9600 ((16666666/9600/16)-1) // 8-bit divisor value to set 
+9600 baud<br>
+#define RS232_BAUD_4800 ((16666666/4800/16)-1) // 8-bit divisor value to set 
+4800 baud<br>
+</font><font face="Arial">&nbsp;</font></p>
+<p><font face="Arial">Note if KFLOP is to be used without Kanalog the UART IO 
+pins must be activated by executing the following line of code one time:</font></p>
+<p><font face="Courier New">FPGA(KAN_TRIG_REG)=2;</font></p>
+<p>&nbsp;</p>
+<p><font face="Arial"><i><b>Note the techniques shown below may be used but a 
+new simpler and buffered method is now available.&nbsp; See the \C 
+Programs\RS232\BufferedRS232.c example</b></i></font></p>
+<p>&nbsp;</p>
+<p><b><i><font face="Arial">Transmit Example (RS232Send.c example)</font></i></b></p>
+<p><font face="Courier New">#include &quot;KMotionDef.h&quot;<br>
+<br>
+void SendChar(char c)<br>
+{<br>
+&nbsp;&nbsp;&nbsp; while (FPGA(RS232_STATUS) &amp; RS232_TRANSMIT_FULL) ;<br>
+&nbsp;&nbsp;&nbsp; FPGA(RS232_DATA) = c;<br>
+}<br>
+<br>
+main()<br>
+{<br>
+&nbsp;&nbsp;&nbsp; int i;<br>
+&nbsp;&nbsp;&nbsp; SetBitDirection(45,1);<br>
+&nbsp;&nbsp;&nbsp; FPGA(RS232_BAUD_REG) = RS232_BAUD_38400;<br>
+&nbsp;&nbsp;&nbsp; // FPGA(KAN_TRIG_REG) = 1; // enable Kanalog to get RS232 
+working<br>
+&nbsp;&nbsp;&nbsp; for (i=0;i&lt;100;i++)<br>
+&nbsp;&nbsp;&nbsp; {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SendChar('A');<br>
+&nbsp;&nbsp;&nbsp; }<br>
+}</font></p>
+<p><b><i><font face="Arial">Receive Example (RS232Read.c example)</font></i></b></p>
+<p><font face="Courier New">#include &quot;KMotionDef.h&quot;<br>
+<br>
+void ReceiveChar()<br>
+{<br>
+&nbsp;&nbsp;&nbsp; // wait for data in buffer<br>
+&nbsp;&nbsp;&nbsp; while ((FPGA(RS232_STATUS) &amp; 1)==0);<br>
+&nbsp;&nbsp;&nbsp; return FPGA(RS232_DATA);<br>
+}<br>
+<br>
+main()<br>
+{<br>
+&nbsp;&nbsp;&nbsp; SetBitDirection(45,1);<br>
+&nbsp;&nbsp;&nbsp; FPGA(RS232_BAUD_REG) = RS232_BAUD_38400;<br>
+&nbsp;&nbsp;&nbsp; // FPGA(KAN_TRIG_REG) = 1; // enable Kanalog to get RS232 
+working<br>
+&nbsp;&nbsp;&nbsp; for (;;)<br>
+&nbsp;&nbsp;&nbsp; {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while ((FPGA(RS232_STATUS) &amp; 
+RS232_DATA_READY) == 0) ;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf(&quot;%X\n&quot;,ReceiveChar());<br>
+&nbsp;&nbsp;&nbsp; }<br>
+} </font></p>
+
+</body>
+
+</html>

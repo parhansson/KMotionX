@@ -1,0 +1,320 @@
+﻿<!DOCTYPE>
+<html>
+	<head> 
+		<title></title>
+		<link type="text/css" rel="stylesheet"  href="./Content/Site.css" />
+		<link type="text/css" rel="stylesheet"  href="./Content/Themes/vader/jquery-ui-1.8.17.custom.css" />
+		<script type="text/javascript" src="./Scripts/jquery-1.7.1.min.js" ></script>
+		<script type="text/javascript" src="./Scripts/jquery-ui-1.8.17.custom.min.js" ></script>
+		<script type="text/javascript" src="./Scripts/JQUIDefs.js" ></script>
+		<script type="text/javascript" src="./Scripts/CommandHooks.js" ></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            window.external.UpdateCommandButtonText(11,20);
+            window.external.RefreshInterpreterState();
+            window.external.InitInterpreterData();
+            $('[data-commandid]').click(function() {
+                var id = $(this).attr('data-commandid');
+                window.external.RunUserCommand(id);
+            });
+        });
+    </script>
+	</head>
+	<body class="controllerbody" > 
+	<div id="bg"> 
+	</div>
+            <div>
+             <div class="axisdrocontainer">
+             <ul class="axisdrolist">
+             <li >  
+             <div class="axisdroitem">
+             <table>
+              <tr>
+                 <td>
+                 <p class="axislabel">X</p>
+                 </td>
+                 <td>
+                   <button id="xenable" style="width:95px; text-align:right" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" >
+                   <div id="enablexLED" class="GreenoffLED enableLED" ></div>
+                   Enable</button>
+                 </td>
+                  <td>
+                   <input type="text" id="xdest" class="axisvalue" value="000.000"></input>  
+                 </td>
+                    <td>
+                   <button id="xzero" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" >Zero</button>
+                 </td>
+                        <td>
+                   <button id="xmoveto" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" >Move</button>
+                 </td>
+              </tr>
+             </table> 
+             </div>
+             </li>
+                     <li class="axisdroitem" > 
+             <table>
+              <tr>
+                 <td>
+                 <p class="axislabel">Y</p>
+                 </td>
+                 <td>
+                   <button id="yenable" style="width:95px; text-align:right" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" >
+                   <div id="enableyLED" class="GreenoffLED enableLED" ></div>
+                   Enable</button>
+                 </td>
+                  <td>
+                   <input type="text"  id="ydest" class="axisvalue" value="000.000"></input>
+                 </td>
+                    <td>
+                   <button id="yzero" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" >Zero</button>
+                 </td>
+                        <td>
+                   <button id="ymoveto" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" >Move</button>
+                 </td>
+              </tr>
+             </table> 
+             </li>
+                          <li class="axisdroitem" > 
+             <table>
+              <tr>
+                 <td>
+                 <p class="axislabel">Z</p>
+                 </td>
+                 <td>
+                   <button id="zenable" style="width:95px; text-align:right" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" >
+                   <div id="enablezLED" class="GreenoffLED enableLED" ></div>
+                   Enable</button>
+                 </td>
+                  <td>
+                   <input type="text" id="zdest" class="axisvalue" value="000.000"></input>
+                 </td>
+                    <td>
+                   <button id="zzero" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" >Zero</button>
+                 </td>
+                      <td>
+                   <button id="zmoveto" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" >Move</button>
+                 </td>
+              </tr>
+             </table> 
+             </li>
+             </ul> 
+             </div>
+          
+             <div class="jogpendantcontainer">
+               <ul class="jogpendantlist">
+                       <li class="jogpendantitem"> 
+             <table>
+              <tr>
+                 <td>
+                 <p class="axislabel">X</p>
+                 </td>
+                 <td>
+                   <button id="xjogneg" class="jognegative" > 
+                   </button>
+                 </td>
+                  <td>
+                   <div id="xjogslider" class="jogslider"></div>
+                   <p id="xjogpercentvalue" class="jogpercent">100%</p>
+                 </td>
+                    <td>
+                   <button id="xjogpos" class="jogpositive" > 
+                   </button>
+                 </td>
+              </tr>
+             </table> 
+             </li>
+             <li class="jogpendantitem"> 
+             <table>
+              <tr>
+                 <td>
+                 <p class="axislabel">Y</p>
+                 </td>
+                 <td>
+                   <button id="yjogneg" class="jognegative" > 
+                   </button>
+                 </td>
+                  <td>
+                   <div id="yjogslider" class="jogslider"></div>
+                   <p id="yjogpercentvalue" class="jogpercent">100%</p>
+                 </td>
+                    <td>
+                   <button id="yjogpos" class="jogpositive" > 
+                   </button>
+                 </td>
+              </tr>
+             </table> 
+             </li>
+                                 <li class="jogpendantitem"> 
+             <table>
+              <tr>
+                 <td>
+                 <p class="axislabel">Z</p>
+                 </td>
+                 <td>
+                   <button id="zjogneg" class="jognegative" > 
+                   </button>
+                 </td>
+                  <td>
+                   <div id="zjogslider" class="jogslider"></div>
+                   <p id="zjogpercentvalue" class="jogpercent">100%</p>
+                 </td>
+                    <td>
+                   <button id="zjogpos" class="jogpositive" > 
+                   </button>
+                 </td>
+              </tr>
+             </table> 
+             </li>
+               </ul> 
+               </div>
+            
+            <div id="gcodedisplay" data-maxlines="13">
+            </div>
+            
+            <div class="mdipanel">
+            <table>
+            <tr>
+            <td>
+            <p class="mdilabel">MDI</p>
+            </td>
+            <td>
+            <input id="mdicommand" type="text" class="mdivalue" />
+            </td>
+            <td>
+              <button id="executemdi" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  EXE </button>
+            </td>
+            </tr>
+            </table>
+            </div>
+            
+            <div id="frocontainer">
+             <p id="frovalue">100%</p>
+             <div id="froslider" style="width:10px; height:140px; margin:0px 0px -10px 25px;"></div>
+             <p id="frolabel">FRO</p>
+            </div>
+            
+            <div id="userbuttonscontainer">
+                  <button id="userbutton11" data-commandid="11" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  User1 </button>      
+                  <button id="userbutton12" data-commandid="12" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  User2 </button>      
+                  <button id="userbutton13" data-commandid="13" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  User3 </button>      
+                  <button id="userbutton14" data-commandid="14" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  User4 </button>      
+                  <button id="userbutton15" data-commandid="15" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  User5 </button>      
+                  <button id="userbutton16" data-commandid="16" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  User6 </button>      
+                  <button id="userbutton17" data-commandid="17" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  User7 </button>      
+                  <button id="userbutton18" data-commandid="18" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  User8 </button>     
+                  <button id="userbutton19" data-commandid="19" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  User9 </button>     
+                  <button id="userbutton20" data-commandid="20" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  User10 </button>
+            </div>
+            
+            <div id="filecontainer">
+            <h4 id="gcodeprogramlabel">PROGRAM NAME</h4>
+            <p id="gcodeprogramname" ></p>
+        
+             <button id="loadgcode" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  Load G-Code </button>
+             <button id="rewindgcode" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  Rewind </button>
+             <button id="runfromline" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  Run From Line:</button>
+            <input id="gcodelinetorun" type="text" />
+             <button id="simulate" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+               <div id="simulateLED" class="GreenoffLED InterpreterLED" ></div>
+                  Simulate
+                  </button>
+             <button id="blockdelete" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all"> 
+             <div id="blkdeleteLED" class="GreenoffLED InterpreterLED" ></div>
+               BLK Delete
+              </button>
+            </div>
+            
+            <div id="maincommandscontainer">
+                  <button id="cyclestart" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  START </button>
+                        <button id="cyclepause" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  <div id="cyclepauseLED" class="RedoffLED CyclePauseLED" ></div>
+                  PAUSE </button>
+                        <button id="stop" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  STOP </button>
+            </div>
+            
+            <div id="statusbar">
+                <p id="connectedvalue"></p>
+                <p id="kflopversionvalue"></p>
+               <button id="mainpagebutton" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  Main </button>
+               <button id="offsetspagebutton" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  Offsets </button>
+               <button id="settingspagebutton" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  Settings </button>
+            </div>
+            
+            
+            
+            
+            <div id="xmove-form" title="Move X to Position"> 
+	            <form>
+	            <fieldset>
+		            <label for="xposition">Position</label>
+		            <input type="text" name="xposition" id="xposition" class="text ui-widget-content ui-corner-all" />
+	            </fieldset>
+	            </form>
+            </div>
+
+            <div id="ymove-form" title="Move Y to Position"> 
+	            <form>
+	            <fieldset>
+		            <label for="yposition">Position</label>
+		            <input type="text" name="yposition" id="yposition" class="text ui-widget-content ui-corner-all" />
+	            </fieldset>
+	            </form>
+            </div>
+            
+            <div id="zmove-form" title="Move Z to Position"> 
+	            <form>
+	            <fieldset>
+		            <label for="zposition">Position</label>
+		            <input type="text" name="zposition" id="zposition" class="text ui-widget-content ui-corner-all" />
+	            </fieldset>
+	            </form>
+            </div>
+            
+            <div id="amove-form" title="Move A to Position"> 
+	            <form>
+	            <fieldset>
+		            <label for="aposition">Position</label>
+		            <input type="text" name="aposition" id="aposition" class="text ui-widget-content ui-corner-all" />
+	            </fieldset>
+	            </form>
+            </div>
+            
+            <div id="bmove-form" title="Move B to Position"> 
+	            <form>
+	            <fieldset>
+		            <label for="bposition">Position</label>
+		            <input type="text" name="bposition" id="bposition" class="text ui-widget-content ui-corner-all" />
+	            </fieldset>
+	            </form>
+            </div>
+            
+            <div id="cmove-form" title="Move C to Position"> 
+	            <form>
+	            <fieldset>
+		            <label for="cposition">Position</label>
+		            <input type="text" name="cposition" id="cposition" class="text ui-widget-content ui-corner-all" />
+	            </fieldset>
+	            </form>
+            </div>
+            </div>
+	</body>
+</html>

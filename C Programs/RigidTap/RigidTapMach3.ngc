@@ -1,0 +1,23 @@
+G0X0Y0Z5
+
+(Call a Rigid Tap Sequence)
+#10=20    (TPI - Threads per inch)
+#11=700   (Forward Cutting RPM)
+#12=1000   (Retract RPM)
+#13=0.75  (Z depth Total inches)
+#14=0.2   (Z depth Forward per Motion)
+#15=0.05  (Z depth Retract per Motion)
+M84
+
+G0X4Y0Z5
+
+(Call a Rigid Tap Sequence)
+#10=20    (TPI - Threads per inch)
+#11=700   (Forward Cutting RPM)
+#12=1000   (Retract RPM)
+#13=0.75  (Z depth Total inches)
+#14=0.2   (Z depth Forward per Motion)
+#15=0.05  (Z depth Retract per Motion)
+M84
+
+M2

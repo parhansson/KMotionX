@@ -1,0 +1,238 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>B.3.5 A Brief List of Linux Text Commands</TITLE>
+<META NAME="description" CONTENT="B.3.5 A Brief List of Linux Text Commands">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node132.html">
+<LINK REL="previous" HREF="node130.html">
+<LINK REL="up" HREF="node126.html">
+<LINK REL="next" HREF="node132.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2327"
+  HREF="node132.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html2321"
+  HREF="node126.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html2315"
+  HREF="node130.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html2323"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html2325"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html2328"
+  HREF="node132.html">B.3.6 Keeping a Copy</A>
+<B> Up:</B> <A NAME="tex2html2322"
+  HREF="node126.html">B.3 Entering Text Commands.</A>
+<B> Previous:</B> <A NAME="tex2html2316"
+  HREF="node130.html">B.3.4 Introduction To Terminal</A>
+ &nbsp; <B>  <A NAME="tex2html2324"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html2326"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION05235000000000000000">
+B.3.5 A Brief List of Linux Text Commands</A>
+</H2>
+
+<P>
+My recommendation is that you purchase a text that sets out in rather
+detailed fashion all of the common commands that ship with Linux.
+Beyond this there are also a set of commands that may be specific
+to the distribution that you are using and you should consult a manual
+specific to that.
+
+<P>
+The listing below are those that I commonly deal with during a Linux
+session.
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER">
+
+<P>
+
+<P>
+
+<P>
+<BR>
+
+<DIV ALIGN="CENTER"><A NAME="3934"></A>
+<TABLE CELLPADDING=3 BORDER="1">
+<CAPTION><STRONG>Table B.1:</STRONG>
+Short List of File Commands</CAPTION>
+<TR><TD ALIGN="CENTER">What It Does</TD>
+<TD ALIGN="CENTER">Command</TD>
+<TD ALIGN="CENTER">Sample</TD>
+</TR>
+<TR><TD ALIGN="CENTER">List Directory Contents</TD>
+<TD ALIGN="CENTER">ls</TD>
+<TD ALIGN="CENTER">ls -l /home/ray/*.rpm</TD>
+</TR>
+<TR><TD ALIGN="CENTER">Change Working Directory</TD>
+<TD ALIGN="CENTER">cd</TD>
+<TD ALIGN="CENTER">cd /usr/local/emc</TD>
+</TR>
+<TR><TD ALIGN="CENTER">Copy File</TD>
+<TD ALIGN="CENTER">cp</TD>
+<TD ALIGN="CENTER">cp emc.ini mymill.ini</TD>
+</TR>
+<TR><TD ALIGN="CENTER">Move File</TD>
+<TD ALIGN="CENTER">mv</TD>
+<TD ALIGN="CENTER">mv mymill.ini bobmill.ini</TD>
+</TR>
+<TR><TD ALIGN="CENTER">Remove File</TD>
+<TD ALIGN="CENTER">rm</TD>
+<TD ALIGN="CENTER">rm mymill2.ini</TD>
+</TR>
+<TR><TD ALIGN="CENTER">Change File Owner</TD>
+<TD ALIGN="CENTER">chown</TD>
+<TD ALIGN="CENTER">chown ray mymill.*</TD>
+</TR>
+<TR><TD ALIGN="CENTER">Change File Group</TD>
+<TD ALIGN="CENTER">chgrp</TD>
+<TD ALIGN="CENTER">chgrp operators mymill.*</TD>
+</TR>
+<TR><TD ALIGN="CENTER">Change File Permissions</TD>
+<TD ALIGN="CENTER">chmod</TD>
+<TD ALIGN="CENTER">chmod a+rwx mymill.*</TD>
+</TR>
+<TR><TD ALIGN="CENTER">Make a Directory</TD>
+<TD ALIGN="CENTER">mkdir</TD>
+<TD ALIGN="CENTER">mkdir /usr/local/emc2</TD>
+</TR>
+<TR><TD ALIGN="CENTER">Remove a Directory</TD>
+<TD ALIGN="CENTER">rmdir</TD>
+<TD ALIGN="CENTER">rmdir /usr/local/emc2</TD>
+</TR>
+<TR><TD ALIGN="CENTER">View All Contents of File</TD>
+<TD ALIGN="CENTER">cat</TD>
+<TD ALIGN="CENTER">cat /usr/local/emc/emc.run</TD>
+</TR>
+<TR><TD ALIGN="CENTER">View Chunks of File</TD>
+<TD ALIGN="CENTER">more</TD>
+<TD ALIGN="CENTER">more /usr/local/emc/emc.run</TD>
+</TR>
+</TABLE></DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+
+<P>
+
+<UL>
+<LI>Note that you will have to own files in order to change ownership
+group or permissions or you will have to issue these commands as root
+(su).
+</LI>
+<LI>A directory must be empty to remove it with rmdir. An alternative
+is to use the rm command with -Rf and the directory name starred.
+</LI>
+</UL>
+</DIV>
+<BR>
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER">
+
+<P>
+
+<P>
+
+<P>
+<BR>
+
+<DIV ALIGN="CENTER"><A NAME="3936"></A>
+<TABLE CELLPADDING=3 BORDER="1">
+<CAPTION><STRONG>Table B.2:</STRONG>
+Short List of General Commands</CAPTION>
+<TR><TD ALIGN="CENTER">What It Does</TD>
+<TD ALIGN="CENTER">Command</TD>
+</TR>
+<TR><TD ALIGN="CENTER">Super User Mode</TD>
+<TD ALIGN="CENTER">su</TD>
+</TR>
+<TR><TD ALIGN="CENTER">Who Am I</TD>
+<TD ALIGN="CENTER">whoami</TD>
+</TR>
+<TR><TD ALIGN="CENTER">Where Am I</TD>
+<TD ALIGN="CENTER">pwd</TD>
+</TR>
+<TR><TD ALIGN="CENTER">Drive Free Space</TD>
+<TD ALIGN="CENTER">df</TD>
+</TR>
+<TR><TD ALIGN="CENTER">Shut Down PC</TD>
+<TD ALIGN="CENTER">halt -n</TD>
+</TR>
+<TR><TD ALIGN="CENTER">Reboot PC</TD>
+<TD ALIGN="CENTER">reboot</TD>
+</TR>
+</TABLE></DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+
+</DIV>
+<BR>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html2327"
+  HREF="node132.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html2321"
+  HREF="node126.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html2315"
+  HREF="node130.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html2323"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html2325"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html2328"
+  HREF="node132.html">B.3.6 Keeping a Copy</A>
+<B> Up:</B> <A NAME="tex2html2322"
+  HREF="node126.html">B.3 Entering Text Commands.</A>
+<B> Previous:</B> <A NAME="tex2html2316"
+  HREF="node130.html">B.3.4 Introduction To Terminal</A>
+ &nbsp; <B>  <A NAME="tex2html2324"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html2326"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

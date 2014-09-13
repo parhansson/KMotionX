@@ -1,0 +1,121 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Tool Setup Screen M3-M9</title>
+</head>
+
+<body>
+
+<p><i><b><font size="5" face="Arial">Tool Setup Screen - M3 - M9</font></b></i></p>
+<p>
+<map name="FPMap0">
+<area href="#G_Code_Actions_-_M3_-_M9" shape="rect" coords="10, 42, 687, 449">
+<area href="ToolSetupScreenM100.htm" shape="rect" coords="52, 22, 103, 43">
+<area href="ToolSetupScreenButtons.htm" shape="rect" coords="104, 23, 170, 43">
+<area href="ToolSetupScreenFiles.htm" shape="rect" coords="169, 23, 257, 46">
+<area href="ToolSetupScreenTP.htm" shape="rect" coords="255, 24, 349, 43">
+</map>
+<img border="0" src="KMotionCNCfiles/ToolSetupM3.PNG" width="700" height="477" usemap="#FPMap0"></p>
+
+<p><font face="Arial"><i>(Click on Image to Jump to 
+		related help)</i></font></p>
+<p><font face="Arial">The Tool Setup Screen allows <i>KMotionCNC</i> to be configured for a 
+particular machine tool.&nbsp; Each machine tool is likely to have different 
+motion resolution, speeds, and acceleration limits.&nbsp; It is also likely to 
+different I/O requirements with regard to Spindle control and such.&nbsp; 
+Additionally&nbsp; a machine may have different initialization and homing 
+requirements.&nbsp; <i>KMotionCNC</i> has a flexible mechanism for defining what 
+type of action is to be performed for various M Codes and Custom Buttons. </font> </p>
+<p><i><b><font size="4" face="Arial"><a name="G_Code_Actions_-_M3_-_M9">G Code Actions 
+- M3 - M9</a></font></b></i></p>
+<p>
+<font face="Arial">
+<img border="2" src="KMotionCNCfiles/GCodeActions.png" align="left" hspace="15"></font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>The M Codes 3 through 9 have functionality commonly used by most machine 
+tools.&nbsp; These can also be used as custom or general purpose M codes in the 
+same manner as the M100-M119 M codes with the exception of M5 and M9 which are 
+automatically executed on Program Stop or Rewind.&nbsp;&nbsp;&nbsp; </p>
+<p>&nbsp;</p>
+<p>M3 - Spindle On CW</p>
+<p>M4 - Spindle On CCW</p>
+<p>M5 - Spindle Off - Note Automatically called on Program Stop/Rewind</p>
+<p>M6 - Tool Change (T variable is passed to the C program in the persist 
+variable specified)</p>
+<p>M3 - Spindle On CW</p>
+<p>M4 - Spindle On CCW</p>
+<p>M5 - Spindle Off - Note Automatically called on Program Stop/Rewind</p>
+<p>&nbsp;</p>
+<p><font face="Arial">The G Code Actions section of the Tool Setup Screen defines what action is to 
+be performed when a particular G Code Command (Mostly M Codes) is encountered.&nbsp; 
+The Action that can be performed can be one of several things:</font></p>
+<ul>
+	<li><font face="Arial">None</font></li>
+	<li><font face="Arial">Set or Reset one I/O Bit</font></li>
+	<li><font face="Arial">Set or Reset two I/O Bits</font></li>
+	<li><font face="Arial">Set a DAC to a variable's value (S parameter)</font></li>
+	<li><font face="Arial">Execute a C Program in the KMotion Control Board 
+	</font> </li>
+	<li><font face="Arial">Execute a C Program in the KMotion Control Board + 
+	wait for it to terminate 
+	</font> </li>
+	<li><font face="Arial">Execute a C Program in the KMotion Control Board + 
+	wait for it to terminate + resync Interpreter positions</font></li>
+	<li><font face="Arial">Execute a Windows Program</font></li>
+</ul>
+<p><font face="Arial">To specify a particular action first select the Action Type.&nbsp; Each 
+Action Type requires a different number and type of parameters.&nbsp; Next fill 
+in the appropriate parameters.&nbsp; The one and two bit I/O commands are 
+inserted directly into the coordinated motion control buffer.&nbsp; In this way 
+they are exactly synchronized with any motion before or after the I/O commands.&nbsp; 
+This is useful in systems where a fast shutter or other operation is required at 
+precise times relative to the motion.&nbsp; </font> </p>
+<p>&nbsp;</p>
+<p><font face="Arial">The five Action Types are described below:</font></p>
+<p><font face="Arial">For <b>one I/O</b> bit specify the I/O bit number and the state 0 or 1 to set 
+it to.&nbsp; </font> </p>
+<p><font face="Arial"><img border="0" src="KMotionCNCfiles/OneBit.png"></font></p>
+<p>&nbsp;</p>
+<p><font face="Arial">For <b>two I/O</b> bits specify the I/O bit numbers and the state 0 or 1 to 
+set each to.&nbsp; Often systems with two direction spindle control will require 
+setting two outputs that control on/off and cw/ccw.&nbsp; This command is 
+designed to handle those situations.</font></p>
+<p><font face="Arial"><img border="0" src="KMotionCNCfiles/TwoBits.png"></font></p>
+<p>&nbsp;</p>
+<p><font face="Arial">For a special command to pause motion until an external 
+Input is activated select <b>Wait Bit</b> and specify the I/O bit number and the state 0 or 1 to 
+wait for.&nbsp; </font> </p>
+<p><font face="Arial">
+<img border="0" src="KMotionCNCfiles/WaitBit.png" width="449" height="30"></font></p>
+<p>&nbsp;</p>
+<p><font face="Arial">For <b>DAC</b> specify the DAC (Digital to analog converter) channel number, 
+how to scale and offset the associated variable, and the minimum and maximum 
+allowed DAC settings.&nbsp; This command is primarily designed for use with the 
+S (Spindle speed) G Code Command</font></p>
+<p><font face="Arial"><img border="0" src="KMotionCNCfiles/DAC.png"></font></p>
+<p>&nbsp;</p>
+<p><font face="Arial">For <b>Execute Prog</b> specify the program Thread (1 through 7) where the 
+program is to be downloaded and executed, a Persist Variable (1-99)&nbsp; that 
+will be set before the program executes, and the name of the C Program to be 
+Compiled, Downloaded, And Executed.&nbsp; If the Filename is left blank, then it 
+will be assumed that a program has been previously downloaded and will just be 
+re-executed.&nbsp; This method is very powerful in that anything that may be 
+programmed in C may be invoked.&nbsp;&nbsp; See the KMotion documentation for 
+information on writing C Programs for the KMotion Motion Control Board.&nbsp; 
+There are a number of example C programs in the &lt;Install Dir&gt;\C Programs folder.&nbsp;&nbsp; 
+The Example &quot;\KStep\InitKStep3Axis.c&quot; s an example which completely configures all 
+necessary parameters in the KFLOP Board to drive 3 stepping motors using KSTEP's amplifiers.</font></p>
+<p><font face="Arial"><img border="0" src="KMotionCNCfiles/ExecuteProg.png"></font></p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

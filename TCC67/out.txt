@@ -1,0 +1,1088 @@
+                                     typedef
+                                     struct
+                                     {
+                                     int
+                                     ADC
+                                     [
+                                     8
+                                     ]
+                                     ;
+                                     int
+                                     DAC
+                                     [
+                                     8
+                                     ]
+                                     ;
+                                     int
+                                     PWM
+                                     [
+                                     8
+                                     ]
+                                     ;
+                                     int
+                                     Enc
+                                     [
+                                     4
+                                     ]
+                                     ;
+                                     int
+                                     BitsDirection
+                                     ;
+                                     int
+                                     BitsState
+                                     ;
+                                     }
+                                     MAIN_STATUS
+                                     ;
+                                     extern
+                                     float
+                                     sqrtf
+                                     (
+                                     float
+                                     x
+                                     )
+                                     ;
+                                     extern
+                                     float
+                                     expf
+                                     (
+                                     float
+                                     x
+                                     )
+                                     ;
+                                     extern
+                                     float
+                                     logf
+                                     (
+                                     float
+                                     x
+                                     )
+                                     ;
+                                     extern
+                                     float
+                                     log10f
+                                     (
+                                     float
+                                     x
+                                     )
+                                     ;
+                                     extern
+                                     float
+                                     powf
+                                     (
+                                     float
+                                     x
+                                     ,
+                                     float
+                                     y
+                                     )
+                                     ;
+                                     extern
+                                     float
+                                     sinf
+                                     (
+                                     float
+                                     x
+                                     )
+                                     ;
+                                     extern
+                                     float
+                                     cosf
+                                     (
+                                     float
+                                     x
+                                     )
+                                     ;
+                                     extern
+                                     float
+                                     tanf
+                                     (
+                                     float
+                                     x
+                                     )
+                                     ;
+                                     extern
+                                     float
+                                     asinf
+                                     (
+                                     float
+                                     x
+                                     )
+                                     ;
+                                     extern
+                                     float
+                                     acosf
+                                     (
+                                     float
+                                     x
+                                     )
+                                     ;
+                                     extern
+                                     float
+                                     atanf
+                                     (
+                                     float
+                                     x
+                                     )
+                                     ;
+                                     extern
+                                     float
+                                     atan2f
+                                     (
+                                     float
+                                     y
+                                     ,
+                                     float
+                                     x
+                                     )
+                                     ;
+                                     typedef
+                                     struct
+                                     {
+                                     float
+                                     *
+                                     bufptr
+                                     ;
+                                     float
+                                     *
+                                     endptr
+                                     ;
+                                     float
+                                     Dest
+                                     ;
+                                     int
+                                     Inject
+                                     ;
+                                     float
+                                     *
+                                     pf
+                                     [
+                                     32
+                                     ]
+                                     ;
+                                     }
+                                     GATHER
+                                     ;
+                                     extern
+                                     GATHER
+                                     gather
+                                     ;
+                                     extern
+                                     float
+                                     *
+                                     gather_buffer
+                                     ;
+                                     extern
+                                     float
+                                     *
+                                     input
+                                     ;
+                                     void
+                                     SetupGatherAllOnAxis
+                                     (
+                                     int
+                                     c
+                                     ,
+                                     int
+                                     n_Samples
+                                     )
+                                     ;
+                                     void
+                                     TriggerGather
+                                     (
+                                     )
+                                     ;
+                                     typedef
+                                     struct
+                                     {
+                                     float
+                                     t
+                                     ;
+                                     float
+                                     a
+                                     ;
+                                     float
+                                     b
+                                     ;
+                                     float
+                                     c
+                                     ;
+                                     float
+                                     d
+                                     ;
+                                     }
+                                     COEFF
+                                     ;
+                                     typedef
+                                     struct
+                                     {
+                                     float
+                                     A2
+                                     ;
+                                     float
+                                     A1
+                                     ;
+                                     float
+                                     B2
+                                     ;
+                                     float
+                                     B1
+                                     ;
+                                     float
+                                     B0
+                                     ;
+                                     float
+                                     d0
+                                     ,
+                                     d1
+                                     ;
+                                     }
+                                     IIR
+                                     ;
+                                     typedef
+                                     struct
+                                     {
+                                     int
+                                     chan_number
+                                     ;
+                                     int
+                                     mode
+                                     ;
+                                     float
+                                     t
+                                     ;
+                                     float
+                                     Dest
+                                     ;
+                                     float
+                                     DestOffset
+                                     ;
+                                     float
+                                     Vel
+                                     ;
+                                     float
+                                     Accel
+                                     ;
+                                     float
+                                     Jerk
+                                     ;
+                                     float
+                                     FFAccel
+                                     ;
+                                     float
+                                     FFVel
+                                     ;
+                                     float
+                                     DistPerCycle
+                                     ;
+                                     float
+                                     invDistPerCycleTable
+                                     ;
+                                     float
+                                     Amp
+                                     ;
+                                     float
+                                     Output
+                                     ;
+                                     float
+                                     Lead
+                                     ;
+                                     COEFF
+                                     *
+                                     pcoeff
+                                     ;
+                                     COEFF
+                                     *
+                                     pcoeff_done
+                                     ;
+                                     float
+                                     x1last
+                                     ,
+                                     x2last
+                                     ;
+                                     int
+                                     PWM0
+                                     ,
+                                     PWM1
+                                     ;
+                                     int
+                                     Encoder
+                                     ;
+                                     signed
+                                     char
+                                     last_enc
+                                     ;
+                                     float
+                                     P
+                                     ,
+                                     I
+                                     ,
+                                     D
+                                     ;
+                                     float
+                                     MaxI
+                                     ;
+                                     float
+                                     MaxErr
+                                     ;
+                                     float
+                                     integrator
+                                     ;
+                                     float
+                                     last_error
+                                     ;
+                                     float
+                                     MaxOutput
+                                     ;
+                                     COEFF
+                                     DummyCoef
+                                     ;
+                                     COEFF
+                                     c
+                                     [
+                                     18
+                                     ]
+                                     ;
+                                     IIR
+                                     iir
+                                     [
+                                     2
+                                     ]
+                                     ;
+                                     }
+                                     CHAN
+                                     ;
+                                     extern
+                                     short
+                                     int
+                                     DAC_Buffer
+                                     [
+                                     8
+                                     ]
+                                     ;
+                                     extern
+                                     int
+                                     ADC_BufferIn
+                                     [
+                                     8
+                                     ]
+                                     ;
+                                     extern
+                                     int
+                                     LastPWM
+                                     [
+                                     8
+                                     ]
+                                     ;
+                                     int
+                                     ReadADC
+                                     (
+                                     int
+                                     ch
+                                     )
+                                     ;
+                                     void
+                                     WriteDAC
+                                     (
+                                     int
+                                     ch
+                                     ,
+                                     int
+                                     v
+                                     )
+                                     ;
+                                     void
+                                     Delay_sec
+                                     (
+                                     float
+                                     sec
+                                     )
+                                     ;
+                                     extern
+                                     CHAN
+                                     chan
+                                     [
+                                     4
+                                     ]
+                                     ;
+                                     extern
+                                     CHAN
+                                     *
+                                     ch0
+                                     ,
+                                     *
+                                     ch1
+                                     ,
+                                     *
+                                     ch2
+                                     ,
+                                     *
+                                     ch3
+                                     ;
+                                     extern
+                                     MAIN_STATUS
+                                     MainStatus
+                                     ;
+                                     void
+                                     Move
+                                     (
+                                     int
+                                     ch
+                                     ,
+                                     float
+                                     x
+                                     )
+                                     ;
+                                     void
+                                     MoveRel
+                                     (
+                                     int
+                                     ch
+                                     ,
+                                     float
+                                     dx
+                                     )
+                                     ;
+                                     int
+                                     CheckDone
+                                     (
+                                     int
+                                     ch
+                                     )
+                                     ;
+                                     int
+                                     CheckDoneGather
+                                     (
+                                     )
+                                     ;
+                                     void
+                                     StartMove
+                                     (
+                                     int
+                                     ch
+                                     )
+                                     ;
+                                     void
+                                     SetupForMove
+                                     (
+                                     float
+                                     From
+                                     ,
+                                     float
+                                     To
+                                     ,
+                                     CHAN
+                                     *
+                                     ch
+                                     ,
+                                     int
+                                     CoeffOffset
+                                     ,
+                                     int
+                                     NoJerkControlAtStart
+                                     ,
+                                     int
+                                     NoJerkControlAtEnd
+                                     ,
+                                     int
+                                     Start
+                                     )
+                                     ;
+                                     void
+                                     SetupForMotionPause
+                                     (
+                                     float
+                                     x
+                                     ,
+                                     CHAN
+                                     *
+                                     ch
+                                     ,
+                                     int
+                                     CoeffOffset
+                                     ,
+                                     float
+                                     time
+                                     )
+                                     ;
+                                     extern
+                                     int
+                                     BitDirShadow
+                                     ;
+                                     void
+                                     SetBitDirection
+                                     (
+                                     int
+                                     bit
+                                     ,
+                                     int
+                                     dir
+                                     )
+                                     ;
+                                     int
+                                     GetBitDirection
+                                     (
+                                     int
+                                     bit
+                                     )
+                                     ;
+                                     void
+                                     SetBit
+                                     (
+                                     int
+                                     bit
+                                     )
+                                     ;
+                                     void
+                                     ClearBit
+                                     (
+                                     int
+                                     bit
+                                     )
+                                     ;
+                                     void
+                                     SetStateBit
+                                     (
+                                     int
+                                     bit
+                                     ,
+                                     int
+                                     state
+                                     )
+                                     ;
+                                     int
+                                     ReadBit
+                                     (
+                                     int
+                                     bit
+                                     )
+                                     ;
+                                     int
+                                     main
+                                     (
+                                     )
+                                     {
+0000  003C0058 MV.L 0 108 105
+0004  07BC1058 MV.L 0 106 108
+0008  07800052 ADDK 0 106 0
+000C  003C34F4 STW.D SP POST DEC 105 0 0
+0010  01BC34F6 STW.D SP POST DEC 107 0 0
+                                     int
+                                     j
+                                     ;
+                                     float
+                                     dist_to_move
+                                     =
+                                     ¹
+                                     ;
+0014  00000028 MVKL. 0 105 0
+0018  00000068 MVKH. 0 105 0
+001C  01000264 LDW.D * 105 0 0
+0020  00006000 NOP 4 0 0
+0024  007FFFA8 MVKL. -1 105 0
+0028  007FFFE8 MVKH. -1 105 0
+002C  013C0A74 STW.D *+SP[A0] 0 0 0
+                                     ch3
+                                     ->
+                                     ->
+0030  00000028 MVKL. 0 105 0
+0034  00000068 MVKH. 0 105 0
+0038  01000264 LDW.D * 105 0 0
+003C  00006000 NOP 4 0 0
+                                     MaxOutput
+0040  01803C28 MVKL. 120 1 0
+0044  01800068 MVKH. 120 1 0
+0048  010C4078 ADD.L 0 1 0
+                                     =
+                                     200
+                                     ;
+004C  00000028 MVKL. 0 105 0
+0050  00000068 MVKH. 0 105 0
+0054  00000266 LDW.D * 105 2 0
+0058  00006000 NOP 4 0 0
+005C  00080276 STW.D * 2 0 0
+                                     ch3
+                                     ->
+                                     ->
+0060  00000028 MVKL. 0 105 0
+0064  00000068 MVKH. 0 105 0
+0068  01000264 LDW.D * 105 0 0
+006C  00006000 NOP 4 0 0
+                                     mode
+0070  01800228 MVKL. 4 1 0
+0074  01800068 MVKH. 4 1 0
+0078  010C4078 ADD.L 0 1 0
+                                     =
+                                     0
+                                     ;
+007C  01800028 MVKL. 0 1 0
+0080  01800068 MVKH. 0 1 0
+0084  01880274 STW.D * 1 0 0
+                                     Delay_sec
+                                     (
+                                     (
+                                     ¹
+                                     )
+0088  00000028 MVKL. 0 105 0
+008C  00000068 MVKH. 0 105 0
+0090  02000264 LDW.D * 105 4 0
+0094  00006000 NOP 4 0 0
+0098  023C34F4 STW.D SP POST DEC 4 0 0
+                                     ;
+009C  023C32E4 LDW.D SP PRE INC 4 0 0
+00A0  00000028 MVKL. 0 105 0
+00A4  00000068 MVKH. 0 105 0
+00A8  00001362 B.S2 0 -1 105
+00AC  0180002A MVKL. 0 107 0
+00B0  0180006A MVKH. 0 107 0
+00B4  00004000 NOP 3 0 0
+                                     ch3
+                                     ->
+                                     ->
+00B8  00000028 MVKL. 0 105 0
+00BC  00000068 MVKH. 0 105 0
+00C0  01000264 LDW.D * 105 0 0
+00C4  00006000 NOP 4 0 0
+                                     pcoeff
+00C8  01801E28 MVKL. 60 1 0
+00CC  01800068 MVKH. 60 1 0
+00D0  010C4078 ADD.L 0 1 0
+                                     ->
+00D4  01880264 LDW.D * 0 1 0
+00D8  00006000 NOP 4 0 0
+                                     d
+00DC  01000828 MVKL. 16 0 0
+00E0  01000068 MVKH. 16 0 0
+00E4  01886078 ADD.L 1 0 1
+                                     =
+                                     ¹
+                                     ;
+00E8  00000028 MVKL. 0 105 0
+00EC  00000068 MVKH. 0 105 0
+00F0  01000264 LDW.D * 105 0 0
+00F4  00006000 NOP 4 0 0
+00F8  010C0274 STW.D * 0 1 0
+                                     ch3
+                                     ->
+                                     ->
+00FC  00000028 MVKL. 0 105 0
+0100  00000068 MVKH. 0 105 0
+0104  01000264 LDW.D * 105 0 0
+0108  00006000 NOP 4 0 0
+                                     Dest
+010C  01800628 MVKL. 12 1 0
+0110  01800068 MVKH. 12 1 0
+0114  010C4078 ADD.L 0 1 0
+                                     =
+                                     ¹
+                                     ;
+0118  00000028 MVKL. 0 105 0
+011C  00000068 MVKH. 0 105 0
+0120  00000266 LDW.D * 105 2 0
+0124  00006000 NOP 4 0 0
+0128  00080276 STW.D * 2 0 0
+                                     ch3
+                                     ->
+                                     ->
+012C  00000028 MVKL. 0 105 0
+0130  00000068 MVKH. 0 105 0
+0134  01000264 LDW.D * 105 0 0
+0138  00006000 NOP 4 0 0
+                                     mode
+013C  01800228 MVKL. 4 1 0
+0140  01800068 MVKH. 4 1 0
+0144  010C4078 ADD.L 0 1 0
+                                     =
+                                     1
+                                     ;
+0148  018000A8 MVKL. 1 1 0
+014C  01800068 MVKH. 1 1 0
+0150  01880274 STW.D * 1 0 0
+                                     ch3
+                                     ->
+                                     ->
+0154  00000028 MVKL. 0 105 0
+0158  00000068 MVKH. 0 105 0
+015C  01000264 LDW.D * 105 0 0
+0160  00006000 NOP 4 0 0
+                                     Amp
+0164  01801828 MVKL. 48 1 0
+0168  01800068 MVKH. 48 1 0
+016C  010C4078 ADD.L 0 1 0
+                                     =
+                                     ¹
+                                     ;
+0170  00000028 MVKL. 0 105 0
+0174  00000068 MVKH. 0 105 0
+0178  00000266 LDW.D * 105 2 0
+017C  00006000 NOP 4 0 0
+0180  00080276 STW.D * 2 0 0
+                                     ch3
+                                     ->
+                                     ->
+0184  00000028 MVKL. 0 105 0
+0188  00000068 MVKH. 0 105 0
+018C  01000264 LDW.D * 105 0 0
+0190  00006000 NOP 4 0 0
+                                     Vel
+0194  01800A28 MVKL. 20 1 0
+0198  01800068 MVKH. 20 1 0
+019C  010C4078 ADD.L 0 1 0
+                                     =
+                                     ¹
+                                     ;
+01A0  00000028 MVKL. 0 105 0
+01A4  00000068 MVKH. 0 105 0
+01A8  00000266 LDW.D * 105 2 0
+01AC  00006000 NOP 4 0 0
+01B0  00080276 STW.D * 2 0 0
+                                     ch3
+                                     ->
+                                     ->
+01B4  00000028 MVKL. 0 105 0
+01B8  00000068 MVKH. 0 105 0
+01BC  01000264 LDW.D * 105 0 0
+01C0  00006000 NOP 4 0 0
+                                     Accel
+01C4  01800C28 MVKL. 24 1 0
+01C8  01800068 MVKH. 24 1 0
+01CC  010C4078 ADD.L 0 1 0
+                                     =
+                                     ¹
+                                     ;
+01D0  00000028 MVKL. 0 105 0
+01D4  00000068 MVKH. 0 105 0
+01D8  00000266 LDW.D * 105 2 0
+01DC  00006000 NOP 4 0 0
+01E0  00080276 STW.D * 2 0 0
+                                     ch3
+                                     ->
+                                     ->
+01E4  00000028 MVKL. 0 105 0
+01E8  00000068 MVKH. 0 105 0
+01EC  01000264 LDW.D * 105 0 0
+01F0  00006000 NOP 4 0 0
+                                     Jerk
+01F4  01800E28 MVKL. 28 1 0
+01F8  01800068 MVKH. 28 1 0
+01FC  010C4078 ADD.L 0 1 0
+                                     =
+                                     2000
+                                     ;
+0200  00000028 MVKL. 0 105 0
+0204  00000068 MVKH. 0 105 0
+0208  00000266 LDW.D * 105 2 0
+020C  00006000 NOP 4 0 0
+0210  00080276 STW.D * 2 0 0
+                                     ch3
+                                     ->
+                                     ->
+0214  00000028 MVKL. 0 105 0
+0218  00000068 MVKH. 0 105 0
+021C  01000264 LDW.D * 105 0 0
+0220  00006000 NOP 4 0 0
+                                     Lead
+0224  01801C28 MVKL. 56 1 0
+0228  01800068 MVKH. 56 1 0
+022C  010C4078 ADD.L 0 1 0
+                                     =
+                                     ¹
+                                     ;
+0230  00000028 MVKL. 0 105 0
+0234  00000068 MVKH. 0 105 0
+0238  00000266 LDW.D * 105 2 0
+023C  00006000 NOP 4 0 0
+0240  00080276 STW.D * 2 0 0
+                                     Move
+                                     (
+                                     (
+                                     3
+                                     ,
+0244  020001A8 MVKL. 3 4 0
+0248  02000068 MVKH. 3 4 0
+024C  023C34F4 STW.D SP POST DEC 4 0 0
+                                     ¹
+                                     )
+0250  00000028 MVKL. 0 105 0
+0254  00000068 MVKH. 0 105 0
+0258  02000266 LDW.D * 105 6 0
+025C  00006000 NOP 4 0 0
+0260  023C34F6 STW.D SP POST DEC 6 0 0
+                                     ;
+0264  023C32E6 LDW.D SP PRE INC 6 0 0
+0268  023C32E4 LDW.D SP PRE INC 4 0 0
+026C  00000028 MVKL. 0 105 0
+0270  00000068 MVKH. 0 105 0
+0274  00001362 B.S2 0 -1 105
+0278  0180002A MVKL. 0 107 0
+027C  0180006A MVKH. 0 107 0
+0280  00004000 NOP 3 0 0
+                                     for
+                                     (
+                                     j
+                                     =
+                                     0
+                                     ;
+0284  01000028 MVKL. 0 0 0
+0288  01000068 MVKH. 0 0 0
+028C  00000028 MVKL. 0 105 0
+0290  00000068 MVKH. 0 105 0
+0294  013C0A74 STW.D *+SP[A0] 0 0 0
+                                     j
+                                     <
+                                     8
+                                     ;
+0298  01000428 MVKL. 8 0 0
+029C  01000068 MVKH. 8 0 0
+02A0  00000028 MVKL. 0 105 0
+02A4  00000068 MVKH. 0 105 0
+02A8  003C0A66 LDW.D *+SP[A0] 2 0 0
+02AC  00006000 NOP 4 0 0
+02B0  01081AFA CMPLT.L1 2 0 109
+02B4  00000028 MVKL. 0 105 0
+02B8  00000068 MVKH. 0 105 0
+02BC  70001362 B.S2 1 109 105
+02C0  00008000 NOP 5 0 0
+                                     j
+02C4  00000028 MVKL. 0 105 0
+02C8  00000068 MVKH. 0 105 0
+02CC  00001362 B.S2 0 -1 105
+02D0  00008000 NOP 5 0 0
+                                     ++
+02D4  00000028 MVKL. 0 105 0
+02D8  00000068 MVKH. 0 105 0
+02DC  013C0A64 LDW.D *+SP[A0] 0 0 0
+02E0  00006000 NOP 4 0 0
+02E4  01880058 MV.L 0 0 1
+02E8  000000AA MVKL. 1 2 0
+02EC  0000006A MVKH. 1 2 0
+02F0  01005078 ADD.L 0 2 0
+02F4  00000028 MVKL. 0 105 0
+02F8  00000068 MVKH. 0 105 0
+02FC  013C0A74 STW.D *+SP[A0] 0 0 0
+                                     )
+0300  00000028 MVKL. 0 105 0
+0304  00000068 MVKH. 0 105 0
+0308  00001362 B.S2 0 -1 105
+030C  00008000 NOP 5 0 0
+                                     {
+                                     MoveRel
+                                     (
+                                     (
+                                     3
+                                     ,
+0310  020001A8 MVKL. 3 4 0
+0314  02000068 MVKH. 3 4 0
+0318  023C34F4 STW.D SP POST DEC 4 0 0
+                                     dist_to_move
+                                     )
+031C  007FFFA8 MVKL. -1 105 0
+0320  007FFFE8 MVKH. -1 105 0
+0324  023C0A66 LDW.D *+SP[A0] 6 0 0
+0328  00006000 NOP 4 0 0
+032C  023C34F6 STW.D SP POST DEC 6 0 0
+                                     ;
+0330  023C32E6 LDW.D SP PRE INC 6 0 0
+0334  023C32E4 LDW.D SP PRE INC 4 0 0
+0338  00000028 MVKL. 0 105 0
+033C  00000068 MVKH. 0 105 0
+0340  00001362 B.S2 0 -1 105
+0344  0180002A MVKL. 0 107 0
+0348  0180006A MVKH. 0 107 0
+034C  00004000 NOP 3 0 0
+                                     while
+                                     (
+                                     !
+                                     CheckDone
+                                     (
+                                     3
+                                     )
+0350  020001A8 MVKL. 3 4 0
+0354  02000068 MVKH. 3 4 0
+0358  023C34F4 STW.D SP POST DEC 4 0 0
+                                     )
+035C  023C32E4 LDW.D SP PRE INC 4 0 0
+0360  00000028 MVKL. 0 105 0
+0364  00000068 MVKH. 0 105 0
+0368  00001362 B.S2 0 -1 105
+036C  0180002A MVKL. 0 107 0
+0370  0180006A MVKH. 0 107 0
+0374  00004000 NOP 3 0 0
+0378  01100058 MV.L 0 4 0
+037C  00000028 MVKL. 0 105 0
+0380  00000068 MVKH. 0 105 0
+0384  B0001362 B.S2 1 0 105
+0388  00008000 NOP 5 0 0
+                                     ;
+038C  00000028 MVKL. 0 105 0
+0390  00000068 MVKH. 0 105 0
+0394  00001362 B.S2 0 -1 105
+0398  00008000 NOP 5 0 0
+                                     MoveRel
+039C  00000028 MVKL. 0 105 0
+03A0  00000068 MVKH. 0 105 0
+03A4  00001362 B.S2 0 -1 105
+03A8  00008000 NOP 5 0 0
+                                     (
+                                     (
+                                     3
+                                     ,
+03AC  020001A8 MVKL. 3 4 0
+03B0  02000068 MVKH. 3 4 0
+03B4  023C34F4 STW.D SP POST DEC 4 0 0
+                                     -
+                                     dist_to_move
+                                     )
+03B8  00000028 MVKL. 0 105 0
+03BC  00000068 MVKH. 0 105 0
+03C0  01000264 LDW.D * 105 0 0
+03C4  00006000 NOP 4 0 0
+03C8  007FFFA8 MVKL. -1 105 0
+03CC  007FFFE8 MVKH. -1 105 0
+03D0  003C0A66 LDW.D *+SP[A0] 2 0 0
+03D4  00006000 NOP 4 0 0
+03D8  01005238 SUBSP.L 0 2 0
+03DC  00004000 NOP 3 0 0
+03E0  0208105A MV.L 0 0 6
+03E4  023C34F6 STW.D SP POST DEC 6 0 0
+                                     ;
+03E8  023C32E6 LDW.D SP PRE INC 6 0 0
+03EC  023C32E4 LDW.D SP PRE INC 4 0 0
+03F0  00000028 MVKL. 0 105 0
+03F4  00000068 MVKH. 0 105 0
+03F8  00001362 B.S2 0 -1 105
+03FC  0180002A MVKL. 0 107 0
+0400  0180006A MVKH. 0 107 0
+0404  00004000 NOP 3 0 0
+                                     while
+                                     (
+                                     !
+                                     CheckDone
+                                     (
+                                     3
+                                     )
+0408  020001A8 MVKL. 3 4 0
+040C  02000068 MVKH. 3 4 0
+0410  023C34F4 STW.D SP POST DEC 4 0 0
+                                     )
+0414  023C32E4 LDW.D SP PRE INC 4 0 0
+0418  00000028 MVKL. 0 105 0
+041C  00000068 MVKH. 0 105 0
+0420  00001362 B.S2 0 -1 105
+0424  0180002A MVKL. 0 107 0
+0428  0180006A MVKH. 0 107 0
+042C  00004000 NOP 3 0 0
+0430  01100058 MV.L 0 4 0
+0434  00000028 MVKL. 0 105 0
+0438  00000068 MVKH. 0 105 0
+043C  B0001362 B.S2 1 0 105
+0440  00008000 NOP 5 0 0
+                                     ;
+0444  00000028 MVKL. 0 105 0
+0448  00000068 MVKH. 0 105 0
+044C  00001362 B.S2 0 -1 105
+0450  00008000 NOP 5 0 0
+                                     ch3
+0454  00000028 MVKL. 0 105 0
+0458  00000068 MVKH. 0 105 0
+045C  00001362 B.S2 0 -1 105
+0460  00008000 NOP 5 0 0
+                                     ->
+                                     ->
+0464  00000028 MVKL. 0 105 0
+0468  00000068 MVKH. 0 105 0
+046C  01000264 LDW.D * 105 0 0
+0470  00006000 NOP 4 0 0
+                                     Vel
+0474  01800A28 MVKL. 20 1 0
+0478  01800068 MVKH. 20 1 0
+047C  010C4078 ADD.L 0 1 0
+                                     *=
+                                     ¹
+                                     ;
+0480  00080266 LDW.D * 0 2 0
+0484  00006000 NOP 4 0 0
+0488  007FFF28 MVKL. -2 105 0
+048C  007FFFE8 MVKH. -2 105 0
+0490  013C0A74 STW.D *+SP[A0] 0 0 0
+0494  00000028 MVKL. 0 105 0
+0498  00000068 MVKH. 0 105 0
+049C  01000264 LDW.D * 105 0 0
+04A0  00006000 NOP 4 0 0
+04A4  00081E02 MPYSP.M 2 0 2
+04A8  00004000 NOP 3 0 0
+04AC  007FFF28 MVKL. -2 105 0
+04B0  007FFFE8 MVKH. -2 105 0
+04B4  013C0A64 LDW.D *+SP[A0] 0 0 0
+04B8  00006000 NOP 4 0 0
+04BC  00080276 STW.D * 2 0 0
+                                     ch3
+                                     ->
+                                     ->
+04C0  00000028 MVKL. 0 105 0
+04C4  00000068 MVKH. 0 105 0
+04C8  01000264 LDW.D * 105 0 0
+04CC  00006000 NOP 4 0 0
+                                     Accel
+04D0  01800C28 MVKL. 24 1 0
+04D4  01800068 MVKH. 24 1 0
+04D8  010C4078 ADD.L 0 1 0
+                                     *=
+                                     ¹
+                                     ;
+04DC  00080266 LDW.D * 0 2 0
+04E0  00006000 NOP 4 0 0
+04E4  007FFEA8 MVKL. -3 105 0
+04E8  007FFFE8 MVKH. -3 105 0
+04EC  013C0A74 STW.D *+SP[A0] 0 0 0
+04F0  00000028 MVKL. 0 105 0
+04F4  00000068 MVKH. 0 105 0
+04F8  01000264 LDW.D * 105 0 0
+04FC  00006000 NOP 4 0 0
+0500  00081E02 MPYSP.M 2 0 2
+0504  00004000 NOP 3 0 0
+0508  007FFEA8 MVKL. -3 105 0
+050C  007FFFE8 MVKH. -3 105 0
+0510  013C0A64 LDW.D *+SP[A0] 0 0 0
+0514  00006000 NOP 4 0 0
+0518  00080276 STW.D * 2 0 0
+                                     dist_to_move
+                                     *=
+                                     *=
+                                     ¹
+                                     ;
+051C  007FFFA8 MVKL. -1 105 0
+0520  007FFFE8 MVKH. -1 105 0
+0524  013C0A64 LDW.D *+SP[A0] 0 0 0
+0528  00006000 NOP 4 0 0
+052C  00000028 MVKL. 0 105 0
+0530  00000068 MVKH. 0 105 0
+0534  00000266 LDW.D * 105 2 0
+0538  00006000 NOP 4 0 0
+053C  01005E00 MPYSP.M 0 2 0
+0540  00004000 NOP 3 0 0
+0544  007FFFA8 MVKL. -1 105 0
+0548  007FFFE8 MVKH. -1 105 0
+054C  013C0A74 STW.D *+SP[A0] 0 0 0
+                                     }
+                                     return
+0550  00000028 MVKL. 0 105 0
+0554  00000068 MVKH. 0 105 0
+0558  00001362 B.S2 0 -1 105
+055C  00008000 NOP 5 0 0
+                                     0
+                                     ;
+0560  02000028 MVKL. 0 4 0
+0564  02000068 MVKH. 0 4 0
+                                     }
+0568  00000028 MVKL. 0 105 0
+056C  00000068 MVKH. 0 105 0
+0570  00001362 B.S2 0 -1 105
+0574  00008000 NOP 5 0 0
+                                     ÿ
+0578  01BC32E6 LDW.D SP PRE INC 107 0 0
+057C  00006000 NOP 4 0 0
+0580  000C0362 B.S2 0 -1 107
+0584  07BC32E4 LDW.D SP PRE INC 108 0 0
+0588  07800852 ADDK 16 106 0
+058C  00004000 NOP 3 0 0

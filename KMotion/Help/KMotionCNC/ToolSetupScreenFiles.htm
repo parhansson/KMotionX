@@ -1,0 +1,213 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Tool Setup Screen Files</title>
+</head>
+
+<body>
+
+<p><i><b><font size="5" face="Arial">Tool Setup Screen - Files &amp; Face</font></b></i></p>
+<p>
+<map name="FPMap0">
+<area href="#Tool_Table_File" shape="rect" coords="26, 54, 614, 83">
+<area href="#Setup_File" shape="rect" coords="28, 82, 497, 103">
+<area href="#Geo_File" shape="rect" coords="31, 100, 509, 125">
+<area href="#Main_Dialog_Face" shape="rect" coords="65, 148, 426, 172">
+<area href="ToolSetupScreenM3.htm" shape="rect" coords="8, 21, 53, 41">
+<area href="ToolSetupScreenM100.htm" shape="rect" coords="52, 19, 102, 42">
+<area href="ToolSetupScreenButtons.htm" shape="rect" coords="93, 17, 161, 42">
+<area href="ToolSetupScreenTP.htm" shape="rect" coords="233, 20, 333, 38">
+<area href="#Vars_File" shape="rect" coords="31, 121, 497, 148">
+</map>
+<img border="0" src="KMotionCNCfiles/ToolSetupFiles.PNG" usemap="#FPMap0"></p>
+
+<p><font face="Arial"><i>(Click on Image to Jump to 
+		related help)</i></font></p>
+<p><font face="Arial">The Tool Setup Screen allows <i>KMotionCNC</i> to be configured for a 
+particular machine tool.&nbsp; Each machine tool is likely to have different 
+motion resolution, speeds, and acceleration limits.&nbsp; It is also likely to 
+different I/O requirements with regard to Spindle control and such.&nbsp; 
+Additionally&nbsp; a machine may have different initialization and homing 
+requirements.&nbsp; <i>KMotionCNC</i> has a flexible mechanism for defining what 
+type of action is to be performed for various M Codes and Custom Buttons. </font> </p>
+<p>&nbsp;</p>
+<p><i><b><font size="4" face="Arial"><a name="Tool_Table_File">Tool Table File</a></font></b></i></p>
+<p>
+<font face="Arial">
+<img border="0" src="KMotionCNCfiles/ToolTableFile.png" align="left" hspace="15"></font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><font face="Arial">The Tool Table File specifies the disk text file which contains the table of 
+tool definitions.&nbsp; In some cases the G Code Interpreter needs to know the 
+length and diameter of the selected tool for tool path compensation.&nbsp; This 
+file is used to define up to 99 tools.&nbsp; See also
+<a href="KMotionCNC.htm#Tool">Selecting Tools</a>.</font></p><p>
+		<font face="Arial">See below for an example Tool Table</font><font SIZE="2"><p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">POC 
+		FMS&nbsp; LEN&nbsp;&nbsp; DIAM&nbsp; COMMENT</font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">1&nbsp;&nbsp;&nbsp; 
+		1&nbsp;&nbsp; 0.0&nbsp;&nbsp; 0.0&nbsp;&nbsp; first tool</font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">2&nbsp;&nbsp;&nbsp; 
+		2&nbsp;&nbsp; 0.0&nbsp;&nbsp; 0.0</font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">3&nbsp;&nbsp;&nbsp; 
+		3&nbsp;&nbsp; 1.0&nbsp;&nbsp; 0.5</font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">4&nbsp;&nbsp;&nbsp; 
+		4&nbsp;&nbsp; 2.0&nbsp;&nbsp; 1.0</font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">32&nbsp; 
+		32&nbsp;&nbsp; 0.0&nbsp;&nbsp; 0.0&nbsp;&nbsp; last tool</font></p>
+		</font>
+		<p style="margin-top: 0; margin-bottom: 0">
+		&nbsp;<p>&nbsp;</p>
+<p><i><b><font size="4" face="Arial"><a name="Setup_File">Setup File</a></font></b></i></p>
+<p>
+<font face="Arial">
+<img border="0" src="KMotionCNCfiles/SetupTableFile.png" align="left" hspace="15"></font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><font face="Arial">The Setup File specifies the disk text file which contains the setup table 
+for the G Code Interpreter.&nbsp; In some machine tools the Interpreter may 
+require a special initialization state.&nbsp; Below is the default Setup file.&nbsp; 
+Modifications to the setup file should not normally be required.</font></p>
+<p><font face="Arial">Attribute&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+Value&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Other Possible Values<br>
+<br>
+axis_offset_x&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+0.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; any real number<br>
+axis_offset_y&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+0.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; any real number<br>
+axis_offset_z&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+0.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; any real number<br>
+block_delete&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+ON&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OFF<br>
+current_x&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+0.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; any real number<br>
+current_y&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+0.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; any real number<br>
+current_z&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+0.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; any real number<br>
+cutter_radius_comp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OFF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+LEFT, RIGHT<br>
+cycle_r&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+0.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; any real number<br>
+cycle_z&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+0.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; any real number not less 
+than cycle_r<br>
+distance_mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+ABSOLUTE&nbsp;&nbsp;&nbsp; INCREMENTAL<br>
+feed_mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+PER_MINUTE&nbsp; INVERSE_TIME<br>
+feed_rate&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+5.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; any positive real number<br>
+flood&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+OFF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ON<br>
+length_units&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+MILLIMETERS INCHES<br>
+mist&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+OFF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ON<br>
+motion_mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+80&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+0,1,2,3,81,82,83,84,85,86,97,88,89<br>
+plane&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+XY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; YZ, ZX<br>
+slot_for_length_offset&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+any unsigned integer less than 69<br>
+slot_for_radius_comp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+any unsigned integer less than 69<br>
+slot_in_use&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; any unsigned 
+integer less than 69<br>
+slot_selected&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; any unsigned 
+integer less than 69<br>
+speed_feed_mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+INDEPENDENT SYNCHED<br>
+spindle_speed&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+1000.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; any non-negative real number<br>
+spindle_turning&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+STOPPED&nbsp;&nbsp;&nbsp;&nbsp; CLOCKWISE, COUNTERCLOCKWISE<br>
+tool_length_offset&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+any non-negative real number<br>
+traverse_rate&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+199.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; any positive real number</font></p>
+<p>&nbsp;</p>
+<p><a name="Geo_File"><b><i><font face="Arial" size="4">Geo</font></i></b><b><font size="4" face="Arial"><i> File</i></font></b></a></p>
+<p><img border="0" src="KMotionCNCfiles/GeoFile.PNG" width="555" height="40"></p>
+<p><font face="Arial">Geometric correction file.&nbsp; Allows correcting errors in the the x,y,z 
+positions.&nbsp; The callibration procedure involves&nbsp; moving the tool tip 
+to an xy array of positions.&nbsp; For example, a precision grid might be 
+printed on a glass or Mylar plate.&nbsp; By Jogging the tool tip to each row and 
+column grid point and recording the machine's x,y,z position, a table of machine 
+coordinates that correspond to perfect coordinates may be obtained.&nbsp; The 
+&quot;measure&quot; button on the main KMotionCNC Screen may be used to log these 
+positions.&nbsp; If such a table is specified here, the system will correct 
+machine coordinates by bilinear xy interpolation of this table.&nbsp; Z is 
+corrected for flatness at the plane of z=0 only. </font> </p>
+<p><font face="Arial">The table format is shown below.&nbsp; </font> </p>
+    <p><font face="Arial">The first line specifies the number of 
+rows and columns in the table.&nbsp; </font> </p>
+    <p><font face="Arial">The second line specifies the delta x and 
+delta y between gridpoints.&nbsp; </font> </p>
+    <p><font face="Arial">The 3rd line defines any Table x,y offset.&nbsp; With an 
+        offset of 0,0 grid point row=0,col=0 will correspond to x=0, y=0.&nbsp; 
+        Specifying an offset will shift the table so that row=0, col=0 will correspond 
+        to the offset position.&nbsp; For example if the machine coordinates are such 
+        that the origin is in the middle of the range of travel, then a negative offset 
+        would be specified.&nbsp;&nbsp;&nbsp; </font> </p>
+    <p><font face="Arial">The remaining lines are row, column, x, y, z 
+table entries.&nbsp; </font> </p>
+<p><font face="Arial">For more information see <a href="GeoCorrection.htm">here</a>.</font></p>
+<p>5,5<br>
+1,1<br>
+0,0<br>
+0,0,-1.767822,-2.129132,-0.331770<br>
+0,1,-0.878572,-2.068192,-0.262691<br>
+0,2,0.036983,-1.979272,-0.234576<br>
+0,3,0.930314,-1.909252,-0.237177<br>
+0,4,1.836404,-1.805593,-0.236061<br>
+1,0,-1.774018,-1.155364,-0.219091<br>
+1,1,-0.882401,-1.073801,-0.179651<br>
+1,2,0.021794,-0.987806,-0.141523<br>
+1,3,0.918408,-0.885504,-0.130446<br>
+1,4,1.792961,-0.811495,-0.124016<br>
+2,0,-1.771149,-0.166872,-0.121132<br>
+2,1,-0.883159,-0.075746,-0.074570<br>
+2,2,0.007254,0.005231,-0.051105<br>
+2,3,0.889548,0.097292,-0.035076<br>
+2,4,1.762710,0.190093,-0.016807<br>
+3,0,-1.761705,0.784817,-0.086695<br>
+3,1,-0.885633,0.869580,-0.025417<br>
+3,2,0.001747,1.008045,0.017727<br>
+3,3,0.880585,1.108997,0.059038<br>
+3,4,1.742520,1.204385,0.058162<br>
+4,0,-1.729192,1.783193,0.021364<br>
+4,1,-0.871298,1.868678,0.054451<br>
+4,2,0.005017,1.979718,0.104414<br>
+4,3,0.878944,2.104289,0.141666<br>
+4,4,1.714383,2.182679,0.144980</p>
+<p>&nbsp;</p>
+<p><i><b><font size="4" face="Arial"><a name="Vars_File">Vars File</a></font></b></i></p>
+<p><font face="Arial">
+<img border="0" src="KMotionCNCfiles/VarsFile.png" width="679" height="40"></font></p>
+<p><font face="Arial">The Vars File is used to save all the GCode Variables 
+which contain <a href="EditFixtureOffsets.htm">Fixture Offsets</a> as well as 
+other values.&nbsp; When Variables are saved to disk the file must already exist 
+which lists which variables are to be saved.&nbsp; The file is read and all the 
+variables present in the file will be replaced with their current values.&nbsp; 
+Variables 5221-5226 contain the XYZABC coordinates of the first fixture offset.&nbsp; 
+Skip 20 for each successive fixture.</font></p>
+<p>&nbsp;</p>
+<p><i><b><font size="4" face="Arial"><a name="Main_Dialog_Face">Main Dialog Face</a></font></b></i></p>
+<p>
+<img border="0" src="KMotionCNCfiles/DialogFace.PNG" width="422" height="150"></p>
+<p>The Main Dialog Face selection selects the look of the main operation screen 
+for KMotionCNC.&nbsp; Currently there are several available selections.&nbsp; 
+The main difference is the number of axes, DROs and jog buttons.&nbsp; It is 
+also possible to alter the dialogs by using a Windows<sup><font size="2">TM</font></sup> 
+Resource Editor.&nbsp; Either Microsoft Visual Studio or a 3rd party freeware 
+such as<font SIZE="3" COLOR="#aca899">:&nbsp;
+<a href="http://www.angusj.com/resourcehacker/">http://</a></font><font SIZE="3"><a href="http://www.angusj.com/resourcehacker/">www.angusj.com/resourcehacker</a>.</font></p>
+
+</body>
+
+</html>

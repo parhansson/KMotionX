@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>7.2 Options in extstgmot.c</TITLE>
+<META NAME="description" CONTENT="7.2 Options in extstgmot.c">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node31.html">
+<LINK REL="previous" HREF="node29.html">
+<LINK REL="up" HREF="node28.html">
+<LINK REL="next" HREF="node31.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html709"
+  HREF="node31.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html703"
+  HREF="node28.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html697"
+  HREF="node29.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html705"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html707"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html710"
+  HREF="node31.html">7.3 Where's the driver?</A>
+<B> Up:</B> <A NAME="tex2html704"
+  HREF="node28.html">7. Servo To Go</A>
+<B> Previous:</B> <A NAME="tex2html698"
+  HREF="node29.html">7.1 Connecting to the</A>
+ &nbsp; <B>  <A NAME="tex2html706"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html708"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION03220000000000000000">
+7.2 Options in extstgmot.c</A>
+</H1>
+
+<P>
+Your system may require changes to extstgmot.c. After making any changes
+you will need to recompile. Here are some of the options from the
+source code.
+
+<P>
+<BLOCKQUOTE>
+/* Uncomment any of the following declarations to inhibit
+<BR>&nbsp;&nbsp; the use of home switches or index pulses when homing, or to
+<BR>&nbsp;&nbsp; ignore limit switches if you don't have them. */
+</BLOCKQUOTE>
+<P>
+<BLOCKQUOTE>/* Uncomment NO_HOME_SWITCH if you want homing sequence to
+<BR>&nbsp;&nbsp; ignore the home switch, and only use the index pulse for homing.
+<BR>&nbsp;&nbsp; This has the effect of making the home switches always appear
+tripped. */
+<BR>/* #define NO_HOME_SWITCH */
+</BLOCKQUOTE>
+<P>
+<BLOCKQUOTE>/* Uncomment NO_INDEX_PULSE if you want homing sequence to
+<BR>&nbsp;&nbsp; ignore the index pulse, and only use the home switch for homing.
+<BR>&nbsp;&nbsp; This has the effect of making the index pulse always appear present.
+*/
+<BR>/* #define NO_INDEX_PULSE */
+</BLOCKQUOTE>
+<P>
+<BLOCKQUOTE>/* Uncomment NO_LIMIT_SWITCH if you don't have limit switches.
+<BR>&nbsp;&nbsp; This has the effect of making the positive and negative travel
+<BR>&nbsp;&nbsp; limit switches never appear tripped. */
+<BR>/* #define NO_LIMIT_SWITCH */
+
+</BLOCKQUOTE>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html709"
+  HREF="node31.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html703"
+  HREF="node28.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html697"
+  HREF="node29.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html705"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html707"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html710"
+  HREF="node31.html">7.3 Where's the driver?</A>
+<B> Up:</B> <A NAME="tex2html704"
+  HREF="node28.html">7. Servo To Go</A>
+<B> Previous:</B> <A NAME="tex2html698"
+  HREF="node29.html">7.1 Connecting to the</A>
+ &nbsp; <B>  <A NAME="tex2html706"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html708"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

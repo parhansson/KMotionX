@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Edit Fixture Offsets Screen</title>
+</head>
+
+<body>
+
+<p><b><i><font face="Arial" size="4">Edit Fixture Offsets</font></i></b></p>
+<p>
+<img border="0" src="KMotionCNCfiles/EditFixturesDialog.png"></p>
+<p><font face="Arial">The Edit Fixture Offsets Screen allows editing, clearing, 
+and saving the 9 fixture offsets (sometimes referred to as Work Offsets) </font> </p>
+<p><font face="Arial">The currently selected Fixture Offset is highlighted with 
+&quot;***&quot;.</font></p>
+<p><font face="Arial">Besides the active Fixture Offset there is also a Global 
+Offset (G92).&nbsp; The commanded Machine Position will be computed as:</font></p>
+<p><font face="Arial">&nbsp;&nbsp;&nbsp; <i>Machine Position&nbsp; =&nbsp; GCode 
+Program 
+Position&nbsp; +&nbsp; Active Fixture Offset&nbsp; +&nbsp; Global Offset</i></font></p>
+<p><font face="Arial">&quot;Clear ALL&quot; can be used to clear all 9 Fixture offsets to 
+zero.&nbsp; Individual &quot;Clear&quot; Buttons will clear single offsets.</font></p>
+<p><font face="Arial">Fixture offsets are saved into the GCode Variables file.&nbsp; 
+If saved they will be restored the next time KMotionCNC is started.&nbsp; The file 
+used to save the GCode Variables can be specified in the
+<a href="ToolSetupScreenFiles.htm">Tool Setup</a>.&nbsp; When Variables are 
+saved to disk the file must already exist which determines which variables are to be 
+saved.&nbsp; The file is read and all the variables present in the file will be 
+replaced with their current values.&nbsp; Variables 5221-5226 contain the XYZABC 
+coordinates of the first fixture offset.&nbsp; Skip 20 variables for each successive 
+fixture.&nbsp; Global Offsets are saved in Vars 5211-5216.</font></p>
+<p><font face="Arial">Note that the Setup File can also set various settings 
+including offsets and will override values loaded from the Vars file.&nbsp; If 
+you do not wish certain parameters to be forced to specific values on startup, 
+make sure to remove them from the <a href="ToolSetupScreenFiles.htm#Setup_File">
+Setup file</a>. </font></p>
+<p><font face="Arial">If &quot;Cancel&quot; is selected any changes made will be discarded 
+and the dialog will exit 
+- however if &quot;Save&quot; was used the values at the time of selecting Save will 
+remain in the Disk File.</font></p>
+<p><font face="Arial">Select &quot;OK&quot; to apply any changes that were made.</font></p>
+<p><font face="Arial">Note that Fixture offsets are in units of Inches or mm.&nbsp; 
+It is up to the Operator to be in the proper corresponding units mode when 
+selecting/changing Fixture offsets.&nbsp; The System must be in the proper 
+corresponding units before selecting a Fixture.&nbsp; After a fixture has been 
+selected the Units may then be changed.</font></p>
+<p><font face="Arial">Fixture Offsets can also be changed from within GCode 
+using G10.&nbsp; For example:</font></p>
+<p><font face="Courier New" size="2">G20 (inches mode)<br>
+F30<br>
+G10L2P1X0Y0Z0 (Set G54 offset to 0,0,0 used by default) <br>
+G10L2P2X2Y0Z0 (Set G55 offset to 2,0,0)<br>
+G10L2P3X0Y2Z0 (Set G55 offset to 0,2,0)<br>
+<br>
+G54 (Set to coordinate system 1 - already by default)<br>
+G0 x0y0z0 (Draw a box) <br>
+G1 x1<br>
+y1<br>
+x0<br>
+y0<br>
+<br>
+G55 (Set to coordinate system 2)<br>
+G0 x0y0z0 (Draw a box) <br>
+G1 x1<br>
+y1<br>
+x0<br>
+y0<br>
+<br>
+G56 (Set to coordinate system 3)<br>
+G0 x0y0z0 (Draw a box) <br>
+G1 x1<br>
+y1<br>
+x0<br>
+y0<br>
+<br>
+M2</font></p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

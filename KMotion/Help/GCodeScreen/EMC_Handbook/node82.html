@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>12.2 Cutter Radius Compensation</TITLE>
+<META NAME="description" CONTENT="12.2 Cutter Radius Compensation">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="previous" HREF="node81.html">
+<LINK REL="up" HREF="node80.html">
+<LINK REL="next" HREF="node83.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1564"
+  HREF="node83.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1558"
+  HREF="node80.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1554"
+  HREF="node81.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1560"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1562"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1565"
+  HREF="node83.html">12.2.1 Cutter Radius Compensation</A>
+<B> Up:</B> <A NAME="tex2html1559"
+  HREF="node80.html">12. Programming Tool Compensation</A>
+<B> Previous:</B> <A NAME="tex2html1555"
+  HREF="node81.html">12.1 Tool Length Offsets</A>
+ &nbsp; <B>  <A NAME="tex2html1561"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1563"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION04320000000000000000">
+12.2 Cutter Radius Compensation</A>
+</H1>
+
+<P>
+Cutter Diameter Compensation (also called Cutter Radius Compensation)
+is something that was obviously added onto the RS-274D specification
+at the demand of users, as it is VERY useful, but the implementation
+was poorly thought out. The purpose of this feature is to allow the
+programmer of the tool path program to 'virtualize' the tool path,
+so that the control can, at run time, determine the correct offset
+from the surface to be cut, based on the tools available. If you resharpen
+the side cutting edges of end mills, then they will end up smaller
+than the standard diameters.
+
+<P>
+The problem is to describe to the control whether the tool is going
+to be cutting on the outside of an imaginary path, or on the inside.
+Since these paths are not necessarily closed paths (although they
+can be), it is essentially impossible for the control to know which
+side of the line it is supposed to offset to. It was decided that
+there would only be two choices, tool 'left' of path, and tool 'right'
+of path. This is to be interpreted as left or right 'when facing the
+direction of cutter motion'. The interpretation is as if you were
+standing on the part, walking behind the tool as it progresses across
+the part.
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1566"
+  HREF="node83.html">12.2.1 Cutter Radius Compensation Detail</A>
+<UL>
+<LI><A NAME="tex2html1567"
+  HREF="node84.html">Programming Instructions</A>
+<LI><A NAME="tex2html1568"
+  HREF="node85.html">D Number</A>
+<LI><A NAME="tex2html1569"
+  HREF="node86.html">Tool Table</A>
+<LI><A NAME="tex2html1570"
+  HREF="node87.html">Two Kinds of Contour</A>
+<LI><A NAME="tex2html1571"
+  HREF="node88.html">Material Edge Contour </A>
+<LI><A NAME="tex2html1572"
+  HREF="node89.html">Tool Path Contour</A>
+<LI><A NAME="tex2html1573"
+  HREF="node90.html">Programming Errors and Limitations </A>
+</UL>
+<BR>
+<LI><A NAME="tex2html1574"
+  HREF="node91.html">First Move </A>
+<UL>
+<LI><A NAME="tex2html1575"
+  HREF="node92.html">Programming Entry Moves</A>
+<LI><A NAME="tex2html1576"
+  HREF="node93.html">General Method</A>
+<LI><A NAME="tex2html1577"
+  HREF="node94.html">Simple Method</A>
+<LI><A NAME="tex2html1578"
+  HREF="node95.html">Other Items Where Cutter Radius Compensation is Performed.</A>
+<LI><A NAME="tex2html1579"
+  HREF="node96.html">Algorithms for Cutter Radius Compensation</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html1580"
+  HREF="node97.html">Jon Elson's Example</A>
+<UL>
+<LI><A NAME="tex2html1581"
+  HREF="node98.html">Endnotes </A>
+</UL></UL>
+<!--End of Table of Child-Links-->
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1564"
+  HREF="node83.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1558"
+  HREF="node80.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1554"
+  HREF="node81.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1560"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1562"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1565"
+  HREF="node83.html">12.2.1 Cutter Radius Compensation</A>
+<B> Up:</B> <A NAME="tex2html1559"
+  HREF="node80.html">12. Programming Tool Compensation</A>
+<B> Previous:</B> <A NAME="tex2html1555"
+  HREF="node81.html">12.1 Tool Length Offsets</A>
+ &nbsp; <B>  <A NAME="tex2html1561"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1563"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

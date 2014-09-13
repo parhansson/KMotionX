@@ -1,0 +1,655 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>KStep Connectors</title>
+</head>
+
+<body>
+
+<p><i><b><font size="5" face="Arial">KStep - Connector Pinouts</font></b></i></p>
+<p><font face="Arial">
+<img border="0" src="KSTEPConnectors.png" width="800" height="639"></font></p>
+<p><font size="4" face="Arial"><b><i>J1 Motor Power</i></b></font></p>
+<p><img border="0" src="J1.png" width="132" height="154"></p>
+<p><font face="Arial">Motor power VBB from 12-48V may be applied through J1 or 
+alternately through JR1.&nbsp; For applications that require more than 10A of 
+supply current both of the GND and VBB connections should be used.</font></p>
+<p><i><b><font face="Arial">Caution Voltage Clamp jumpers must be set to a 
+Higher Voltage than the applied voltage.</font></b></i></p>
+<p><i><b><font face="Arial">Caution if JR1 is connected to a PC Power Supply 12V 
+will be applied to VB</font></b></i></p>
+<p>&nbsp;</p>
+<p><font size="4" face="Arial"><b><i>J2 J3 J4 J5</i></b></font></p>
+<p><img border="0" src="MotorConnections.png"></p>
+<p><img border="0" src="J2J3J4J5.png" width="458" height="118" hspace="25"></p>
+<p><font face="Arial">Connect Stepper Motors to connectors J2 through J5.&nbsp; 
+A Stepper Motor has two independent coils A and B.&nbsp; This should be verified 
+with an Ohmmeter.&nbsp; Connect one motor coil across the A terminals and the 
+other coil across the B terminals.&nbsp; </font></p>
+<p><i><b><font face="Arial">Caution cross wiring the motor terminals is likely 
+to cause damage to KStep and/or the motor.</font></b></i></p>
+<p><font face="Arial" size="2">&nbsp; </font></p>
+<p><i><b><font face="Arial" size="4">Voltage Clamping</font></b></i></p>
+<p><img border="0" src="VoltClamp.JPG" width="220" height="183"></p>
+<p><font face="Arial">KStep features a jumper programmable Voltage Clamping 
+Circuit.&nbsp; Voltage spikes due to Regenerative Braking and other sources can 
+potentially raise the supply voltage up to a level that can damage electronics 
+including KStep or the power supply.&nbsp; Voltage Spikes may also cause a power 
+supply to trip a fault and shut down.&nbsp; KStep's Voltage clamp can be used to 
+avoid these problems.&nbsp;&nbsp; KStep's Voltage Clamp can be programmed for 4 
+different voltage levels.&nbsp; It is not possible to disable the Voltage Clamp 
+but the clamping voltage level may be changed.&nbsp;&nbsp; With all jumpers 
+removed the Voltage will be clamped at 49V.&nbsp; Each jumper added will reduce 
+the Clamping voltage by 12V.&nbsp; The order of the jumpers is not important as 
+each reduces the Voltage by the same amount (12V).&nbsp; This allows common 
+supply voltages of 12, 24, 36, and 48V to be used.&nbsp; </font></p>
+<p><i><b><font face="Arial">Caution connecting a supply voltage higher than the 
+clamping voltage will draw excessive current and is likely to cause damage to 
+KStep or the Power Supply.&nbsp; </font></b></i></p>
+<table border="3" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="300" id="table3" height="125" bordercolorlight="#000000">
+  <tr>
+    <td width="24%" height="9" align="center" bordercolorlight="#000000" bordercolordark="#000000" bgcolor="#C0C0C0">
+	<b><font face="Arial" size="2">Jumpers Installed</font></b></td>
+    <td width="28%" height="9" align="center" bordercolorlight="#000000" bordercolordark="#000000" bgcolor="#C0C0C0">
+	<b><font face="Arial" size="2">Example</font></b></td>
+    <td width="46%" height="9" align="center" bordercolorlight="#000000" bordercolordark="#000000" bgcolor="#C0C0C0">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">Clamping Level</font></b></td>
+  </tr>
+  <tr>
+    <td width="24%" height="23" align="center">
+    <b><font face="Arial" size="2">None</font></b></td>
+    <td width="28%" height="23" align="center">
+    <b><font face="Arial" size="2">None</font></b></td>
+    <td width="46%" height="23" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">49V</font></b></td>
+  </tr>
+  <tr>
+    <td width="24%" height="23" align="center">
+    <b><font face="Arial" size="2">1</font></b></td>
+    <td width="28%" height="23" align="center">
+    <b><font face="Arial" size="2">A</font></b></td>
+    <td width="46%" height="23" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">37V</font></b></td>
+  </tr>
+  <tr>
+    <td width="24%" height="22" align="center">
+    <b><font face="Arial" size="2">2</font></b></td>
+    <td width="28%" height="22" align="center">
+    <b><font face="Arial" size="2">A+B</font></b></td>
+    <td width="46%" height="22" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">25V</font></b></td>
+  </tr>
+  <tr>
+    <td width="24%" height="25" align="center">
+    <b><font face="Arial" size="2">3</font></b></td>
+    <td width="28%" height="25" align="center">
+    <b><font face="Arial" size="2">A+B+C</font></b></td>
+    <td width="46%" height="25" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">13V</font></b></td>
+  </tr>
+  </table>
+<p>&nbsp;</p>
+<p><b><i><font face="Arial" size="4">JP26</font></i></b></p>
+<p><font face="Arial"><img border="0" src="JP26.png" width="250" height="188"></font></p>
+<p><font face="Arial">KStep can accept Step/Dir signals in from either JP26 or 
+JP36 whichever is more convenient.&nbsp; Normally if two KSteps are connected to 
+KFLOP in order to have 8 axes in the system then JP26 will be used for the 2nd 
+KStep.&nbsp; KFLOP drives Step/Dir Generators 4 - 7 on its JP5 connector which 
+when connected to KStep's JP26 connector will drive Motors 0 - 3.&nbsp; When 
+driving signals into JP26 GND, +5V and Enable must be provided into KStep in 
+some manner.&nbsp; J6 is usually the simplest but JR1 and JP36 are also 
+possibilities.&nbsp; </font></p>
+<table border="2" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="28%" id="table2" height="200">
+  <tr>
+    <td width="10%" height="24" align="center" bgcolor="#C0C0C0"><b><font face="Arial" size="2">
+    Pin</font></b></td>
+    <td width="26%" height="24" align="center" bgcolor="#C0C0C0"><b><font face="Arial" size="2">
+    KFLOP Name</font></b></td>
+    <td width="32%" height="24" align="center" bgcolor="#C0C0C0">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">KFLOP Output</font></b></td>
+    <td width="26%" height="24" align="center" bgcolor="#C0C0C0">
+	<b><font face="Arial" size="2">KStep Input</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">1</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">IO36</font></b></td>
+    <td width="32%" height="19" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">Step 4</font></b></td>
+    <td width="26%" height="19" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">Step 0</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">2</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">IO37</font></b></td>
+    <td width="32%" height="19" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">Dir 4</font></b></td>
+    <td width="26%" height="19" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">Dir 0</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">3</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">IO38</font></b></td>
+    <td width="32%" height="19" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">Step 5</font></b></td>
+    <td width="26%" height="19" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">Step 1</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">4</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">IO39</font></b></td>
+    <td width="32%" height="19" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">Dir 5</font></b></td>
+    <td width="26%" height="19" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">Dir 1</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">5</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">IO40</font></b></td>
+    <td width="32%" height="19" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">Step 6</font></b></td>
+    <td width="26%" height="19" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">Step 2</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">6</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">IO41</font></b></td>
+    <td width="32%" height="19" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">Dir 6</font></b></td>
+    <td width="26%" height="19" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">Dir 2</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="8" align="center"><b><font face="Arial" size="2">
+    7</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">IO42</font></b></td>
+    <td width="32%" height="19" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">Step 7</font></b></td>
+    <td width="26%" height="19" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">Step 3</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="20" align="center">
+    <b>
+    <font face="Arial" size="2">8</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">IO43</font></b></td>
+    <td width="32%" height="19" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">&nbsp;Dir 7</font></b></td>
+    <td width="26%" height="19" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">&nbsp;Dir 3</font></b></td>
+  </tr>
+  </table>
+<p>&nbsp;</p>
+<p><i><b><font face="Arial" size="4">Disable Optos Jumper</font></b></i></p>
+<p><img border="0" src="DisableOpto.JPG" width="175" height="156"></p>
+<p><font face="Arial">KStep normally drives JP36 pins 11 - 14 with selected Opto 
+Input Data.&nbsp; If Opto Input Data is not desired this jumper disables this 
+feature and leaves these pins in a high impedance state.&nbsp; This might be 
+necessary if the connection to KFLOP desires to use the associated pins for some 
+other purpose such as KFLOP Encoder inputs #2 and #3.</font></p>
+<p><font size="4" face="Arial"><b><i>J</i></b></font><b><i><font face="Arial" size="4">R1</font></i></b></p>
+<p><img border="0" src="JR1.JPG" width="200" height="166"></p>
+<p><font face="Arial">JR1 is a molex Disk drive type connector that can be used 
+to provide Motor power (VBB) and +5V to KStep.&nbsp; Motor power is common to 
+all 4 Motor Drives and may be applied either through JR1 or J1 screw terminals.&nbsp; 
+A PC Power Supply often provides +5V on pin 1 and +12V on Pin 4 so caution 
+should be made to assure different power supply voltages are not connected to 
+both JR1 and J1.&nbsp; The +5V connection is used to power the Motor driver 
+circuits.&nbsp; The +5V and GND connections are to the motor side of the 
+isolation and will be isolated from the KFLOP side if the Isolation Jumpers are 
+removed.&nbsp;&nbsp; </font></p>
+<p>&nbsp;</p>
+<p><font size="4" face="Arial"><b><i>JP33 </i></b></font></p>
+<p><font face="Arial"><img border="0" src="JP33.png" width="275" height="174"></font></p>
+<p><font face="Arial">KStep adds 2 opto isolated relay drivers (100ma @ 36V), 
+one Analog Output, and 16 opto isolated 12-24V inputs.&nbsp; All these IO are 
+optically isolated regardless of the Isolation Jumpers set for the Isolation on 
+the Step/Dir and enable signals.&nbsp; Opto Inputs have a common Anode normally 
+connected to either +12V or +24V.&nbsp; Shorting any of the OPTO- pins to GND 
+will activate the input. The Opto Inputs have a 10K ohm series resistance.</font></p>
+<p><img border="0" src="JP33Schematic.png" width="268" height="227"></p>
+<table border="2" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="30%" id="table4" height="200">
+  <tr>
+    <td width="17%" height="24" align="center" bgcolor="#C0C0C0"><b><font face="Arial" size="2">
+    JP33 Pin</font></b></td>
+    <td width="30%" height="24" align="center" bgcolor="#C0C0C0"><b><font face="Arial" size="2">
+    KSTEP Signal</font></b></td>
+    <td width="49%" height="24" align="center" bgcolor="#C0C0C0">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">KFLOP Related 
+	Signal</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b>
+    <font face="Arial" size="2">1</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Relay0+</font></b></td>
+    <td width="49%" height="24" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">IO 0 Output</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b>
+    <font face="Arial" size="2">2</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Relay0-</font></b></td>
+    <td width="49%" height="24" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">IO 0 Output</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b>
+    <font face="Arial" size="2">3</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Relay1+</font></b></td>
+    <td width="49%" height="24" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">IO 1 Output</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b>
+    <font face="Arial" size="2">4</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Relay1-</font></b></td>
+    <td width="49%" height="24" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">IO 1 Output</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b>
+    <font face="Arial" size="2">5</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Analog Vcc</font></b></td>
+    <td width="49%" height="24" align="center">
+	<p style="margin-left: 5px">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b>
+    <font face="Arial" size="2">6</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Analog Out</font></b></td>
+    <td width="49%" height="24" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">IO 44 PWM Output</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center"><b><font face="Arial" size="2">
+    7</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Analog Gnd</font></b></td>
+    <td width="49%" height="24" align="center">
+	<p style="margin-left: 5px">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b>
+    <font face="Arial" size="2">8</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Opto Anode</font></b></td>
+    <td width="49%" height="24" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">&nbsp;</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b><font face="Arial" size="2">9</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Opto IN 0</font></b></td>
+    <td width="49%" height="24" align="center">
+	<p style="margin-left: 5px"><b><font face="Arial" size="2">IO 168 Input</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b><font face="Arial" size="2">10</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Opto IN 1</font></b></td>
+    <td width="49%" height="24" align="center">
+	<b><font face="Arial" size="2">IO 169 Input</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b><font face="Arial" size="2">11</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Opto IN 2</font></b></td>
+    <td width="49%" height="24" align="center">
+	<b><font face="Arial" size="2">IO 170 Input</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b><font face="Arial" size="2">12</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Opto IN 3</font></b></td>
+    <td width="49%" height="24" align="center">
+	<b><font face="Arial" size="2">IO 171 Input</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b><font face="Arial" size="2">13</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Opto IN 4</font></b></td>
+    <td width="49%" height="24" align="center">
+	<b><font face="Arial" size="2">IO 172 Input</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b><font face="Arial" size="2">14</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Opto IN 5</font></b></td>
+    <td width="49%" height="24" align="center">
+	<b><font face="Arial" size="2">IO 173 Input</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b><font face="Arial" size="2">15</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Opto IN 6</font></b></td>
+    <td width="49%" height="24" align="center">
+	<b><font face="Arial" size="2">IO 174 Input</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b><font face="Arial" size="2">16</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Opto IN 7</font></b></td>
+    <td width="49%" height="24" align="center">
+	<b><font face="Arial" size="2">IO 175 Input</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b><font face="Arial" size="2">17</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Opto IN 8</font></b></td>
+    <td width="49%" height="24" align="center">
+	<b><font face="Arial" size="2">IO 176 Input</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b><font face="Arial" size="2">18</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Opto IN 9</font></b></td>
+    <td width="49%" height="24" align="center">
+	<b><font face="Arial" size="2">IO 177 Input</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b><font face="Arial" size="2">19</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Opto IN 10</font></b></td>
+    <td width="49%" height="24" align="center">
+	<b><font face="Arial" size="2">IO 178 Input</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b><font face="Arial" size="2">20</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Opto IN 11</font></b></td>
+    <td width="49%" height="24" align="center">
+	<b><font face="Arial" size="2">IO 179 Input</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b><font face="Arial" size="2">21</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Opto IN 12</font></b></td>
+    <td width="49%" height="24" align="center">
+	<b><font face="Arial" size="2">IO 180 Input</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b><font face="Arial" size="2">22</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Opto IN 13</font></b></td>
+    <td width="49%" height="24" align="center">
+	<b><font face="Arial" size="2">IO 181 Input</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b><font face="Arial" size="2">23</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Opto IN 14</font></b></td>
+    <td width="49%" height="24" align="center">
+	<b><font face="Arial" size="2">IO 182 Input</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b><font face="Arial" size="2">24</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Opto IN 15</font></b></td>
+    <td width="49%" height="24" align="center">
+	<b><font face="Arial" size="2">IO 183 Input</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b><font face="Arial" size="2">25</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">Vdd +5V</font></b></td>
+    <td width="49%" height="24" align="center">
+	<b><font face="Arial" size="2">+5V KFLOP (if non isolated)</font></b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="24" align="center">
+    <b><font face="Arial" size="2">26</font></b></td>
+    <td width="30%" height="24" align="center">
+    <b><font face="Arial" size="2">GND KSTEP</font></b></td>
+    <td width="49%" height="24" align="center">
+	<b><font face="Arial" size="2">GND KFLOP (if non isolated)</font></b></td>
+  </tr>
+  </table>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><b><font face="Arial" size="4"><i><a name="Optically_isolated_Inputs">
+Optically isolated Inputs</a></i></font></b></p>
+<p><font face="Arial">The input circuit for 4 of the 16 opto inputs is shown 
+below. Note there is a common Anode for all 16 opto inputs which is normally 
+tied to a +12 or +24V supply.&nbsp; Each of the negative opto pins are then 
+switched to ground (return for the +12 or +24V supply)</font></p>
+<p><img border="0" src="OptoInputCircuit.png" width="546" height="245"></p>
+<p>&nbsp;</p>
+<p><font face="Arial">External Wiring would typically be arranged such as:</font></p>
+<p><img border="0" src="OptoIns66.png" width="433" height="384"></p>
+<p>&nbsp;</p>
+<p><b><font face="Arial" size="4"><i>Optically isolated 
+<a name="PWM_to_Analog_Circuit">PWM to Analog Circuit</a></i></font></b></p>
+<p><font face="Arial">A 3.3V PWM output from KFLOP IO 44 JP7 pin 5 is normally 
+connected to KStep JP36 Pin 5 to drive the PWM to Analog circuitry.&nbsp; Often 
+a VFD will have 3 input terminals where a potentiometer can be connected as 
+speed control.&nbsp; The three connections AnalogVcc, AnalogOut, and AnalogGnd 
+can be connected to perform a similar function as a potentiometer.&nbsp; The 
+AnalogOut voltage will vary from AnalogGnd to AnalogVcc voltage as a function of 
+the PWM duty cycle.&nbsp; </font></p>
+<p><img border="0" src="IsolatedPWMtoAnalog.png" width="673" height="328"></p>
+<p><img border="0" src="AnalogOut66.png" width="479" height="162"></p>
+<p><i><b><font size="4" face="Arial"><a name="Relay_Driver_Outputs">Relay Driver Outputs</a></font></b></i></p>
+<p><font face="Arial">Two Optically Isolated Outputs are provided to drive 
+medium power devices such as relay coils.&nbsp;&nbsp; Loads up to 30V @100ma may 
+be driven.</font></p>
+<p><font face="Arial">The internal KStep circuitry is shown below which converts 
+the incoming 3.3V LVTTL inputs to darlington transistor outputs.</font></p>
+<p><img border="0" src="RelayDrivers.png" width="446" height="162"></p>
+<p>&nbsp;</p>
+<p><font face="Arial">A typical wiring diagram driving 24V relays.</font></p>
+<p><img border="0" src="RelaysKStep.png" width="541" height="416"></p>
+<p>&nbsp;</p>
+<p><i><b><font face="Arial" size="4">JP31JP32 PFD1 PFD2 Jumpers</font></b></i></p>
+<p><font face="Arial">These Jumpers can be used to control the Fast/Slow/Mixed 
+delay settings of all 4 Motor Drives.&nbsp; In almost all cases these jumpers 
+should remain removed for best performance.</font></p>
+<p>&nbsp;</p>
+<p><i><b><font face="Arial">Current Setting Jumpers</font></b></i></p>
+<p><font face="Arial">Current for each Stepper Coil is set with a set of 3 
+jumpers labeled H M L (high, medium, low).</font></p>
+<p><font face="Arial">Both sets of 3 jumpers for each motor coils must be set to 
+the same level.</font></p>
+<table border="2" cellpadding="0" cellspacing="0" style="border-collapse:
+ collapse;width:355px" bordercolordark="#000000" bordercolor="#000000" bordercolorlight="#000000">
+	<colgroup>
+		<col width="64" span="3" style="width:48pt">
+		<col width="105" style="width: 79pt">
+	</colgroup>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="height: 15.0pt; width: 68px; font-weight: 700; text-align: center; color: black; font-size: 11.0pt; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px">
+		<font size="3">H</font></td>
+		<td style="width: 70px; font-weight: 700; text-align: center; color: black; font-size: 11.0pt; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px">
+		<font size="3">M&nbsp;</font></td>
+		<td style="width: 73px; font-weight: 700; text-align: center; color: black; font-size: 11.0pt; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px">
+		<font size="3">L</font></td>
+		<td style="width: 140px; font-weight: 700; text-align: center; color: black; font-size: 11.0pt; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px">
+		<font size="3">Current (Amps)</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="height: 15.0pt; font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="68">
+		<font size="3">Removed</font></td>
+		<td style="font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="70">
+		<font size="3">Removed</font></td>
+		<td style="font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="73">
+		<font size="3">Removed</font></td>
+		<td style="text-align: center; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="140">
+		<font size="3">0.63</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="height: 15.0pt; font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="68">
+		<font size="3">Removed</font></td>
+		<td style="font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="70">
+		<font size="3">Removed</font></td>
+		<td style="font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="73">
+		<font size="3">Installed</font></td>
+		<td style="text-align: center; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="140">
+		<font size="3">1.25</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="height: 15.0pt; font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="68">
+		<font size="3">Removed</font></td>
+		<td style="font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="70">
+		<font size="3">Installed</font></td>
+		<td style="font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="73">
+		<font size="3">Removed</font></td>
+		<td style="text-align: center; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="140">
+		<font size="3">1.88</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="height: 15.0pt; font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="68">
+		<font size="3">Removed</font></td>
+		<td style="font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="70">
+		<font size="3">Installed</font></td>
+		<td style="font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="73">
+		<font size="3">Installed</font></td>
+		<td style="text-align: center; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="140">
+		<font size="3">2.50</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="height: 15.0pt; font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="68">
+		<font size="3">Installed</font></td>
+		<td style="font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="70">
+		<font size="3">Removed</font></td>
+		<td style="font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="73">
+		<font size="3">Removed</font></td>
+		<td style="text-align: center; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="140">
+		<font size="3">3.13</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="height: 15.0pt; font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="68">
+		<font size="3">Installed</font></td>
+		<td style="font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="70">
+		<font size="3">Removed</font></td>
+		<td style="font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="73">
+		<font size="3">Installed</font></td>
+		<td style="text-align: center; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="140">
+		<font size="3">3.75</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="height: 15.0pt; font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="68">
+		<font size="3">Installed</font></td>
+		<td style="font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="70">
+		<font size="3">Installed</font></td>
+		<td style="font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="73">
+		<font size="3">Removed</font></td>
+		<td style="text-align: center; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="140">
+		<font size="3">4.38</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="height: 15.0pt; font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="68">
+		<font size="3">Installed</font></td>
+		<td style="font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="70">
+		<font size="3">Installed</font></td>
+		<td style="font-size: 9.0pt; text-align: center; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="73">
+		<font size="3">Installed</font></td>
+		<td style="text-align: center; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; border: medium none; padding: 0px" width="140">
+		<font size="3">5.00</font></td>
+	</tr>
+</table>
+<p>&nbsp;</p>
+<p><font size="4" face="Arial"><b><i>JP36 To KFLOP</i></b></font></p>
+<p><font face="Arial"><img border="0" src="JP36.png" width="300" height="113"></font></p>
+<p><font face="Arial">JP36 is designed to connect directly to KFLOP's JP7 in a 
+1:1 connection.&nbsp; KFLOP is then able to supply the 4 sets of Step/Dir 
+signals, the Enable, the Analog PWM signal, the 2 Relay Driver outputs, and 
+connections for the 16 opto inputs, as well as +5V (used if running without opto 
+isolation).&nbsp; To conserved KFLOP IO pins the 16 opto inputs are read back in 
+a multiplexed fashion 4 bits at a time where 2 outputs from KFLOP select which 
+bank of 4 are currently selected.&nbsp; +3.3V is also provided to power the opto 
+multiplexing circuitry.</font></p>
+<p><img border="0" src="Jp36schematic.png" width="305" height="221"></p>
+<p><i><b><font face="Arial" size="4">JP34 JP35 Isolation Jumpers</font></b></i></p>
+<p><img border="0" src="Isolation.JPG" width="200" height="138"></p>
+<p><font face="Arial">KStep allows all the Motor Power and +5V Mosfet circuitry 
+to be totally optically isolated from the KFLOP Step/Dir and Enable signals.&nbsp; 
+To operate with total isolation remove JP34 and JP35.&nbsp; However in this mode 
+an additional +5V supply must be provided and applied to either J6 or JR1.&nbsp; 
+With the jumpers installed KStep will make use of KFLOP +5V and KFLOP GND coming 
+in through connector JP36 and no additional supply will be required.&nbsp; The
+<a href="../BlockDiagramKStep.htm">Block Diagram</a> shows how the isolation is 
+sectioned.</font></p>
+<p><font face="Arial">Regardless of these jumpers installed or not the 12-24V 
+Optically isolated Inputs, the 2 Relay Driver outputs, and the Analog Output 
+will always be fully optically isolated.</font></p>
+<p>&nbsp;</p>
+<p><b><i><font face="Arial" size="4">J6 - GND, +5V, Enable, 3.3V GND</font></i></b></p>
+<p><img border="0" src="J6.png" width="250" height="121"></p>
+<p>&nbsp;</p>
+<p><font face="Arial">J6 provides a connection point for +5V and GND to power 
+the KStep Mosfet Drive Circuitry if operated in Isolated mode.&nbsp; The Enable 
+connection allows a means of enabling KStep amplifiers if JP36 is not used to 
+enable the amplifiers.&nbsp; Controller 3.3V GND is the same GND as on JP36 
+which is the KFLOP or Controller Ground which is reference for the Step/Dir 
+signals and Enable Signals.&nbsp; The Isolation Jumpers can be used to isolate 
+or connect the two GND terminals on this connector.</font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

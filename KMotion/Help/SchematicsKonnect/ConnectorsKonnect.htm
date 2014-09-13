@@ -1,0 +1,728 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Konnect Connector Descriptions</title>
+</head>
+
+<body>
+
+<p><i><b><font size="5" face="Arial">KONNECT - Connector Pinouts</font></b></i></p>
+<p><font face="Arial"><img border="0" src="Konnect500.png"></font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><font size="4" face="Arial"><b><i>Konnect JP8 Aux Bus Connection to KFLOP JP6</i></b></font></p>
+<p><img border="0" src="JP8.png" width="250" height="127"></p>
+<p><font face="Arial">JP8 provides all internal signal and power connections to KFLOP.&nbsp; This 
+16 pin ribbon connection should be as short as possible to avoid noise and 
+crosstalk as the cable forms a high speed communication link.&nbsp; The Aux Bus 
+supports multiple boards connected tot he same cable.&nbsp; In most case the 
+specifics of the Aux Bus will be handled internally by KFLOP and no knowledge of 
+the signals will be required for use.&nbsp; </font></p>
+<p><font face="Arial">The 8 data bits 
+(DB0-DB7) are bi-directional.&nbsp; CLKIN and STARTIN allow a board to be 
+selected by the address placed on the bus, and then a fixed sequence of 8-bit 
+writes (2) and reads (5) can be performed using the CLKIN signal.</font></p>
+<table border="2" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="18%" id="table5" height="200">
+  <tr>
+    <td width="10%" height="24" align="center" bgcolor="#C0C0C0"><b><font face="Arial" size="2">
+    Pin</font></b></td>
+    <td width="26%" height="24" align="center" bgcolor="#C0C0C0"><b><font face="Arial" size="2">
+    KFLOP Name</font></b></td>
+    <td width="28%" height="24" align="center" bgcolor="#C0C0C0">
+	<b><font face="Arial" size="2">Konnect Name</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">1</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b><font face="Arial" size="2">VDD5</font></b></td>
+    <td width="28%" height="19" align="center">
+	<p style="margin-left: 0px; margin-top:0; margin-bottom:0"><b>
+	<font face="Arial" size="2">VDD5</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">2</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b><font face="Arial" size="2">VDD12</font></b></td>
+    <td width="28%" height="19" align="center">
+	<p style="margin-left: 0px; margin-top:0; margin-bottom:0"><b>
+	<font face="Arial" size="2">VDD12</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">3</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b><font face="Arial" size="2">VDD33</font></b></td>
+    <td width="28%" height="19" align="center">
+	<p style="margin-left: 0px; margin-top:0; margin-bottom:0"><b>
+	<font face="Arial" size="2">VDD33</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">4</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b><font face="Arial" size="2">RESET#</font></b></td>
+    <td width="28%" height="19" align="center">
+	<p style="margin-left: 0px; margin-top:0; margin-bottom:0"><b>
+	<font face="Arial" size="2">RESET#</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">5</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">IO26</font></b></td>
+    <td width="28%" height="19" align="center">
+	<p style="margin-left: 0px; margin-top:0; margin-bottom:0"><b>
+	<font face="Arial" size="2">DB0</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">6</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">IO27</font></b></td>
+    <td width="28%" height="19" align="center">
+	<p style="margin-left: 0px; margin-top:0; margin-bottom:0"><b>
+	<font face="Arial" size="2">DB1</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="8" align="center"><b><font face="Arial" size="2">
+    7</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b>
+    <font face="Arial" size="2">IO28</font></b></td>
+    <td width="28%" height="19" align="center">
+	<p style="margin-left: 0px; margin-top:0; margin-bottom:0"><b>
+	<font face="Arial" size="2">DB2</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="20" align="center">
+    <b>
+    <font face="Arial" size="2">8</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b><font face="Arial" size="2">GND</font></b></td>
+    <td width="28%" height="19" align="center">
+	<p style="margin-left: 0px; margin-top:0; margin-bottom:0"><b>
+	<font face="Arial" size="2">GND</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="20" align="center">
+    <b><font face="Arial" size="2">9</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b><font face="Arial" size="2">GND</font></b></td>
+    <td width="28%" height="19" align="center">
+	<b><font face="Arial" size="2">GND</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="20" align="center">
+    <b><font face="Arial" size="2">10</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b><font face="Arial" size="2">IO29</font></b></td>
+    <td width="28%" height="19" align="center">
+	<b><font face="Arial" size="2">DB3</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="20" align="center">
+    <b><font face="Arial" size="2">11</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b><font face="Arial" size="2">IO30</font></b></td>
+    <td width="28%" height="19" align="center">
+	<b><font face="Arial" size="2">DB4</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="20" align="center">
+    <b><font face="Arial" size="2">12</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b><font face="Arial" size="2">IO31</font></b></td>
+    <td width="28%" height="19" align="center">
+	<b><font face="Arial" size="2">DB5</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="20" align="center">
+    <b><font face="Arial" size="2">13</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b><font face="Arial" size="2">IO32</font></b></td>
+    <td width="28%" height="19" align="center">
+	<b><font face="Arial" size="2">DB6</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="20" align="center">
+    <b><font face="Arial" size="2">14</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b><font face="Arial" size="2">IO33</font></b></td>
+    <td width="28%" height="19" align="center">
+	<b><font face="Arial" size="2">DB7</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="20" align="center">
+    <b><font face="Arial" size="2">15</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b><font face="Arial" size="2">IO34</font></b></td>
+    <td width="28%" height="19" align="center">
+	<b><font face="Arial" size="2">CLKIN</font></b></td>
+  </tr>
+  <tr>
+    <td width="10%" height="20" align="center">
+    <b><font face="Arial" size="2">16</font></b></td>
+    <td width="26%" height="19" align="center">
+    <b><font face="Arial" size="2">IO35</font></b></td>
+    <td width="28%" height="19" align="center">
+	<b><font face="Arial" size="2">STARTIN</font></b></td>
+  </tr>
+  </table>
+<p>&nbsp;</p>
+<p><i><b><font face="Arial" size="4">J2 Konnect Power</font></b></i></p>
+<p><font face="Arial"><img border="0" src="KonnectPower125.png" width="125" height="110"></font></p>
+<p><font face="Arial">The power signals from KFLOP's Aux Bus are available on 
+the J2 terminals.&nbsp; It is not normally necessary to apply power to these 
+terminals as power is supplied from KFLOP through the JP8 connector.&nbsp; For 
+multiple boards it may be desirable to apply additional higher gauge power and 
+GND connections between boards.&nbsp; Note the Signal labeled 12V is connected 
+to the KFLOP 12V signal but may not be necessarily 12V.&nbsp; KFLOP and Konnect 
+do not require or use the 12V signal but only pass the signal through the 
+various connectors.&nbsp; Disk Drive Power Supplies usually supply +12V into 
+KFLOP JR1 Pin 1.&nbsp; Also note that if any of these supply voltages are used 
+for the Inputs or outputs then the Input wiring will not be isolated from KFLOP.
+</font></p>
+<p><font face="Arial">It is possible to supply +5V power to KFLOP through these 
+terminals if the power consumption on KFLOP is less than 1 Amp and the ribbon 
+cable connection is short (several inches or less).</font></p>
+<p>&nbsp;</p>
+<p><b><font face="Arial" size="4"><i><a name="Optically_isolated_Inputs">
+Optically isolated Inputs</a></i></font></b></p>
+<p style="margin-top: 0; margin-bottom: 0">
+<img border="0" src="In1.png" width="250" height="159"></p>
+<p style="margin-top: 0; margin-bottom: 0"><b><font face="Arial">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+Individual Inputs (one of 4)</font></b></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">
+<img border="0" src="Commons125.jpg" width="125" height="99" hspace="50"></p>
+<p style="margin-top: 0; margin-bottom: 0"><b><font face="Arial">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Input Bank Commons</font></b></p>
+<p><font face="Arial">Konnect's 32 optically isolated inputs are grouped into 4 independent 
+Banks of 8 
+inputs.&nbsp; This allows any Bank to be used with either sourcing or sinking 
+signals.&nbsp; However all 
+inputs in the same bank share the same common and must operate in the same mode.&nbsp; 
+The 4 independent Banks also allow different supply voltages and supply isolation to be 
+used for each Bank.&nbsp; 24V is the preferred input voltage and will draw (24V 
+- 1.4 - 1.4)/4K ~&nbsp; 5ma of current.&nbsp; </font></p>
+<p><font face="Arial">Konnect's 32 optically isolated inputs can be driven from 
+a +/- 4.75V to a +/-25V signal.&nbsp; Less than 2V should be applied to ensure 
+the input is off.&nbsp; One of the 32 input circuits is shown below.&nbsp; The 
+input consists of a AC type of Optocoupler in series with an LED indicator in 
+series with a 4Kohm resistor.&nbsp; The AC type of input allows the common to be 
+connected to either the Positive or Negative Supply voltage so that either sinking or 
+sourcing outputs can be used (current can flow either direction to activate the 
+input).&nbsp; </font></p>
+<p><font face="Arial"><img border="0" src="KonnectInputCircuit.png" width="522" height="91"></font></p>
+<p><font face="Arial">External Wiring would typically be arranged such as:</font></p>
+<p><font face="Arial"><img border="0" src="CommonAnode.png" width="542" height="301"></font></p>
+<p>
+&nbsp;</p>
+<p>&nbsp;</p>
+<p><i><b><font size="4" face="Arial"><a name="Relay_Driver_Outputs">Opto 
+Isolated Outputs</a></font></b></i></p>
+<p><img border="0" src="Out1.png" width="250" height="120"></p>
+<p><b><font face="Arial">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Input Bank Commons</font></b></p>
+<p><font face="Arial">Each of the 16 Optically Isolated Outputs is completely isolated with a + and 
+- terminal.&nbsp; When active the output passes current from the + to - 
+terminals much like a relay contact would.</font></p>
+<p><font face="Arial">The Outputs are capable of driving 
+medium power devices such as relay coils.&nbsp;&nbsp; Loads up to 30V @ 250ma may 
+be driven.&nbsp; </font></p>
+<p><font face="Arial">The internal Konnect Output Circuitry is shown below which 
+converts a photo transistor output to darlington transistor output.&nbsp; 
+The 220Ohm resistor allows the output have a low on voltage for low currents 
+before the transistor turns on.&nbsp; This allows the output to drive low 
+current circuits with a smaller on voltage(2ma @ &lt; 0.6V).&nbsp; For example 
+LVTTL/TTL inputs require less than 0.8V to guarantee a low input.&nbsp; At higher 
+currents Q1 becomes active and keeps the on voltage drop below 0.9V at 0.25A.&nbsp; 
+Switching 0.25A at 24V allows loads up to 6W to be driven.</font></p>
+<p>
+<font face="Arial">
+<img border="0" src="OptoOutput.png" width="361" height="103"></font></p>
+<p>&nbsp;</p>
+<p><font face="Arial">A typical wiring diagram driving 24V relays.&nbsp; Because 
+of the less than 0.9V drop on the Konnect outputs the load will be driven with 
+more than 23.1V.</font></p>
+<p>
+<font face="Arial">
+<img border="0" src="RelaysKonnect.png" width="541" height="416"></font></p>
+<p>&nbsp;</p>
+<p><i><b><font face="Arial">Board Address Selection Jumpers</font></b></i></p>
+<p><font face="Arial">
+<img border="0" src="AddressJumpers.png" width="100" height="76"></font></p>
+<p><font face="Arial">The KFLOP's Auxiliary Port works as a Bus where multiple 
+boards can be connected to the same Port.&nbsp; Each board has an address so it 
+can be selected as active.&nbsp; For a single Konnect board in the system removing all 
+Jumpers will configure the Konnect Board Address as zero.&nbsp; If multiple 
+boards are to be used set each board to an unique address.&nbsp; </font></p>
+<table border="2" cellpadding="0" cellspacing="0" style="border-collapse:
+ collapse;width:334px" bordercolordark="#000000" bordercolor="#000000" bordercolorlight="#000000">
+	<colgroup>
+		<col width="64" span="3" style="width:48pt">
+		<col width="105" style="width: 79pt">
+	</colgroup>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; width: 80px; font-weight: 700; text-align: center; color: black; font-size: 11.0pt; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" bgcolor="#C0C0C0">
+		<font size="3" face="Arial">A0</font></td>
+		<td style="border-color:inherit; width: 78px; font-weight: 700; text-align: center; color: black; font-size: 11.0pt; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" bgcolor="#C0C0C0">
+		<font size="3" face="Arial">A1&nbsp;</font></td>
+		<td style="border-color:inherit; width: 85px; font-weight: 700; text-align: center; color: black; font-size: 11.0pt; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" bgcolor="#C0C0C0">
+		<font size="3" face="Arial">A2</font></td>
+		<td style="border-color:inherit; width: 87px; font-weight: 700; text-align: center; color: black; font-size: 11.0pt; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" bgcolor="#C0C0C0">
+		<font size="3" face="Arial">Address</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="80" bordercolorlight="#000000">
+		<font size="3" face="Arial">Removed</font></td>
+		<td style="border-color:inherit; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="78" bordercolorlight="#000000">
+		<font size="3" face="Arial">Removed</font></td>
+		<td style="border-color:inherit; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="85" bordercolorlight="#000000">
+		<font size="3" face="Arial">Removed</font></td>
+		<td style="border-color:inherit; text-align: center; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="87" bordercolorlight="#000000">
+		<font size="3" face="Arial">0</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="80">
+		<font size="3" face="Arial">Installed</font></td>
+		<td style="border-color:inherit; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="78">
+		<font size="3" face="Arial">Removed</font></td>
+		<td style="border-color:inherit; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="85">
+		<font size="3" face="Arial">Removed</font></td>
+		<td style="border-color:inherit; text-align: center; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="87">
+		<font size="3" face="Arial">1</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="80">
+		<font size="3" face="Arial">Removed</font></td>
+		<td style="border-color:inherit; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="78">
+		<font size="3" face="Arial">Installed</font></td>
+		<td style="border-color:inherit; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="85">
+		<font size="3" face="Arial">Removed</font></td>
+		<td style="border-color:inherit; text-align: center; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="87">
+		<font size="3" face="Arial">2</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="80">
+		<font size="3" face="Arial">Installed</font></td>
+		<td style="border-color:inherit; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="78">
+		<font size="3" face="Arial">Installed</font></td>
+		<td style="border-color:inherit; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="85">
+		<font size="3" face="Arial">Removed</font></td>
+		<td style="border-color:inherit; text-align: center; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="87">
+		<font size="3" face="Arial">3</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="80">
+		<font size="3" face="Arial">Removed</font></td>
+		<td style="border-color:inherit; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="78">
+		<font size="3" face="Arial">Removed</font></td>
+		<td style="border-color:inherit; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="85">
+		<font size="3" face="Arial">Installed</font></td>
+		<td style="border-color:inherit; text-align: center; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="87">
+		<font size="3" face="Arial">4</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="80">
+		<font size="3" face="Arial">Installed</font></td>
+		<td style="border-color:inherit; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="78">
+		<font size="3" face="Arial">Removed</font></td>
+		<td style="border-color:inherit; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="85">
+		<font size="3" face="Arial">Installed</font></td>
+		<td style="border-color:inherit; text-align: center; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="87">
+		<font size="3" face="Arial">5</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="80">
+		<font size="3" face="Arial">Removed</font></td>
+		<td style="border-color:inherit; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="78">
+		<font size="3" face="Arial">Installed</font></td>
+		<td style="border-color:inherit; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="85">
+		<font size="3" face="Arial">Installed</font></td>
+		<td style="border-color:inherit; text-align: center; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="87">
+		<font size="3" face="Arial">6</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="80">
+		<font size="3" face="Arial">Installed</font></td>
+		<td style="border-color:inherit; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="78">
+		<font size="3" face="Arial">Installed</font></td>
+		<td style="border-color:inherit; font-size: 9.0pt; text-align: left; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="85">
+		<font size="3" face="Arial">Installed</font></td>
+		<td style="border-color:inherit; text-align: center; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="87">
+		<font size="3" face="Arial">7</font></td>
+	</tr>
+</table>
+
+<p><font face="Arial">KFLOP can be configured to service each Konnect Board 
+using the AddKonnect function.&nbsp; The first parameter is the board address.&nbsp; 
+The second parameter is the address of where KFLOP should obtain data to send to 
+Konnect's 16 Outputs.&nbsp; The 3rd Parameter the address of where KFLOP should 
+place the data received from Konnects 32 Inputs.</font></p>
+<p><font face="Arial">In most cases the addresses will be KFLOP Virtual I/O bit 
+locations.&nbsp; KFLOP has two sets of Virtual I/O Bits, standard and extended.&nbsp; 
+The standard consists of 16 Bits in VirtualBits, and the Extended consist of 
+1024 Bits in VirtualBitsEx[32].</font></p>
+<p><font face="Arial">The code below configures KFLOP to service 4 Konnect 
+Boards (192 IO bits): </font></p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">	InitAux();</font></p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">	AddKonnect(0,&amp;VirtualBits,VirtualBitsEx);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+AddKonnect(1,VirtualBitsEx+1,VirtualBitsEx+2);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+AddKonnect(2,VirtualBitsEx+3,VirtualBitsEx+4);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+AddKonnect(3,VirtualBitsEx+5,VirtualBitsEx+6);</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Board 0 has Output 
+Bits mapped to&nbsp;&nbsp;&nbsp;&nbsp; 48&nbsp; -&nbsp;&nbsp; 63 and Input Bits 
+Mapped to 1024-1055</font></p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Board 1 has Output 
+Bits mapped to 1056-1071 and Input Bits Mapped to 1088-1119</font></p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Board 2 has Output 
+Bits mapped to 1120-1135 and Input Bits Mapped to 1152-1183</font></p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Board 2 has Output 
+Bits mapped to 1184-1199 and Input Bits Mapped to 1216-1247</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p><i><b><font face="Arial">Typical IO Mapping for Standard Single Konnect</font></b></i></p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">AddKonnect(0,&amp;VirtualBits,VirtualBitsEx);<br>
+&nbsp;</font></p>
+<table border="2" cellpadding="0" cellspacing="0" style="border-collapse:
+ collapse;width:173px" bordercolordark="#000000" bordercolor="#000000" bordercolorlight="#000000">
+	<colgroup>
+		<col width="64" span="1" style="width:48pt">
+		<col width="105" style="width: 79pt">
+	</colgroup>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; width: 68px; font-weight: 700; color: black; font-size: 11.0pt; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" align="center" bgcolor="#C8C8C8">
+		<font face="Arial" size="3">Outputs</font></td>
+		<td style="border-color:inherit; width: 101px; font-weight: 700; color: black; font-size: 11.0pt; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" align="center" bgcolor="#C8C8C8">
+		<font face="Arial" size="3">Virtual IO</font><p style="margin-top: 0; margin-bottom: 0">
+		<font face="Arial" size="3">&nbsp;Number</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">0</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">48</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">1</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">49</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">2</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">50</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">3</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">51</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">4</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">52</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">5</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">53</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">6</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">54</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">7</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">55</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">8</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">56</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">9</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">57</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">10</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">58</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">11</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">59</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">12</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">60</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">13</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">61</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">14</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">62</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">15</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">63</font></td>
+	</tr>
+</table>
+
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<table border="2" cellpadding="0" cellspacing="0" style="border-collapse:
+ collapse;width:173px" bordercolordark="#000000" bordercolor="#000000" bordercolorlight="#000000">
+	<colgroup>
+		<col width="64" span="1" style="width:48pt">
+		<col width="105" style="width: 79pt">
+	</colgroup>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; width: 68px; font-weight: 700; color: black; font-size: 11.0pt; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" align="center" bgcolor="#C8C8C8">
+		<font face="Arial" size="3">Inputs</font></td>
+		<td style="border-color:inherit; width: 101px; font-weight: 700; color: black; font-size: 11.0pt; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" align="center" bgcolor="#C8C8C8">
+		<font face="Arial" size="3">Virtual IO</font><p style="margin-top: 0; margin-bottom: 0">
+		<font face="Arial" size="3">&nbsp;Number</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">0</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1024</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">1</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1025</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">2</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1026</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">3</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1027</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">4</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1028</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">5</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1029</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">6</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1030</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td style="border-color:inherit; height: 22px; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">7</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center" height="22">
+		<font face="Arial" size="3">1031</font></td>
+	</tr>
+	<tr height="20" style="height:15.0pt">
+		<td style="border-color:inherit; height: 18px; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">8</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center" height="18">
+		<font face="Arial" size="3">1032</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">9</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1033</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">10</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1034</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">11</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1035</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">12</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1036</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">13</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1037</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">14</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1038</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">15</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1039</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">16</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1040</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">17</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1041</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">18</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1042</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">19</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1043</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">20</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1044</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">21</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1045</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">22</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1046</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">23</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1047</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">24</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1048</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">25</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1049</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">26</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1050</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">27</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1051</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">28</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1052</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">29</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1053</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">30</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1054</font></td>
+	</tr>
+	<tr>
+		<td height="20" style="border-color:inherit; height: 15.0pt; font-size: 9.0pt; color: black; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="68" align="center">
+		<font face="Arial" size="3">31</font></td>
+		<td style="border-color:inherit; color: black; font-size: 11.0pt; font-weight: 400; font-style: normal; text-decoration: none; font-family: Calibri, sans-serif; vertical-align: bottom; white-space: nowrap; padding-left:4px; padding-right:4px; padding-top:1px; padding-bottom:1px" width="101" align="center">
+		<font face="Arial" size="3">1055</font></td>
+	</tr>
+</table>
+
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+
+</body>
+
+</html>

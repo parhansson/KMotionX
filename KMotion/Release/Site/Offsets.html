@@ -1,0 +1,210 @@
+﻿<!DOCTYPE HTML>
+<html>
+	<head> 
+		<title></title>
+		<link type="text/css" rel="stylesheet"  href="./Content/Site.css" />
+		<link type="text/css" rel="stylesheet"  href="./Content/Themes/vader/jquery-ui-1.8.17.custom.css" />
+		<script type="text/javascript" src="./Scripts/jquery-1.7.1.min.js" ></script>
+		<script type="text/javascript" src="./Scripts/jquery-ui-1.8.17.custom.min.js" ></script>
+		<script type="text/javascript" src="./Scripts/JQUIDefs.js" ></script>
+		<script type="text/javascript" src="./Scripts/CommandHooks.js" ></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+        window.external.LoadToolEditor(1, 12);
+        window.external.LoadOffsetEditor(1, 9);
+
+        //SaveData
+
+        $('#savedata').click(function() {
+            window.external.SaveOffsetEditor(1, 9);
+            window.external.SaveToolEditor(1, 12);
+            window.external.SaveInterpreterData();
+        });
+        });
+    </script>
+	</head>
+	<body class="controllerbody" > 
+	<div id="bg"> 
+	</div>
+            <div>
+ 
+ <div id="toollibcontainer">
+ <h2 style=" text-align:center; margin: 15px 5px 5px 5px; font-family:Trebuchet MS;">Tool Table</h2>
+  <table class="toollibtable">
+ <tr class="toollibrow">
+ <th class="toollibheader">Tool Name</th>
+ <th class="toollibheader">Changer Slot #</th>
+ <th class="toollibheader">Tool #</th>
+ <th class="toollibheader">Length Offset</th>
+ <th class="toollibheader">Diam. Offset</th>
+ </tr>
+ <tr class="toollibrow">
+ <td><input class="toollibtext" id="toolname1" type="text" /></td>
+ <td><input class="toollibtext" id="toolslot1" type="text" /></td>
+ <td><input class="toollibtext" id="toolid1" type="text" /></td>
+ <td><input class="toollibtext" id="toollength1" type="text" /></td>
+ <td><input class="toollibtext" id="tooldiameter1" type="text" /></td>
+ </tr>
+  <tr class="toollibrow">
+ <td><input class="toollibtext" id="toolname2" type="text" /></td>
+ <td><input class="toollibtext" id="toolslot2" type="text" /></td>
+ <td><input class="toollibtext" id="toolid2" type="text" /></td>
+ <td><input class="toollibtext" id="toollength2" type="text" /></td>
+ <td><input class="toollibtext" id="tooldiameter2" type="text" /></td>
+ </tr>
+  <tr class="toollibrow">
+ <td><input class="toollibtext" id="toolname3" type="text" /></td>
+ <td><input class="toollibtext" id="toolslot3" type="text" /></td>
+ <td><input class="toollibtext" id="toolid3" type="text" /></td>
+ <td><input class="toollibtext" id="toollength3" type="text" /></td>
+ <td><input class="toollibtext" id="tooldiameter3" type="text" /></td>
+ </tr>
+  <tr class="toollibrow">
+ <td><input class="toollibtext" id="toolname4" type="text" /></td>
+ <td><input class="toollibtext" id="toolslot4" type="text" /></td>
+ <td><input class="toollibtext" id="toolid4" type="text" /></td>
+ <td><input class="toollibtext" id="toollength4" type="text" /></td>
+ <td><input class="toollibtext" id="tooldiameter4" type="text" /></td>
+ </tr>
+  <tr class="toollibrow">
+ <td><input class="toollibtext" id="toolname5" type="text" /></td>
+ <td><input class="toollibtext" id="toolslot5" type="text" /></td>
+ <td><input class="toollibtext" id="toolid5" type="text" /></td>
+ <td><input class="toollibtext" id="toollength5" type="text" /></td>
+ <td><input class="toollibtext" id="tooldiameter5" type="text" /></td>
+ </tr>
+  <tr class="toollibrow">
+ <td><input class="toollibtext" id="toolname6" type="text" /></td>
+ <td><input class="toollibtext" id="toolslot6" type="text" /></td>
+ <td><input class="toollibtext" id="toolid6" type="text" /></td>
+ <td><input class="toollibtext" id="toollength6" type="text" /></td>
+ <td><input class="toollibtext" id="tooldiameter6" type="text" /></td>
+ </tr>
+  <tr class="toollibrow">
+ <td><input class="toollibtext" id="toolname7" type="text" /></td>
+ <td><input class="toollibtext" id="toolslot7" type="text" /></td>
+ <td><input class="toollibtext" id="toolid7" type="text" /></td>
+ <td><input class="toollibtext" id="toollength7" type="text" /></td>
+ <td><input class="toollibtext" id="tooldiameter7" type="text" /></td>
+ </tr>
+  <tr class="toollibrow">
+ <td><input class="toollibtext" id="toolname8" type="text" /></td>
+ <td><input class="toollibtext" id="toolslot8" type="text" /></td>
+ <td><input class="toollibtext" id="toolid8" type="text" /></td>
+ <td><input class="toollibtext" id="toollength8" type="text" /></td>
+ <td><input class="toollibtext" id="tooldiameter8" type="text" /></td>
+ </tr>
+  <tr class="toollibrow">
+ <td><input class="toollibtext" id="toolname9" type="text" /></td>
+ <td><input class="toollibtext" id="toolslot9" type="text" /></td>
+ <td><input class="toollibtext" id="toolid9" type="text" /></td>
+ <td><input class="toollibtext" id="toollength9" type="text" /></td>
+ <td><input class="toollibtext" id="tooldiameter9" type="text" /></td>
+ </tr>
+  <tr class="toollibrow">
+ <td><input class="toollibtext" id="toolname10" type="text" /></td>
+ <td><input class="toollibtext" id="toolslot10" type="text" /></td>
+ <td><input class="toollibtext" id="toolid10" type="text" /></td>
+ <td><input class="toollibtext" id="toollength10" type="text" /></td>
+ <td><input class="toollibtext" id="tooldiameter10" type="text" /></td>
+ </tr>
+  <tr class="toollibrow">
+ <td><input class="toollibtext" id="toolname11" type="text" /></td>
+ <td><input class="toollibtext" id="toolslot11" type="text" /></td>
+ <td><input class="toollibtext" id="toolid11" type="text" /></td>
+ <td><input class="toollibtext" id="toollength11" type="text" /></td>
+ <td><input class="toollibtext" id="tooldiameter11" type="text" /></td>
+ </tr>
+  <tr class="toollibrow">
+ <td><input class="toollibtext" id="toolname12" type="text" /></td>
+ <td><input class="toollibtext" id="toolslot12" type="text" /></td>
+ <td><input class="toollibtext" id="toolid12" type="text" /></td>
+ <td><input class="toollibtext" id="toollength12" type="text" /></td>
+ <td><input class="toollibtext" id="tooldiameter12" type="text" /></td>
+ </tr>
+ </table>
+ </div>
+ 
+ <div id="offsetscontainer">
+ <h2 style=" text-align:center; margin: 15px 5px 5px 5px; font-family:Trebuchet MS;">Work Offsets</h2>
+ <table class="offsettable">
+ <tr class="offsetrow">
+ <th class="offsetheader">Offset Name</th>
+ <th class="offsetheader">X</th>
+ <th class="offsetheader">Y</th>
+ <th class="offsetheader">Z</th>
+ </tr>
+ <tr class="offsetrow">
+ <td class="offsetlabel" id="offsetlabel1">G54</td>
+ <td><input class="offsettext" id="offsetX1" type="text" /></td>
+ <td><input class="offsettext" id="offsetY1" type="text" /></td>
+ <td><input class="offsettext" id="offsetZ1" type="text" /></td>
+ </tr>
+  <tr class="offsetrow">
+ <td class="offsetlabel" id="offsetlabel2">G55</td>
+ <td><input class="offsettext" id="offsetX2" type="text" /></td>
+ <td><input class="offsettext" id="offsetY2" type="text" /></td>
+ <td><input class="offsettext" id="offsetZ2" type="text" /></td>
+ </tr>
+  <tr class="offsetrow">
+ <td class="offsetlabel" id="offsetlabel3">G56</td>
+ <td><input class="offsettext" id="offsetX3" type="text" /></td>
+ <td><input class="offsettext" id="offsetY3" type="text" /></td>
+ <td><input class="offsettext" id="offsetZ3" type="text" /></td>
+ </tr>
+  <tr class="offsetrow">
+ <td class="offsetlabel" id="offsetlabel4">G57</td>
+ <td><input class="offsettext" id="offsetX4" type="text" /></td>
+ <td><input class="offsettext" id="offsetY4" type="text" /></td>
+ <td><input class="offsettext" id="offsetZ4" type="text" /></td>
+ </tr>
+  <tr class="offsetrow">
+ <td class="offsetlabel" id="offsetlabel5">G58</td>
+ <td><input class="offsettext" id="offsetX5" type="text" /></td>
+ <td><input class="offsettext" id="offsetY5" type="text" /></td>
+ <td><input class="offsettext" id="offsetZ5" type="text" /></td>
+ </tr>
+  <tr class="offsetrow">
+ <td class="offsetlabel" id="offsetlabel6">G59</td>
+ <td><input class="offsettext" id="offsetX6" type="text" /></td>
+ <td><input class="offsettext" id="offsetY6" type="text" /></td>
+ <td><input class="offsettext" id="offsetZ6" type="text" /></td>
+ </tr>
+  <tr class="offsetrow">
+ <td class="offsetlabel" id="offsetlabel7">G59.1</td>
+ <td><input class="offsettext" id="offsetX7" type="text" /></td>
+ <td><input class="offsettext" id="offsetY7" type="text" /></td>
+ <td><input class="offsettext" id="offsetZ7" type="text" /></td>
+ </tr>
+  <tr class="offsetrow">
+ <td class="offsetlabel" id="offsetlabel8">G59.2</td>
+ <td><input class="offsettext" id="offsetX8" type="text" /></td>
+ <td><input class="offsettext" id="offsetY8" type="text" /></td>
+ <td><input class="offsettext" id="offsetZ8" type="text" /></td>
+ </tr>
+  <tr class="offsetrow">
+ <td class="offsetlabel" id="offsetlabel9">G59.3</td>
+ <td><input class="offsettext" id="offsetX9" type="text" /></td>
+ <td><input class="offsettext" id="offsetY9" type="text" /></td>
+ <td><input class="offsettext" id="offsetZ9" type="text" /></td>
+ </tr>
+ </table>
+ </div>
+ 
+ <button id="savedata" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" style="left:700px; top:530px">Save Data</button>
+ 
+            <div id="statusbar">
+                <p id="connectedvalue"></p>
+                <p id="kflopversionvalue"></p>
+               <button id="mainpagebutton" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  Main </button>
+               <button id="offsetspagebutton" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  Offsets </button>
+               <button id="settingspagebutton" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  Settings </button>
+            </div>
+             
+            </div>
+	</body>
+</html>

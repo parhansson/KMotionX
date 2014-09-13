@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>13.4 Writing blocks using variables</TITLE>
+<META NAME="description" CONTENT="13.4 Writing blocks using variables">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node104.html">
+<LINK REL="previous" HREF="node102.html">
+<LINK REL="up" HREF="node99.html">
+<LINK REL="next" HREF="node104.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1889"
+  HREF="node104.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1883"
+  HREF="node99.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1877"
+  HREF="node102.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1885"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1887"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1890"
+  HREF="node104.html">13.5 Sample Variable Programs</A>
+<B> Up:</B> <A NAME="tex2html1884"
+  HREF="node99.html">13. Programming With Variables</A>
+<B> Previous:</B> <A NAME="tex2html1878"
+  HREF="node102.html">13.3 Changing Variable Values</A>
+ &nbsp; <B>  <A NAME="tex2html1886"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1888"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION04440000000000000000">
+13.4 Writing blocks using variables</A>
+</H1>
+
+<P>
+Right about now, the conventional program code writer will realize
+that it is a bit easier to just write the real numbered code than
+it is to write the variable code. It is also easier to read and make
+sense of real numbered code as the following two lines illustrate.
+
+<P>
+Hard code T55 M6 G43 H55 G55 X55 A55 
+
+<P>
+Variable code T#1000 M6 G43 H#1000 G#1000 X#1000 A#1000
+
+<P>
+And real numbered code will take less time to write if you want to
+use that code or those numeric values only one time. The real value
+of code written with variables becomes obvious if you want to re use
+code for different sized parts, paste in the same code several times,
+or when using different setups and tools.
+
+<P>
+Variables can also be of value where a location is repeated many times
+during a program. Rather than typing (x21.1345) in a dozen locations
+in a program you can assign that value to a variable at the top of
+your program and reference it wherever you need to within. Then if
+a program wide change needs to be made to that value it can be done
+once and all references will shift to the new value.
+
+<P>
+Under any of these conditions variable programming becomes much more
+efficient than repeating or editing all those lines of code with the
+correct values.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1889"
+  HREF="node104.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1883"
+  HREF="node99.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1877"
+  HREF="node102.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1885"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1887"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1890"
+  HREF="node104.html">13.5 Sample Variable Programs</A>
+<B> Up:</B> <A NAME="tex2html1884"
+  HREF="node99.html">13. Programming With Variables</A>
+<B> Previous:</B> <A NAME="tex2html1878"
+  HREF="node102.html">13.3 Changing Variable Values</A>
+ &nbsp; <B>  <A NAME="tex2html1886"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1888"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,47 @@
+(This demo shows the usage of:                   )
+(   . fixture offsets                            )
+(   . Tool Radius compensation                   )
+(   . Tool Length compensation                   )
+(                                                )
+( A Box is drawn without and with compensations  )
+( and both are repeated at two fixture offsets   )
+
+G20 (inches mode)
+F30
+G0 x0y0z0 (Draw a box) 
+G1 x1
+y1
+x0
+y0
+G0 x-1y0
+D3G42 (Select tool - Radius Comp On - Tool is on Right of contour)
+G43 H3 (Tool #3 length comp On) 
+G1 x0y0 (Draw a box) 
+x1
+y1
+x0
+y0
+z1.5 (Bring tool up)
+G40 (radius comp off)
+G49 (length comp off)
+G10L2P2x-2y-2z0
+G55
+G0 x0y0z0 (Draw a box) 
+G1 x1
+y1
+x0
+y0
+G0 x-1y0
+D3G42 (Select tool - Comp On - Tool is on Right of contour)
+G43 H3 (Tool #3 length comp On) 
+G1 x0y0 (Draw a box) 
+x1
+y1
+x0
+y0
+z1.5 (Bring tool up)
+G40 (radius comp off)
+G49 (length comp off)
+G54 (fixture offset off)
+G0x-2.5y-2.5z1.5
+M2

@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>10.3 Words </TITLE>
+<META NAME="description" CONTENT="10.3 Words ">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node49.html">
+<LINK REL="previous" HREF="node47.html">
+<LINK REL="up" HREF="node45.html">
+<LINK REL="next" HREF="node49.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1054"
+  HREF="node49.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1048"
+  HREF="node45.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1042"
+  HREF="node47.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1050"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1052"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1055"
+  HREF="node49.html">10.4 Line Number Words</A>
+<B> Up:</B> <A NAME="tex2html1049"
+  HREF="node45.html">10. G Code Basics</A>
+<B> Previous:</B> <A NAME="tex2html1043"
+  HREF="node47.html">10.2 Numbers</A>
+ &nbsp; <B>  <A NAME="tex2html1051"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1053"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION04130000000000000000">
+10.3 Words </A>
+</H1>
+
+<P>
+An nc program word is an acceptable letter followed by a real_value.
+Table 2 shows the current list of words that the EMC interpreter recognizes.
+The meanings of many of these words are listed in detail below. Some
+are included in and in the chapter on tool radius compensation and
+the chapter on canned cycles.
+
+<P>
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">A</TD>
+<TD ALIGN="LEFT">A axis of machine</TD>
+</TR>
+<TR><TD ALIGN="CENTER">B</TD>
+<TD ALIGN="LEFT">B axis of machine</TD>
+</TR>
+<TR><TD ALIGN="CENTER">C</TD>
+<TD ALIGN="LEFT">C axis of machine</TD>
+</TR>
+<TR><TD ALIGN="CENTER">D</TD>
+<TD ALIGN="LEFT">Tool radius compensation number</TD>
+</TR>
+<TR><TD ALIGN="CENTER">F</TD>
+<TD ALIGN="LEFT">Feed rate</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G</TD>
+<TD ALIGN="LEFT">General Function (see below)</TD>
+</TR>
+<TR><TD ALIGN="CENTER">H</TD>
+<TD ALIGN="LEFT">Toool length offset</TD>
+</TR>
+<TR><TD ALIGN="CENTER">I</TD>
+<TD ALIGN="LEFT">X-axis offset for arcs</TD>
+</TR>
+<TR><TD ALIGN="CENTER">&nbsp;</TD>
+<TD ALIGN="LEFT">X offset in G87 canned cycle</TD>
+</TR>
+<TR><TD ALIGN="CENTER">J</TD>
+<TD ALIGN="LEFT">Y-axis offset for arcs</TD>
+</TR>
+<TR><TD ALIGN="CENTER">&nbsp;</TD>
+<TD ALIGN="LEFT">and Y offset in G87 canned cycle</TD>
+</TR>
+<TR><TD ALIGN="CENTER">K</TD>
+<TD ALIGN="LEFT">Z-axis offset for arcs</TD>
+</TR>
+<TR><TD ALIGN="CENTER">&nbsp;</TD>
+<TD ALIGN="LEFT">and Z offset in G87 canned cycle</TD>
+</TR>
+<TR><TD ALIGN="CENTER">L</TD>
+<TD ALIGN="LEFT">L number of repetitions in canned cycles
+
+<P>
+and key used with G10</TD>
+</TR>
+<TR><TD ALIGN="CENTER">M</TD>
+<TD ALIGN="LEFT">Miscellaneous function (see below)</TD>
+</TR>
+<TR><TD ALIGN="CENTER">N</TD>
+<TD ALIGN="LEFT">Line number</TD>
+</TR>
+<TR><TD ALIGN="CENTER">P</TD>
+<TD ALIGN="LEFT">Dwell time with G4 and canned cycles
+
+<P>
+key used with G10</TD>
+</TR>
+<TR><TD ALIGN="CENTER">Q</TD>
+<TD ALIGN="LEFT">Feed increment in G83 canned cycle</TD>
+</TR>
+<TR><TD ALIGN="CENTER">R</TD>
+<TD ALIGN="LEFT">Arc radius</TD>
+</TR>
+<TR><TD ALIGN="CENTER">S</TD>
+<TD ALIGN="LEFT">Spindle speed</TD>
+</TR>
+<TR><TD ALIGN="CENTER">T</TD>
+<TD ALIGN="LEFT">Tool selection</TD>
+</TR>
+<TR><TD ALIGN="CENTER">X</TD>
+<TD ALIGN="LEFT">X axis of machine</TD>
+</TR>
+<TR><TD ALIGN="CENTER">Y</TD>
+<TD ALIGN="LEFT">Y axis of machine</TD>
+</TR>
+<TR><TD ALIGN="CENTER">Z</TD>
+<TD ALIGN="LEFT">Z axis of machine</TD>
+</TR>
+</TABLE>
+
+<P>
+Table 2 Words acceptable to the EMC interpreter
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1054"
+  HREF="node49.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1048"
+  HREF="node45.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1042"
+  HREF="node47.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1050"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1052"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1055"
+  HREF="node49.html">10.4 Line Number Words</A>
+<B> Up:</B> <A NAME="tex2html1049"
+  HREF="node45.html">10. G Code Basics</A>
+<B> Previous:</B> <A NAME="tex2html1043"
+  HREF="node47.html">10.2 Numbers</A>
+ &nbsp; <B>  <A NAME="tex2html1051"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1053"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

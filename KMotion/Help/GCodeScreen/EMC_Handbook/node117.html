@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>14.1.6 EMC on a Microsoft Windows Computer</TITLE>
+<META NAME="description" CONTENT="14.1.6 EMC on a Microsoft Windows Computer">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="previous" HREF="node116.html">
+<LINK REL="up" HREF="node111.html">
+<LINK REL="next" HREF="node118.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2093"
+  HREF="node118.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html2087"
+  HREF="node111.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html2083"
+  HREF="node116.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html2089"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html2091"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html2094"
+  HREF="node118.html">IV. Part 4 Waffle</A>
+<B> Up:</B> <A NAME="tex2html2088"
+  HREF="node111.html">14.1 Remote EMC with</A>
+<B> Previous:</B> <A NAME="tex2html2084"
+  HREF="node116.html">14.1.5 Problems and Other</A>
+ &nbsp; <B>  <A NAME="tex2html2090"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html2092"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION04516000000000000000"></A><A NAME="3163"></A>
+<BR>
+14.1.6 EMC on a Microsoft Windows Computer
+</H2>
+
+<P>
+The final goal of my experiments with a remote GUI was to demonstrate
+a Windows<A NAME="3164"></A> computer in control at NAMES 2002. After
+downloading tkemc.exe from the NIST web site, matching versions of
+tcl and tk binaries were installed. The self extracting tkemc<A NAME="3165"></A>
+archive failed to do so at the first attempt, so another copy was
+downloaded, this time to be extracted successfully.
+
+<P>
+Samba will probably have to be set up to allow file sharing in order
+to prevent problems with opening G-code files. I'm not sure how well
+the use of '&#92;' by DOS or Windows will convert to '/'
+used by linux.
+
+<P>
+With the client emc.nml file edited and the -queryhost<A NAME="3167"></A>
+flag removed from emc.bat, a connection was made with the EMC server.
+A serious problem has been found with the GUI in use - The X Y Z data
+is not being displayed correctly, in fact ``Feed Override'' appears
+to be used for one of the three axis ! The colours of the axis digits
+are also out of sync with reality, X is red, Y, green, and Z is shown
+as yellow. Most odd.
+
+<P>
+After persuading Don McLean to compile emcsh.exe<A NAME="3169"></A>
+against the current sources (24th March 2002), using Microsoft Visual
+C++, another attempt was made. This time all the digits responded
+to the correct axis and the machined could be homed and jogged. Once
+again, differences in the operating systems caused problems. This
+time with the way Tcl/Tk and the underlying OS handles paths. Linux
+will use /emc/programs/foo.ngc, and Windows, C:&#92;emc&#92;programs&#92;foo.ngc.
+EMC expects the former format to locate and load a G-code file, and
+the latter just causes an error. For file browsing to work correctly,
+the emc/programs directory will have to be ``shared'' with the
+aid of Samba<A NAME="3174"></A> which will add further to the problem of
+path names.
+
+<P>
+In conclusion, Whilst operating EMC across a network is possible,
+using a Windows computer will require some editing of Tkemc to change
+the way file and path names are handled.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html2093"
+  HREF="node118.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html2087"
+  HREF="node111.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html2083"
+  HREF="node116.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html2089"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html2091"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html2094"
+  HREF="node118.html">IV. Part 4 Waffle</A>
+<B> Up:</B> <A NAME="tex2html2088"
+  HREF="node111.html">14.1 Remote EMC with</A>
+<B> Previous:</B> <A NAME="tex2html2084"
+  HREF="node116.html">14.1.5 Problems and Other</A>
+ &nbsp; <B>  <A NAME="tex2html2090"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html2092"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

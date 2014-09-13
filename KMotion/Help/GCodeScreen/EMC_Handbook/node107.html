@@ -1,0 +1,700 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Example 3 - An outside milled four cornered object</TITLE>
+<META NAME="description" CONTENT="Example 3 - An outside milled four cornered object">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node108.html">
+<LINK REL="previous" HREF="node106.html">
+<LINK REL="up" HREF="node104.html">
+<LINK REL="next" HREF="node108.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1948"
+  HREF="node108.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1942"
+  HREF="node104.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1936"
+  HREF="node106.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1944"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1946"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1949"
+  HREF="node108.html">Example 4 - Milling</A>
+<B> Up:</B> <A NAME="tex2html1943"
+  HREF="node104.html">13.5 Sample Variable Programs</A>
+<B> Previous:</B> <A NAME="tex2html1937"
+  HREF="node106.html">Example 2 - Incremented</A>
+ &nbsp; <B>  <A NAME="tex2html1945"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1947"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION04453000000000000000">
+Example 3 - An outside milled four cornered object</A>
+</H2>
+
+<P>
+<TABLE  WIDTH="0%">
+<TR><TD>
+This example is more complicated than what you have seen so far. Our
+task is to mill a four cornered object that has all outside corners
+using tool diameter compensation. This object could be a square, a
+rectangle, a parallelogram, a trapezoid, or an object where none of
+the angles and sides are the same.
+
+<P>
+</TD></TR>
+</TABLE>
+
+<TABLE  WIDTH="0%">
+<TR><TD>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><!-- MATH
+ $\resizebox*{2.5in}{!}{\includegraphics{/usr/share/lyx/EMC_images/varfig2.eps}}$
+ -->
+<IMG
+ WIDTH="288" HEIGHT="192" ALIGN="BOTTOM" BORDER="0"
+ SRC="img37.gif"
+ ALT="\resizebox*{2.5in}{!}{\includegraphics{/usr/share/lyx/EMC_images/varfig2.eps}}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+</TD></TR>
+</TABLE>
+
+<P>
+<BR>
+
+<P>
+We need to tell the machine all of the following information.
+
+<P>
+
+<UL>
+<LI>Tool number and length
+</LI>
+<LI>Coordinate system and plane
+</LI>
+<LI>Approach point
+</LI>
+<LI>Depth
+</LI>
+<LI>Tool diameter offset and direction of travel, and coolant on
+</LI>
+<LI>First corner coordinates, feed rate milling and feed rate
+</LI>
+<LI>Second corner coordinates
+</LI>
+<LI>Third corner coordinates
+</LI>
+<LI>Fourth corner coordinates
+</LI>
+<LI>Turn off tool diameter offset, tool length, and coolant, retract depth,
+and return home.
+</LI>
+</UL>
+By filling in information for all of the list above we can mill four
+sides and four outside corners. Hanging on to the part while the milling
+is done is your problem. The hard coded program for this is not to
+difficult to write and is shown in table 4. It requires that we choose
+an end mill size and compute the approach point for tool diameter
+offset. This example assumes a 1.000 end mill and a g55 coordinate
+home at the first corner. It will mill a 2 x 2 square just like that
+shown in figure 2.
+
+<P>
+<TT><FONT SIZE="-1">N0130 G53 G0 X0 Y0 Z0 (send the machine to machine
+home)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0140 G17 T1 M6 M0 (load tool 1)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0150 G40 H1 G55 X0 Y0 Z0 (pick up tool length
+and move to coordinate home)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0160 X-1 Y-0.5 (45 degree approach point with
+0.5 tool radius offset) </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0170 Z-2.5 (milling depth)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0180 G1 F10 G41 X0 Y0 M8 (approach first corner
+with coolant)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0190 X2 (mill first side)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0200 Y-2 (mill second side)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0210 X0 (mill third side)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0220 Y0 (mill fourth side)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0230 G49 Y0.25 M9 (turn off comp and coolant
+and clear part)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0240 G0 Z0 (retract Z)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0250 G53 X0 Y0 Z0 (move back to machine home)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0260 M2 (program end)</FONT></TT>
+<P>
+
+
+<P>
+The size and shape of the part can be changed and depend upon the
+actual numbers entered in lines numbered 190 to 220. Suppose we wanted
+to cut a trapezoid with the small side one inch less that the long
+side. This could easily be made trapezoidal by changing those lines
+as table 5 lists. A set of these sample shapes is shown in table 8.
+
+<P>
+Changes required for a trapezoid
+
+<P>
+<TT><FONT SIZE="-1">N0190 X2 (mill first side)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0200 X1.5 Y-2 (mill second side)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0210 X0.5 (mill third side) </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0220 X0 Y0 (mill fourth side)</FONT></TT>
+<P>
+
+
+<P>
+Now the narrow side is one inch smaller than its longer parallel side
+and the other two are angled in by a half inch. Notice that very few
+changes needed to be made in the code in order to create the second
+part. We added both coordinates to the corner definitions and changed
+the actual numbers. These distance kinds of g-code numbers can be
+stored as variables. By changing the actual values of these variables
+we can create many different sizes and shapes using the same set of
+part program code.
+
+<P>
+First we need to define a set of variables and what we will use them
+for.
+
+<P>
+Variable list for milling the outside of a four sided object
+
+<P>
+1000 Tool Number
+<BR>
+1001 Tool Diameter
+<BR>
+1002 Coordinate Reference
+<BR>
+1003 Finished depth of cutter
+<BR>
+1004 First corner x location
+<BR>
+1005 First corner y location
+<BR>
+1006 Second corner x location
+<BR>
+1007 Second corner y location
+<BR>
+1008 Third corner x location
+<BR>
+1009 Third corner y location
+<BR>
+1010 Fourth corner x location
+<BR>
+1011 Fourth corner y location
+
+<P>
+One small problem that comes up with variable programming is that
+often you must include the tool diameter both in the tool file and
+as a variable when it will be used to compute an approach point.
+
+<P>
+Now all that we have to do is plug in these variable names in place
+of the hard numbers in the above code. For this more general case,
+we will include x and y coordinates for each corner. By doing this
+we can rotate the shape and make non parallel sides. We will also
+need to set up a computation for the approach in line 40 and the exit
+in line 110.
+
+<P>
+The variables and what they do are included in code as comment blocks.
+This way if the part program and the variable file become separated
+I can recreate the variable file easily. Including the variables as
+comments also helps when reading the program and debugging a setup.
+
+<P>
+Milling the outside of a four sided object
+
+<P>
+<TT><FONT SIZE="-1">N10 (1000 Tool Number)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N20 (1001 Tool Diameter)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N30 (1002 Coodinate Reference)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N40 (1003 Finished Depth of cut)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N50 (1004 First corner x location)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N60 (1005 First corner y location)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N70 (1006 Second corner x location)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N80 (1007 Second corner y location)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N90 (1008 Third corner x location)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N100 (1009 Third corner y location)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N110 (1010 Fourth corner x location)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N120 (1011 Fourth corner y location)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N130 G0 G53 X0 Y0 Z0 (machine home)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N140 G17 T#1000 M6 M0 (load tool)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N150 G43 H#1000 G#1002 X0 Y0 Z0 (move to offsets)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N160 X[-1*#1001] Y[-1*[#1001/2]]
+(45 degree approach)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N170 Z[-1*#1003] (tool to depth)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N180 G1 f10 G41 D#1000 X#1004 Y#1005 M8 (comp,
+cool, and approach corner)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N190 X#1006 Y#1007 (mill first side)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N200 X#1008 Y#1009 (mill second side)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N210 X#1010 Y#1011 (mill third side)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N220 X#1004 Y#1005 (mill fourth side)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N230 G40 Y[#1001/4] M9 (clear part)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N240 G49 T0 M6 G0 Z0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N250 G53 X0 Y0 Z0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N260 M2</FONT></TT>
+<P>
+
+
+<P>
+There are some limits on how far you can rotate this part using the
+four corners. A useful rule is that the line between the first corner
+and the second should not be more than 45 degrees off of the x axis
+of the machine or the cutter comp may not work correctly. If the line
+between the last corner and the first is steeper than a 45 you will
+get a tool gouge that will not be reported by the EMC.
+
+<P>
+TABLE 8 Corner values and sample shape
+
+<P>
+<TABLE  WIDTH="0%">
+<TR><TD>
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">Square</TD>
+<TD ALIGN="CENTER">&nbsp;</TD>
+<TD ALIGN="CENTER">&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="CENTER">corner</TD>
+<TD ALIGN="CENTER">X</TD>
+<TD ALIGN="CENTER">X</TD>
+</TR>
+<TR><TD ALIGN="CENTER">1</TD>
+<TD ALIGN="CENTER">0</TD>
+<TD ALIGN="CENTER">0</TD>
+</TR>
+<TR><TD ALIGN="CENTER">2</TD>
+<TD ALIGN="CENTER">2</TD>
+<TD ALIGN="CENTER">0</TD>
+</TR>
+<TR><TD ALIGN="CENTER">3</TD>
+<TD ALIGN="CENTER">2</TD>
+<TD ALIGN="CENTER">-2</TD>
+</TR>
+<TR><TD ALIGN="CENTER">4</TD>
+<TD ALIGN="CENTER">0</TD>
+<TD ALIGN="CENTER">-2</TD>
+</TR>
+</TABLE>
+
+<P>
+</TD></TR>
+</TABLE>
+
+<TABLE  WIDTH="0%">
+<TR><TD>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><!-- MATH
+ $\resizebox*{1\columnwidth}{!}{\includegraphics{/usr/share/lyx/EMC_images/varfig3.eps}}$
+ -->
+<IMG
+ WIDTH="483" HEIGHT="323" ALIGN="BOTTOM" BORDER="0"
+ SRC="img38.gif"
+ ALT="\resizebox*{1\columnwidth}{!}{\includegraphics{/usr/share/lyx/EMC_images/varfig3.eps}}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+</TD></TR>
+</TABLE>
+<TABLE  WIDTH="0%">
+<TR><TD>
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">Rectangle</TD>
+<TD ALIGN="CENTER">&nbsp;</TD>
+<TD ALIGN="CENTER">&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="CENTER">corner</TD>
+<TD ALIGN="CENTER">X</TD>
+<TD ALIGN="CENTER">X</TD>
+</TR>
+<TR><TD ALIGN="CENTER">1</TD>
+<TD ALIGN="CENTER">0</TD>
+<TD ALIGN="CENTER">0</TD>
+</TR>
+<TR><TD ALIGN="CENTER">2</TD>
+<TD ALIGN="CENTER">4</TD>
+<TD ALIGN="CENTER">0</TD>
+</TR>
+<TR><TD ALIGN="CENTER">3</TD>
+<TD ALIGN="CENTER">4</TD>
+<TD ALIGN="CENTER">-2</TD>
+</TR>
+<TR><TD ALIGN="CENTER">4</TD>
+<TD ALIGN="CENTER">0</TD>
+<TD ALIGN="CENTER">-2</TD>
+</TR>
+</TABLE>
+
+<P>
+</TD></TR>
+</TABLE>
+
+<TABLE  WIDTH="0%">
+<TR><TD>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><!-- MATH
+ $\resizebox*{1\columnwidth}{!}{\includegraphics{/usr/share/lyx/EMC_images/varfig4.eps}}$
+ -->
+<IMG
+ WIDTH="483" HEIGHT="323" ALIGN="BOTTOM" BORDER="0"
+ SRC="img39.gif"
+ ALT="\resizebox*{1\columnwidth}{!}{\includegraphics{/usr/share/lyx/EMC_images/varfig4.eps}}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+</TD></TR>
+</TABLE>
+<TABLE  WIDTH="0%">
+<TR><TD>
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">Trapeziod</TD>
+<TD ALIGN="CENTER">&nbsp;</TD>
+<TD ALIGN="CENTER">&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="CENTER">corner</TD>
+<TD ALIGN="CENTER">X</TD>
+<TD ALIGN="CENTER">X</TD>
+</TR>
+<TR><TD ALIGN="CENTER">1</TD>
+<TD ALIGN="CENTER">0</TD>
+<TD ALIGN="CENTER">0</TD>
+</TR>
+<TR><TD ALIGN="CENTER">2</TD>
+<TD ALIGN="CENTER">4</TD>
+<TD ALIGN="CENTER">0</TD>
+</TR>
+<TR><TD ALIGN="CENTER">3</TD>
+<TD ALIGN="CENTER">3.5</TD>
+<TD ALIGN="CENTER">-2</TD>
+</TR>
+<TR><TD ALIGN="CENTER">4</TD>
+<TD ALIGN="CENTER">0</TD>
+<TD ALIGN="CENTER">-2</TD>
+</TR>
+</TABLE>
+
+<P>
+</TD></TR>
+</TABLE>
+
+<TABLE  WIDTH="0%">
+<TR><TD>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><!-- MATH
+ $\resizebox*{1\columnwidth}{!}{\includegraphics{/usr/share/lyx/EMC_images/varfig5.eps}}$
+ -->
+<IMG
+ WIDTH="483" HEIGHT="323" ALIGN="BOTTOM" BORDER="0"
+ SRC="img40.gif"
+ ALT="\resizebox*{1\columnwidth}{!}{\includegraphics{/usr/share/lyx/EMC_images/varfig5.eps}}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+</TD></TR>
+</TABLE>
+<TABLE  WIDTH="0%">
+<TR><TD>
+<BR>
+<BR>
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">Parallelogram 1</TD>
+<TD ALIGN="CENTER">&nbsp;</TD>
+<TD ALIGN="CENTER">&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="CENTER">corner</TD>
+<TD ALIGN="CENTER">X</TD>
+<TD ALIGN="CENTER">X</TD>
+</TR>
+<TR><TD ALIGN="CENTER">1</TD>
+<TD ALIGN="CENTER">0</TD>
+<TD ALIGN="CENTER">0</TD>
+</TR>
+<TR><TD ALIGN="CENTER">2</TD>
+<TD ALIGN="CENTER">4</TD>
+<TD ALIGN="CENTER">0</TD>
+</TR>
+<TR><TD ALIGN="CENTER">3</TD>
+<TD ALIGN="CENTER">4.5</TD>
+<TD ALIGN="CENTER">-2</TD>
+</TR>
+<TR><TD ALIGN="CENTER">4</TD>
+<TD ALIGN="CENTER">0.5</TD>
+<TD ALIGN="CENTER">-2</TD>
+</TR>
+</TABLE>
+<BR>
+<BR>
+
+<P>
+</TD></TR>
+</TABLE>
+
+<TABLE  WIDTH="0%">
+<TR><TD>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><!-- MATH
+ $\resizebox*{1\columnwidth}{!}{\includegraphics{/usr/share/lyx/EMC_images/varfig6.eps}}$
+ -->
+<IMG
+ WIDTH="483" HEIGHT="323" ALIGN="BOTTOM" BORDER="0"
+ SRC="img41.gif"
+ ALT="\resizebox*{1\columnwidth}{!}{\includegraphics{/usr/share/lyx/EMC_images/varfig6.eps}}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+</TD></TR>
+</TABLE>
+<TABLE  WIDTH="0%">
+<TR><TD>
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">Parallelogram 2</TD>
+<TD ALIGN="CENTER">&nbsp;</TD>
+<TD ALIGN="CENTER">&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="CENTER">corner</TD>
+<TD ALIGN="CENTER">X</TD>
+<TD ALIGN="CENTER">X</TD>
+</TR>
+<TR><TD ALIGN="CENTER">1</TD>
+<TD ALIGN="CENTER">0</TD>
+<TD ALIGN="CENTER">0</TD>
+</TR>
+<TR><TD ALIGN="CENTER">2</TD>
+<TD ALIGN="CENTER">4</TD>
+<TD ALIGN="CENTER">1</TD>
+</TR>
+<TR><TD ALIGN="CENTER">3</TD>
+<TD ALIGN="CENTER">5</TD>
+<TD ALIGN="CENTER">-1</TD>
+</TR>
+<TR><TD ALIGN="CENTER">4</TD>
+<TD ALIGN="CENTER">1</TD>
+<TD ALIGN="CENTER">-2</TD>
+</TR>
+</TABLE>
+
+<P>
+</TD></TR>
+</TABLE>
+
+<TABLE  WIDTH="0%">
+<TR><TD>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><!-- MATH
+ $\resizebox*{1\columnwidth}{!}{\includegraphics{/usr/share/lyx/EMC_images/varfig7.eps}}$
+ -->
+<IMG
+ WIDTH="483" HEIGHT="323" ALIGN="BOTTOM" BORDER="0"
+ SRC="img42.gif"
+ ALT="\resizebox*{1\columnwidth}{!}{\includegraphics{/usr/share/lyx/EMC_images/varfig7.eps}}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+</TD></TR>
+</TABLE>
+<TABLE  WIDTH="0%">
+<TR><TD>
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">Diamond</TD>
+<TD ALIGN="CENTER">&nbsp;</TD>
+<TD ALIGN="CENTER">&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="CENTER">corner</TD>
+<TD ALIGN="CENTER">X</TD>
+<TD ALIGN="CENTER">X</TD>
+</TR>
+<TR><TD ALIGN="CENTER">1</TD>
+<TD ALIGN="CENTER">0</TD>
+<TD ALIGN="CENTER">0</TD>
+</TR>
+<TR><TD ALIGN="CENTER">2</TD>
+<TD ALIGN="CENTER">1</TD>
+<TD ALIGN="CENTER">1</TD>
+</TR>
+<TR><TD ALIGN="CENTER">3</TD>
+<TD ALIGN="CENTER">2</TD>
+<TD ALIGN="CENTER">0</TD>
+</TR>
+<TR><TD ALIGN="CENTER">4</TD>
+<TD ALIGN="CENTER">1</TD>
+<TD ALIGN="CENTER">-1</TD>
+</TR>
+</TABLE>
+
+<P>
+</TD></TR>
+</TABLE>
+
+<TABLE  WIDTH="0%">
+<TR><TD>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><!-- MATH
+ $\resizebox*{1\columnwidth}{!}{\includegraphics{/usr/share/lyx/EMC_images/varfig8.eps}}$
+ -->
+<IMG
+ WIDTH="483" HEIGHT="323" ALIGN="BOTTOM" BORDER="0"
+ SRC="img43.gif"
+ ALT="\resizebox*{1\columnwidth}{!}{\includegraphics{/usr/share/lyx/EMC_images/varfig8.eps}}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+</TD></TR>
+</TABLE>
+<TABLE  WIDTH="0%">
+<TR><TD>
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">Shape</TD>
+<TD ALIGN="CENTER">&nbsp;</TD>
+<TD ALIGN="CENTER">&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="CENTER">corner</TD>
+<TD ALIGN="CENTER">X</TD>
+<TD ALIGN="CENTER">X</TD>
+</TR>
+<TR><TD ALIGN="CENTER">1</TD>
+<TD ALIGN="CENTER">0</TD>
+<TD ALIGN="CENTER">0</TD>
+</TR>
+<TR><TD ALIGN="CENTER">2</TD>
+<TD ALIGN="CENTER">1</TD>
+<TD ALIGN="CENTER">1</TD>
+</TR>
+<TR><TD ALIGN="CENTER">3</TD>
+<TD ALIGN="CENTER">4</TD>
+<TD ALIGN="CENTER">2</TD>
+</TR>
+<TR><TD ALIGN="CENTER">4</TD>
+<TD ALIGN="CENTER">3</TD>
+<TD ALIGN="CENTER">-1</TD>
+</TR>
+</TABLE>
+
+<P>
+</TD></TR>
+</TABLE>
+
+<TABLE  WIDTH="0%">
+<TR><TD>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><!-- MATH
+ $\resizebox*{1\columnwidth}{!}{\includegraphics{/usr/share/lyx/EMC_images/varfig9.eps}}$
+ -->
+<IMG
+ WIDTH="483" HEIGHT="323" ALIGN="BOTTOM" BORDER="0"
+ SRC="img44.gif"
+ ALT="\resizebox*{1\columnwidth}{!}{\includegraphics{/usr/share/lyx/EMC_images/varfig9.eps}}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+</TD></TR>
+</TABLE>
+
+<P>
+<BR>
+
+<P>
+As mentioned earlier, this code and the shapes that can be cut with
+it is not very easy to read. But you should read through it and substitute
+the variable description wherever you find a pound sign. When you
+have done this a few times any program file that uses variables will
+become easier to understand.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1948"
+  HREF="node108.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1942"
+  HREF="node104.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1936"
+  HREF="node106.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1944"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1946"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1949"
+  HREF="node108.html">Example 4 - Milling</A>
+<B> Up:</B> <A NAME="tex2html1943"
+  HREF="node104.html">13.5 Sample Variable Programs</A>
+<B> Previous:</B> <A NAME="tex2html1937"
+  HREF="node106.html">Example 2 - Incremented</A>
+ &nbsp; <B>  <A NAME="tex2html1945"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1947"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

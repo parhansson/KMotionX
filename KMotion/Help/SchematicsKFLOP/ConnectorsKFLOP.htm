@@ -1,0 +1,715 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>KFLOP Connectors</title>
+</head>
+
+<body>
+
+<p><i><b><font size="5" face="Arial">KFLOP - Connector Pinouts</font></b></i></p>
+<p><font face="Arial">
+<img border="0" src="KFLOPConnectors.jpg" width="600" height="415"></font></p>
+<p>&nbsp;</p>
+<p><font face="Arial"><font size="4"><b><i>JR1 - +5V Power (regulated +/- 5%)</i></b></font> 
+</font> </p>
+<p><font face="Arial">Typical current = 0.35Amps with no user I/O connected.&nbsp; 
+More current may be required dependent on the amount of Digital I/O and option 
+boards.&nbsp; &nbsp;&nbsp; 
++5V @ 2.5A should be more than sufficient under all conditions.&nbsp; The +12V 
+input is not used internally by the board, but is routed to pins on the JP4, 
+JP6, and JP7 connectors for the convenience of the user.&nbsp; 
++5V power is also routed to the same connectors.&nbsp; 5V power may be applied 
+at whichever connector is more convenient.&nbsp; This connector is rated for 
+6.5Amps per connection.</font></p>
+<p><font face="Arial">This connector is a standard PC-disk drive power connector 
+which makes it easy to drive the board with an inexpensive PC power supply.</font></p>
+<p><font face="Arial">Under some conditions USB power may be used to avoid 
+requiring an external +5V power supply connection.&nbsp; USB specifies a maximum 
+of 500ma may be drawn from the USB cable.&nbsp; KFLOP itself consumes 350ma.&nbsp; 
+If external IO draws less than the remaining 150ma USB supplied power may be 
+used.&nbsp; To utilize USB power connect Jumper J3 and do not supply +5V into 
+any of the KFLOP connectors. </font></p>
+<p>&nbsp;</p>
+<p><font face="Arial"><img border="0" src="power4pin.png" width="284" height="218"></font></p>
+<p><font face="Arial"><img border="0" src="PowerPhoto.JPG" width="400" height="197"></font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><font size="4" face="Arial"><b><i>JP2 - JTAG </i></b></font></p>
+<p><font face="Arial">This connector is only used for advanced debugging using an XDS510 JTAG type in 
+circuit emulator.&nbsp; A small amount of regulated 3.3V (&lt;0.5 Amp) is available 
+on this connector if needed for external use.</font></p>
+<p><font face="Arial"><img border="0" src="JTAG14pin.png" width="513" height="387"></font></p>
+<p>&nbsp;</p>
+<p><font size="4" face="Arial"><b><i><a name="JP3"></a>JP7 - Digital IO</i></b></font></p>
+<p><font face="Arial">18 LVTTL bi-directional digital I/O, and +5, 
++15, -15 power supply outputs.&nbsp; Many Digital I/O bits are pre-defined as 
+encoder, home, or limit inputs (see table below) but if not required for the 
+particular application may be used as general purpose I/O.&nbsp; Digital Outputs 
+may sink/source 10 ma.&nbsp; Digital I/O is LVTTL (3.3V) but is 5 V tolerant.</font></p>
+<p><font color="#FF0000" face="Arial">
+<span style="font-weight: 700; font-style: italic; background-color: #FFFFFF">
+Caution! This connector contains 12V signals.&nbsp; Shorts to low voltage 
+pins will cause permanent damage to the board!&nbsp; </span></font></p>
+<p><font face="Arial"><img border="0" src="JP7.PNG" width="541" height="540"></font></p>
+<p><font face="Arial"><img border="0" src="JP7Photo.JPG" width="418" height="139"></font></p>
+<p>&nbsp;</p>
+<table border="2" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="682" id="AutoNumber2">
+  <tr>
+    <td width="10%" height="9" align="center"><font face="Arial" size="2">
+    Pin</font></td>
+    <td width="12%" height="9" align="center"><font face="Arial" size="2">
+    Name</font></td>
+    <td width="77%" height="9"><font face="Arial" size="2">Description</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="20" align="center">
+    <font face="Arial" size="2">1</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">VDD33</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">+3.3 Volts 
+	Output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">2</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">VDD33</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">+3.3 Volts 
+	Output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">3</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">VDD12</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">+12 Volts 
+    Output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">4</font></td>
+    <td width="12%" height="10" align="center">
+    <font face="Arial" size="2">RESET#</font></td>
+    <td width="77%" height="10"><font face="Arial" size="2">Power up Reset 
+    (low true) output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">5</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">IO44</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (3.3V Only)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">6</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">IO45</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (3.3V Only)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="8" align="center"><font face="Arial" size="2">
+    7</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">IO0</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or Encoder 0 Input Phase A</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">8</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">IO1</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or Encoder 0 Input Phase B</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">9</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">IO2</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or Encoder 1 Input Phase A</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">10</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">IO3</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or Encoder 1 Input Phase B</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">11</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">IO4</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or Encoder 2 Input Phase A</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">12</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">IO5</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or Encoder 2 Input Phase B</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">13</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">IO6</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or Encoder 3 Input Phase A</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">14</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">IO7</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or Encoder 3 Input Phase B</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">15</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">IO8</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or Axis 0 Home&nbsp;&nbsp;&nbsp;&nbsp; (or Step 0 
+	output)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">16</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">IO9</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or Axis 1 Home&nbsp;&nbsp;&nbsp;&nbsp; (or Dir&nbsp; 
+	0 output)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">17</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">IO10</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or Axis 2 Home&nbsp;&nbsp;&nbsp;&nbsp; (or Step 1 
+	output)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">18</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">IO11</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or Axis 3 Home&nbsp;&nbsp;&nbsp;&nbsp; (or Dir&nbsp; 
+	1 output)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">19</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">IO12</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or Axis 0 + Limit&nbsp;&nbsp; (or Step 2 output)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">20</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">IO13</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or Axis 0 - Limit&nbsp;&nbsp;&nbsp; (or Dir&nbsp; 2 output)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">21</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">IO14</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or Axis 1 + Limit&nbsp;&nbsp; (or Step 3 output)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">22</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">IO15</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or Axis 1 - Limit&nbsp;&nbsp;&nbsp; (or Dir&nbsp; 3 output)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">23</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">VDD5</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">+5 Volts 
+    Output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">24</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">VDD5</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">+5 Volts 
+    Output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">25</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">GND</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">Digital Ground</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">26</font></td>
+    <td width="12%" height="19" align="center">
+    <font face="Arial" size="2">GND</font></td>
+    <td width="77%" height="19"><font face="Arial" size="2">Digital Ground</font></td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p><font face="Arial">Note: Homes and Limits are recommendations only.&nbsp; Any 
+input may be used.</font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><i><font size="4" face="Arial"><b><a name="JP4">JP4</a> - Aux Connector #0</b></font></i></p>
+<p><font face="Arial">Auxiliary connector which supplies power, reset, and 10 digital I/O (LVTTL 
+3.3V only) which is normally connected to optional expansion daughter boards (ie. 
+SnapAmp 1000).&nbsp; If no 
+expansion module is required, these digital I/O may be used for general purpose 
+use.&nbsp; The first 8 IO (IO16-IO23) contain 150ohm termination resistors (pull 
+downs).</font></p>
+<p><font face="Arial"><img border="0" src="JP4.PNG" width="435" height="612"></font></p>
+<p><font face="Arial"><img border="0" src="JP4Photo.JPG" width="400" height="136"></font></p>
+<table border="2" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="33%" id="AutoNumber4" height="389">
+  <tr>
+    <td width="10%" height="9" align="center"><font face="Arial" size="2">
+    Pin</font></td>
+    <td width="22%" height="9" align="center"><font face="Arial" size="2">
+    Name</font></td>
+    <td width="48%" height="9">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Description</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="20" align="center">
+    <font face="Arial" size="2">1</font></td>
+    <td width="22%" height="19" align="center">
+    <font face="Arial" size="2">VDD5</font></td>
+    <td width="48%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">+5 Volts 
+    Output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">2</font></td>
+    <td width="22%" height="19" align="center">
+    <font face="Arial" size="2">VDD12</font></td>
+    <td width="48%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">+12 Volts 
+    Output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">3</font></td>
+    <td width="22%" height="19" align="center">
+    <font face="Arial" size="2">VDD33</font></td>
+    <td width="48%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">+3.3 Volts 
+	Output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">4</font></td>
+    <td width="22%" height="10" align="center">
+    <font face="Arial" size="2">RESET#</font></td>
+    <td width="48%" height="10">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Power up Reset 
+    (low true) output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">5</font></td>
+    <td width="22%" height="19" align="center">
+    <font face="Arial" size="2">IO16</font></td>
+    <td width="48%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (3.3V Only)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">6</font></td>
+    <td width="22%" height="19" align="center">
+    <font face="Arial" size="2">IO17</font></td>
+    <td width="48%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (3.3V Only)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="8" align="center"><font face="Arial" size="2">
+    7</font></td>
+    <td width="22%" height="19" align="center">
+    <font face="Arial" size="2">IO18</font></td>
+    <td width="48%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (3.3V Only)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">8</font></td>
+    <td width="22%" height="19" align="center">
+    <font face="Arial" size="2">GND</font></td>
+    <td width="48%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Digital Ground</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">9</font></td>
+    <td width="22%" height="19" align="center">
+    <font face="Arial" size="2">GND</font></td>
+    <td width="48%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Digital Ground</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">10</font></td>
+    <td width="22%" height="19" align="center">
+    <font face="Arial" size="2">IO19</font></td>
+    <td width="48%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (3.3V Only)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">11</font></td>
+    <td width="22%" height="19" align="center">
+    <font face="Arial" size="2">IO20</font></td>
+    <td width="48%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (3.3V Only)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">12</font></td>
+    <td width="22%" height="19" align="center">
+    <font face="Arial" size="2">IO21</font></td>
+    <td width="48%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (3.3V Only)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">13</font></td>
+    <td width="22%" height="19" align="center">
+    <font face="Arial" size="2">IO22</font></td>
+    <td width="48%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (3.3V Only)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">14</font></td>
+    <td width="22%" height="19" align="center">
+    <font face="Arial" size="2">IO23</font></td>
+    <td width="48%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (3.3V Only)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">15</font></td>
+    <td width="22%" height="19" align="center">
+    <font face="Arial" size="2">IO24</font></td>
+    <td width="48%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (3.3V Only)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">16</font></td>
+    <td width="22%" height="19" align="center">
+    <font face="Arial" size="2">IO25</font></td>
+    <td width="48%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (3.3V Only)</font></td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><font face="Arial"><i><font size="4"><b>JP6 - Aux Connector #</b></font></i><font size="4"><b><i>1</i></b></font></font></p>
+<p><font face="Arial">Auxiliary connector which supplies power, reset, and 10 digital I/O (LVTTL 
+3.3V only) which is normally connected to optional expansion daughter boards (ie. 
+SnapAmp 1000).&nbsp; If no 
+expansion module is required, these digital I/O may be used for general purpose 
+use.&nbsp; The first 8 IO (IO26-IO33) contain 150ohm termination resistors (pull 
+downs).</font></p>
+<p><font face="Arial"><img border="0" src="JP6.PNG" width="415" height="637"></font></p>
+<p><font face="Arial"><img border="0" src="JP6Photo.JPG" width="450" height="119"></font></p>
+<table border="2" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="40%" id="table1" height="389">
+  <tr>
+    <td width="10%" height="9" align="center"><font face="Arial" size="2">
+    Pin</font></td>
+    <td width="16%" height="9" align="center"><font face="Arial" size="2">
+    Name</font></td>
+    <td width="66%" height="9">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Description</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="20" align="center">
+    <font face="Arial" size="2">1</font></td>
+    <td width="15%" height="19" align="center">
+    <font face="Arial" size="2">VDD5</font></td>
+    <td width="66%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">+5 Volts 
+    Output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">2</font></td>
+    <td width="15%" height="19" align="center">
+    <font face="Arial" size="2">VDD12</font></td>
+    <td width="66%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">+12 Volts 
+    Output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">3</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Arial" size="2">VDD33</font></td>
+    <td width="66%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">+3.3 Volts 
+	Output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">4</font></td>
+    <td width="16%" height="10" align="center">
+    <font face="Arial" size="2">RESET#</font></td>
+    <td width="66%" height="10">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Power up Reset 
+    (low true) output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">5</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Arial" size="2">IO26</font></td>
+    <td width="66%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (3.3V Only) or PWM0 out</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">6</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Arial" size="2">IO27</font></td>
+    <td width="66%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (3.3V Only) or PWM1 out</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="8" align="center"><font face="Arial" size="2">
+    7</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Arial" size="2">IO28</font></td>
+    <td width="66%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (3.3V Only) or PWM2 out</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">8</font></td>
+    <td width="15%" height="19" align="center">
+    <font face="Arial" size="2">GND</font></td>
+    <td width="66%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Digital Ground</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">9</font></td>
+    <td width="15%" height="19" align="center">
+    <font face="Arial" size="2">GND</font></td>
+    <td width="66%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Digital Ground</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">10</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Arial" size="2">IO29</font></td>
+    <td width="66%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (3.3V Only) or PWM3 out</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">11</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Arial" size="2">IO30</font></td>
+    <td width="66%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (3.3V Only) or PWM4 out</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">12</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Arial" size="2">IO31</font></td>
+    <td width="66%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (3.3V Only) or PWM5 out</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">13</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Arial" size="2">IO32</font></td>
+    <td width="66%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (3.3V Only) or PWM6 out</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">14</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Arial" size="2">IO33</font></td>
+    <td width="66%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (3.3V Only) or PWM7 out</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">15</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Arial" size="2">IO34</font></td>
+    <td width="66%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (3.3V Only)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">16</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Arial" size="2">IO35</font></td>
+    <td width="66%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (3.3V Only)</font></td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p><i><font size="4" face="Arial"><b>JP5 - GPIO #1 / LV Differential Connector</b></font></i></p>
+<p><font face="Arial">Low Voltage Differential RJ45 Connector.&nbsp; This connector is intended for 
+high-speed low-voltage&nbsp; differential communication over a twisted pair 
+cable use.&nbsp; However it may also be used as 8 General Purpose digital I/O (LVTTL 
+5V Tolerant)&nbsp; </font> </p>
+<p><font face="Arial"><img border="0" src="JP5.PNG" width="281" height="401"></font></p>
+<p><font face="Arial"><img border="0" src="JP5Photo.JPG" width="400" height="276"></font></p>
+<table border="2" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="60%" id="table2" height="200">
+  <tr>
+    <td width="10%" height="9" align="center"><font face="Arial" size="2">
+    Pin</font></td>
+    <td width="11%" height="9" align="center"><font face="Arial" size="2">
+    Name</font></td>
+    <td width="78%" height="9">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Description</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="20" align="center">
+    <font face="Arial" size="2">1</font></td>
+    <td width="11%" height="19" align="center">
+    <font face="Arial" size="2">IO36</font></td>
+    <td width="78%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or&nbsp; (or Step 4 output) or (Encoder 4 Input 
+	Phase A)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">2</font></td>
+    <td width="11%" height="19" align="center">
+    <font face="Arial" size="2">IO37</font></td>
+    <td width="78%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or&nbsp; (or Dir 4 output)&nbsp;&nbsp;&nbsp; or 
+	(Encoder 4 Input Phase B)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">3</font></td>
+    <td width="11%" height="19" align="center">
+    <font face="Arial" size="2">IO38</font></td>
+    <td width="78%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or&nbsp; (or Step 5 output) or (Encoder 5 Input 
+	Phase A)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">4</font></td>
+    <td width="11%" height="19" align="center">
+    <font face="Arial" size="2">IO39</font></td>
+    <td width="78%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or&nbsp; (or Dir 5 output)&nbsp;&nbsp;&nbsp; or 
+	(Encoder 5 Input Phase B)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">5</font></td>
+    <td width="11%" height="19" align="center">
+    <font face="Arial" size="2">IO40</font></td>
+    <td width="78%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or&nbsp; (or Step 6 output) or (Encoder 6 Input 
+	Phase A)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Arial" size="2">6</font></td>
+    <td width="11%" height="19" align="center">
+    <font face="Arial" size="2">IO41</font></td>
+    <td width="78%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or&nbsp; (or Dir 6 output)&nbsp;&nbsp;&nbsp; or 
+	(Encoder 6 Input Phase B)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="8" align="center"><font face="Arial" size="2">
+    7</font></td>
+    <td width="11%" height="19" align="center">
+    <font face="Arial" size="2">IO42</font></td>
+    <td width="78%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or&nbsp; (or Step 7 output) or (Encoder 7 Input 
+	Phase A)</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="20" align="center">
+    <font face="Arial" size="2">8</font></td>
+    <td width="11%" height="19" align="center">
+    <font face="Arial" size="2">IO43</font></td>
+    <td width="78%" height="19">
+	<p style="margin-left: 5px"><font face="Arial" size="2">Gen Purpose 
+    LVTTL I/O (5V Tolerant) or&nbsp; (or Dir 7 output)&nbsp;&nbsp;&nbsp; or 
+	(Encoder 7 Input Phase B)</font></td>
+  </tr>
+  </table>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

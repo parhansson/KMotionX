@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<InterpreterData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <BreakAngle>10</BreakAngle>
+  <LookAhead>3</LookAhead>
+  <CollinearTolerance>0.0005</CollinearTolerance>
+  <CornerTolerance>0.0005</CornerTolerance>
+  <FacetAngle>1</FacetAngle>
+  <XaxisIndex>0</XaxisIndex>
+  <XaxisCPI>10000</XaxisCPI>
+  <XaxisAccel>16</XaxisAccel>
+  <XaxisVel>30</XaxisVel>
+  <XaxisJogVel>30</XaxisJogVel>
+  <YaxisIndex>1</YaxisIndex>
+  <YaxisCPI>10000</YaxisCPI>
+  <YaxisAccel>16</YaxisAccel>
+  <YaxisVel>30</YaxisVel>
+  <YaxisJogVel>30</YaxisJogVel>
+  <ZaxisIndex>2</ZaxisIndex>
+  <ZaxisCPI>10000</ZaxisCPI>
+  <ZaxisAccel>16</ZaxisAccel>
+  <ZaxisVel>30</ZaxisVel>
+  <ZaxisJogVel>30</ZaxisJogVel>
+  <AaxisIndex>3</AaxisIndex>
+  <AaxisCPI>10000</AaxisCPI>
+  <AaxisAccel>16</AaxisAccel>
+  <AaxisVel>30</AaxisVel>
+  <AaxisJogVel>30</AaxisJogVel>
+  <BaxisIndex>4</BaxisIndex>
+  <BaxisCPI>10000</BaxisCPI>
+  <BaxisAccel>16</BaxisAccel>
+  <BaxisVel>30</BaxisVel>
+  <BaxisJogVel>30</BaxisJogVel>
+  <CaxisIndex>5</CaxisIndex>
+  <CaxisCPI>10000</CaxisCPI>
+  <CaxisAccel>16</CaxisAccel>
+  <CaxisVel>30</CaxisVel>
+  <CaxisJogVel>30</CaxisJogVel>
+  <Tools />
+  <Offsets />
+  <Commands />
+</InterpreterData>

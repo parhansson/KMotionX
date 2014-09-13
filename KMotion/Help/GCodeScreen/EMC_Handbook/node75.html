@@ -1,0 +1,308 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>11.8 G87 Cycle</TITLE>
+<META NAME="description" CONTENT="11.8 G87 Cycle">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node76.html">
+<LINK REL="previous" HREF="node74.html">
+<LINK REL="up" HREF="node66.html">
+<LINK REL="next" HREF="node76.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1452"
+  HREF="node76.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1446"
+  HREF="node66.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1440"
+  HREF="node74.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1448"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1450"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1453"
+  HREF="node76.html">11.9 G88 Cycle</A>
+<B> Up:</B> <A NAME="tex2html1447"
+  HREF="node66.html">11. Canned Cycles</A>
+<B> Previous:</B> <A NAME="tex2html1441"
+  HREF="node74.html">11.7 G86 Cycle</A>
+ &nbsp; <B>  <A NAME="tex2html1449"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1451"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION04280000000000000000">
+11.8 G87 Cycle</A>
+</H1>
+
+<P>
+The G87<A NAME="2312"></A> cycle is intended for back boring. 
+
+<P>
+The situation is that you have a through hole and you want to counter
+bore the bottom of hole. To do this you put an L-shaped tool in the
+spindle with a cutting surface on the UPPER side of its base. You
+stick it carefully through the hole when it is not spinning and is
+oriented so it fits through the hole, then you move it so the stem
+of the L is on the axis of the hole, start the spindle, and feed the
+tool upward to make the counter bore. Then you stop the tool, get
+it out of the hole, and restart it. 
+
+<P>
+This cycle uses I and J values to indicate the position for inserting
+and removing the tool. I and J will always be increments from the
+X position and the Y position, regardless of the distance mode setting.
+This cycle also uses a K value to specify the position along the Z-axis
+of the top of counterbore. The K value is an absolute Z-value in absolute
+distance mode, and an increment (from the Z position) in incremental
+distance mode. 
+
+<P>
+0. Preliminary motion, as described above. 
+
+<P>
+1. Move at traverse rate parallel to the XY-plane to the point indicated
+by I and J. 
+
+<P>
+2. Stop the spindle in a specific orientation. 
+
+<P>
+3. Move the Z-axis only at traverse rate downward to the Z position. 
+
+<P>
+4. Move at traverse rate parallel to the XY-plane to the X,Y location. 
+
+<P>
+5. Start the spindle in the direction it was going before. 
+
+<P>
+6. Move the Z-axis only at the given feed rate upward to the position
+indicated by K. 
+
+<P>
+7. Move the Z-axis only at the given feed rate back down to the Z
+position. 
+
+<P>
+8. Stop the spindle in the same orientation as before. 
+
+<P>
+9. Move at traverse rate parallel to the XY-plane to the point indicated
+by I and J. 
+
+<P>
+10. Move the Z-axis only at traverse rate to the clear Z. 
+
+<P>
+11. Move at traverse rate parallel to the XY-plane to the specified
+X,Y location. 
+
+<P>
+12. Restart the spindle in the direction it was going before.
+
+<P>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><IMG
+ WIDTH="394" HEIGHT="335" ALIGN="BOTTOM" BORDER="0"
+ SRC="img20.gif"
+ ALT="\includegraphics{/usr/share/lyx/EMC_images/G87pre.eps}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+Example 6 - Backbore
+
+<P>
+Example six uses a incremental distances from (0, 0, 0) so the preliminary
+moves look much like those in example five but they are done using
+the G87 backbore canned cycle.
+
+<P>
+G91 G87 M3 S1000 X1 Y1 Z-0.4 R1.4 I-0.1 J-0.1 K-0.1
+
+<P>
+<TABLE  WIDTH="0%">
+<TR><TD>
+You will notice that the preliminary moves shift the tool to directly
+above the center axis of the existing bore.
+
+<P>
+Next it increments that location by the I and J values. I offsets
+X with a plus value being added to the current X. J does the same
+for the Y axis. 
+
+<P>
+For our example block both I and J are negative so they move back
+from the hole axis along the path just made by the tool. The amount
+of offset required should be just enough that the tool tip will slide
+down through the bore.
+
+<P>
+</TD></TR>
+</TABLE>
+
+<TABLE  WIDTH="0%">
+<TR><TD>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><!-- MATH
+ $\resizebox*{2in}{!}{\includegraphics{/usr/share/lyx/EMC_images/G87s1.eps}}$
+ -->
+<IMG
+ WIDTH="230" HEIGHT="226" ALIGN="BOTTOM" BORDER="0"
+ SRC="img21.gif"
+ ALT="\resizebox*{2in}{!}{\includegraphics{/usr/share/lyx/EMC_images/G87s1.eps}}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+</TD></TR>
+</TABLE>
+<TABLE  WIDTH="0%">
+<TR><TD>
+Next the canned cycle moves the tool down in z and at the bottom location
+represented in the block by the Z 0.4 value it moves the tool back
+to the center of the bore.
+
+<P>
+</TD></TR>
+</TABLE>
+<TABLE  WIDTH="0%">
+<TR><TD>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><!-- MATH
+ $\resizebox*{2in}{!}{\includegraphics{/usr/share/lyx/EMC_images/G87s5.eps}}$
+ -->
+<IMG
+ WIDTH="230" HEIGHT="173" ALIGN="BOTTOM" BORDER="0"
+ SRC="img22.gif"
+ ALT="\resizebox*{2in}{!}{\includegraphics{/usr/share/lyx/EMC_images/G87s5.eps}}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+</TD></TR>
+</TABLE>
+
+<P>
+<BR>
+
+<P>
+Now the g87 canned cycle turns the spindle on and moves back up into
+the bore at the programmed feedrate. This is the real cutting action
+of this canned cycle. With the proper tool in a boring bar this cycle
+will produce a chamfer on the bottom side of the bore. G87 can also
+be used to produce a larger diameter bore on the bottom side of the
+bore. 
+
+<P>
+<TABLE  WIDTH="0%">
+<TR><TD>
+When the tool has reached the K position it is returned to the bottom
+location, the spindle is stopped and oriented and follows the earlier
+path back out of the bore to the initial position above. 
+
+<P>
+</TD></TR>
+</TABLE>
+
+<TABLE  WIDTH="0%">
+<TR><TD>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><!-- MATH
+ $\resizebox*{2in}{!}{\includegraphics{/usr/share/lyx/EMC_images/G87s12.eps}}$
+ -->
+<IMG
+ WIDTH="230" HEIGHT="161" ALIGN="BOTTOM" BORDER="0"
+ SRC="img23.gif"
+ ALT="\resizebox*{2in}{!}{\includegraphics{/usr/share/lyx/EMC_images/G87s12.eps}}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+</TD></TR>
+</TABLE>
+
+<P>
+<BR>
+
+<P>
+This canned cycle assumes spindle orientation which has not been implemented
+in the EMC to date. The proper alignment of the tool tip to the oriented
+spindle is critical to the successful insertion of the tool through
+the hole to be backbored.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1452"
+  HREF="node76.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1446"
+  HREF="node66.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1440"
+  HREF="node74.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1448"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1450"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1453"
+  HREF="node76.html">11.9 G88 Cycle</A>
+<B> Up:</B> <A NAME="tex2html1447"
+  HREF="node66.html">11. Canned Cycles</A>
+<B> Previous:</B> <A NAME="tex2html1441"
+  HREF="node74.html">11.7 G86 Cycle</A>
+ &nbsp; <B>  <A NAME="tex2html1449"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1451"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

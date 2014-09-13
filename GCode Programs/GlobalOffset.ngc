@@ -1,0 +1,14 @@
+G20 						(inches mode)
+
+G0 X-0.1 Y-0.2 Z-0.3  		(move somewhere)
+G92 X0 Y0 Z0  				(declare where we are to be zero)
+G0 X1 Y2 Z3
+
+G10 L2 P2 X0.5 Y0.7 Z0.9 	(Set G55 offset)
+G55 						(Set to coordinate system 1)
+G0 X1 Y1 Z1
+
+G92 X0 Y0 Z0  				(declare where we are to be zero)
+
+
+G53 X0 Y0 Z0

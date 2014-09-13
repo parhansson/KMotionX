@@ -1,0 +1,196 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>8.3 Jon's Experience </TITLE>
+<META NAME="description" CONTENT="8.3 Jon's Experience ">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node38.html">
+<LINK REL="previous" HREF="node36.html">
+<LINK REL="up" HREF="node34.html">
+<LINK REL="next" HREF="node38.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html811"
+  HREF="node38.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html805"
+  HREF="node34.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html799"
+  HREF="node36.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html807"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html809"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html812"
+  HREF="node38.html">8.4 Fred's PID Report</A>
+<B> Up:</B> <A NAME="tex2html806"
+  HREF="node34.html">8. PID Axis Tuning</A>
+<B> Previous:</B> <A NAME="tex2html800"
+  HREF="node36.html">8.2 Tim's Experience</A>
+ &nbsp; <B>  <A NAME="tex2html808"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html810"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION03330000000000000000">
+8.3 Jon's Experience </A>
+</H1>
+
+<P>
+I also found while working with the servo tuning (last summer)...
+FF1 (I think that is the non-zero FFn parameter in my .ini file) is
+VERY effective in improving following error, and is, in fact, BETTER
+than a PID could do, because, of course, it knows IN advance what
+is GOING to happen at a velocity change!&nbsp; I was able to get following
+error down to under .001&#34; under practically all circumstances
+by setting FF1 to a small value, somewhere between 4 and 7.5 or so.
+You can see my graph at http://www.artsci.wustl.edu/~jmelson/servo.html
+showing a jog move at 90 IPM. Oh, yes, one other thing, the acceleration
+parameters in the default EMC .ini file are ridiculous. I had been
+ignoring jerky motion when manually jogging when I started working
+with EMC, until I broke a brand new toothed belt on my Y axis. This
+led me to realize the system was demanding much too much acceleration,
+and I slowed it down quite a bit. No belts have broken since then. 
+
+<P>
+Jon 
+<BR>
+Date: Wed, 14 Jun 2000 17:38:00 -0500 
+<BR>
+From: Jon Elson &lt;jmelson@artsci.wustl.edu&gt; 
+
+<P>
+-2- 
+
+<P>
+JohnDRoc@aol.com wrote: 
+
+<P>
+&gt; Yes, it's fast, it's definitely an industrial-strength milling center.
+It's 
+<BR>&gt; not a humming sound it's more like a grinding or laboring sound.
+It runs in 
+<BR>&gt; my mind that it ran more &#34;freely&#34; before, but
+it might just be a result of 
+<BR>&gt; the compensation - maybe I didn't notice when it was slamming back
+and forth. 
+
+<P>
+Well, I still think it is what I saw, but maybe not. Does the sound
+change at different jog speeds? What is your P parameter in the axis
+setup, in fact what are all your parameters in there? If the P gain
+is set too high, it could cause rough operation. Yes, it could be
+tuning of the servo amp, too. I found it was best to run with a conservative
+P, I and D set to zero, and a small value on FF1, about 5.0 This gave
+me really minute following error and quite solid position holding,
+without any instability. 
+
+<P>
+&gt;&nbsp; I think the next step is going to be working with the logging program,
+to 
+<BR>&gt; determine the fine tuning of the amps.&nbsp; Then, I think I saw in a
+post from 
+<BR>&gt; Fred, that there is supposed to be a program that helps come up
+with the PID 
+<BR>&gt; values. 
+
+<P>
+Unless they've done some serious repair in the PID department, the
+I and D are programmed wrong, and do not do anything useful. Unfortunately,
+the controls theory used in EMC gave a steady-state, or at least one
+quadrant, definition of PID algorithms. The problem is this is a motion
+control problem in all FOUR quadrants. And, Integral history from
+when you were in a different quadrant is not only irrelevant, but
+makes your solution MORE inaccurate, instead of reducing error. But,
+pedantically, because you are SUPPOSED to use the entire history of
+the system, EMC holds that you MUST use the entire history, even if
+it fails to perform the necessary goal. 
+
+<P>
+The Derivative term probably works, in the general sense, but since
+this is a quantized system, and in slow motion there are so few encoder<A NAME="1827"></A>
+counts per servo cycle, the Derivative term from each encoder cycle
+has WAY too much quantization noise to perform well. It needs to be
+smoothed a bit. Fortunately, they put in the FF0, FF1 and FF2 terms,
+which are both mathematically pure, and of great use. FF1 is actually
+better than some combination of I and D, because it can respond BEFORE
+error develops, as in a rapid acceleration of the system from rest.
+The I term won't know what is going on for minutes, because it is
+taking the average of millions of tiny errors past, and due to the
+quantization, you can't set the D term very high, or the system gets
+unstable. As long as the servo amps are well behaved, just using P
+and FF1 has worked VERY well for me. 
+
+<P>
+So, I don't know what the auto-tune program will do with those parameters.
+If good, it will also find them to be unhelpful, and leave them close
+to zero. 
+
+<P>
+Jon 
+<BR>
+Date: Wed, 12 Jul 2000 02:23:39 -0400 (EDT) 
+<BR>
+From: Jon Elson &lt;jmelson@artsci.wustl.edu&gt; 
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html811"
+  HREF="node38.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html805"
+  HREF="node34.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html799"
+  HREF="node36.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html807"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html809"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html812"
+  HREF="node38.html">8.4 Fred's PID Report</A>
+<B> Up:</B> <A NAME="tex2html806"
+  HREF="node34.html">8. PID Axis Tuning</A>
+<B> Previous:</B> <A NAME="tex2html800"
+  HREF="node36.html">8.2 Tim's Experience</A>
+ &nbsp; <B>  <A NAME="tex2html808"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html810"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

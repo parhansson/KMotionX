@@ -1,0 +1,441 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Step and Direction Setup</title>
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+</head>
+
+<body>
+
+<p><i><b><font size="5">Configuring Step and Direction Outputs</font></b></i></p>
+<p>(for Legacy KMotion Board see <a href="StepAndDirKMotion.htm">here</a>)</p>
+<p>KFLOP supports connection to motor amplifiers that utilize step and 
+direction (or <span style="background-color: #FFFFFF"><a href="#Quadrature">
+quadrature</a></span>) inputs to control the motion.&nbsp; Step and direction motor 
+amplifiers are typically used with stepper motors with or without micro-stepping 
+capability.&nbsp; Each &quot;step&quot; causes the motor amplifier to advance the motor 
+position one step in the direction specified by the &quot;Direction&quot; signal.&nbsp; 
+Only two digital output signals are required for this interface.&nbsp;&nbsp; 
+Fine micro-stepping resolution combined with high motor RPM can result in step 
+rates in the megahertz.&nbsp; For example,&nbsp; a 200 step/rev stepping motor 
+with 128:1 micro-stepping running at 3000 RPM requires:</p>
+<p>&nbsp;&nbsp;&nbsp; <i>3000 RPM&nbsp; /&nbsp; 60 Sec/Min * 200 steps/rev * 128
+<font face="Times New Roman">µ</font>steps/full step =&nbsp; 1.28 MHz
+<font face="Times New Roman">µ</font>steps/sec</i></p>
+<p>KFLOP has 
+8 axes of Step and Direction.&nbsp;&nbsp; Output 
+pulses up to 2.5 MHz can be generated. </p>
+<p>The 8 Axes of Step/Dir outputs are normally hard wired to IO bits 8 through 
+15 on JP7 and IO bits 36 through 43 on JP5.&nbsp; However the first 4 Step/Dir 
+outputs can be multiplexed to connectors JP4 and JP6 if desired.&nbsp; This may 
+be required if JP7 is used for some other purpose such as interfacing to the 
+Kanalog I/O Expander.&nbsp; A global <span style="background-color: #FFFFFF">
+<a href="#Global_Register">multiplexing bit</a></span> is used to switch the 
+outputs to the alternate connectors.&nbsp; </p>
+<p>Note that the first 8 of 10 I/O pins of Aux #0 and Aux #1 have internal 150 
+Ohm pull down resistors.&nbsp; Therefore Pins JP4-13, JP4-14, JP6-13 and JP6-14 
+may not be used in Open Collector mode. </p>
+<p>If an axis channel is selected as a Step and Direction axis, the 
+corresponding 2 output pins will be automatically configured as outputs and they 
+may not be used as general purpose IO.</p>
+<p>For KFLOP see the Table below:</p>
+	<table border="1" width="456" id="table3">
+		<tr>
+			<td align="center" bgcolor="#C8C8C8">&nbsp;</td>
+			<td align="center" width="168" bgcolor="#C8C8C8" colspan="2">Mux = 0</td>
+			<td align="center" width="174" bgcolor="#C8C8C8" colspan="2">Mux = 1</td>
+		</tr>
+		<tr>
+			<td align="center" bgcolor="#C8C8C8"><font face="Arial">Signal</font></td>
+			<td align="center" width="75" bgcolor="#C8C8C8"><font face="Arial">
+			IO Bit</font></td>
+			<td align="center" width="87" bgcolor="#C8C8C8">Pin</td>
+			<td align="center" width="80" bgcolor="#C8C8C8">IO Bit</td>
+			<td align="center" width="88" bgcolor="#C8C8C8">Pin</td>
+		</tr>
+		<tr>
+			<td align="left" bgcolor="#DEDEDE">Step 0</td>
+			<td align="center" width="75" bgcolor="#DEDEDE"><font face="Arial">8</font></td>
+			<td align="center" width="87" bgcolor="#DEDEDE">JP7 - 15</td>
+			<td align="center" width="80" bgcolor="#DEDEDE">22</td>
+			<td align="center" width="88" bgcolor="#DEDEDE">JP4 - 13</td>
+		</tr>
+		<tr>
+			<td align="left" bgcolor="#DEDEDE"><font face="Arial">Direction 0</font></td>
+			<td align="center" width="75" bgcolor="#DEDEDE"><font face="Arial">9</font></td>
+			<td align="center" width="87" bgcolor="#DEDEDE">JP7 - 16</td>
+			<td align="center" width="80" bgcolor="#DEDEDE">23</td>
+			<td align="center" width="88" bgcolor="#DEDEDE">JP4 - 14</td>
+		</tr>
+		<tr>
+			<td align="left" bgcolor="#DEDEDE">Step 1</td>
+			<td align="center" width="75" bgcolor="#DEDEDE"><font face="Arial">10</font></td>
+			<td align="center" width="87" bgcolor="#DEDEDE">JP7 - 17</td>
+			<td align="center" width="80" bgcolor="#DEDEDE">24</td>
+			<td align="center" width="88" bgcolor="#DEDEDE">JP4 - 15</td>
+		</tr>
+		<tr>
+			<td align="left" bgcolor="#DEDEDE"><font face="Arial">Direction 1</font></td>
+			<td align="center" width="75" bgcolor="#DEDEDE"><font face="Arial">11</font></td>
+			<td align="center" width="87" bgcolor="#DEDEDE">JP7 - 18</td>
+			<td align="center" width="80" bgcolor="#DEDEDE">25</td>
+			<td align="center" width="88" bgcolor="#DEDEDE">JP4 - 16</td>
+		</tr>
+		<tr>
+			<td align="left" bgcolor="#C8C8C8">Step 2</td>
+			<td align="center" width="75" bgcolor="#C8C8C8"><font face="Arial">12</font></td>
+			<td align="center" width="87" bgcolor="#C8C8C8">JP7 - 19</td>
+			<td align="center" width="80" bgcolor="#C8C8C8">32</td>
+			<td align="center" width="88" bgcolor="#C8C8C8">JP6 - 13</td>
+		</tr>
+		<tr>
+			<td align="left" bgcolor="#C8C8C8"><font face="Arial">Direction 2</font></td>
+			<td align="center" width="75" bgcolor="#C8C8C8"><font face="Arial">13</font></td>
+			<td align="center" width="87" bgcolor="#C8C8C8">JP7 - 20</td>
+			<td align="center" width="80" bgcolor="#C8C8C8">33</td>
+			<td align="center" width="88" bgcolor="#C8C8C8">JP6 - 14</td>
+		</tr>
+		<tr>
+			<td align="left" bgcolor="#C8C8C8">Step 3</td>
+			<td align="center" width="75" bgcolor="#C8C8C8"><font face="Arial">14</font></td>
+			<td align="center" width="87" bgcolor="#C8C8C8">JP7 - 21</td>
+			<td align="center" width="80" bgcolor="#C8C8C8">34</td>
+			<td align="center" width="88" bgcolor="#C8C8C8">JP6 - 15</td>
+		</tr>
+		<tr>
+			<td align="left" bgcolor="#C8C8C8"><font face="Arial">Direction 3</font></td>
+			<td align="center" width="75" bgcolor="#C8C8C8">15</td>
+			<td align="center" width="87" bgcolor="#C8C8C8">JP7 - 22</td>
+			<td align="center" width="80" bgcolor="#C8C8C8">35</td>
+			<td align="center" width="88" bgcolor="#C8C8C8">JP6 - 16</td>
+		</tr>
+		</table>
+	<p>&nbsp;</p>
+	<table border="1" width="276" id="table6">
+		<tr>
+			<td align="center" bgcolor="#C0C0C0"><font face="Arial">Signal</font></td>
+			<td align="center" width="76" bgcolor="#C0C0C0"><font face="Arial">
+			IO Bit</font></td>
+			<td align="center" width="87" bgcolor="#C0C0C0">JP5 Pin</td>
+		</tr>
+		<tr>
+			<td align="left" bgcolor="#DEDEDE">Step 4</td>
+			<td align="center" width="76" bgcolor="#DEDEDE"><font face="Arial">36</font></td>
+			<td align="center" width="87" bgcolor="#DEDEDE">JP5 - 1</td>
+		</tr>
+		<tr>
+			<td align="left" bgcolor="#DEDEDE"><font face="Arial">Direction 4</font></td>
+			<td align="center" width="76" bgcolor="#DEDEDE"><font face="Arial">37</font></td>
+			<td align="center" width="87" bgcolor="#DEDEDE">JP5 - 2</td>
+		</tr>
+		<tr>
+			<td align="left" bgcolor="#DEDEDE">Step 5</td>
+			<td align="center" width="76" bgcolor="#DEDEDE"><font face="Arial">38</font></td>
+			<td align="center" width="87" bgcolor="#DEDEDE">JP5 - 3</td>
+		</tr>
+		<tr>
+			<td align="left" bgcolor="#DEDEDE"><font face="Arial">Direction 5</font></td>
+			<td align="center" width="76" bgcolor="#DEDEDE"><font face="Arial">39</font></td>
+			<td align="center" width="87" bgcolor="#DEDEDE">JP5 - 4</td>
+		</tr>
+		<tr>
+			<td align="left" bgcolor="#DEDEDE">Step 6</td>
+			<td align="center" width="76" bgcolor="#DEDEDE"><font face="Arial">40</font></td>
+			<td align="center" width="87" bgcolor="#DEDEDE">JP5 - 5</td>
+		</tr>
+		<tr>
+			<td align="left" bgcolor="#DEDEDE"><font face="Arial">Direction 6</font></td>
+			<td align="center" width="76" bgcolor="#DEDEDE"><font face="Arial">41</font></td>
+			<td align="center" width="87" bgcolor="#DEDEDE">JP5 - 6</td>
+		</tr>
+		<tr>
+			<td align="left" bgcolor="#DEDEDE">Step 7</td>
+			<td align="center" width="76" bgcolor="#DEDEDE"><font face="Arial">42</font></td>
+			<td align="center" width="87" bgcolor="#DEDEDE">JP5 - 7</td>
+		</tr>
+		<tr>
+			<td align="left" bgcolor="#DEDEDE"><font face="Arial">Direction 7</font></td>
+			<td align="center" width="76" bgcolor="#DEDEDE">43</td>
+			<td align="center" width="87" bgcolor="#DEDEDE">JP5 - 8</td>
+		</tr>
+	</table>
+	<p>&nbsp;</p>
+<p>To configure an axis as step and direction, on the Configuration Screen 
+select output mode as &quot;Step Dir&quot; and select which of the 4 available Step and 
+Direction generators should be used by setting the appropriate Output Channel 0 
+setting.&nbsp; See below.&nbsp;&nbsp;&nbsp; </p>
+<p><img border="0" src="ConfigStepDir.PNG" width="507" height="515"></p>
+<p>&nbsp;</p>
+<p>Valid output channel settings 0-31&nbsp; are 
+allowed for KFLOP.&nbsp; Although only 8 Step and 
+Direction generators are available for KFLOP by adding 8 and/or 16 to the 
+channel number the mode of the Step/Dir Generator can be changed.&nbsp; </p>
+<p>Adding 8 to the channel number uses the same 
+generator to be used except the output pins are actively driven (high and 
+low) as 3.3V LVTTL signals instead of only driven low as open collector outputs.&nbsp; </p>
+<p>Adding 16 to the channel number switches the generator from Step/Dir to 
+Quadrature output mode.&nbsp; </p>
+<p>If your amplifier has opto coupler inputs driven off +5V 
+then open-collector mode is likely to work better.&nbsp; The diagram below shows 
+how the open collector mode works driving the LED of an Opto Coupler with the 
+anode connected to +5V.</p>
+<p><img border="0" src="OpenCollector.PNG" width="450" height="280"></p>
+<p>&nbsp;However if the 
+amplifier has standard logic inputs then LVTTL outputs should work better.&nbsp;&nbsp; </p>
+<p>&nbsp;</p>
+<p><a name="Quadrature">Quadrature</a> outputs are required for some amplifiers.&nbsp; 
+Quadrature outputs output two A B phases instead of Step/Dir signals.&nbsp; An 
+advantage is that only one signal edge transition takes place for each &quot;step&quot; as 
+opposed to a complete pulse.</p>
+<p>&nbsp;</p>
+<p>The table below summarizes the modes:</p>
+	<table border="1" width="639" id="table5">
+		<tr>
+			<td bgcolor="#C0C0C0">
+			<p align="center"><font face="Arial">Output Chan 0 Setting</font></td>
+			<td align="center" width="218" bgcolor="#C0C0C0"><font face="Arial">
+			Step &amp; Dir Generator Selected</font></td>
+			<td align="center" width="242" bgcolor="#C0C0C0">Output Drive Type</td>
+		</tr>
+		<tr>
+			<td align="center">0</td>
+			<td align="center" width="218"><font face="Arial">0</font></td>
+			<td align="center" width="242">Open Collector - Step/Dir</td>
+		</tr>
+		<tr>
+			<td align="center"><font face="Arial">1</font></td>
+			<td align="center" width="218"><font face="Arial">1</font></td>
+			<td align="center" width="242">Open Collector - Step/Dir</td>
+		</tr>
+		<tr>
+			<td align="center">2</td>
+			<td align="center" width="218"><font face="Arial">2</font></td>
+			<td align="center" width="242">Open Collector - Step/Dir</td>
+		</tr>
+		<tr>
+			<td align="center"><font face="Arial">3</font></td>
+			<td align="center" width="218"><font face="Arial">3</font></td>
+			<td align="center" width="242">Open Collector - Step/Dir</td>
+		</tr>
+		<tr>
+			<td align="center">4</td>
+			<td align="center" width="218"><font face="Arial">4</font></td>
+			<td align="center" width="242">Open Collector - Step/Dir</td>
+		</tr>
+		<tr>
+			<td align="center"><font face="Arial">5</font></td>
+			<td align="center" width="218"><font face="Arial">5</font></td>
+			<td align="center" width="242">Open Collector - Step/Dir</td>
+		</tr>
+		<tr>
+			<td align="center">6</td>
+			<td align="center" width="218"><font face="Arial">6</font></td>
+			<td align="center" width="242">Open Collector - Step/Dir</td>
+		</tr>
+		<tr>
+			<td align="center"><font face="Arial">7</font></td>
+			<td align="center" width="218">7</td>
+			<td align="center" width="242">Open Collector - Step/Dir</td>
+		</tr>
+		<tr>
+			<td align="center">8</td>
+			<td align="center" width="218">0</td>
+			<td align="center" width="242">LVTTL - Step/Dir</td>
+		</tr>
+		<tr>
+			<td align="center">9</td>
+			<td align="center" width="218">1</td>
+			<td align="center" width="242">LVTTL - Step/Dir</td>
+		</tr>
+		<tr>
+			<td align="center">10</td>
+			<td align="center" width="218">2</td>
+			<td align="center" width="242">LVTTL - Step/Dir</td>
+		</tr>
+		<tr>
+			<td align="center">11</td>
+			<td align="center" width="218">3</td>
+			<td align="center" width="242">LVTTL - Step/Dir</td>
+		</tr>
+		<tr>
+			<td align="center">12</td>
+			<td align="center" width="218">4</td>
+			<td align="center" width="242">LVTTL - Step/Dir</td>
+		</tr>
+		<tr>
+			<td align="center">13</td>
+			<td align="center" width="218">5</td>
+			<td align="center" width="242">LVTTL - Step/Dir</td>
+		</tr>
+		<tr>
+			<td align="center">14</td>
+			<td align="center" width="218">6</td>
+			<td align="center" width="242">LVTTL - Step/Dir</td>
+		</tr>
+		<tr>
+			<td align="center">15</td>
+			<td align="center" width="218">7</td>
+			<td align="center" width="242">LVTTL - Step/Dir</td>
+		</tr>
+		<tr>
+			<td align="center">16</td>
+			<td align="center" width="218"><font face="Arial">0</font></td>
+			<td align="center" width="242">Open Collector - Quadrature</td>
+		</tr>
+		<tr>
+			<td align="center">17</td>
+			<td align="center" width="218"><font face="Arial">1</font></td>
+			<td align="center" width="242">Open Collector - Quadrature</td>
+		</tr>
+		<tr>
+			<td align="center">18</td>
+			<td align="center" width="218"><font face="Arial">2</font></td>
+			<td align="center" width="242">Open Collector - Quadrature</td>
+		</tr>
+		<tr>
+			<td align="center">19</td>
+			<td align="center" width="218"><font face="Arial">3</font></td>
+			<td align="center" width="242">Open Collector - Quadrature</td>
+		</tr>
+		<tr>
+			<td align="center">20</td>
+			<td align="center" width="218"><font face="Arial">4</font></td>
+			<td align="center" width="242">Open Collector - Quadrature</td>
+		</tr>
+		<tr>
+			<td align="center">21</td>
+			<td align="center" width="218"><font face="Arial">5</font></td>
+			<td align="center" width="242">Open Collector - Quadrature</td>
+		</tr>
+		<tr>
+			<td align="center">22</td>
+			<td align="center" width="218"><font face="Arial">6</font></td>
+			<td align="center" width="242">Open Collector - Quadrature</td>
+		</tr>
+		<tr>
+			<td align="center">23</td>
+			<td align="center" width="218">7</td>
+			<td align="center" width="242">Open Collector - Quadrature</td>
+		</tr>
+		<tr>
+			<td align="center">24</td>
+			<td align="center" width="218"><font face="Arial">0</font></td>
+			<td align="center" width="242">LVTTL - Quadrature</td>
+		</tr>
+		<tr>
+			<td align="center">25</td>
+			<td align="center" width="218"><font face="Arial">1</font></td>
+			<td align="center" width="242">LVTTL - Quadrature</td>
+		</tr>
+		<tr>
+			<td align="center">26</td>
+			<td align="center" width="218"><font face="Arial">2</font></td>
+			<td align="center" width="242">LVTTL - Quadrature</td>
+		</tr>
+		<tr>
+			<td align="center">27</td>
+			<td align="center" width="218"><font face="Arial">3</font></td>
+			<td align="center" width="242">LVTTL - Quadrature</td>
+		</tr>
+		<tr>
+			<td align="center">28</td>
+			<td align="center" width="218"><font face="Arial">4</font></td>
+			<td align="center" width="242">LVTTL - Quadrature</td>
+		</tr>
+		<tr>
+			<td align="center">29</td>
+			<td align="center" width="218"><font face="Arial">5</font></td>
+			<td align="center" width="242">LVTTL - Quadrature</td>
+		</tr>
+		<tr>
+			<td align="center">30</td>
+			<td align="center" width="218"><font face="Arial">6</font></td>
+			<td align="center" width="242">LVTTL - Quadrature</td>
+		</tr>
+		<tr>
+			<td align="center">31</td>
+			<td align="center" width="218">7</td>
+			<td align="center" width="242">LVTTL - Quadrature</td>
+		</tr>
+	</table>
+	<p>&nbsp;</p>
+<p>Note when configuring the motion profile for a Step and Direction Axis the appropriate maximum Velocity, Acceleration, and Jerk should be set in units 
+of micro-steps/sec, micro-steps/sec<sup>2</sup>, and micro-steps/sec<sup>3</sup> 
+respectively.</p>
+<p>&nbsp;</p>
+<p><font size="5"><b><i><a name="Global_Register">Global Register</a> sets Pulse 
+Width, Polarity, Multiplexor</i></b></font></p>
+<p>To change the Step/Dir Pulse width, Step Pulse Polarity, and connector 
+multiplexor for channels 0-4 a programmable register in KFLOP's FPGA may be 
+used.&nbsp; </p>
+<p>KFLOP has the capability to program the Step pulse width as a 6-bit value.&nbsp; The default 
+setting is 2us.&nbsp; The pulse length may be adjusted from 1 to 63 of 16.67 MHz 
+clocks.&nbsp; Which corresponds to 60ns to 3.78us.&nbsp; Using a long pulse 
+length limits the maximum frequency that can be generated.&nbsp; For example 
+with the default pulse length of 2us the frequency should not exceed 1/(2 x 2us) 
+= 250KHz.&nbsp; </p>
+<p>Setting Bit-6 high of the register can be set high to multiplex Step/Dir 
+generators 0-3 from JP7 to JP4 and JP6.</p>
+<p>Setting Bit-7 high will invert the Step Output pulse so that it pulses High 
+rather than Low.&nbsp; Some Amplifiers (Geckos) prefer this mode.&nbsp; 
+If the drive &quot;steps&quot; on the falling edge of the pulse, then this option will 
+provide more setup time for the Direction Signal. </p>
+<p>A User C Program must be used to change the FPGA register.&nbsp; The following statement should be used:</p>
+<p>	FPGA(STEP_PULSE_LENGTH_ADD)=32;&nbsp; // set the pulse time to ~ 2us</p>
+<p>	FPGA(STEP_PULSE_LENGTH_ADD)=32 + 0x40;&nbsp;&nbsp; // set the pulse time to 
+~ 2us and multiplex to JP4 and JP6 </p>
+<p>	FPGA(STEP_PULSE_LENGTH_ADD)=32 + 0x80;&nbsp;&nbsp; // set the pulse time to 
+~ 2us and pulse the Step High </p>
+<p>	FPGA(STEP_PULSE_LENGTH_ADD)=32 + 0x40 + 0x80&nbsp;&nbsp; // set the pulse 
+time to ~ 2us, mux to JP4 and JP6, and pulse the Step High</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><i><b><font size="5">Example Configuration for a IM804 Amplifier and Rapidsyn 
+Stepper</font></b></i></p>
+<p><img border="0" src="StepDirLayout.jpg" width="563" height="514"></p>
+<p><font size="4"><b><i>Layout - KMotion - Amplifier - Motor</i></b></font></p>
+<p>&nbsp;</p>
+<p><img border="0" src="IM804.jpg" width="522" height="347"></p>
+<p><font size="4">Amplifier Connections - resistors set coil currents (1500 ohms 
+= 3A) and idle standby current (270 ohms = 0.5A).&nbsp;&nbsp; DIP Switches set 
+to ON-OFF-OFF-ON for 128:1 micro-stepping.</font></p>
+<p>&nbsp;</p>
+<p><img border="0" src="RapidsynMotor.JPG" width="336" height="493"></p>
+<p><font size="4">Rapidsyn stepper motor.&nbsp; Note coil winding's centertaps 
+are not used.</font></p>
+<p>&nbsp;</p>
+<p><img border="0" src="ConfigStepDir.PNG" width="507" height="515"></p>
+<p>Axis channel 0 configures as &quot;Step Dir&quot; mode and using Step and Direction 
+generator 0.</p>
+<p>&nbsp;</p>
+<p><img border="0" src="MoveResponse.PNG" width="897" height="580"></p>
+<p>Max Velocity 1.6 x 10<sup>6</sup> steps/sec (1.6e6 / 128 = 12,500 sps =&nbsp; 
+3750 RPM).&nbsp; Note this (and most) steppers lose most all of their useful 
+torque above several thousand full steps per second.&nbsp; The high speed 
+demonstrated here is intended to demonstrate KMotion's ability to generate high 
+pulse rates.</p>
+<p>Max Acceleration 6 x 10<sup>6</sup> steps/sec<sup>2</sup></p>
+<p>Max Jerk 2 x 10<sup>8</sup> steps/sec<sup>3</sup></p>
+<p>1 x 10<sup>6</sup> count&nbsp; Move performed and data captured over 3 
+seconds.</p>
+<p>Pushing Move downloads all parameters, enables the axis, performs the 
+movement, and plots the result.</p>
+<p>&nbsp;</p>
+<p><img border="0" src="DiditalStepOutputs.PNG" width="284" height="358"></p>
+<p>Note after the axis has been enabled, digital IO bits 8 and 9 have 
+automatically been configured as outputs for use by Step and Direction Generator 
+#0.</p>
+<p>&nbsp;</p>
+<p><font size="4">See Video</font></p>
+<p>Click <a href="http://www.dynomotion.com/Videos/StepAndDir.wmv">here</a> for 
+a video showing slow and smooth acceleration of this configuration up to 12,500 
+full steps per second (1.6 MHz @ 128 microsteps/full step). </p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

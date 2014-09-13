@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Fixture Offsets (G54-G59.3)</TITLE>
+<META NAME="description" CONTENT="Fixture Offsets (G54-G59.3)">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node61.html">
+<LINK REL="previous" HREF="node59.html">
+<LINK REL="up" HREF="node52.html">
+<LINK REL="next" HREF="node61.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1233"
+  HREF="node61.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1227"
+  HREF="node52.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1221"
+  HREF="node59.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1229"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1231"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1234"
+  HREF="node61.html">Canned Cycles/Drill Subroutines (G80-G89)</A>
+<B> Up:</B> <A NAME="tex2html1228"
+  HREF="node52.html">10.7 Basic Motion and</A>
+<B> Previous:</B> <A NAME="tex2html1222"
+  HREF="node59.html">Short term change in</A>
+ &nbsp; <B>  <A NAME="tex2html1230"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1232"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION04178000000000000000">
+Fixture Offsets (G54-G59.3)</A>
+</H2>
+
+<P>
+Fixture offset are used to make a part home that is different from
+the absolute, machine coordinate system. This allows the part programmer
+to set up home positions for multiple parts. A typical operation that
+uses fixture offsets would be to mill multiple copies of parts on
+&#34;islands&#34; in a piece, similar to the figure below:
+[gcode/images/offset.jpg]
+
+<P>
+<!-- MATH
+ $\resizebox*{5in}{!}{\includegraphics{/usr/share/lyx/EMC_images/offsets.eps}}$
+ -->
+<IMG
+ WIDTH="575" HEIGHT="258" ALIGN="BOTTOM" BORDER="0"
+ SRC="img14.gif"
+ ALT="\resizebox*{5in}{!}{\includegraphics{/usr/share/lyx/EMC_images/offsets.eps}}"> 
+
+<P>
+To use fixture offsets, the values of the desired home positions must
+be stored in the control, prior to running a program that uses them.
+Once there are values assigned, a call to G54, for instance, would
+add 2 to all X values in a program. A call to G58 would add 2 to X
+values and -2 to Y values in this example.
+
+<P>
+<A NAME="2206"></A>G53 is used to cancel out fixture offsets. So, calling
+G53 and then G0 X0 Y0 would send the machine back to the actual coordinates
+of X=0, Y=0.
+
+<P>
+<TABLE  WIDTH="0%">
+<TR><TD>
+G53&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;motion in machine coordinate system
+
+<P>
+<A NAME="2209"></A>G54&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;use preset work coordinate system 1
+
+<P>
+<A NAME="2210"></A>G55&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;use preset work coordinate system 2
+
+<P>
+<A NAME="2211"></A>G56&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;use preset work coordinate system 3
+
+<P>
+<A NAME="2212"></A>G57&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;use preset work coordinate system 4
+
+<P>
+<A NAME="2213"></A>G58&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;use preset work coordinate system 5
+
+<P>
+<A NAME="2214"></A>G59&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;use preset work coordinate system 6
+
+<P>
+G59.1&nbsp;&nbsp;&nbsp;use preset work coordinate system 7
+
+<P>
+G59.2&nbsp;&nbsp;&nbsp;use preset work coordinate system 8
+
+<P>
+G59.3&nbsp;&nbsp;&nbsp;use preset work coordinate system 9
+
+<P>
+</TD></TR>
+</TABLE>
+
+<P>
+<BR>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1233"
+  HREF="node61.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1227"
+  HREF="node52.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1221"
+  HREF="node59.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1229"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1231"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1234"
+  HREF="node61.html">Canned Cycles/Drill Subroutines (G80-G89)</A>
+<B> Up:</B> <A NAME="tex2html1228"
+  HREF="node52.html">10.7 Basic Motion and</A>
+<B> Previous:</B> <A NAME="tex2html1222"
+  HREF="node59.html">Short term change in</A>
+ &nbsp; <B>  <A NAME="tex2html1230"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1232"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>2.1.2.2 Download and tar </TITLE>
+<META NAME="description" CONTENT="2.1.2.2 Download and tar ">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node11.html">
+<LINK REL="previous" HREF="node9.html">
+<LINK REL="up" HREF="node8.html">
+<LINK REL="next" HREF="node11.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html401"
+  HREF="node11.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html395"
+  HREF="node8.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html389"
+  HREF="node9.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html397"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html399"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html402"
+  HREF="node11.html">2.1.2.3 The linux link</A>
+<B> Up:</B> <A NAME="tex2html396"
+  HREF="node8.html">2.1.2 rtl2.0 and rtl2.2</A>
+<B> Previous:</B> <A NAME="tex2html390"
+  HREF="node9.html">2.1.2.1 Introduction</A>
+ &nbsp; <B>  <A NAME="tex2html398"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html400"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION02212200000000000000">
+2.1.2.2 Download and tar </A>
+</H3>
+
+<P>
+Download a clean prepatched kernel from rtlinux.org http://www.rtlinux.org
+rtlinux-2.0 is intended to be used with Linux 2.2.13 rtlinux-2.2 is
+intended to be used with Linux 2.2.14 rtlinux -2.2a is also intended
+to be used with Linux 2.2.14 Sometimes my browser wants to show a
+file rather than save it so I place the cursor over the file that
+I want to download and click the right mouse button rather than the
+left. This brings up a window that lets me name the file to download. 
+
+<P>
+I placed this file in the home directory of root.&nbsp;When the download
+was complete I looked at the directory.
+
+<P>
+<TT><I><FONT COLOR="#000000"><FONT SIZE="-2">ls -l /root/rt*</FONT></FONT></I></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">-rw-r-r- 1&nbsp;root&nbsp;&nbsp;root&nbsp;&nbsp;16617862&nbsp;May&nbsp;16&nbsp;14:59&nbsp;rtlinux-2.2a-prepatched.tgz</FONT></TT>
+<P>
+
+
+<P>
+That looks OK so I want to untar it into /usr/src
+
+<P>
+<TT><I><FONT COLOR="#000000"><FONT SIZE="-2">tar xzvf</FONT></FONT></I><B><I><FONT COLOR="#000000"><FONT SIZE="-2">&nbsp;</FONT></FONT></I></B><I><FONT COLOR="#000000"><FONT SIZE="-2">/root/rtlinux-2.2a-prepatched.tar.gz</FONT></FONT></I><B><I><FONT COLOR="#000000"><FONT SIZE="-2">&nbsp;</FONT></FONT></I></B><I><FONT COLOR="#000000"><FONT SIZE="-2">/usr/src</FONT></FONT></I></TT>
+<P>
+
+
+<P>
+Note 2.2/2.2a - Both use the same rtlinux-2.2 directory when taken
+out of the tar ball. 
+
+<P>
+A whole bunch of stuff goes across the screen indicating all of the
+files that tar is placing in /usr/src. This creates a new directory
+/usr/src/rtlinux-2.2 and sets up the new kernel structure below it.
+[install/images/expl01.gif]
+
+<P>
+<!-- MATH
+ $\resizebox*{5in}{!}{\includegraphics{/usr/share/lyx/EMC_images/expl01.eps}}$
+ -->
+<IMG
+ WIDTH="575" HEIGHT="216" ALIGN="BOTTOM" BORDER="0"
+ SRC="img5.gif"
+ ALT="\resizebox*{5in}{!}{\includegraphics{/usr/share/lyx/EMC_images/expl01.eps}}"> 
+
+<P>
+If you are uncomfortable with using command line stuff like tar, you
+can use the kde file system explorer and archiver. You will need to
+start x-windows and use the kde windows manager for your system to
+look anything like the pictures included above. <B>(Note shows
+2.0)</B> [install/images/archive.gif]
+
+<P>
+<!-- MATH
+ $\resizebox*{5in}{!}{\includegraphics{/usr/share/lyx/EMC_images/archiv01.eps}}$
+ -->
+<IMG
+ WIDTH="575" HEIGHT="405" ALIGN="BOTTOM" BORDER="0"
+ SRC="img6.gif"
+ ALT="\resizebox*{5in}{!}{\includegraphics{/usr/share/lyx/EMC_images/archiv01.eps}}"> 
+
+<P>
+Now if you double left click on the little file symbol to the left
+of the rtlinux...tgz file name, explorer will open that file with
+the kde archiver. This window allows you to see all of the files that
+are in the tgz file.
+
+<P>
+You can select the extract to item from the file menu or click on
+the little magnifying glass icon and archiver brings up the extract
+window. Enter the destination for the extraction /usr/src and click
+OK and in a minute or so the job will be done.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html401"
+  HREF="node11.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html395"
+  HREF="node8.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html389"
+  HREF="node9.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html397"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html399"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html402"
+  HREF="node11.html">2.1.2.3 The linux link</A>
+<B> Up:</B> <A NAME="tex2html396"
+  HREF="node8.html">2.1.2 rtl2.0 and rtl2.2</A>
+<B> Previous:</B> <A NAME="tex2html390"
+  HREF="node9.html">2.1.2.1 Introduction</A>
+ &nbsp; <B>  <A NAME="tex2html398"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html400"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

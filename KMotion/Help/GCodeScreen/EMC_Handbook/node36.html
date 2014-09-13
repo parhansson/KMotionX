@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>8.2 Tim's Experience</TITLE>
+<META NAME="description" CONTENT="8.2 Tim's Experience">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node37.html">
+<LINK REL="previous" HREF="node35.html">
+<LINK REL="up" HREF="node34.html">
+<LINK REL="next" HREF="node37.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html797"
+  HREF="node37.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html791"
+  HREF="node34.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html785"
+  HREF="node35.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html793"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html795"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html798"
+  HREF="node37.html">8.3 Jon's Experience</A>
+<B> Up:</B> <A NAME="tex2html792"
+  HREF="node34.html">8. PID Axis Tuning</A>
+<B> Previous:</B> <A NAME="tex2html786"
+  HREF="node35.html">8.1 Ray's Experience</A>
+ &nbsp; <B>  <A NAME="tex2html794"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html796"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION03320000000000000000">
+8.2 Tim's Experience</A>
+</H1>
+
+<P>
+EMC now is handling steppers as if they were servos from what I understand
+(this is with freqmot, with or without DRO feedback) and using freqmot
+I can confirm that P,I, and D definitely have an effect on steppers.
+If I set P too low I get constant follow errors at any speed, If I
+set D to anything but 0 I start having a problem with the motors stalling
+on acceleration (probably because this setting is trying to make the
+motor get up to speed faster than the stepper can accelerate). I have
+played with various I settings between 1 and 1000 and it does seem
+to help me get even higher feed rates, but I have not really figured
+a way to see what works best on this one. 
+
+<P>
+You can easily play with these settings by going to the settings menu
+and selecting calibration. The values will be for the axis that is
+currently selected and will take effect as soon as the calibration
+window is closed. Make sure you remember or write down the setting
+you settle on as the values you put in the calibration window are
+not saved back to your .ini file, you have to edit them in manually. 
+
+<P>
+Tim 
+<BR>
+Date: Sat, 4 Mar 2000 14:28:49 -0700 
+<BR>
+From: &#34;Tim Goldstein&#34; &lt;timg@ktmarketing.com&gt; 
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html797"
+  HREF="node37.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html791"
+  HREF="node34.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html785"
+  HREF="node35.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html793"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html795"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html798"
+  HREF="node37.html">8.3 Jon's Experience</A>
+<B> Up:</B> <A NAME="tex2html792"
+  HREF="node34.html">8. PID Axis Tuning</A>
+<B> Previous:</B> <A NAME="tex2html786"
+  HREF="node35.html">8.1 Ray's Experience</A>
+ &nbsp; <B>  <A NAME="tex2html794"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html796"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

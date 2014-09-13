@@ -1,0 +1,14 @@
+G0 X0 Y0 Z0  		(Rapid move to 0)
+G20          		(Engish mode, inches)
+F50         		(Feed Rate 100 in/min)
+G3 X0 Y0.5 I0 J0.25	(Small Half circles CCW)
+G3 X0 Y0 I0 J-0.25
+G3 X0 Y0.5 I0 J0.25
+G3 X0 Y0 I0 J-0.25
+
+G2 X0 Y2 I0 J1		(Large Half circles CW)
+G2 X0 Y0 I0 J-1
+G2 X0 Y2 I0 J1
+G2 X0 Y0 I0 J-1
+M2
+

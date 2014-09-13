@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>7. Servo To Go</TITLE>
+<META NAME="description" CONTENT="7. Servo To Go">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node34.html">
+<LINK REL="previous" HREF="node20.html">
+<LINK REL="up" HREF="node19.html">
+<LINK REL="next" HREF="node29.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html676"
+  HREF="node29.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html670"
+  HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html664"
+  HREF="node27.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html672"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html674"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html677"
+  HREF="node29.html">7.1 Connecting to the</A>
+<B> Up:</B> <A NAME="tex2html671"
+  HREF="node19.html">II. Part 2 -</A>
+<B> Previous:</B> <A NAME="tex2html665"
+  HREF="node27.html">6.4 Tuning freqmod</A>
+ &nbsp; <B>  <A NAME="tex2html673"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html675"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION03200000000000000000">
+7. Servo To Go</A>
+</H1>
+
+<P>
+For machines that use servo motors, one option is to use the servo
+motor interface card from Servo To Go Inc http://servotogo.com.
+It has been used in several installations, and the driver code is
+included with the EMC distribution. Here we attempt to document matters
+relating to this card. The organization is FAQ-like at this point,
+addressing specific questions or aspects of using the Servo To Go
+card.
+
+<P>
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT" VALIGN="MIDDLE" WIDTH=142>./src/emcmot/stg.c ./src/emcmot/stg.h</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=213>Model 1 produces stg.o (4 axes) with -DSTG_8_AXES produces stg8.o
+(8 axes)</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="MIDDLE" WIDTH=142>./src/emcmot/stg2.c ./src/emcmot/stg2.h</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=213>For Model 2 4 axis default (use -DSTG_8_AXES for 8 axes, 4 or 8
+are currently your only choices).</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="MIDDLE" WIDTH=142>./src/emcmot/stg_v2_axis8.c</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=213>same as above but does not have FIND_STG_BASE_ADDRESS variable
+and associated code. May be obsolete since there are some typos in
+comments that are corrected in stg2.c</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="MIDDLE" WIDTH=142>./src/emcmot/stgdiag.c</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=213>diagnostics program a stand-alone console (command line) program to
+test card functions note that a similar program is available on the
+Servo To Go web site.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="MIDDLE" WIDTH=142>./src/emcmot/extstgmot.c</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=213>dispatcher/wrapper implements functions described in extintf.h by
+calling functions in stg.c or stg2.c</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="MIDDLE" WIDTH=142>./plat/nonrealtime/bin/stg2diag</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=213>executable from stgdiag.c Model 2 Use from command line.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="MIDDLE" WIDTH=142>./plat/nonrealtime/bin/stg2mot</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=213>non-real-time from stg2.o Model 2 4 axes.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="MIDDLE" WIDTH=142>./plat/nonrealtime/bin/stgdiag</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=213>executable from stgdiag.c Model 1 Use from command line.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="MIDDLE" WIDTH=142>./plat/nonrealtime/bin/stgmot</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=213>non-realtime from stg.o Model 1 4 axes.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="MIDDLE" WIDTH=142>./plat/nonrealtime/lib/stg.o</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=213>from stg.c intermediate file</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="MIDDLE" WIDTH=142>./plat/nonrealtime/lib/stg2.o</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=213>from stg2.c intermediate file</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="MIDDLE" WIDTH=142>./plat/nonrealtime/lib/stg8.o</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=213>from stg.c with STG_8_AXES flag Model 1.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="MIDDLE" WIDTH=142>./plat/nonrealtime/lib/stgdiag.o</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=213>file used to make the executable in the bin directory.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="MIDDLE" WIDTH=142>./plat/realtime/lib/stg.o</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=213>from stg.c intermediate file</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="MIDDLE" WIDTH=142>./plat/realtime/lib/stg2.o</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=213>from stg2.c intermediate file</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="MIDDLE" WIDTH=142>./plat/realtime/lib/stg2mod.o</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=213>from stg2.o Model 2 4 axes</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="MIDDLE" WIDTH=142>./plat/realtime/lib/stg8.o</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=213>from stg.c with -DSTG_8_AXES Model 1 8 axes</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="MIDDLE" WIDTH=142>./plat/realtime/lib/stg8mod.o</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=213>installable kernel module from stg8.o Model 1 8 axis</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="MIDDLE" WIDTH=142>./plat/realtime/lib/
+
+<P>
+stg_v2_8axis_mod.o</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=213>from stg2.o (not stg_v2_8axis.o) same as stg2mod.o (no, I don't
+know why)</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="MIDDLE" WIDTH=142>./plat/realtime/lib/stgmod.o</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=213>from stg.o Model 1 4 axis</TD>
+</TR>
+</TABLE>
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html678"
+  HREF="node29.html">7.1 Connecting to the card</A>
+<LI><A NAME="tex2html679"
+  HREF="node30.html">7.2 Options in extstgmot.c</A>
+<LI><A NAME="tex2html680"
+  HREF="node31.html">7.3 Where's the driver?</A>
+<LI><A NAME="tex2html681"
+  HREF="node32.html">7.4 What is the difference between Model 1 and 2?</A>
+<LI><A NAME="tex2html682"
+  HREF="node33.html">7.5 stgdiag</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html676"
+  HREF="node29.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html670"
+  HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html664"
+  HREF="node27.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html672"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html674"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html677"
+  HREF="node29.html">7.1 Connecting to the</A>
+<B> Up:</B> <A NAME="tex2html671"
+  HREF="node19.html">II. Part 2 -</A>
+<B> Previous:</B> <A NAME="tex2html665"
+  HREF="node27.html">6.4 Tuning freqmod</A>
+ &nbsp; <B>  <A NAME="tex2html673"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html675"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

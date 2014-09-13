@@ -1,0 +1,276 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>14. Remote GUIs</TITLE>
+<META NAME="description" CONTENT="14. Remote GUIs">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="previous" HREF="node99.html">
+<LINK REL="up" HREF="node44.html">
+<LINK REL="next" HREF="node111.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1986"
+  HREF="node111.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1980"
+  HREF="node44.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1976"
+  HREF="node109.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1982"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1984"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1987"
+  HREF="node111.html">14.1 Remote EMC with</A>
+<B> Up:</B> <A NAME="tex2html1981"
+  HREF="node44.html">III. Part 3 -</A>
+<B> Previous:</B> <A NAME="tex2html1977"
+  HREF="node109.html">Example 5 - Iterated</A>
+ &nbsp; <B>  <A NAME="tex2html1983"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1985"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION04500000000000000000">
+14. Remote GUIs</A>
+</H1>
+
+<P>
+Running the GUI on a separate computer - From Will Shackleford
+
+<P>
+EMC usually consists programs from 4 categories: 
+
+<P>
+GUI - (Graphical User Interface) xemc, yemc, tkemc, emcJavaGui, fpanel,
+etc. TASK - mmtask, shvtask, bridgeportask etc. MOTION - emcmotsim,
+steppermod.o, shavermod.o, minimod.o, etc. IO - mmio, shvio, simio,
+bridgeportio, etc. 
+
+<P>
+You generally need to run at least one program from each category
+to get a working EMC, which to me would mean all 4. Most of the programs
+in the motion category are built as real-time kernel modules, and
+at the moment do not communicate using NML directly. 
+
+<P>
+The most common way to split EMC across a network would be to put
+the TASK,MOTION and IO on computer1 and the GUI on computer2. 
+
+<P>
+To do this I would find the .nml file used for my setup. It is usually
+the same as the .run file. The file needs to be changed with a text
+editor in two ways. 
+
+<P>
+1. The host is listed as &#34;localhost&#34; for almost
+every thing which is fine if everything runs on the same computer
+but to run across TCP we'll need the real host names. I usually use
+a global search and replace of &#34;localhost&#34; to &#34;myhost&#34;.
+You can also use IP address directly if you don't have host tables
+or a name server setup. 
+
+<P>
+2. You need to change the process type flag for the appropriate process
+from LOCAL to REMOTE. 
+
+<P>
+Then just copy over the .nml file, .ini file and the program you want
+to run on to computer2. 
+
+<P>
+You need to start emcsvr<A NAME="2971"></A> on the host computer, The
+computer listed in the buffer lines (which start with B) before starting
+any remote programs. Attached is the file with xemc on computer2 and
+everything else on computer1. 
+
+<P>
+When everything is finally run xemc will send messages via TCP to
+emcsvr which will then be placed in shared memory buffers to be read
+by IO and TASK. TASK will then forward messages as necessary to the
+MOTION kernel module. 
+
+<P>
+&nbsp;
+
+<P>
+Scott Stephens wants to run the TkEMC<A NAME="2972"></A> on a Windows
+PC. Here are the steps to do it, some of which may be confounding
+you all since the Windows zip/archive file may be out of date, unclickable,
+or whatever. 
+
+<P>
+1. Get the EMC up and running on your Linux/RT Linux computer, controlling
+your machine. 
+
+<P>
+2. In the .ini file for the EMC on the Linux/RT computer, make sure
+that the EMC server is uncommented, e.g., 
+
+<P>
+<TT><FONT SIZE="-2">; section for external NML server parameters</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">-----------------
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">[EMCSERVER] </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">; Platform for NML server, e.g., nonrealtime</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">PLAT =&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nonrealtime
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">; Name of NML server, e.g., emcsvr; if not found
+then none will run </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">EMCSERVER =&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;emcsvr </FONT></TT>
+<P>
+
+
+<P>
+The emcsvr<A NAME="3014"></A> runs on the Linux/RT Linux computer. It
+opens connections to the EMC command and status buffers on the Linux/RT
+Linux computer, listens for network connections from remote clients
+(like the TkEMC on a Windows PC), and acts as a go-between.
+
+<P>
+3. Get the Windows version of the TkEMC and the emcsh program. These
+should be precompiled and zipped up along with a .nml file.
+
+<P>
+4. Edit the .nml file, near the top, and put the name of the Linux/RT
+Linux computer in the buffers' host name field, e.g., 
+
+<P>
+<TT><FONT SIZE="-2"># Top-level buffers to EMC </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">B&nbsp;emcCommand&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SHMEM&nbsp;&nbsp;&nbsp;linuxpc.mydomain&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8192&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;
+0&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;12&nbsp;1001&nbsp;TCP=5005&nbsp;xdr&nbsp;diag</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">B&nbsp;emcStatus&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SHMEM&nbsp;&nbsp;&nbsp;linuxpc.mydomain&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8192&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;12&nbsp;1002&nbsp;TCP=5005&nbsp;xdr&nbsp;diag</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">B&nbsp;emcError&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SHMEM&nbsp;&nbsp;&nbsp;linuxpc.mydomain&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8192&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;3&nbsp;&nbsp;&nbsp;&nbsp;12&nbsp;1003&nbsp;TCP=5005&nbsp;xdr&nbsp;diag&nbsp;queue</FONT></TT>
+<P>
+
+
+<P>
+There are three entries, which I've put as &#34;linuxpc.mydomain&#34;
+in this 
+
+<P>
+example. This tells the TkEMC<A NAME="3022"></A>, which will be running
+on a Windows box, 
+
+<P>
+where to look for the EMC. 
+
+<P>
+5. Edit the .nml file again, near the bottom, and make sure that the 
+
+<P>
+&#34;xemc&#34; process is connecting remotely, using the
+REMOTE access keyword, 
+
+<P>
+e.g., 
+
+<P>
+<TT><FONT SIZE="-2">P&nbsp;xemc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;emcCommand&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;REMOTE&nbsp;&nbsp;localhost&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;W&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10.0&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">P&nbsp;xemc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;emcStatus&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;REMOTE&nbsp;&nbsp;localhost&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;R&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10.0&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">P&nbsp;xemc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;emcError&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;REMOTE&nbsp;&nbsp;localhost&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;R&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10.0&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">P&nbsp;xemc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;toolCmd&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;REMOTE&nbsp;&nbsp;localhost&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;W&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10.0&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">P&nbsp;xemc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;toolSts&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;REMOTE&nbsp;&nbsp;localhost&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;R&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10.0&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10</FONT></TT>
+<P>
+
+
+<P>
+You can leave &#34;localhost&#34; alone. This is the name
+of the Windows PC, but it's not used right now so it's mostly for
+documentation. 
+
+<P>
+6. Start the EMC on the Linux/RT Linux box. 
+
+<P>
+7. Run the TkEMC on the Windows box. It should connect across the
+network, and bring up a window showing the status of the EMC. You
+can use either the TkEMC on the Linux box, or the remote one, or both.
+Try one and watch the other update. 
+
+<P>
+-Fred
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1988"
+  HREF="node111.html">14.1 Remote EMC with BDI</A>
+<UL>
+<LI><A NAME="tex2html1989"
+  HREF="node112.html">14.1.1 Introduction</A>
+<LI><A NAME="tex2html1990"
+  HREF="node113.html">14.1.2 Initial Tests</A>
+<LI><A NAME="tex2html1991"
+  HREF="node114.html">14.1.3 Setting up the Server</A>
+<LI><A NAME="tex2html1992"
+  HREF="node115.html">14.1.4 Setting up the Client</A>
+<LI><A NAME="tex2html1993"
+  HREF="node116.html">14.1.5 Problems and Other Issues</A>
+<LI><A NAME="tex2html1994"
+  HREF="node117.html">14.1.6 EMC on a Microsoft Windows Computer</A>
+</UL></UL>
+<!--End of Table of Child-Links-->
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1986"
+  HREF="node111.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1980"
+  HREF="node44.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1976"
+  HREF="node109.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1982"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1984"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1987"
+  HREF="node111.html">14.1 Remote EMC with</A>
+<B> Up:</B> <A NAME="tex2html1981"
+  HREF="node44.html">III. Part 3 -</A>
+<B> Previous:</B> <A NAME="tex2html1977"
+  HREF="node109.html">Example 5 - Iterated</A>
+ &nbsp; <B>  <A NAME="tex2html1983"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1985"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

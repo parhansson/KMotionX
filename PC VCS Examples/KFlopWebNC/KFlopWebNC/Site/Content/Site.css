@@ -1,0 +1,829 @@
+﻿
+/* Main Components Style */
+
+#bg
+{ 
+	position:fixed;
+	width:100%;
+	height:100%;
+	left:0px;
+	top:0px;
+	z-index:-1;
+    background-image:url(./Images/background.jpg); 
+}
+ 
+.controllerbody
+{
+ 
+ 
+}
+.tabs
+{
+  width:100%; height:100%;
+  padding:10px 10px 10px 10px;
+}
+#statusbar
+{
+	position:absolute;
+	width:965px;
+	height:65px;
+	left:20px;
+	top:660px;
+    background-image:url(./Images/status panel.png); 
+    background-repeat:no-repeat;
+}
+#filecontainer
+{
+	position:absolute;
+	width:216px;
+	height:306px;
+	left:766px;
+	top:25px;
+    background-image:url(./Images/main panel.png); 
+}
+#maincommandscontainer
+{
+	position:absolute;
+	width:216px;
+	height:306px;
+	left:766px;
+	top:340px;
+    background-image:url(./Images/main panel.png); 
+}
+
+/* Axis DRO Style */
+.axisdrocontainer
+{ 	
+  position:absolute;
+  left:20px;
+  top:25px;
+  width: 390px;
+}
+ 
+.axisdrolist
+{
+	list-style-type:  none;
+	list-style-image: none;
+    margin-bottom:5px;
+    margin-top:5px;
+    margin-left:5px;
+    margin-right:5px;
+}
+ 
+.axisdroitem
+{ 
+    background-image:url(./Images/dro panel.png); 
+    background-repeat:no-repeat;
+	padding: 3px 3px 3px 3px;
+	margin: 5px 5px 5px 5px;
+}
+
+.axisvalue
+{ 
+ width: 100px;
+ font-size:x-large;
+ color:Lime;
+ background-color:Black;
+ margin: 2px 2px 2px 2px;
+ text-align:right;
+ font-family:Trebuchet MS;
+}
+.axislabel
+{
+ font-weight:bold;
+ font-size:x-large;
+ font-family:Trebuchet MS;
+ width:30;
+}
+#xmoveto
+{ 
+	right:15px;  
+}
+#ymoveto
+{ 
+	right:15px;  
+}
+#zmoveto
+{ 
+	right:15px;  
+}
+.enableLED
+{
+ width:22px;  
+ height:9px;  
+ position:absolute;
+ top:5px;
+ left:5px;
+}
+
+/* Jog Style */
+
+.jogpendantcontainer
+{
+  position:absolute;
+  left:20px;
+  top:285px;
+  width: 420px;
+}
+.jogpendantlist
+{
+	list-style-type:  none;
+	list-style-image: none;
+    margin-bottom:5px;
+    margin-top:5px;
+    margin-left:5px;
+    margin-right:5px;
+}
+ 
+.jogpendantitem
+{  
+	height:75px;
+    background-image:url(./Images/jog panel.png); 
+    background-repeat:no-repeat;
+	padding: 5px 5px 5px 5px;
+	margin: 1px 1px 1px 1px;
+}
+.jogslider
+{
+	position:absolute;
+	width:120px;
+    margin: 5px 10px 5px 10px;
+}
+.jogpercent
+{ 
+	left:150px;
+	top:10px; 
+	text-align:center;
+	font-family:Trebuchet MS;
+	font-weight:bold;
+	font-size:small;
+}
+.jogpositive
+{
+	width:76px;
+	height:56px;
+    background-image:url(./Images/jog right.png); 
+    background-repeat:no-repeat;
+    background-color:#B0B0B0;
+    font-weight:bold;
+    font-size:xx-large;
+    vertical-align:middle;
+}
+.jognegative
+{
+	width:76px;
+	height:56px;
+	background-image:url(./Images/jog left.png); 
+    background-repeat:no-repeat;
+    background-color:#B0B0B0;
+    font-weight:bold;
+    font-size:xx-large;
+    vertical-align:middle;
+}
+
+#gcodedisplay
+{
+    width:340px;
+	height:300px;
+	position:absolute;
+	left:400px;
+	top:25px;
+    background-color:#717D65;
+    border-color:Gray;
+    border-style:inset;
+    border-width:thick;
+}
+#gcodeprogramlabel
+{
+ width:100%;
+ font-size:large;
+ text-align:center;	
+ margin-top:20px;
+ font-weight:bold;
+ font-family:Trebuchet MS;
+}
+#gcodeprogramname
+{
+ width:200px;
+ margin: 5px auto 5px 5px;
+ font-size:large;
+ text-align:center;	
+ background-color:#717D65;
+ font-family:Trebuchet MS;
+}
+.currentgcodeline
+{ 
+ width:90%;
+ margin: 2px 2px 2px 5px;
+ font-size:medium; 
+ font-weight:bold;
+ background-color:#C9DEB4; 
+ font-family:Trebuchet MS;
+ white-space:nowrap;
+ word-spacing:5px;
+ overflow:hidden;
+}
+.gcodeline
+{
+ margin: 0px 0px 0px 5px;
+ width:90%;
+ font-size:medium;  
+ font-family:Trebuchet MS;
+ white-space:nowrap;
+ word-spacing:5px;
+ overflow:hidden;
+}
+
+#loadgcode
+{
+ width:200px;
+ font-size:large;
+ text-align:center;	
+ margin: 5px 5px 5px 5px;
+}
+#rewindgcode
+{
+ width:200px;
+ font-size:large;
+ text-align:center;	
+ margin: 5px auto 5px 5px;
+}
+#runfromline
+{
+ font-size:small;
+ width:150px;
+ font-size:large;
+ text-align:center;	
+ margin: 5px 0px 5px 5px;
+}
+#gcodelinetorun
+{
+ width:38px;
+ font-size:large;
+ text-align:center;	
+ margin: 5px 0px 5px 0px;
+ background-color:#717D65;
+}
+#gcodelinetorun
+{
+ width:38px;
+ font-size:large;
+ text-align:center;	
+ margin: 5px 0px 5px 0px;
+ background-color:#717D65;
+ font-family:Trebuchet MS;
+}
+#simulate
+{
+ width:200px;
+ font-size:large;
+ text-align:center;	
+ margin: 5px auto 5px 5px;
+}
+#blockdelete
+{
+ width:200px;
+ font-size:large;
+ text-align:center;	
+ margin: 5px auto 5px 5px;
+}
+.mdipanel
+{  
+    background-image:url(./Images/dro panel.png); 
+    background-repeat:no-repeat; 
+    width:350px;
+	height:50px;
+	position:absolute;
+	left:400px;
+	top:345px;
+	padding: 5px 5px 5px 5px;
+}
+.mdilabel
+{
+    font-weight:bold;
+	margin-left:11px;
+    font-size:x-large;
+    font-family:Trebuchet MS;
+}
+.mdivalue
+{
+	width:220px;
+	font-size:large;
+    background-color:#717D65;
+    font-family:Trebuchet MS;
+}
+#cyclestart
+{
+ width:200px;
+ height:80px;
+ font-weight:bolder;
+ font-size:xx-large;
+ text-align:left; 
+ vertical-align:bottom;
+ margin: 20px 5px 5px 5px;
+ background-image:url(./Images/cycle start.png); 
+}
+#cyclepause
+{
+ width:200px;
+ height:80px;
+ font-weight:bolder;
+ font-size:xx-large;
+ text-align:left;	 
+ vertical-align:text-bottom;
+ margin: 5px 5px 5px 5px;
+ background-image:url(./Images/cycle pause.png); 
+}
+#stop
+{
+ width:200px;
+ height:80px;
+ font-weight:bolder;
+ font-size:xx-large;
+ text-align:left;	 
+ vertical-align:bottom;
+ margin: 5px 5px 5px 5px;
+ background-image:url(./Images/cycle stop.png); 
+}
+#mainpagebutton
+{
+ position:absolute;
+ top:10px;
+ left:470px;
+ width:150px;
+ font-size:large;
+ text-align:center;	
+ margin: 5px auto 5px 5px;
+}
+#offsetspagebutton
+{
+ position:absolute;
+ top:10px;
+ left:630px;
+ width:150px;
+ font-size:large;
+ text-align:center;	
+ margin: 5px auto 5px 5px;
+}
+
+#settingspagebutton
+{
+ position:absolute;
+ top:10px;
+ left:790px;
+ width:150px;
+ font-size:large;
+ text-align:center;	
+ margin: 5px auto 5px 5px;
+}
+#connectedvalue
+{
+ font-family:Trebuchet MS;
+ position:absolute;
+ top:10px;
+ left:5px;
+ font-size:large;
+ font-weight:bold;
+ text-align:center;	
+ margin: 5px auto 5px 5px;
+}
+#kflopversionvalue
+{
+ font-family:Trebuchet MS;
+ position:absolute;
+ top:10px;
+ left:140px;
+ font-size:medium;
+ text-align:center;	
+ margin: 5px auto 5px 5px;
+}
+#frocontainer
+{ 
+ width:65px;
+ height:225px;
+ position:absolute;
+ top:420px;
+ left:690px;
+ background-image:url(./Images/fro panel.png); 
+}
+#frolabel
+{ 
+	width:63px; 
+	font-size:medium; 
+	font-weight:bold; 
+	font-family:Trebuchet MS; 
+	text-align:center;	
+}
+#frovalue
+{ 
+	width:63px; 
+	font-size:medium; 
+	font-weight:bold; 
+	font-family:Trebuchet MS; 
+	text-align:center;	
+}
+#userbuttonscontainer
+{ 
+ width:280px;
+ height:225px;
+ position:absolute;
+ top:420px;
+ left:400px;
+ background-image:url(./Images/user panel.png); 
+}
+#userbutton11
+{
+ width:120px;
+ height:30px; 
+ position:absolute;
+ top:15px;
+ left:10px;
+}
+#userbutton12
+{
+ width:120px;
+ height:30px;  
+ position:absolute;
+ top:55px;
+ left:10px;
+}
+#userbutton13
+{
+ width:120px;
+ height:30px;   
+ position:absolute;
+ top:95px;
+ left:10px;
+}
+#userbutton14
+{
+ width:120px;
+ height:30px;  
+ position:absolute;
+ top:135px;
+ left:10px;
+}
+#userbutton15
+{
+ width:120px;
+ height:30px;  
+ position:absolute;
+ top:175px;
+ left:10px;
+}
+#userbutton16
+{
+ width:120px;
+ height:30px;  
+ position:absolute;
+ top:15px;
+ left:145px;
+}
+#userbutton17
+{
+ width:120px;  
+ height:30px;  
+ position:absolute;
+ top:55px;
+ left:145px;
+}
+#userbutton18
+{
+ width:120px; 
+ height:30px;  
+ position:absolute;
+ top:95px;
+ left:145px;
+}
+#userbutton19
+{
+ width:120px;
+ height:30px;  
+ position:absolute;
+ top:135px;
+ left:145px;
+}
+#userbutton20
+{
+ width:120px;  
+ height:30px;  
+ position:absolute;
+ top:175px;
+ left:145px;
+}
+.GreenoffLED
+{
+ background-color:#053606;
+ background-image:url(./Images/GreenLED_24x10.png); 
+}
+.GreenonLED
+{
+ background-color:#00FF04;
+ background-image:url(./Images/GreenLED_24x10.png); 
+}
+.InterpreterLED
+{
+ width:22px;  
+ height:9px;  
+ position:absolute;
+ top:10px;
+ left:15px;
+}
+
+
+
+.RedoffLED
+{ 
+ background-color:#2E0606;
+ background-image:url(./Images/RedLED_40x15.png); 
+}
+.RedonLED
+{
+ background-color:#FF0000;
+ background-image:url(./Images/RedLED_40x15.png); 
+}
+.CyclePauseLED
+{
+ width:40px;  
+ height:15px;  
+ position:absolute;
+ Top:5px;
+ left:5px;
+}
+
+ 
+#toollibcontainer
+{
+    background-image:url(./Images/tool panel.png); 
+	position:absolute;
+	left:20px;
+	top:20px;
+	width:657px;
+	height:575px;
+}
+.toollibtable
+{
+ width:80%;	
+	margin: 15px 10px 10px 18px;
+}
+
+.toollibtable
+{ 
+}
+.toollibheader
+{
+padding:2px 5px 3px 6px;
+width:115px;
+text-align:center;
+font-size:medium;
+ font-weight:bold;
+ font-family:Trebuchet MS;
+}
+
+.toollibrow
+{
+	border: solid 2px Gray;
+	margin: 3px 3px 3px 3px;
+	padding: 3px 3px 3px 3px;
+}
+.toolliblabel
+{
+text-align:center;
+ font-family:Trebuchet MS;
+ font-weight:bold;
+}
+.toollibtext
+{
+ font-family:Trebuchet MS;
+padding:5px 5px 5px 5px;
+width:105px;
+text-align:center;
+ background-color:#717D65; 
+}
+
+
+
+#offsetscontainer
+{
+	position:absolute;
+	left:690px;
+	top:20px;
+	width:295px;
+	height:485px;
+    background-image:url(./Images/offsets panel.png); 
+}
+
+.offsettable
+{
+ width:80%;	
+	margin: 15px 10px 10px 14px;
+}
+ 
+.offsetheader
+{
+padding:2px 5px 3px 6px;
+width:60px;
+text-align:center;
+font-size:medium;
+ font-weight:bold;
+ font-family:Trebuchet MS;
+}
+
+.offsetrow
+{
+	border: solid 2px Gray; 
+	margin: 3px 3px 3px 3px;
+	padding: 3px 3px 3px 3px;
+}
+.offsetlabel
+{
+text-align:center;
+ font-family:Trebuchet MS;
+ font-weight:bold;
+}
+.offsettext
+{
+ font-family:Trebuchet MS;
+padding:5px 5px 5px 5px;
+width:50px;
+text-align:center;
+ background-color:#717D65; 
+}
+
+
+
+#savedata
+{
+ font-family:Trebuchet MS;
+padding:5px 5px 5px 5px;
+width:270px;
+height:100px;
+position:absolute;
+text-align:left;
+ font-weight:bolder;
+ font-size:xx-large;
+    background-image:url(./Images/save data.png); 
+}
+
+#settingstabs
+{
+  height:480px;	
+}
+
+#tplannercontainer
+{
+	position:absolute;
+	left:20px;
+	top:40px;
+	width:800px;
+	height:100px; 
+}
+
+.tplannertable
+{
+ width:80%;	
+	margin: 15px 10px 10px 14px;
+}
+ 
+.tplannerheader
+{
+padding:2px 5px 3px 6px;
+text-align:center;
+font-size:medium;
+ font-weight:bold;
+ font-family:Trebuchet MS;
+}
+
+.tplannerrow
+{
+	border: solid 2px Gray; 
+	margin: 3px 3px 3px 3px;
+	padding: 3px 3px 3px 3px;
+}
+.tplannerlabel
+{
+text-align:center;
+ font-family:Trebuchet MS;
+ font-weight:bold;
+}
+.tplannerunits
+{
+text-align:center;
+ font-family:Trebuchet MS; 
+ font-size:small;
+}
+.tplannertext
+{
+ font-family:Trebuchet MS;
+padding:5px 5px 5px 5px;
+width:160px;
+text-align:center;
+ background-color:#717D65; 
+}
+
+#axisparamcontainer
+{
+	position:absolute;
+	left:20px;
+	top:185px;
+	width:800px;
+	height:100px; 
+}
+
+.axisparamtable
+{
+ width:80%;	
+	margin: 15px 10px 10px 14px;
+}
+ 
+.axisparamheader
+{
+padding:2px 5px 3px 6px;
+text-align:center;
+font-size:medium;
+ font-weight:bold;
+ font-family:Trebuchet MS;
+}
+
+.axisparamrow
+{
+	border: solid 2px Gray; 
+	margin: 3px 3px 3px 3px;
+	padding: 3px 3px 3px 3px;
+}
+.axisparamlabel
+{
+text-align:center;
+ font-family:Trebuchet MS;
+ font-weight:bold;
+} 
+.axisparamtext
+{
+ font-family:Trebuchet MS;
+padding:5px 5px 5px 5px;
+width:150px;
+text-align:center;
+ background-color:#717D65; 
+}
+
+.commandeditor
+{
+	display:inline;
+	width:900px;
+}
+.editorforcommand
+{
+	display:inline; 
+}
+.commandtype
+{
+	display:inline;
+ font-family:Trebuchet MS;
+margin:5px 5px 5px 5px;
+text-align:center;
+ background-color:#717D65; 
+}
+.commandlabel
+{
+	display:inline;
+ font-family:Trebuchet MS;
+margin:5px 5px 5px 5px;
+text-align:center;
+}
+.commandtext
+{
+	display:inline;
+ font-family:Trebuchet MS;
+margin:5px 5px 5px 5px;
+width:50px;
+text-align:center;
+ background-color:#717D65; 
+}
+.commandfiletext
+{
+	display:inline;
+ font-family:Trebuchet MS;
+ font-size:small;
+margin:5px 5px 5px 5px;
+width:305px;
+text-align:center;
+ background-color:#717D65; 
+}
+.commanddescription
+{
+	display:inline; 
+text-align:center;
+font-size:small;
+ font-family:Trebuchet MS;
+ font-weight:bold;
+margin:5px 5px 5px 5px;
+} 
+.commanddescription
+{
+	display:inline; 
+text-align:center;
+font-size:small;
+ font-family:Trebuchet MS;
+ font-weight:bold;
+margin:5px 5px 5px 5px;
+} 

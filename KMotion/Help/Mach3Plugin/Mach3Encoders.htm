@@ -1,0 +1,253 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Mach3 Plugin Enoder Setup</title>
+</head>
+
+<body>
+
+<p style="margin-top: 0; margin-bottom: 0"><b><i><font face="Arial" size="5">&nbsp;</font><font face="Arial" size="6">Mach3 
+Plugin - with Encoders</font></i></b></p>
+<p style="margin-top: 0; margin-bottom: 0"><b><i><font face="Arial" size="4">&nbsp;</font></i></b></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The following 
+describes the use of linear glass scale encoders or rotary shaft encoders with 
+Mach3.&nbsp; The setup process described apply for KFlop operating in open loop 
+mode with encoders as well as <a href="../ClosedLoopStep/ClosedLoopStepper.htm">
+closed loop control.</a></font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">KFlop/KMotion 
+should first be wired and configured such that the encoders are functional and 
+scaled (using the InputGain0 parameter) so that the encoder counts match the 
+commanded position in units of &#956;steps.&nbsp; To verify that this is properly 
+configured the KMotion.exe <a href="../StepScreen/StepScreen.htm">Step Response 
+Screen</a> may be used for verification.&nbsp; The Plot of Position Error should 
+show small errors (typically &lt;200 &#956;Steps) for a Move Plot if properly 
+configured.</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Since the encoder 
+position is already scaledwithin KFlop/KMotion&nbsp; to match the &#956;steps/Unit 
+scale of the motor, the Mach3 Encoder resolution should be set to the same value 
+as the Motor &quot;Tuning&quot; as shown below.&nbsp; The Encoder/MPG screen is opened 
+using the Config|Ports and Pins Menu.&nbsp; The Port and Pin definitions are not 
+relevant when using KMotion/KFlop and should be set to some unused Port.</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+<img border="0" src="MotorTuningResolution.PNG" width="680" height="427"></font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+<img border="0" src="EncoderResolution.PNG" width="713" height="423"></font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial"><i><b>
+<a name="Zero_Buttons">Zero Buttons</a></b></i></font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Mach3 &quot;Zeros&quot; a 
+DRO by adjusting the currently selected work offset such that the DRO will read 
+zero.&nbsp; Since the glass scales are the best reference,&nbsp; the commanded 
+position is adjusted to match the encoder position, before Mach3 is told to 
+compute the new work offset. </font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+<img border="0" src="ZeroX.PNG" width="92" height="83"></font></p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+NotifyPlugins(10100)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'tell KFlop to set 
+command to encoder<br>
+Sleep 300&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+'make sure mach updates<br>
+DoOEMButton (1008)&nbsp;&nbsp;&nbsp;&nbsp; 'calculate work offset<br>
+&nbsp;</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+<img border="0" src="ZeroY.PNG" width="92" height="87"></font></p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+NotifyPlugins(10101)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'tell KFlop to set 
+command to encoder<br>
+Sleep 300&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+'make sure mach updates<br>
+DoOEMButton (1009)&nbsp;&nbsp;&nbsp;&nbsp; 'calculate work offset</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+<img border="0" src="ZeroZ.PNG" width="92" height="87"></font></p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+NotifyPlugins(10102)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'tell KFlop to set 
+command to encoder<br>
+Sleep 300&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+'make sure mach updates<br>
+DoOEMButton (1010)&nbsp;&nbsp;&nbsp;&nbsp; 'calculate work offset</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">In the <b>
+Config|Config Plugins|Dynomotion</b> set an appropriate KFlop User Program that 
+will process the NotifyPlugin Message Codes to set KFlops internal Commanded 
+Destination to the Current Encoder Positions.&nbsp; Typical program for 3 axes 
+shown below.&nbsp; Note that the Message code is defined to be passed to the 
+KFlop User Program via persist.UserData[6]</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+<img border="0" src="ConfigNotifyProgram.PNG" width="554" height="93"></font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial"><i><b>Example 
+File: &lt;Install Dir&gt;\C Programs\NotifyZeroEncoderMach3.c</b></i></font></p>
+<p><font face="Courier New" size="2">#include &quot;KMotionDef.h&quot; </font></p>
+<p><font face="Courier New" size="2">//Plugin calls for Mach3 NotifyPlugins 
+Commands </font></p>
+<p><font face="Courier New" size="2">#define X 0<br>
+#define Y 1<br>
+#define Z 2<br>
+<br>
+main()<br>
+{<br>
+&nbsp;&nbsp;&nbsp; int msg = persist.UserData[6]; // Mach3 notify Message 
+10000-10999 </font></p>
+<p><font face="Courier New" size="2">&nbsp;&nbsp;&nbsp; printf(&quot;Mach3 Notify 
+Call, Message = %d\n&quot;,msg); <br>
+</font></p>
+<p><font face="Courier New" size="2">&nbsp;&nbsp;&nbsp; if (msg==10100)<br>
+&nbsp;&nbsp;&nbsp; {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // adjust the commanded position to 
+match the glass scale encoder<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DisableAxis(X);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EnableAxisDest(X,chan[X].Position);<br>
+&nbsp;&nbsp;&nbsp; }<br>
+&nbsp;&nbsp;&nbsp; if (msg==10101)<br>
+&nbsp;&nbsp;&nbsp; {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // adjust the commanded position to 
+match the glass scale encoder<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DisableAxis(Y);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EnableAxisDest(Y,chan[Y].Position);<br>
+&nbsp;&nbsp;&nbsp; }<br>
+&nbsp;&nbsp;&nbsp; if (msg==10102)<br>
+&nbsp;&nbsp;&nbsp; {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // adjust the commanded position to 
+match the glass scale encoder<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DisableAxis(Z);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EnableAxisDest(Z,chan[Z].Position);<br>
+&nbsp;&nbsp;&nbsp; }<br>
+}</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial"><i><b>REF Buttons</b></i></font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Mach3 REF buttons 
+are used to set the initial Machine coordinates either by simply Zeroing them or 
+performing a home operation into a switch.</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The REF X, REF Y, 
+REF Z etc... buttons may require editing using a screen editor.&nbsp; We 
+recommend the one written by Klaus Dietz.</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+<img border="0" src="KlausAbout.PNG" width="402" height="328"></font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The Ref buttons 
+should be edited to perform the standard Mach3 Ref operations.&nbsp; See the 
+settings selected for the Ref buttons shown below when using Klaus' free Mach 
+Screen Editor.&nbsp; The standard Ref operations for Mach3 is to request the 
+Plugin to perform the Home Operation (actually labeled purge in the plugin).&nbsp;
+</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+<img border="0" src="XRef.PNG" width="62" height="67"></font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+<img border="0" src="KlausRefX.PNG" width="288" height="175"></font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+<img border="0" src="YRef.PNG" width="63" height="67"></font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+<img border="0" src="KlausRefY.PNG" width="288" height="175"></font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+<img border="0" src="ZRef.PNG" width="63" height="67"></font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+<img border="0" src="KlausRefZ.PNG" width="288" height="175"></font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+<a name="HomeEncoder"></a>The Dynomotion Plugin passes these Home requests to 
+KFlop to handle with a Home User Program.&nbsp; In the <b>Config|Config 
+Plugins|Dynomotion</b> set an appropriate KFlop User Home Program.&nbsp; A <b>
+flag</b> variable is also passed to tell which axis is to be homed (Note that 
+the flags is defined to be passed to the KFlop User Program via 
+persist.UserData[5]).&nbsp;&nbsp; In the case with encoders, both the Encoder 
+Position and the Commanded Destination should be zeroed.&nbsp;&nbsp; Prior to 
+Zeroing if any homing motion (to a switch for example - See: SimpleHome3Axis.c 
+in the C Programs directory) may also be added into the program.</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+<img border="0" src="ConfigHomeProgram.PNG" width="560" height="83"></font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial"><i><b>Example 
+File: &lt;Install Dir&gt;\C Programs\HomeEncoderMach3.c</b></i></font></p>
+<p><font face="Courier New" size="2">#include &quot;KMotionDef.h&quot; </font></p>
+<p><font face="Courier New" size="2">//Plugin calls for Mach3 Home (actually 
+Purge) Commands<br>
+//Called from Mach3 &quot;REF&quot; command<br>
+//in this case just Zero the measured position (encoder)<br>
+//and set the commanded destination to zero </font></p>
+<p><font face="Courier New" size="2">#define X 0<br>
+#define Y 1<br>
+#define Z 2 </font></p>
+<p><font face="Courier New" size="2">main()<br>
+{<br>
+&nbsp;&nbsp;&nbsp; int flags = persist.UserData[5]; // Mach3 flags bit0=X, 
+bit1=Y, Bit2=Z, etc... </font></p>
+<p><font face="Courier New" size="2">&nbsp;&nbsp;&nbsp; printf(&quot;Mach3 Home Call, 
+flags = %d\n&quot;,flags); <br>
+</font></p>
+<p><font face="Courier New" size="2">&nbsp;&nbsp;&nbsp; if (flags &amp; 1)<br>
+&nbsp;&nbsp;&nbsp; {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DisableAxis(X);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Zero(X);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EnableAxisDest(X,0.0);<br>
+&nbsp;&nbsp;&nbsp; }<br>
+&nbsp;&nbsp;&nbsp; if (flags &amp; 2)<br>
+&nbsp;&nbsp;&nbsp; {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DisableAxis(Y);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Zero(Y);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EnableAxisDest(Y,0.0);<br>
+&nbsp;&nbsp;&nbsp; }<br>
+&nbsp;&nbsp;&nbsp; if (flags &amp; 4)<br>
+&nbsp;&nbsp;&nbsp; {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DisableAxis(Z);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Zero(Z);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EnableAxisDest(Z,0.0);<br>
+&nbsp;&nbsp;&nbsp; }<br>
+}</font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+
+</body>
+
+</html>

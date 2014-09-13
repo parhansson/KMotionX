@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Example 1 - Drilling a pattern from a variable location</TITLE>
+<META NAME="description" CONTENT="Example 1 - Drilling a pattern from a variable location">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node106.html">
+<LINK REL="previous" HREF="node104.html">
+<LINK REL="up" HREF="node104.html">
+<LINK REL="next" HREF="node106.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1920"
+  HREF="node106.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1914"
+  HREF="node104.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1908"
+  HREF="node104.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1916"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1918"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1921"
+  HREF="node106.html">Example 2 - Incremented</A>
+<B> Up:</B> <A NAME="tex2html1915"
+  HREF="node104.html">13.5 Sample Variable Programs</A>
+<B> Previous:</B> <A NAME="tex2html1909"
+  HREF="node104.html">13.5 Sample Variable Programs</A>
+ &nbsp; <B>  <A NAME="tex2html1917"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1919"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION04451000000000000000">
+Example 1 - Drilling a pattern from a variable location</A>
+</H2>
+
+<P>
+One of the simplest uses of variables is to set up positions from
+which a set of milling operations can be performed. In this capacity
+these variables work somewhat like the coordinate systems that are
+common to many g code implementations. 
+
+<P>
+<TABLE  WIDTH="0%">
+<TR><TD>
+This program assumes that the drill bit is already loaded and that
+the machine is home. The pattern is five holes. One in the center
+and four on a 1 inch radius around that center hole. Opposite holes
+in the pattern are aligned with the axes in what could be called a
+diamond. (see figure 1)
+
+<P>
+We will begin by assigning values to two variables. We can then use
+these variables as the center of the hole pattern and increment the
+drilling operation with respect to that center location.
+
+<P>
+</TD></TR>
+</TABLE>
+<TABLE  WIDTH="0%">
+<TR><TD>
+<!-- MATH
+ $\resizebox*{2.5in}{!}{\includegraphics{/usr/share/lyx/EMC_images/varfig1.eps}}$
+ -->
+<IMG
+ WIDTH="288" HEIGHT="192" ALIGN="BOTTOM" BORDER="0"
+ SRC="img36.gif"
+ ALT="\resizebox*{2.5in}{!}{\includegraphics{/usr/share/lyx/EMC_images/varfig1.eps}}"> 
+
+<P>
+</TD></TR>
+</TABLE>
+
+<P>
+<BR>
+
+<P>
+<TT><FONT SIZE="-1">N10 #1000 = 4.5120 (x distance for center
+of set of 4 holes)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N12 #1001 = 2.6873 (y distance for center of set of
+holes) </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N14 g0 x#1000 y#1001 z1 (move to center location)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N16 g1 f4 z2 (drill center hole)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N18 g0 z0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N20 x[#1000 + 1.0] (move to first diamond hole)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N22 z1</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N24 g1 f4 z2 (drill first diamond corner hole)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N26 g0 z0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N28 x[#1000 - 1.0] (move to second diamond hole)
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N30 z1</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N32 g1 f4 z2 (drill second diamond corner hole) </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N34 g0 z0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N36 x#1000 y[#1001 + 1.0] (move to third diamond
+hole)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N38 z1</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N40 g1 f4 z2 (drill third diamond corner hole)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N42 g0 z0 </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N44 y[#1001 - 1.0] (move to fourth diamond hole)
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N46 z1 </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N48 g1 f4 z2 (drill fourth diamond corner hole) </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N50 g0 z0 </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N52 g53 x0 y0 z0 </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N54 m2</FONT></TT>
+<P>
+
+
+<P>
+This set of code blocks could have been written using the real values
+for the locations, however the use of just two variables allows the
+entire pattern to be shifted rather easily during production to keep
+the hole locations within the tolerances specified on the print. Writing
+this kind of code using variables also allows for wide variation in
+the setup of the machine for milling.
+
+<P>
+In this example the pattern is a fixed shape and size - perhaps a
+pipe flange or a bearing mount for a sliding rod. The two variables
+allow the operator to quickly shift the pattern to the exact coordinates
+where it should be placed. In the example the editing would have to
+be done to the program code on lines N10 and N12 because the variables
+are implicit. Explicit variables would allow the operator to change
+the values in the emc.var file and reload it.
+
+<P>
+Code like that developed in this example can easily be copied and
+pasted several times into the same program to reproduce the same pattern
+at several locations. The only additional code that must be added
+is a line that changes the variables for each location. This could
+be as simple as #1000 = (number) before each pasted chunk, or it
+could be an increment from the first location. Example two shows how
+to increment.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1920"
+  HREF="node106.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1914"
+  HREF="node104.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1908"
+  HREF="node104.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1916"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1918"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1921"
+  HREF="node106.html">Example 2 - Incremented</A>
+<B> Up:</B> <A NAME="tex2html1915"
+  HREF="node104.html">13.5 Sample Variable Programs</A>
+<B> Previous:</B> <A NAME="tex2html1909"
+  HREF="node104.html">13.5 Sample Variable Programs</A>
+ &nbsp; <B>  <A NAME="tex2html1917"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1919"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

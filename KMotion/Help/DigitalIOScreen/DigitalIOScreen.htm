@@ -1,0 +1,89 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Digital IO Screen</title>
+</head>
+
+<body>
+
+<p><i><b><font size="5">Digital I/O Screen</font></b></i></p>
+<p><img border="0" src="DigitalIOScreen.PNG" width="319" height="422"></p>
+<p>The <i><b>Digital I/O Screen</b></i> displays and allows changes to the 
+current state of the <i><b>KMotion</b></i> digital I/O bits.&nbsp; </p>
+<p><i><b>KMotion</b></i> has a number of digital I/O bits that may be used as <i>
+GPIO</i> (General Purpose Inputs or Outputs) or as specific dedicated functions 
+(encoder inputs).&nbsp; There are 28 bits that may be utilized as GPIO (bits 0 - 
+27).&nbsp; Each bit may be independently defined as either an input or an 
+output.&nbsp; On Power UP <i><b>KMotion</b></i> defines all I/O as inputs by 
+default.&nbsp; Any bit may be configured as an output by checking the 
+corresponding box in the &quot;Output&quot; columns.&nbsp; Alternately, the bits may be 
+configured by a C program running within the <i><b>KMotion</b></i> (See
+<a href="../ProgramScreen/ProgramScreen.htm#SetBitDirection">
+SetBitDirection()</a>) or by Script commands (See
+<a href="../ConsoleScreen/ConsoleScreen.htm#SETBITDIRECTION">
+SetBitDirection</a>) sent to the <i><b>KMotion</b></i>. </p>
+<p>The <i>State</i> of each I/O bit may be observed in the corresponding 
+checkbox under the &quot;State&quot; columns.&nbsp; If the bit is defined as an output, 
+clicking on the &quot;State&quot; checkbox will toggle the bit.&nbsp; Alternately, the 
+bits may be read, set, or cleared by a C program running within the <i><b>
+KMotion</b></i> (See <a href="../ProgramScreen/ProgramScreen.htm#ReadBit">
+ReadBit()</a>, <a href="../ProgramScreen/ProgramScreen.htm#SetBit">
+SetBit()</a>, <a href="../ProgramScreen/ProgramScreen.htm#ClearBit">
+ClearBit()</a>, or
+<a href="../ProgramScreen/ProgramScreen.htm#SetStateBit">SetStateBit()</a>) 
+or by Script commands (See
+<a href="../ConsoleScreen/ConsoleScreen.htm#READBIT">ReadBit</a>,
+<a href="../ConsoleScreen/ConsoleScreen.htm#SETBIT">SetBit</a>,
+<a href="../ConsoleScreen/ConsoleScreen.htm#CLEARBIT">ClearBit</a>, or
+<a href="../ConsoleScreen/ConsoleScreen.htm#SETSTATEBIT">SetStateBit</a>) 
+sent to the <i><b>KMotion</b></i>. </p>
+<p>Additionally, <i>buffered</i> commands may change the state of Digital I/O 
+bits.&nbsp; <i>Buffered</i> I/O commands are I/O commands that are inserted into 
+the coordinated motion buffer.&nbsp; When it is required that I/O bits be 
+changed at exact times within a motion sequence, <i>buffered</i> I/O commands 
+may be inserted into the motion buffer (see
+<a href="../ConsoleScreen/ConsoleScreen.htm#SETBITBUF">SetBitBuf</a>,
+<a href="../ConsoleScreen/ConsoleScreen.htm#CLEARBITBUF">ClearBitBuf</a>, 
+and <a href="../ConsoleScreen/ConsoleScreen.htm#SETSTATEBITBUF">
+SetStateBitBuf</a>).&nbsp; In this case the I/O commands occur when they are 
+encountered within the motion sequence.&nbsp; The <i><b>KMotion</b></i> GCode 
+interpreter allows buffered I/O commands to be inserted within motion sequences 
+by using a special form of GCode comment (See
+<a href="../GCodeScreen/GCodeScreen.htm#BUF">buffered GCode Commands</a>).</p>
+<p>The Digital I/O 0 - 21 are routed to connector
+<a href="../Schematics/Connectors.htm#JP3">JP3</a>, and Digital I/O 20 - 27 are 
+routed to connector <a href="../Schematics/Connectors.htm#JP4">JP4</a> all as LVTTL 
+signals (which are also 5V TTL compliant and tolerant).&nbsp; Note that Digital 
+I/O 20 and 21 are routed to both connectors.</p>
+<p>Digital I/O bits 0 - 7 are wired internally to the 4 quadrature encoder inputs 
+(2 bits - Phase A and Phase B for each encoder).&nbsp; For each encoder that is 
+intended to be used,&nbsp; the corresponding Digital I/O bits must be defined as 
+inputs.</p>
+<p>Digital I/O bit 28 is dedicated as the +/-15V enable.&nbsp; Setting this bit 
+activates the <i><b>KMotion</b></i> on-board +/- 15V generator.&nbsp; The +/- 
+15V is derived from the 5V supply and is able to source ~ 2 Watts of power on 
+each supply (~ 130ma).&nbsp; This supply is required to be enable when using the 
++/- 10V ADC inputs or +/- 10V DAC outputs.&nbsp; </p>
+<p><b><i><font color="#FF0000">Caution: Shorting + or - 15V to any Digital I/O 
+bit will cause permanent damage.</font> </i></b></p>
+<p>Digital I/O bit 29 is dedicated as the <i>Fan Control</i> bit.&nbsp; 
+Applications that supply high currents (&gt; ~ 2Amps) for extended periods (&gt; ~10 
+seconds) on any axis should enable the fan to cool the output stages and avoid 
+thermal shutdown of the output stages.</p>
+<p>Digital I/O bit 30 is dedicated as the <i>Aux Control Switch</i>.&nbsp; The 
+Aux Control Switch may be used to switch some medium power (&lt; 30V @ 2A) device 
+like a lamp or solenoid (<a href="../Schematics/Connectors.htm#Auxillary Switch Example">See 
+example</a>).</p>
+<p>Digital I/O bit 31 is a dedicated input of <i>Thermal Warning Status</i>.&nbsp; 
+Any output stage that is overheating (internal junction temperature &gt; 145 
+degrees C) will trigger the thermal warning and cause shutdown of all output 
+stages.</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>4.3 Ray's three disk download procedure.</TITLE>
+<META NAME="description" CONTENT="4.3 Ray's three disk download procedure.">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="previous" HREF="node16.html">
+<LINK REL="up" HREF="node14.html">
+<LINK REL="next" HREF="node18.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html498"
+  HREF="node18.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html492"
+  HREF="node14.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html488"
+  HREF="node16.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html494"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html496"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html499"
+  HREF="node18.html">5. INSTALLING THE NIST</A>
+<B> Up:</B> <A NAME="tex2html493"
+  HREF="node14.html">4. EMC Download Page</A>
+<B> Previous:</B> <A NAME="tex2html489"
+  HREF="node16.html">4.2 Links</A>
+ &nbsp; <B>  <A NAME="tex2html495"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html497"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION02430000000000000000">
+4.3 Ray's three disk download procedure.</A>
+</H1>
+
+<P>
+Once I have the three EMC files on disk, the next thing I'd do is
+make a directory called /usr/local/nist on the Linux machine.
+
+<P>
+<TT><FONT SIZE="-2">mkdir /usr/local/nist</FONT></TT>
+<P>
+
+
+<P>
+Now move into that directory.
+
+<P>
+<TT><FONT SIZE="-2">cd /usr/local/nist</FONT></TT>
+<P>
+
+
+<P>
+The prompt should show nist on the right end. You can stay in this
+directory and copy files to it. Insert the first floppy into your
+machine. 
+
+<P>
+<TT><FONT COLOR="#000000"><FONT SIZE="-1">mount -t msdos /dev/fd0 /mnt/floppy</FONT></FONT></TT>
+<P>
+
+
+<P>
+After a second of looking at your floppy it should return your screen
+to your root prompt. This mount command will allow you to work with
+floppy files in your /mnt/floppy directory. If you have already defined
+/dev/fd0 as having the msdos file type you may be able to skip the
+-t msdos part of the above command.
+
+<P>
+<TT><FONT COLOR="#000000"><FONT SIZE="-1">cp /mnt/floppy/* /usr/local/nist</FONT></FONT></TT>
+<P>
+
+
+<P>
+After a bit of floppy disk grinding you should get the prompt again.
+Check to see that the file was copied.
+
+<P>
+<FONT COLOR="#000000"><FONT SIZE="-1">ls</FONT></FONT>
+<P>
+
+
+<P>
+You should see a list of the files in the nist directory. At this
+point there will be just one emc-**-***-1999.aa* if you
+copied it.
+
+<P>
+<TT><FONT COLOR="#000000"><FONT SIZE="-1">umount /dev/fd0</FONT></FONT></TT>
+<P>
+
+
+<P>
+After a second you should get the prompt again. If you get a &#34;can't
+umount message&#34; it is probably because umount will not work
+when you are in the /mnt/floppy directory.
+
+<P>
+When umount is successful you'll need to repeat the mount, copy, ls,
+and umount commands for each of the disks. You don't need to type
+in each command every time, at the prompt, he up arrow will scroll
+you back to the previous commands. Just up arrow to the one you want
+and [enter].
+
+<P>
+Now that you've got a directory listing all of the emc floppy files
+in it, all you have to do is put them together. You can do this with
+the cat command. It will be easiest if your prompt and the files are
+in your nist directory.
+
+<P>
+<TT><I><FONT COLOR="#000000"><FONT SIZE="-1">cd /usr/local/nist</FONT></FONT></I></TT>&nbsp;
+<BR><TT><FONT COLOR="#000000">Type in:</FONT></TT>&nbsp;
+<BR><TT><I><FONT COLOR="#000000"><FONT SIZE="-1">cat emc* &gt; emc-dd-Mmm-yyyy.tgz</FONT></FONT></I></TT>
+<P>
+
+
+<P>
+(you should replace the dd-=Mmm_yyyy with the proper release numbers.)
+After a bit of work you should see the prompt again.
+
+<P>
+<TT><I><FONT COLOR="#000000"><FONT SIZE="-1">ls -l </FONT></FONT></I></TT>
+<P>
+
+
+<P>
+Those are lower case L's not one's. The big tar file should be listed
+as a 3+ meg file with the .tgz extension.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html498"
+  HREF="node18.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html492"
+  HREF="node14.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html488"
+  HREF="node16.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html494"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html496"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html499"
+  HREF="node18.html">5. INSTALLING THE NIST</A>
+<B> Up:</B> <A NAME="tex2html493"
+  HREF="node14.html">4. EMC Download Page</A>
+<B> Previous:</B> <A NAME="tex2html489"
+  HREF="node16.html">4.2 Links</A>
+ &nbsp; <B>  <A NAME="tex2html495"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html497"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

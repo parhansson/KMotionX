@@ -1,0 +1,2 @@
+KFLOP Modbus Support - ModbusMaster.c
+The Kflop+KAnalog configuration can be used to allow the Kflop to use the popular Modbus protocol over the RS232 port to control PLCs and other modbus slave devices. See the comment block of ModbusMaster.c for details.

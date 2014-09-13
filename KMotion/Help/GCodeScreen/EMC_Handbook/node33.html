@@ -1,0 +1,211 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>7.5 stgdiag</TITLE>
+<META NAME="description" CONTENT="7.5 stgdiag">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="previous" HREF="node32.html">
+<LINK REL="up" HREF="node28.html">
+<LINK REL="next" HREF="node34.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html749"
+  HREF="node34.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html743"
+  HREF="node28.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html739"
+  HREF="node32.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html745"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html747"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html750"
+  HREF="node34.html">8. PID Axis Tuning</A>
+<B> Up:</B> <A NAME="tex2html744"
+  HREF="node28.html">7. Servo To Go</A>
+<B> Previous:</B> <A NAME="tex2html740"
+  HREF="node32.html">7.4 What is the</A>
+ &nbsp; <B>  <A NAME="tex2html746"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html748"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION03250000000000000000">
+7.5 stgdiag</A>
+</H1>
+
+<P>
+Included in the EMC distribution is a diagnostics program to help
+verify the Servo To Go hardware. The source code for the program is
+typically located in:
+<BR>/usr/local/emc/src/emcmot/stgdiag.c
+
+<P>
+There are two versions of the executable (depending on whether it
+is linked with stg.c or stg2.c). stgdiag is for the Model 1 card and
+stg2diag is for the Model 2. The executables are usually located in:
+<BR>/usr/local/emc/plat/nonrealtime/bin/
+
+<P>
+To run the program, either navigate to the above directory, or have
+it on your path. The syntax is (using the Model 2 version as the example):
+
+<P>
+<TT><FONT SIZE="-1">stg2diag [ dio | dac | limit | home | index
+&lt;axis&gt; | latch &lt;axis&gt;][ base_address ]</FONT></TT>
+<P>
+
+
+<P>
+first set of options:
+
+<P>
+<TT><FONT SIZE="-2">none&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></TT>&nbsp;&nbsp;<TT><FONT SIZE="-2">&nbsp;&nbsp;position
+for x, y, and z continuously updated, control-C to quit</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">dio&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></TT>&nbsp;&nbsp;<TT><FONT SIZE="-2">&nbsp;digital
+I/O, displays state of ports A, B and D</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">dac&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></TT>&nbsp;&nbsp;<TT><FONT SIZE="-2">&nbsp;&nbsp;&nbsp;digital
+to analog converter, prompts for axis, then prompts for voltage</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">limit&nbsp;&nbsp;&nbsp;&nbsp;</FONT></TT>&nbsp;&nbsp;<TT><FONT SIZE="-2">&nbsp;&nbsp;displays
+limit switches continuously, new line at each change, control-C to
+stop</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">home&nbsp;&nbsp;&nbsp;</FONT></TT>&nbsp;&nbsp;<TT><FONT SIZE="-2">&nbsp;&nbsp;&nbsp;&nbsp;displays
+home switches continuously, new line at each change, control-C to
+stop</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">index &lt;axis&gt;&nbsp;continuously display state of index
+pulse for given axis, control-C to stop</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">latch &lt;axis&gt;&nbsp;continuously display state of index
+pulse latch, control-C to stop</FONT></TT>
+<P>
+
+
+<P>
+Default base address is 0x200 unless the base address is specified
+in the final argument.
+
+<P>
+lstg
+
+<P>
+There is another program available to help debug and verify the Servo
+To Go hardware functionality. It is available from the Servo To Go
+website in the Download Area. Like stgdiag, it is a console application.
+However lstg is more general, and has slightly more functions. Here
+is an example of its use:
+
+<P>
+<TT><FONT SIZE="-1">[root@mclinux don]# lstg</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">Servo To Go Demo</FONT></TT>
+<P>
+
+
+<P>
+Enter the letter corresponding to the desired command. You don't need
+to follow it with a carriage return. If the letter isn't a valid command,
+the list of commands will be repeated. To exit from a demo, type any
+character.
+<BR>
+Base Address = 200
+<BR>
+Board Model = Model 2
+<BR>
+ServoToGo: [carriage return]
+<BR>
+Commands:
+<BR>
+o - Digital output demo, toggle bit
+<BR>
+i - Digital input demo
+<BR>
+D - DAC demo for chan 3, ramp
+<BR>
+d - DAC demo, set voltage
+<BR>
+r - Some random motion on chan 0
+<BR>
+a - ADC demo
+<BR>
+A - ADC autozero ON
+<BR>
+n - ADC noise demo
+<BR>
+N - ADC autozero OFF
+<BR>
+e - Encoder demo
+<BR>
+E - Zero Encoders
+<BR>
+x - Index pulse demo
+<BR>
+X - Index latch demo
+<BR>
+l - External Latch Test
+<BR>
+y - IRR test, continually reset index latch
+<BR>
+1..8 - Set default Axis
+<BR>
+q - Quit
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html749"
+  HREF="node34.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html743"
+  HREF="node28.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html739"
+  HREF="node32.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html745"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html747"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html750"
+  HREF="node34.html">8. PID Axis Tuning</A>
+<B> Up:</B> <A NAME="tex2html744"
+  HREF="node28.html">7. Servo To Go</A>
+<B> Previous:</B> <A NAME="tex2html740"
+  HREF="node32.html">7.4 What is the</A>
+ &nbsp; <B>  <A NAME="tex2html746"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html748"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

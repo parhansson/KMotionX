@@ -1,0 +1,92 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Analog IO Screen</title>
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+</head>
+
+<body>
+
+<p><i><b><font size="5">Analog I/O Status Screen</font></b></i></p>
+<p><img border="0" src="AnalogStatusSnap0.png" width="612" height="286"></p>
+<p><img border="0" src="AnalogStatusSnap1.png" width="612" height="286"></p>
+<p><img border="0" src="AnalogStatusKanalog.PNG" width="612" height="286"></p>
+<p>The <b><i>Analog</i></b><i><b> I/O Status Screen</b></i> displays various 
+analog measurements and commands including:</p>
+<ul>
+  <li>Kanalog DAC Settings</li>
+	<li>Kanalog ADC Readings</li>
+	<li>SnapAmp Measured current flow per motor coil</li>
+  <li>SnapAmp Power Supply Voltages</li>
+  <li>SnapAmp Mosfet Temperatures</li>
+	<li>SnapAmp PWM power amp settings</li>
+</ul>
+<p>KFLOP itself has no Analog capability and when operated alone with no option 
+cards the Analog I/O Screen will not display.&nbsp; If one or two <i><b>SnapAmp</b></i> option boards are installed 
+and checked on the option menu, tabs will allow display <i><b>of SnapAmp</b></i> Status.&nbsp; Current 
+measurement for each full bridge (motor coil), Power supply voltage for each 
+side, Temperature of each side, and PWM setting for each PWM.&nbsp; If Kanalog 
+is installed and checked on the option menu a tab will allow displaying Kanalog 
+Analog Status.</p>
+<p>&nbsp;</p>
+<p><u><b><a name="PWMs">PWM's</a></b></u></p>
+<p>The state of each <i><b>SnapAmp's</b></i> four PWM (Pulse Width Modulators) are 
+displayed in the top right area of the status screen.&nbsp;&nbsp; The PWM's are 
+connected to <i>Full Bridge Drivers</i> to allow direct control of 
+various motors or loads.&nbsp; See the description of
+<a href="../PWM_Description/PWM_Description.htm">KMotion's Power Amplifiers and 
+PWM's</a> for details.&nbsp; The PWM's may operate independently to drive a full 
+bridge driver, or they may function as a pair of PWM's connected to a pair of 
+Full Bridge drivers to drive a 4 phase stepper motor or a
+<a href="../PWM_Description/PWM_Description.htm#3_Phase_mode">3 phase load</a>.&nbsp; 
+</p>
+<p style="margin-top: 0; margin-bottom: 0">PWMs may be assigned to an axis by 
+changing the OutputChan0 and OutputChan1 parameters for an axis.&nbsp; Only 
+consecutive even and odd PWMS&nbsp; may be paired to drive a 3 
+or 4 phase phase load.</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">There are several possible 
+modes for each PWM channels:</p>
+<ul>
+  <li>
+  <p style="margin-top: 0; margin-bottom: 0">Normal Independent</li>
+  <li>
+  <p style="margin-top: 0; margin-bottom: 0">Recirculating Independent</li>
+  <li>
+  <p style="margin-top: 0; margin-bottom: 0">3 Phase - paired</li>
+	<li>
+  <p style="margin-top: 0; margin-bottom: 0">Current Feedback</li>
+</ul>
+<p style="margin-top: 0; margin-bottom: 0">If a PWM channel is operating in 
+Normal mode, the PWM channel status will show the value in counts (-255 ... 
++255) and the percent of full scale.</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">If a PWM channel is operating in 
+Recirculating mode, the PWM channel status will show the value in counts (-511 
+... +511), followed by an &quot;R&quot;, and the percent of full scale.</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">A PWM channel may also operate in 
+current loop mode.&nbsp; In current loop mode the PWM duty cycle is 
+automatically adjusted in order to maintain the commanded current.&nbsp; The PWM channel status will show the 
+command value in counts (-4095 
+... +4095), followed by a &quot;C&quot;, and the percent of full scale.</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">If a pair of PWM channels is 
+operating in 3 Phase mode, the PWM channel status will show the value in counts 
+(-230 ... 230) after the first PWM channel and the phase angle in degrees after 
+second PWM channel.</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">The example status below shows PWM 
+channels 8 and 9 operating in 3 phase mode, PWM channel 10 operating in Normal 
+mode, and PWM channels 11 operating in Recirculating mode.</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">
+<img border="0" src="PWMStatus.PNG"></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+
+</body>
+
+</html>

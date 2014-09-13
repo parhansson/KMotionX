@@ -1,0 +1,97 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Mach3 Plugin Passing DROs</title>
+</head>
+
+<body>
+
+<p style="margin-top: 0; margin-bottom: 0"><b><i><font face="Arial" size="5">&nbsp;</font><font face="Arial" size="6">Mach3 
+Plugin - Passing DROs</font></i></b></p>
+<p style="margin-top: 0; margin-bottom: 0"><b><i><font face="Arial" size="4">&nbsp;</font></i></b></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<div id="cg_msg_content" style="width: 669px; height: 592px; margin-left: 10px; margin-right: 10px; margin-top: 0px; margin-bottom: 10px">
+	<div style="FONT-FAMILY: arial, helvetica, sans-serif; FONT-SIZE: 10pt">
+		<div style="FONT-FAMILY: arial, helvetica, sans-serif; FONT-SIZE: 10pt">
+			<div>
+				<div>
+					<div>
+						<font color="#000000"><strong><u>Mechanism for 
+						transfering values back and forth between Mach3 and 
+						KFLOP</u></strong></font></div>
+					<div>
+						&nbsp;</div>
+					<div>
+						&nbsp;</div>
+					<div>
+						<font color="#000000">Mach3 User DROs 1 to 50 map to 
+						KFlop UserData 0 to 99 (2 words each double)</font></div>
+				</div>
+				<div>
+					&nbsp;</div>
+				<div>
+					&nbsp;</div>
+				<div>
+					<font color="#000000">To&nbsp;Read from&nbsp;KFLOP to Mach3 use 
+					NotifyPlugins codes 18001 to 18050</font></div>
+			</div>
+			<div>
+				<font color="#000000">To Write&nbsp;from Mach3 to KFLOP use 
+				NotifyPlugins codes 19001 to 19050</font></div>
+			<div>
+				&nbsp;</div>
+			<div>
+				&nbsp;</div>
+			<div>
+				<strong><font color="#000000"><u>Example MACH3 SIDE</u></font></strong></div>
+			<div>
+				&nbsp;</div>
+			<div>
+				<font color="#000000" face="Courier New, courier, monaco, monospace, sans-serif">
+				SetOEMDRO(1007,123.456)&nbsp; 'Put a value in a Mach DRO<br>
+				NotifyPlugins(19007)&nbsp;&nbsp;&nbsp;&nbsp; 'Send it to KFLOP<br>
+				Sleep(3000)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'Wait for KFLOP to modify and copy it<br>
+				NotifyPlugins(18008)&nbsp;&nbsp;&nbsp;&nbsp; 'Read the result from KFLOP<br>
+				x=GetOEMDRO(1008)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'Check the value passed back <br>
+				<br>
+&nbsp;</font></div>
+			<div>
+				<font color="#000000" face="arial, helvetica, sans-serif">
+				<strong><u>Example KFLOP SIDE</u></strong></font></div>
+			<div>
+				&nbsp;</div>
+			<div>
+				<font color="#000000" face="Courier New, courier, monaco, monospace, sans-serif">
+				#include &quot;KMotionDef.h&quot;</font></div>
+			<div>
+				<font color="#000000" face="Courier New, courier, monaco, monospace, sans-serif">
+				#define DROIN 7<br>
+				#define DROOUT 8<br>
+				main()<br>
+				{<br>
+				&nbsp;&nbsp;&nbsp; double *pin&nbsp; = (double *)&amp;persist.UserData[(DROIN -1)*2];<br>
+				&nbsp;&nbsp;&nbsp; double *pout = (double *)&amp;persist.UserData[(DROOUT-1)*2];</font></div>
+			<div>
+				<font color="#000000" face="Courier New, courier, monaco, monospace, sans-serif">
+				&nbsp;&nbsp;&nbsp; for(;;)<br>
+				&nbsp;&nbsp;&nbsp; {<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Delay_sec(2);<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *pout = *pin + 999;<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf(&quot;DROIN %d = %f DROOUT %d = %f\n&quot;,DROIN,*pin,DROOUT,*pout);<br>
+				&nbsp;&nbsp;&nbsp; }<br>
+				}</div>
+			</font><br>
+&nbsp;</div>
+	</div>
+</div>
+<p>&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+
+</body>
+
+</html>

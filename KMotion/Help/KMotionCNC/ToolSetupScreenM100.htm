@@ -1,0 +1,42 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Tool Setup Screen M100</title>
+</head>
+
+<body>
+
+<p><i><b><font size="5" face="Arial">Tool Setup Screen - M100 - M119</font></b></i></p>
+<p>
+<map name="FPMap0">
+<area href="#G_Code_Actions_M100-M119" shape="rect" coords="11, 48, 693, 438">
+<area href="ToolSetupScreenM3.htm" shape="rect" coords="7, 22, 52, 43">
+<area href="ToolSetupScreenButtons.htm" shape="rect" coords="103, 22, 171, 45">
+<area href="ToolSetupScreenFiles.htm" shape="rect" coords="170, 22, 256, 45">
+<area href="ToolSetupScreenTP.htm" shape="rect" coords="254, 24, 350, 46">
+</map>
+<img border="0" src="KMotionCNCfiles/ToolSetupM100.PNG" width="700" height="477" usemap="#FPMap0"></p>
+
+<p><font face="Arial"><i>(Click on Image to Jump to 
+		related help)</i></font></p>
+<p><font face="Arial">The Tool Setup Screen allows <i>KMotionCNC</i> to be configured for a 
+particular machine tool.&nbsp; Each machine tool is likely to have different 
+motion resolution, speeds, and acceleration limits.&nbsp; It is also likely to 
+different I/O requirements with regard to Spindle control and such.&nbsp; 
+Additionally&nbsp; a machine may have different initialization and homing 
+requirements.&nbsp; <i>KMotionCNC</i> has a flexible mechanism for defining what 
+type of action is to be performed for various M Codes and Custom Buttons. </font> </p>
+<p><i><b><font size="4" face="Arial"><a name="G_Code_Actions_M100-M119">G Code Actions 
+M100-M119</a></font></b></i></p>
+<p><font face="Arial">This Tool Setup Screen Tab allows the user to define up to 
+20 custom general purpose M codes that can be used to change IO bits, or execute 
+User C programs, or execute Windows Programs.&nbsp; The action to be performed 
+is defined in a similar manner as the&nbsp;
+<a href="ToolSetupScreenM3.htm#G_Code_Actions_-_M3_-_M9">GCode Actions M3-M9</a> 
+however parameters may also be passed from GCode to a KFLOP User C Program.&nbsp;
+<a href="MCodesWithParams.htm">See also</a>.</font></p>
+
+</body>
+
+</html>

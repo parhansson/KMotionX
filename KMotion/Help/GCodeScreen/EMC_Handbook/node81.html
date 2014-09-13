@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>12.1 Tool Length Offsets</TITLE>
+<META NAME="description" CONTENT="12.1 Tool Length Offsets">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node82.html">
+<LINK REL="previous" HREF="node80.html">
+<LINK REL="up" HREF="node80.html">
+<LINK REL="next" HREF="node82.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1552"
+  HREF="node82.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1546"
+  HREF="node80.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1540"
+  HREF="node80.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1548"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1550"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1553"
+  HREF="node82.html">12.2 Cutter Radius Compensation</A>
+<B> Up:</B> <A NAME="tex2html1547"
+  HREF="node80.html">12. Programming Tool Compensation</A>
+<B> Previous:</B> <A NAME="tex2html1541"
+  HREF="node80.html">12. Programming Tool Compensation</A>
+ &nbsp; <B>  <A NAME="tex2html1549"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1551"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION04310000000000000000">
+12.1 Tool Length Offsets</A>
+</H1>
+
+<P>
+Tool length offsets are given as positive numbers in the tool table.
+A tool length offset is programmed using G43 Hn, where n is the desired
+table index. It is expected that all entries in the tool table will
+be positive. The H number is checked for being a non-negative integer
+when it is read. The interpreter behaves as follows.
+
+<P>
+1. If G43 Hn is programmed, A USE_TOOL_LENGTH_OFFSET(length) function
+call is made (where length is the value of the tool length offset
+entry in the tool table whose index is n), tool_length_offset is
+reset in the machine settings model, and the value of current_z in
+the model is adjusted. Note that n does not have to be the same as
+the slot number of the tool currently in the spindle.
+
+<P>
+2. If G49 is programmed, USE_TOOL_LENGTH_OFFSET(0.0) is called,
+tool_length_offset is reset to 0.0 in the machine settings model,
+and the value of current_z in the model is adjusted. The effect of
+tool length compensation is illustrated in the screen shot below.
+Notice that the length of the tool is subtracted from the z setting
+so that the tool tip appears at the programmed setting.&nbsp; You should
+note that the effect of tool length compensation is immediate when
+you view the z position as a relative coordinate but it does affect
+actual machine position until you program a z move.
+
+<P>
+<TABLE  WIDTH="0%">
+<TR><TD>
+Test tool length program. 
+
+<P>
+Tool #1 is 1 inch long.
+
+<P>
+<TT>N01 G1 F15 X0 Y0 Z0</TT>&nbsp;
+<BR><TT>N02 G43 H1 Z0 X1</TT>&nbsp;
+<BR><TT>N03 G49 X0 Z0</TT>&nbsp;
+<BR><TT>N04 G0 X2</TT>&nbsp;
+<BR><TT>N05 G1 G43 H1 G4 P10 Z0 X3</TT>&nbsp;
+<BR><TT>N06 G49 X2 Z0</TT>&nbsp;
+<BR><TT>N07 G0 X0</TT>
+
+<P>
+</TD></TR>
+</TABLE>
+
+<TABLE  WIDTH="0%">
+<TR><TD>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><!-- MATH
+ $\resizebox*{2in}{!}{\includegraphics{/usr/share/lyx/EMC_images/length1.eps}}$
+ -->
+<IMG
+ WIDTH="230" HEIGHT="205" ALIGN="BOTTOM" BORDER="0"
+ SRC="img28.gif"
+ ALT="\resizebox*{2in}{!}{\includegraphics{/usr/share/lyx/EMC_images/length1.eps}}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+</TD></TR>
+</TABLE>
+
+<P>
+<BR>
+
+<P>
+The effect of this is that in most cases the machine will pick up
+the offset as a ramp during the next xyz move after the g43 word.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1552"
+  HREF="node82.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1546"
+  HREF="node80.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1540"
+  HREF="node80.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1548"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1550"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1553"
+  HREF="node82.html">12.2 Cutter Radius Compensation</A>
+<B> Up:</B> <A NAME="tex2html1547"
+  HREF="node80.html">12. Programming Tool Compensation</A>
+<B> Previous:</B> <A NAME="tex2html1541"
+  HREF="node80.html">12. Programming Tool Compensation</A>
+ &nbsp; <B>  <A NAME="tex2html1549"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1551"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

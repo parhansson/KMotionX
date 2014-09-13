@@ -1,0 +1,197 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Step and Direction Setup</title>
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+</head>
+
+<body>
+
+<p><i><b><font size="5">Configuring KMotion Step and Direction Outputs</font></b></i></p>
+<p>KMotion supports connection to motor amplifiers that utilize step and 
+direction inputs to control the motion.&nbsp; Step and direction motor 
+amplifiers are typically used with stepper motors with or without micro-stepping 
+capability.&nbsp; Each &quot;step&quot; causes the motor amplifier to advance the motor 
+position one step in the direction specified by the &quot;Direction&quot; signal.&nbsp; 
+Only two digital output signals are required for this interface.&nbsp;&nbsp; 
+Fine micro-stepping resolution combined with high motor RPM can result in step 
+rates in the megahertz.&nbsp; For example,&nbsp; a 200 step/rev stepping motor 
+with 128:1 micro-stepping running at 3000 RPM requires:</p>
+<p>&nbsp;&nbsp;&nbsp; <i>3000 RPM&nbsp; /&nbsp; 60 Sec/Min * 200 steps/rev * 128
+<font face="Times New Roman">µ</font>steps/full step =&nbsp; 1.28 MHz
+<font face="Times New Roman">µ</font>steps/sec</i></p>
+<p>KMotion has 4 axes of Step and Direction Generation on board.&nbsp; Output 
+pulses up to 2.5 MHz can be generated. </p>
+<p>The 4 Axes of Step and Direction outputs are hard wired to IO bits 8 through 
+15.&nbsp; If an axis channel is selected as a Step and Direction axis, the 
+corresponding 2 output pins will be automatically configured as outputs and they 
+may not be used as general purpose IO.</p>
+<p>For KMotion see the Table below:</p>
+	<table border="1" width="246" id="table1">
+		<tr>
+			<td align="center" bgcolor="#C0C0C0"><font face="Arial">Signal</font></td>
+			<td align="center" width="69" bgcolor="#C0C0C0"><font face="Arial">
+			IO Bit</font></td>
+			<td align="center" width="55" bgcolor="#C0C0C0">JP3 Pin</td>
+		</tr>
+		<tr>
+			<td align="left">Step 0</td>
+			<td align="center" width="69"><font face="Arial">8</font></td>
+			<td align="center" width="55">23</td>
+		</tr>
+		<tr>
+			<td align="left"><font face="Arial">Direction 0</font></td>
+			<td align="center" width="69"><font face="Arial">9</font></td>
+			<td align="center" width="55">24</td>
+		</tr>
+		<tr>
+			<td align="left">Step 1</td>
+			<td align="center" width="69"><font face="Arial">10</font></td>
+			<td align="center" width="55">25</td>
+		</tr>
+		<tr>
+			<td align="left"><font face="Arial">Direction 1</font></td>
+			<td align="center" width="69"><font face="Arial">11</font></td>
+			<td align="center" width="55">26</td>
+		</tr>
+		<tr>
+			<td align="left">Step 2</td>
+			<td align="center" width="69"><font face="Arial">12</font></td>
+			<td align="center" width="55">27</td>
+		</tr>
+		<tr>
+			<td align="left"><font face="Arial">Direction 2</font></td>
+			<td align="center" width="69"><font face="Arial">13</font></td>
+			<td align="center" width="55">28</td>
+		</tr>
+		<tr>
+			<td align="left">Step 3</td>
+			<td align="center" width="69"><font face="Arial">14</font></td>
+			<td align="center" width="55">29</td>
+		</tr>
+		<tr>
+			<td align="left"><font face="Arial">Direction 3</font></td>
+			<td align="center" width="69">15</td>
+			<td align="center" width="55">30</td>
+		</tr>
+	</table>
+<p>To configure an axis as step and direction, on the Configuration Screen 
+select output mode as &quot;Step Dir&quot; and select which of the 4 available Step and 
+Direction generators should be used by setting the appropriate Output Channel 0 
+setting.&nbsp; See below.&nbsp;&nbsp;&nbsp; </p>
+<p><img border="0" src="ConfigStepDir.PNG" width="507" height="515"></p>
+<p>&nbsp;</p>
+<p>Valid output channel settings 0-7 are allowed for KMotion.&nbsp; Although only 4 Step and 
+Direction generators are available for KMotion,&nbsp; channels 4-7 specify the same 
+generators as channels 0-3 except the output pins are actively driven (high and 
+low) as 3.3V LVTTL signals instead of only driven low as open collector 
+outputs.&nbsp;</p>
+<p>If your Step and Direction amplifier has opto coupler inputs driven off +5V 
+then open-collector mode is likely to work better.&nbsp; However if the 
+amplifier has standard logic inputs then LVTTL outputs should work better.&nbsp;
+</p>
+<p>The table below summarizes the modes for KMotion:</p>
+	<table border="1" width="584" id="table4">
+		<tr>
+			<td bgcolor="#C0C0C0">
+			<p align="center"><font face="Arial">Output Chan 0 Setting</font></td>
+			<td align="center" width="228" bgcolor="#C0C0C0"><font face="Arial">
+			Step &amp; Dir Generator Selected</font></td>
+			<td align="center" width="156" bgcolor="#C0C0C0">Output Drive Type</td>
+		</tr>
+		<tr>
+			<td align="center">0</td>
+			<td align="center" width="228"><font face="Arial">0</font></td>
+			<td align="center" width="156">Open Collector</td>
+		</tr>
+		<tr>
+			<td align="center"><font face="Arial">1</font></td>
+			<td align="center" width="228"><font face="Arial">1</font></td>
+			<td align="center" width="156">Open Collector</td>
+		</tr>
+		<tr>
+			<td align="center">2</td>
+			<td align="center" width="228"><font face="Arial">2</font></td>
+			<td align="center" width="156">Open Collector</td>
+		</tr>
+		<tr>
+			<td align="center"><font face="Arial">3</font></td>
+			<td align="center" width="228"><font face="Arial">3</font></td>
+			<td align="center" width="156">Open Collector</td>
+		</tr>
+		<tr>
+			<td align="center">4</td>
+			<td align="center" width="228"><font face="Arial">0</font></td>
+			<td align="center" width="156">LVTTL</td>
+		</tr>
+		<tr>
+			<td align="center"><font face="Arial">5</font></td>
+			<td align="center" width="228"><font face="Arial">1</font></td>
+			<td align="center" width="156">LVTTL</td>
+		</tr>
+		<tr>
+			<td align="center">6</td>
+			<td align="center" width="228"><font face="Arial">2</font></td>
+			<td align="center" width="156">LVTTL</td>
+		</tr>
+		<tr>
+			<td align="center"><font face="Arial">7</font></td>
+			<td align="center" width="228">3</td>
+			<td align="center" width="156">LVTTL</td>
+		</tr>
+	</table>
+<p>&nbsp;</p>
+<p>Note when configuring the motion profile for a Step and Direction Axis the appropriate maximum Velocity, Acceleration, and Jerk should be set in units 
+of micro-steps/sec, micro-steps/sec<sup>2</sup>, and micro-steps/sec<sup>3</sup> 
+respectively.</p>
+<p>&nbsp;</p>
+<p><font size="5"><b><i>Programmable Pulse width</i></b></font></p>
+<p>KMotion has a fixed pulse width of 4 (240ns).</p>
+<p>&nbsp;</p>
+<p><i><b><font size="5">Example Configuration for a IM804 Amplifier and Rapidsyn 
+Stepper</font></b></i></p>
+<p><img border="0" src="StepDirLayout.jpg" width="563" height="514"></p>
+<p><font size="4"><b><i>Layout - KMotion - Amplifier - Motor</i></b></font></p>
+<p>&nbsp;</p>
+<p><img border="0" src="IM804.jpg" width="522" height="347"></p>
+<p><font size="4">Amplifier Connections - resistors set coil currents (1500 ohms 
+= 3A) and idle standby current (270 ohms = 0.5A).&nbsp;&nbsp; DIP Switches set 
+to ON-OFF-OFF-ON for 128:1 micro-stepping.</font></p>
+<p>&nbsp;</p>
+<p><img border="0" src="RapidsynMotor.JPG" width="336" height="493"></p>
+<p><font size="4">Rapidsyn stepper motor.&nbsp; Note coil winding's centertaps 
+are not used.</font></p>
+<p>&nbsp;</p>
+<p><img border="0" src="ConfigStepDir.PNG" width="507" height="515"></p>
+<p>Axis channel 0 configures as &quot;Step Dir&quot; mode and using Step and Direction 
+generator 0.</p>
+<p>&nbsp;</p>
+<p><img border="0" src="MoveResponse.PNG" width="897" height="580"></p>
+<p>Max Velocity 1.6 x 10<sup>6</sup> steps/sec (1.6e6 / 128 = 12,500 sps =&nbsp; 
+3750 RPM).&nbsp; Note this (and most) steppers lose most all of their useful 
+torque above several thousand full steps per second.&nbsp; The high speed 
+demonstrated here is intended to demonstrate KMotion's ability to generate high 
+pulse rates.</p>
+<p>Max Acceleration 6 x 10<sup>6</sup> steps/sec<sup>2</sup></p>
+<p>Max Jerk 2 x 10<sup>8</sup> steps/sec<sup>3</sup></p>
+<p>1 x 10<sup>6</sup> count&nbsp; Move performed and data captured over 3 
+seconds.</p>
+<p>Pushing Move downloads all parameters, enables the axis, performs the 
+movement, and plots the result.</p>
+<p>&nbsp;</p>
+<p><img border="0" src="DiditalStepOutputs.PNG" width="284" height="358"></p>
+<p>Note after the axis has been enabled, digital IO bits 8 and 9 have 
+automatically been configured as outputs for use by Step and Direction Generator 
+#0.</p>
+<p>&nbsp;</p>
+<p><font size="4">See Video</font></p>
+<p>Click <a href="http://www.dynomotion.com/Videos/StepAndDir.wmv">here</a> for 
+a video showing slow and smooth acceleration of this configuration up to 12,500 
+full steps per second (1.6 MHz @ 128 microsteps/full step). </p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

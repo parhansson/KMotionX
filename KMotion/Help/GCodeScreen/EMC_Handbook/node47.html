@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>10.2 Numbers </TITLE>
+<META NAME="description" CONTENT="10.2 Numbers ">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node48.html">
+<LINK REL="previous" HREF="node46.html">
+<LINK REL="up" HREF="node45.html">
+<LINK REL="next" HREF="node48.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1040"
+  HREF="node48.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1034"
+  HREF="node45.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1028"
+  HREF="node46.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1036"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1038"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1041"
+  HREF="node48.html">10.3 Words</A>
+<B> Up:</B> <A NAME="tex2html1035"
+  HREF="node45.html">10. G Code Basics</A>
+<B> Previous:</B> <A NAME="tex2html1029"
+  HREF="node46.html">10.1 Blocks</A>
+ &nbsp; <B>  <A NAME="tex2html1037"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1039"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION04120000000000000000">
+10.2 Numbers </A>
+</H1>
+
+<P>
+Since every nc word is composed of a letter and a value. Before we
+begin a serious discussion of the meaning of nc programming words
+we need to consider the meaning of value within the interpreter. A
+real_value is some collection of characters that can be processed
+to come up with a number. A real_value may be an explicit number
+(such as 341 or -0.8807), a parameter value, an expression, or a unary
+operation value. In this chapter all examples will use explicit numbers.
+Expressions and unary operations are treated in the computation chapter.
+The use of parameter values or variables are a described in detail
+in the Using Variables chapter. 
+
+<P>
+EMC uses the following rules regarding numbers. In these rules a digit
+is a single character between 0 and 9. 
+
+<P>
+A number consists of : 
+
+<P>
+
+<UL>
+<LI>an optional plus or minus sign, followed
+</LI>
+<LI>by zero to many digits, followed, possibly, by
+</LI>
+<LI>one decimal point, followed by
+</LI>
+<LI>zero to many digits provided that there is at least one digit somewhere
+in the number.
+</LI>
+</UL>
+There are two kinds of numbers: integers and decimals. An integer
+does not have a decimal point in it; a decimal does. 
+
+<P>
+Some additional rules about the meaning of numbers are that: 
+
+<P>
+
+<UL>
+<LI>Numbers may have any number of digits, subject to the limitation on
+line length.
+</LI>
+<LI>A non-zero number with no sign as the first character is assumed to
+be positive. 
+</LI>
+<LI>Initial and trailing zeros are allowed but not required.
+</LI>
+<LI>A number with initial or trailing zeros will have the same value as
+if the extra zeros were not there. 
+</LI>
+</UL>
+Numbers used for specific purposes in RS274/NGC are often restricted
+to some finite set of values or to some range of values. In many uses,
+decimal numbers must be close to integers; this includes the values
+of indexes (for parameters and changer slot numbers, for example).
+In the interpreter, a decimal number which is supposed be close to
+an integer is considered close enough if it is within 0.0001 of an
+integer. 
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1040"
+  HREF="node48.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1034"
+  HREF="node45.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1028"
+  HREF="node46.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1036"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1038"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1041"
+  HREF="node48.html">10.3 Words</A>
+<B> Up:</B> <A NAME="tex2html1035"
+  HREF="node45.html">10. G Code Basics</A>
+<B> Previous:</B> <A NAME="tex2html1029"
+  HREF="node46.html">10.1 Blocks</A>
+ &nbsp; <B>  <A NAME="tex2html1037"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1039"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

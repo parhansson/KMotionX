@@ -1,0 +1,246 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>11.12 Why use a canned cycle?</TITLE>
+<META NAME="description" CONTENT="11.12 Why use a canned cycle?">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="previous" HREF="node78.html">
+<LINK REL="up" HREF="node66.html">
+<LINK REL="next" HREF="node80.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1506"
+  HREF="node80.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1500"
+  HREF="node66.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1496"
+  HREF="node78.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1502"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1504"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1507"
+  HREF="node80.html">12. Programming Tool Compensation</A>
+<B> Up:</B> <A NAME="tex2html1501"
+  HREF="node66.html">11. Canned Cycles</A>
+<B> Previous:</B> <A NAME="tex2html1497"
+  HREF="node78.html">11.11 G98 G99</A>
+ &nbsp; <B>  <A NAME="tex2html1503"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1505"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION042120000000000000000">
+11.12 Why use a canned cycle?</A>
+</H1>
+
+<P>
+There are at least two reasons for using canned cycles. The first
+is the economy of code. A single bore would take several lines of
+code to execute.
+
+<P>
+Example 1 above demonstrated how a canned cycle could be used to produce
+8 holes with ten lines of nc code within the canned cycle mode. The
+program below will produce the same set of 8 holes using five lines
+for the canned cycle. It does not follow exactly the same path nor
+does it drill in the same order as the earlier example. But the program
+writing economy of a good canned cycle should be obvious. 
+
+<P>
+<TABLE  WIDTH="0%">
+<TR><TD>
+Example 7 - Eight Holes Revisited 
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1">n100 g90 g0 x0 y0 z0 (move coordinate
+home) </FONT></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1">n110 g1 f10 x0 g4 p0.1 </FONT></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1">n120 g91 g81 x1 y0 z-1 r1 l4(canned
+drill cycle) </FONT></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1">n130 g90 g0 x0 y1 </FONT></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1">n140 z0 </FONT></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1">n150 g91 g81 x1 y0 z-.5 r1 l4(canned
+drill cycle) </FONT></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1">n160 g80 (turn off canned cycle) </FONT></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1">n170 m2 (program end)</FONT></TT>
+<P>
+
+
+<P>
+</TD></TR>
+</TABLE>
+
+<TABLE  WIDTH="0%">
+<TR><TD>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><!-- MATH
+ $\resizebox*{2in}{!}{\includegraphics{/usr/share/lyx/EMC_images/Eight.eps}}$
+ -->
+<IMG
+ WIDTH="230" HEIGHT="188" ALIGN="BOTTOM" BORDER="0"
+ SRC="img26.gif"
+ ALT="\resizebox*{2in}{!}{\includegraphics{/usr/share/lyx/EMC_images/Eight.eps}}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+</TD></TR>
+</TABLE>
+
+<P>
+<BR>
+
+<P>
+Example 8 - Twelve holes in a square 
+
+<P>
+This example demonstrates the use of the L word to repeat a set of
+incremental drill cycles for successive blocks of code within the
+same G81 motion mode. Here we produce 12 holes using five lines of
+code in the canned motion mode. 
+
+<P>
+<TABLE  WIDTH="0%">
+<TR><TD>
+<TT><FONT SIZE="-1">N1000 G90 G0 X0 Y0 Z0 (move coordinate home)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N1010 G1 F50 X0 G4 P0.1</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N1020 G91 G81 X1 Y0 Z-0.5 R1 L4 (canned drill cycle)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N1030 X0 Y1 R0 L3 (repeat)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N1040 X-1 Y0 L3 (repeat)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N1050 X0 Y-1 L2 (repeat)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N1060 G80 (turn off canned cycle)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N1070 G90 G0 X0 (rapid home)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N1080 Y0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N1090 Z0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N1100 M2 (program end)</FONT></TT>
+<P>
+
+
+<P>
+</TD></TR>
+</TABLE>
+
+<TABLE  WIDTH="0%">
+<TR><TD>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><!-- MATH
+ $\resizebox*{2in}{!}{\includegraphics{/usr/share/lyx/EMC_images/Twelve.eps}}$
+ -->
+<IMG
+ WIDTH="230" HEIGHT="169" ALIGN="BOTTOM" BORDER="0"
+ SRC="img27.gif"
+ ALT="\resizebox*{2in}{!}{\includegraphics{/usr/share/lyx/EMC_images/Twelve.eps}}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+</TD></TR>
+</TABLE>
+
+<P>
+<BR>
+
+<P>
+The second reason to use a canned cycle is that they all produce preliminary
+moves and returns that you can anticipate and control regardless of
+the start point of the canned cycle.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1506"
+  HREF="node80.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1500"
+  HREF="node66.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1496"
+  HREF="node78.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1502"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1504"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1507"
+  HREF="node80.html">12. Programming Tool Compensation</A>
+<B> Up:</B> <A NAME="tex2html1501"
+  HREF="node66.html">11. Canned Cycles</A>
+<B> Previous:</B> <A NAME="tex2html1497"
+  HREF="node78.html">11.11 G98 G99</A>
+ &nbsp; <B>  <A NAME="tex2html1503"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1505"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Simple Method</TITLE>
+<META NAME="description" CONTENT="Simple Method">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node95.html">
+<LINK REL="previous" HREF="node93.html">
+<LINK REL="up" HREF="node91.html">
+<LINK REL="next" HREF="node95.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1758"
+  HREF="node95.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1752"
+  HREF="node91.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1746"
+  HREF="node93.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1754"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1756"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1759"
+  HREF="node95.html">Other Items Where Cutter</A>
+<B> Up:</B> <A NAME="tex2html1753"
+  HREF="node91.html">First Move</A>
+<B> Previous:</B> <A NAME="tex2html1747"
+  HREF="node93.html">General Method</A>
+ &nbsp; <B>  <A NAME="tex2html1755"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1757"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION04322300000000000000">
+Simple Method</A>
+</H3>
+
+<P>
+If the contour is a material edge contour and there is a convex corner
+somewhere on the contour, a simpler method of making an entry is available.
+See Figure 12.
+
+<P>
+First, pick a convex corner, D. Decide which way you want to go along
+the contour from D. In our example we are keeping the tool to the
+left of the contour and going next towards F. Extend the line FD (if
+the next part of the contour is an arc, extend the tangent to arc
+FD from D) to divide the area outside the contour near D into two
+regions. Make sure the center of the tool is currently in the region
+on the same side of the extended line as the material inside the contour
+near D. If not, move the tool into that region. In the example, point
+E represents the current location of the center of the tool. Since
+it is on the same side of line DF as the shaded triangle, no additional
+move is needed. Now write a line of NC code that turns compensation
+on and moves to point D
+
+<P>
+<TABLE  WIDTH="0%">
+<TR><TD>
+<TT><FONT SIZE="-1">N0010 G41 G1 X2 Y2 (turn compensation on and make entry
+move) </FONT></TT>
+<P>
+
+
+<P>
+This method will also work at a concave corner on a tool path contour,
+if the actual tool is oversized, but it will fail with a tool path
+contour if the tool is undersized.
+
+<P>
+</TD></TR>
+</TABLE>
+
+<TABLE  WIDTH="0%">
+<TR><TD>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><!-- MATH
+ $\resizebox*{3in}{!}{\includegraphics{/usr/share/lyx/EMC_images/Image14.eps}}$
+ -->
+<IMG
+ WIDTH="345" HEIGHT="210" ALIGN="BOTTOM" BORDER="0"
+ SRC="img34.gif"
+ ALT="\resizebox*{3in}{!}{\includegraphics{/usr/share/lyx/EMC_images/Image14.eps}}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+</TD></TR>
+</TABLE>
+
+<P>
+<BR>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1758"
+  HREF="node95.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1752"
+  HREF="node91.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1746"
+  HREF="node93.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1754"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1756"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1759"
+  HREF="node95.html">Other Items Where Cutter</A>
+<B> Up:</B> <A NAME="tex2html1753"
+  HREF="node91.html">First Move</A>
+<B> Previous:</B> <A NAME="tex2html1747"
+  HREF="node93.html">General Method</A>
+ &nbsp; <B>  <A NAME="tex2html1755"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1757"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

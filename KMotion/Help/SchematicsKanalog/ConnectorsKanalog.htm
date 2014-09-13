@@ -1,0 +1,165 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Kanalog Connectors</title>
+</head>
+
+<body>
+
+<p><i><b><font size="5" face="Arial">Kanalog - Connector Pinouts</font></b></i></p>
+<p><font face="Arial"><img border="0" src="Kanalog500JP.png" width="777" height="707"></font></p>
+<p>&nbsp;</p>
+<p><font size="4" face="Arial"><b><i>JP1/JP2 Differential Inputs</i></b></font></p>
+<p><font face="Arial">16 Differential Receiver Inputs are provided.&nbsp; 
+Kanalog converts the differential signals to signal ended LVTTL signals and 
+passes them through to existing KFlop I/O pins.&nbsp; </font> </p>
+<p><font face="Arial">JP1 converts 8 of the signals and connects them to Kflop 
+I/O bits 0-7 (Kflop JP7 Pins 7-14) which are Kflop's 4 encoder A/B input 
+channels.&nbsp; </font> </p>
+<p><font face="Arial">JP2 converts 8 of the signals and connects them to Kflop 
+I/O bits 36-43 (Kflop JP5 Pins 1-8) which are General Purpose I/O pins.</font></p>
+<p><font face="Arial">Typically up to 4 encoder's A/B signals are connected to 
+JP1 and any Z index inputs are connected to JP2</font></p>
+<p><font face="Arial">These differential inputs are moderately damped with an 
+internal 470ohm resistor connected across the + to - inputs.&nbsp; If additional 
+termination is required an external resistor may be connected. </font> </p>
+<p><font face="Arial"><img border="0" src="JP1JP2.PNG" width="545" height="290"></font></p>
+<p>&nbsp;</p>
+<p><font size="4" face="Arial"><b><i>JP6 - Analog Inputs +/- 10V</i></b></font></p>
+<p><font face="Arial">(8) +/- 10V analog inputs are provided.&nbsp; These are 
+mapped and referenced as ADC inputs 0-7 for Kflop configuration purposes.&nbsp; 
+Input impedance is approximately 100K ohms.</font></p>
+<p><font face="Arial">(8) ground terminals are provided.&nbsp; Kanalog contains 
+a single solid ground plane so these grounds may be used as any digital or 
+analog ground connection.</font></p>
+<p><font face="Arial"><img border="0" src="JP6.PNG" width="215" height="284"></font></p>
+<p><font size="4" face="Arial"><b><i>JP8 - FET Switch Outputs (relay drivers) - 
+watchdog - power outputs</i></b></font></p>
+<p><font face="Arial">(8) 24V @ 1Amp relay FET Switch Outputs are available on 
+Kanalog mapped as Output Bits 152-159.&nbsp; When activated (checked on or with 
+state &quot;1&quot;) the FET Switches make a connection to ground.&nbsp; Normally a load, 
+such as a relay coil is connected between some appropriate +supply and a Switch 
+input.&nbsp;&nbsp; Therefore when the Switch&nbsp; makes a connection to ground, 
+the load is energized.</font></p>
+<blockquote>
+	<p><font color="#FF0000" face="Arial">
+	<span style="font-weight: 700; font-style: italic; background-color: #FFFFFF">Caution! 
+	Inductive loads MUST have a reverse diode connected in parallel with the 
+	load to avoid a high voltage spark when the switch opens.&nbsp; Failure to 
+	allow a re-circulating current path on any inductive coil such as a relay, 
+	solenoid, or motor is likely to cause permanent damage.</span></font></p>
+</blockquote>
+<p><font face="Arial">One Enable or Watchdog FET Switch Output is also available (24V @ 1Amp).&nbsp; 
+This switch conducts after Kflop boots, enables the +/-15V generator, and begins 
+communicating with the board.&nbsp; It is recommended that this switch output is 
+used an one of the conditions to enable main system power for motors and other 
+devices.</font></p>
+<p><font face="Arial">(2) +3.3V outputs are available to power low current (&lt;100ma) external 
+circuitry.</font></p>
+<p><font face="Arial">One low current 1.7V bias current is available.&nbsp; See circuit below:</font></p>
+<p><font face="Arial">(4) +5V outputs are available to power low current (&lt;100ma) external 
+circuitry such as encoders.&nbsp; Normally +5V is applied to Kflop JR1 (4 pin 
+white Molex connector) and passes through the ribbon connector to Kanalog.&nbsp; 
+However it is also possible to feed +5V into the system via these terminals.&nbsp; 
+If +5V power is fed into both Kflop and Kanalog the exact same +5V supply must 
+be connected to both.</font></p>
+<p><font face="Arial"><img border="0" src="Bias1.7V.PNG" width="238" height="193"></font></p>
+<p><font face="Arial"><img border="0" src="JP8.PNG" width="241" height="266"></font></p>
+<p>&nbsp;</p>
+<p><b><i><font face="Arial" size="4">J</font></i></b><font size="4" face="Arial"><b><i>P9 - 
+Differential Signals 8-15 to Kflop</i></b></font></p>
+<p><font face="Arial">The second (8) of the 16 Differential signals pass through 
+to KFlop through this connector.&nbsp; If only the first 8 differential are used 
+then this connector is not required and the 8 Kflop inputs may be used for some 
+other purpose.</font></p>
+<p>&nbsp;</p>
+<p><font face="Arial"><img border="0" src="JP9.PNG" width="201" height="228"></font></p>
+<p>&nbsp;</p>
+<p><b><i><font face="Arial" size="4">J</font></i></b><font size="4" face="Arial"><b><i>P10 - 
+RS232</i></b></font></p>
+<p><font face="Arial">The JP10 6-pin phone connector provides 3-wire RS232 connectivity.&nbsp; JP10 
+Pin3 is used for transmit data from Kanalog.&nbsp; JP10 Pin 4 is used for 
+receive data going into Kanalog.&nbsp; Receive data is converted to LVTTL and 
+routed to a Kflop I/O bit #44.&nbsp; Data from LVTTL Kflop I/O bit #45 is passed 
+through the RS232 driver and out the Transmit pin.&nbsp; This phone plug 
+connector is designed to be compatible with
+<a href="http://www.automationdirect.com">Automation Direct's </a>PLC line using 
+a crossover phone cable.&nbsp;&nbsp; </font> </p>
+<p><font face="Arial">Note: Our pin out numbering may differ from most 
+standards.&nbsp; Pin 1 on the board is the pin closest to JP8.</font></p>
+<p><font face="Arial"><img border="0" src="JP10.PNG" width="280" height="169"></font></p>
+<p><font size="4" face="Arial"><b><i>JP11 - Analog Ouputs +/- 10V</i></b></font></p>
+<p><font face="Arial">(8) +/- 10V analog ouputs are provided.&nbsp; These are 
+mapped and referenced as DAC outputs 0-7 for Kflop configuration purposes.&nbsp; 
+Output impedance is approximately 2K ohms.</font></p>
+<p><font face="Arial">(8) ground terminals are provided.&nbsp; Kanalog contains 
+a single solid ground plane so these grounds may be used as any digital or 
+analog ground connection.</font></p>
+<p><font face="Arial"><img border="0" src="JP11.PNG" width="215" height="306"></font></p>
+<p>&nbsp;</p>
+<p><font size="4" face="Arial"><b><i>JP12 - General Purpose Inputs, Outputs, Low 
+level analog in, Supplies </i></b></font></p>
+<p><font face="Arial">JP12 is a standard 40 pin IDC header connector.&nbsp;
+</font></p>
+<p><font face="Arial">(8) 3.3V LVTTL Inputs are provided (SDIN0 - SDIN7) mapped 
+as Kanalog Input bits #128-135.&nbsp; Inputs are diode clamped to 3.3V.&nbsp;
+</font></p>
+<blockquote>
+	<p><i><font face="Arial"><font color="#FF0000"><b>Note: To connect 5V 
+	signals a 200ohm&nbsp; external series resistor is required</b></font>.</font></i></p>
+</blockquote>
+<p><font face="Arial">(8) 3.3V LVTTL Outputs are provided (OUT 0 - OUT_7) mapped 
+as Kanalog Output bits #160-167. </font></p>
+<p><font face="Arial">ADC channels 0-3 have internal low voltage inputs exposed 
+as signals IN0-IN3.&nbsp; Instead of driving the normal terminal inputs with a 
+voltage range of +/- 10V.&nbsp; The INx pins may be driven with low voltage (0V 
+- 3V) signals with an input impedance of ~10K ohms.&nbsp;&nbsp; This may allow 
+higher resolution with low voltage signals.&nbsp; Caution should be used as 
+these are low voltage unprotected signal inputs.</font></p>
+<p><font face="Arial">+/- 15V from the internal DC-DC generator is available on 
+pins V15 (+15V) and VM15 (-15V).&nbsp; 70ma is available for external use for 
+each supply.</font></p>
+<p><font face="Arial">ENABLE_ALL is the LVTTL equivalent of the SwitchEnableAll 
+FET output if a logic level is desired instead of the FET SWITCH output.</font></p>
+<p><font face="Arial">One additional 24V 1Amp FET switch is available with an 
+exposed gate.&nbsp; Drive signal FET_MISC_GATE to 3.3v to turn on the FET (SwitchMisc) 
+output.</font></p>
+<p><font face="Arial"><img border="0" src="SwitchMisc.PNG" width="504" height="219"></font></p>
+<p><font face="Arial">+3.3V and +5V are available on this connector.&nbsp; +3.3V 
+is available as an output only (regulated down from the +5V).&nbsp;&nbsp; +5V is 
+common to all other +5V signals and may be used as input or output.&nbsp;&nbsp;
+</font></p>
+<p><font face="Arial">&nbsp;<img border="0" src="JP12.PNG" width="359" height="344"></font></p>
+<p><font size="4" face="Arial"><b><i>JP13 - </i></b></font><b><i>
+<font face="Arial" size="4">Opto Outputs</font></i></b></p>
+<p><font face="Arial">(8) totaly isolated and independent optically isolated outputs are provided.&nbsp; 
+</font> </p>
+<p><font face="Arial">Opto output transistors are rated for a max voltage of 80V and will conduct 
+up to 25ma of current.&nbsp; </font> </p>
+<p><font face="Arial"><img border="0" src="OptoOutCircuit.PNG" width="213" height="488"></font></p>
+<p><font face="Arial"><img border="0" src="JP13.PNG" width="241" height="276"></font></p>
+<p><font size="4" face="Arial"><b><i>JP14 -&nbsp; Kflop</i></b></font></p>
+<p><font face="Arial">This is the main connection between Kflop and Kanalog and should consist of a 
+short 26-pin one-one ribbon cable.</font></p>
+<p><font face="Arial">Analog and digital data passes through this cable in serial form.&nbsp; The 
+first 8 differential signals pass to the Kflop in parallel form.</font></p>
+<p><font face="Arial">None of thes signals should be used by the User.</font></p>
+<p><font face="Arial"><img border="0" src="JP14.PNG" width="343" height="251"></font></p>
+<p>&nbsp;</p>
+<p><font size="4" face="Arial"><b><i>JP15 - </i></b></font><b><i>
+<font face="Arial" size="4">Opto Intputs</font></i></b></p>
+<p><font face="Arial">(8) totaly isolated and independent optically isolated inputs are provided.&nbsp; 
+</font> </p>
+<p><font face="Arial">Input LEDs have a series resistance of 10Kohms and may be driven directly by 
+any voltage from 5-24V.&nbsp; Max drain of 2.4ma when driven with 24V.</font></p>
+<p><font face="Arial"><img border="0" src="JP15.PNG" width="241" height="284"></font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

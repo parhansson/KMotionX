@@ -1,0 +1,1052 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Machine Configuration file emc.ini</TITLE>
+<META NAME="description" CONTENT="Machine Configuration file emc.ini">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="previous" HREF="node23.html">
+<LINK REL="up" HREF="node23.html">
+<LINK REL="next" HREF="node25.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html623"
+  HREF="node25.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html617"
+  HREF="node23.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html613"
+  HREF="node23.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html619"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html621"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html624"
+  HREF="node25.html">6.3 Configuring EMC</A>
+<B> Up:</B> <A NAME="tex2html618"
+  HREF="node23.html">6.2 Configuring EMC</A>
+<B> Previous:</B> <A NAME="tex2html614"
+  HREF="node23.html">6.2 Configuring EMC</A>
+ &nbsp; <B>  <A NAME="tex2html620"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html622"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION03121000000000000000">
+Machine Configuration file emc.ini</A>
+</H2>
+
+<P>
+<FONT COLOR="#000000">The machine configuration file emc.ini follows the
+Microsoft INI file format, in which values are associated with keywords
+on single lines, perhaps in sections denoted with square brackets,
+e.g.,</FONT>
+<P>
+<FONT COLOR="#000000">[SECTION]</FONT>
+<BR><FONT COLOR="#000000">; COMMENT</FONT>
+<BR><FONT COLOR="#000000">SYMBOL = VALUE</FONT>
+<P>
+<FONT COLOR="#000000">Everything from the first non-whitespace character
+after the = up to the end of the line is passed as the value, so you
+can embed spaces in string symbols if you want to. </FONT>
+<P>
+<FONT COLOR="#000000">You can edit the values for each keyword in any
+text editor. The changes won't take effect until the next time the
+controller is run. The file should be called emc.ini, but the name
+can be overridden using a command line argument to the controllers.
+See the section &#34;Starting Up&#34; for information on
+how to do this. The following sections detail each section of the
+configuration file, using sample values for the configuration lines. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="534"></A>[EMC] section. The [EMC]
+section contains general parameters for the whole controller. These
+are: </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="540"></A>VERSION = $Revision: 1.14 $</FONT>
+<P>
+<FONT COLOR="#000000">The version number for the INI file. This is automatically
+updated when using the Revision Control System, which looks for the
+$Revision: 1.14 $ string and appends the revision number. If you
+want to edit this manually just change the number and leave the other
+tags alone. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="544"></A>MACHINE = My Controller</FONT>
+<P>
+<FONT COLOR="#000000">This is the name of the controller, which is printed
+out when it runs. You can put whatever you want here.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="548"></A>NML_FILE = emc.nml</FONT>
+<P>
+<FONT COLOR="#000000">The name of the NML file to use.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="552"></A>DEBUG = 0x00000003</FONT>
+<P>
+<FONT COLOR="#000000">Sets the verbosity of the debugging messages printed
+out on the text console. Valid options are :</FONT>
+<P>
+<FONT COLOR="#000000">0x00000000 Do not print any debugging messages.</FONT>
+<P>
+<FONT COLOR="#000000">0x00000001 Print invalid messages</FONT>
+<P>
+<FONT COLOR="#000000">0x00000002 Print configuration settings</FONT>
+<P>
+<FONT COLOR="#000000">0x00000004 Print defaults</FONT>
+<P>
+<FONT COLOR="#000000">0x00000008 Print version</FONT>
+<P>
+<FONT COLOR="#000000">0x00000010 Print task messages</FONT>
+<P>
+<FONT COLOR="#000000">0x00000020 Print IO points</FONT>
+<P>
+<FONT COLOR="#000000">0x00000040 Print NML messages</FONT>
+<P>
+<FONT COLOR="#000000">0x00000080 Print time taken for motion to complete</FONT>
+<P>
+<FONT COLOR="#000000">0x00000100 Print interpreter debugging</FONT>
+<P>
+<FONT COLOR="#000000">0x00000200 Print RCS debugging</FONT>
+<P>
+<FONT COLOR="#000000">0x00000400 Print raw trajectory data</FONT>
+<P>
+<FONT COLOR="#000000">0x00000800 Print interpreter list</FONT>
+<P>
+<FONT COLOR="#000000">0x7FFFFFFF Print all debugging messages</FONT>
+<P>
+<FONT COLOR="#000000">The numbers can be combined (logical AND) so that
+selected information can be printed. i.e. 0x00000003 would print invalid
+messages AND configuration settings.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="586"></A>RS274NGC_STARTUP_CODE
+= G21 G90</FONT>
+<P>
+<FONT COLOR="#000000">A string of NC codes that the interpreter is initalised
+with.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="590"></A>[DISPLAY] section.
+The [DISPLAY] section contains parameters for the Graphical User
+Interface.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="596"></A>PLAT = nonrealtime</FONT>
+<P>
+<FONT COLOR="#000000">Only one choice, nonrealtime.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="600"></A>DISLAY = tkemc</FONT>
+<P>
+<FONT COLOR="#000000">The name of the user interface to use. Valid options
+are :</FONT>
+<P>
+<FONT COLOR="#000000">emcpanel<A NAME="604"></A></FONT>
+<P>
+<FONT COLOR="#000000">keystick<A NAME="606"></A></FONT>
+<P>
+<FONT COLOR="#000000">tkemc<A NAME="608"></A></FONT>
+<P>
+<FONT COLOR="#000000">tkemcts<A NAME="610"></A></FONT>
+<P>
+<FONT COLOR="#000000">xemc<A NAME="612"></A></FONT>
+<P>
+<FONT COLOR="#000000">yemc<A NAME="614"></A></FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="616"></A>CYCLE_TIME = 0.200</FONT>
+<P>
+<FONT COLOR="#000000">The period, in seconds, at which the display will
+be updated.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="620"></A>HELP_FILE = doc/help.txt</FONT>
+<P>
+<FONT COLOR="#000000">Location and name of a plain text help file to be
+used when the GUI HELP button is pressed.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="624"></A>POSITION_OFFSET = RELATIVE</FONT>
+<P>
+<FONT COLOR="#000000">Initial display setting for position, RELATIVE or
+MACHINE.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="628"></A>POSITION_FEEDBACK = ACTUAL</FONT>
+<P>
+<FONT COLOR="#000000">Initial display setting for position, COMMANDED
+or ACTUAL.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="632"></A>MAX_FEED_OVERRIDE =
+1.2</FONT>
+<P>
+<FONT COLOR="#000000">Highest value that will be allowed for feedrate
+override. 1.0 = 100%</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="636"></A>PROGRAM_PREFIX = programs/</FONT>
+<P>
+<FONT COLOR="#000000">The prefix to be added to any NC program prior to
+loading.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="640"></A>INTRO_GRAPHIC = emc.gif</FONT>
+<P>
+<FONT COLOR="#000000">File name of the image to be displayed whilst EMC
+is loaded. This can be commented out if not required.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="644"></A>INTRO_TIME = 5</FONT>
+<P>
+<FONT COLOR="#000000">Time, in seconds, that the intro image is displayed.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="648"></A>BALLOON_HELP = 1</FONT>
+<P>
+<FONT COLOR="#000000">Enable popup balloon help with tk based GUIs.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="652"></A>LINEAR_UNITS = AUTO</FONT>
+<P>
+<FONT COLOR="#000000">Units used for display of linear axis. AUTO, INCH,
+MM, or CM</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="656"></A>ANGULAR_UNITS = AUTO</FONT>
+<P>
+<FONT COLOR="#000000">Units used for display of rotary axis. AUTO, DEG,
+RAD, or GRAD.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="660"></A>[TASK] section. The
+[TASK] section contains general parameters for EMCTASK, which
+includes primarily the NC language interpreter and the sequencing
+logic for sending commands to EMCMOT and EMCIO.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="666"></A>PLAT = nonrealtime</FONT>
+<P>
+<FONT COLOR="#000000">Only one choice, nonrealtime.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="670"></A>TASK = minimilltask</FONT>
+<P>
+<FONT COLOR="#000000">Name of the task controller program, bridgeporttask
+or minimilltask. This will need to correspond with IO controller program.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="674"></A>CYCLE_TIME = 0.010</FONT>
+<P>
+<FONT COLOR="#000000">The period, in seconds, at which EMCTASK will run.
+You can make this as small as you want to increase the throughput.
+Making it 0.0 or a negative number will tell EMCTASK not to sleep
+at all. Ultimately the system loading will limit the effective throughput.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="678"></A>[RS274NGC] section.
+Part program interpreter section.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="682"></A>PARAMETER_FILE = emc.var</FONT>
+<P>
+<FONT COLOR="#000000">Name of the file containing variables used for coordinate
+offsets.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="686"></A>[EMCMOT] section.
+The [EMCMOT] section contains critical parameters for the motion
+control module.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="692"></A>PLAT = realtime</FONT>
+<P>
+<FONT COLOR="#000000">Only one choice for most, realtime.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="696"></A>EMCMOT = steppermod.o</FONT>
+<P>
+<FONT COLOR="#000000">The motion control module to be used. Choices are
+:</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="700"></A>steppermod.o The original stepper
+motor module using the parallel port. Not available with rtai systems.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="702"></A>freqmod.o An improved stepper
+motor module requiring PERIOD to be set.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="704"></A>smdromod.o freqmod with encoder
+feedback. Requires DRO_BASE_ADDRESS to be set.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="706"></A>stgmod.o Servo motor control using
+the Servo To Go card.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="708"></A>stg8mod.o Eight axis version of
+stgmod</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="710"></A>stg2mod.o Servo motor control
+using the Servo To Go II card.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="712"></A>newstgmod.o Updated version
+of stgmod for both versions of the Servo To Go card.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="714"></A>vtiisamod.o Servo motor control
+using the ISA Vigilant Products card.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="716"></A>vtipcimod.o PCI version of vtiisamod.
+Only available for 2.4.xx based systems.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="718"></A>ppmcmod.o Jon Elson's parallel
+port motion control system for servo motors.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="720"></A>ppmcmod8.o Eight axis version
+of ppmcmod</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="722"></A>univstepmod.o Stepper motor
+control via Jon Elson's parallel port system.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="724"></A>simmod.o Simulated motion control
+module.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="726"></A>minitetra.o Hexapod kinimatics
+using freqmod.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="728"></A>SHMEM_KEY = 100</FONT>
+<P>
+<FONT COLOR="#000000">Key used for shared memory.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="732"></A>SHMEM_BASE_ADDRESS
+= 0x3F00000</FONT>
+<P>
+<FONT COLOR="#000000">Base address of physical shared memory. For rtlinux_09J,
+this must point to memory reserved during boot up via ``mem = 31M''
+in /etc/lilo.conf. This is not required for all later realtime linux
+systems as a different mechanism is used to allocate shared memory.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="736"></A>IO_BASE_ADDRESS = 0x378</FONT>
+<P>
+<FONT COLOR="#000000">Base address for the motion control card or parallel
+port.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="740"></A>PARPORT_BASE_ADDRESS
+= 0x378</FONT>
+<P>
+<FONT COLOR="#000000">Obsolete since July 2002 in the CVS sources, and
+BDI-2.2.18. Use IO_BASE_ADDRESS instead.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="744"></A>STG_BASE_ADDRESS = 0x200</FONT>
+<P>
+<FONT COLOR="#000000">Obsolete since July 2002 in the CVS sources, and
+BDI-2.2.18. Use IO_BASE_ADDRESS instead.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="748"></A>DRO_BASE_ADDRESS = 0x200</FONT>
+<P>
+<FONT COLOR="#000000">Base address for the Mauch/Kaluga DRO card used
+by smdromod for encoder feedback.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="752"></A>COMM_TIMEOUT= 1.0</FONT>
+<P>
+<FONT COLOR="#000000">Timeout for comms to emcmot in seconds.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="756"></A>COMM_WAIT = 0.010</FONT>
+<P>
+<FONT COLOR="#000000">Interval between tries of comms to emcmot in seconds.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="760"></A>PERIOD = 0.000020</FONT>
+<P>
+<FONT COLOR="#000000">Base period for output pulses with freqmod in seconds.
+The shorter the interval, the higher the maximum feedrate becomes,
+but at the expense of system throughput. Too smaller a period will
+cause the whole system to lock up.</FONT>
+<P>
+<FONT COLOR="#000000">Do NOT use this parameter with any module other
+than freqmod or smdromod. The system WILL lock up.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="766"></A>MOTION_IO_ADDRESS =
+0x3BC</FONT>
+<P>
+<FONT COLOR="#000000">Port used for IO synchonized with motion start/end.</FONT>
+<P>
+<FONT COLOR="#000000">[TRAJ] section. The [TRAJ] section contains
+general parameters for the trajectory planning module in EMCMOT.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="775"></A>AXES = 3</FONT>
+<P>
+<FONT COLOR="#000000">The number of controlled axes in the system. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="779"></A>COORDINATES = X Y Z</FONT>
+<P>
+<FONT COLOR="#000000">The names of the axes being controlled. X, Y, Z,
+A, B, and C are all valid. It is also possible to have X Y Y Z and
+control ganged slides.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="783"></A>HOME = 0 0 0 </FONT>
+<P>
+<FONT COLOR="#000000">Coordinates of the homed position of each axis.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="787"></A>LINEAR_UNITS = 0.03937007874016 </FONT>
+<P>
+<FONT COLOR="#000000">The number of linear units per millimeter. For systems
+executing in native English (inch) units, this value is as shown above.
+For systems executing in native millimeter units, this value is 1.
+This does not affect the ability to program in English or metric units
+in NC code. It is used to determine how to interpret the numbers reported
+in the controller status by external programs. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="791"></A>ANGULAR_UNITS = 1.0</FONT>
+<P>
+<FONT COLOR="#000000">The number of angular units per degree. For systems
+executing in native degree units, this value is as shown above. For
+systems executing in radians, this value is 0.01745329252167, or PI/180. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="795"></A>CYCLE_TIME = 0.010</FONT>
+<P>
+<FONT COLOR="#000000">The period in seconds at which trajectory calculations
+are performed. This is a multiple of the period at which servo calculations
+are performed, as set in the [AXIS_#] CYCLE_TIME entry. Trajectory
+calculations are called at multiples of the servo period to plan linear
+or circular motion in Cartesian space. These values are interpolated
+at the servo period and run through the inverse kinematics. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="800"></A>DEFAULT_VELOCITY = 1.0</FONT>
+<P>
+<FONT COLOR="#000000">The initial velocity used for axis or coordinated
+axis motion, in user units per second. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="804"></A>DEFAULT_ACCELERATION
+= 100.0</FONT>
+<P>
+<FONT COLOR="#000000">The initial acceleration used for axis or coordinated
+axis motion, in user units per second per second. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="808"></A>MAX_VELOCITY = 5.0</FONT>
+<P>
+<FONT COLOR="#000000">The maximum velocity for any axis or coordinated
+move, in user units per second.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="812"></A>MAX_ACCELERATION = 100.0</FONT>
+<P>
+<FONT COLOR="#000000">The maximum acceleration for any axis or coordinated
+axis move, in user units per second per second.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="816"></A>PROBE_INDEX = 0</FONT>
+<P>
+<FONT COLOR="#000000">Input index of the probe used in CMM applications.
+See the [EMCIO] section for details of _INDEX.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="821"></A>PROBE_POLARITY = 1</FONT>
+<P>
+<FONT COLOR="#000000">Polarity of the probe when triggered. See the [EMCIO]
+section for details of INDEX.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="826"></A>[AXIS_#] Sections.
+The [AXIS_0], [AXIS_1], etc. sections contains general parameters
+for the individual axis control modules in EMCMOT. The axis section
+names begin numbering at 0, and run through the number of axes specified
+in the [TRAJ] AXES entry minus 1.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="836"></A>TYPE = LINEAR</FONT>
+<P>
+<FONT COLOR="#000000">The type of axes, either LINEAR or ANGULAR. Values
+for the position of LINEAR axes are in the units (per millimeter)
+specified in the [AXIS_#] UNITS entry. Values for the position
+of ANGULAR axes are in the units (per degree) specified in the same
+entry. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="841"></A>UNITS = 0.03937007874016</FONT>
+<P>
+<FONT COLOR="#000000">Units per millimeter for a LINEAR axis, as defined
+in the [AXIS_#] TYPE section, or units per degree for an ANGULAR
+axis as defined in the same section.&nbsp; The following parameters P,
+I, D, FF0, FF1, FF2 are used by the servo compensation algorithm to
+optimize performance while tracking trajectory set-points. See Tuning
+Servos for information on setting up a servomotor system. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="846"></A>P = 50</FONT>
+<P>
+<FONT COLOR="#000000">The proportional gain for the axis servo. This value
+multiplies the error between commanded and actual position in user
+units, resulting in a contribution to the computed voltage for the
+motor amplifier. The units on the P gain are volts per user unit. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="850"></A>I = 0</FONT>
+<P>
+<FONT COLOR="#000000">The integral gain for the axis servo. The value
+multiplies the cumulative error between commanded and actual position
+in user units, resulting in a contribution to the computed voltage
+for the motor amplifier. The units on the I gain are volts per user
+unit-seconds. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="854"></A>D = 0</FONT>
+<P>
+<FONT COLOR="#000000">The derivative gain for the axis servo. The value
+multiplies the difference between the current and previous errors,
+resulting in a contribution to the computed voltage for the motor
+amplifier. The units on the D gain are volts per user unit per second. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="858"></A>FF0 = 0</FONT>
+<P>
+<FONT COLOR="#000000">The 0-th order feedforward gain. This number is
+multiplied by the commanded position, resulting in a contribution
+to the computed voltage for the motor amplifier. The units on the
+FF0 gain are volts per user unit. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="862"></A>FF1 = 0</FONT>
+<P>
+<FONT COLOR="#000000">The 1st order feedforward gain. This number is multiplied
+by the change in commanded position per second, resulting in a contribution
+to the computed voltage for the motor amplifier. The units on the
+FF1 gain are volts per user unit per second. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="866"></A>FF2 = 0</FONT>
+<P>
+<FONT COLOR="#000000">The 2nd order feedforward gain. This number is multiplied
+by the change in commanded position per second per second, resulting
+in a contribution to the computed voltage for the motor amplifier.
+The units on the FF2 gain are volts per user unit per second per second. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="870"></A>CYCLE_TIME = 0.001</FONT>
+<P>
+<FONT COLOR="#000000">This is the period in seconds at which servo calculations
+will run. The values can be different between different axes, and
+the lowest will be used for all. This ensures that the calculations
+will occur at least as fast as they are specified here. The value
+should be an integer submultiple of the trajectory cycle time specified
+in the [TRAJ] CYCLE_TIME entry, so that an integer number of
+interpolations will occur. If this is not the case the times will
+be forced so that the interpolation interval is the next highest integer. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="875"></A>INPUT_SCALE = 40000 0</FONT>
+<P>
+<FONT COLOR="#000000">These two values are the scale and offset factors
+for the axis input from the raw feedback device, e.g., an incremental
+encoder<A NAME="877"></A>. The second value (offset) is subtracted from
+raw input (e.g., encoder counts), and divided by the first value (scale
+factor), before being used as feedback. The units on the scale value
+are in raw units (e.g., counts) per user units (e.g., inch). The units
+on the offset value are in raw units (e.g., counts). </FONT>
+<P>
+<FONT COLOR="#000000">Specifically, when reading inputs, the EMC first
+reads the raw sensor values. The units on these values are the sensor
+units, typically A/D counts, or encoder ticks. These units, and the
+location of their 0 value, will not in general correspond to the quasi-SI
+units used in the EMC. Hence a scaling is done immediately upon sampling: </FONT>
+<P>
+<FONT COLOR="#000000">input = (raw - offset) / scale</FONT>
+<P>
+<FONT COLOR="#000000">The value for scale can be obtained analytically
+by doing a unit analysis, i.e., units are [sensor units]/[desired
+input SI units]. For example, on a 2000 counts per rev encoder<A NAME="887"></A>,
+and 10 revs/inch gearing, and desired units of mm, we have </FONT>
+<P>
+<FONT COLOR="#000000">[scale units] = 2000 [counts/rev] * 10
+[rev/inch] * 1/25.4 [inch/mm] = 787.4 counts/mm</FONT>
+<P>
+<FONT COLOR="#000000">and, as a result, </FONT>
+<P>
+<FONT COLOR="#000000">input [mm] = (encoder [counts] - offset
+[counts]) / 787.4 [counts/mm]</FONT>
+<P>
+<FONT COLOR="#000000">Note that the units of the offset are in sensor
+units, e.g., counts, and they are pre-subtracted from the sensor readings.
+The value for this offset is obtained by finding the value of counts
+for which you want your user units to read 0.0. This is normally accomplished
+automatically during a homing procedure. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="913"></A>OUTPUT_SCALE = 1 0</FONT>
+<P>
+<FONT COLOR="#000000">These two values are the scale and offset factors
+for the axis output to the motor amplifiers. The second value (offset)
+is subtracted from the computed output (in volts), and divided by
+the first value (scale factor), before being written to the D/A converters.
+The units on the scale value are in true volts per DAC output volts.
+The units on the offset value are in volts. These can be used to linearize
+a DAC. </FONT>
+<P>
+<FONT COLOR="#000000">Specifically, when writing outputs, the EMC first
+converts the desired output in quasi-SI units to raw actuator values,
+e.g., volts for an amplifier DAC. This scaling looks like: </FONT>
+<P>
+<FONT COLOR="#000000">raw = (output - offset) / scale</FONT>
+<P>
+<FONT COLOR="#000000">The value for scale can be obtained analytically
+by doing a unit analysis, i.e., units are [output SI units]/[actuator
+units]. For example, on a machine with a velocity mode amplifier
+such that 1 volt results in 250 mm/sec velocity, we have: </FONT>
+<P>
+<FONT COLOR="#000000">[scale units] = 250 [mm/sec] / 1 [volts]
+= 250 mm/sec/volt</FONT>
+<P>
+<FONT COLOR="#000000">and, as a result, </FONT>
+<P>
+<FONT COLOR="#000000">amplifier [volts] = (output [mm/sec] - offset
+[mm/sec]) / 250 [mm/sec/volt]</FONT>
+<P>
+<FONT COLOR="#000000">Note that the units of the offset are in user units,
+e.g., mm/sec, and they are pre-subtracted from the sensor readings.
+The value for this offset is obtained by finding the value of your
+output which yields 0.0 for the actuator output. If the DAC is linearized,
+this offset is normally 0.0. </FONT>
+<P>
+<FONT COLOR="#000000">The scale and offset can be used to linearize the
+DACs as well, resulting in values that reflect the combined effects
+of amplifier gain, DAC non-linearity, DAC units, etc. To do this,
+follow this procedure: </FONT>
+<P>
+<FONT COLOR="#000000">a. Build a calibration table for the output, driving
+the DACs with a desired voltage and measuring the result, e.g., </FONT>
+<P>
+<TABLE  WIDTH="0%">
+<TR><TD>
+<FONT COLOR="#000000">RAW&nbsp;&nbsp;&nbsp;&nbsp; MEAS</FONT>
+<BR><FONT COLOR="#000000">--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--</FONT>
+<BR><FONT COLOR="#000000">-10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-9.93</FONT>
+<BR><FONT COLOR="#000000">-9&nbsp;V&nbsp;&nbsp;&nbsp;&nbsp;-8.83</FONT>
+<BR><FONT COLOR="#000000">0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-0.03</FONT>
+<BR><FONT COLOR="#000000">1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.96</FONT>
+<BR><FONT COLOR="#000000">9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;9.87</FONT>
+<BR><FONT COLOR="#000000">10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10.87</FONT>
+<P>
+</TD></TR>
+</TABLE>
+
+<P>
+<BR>
+
+<P>
+<FONT COLOR="#000000">b. Do a least-squares linear fit to get coefficients
+a, b such that </FONT>
+<P>
+<FONT COLOR="#000000">meas = a * raw + b</FONT>
+<P>
+<FONT COLOR="#000000">c. Note that we want raw output such that our measured
+result is identical to the commanded output. This means </FONT>
+<P>
+<FONT COLOR="#000000">cmd = a * raw + b</FONT>
+<P>
+<FONT COLOR="#000000">raw = (cmd - b) / a</FONT>
+<P>
+<FONT COLOR="#000000">As a result, the a and b coefficients from the linear
+fit can be used as the scale and offset for the controller directly. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="981"></A>MIN_LIMIT = -1000 </FONT>
+<P>
+<FONT COLOR="#000000">The minimum limit (soft limit) for axis motion,
+in user units. When this limit is exceeded, the controller aborts
+axis motion. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="985"></A>MAX_LIMIT = 1000 </FONT>
+<P>
+<FONT COLOR="#000000">The maximum limit (soft limit) for axis motion,
+in user units. When this limit is exceeded, the controller aborts
+axis motion. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="989"></A>MIN_OUTPUT = -10 </FONT>
+<P>
+<FONT COLOR="#000000">The minimum value for the output of the PID compensation
+that is written to the motor amplifier, in volts. The computed output
+value is clamped to this limit. The limit is applied before scaling
+to raw output units. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="993"></A>MAX_OUTPUT = 10 </FONT>
+<P>
+<FONT COLOR="#000000">The maximum value for the output of the PID compensation
+that is written to the motor amplifier, in volts. The computed output
+value is clamped to this limit. The limit is applied before scaling
+to raw output units. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="997"></A>FERROR = 1.0 MIN_FERROR = 0.010 </FONT>
+<P>
+<FONT COLOR="#000000">FERROR is the maximum allowable following error,
+in user units. If the difference between commanded and sensed position
+exceeds this amount, the controller disables servo calculations, sets
+all the outputs to 0.0, and disables the amplifiers. If MIN_FERROR
+is present in the .ini file, velocity-proportional following errors
+are used. Here, the maximum allowable following error is proportional
+to the speed, with FERROR applying to the rapid rate set by [TRAJ]
+MAX_VELOCITY, and proportionally smaller following errors for slower
+speeds. The maximum allowable following error will always be greater
+than MIN_FERROR. This prevents small following errors for stationary
+axes from inadvertently aborting motion. Small following errors will
+always be present due to vibration, etc.&nbsp; The following polarity
+values determine how inputs are interpreted and how outputs are applied.
+They can usually be set via trial-and-error since there are only two
+possibilities. The EMCMOT utility program USRMOT can be used to set
+these interactively and verify their results so that the proper values
+can be put in the INI file with a minimum of trouble. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1002"></A>ENABLE_POLARITY = 0 </FONT>
+<P>
+<FONT COLOR="#000000">The polarity for enabling the amplifiers. Set this
+to 0 or 1 for the proper polarity. This value can be determined by
+following all the electronics back from the amplifier, through any
+driver circuitry, etc. or it can be set through a simple trial-and-error.
+Normally, for amplifiers which are enabled active-low (0 volts enables),
+this is a 0. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1006"></A>MIN_LIMIT_SWITCH_POLARITY
+= 1 </FONT>
+<P>
+<FONT COLOR="#000000">The polarity for detecting minimum-travel hardware
+limit switch trips. Set this depending on how your switches are wired
+up to the digital inputs on the I/O board. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1010"></A>MAX_LIMIT_SWITCH_POLARITY
+= 1 </FONT>
+<P>
+<FONT COLOR="#000000">The polarity for detecting maximum-travel hardware
+limit switch trips. Set this depending on how your switches are wired
+up to the digital inputs on the I/O board. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1014"></A>HOME_SWITCH_POLARITY
+= 1 </FONT>
+<P>
+<FONT COLOR="#000000">The polarity for detecting homing switch trips.
+Set this depending on how your switches are wired up to the digital
+inputs on the I/O board. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1018"></A>HOMING_POLARITY = 1 </FONT>
+<P>
+<FONT COLOR="#000000">The direction in which homing moves are initiated.
+0 means in the negative direction, 1 means in the positive direction. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1022"></A>FAULT_POLARITY = 1 </FONT>
+<P>
+<FONT COLOR="#000000">The polarity for detecting amplifier faults. Set
+this to 0 or 1 depending upon how the amplifier sets the logic level
+for its fault condition.</FONT>
+<P>
+<FONT COLOR="#000000">The following entries are used to set the parameters
+for the DC servomotor simulations. These are only used when running
+the EMC in simulation. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1028"></A>TORQUE_UNITS = OZ_IN </FONT>
+<P>
+<FONT COLOR="#000000">The units used to interpret subsequent values for
+ROTOR_INERTIA and DAMPING_FRICTION_COEFFICIENT. This can be OZ_IN
+for ounce-inches, LB_FT for pound-feet, or N_M for newton-meters. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1032"></A>ARMATURE_RESISTANCE
+= 1.10 </FONT>
+<P>
+<FONT COLOR="#000000">The resistance, in ohms, of the motor. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1036"></A>ARMATURE_INDUCTANCE
+= 0.0120 </FONT>
+<P>
+<FONT COLOR="#000000">The inductance, in henries, of the motor. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1040"></A>BACK_EMF_CONSTANT =
+0.0254 </FONT>
+<P>
+<FONT COLOR="#000000">The back EMF constant, or torque constant, in volts
+per radian per second. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1044"></A>ROTOR_INERTIA = 0.0104 </FONT>
+<P>
+<FONT COLOR="#000000">The rotor inertia, in torque units * seconds2. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1048"></A>DAMPING_FRICTION_COEFFICIENT
+= 0.083 </FONT>
+<P>
+<FONT COLOR="#000000">The damping coefficient, in torque units per radian
+per second. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1052"></A>SHAFT_OFFSET = 0 </FONT>
+<P>
+<FONT COLOR="#000000">The angular offset, in radians, between the the
+motor initial position and the encoder initial position. Normally
+this is 0, but can be made any arbitrary value if the simulated motor
+shaft position is interpreted as the actual axis position and should
+be something other than 0 when the encoder reports 0. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1056"></A>REVS_PER_UNIT = 10 </FONT>
+<P>
+<FONT COLOR="#000000">The amount of motor shaft revolutions per user unit
+of position. For example, for a 1/10 inch lead screw, where 10 rotations
+equals 1 inch, this would be 10.&nbsp; The following entry is used to
+set the parameters for the amplifier simulations. These are only used
+when running the EMC in simulation. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1060"></A>AMPLIFIER_GAIN = 1 </FONT>
+<P>
+<FONT COLOR="#000000">The gain of the amplifier, which multiplies the
+input voltage to generate an output voltage which drives the motor. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1064"></A>MAX_OUTPUT_CURRENT
+= 10 </FONT>
+<P>
+<FONT COLOR="#000000">The maximum output current of the amplifier, in
+amps. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1068"></A>LOAD_RESISTANCE = 1.10 </FONT>
+<P>
+<FONT COLOR="#000000">The resistance, in ohms, of the load on the amplifier.
+This is normally the same as the motor armature resistance, but it
+may not be, for example, if there is additional resistive load between
+the amplifier and the motor itself.&nbsp; The following entry is used
+to set the parameters for the encoder<A NAME="1070"></A> simulations.
+These are only used when running the EMC in simulation. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1072"></A>COUNTS_PER_REV = 4096 </FONT>
+<P>
+<FONT COLOR="#000000">The number of encoder counts per motor shaft revolution.
+If there is gearing between the encoder shaft and the motor shaft,
+this value should include this. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1076"></A>[EMCIO] section. The
+[EMCIO] section contains control values and setup parameters for
+the digital and analog I/O points in EMCIO. </FONT>
+<P>
+<FONT COLOR="#000000">The following entries set general parameters for
+the I/O controller. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1084"></A>PLAT = nonrealtime</FONT>
+<P>
+<FONT COLOR="#000000">Only one choice, nonrealtime.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1088"></A>EMCIO = minimillio</FONT>
+<P>
+<FONT COLOR="#000000">Name of the IO controller program. Valid options
+are :</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1092"></A>bridgeportio Used with bridgeporttask
+in [TASK] section.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1096"></A>minimillio Used with minimilltask
+in [TASK] section.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1100"></A>ppmcio Used with bridgeporttask in
+[TASK] section.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1104"></A>simio Can be used with either minimilltask
+or bridgeporttask.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1106"></A>CYCLE_TIME = 0.100 </FONT>
+<P>
+<FONT COLOR="#000000">The period, in seconds, at which EMCIO will run.
+You can make this as small as you want to increase the throughput.
+Making it 0.0 or a negative number will tell EMCIO not to sleep at
+all. Ultimately the system loading will limit the effective throughput. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1110"></A>TOOL_TABLE = tool.tbl </FONT>
+<P>
+<TABLE  WIDTH="0%">
+<TR><TD>
+<FONT COLOR="#000000">The file which contains tool information. The format
+of the file is </FONT>
+<P>
+<FONT COLOR="#000000">POC&nbsp;&nbsp;&nbsp;&nbsp; FMS&nbsp;&nbsp;&nbsp;&nbsp; LEN&nbsp;&nbsp;&nbsp;&nbsp; DIAM&nbsp;&nbsp;&nbsp; COMMENT</FONT>
+<BR><FONT COLOR="#000000">1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</FONT>
+<BR><FONT COLOR="#000000">2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </FONT>
+<P>
+</TD></TR>
+</TABLE>
+
+<P>
+<BR>
+
+<P>
+<FONT COLOR="#000000">where the first line is a comment (in this case
+the name of the columns), and the subsequent lines contain the pocket
+number in which the tool is located, the tool ID of the tool itself,
+the length, the diameter, and an optional comment. The length and
+diameter are in user units.</FONT>
+<P>
+<FONT COLOR="#000000">The following entries set parameters for spindle
+control. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1127"></A>IO_BASE_ADDRESS = 0x278</FONT>
+<P>
+<FONT COLOR="#000000">Base address for the port used for IO.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1131"></A>PARPORT_BASE_ADDRESS
+= 0x278</FONT>
+<P>
+<FONT COLOR="#000000">Obsolete since July 2002 in the CVS sources, and
+BDI-2.2.18. Use IO_BASE_ADDRESS instead.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1135"></A>SPINDLE_OFF_WAIT = 1.0 </FONT>
+<P>
+<FONT COLOR="#000000">How long, in seconds, to wait after the spindle
+has been turned off before applying the brake. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1139"></A>SPINDLE_ON_WAIT = 1.5 </FONT>
+<P>
+<FONT COLOR="#000000">How long, in seconds, to wait after the spindle
+brake has been released before turning the spindle on.</FONT>
+<P>
+<FONT COLOR="#000000">The following entries set the bit indices for the
+digital I/O so that the controller knows the mapping to I/O point
+wiring. The indices start at 0 for the least significant bit in the
+digital I/O map. See Setting up the External Interfaces for information
+on interfacing I/O boards to the software. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1145"></A>ESTOP_SENSE_INDEX =
+1 </FONT>
+<P>
+<FONT COLOR="#000000">The location of the input bit which is used to detect
+whether the system is in ESTOP. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1149"></A>LUBE_SENSE_INDEX = 2 </FONT>
+<P>
+<FONT COLOR="#000000">The location of the input bit which is used to detect
+whether the lubrication level is OK or low. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1153"></A>SPINDLE_FORWARD_INDEX
+= 1 </FONT>
+<P>
+<FONT COLOR="#000000">The location of the output bit which is used to
+drive the spindle forward. Only applicable to manual spindles. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1157"></A>SPINDLE_REVERSE_INDEX
+= 0 </FONT>
+<P>
+<FONT COLOR="#000000">The location of the output bit which is used to
+drive the spindle in reverse. Only applicable to manual spindles. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1161"></A>MIST_COOLANT_INDEX
+= 6 </FONT>
+<P>
+<FONT COLOR="#000000">The location of the output bit which is used to
+turn mist coolant on or off. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1165"></A>FLOOD_COOLANT_INDEX
+= 7 </FONT>
+<P>
+<FONT COLOR="#000000">The location of the output bit which is used to
+turn flood coolant on or off. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1169"></A>SPINDLE_DECREASE_INDEX
+= 8 </FONT>
+<P>
+<FONT COLOR="#000000">The location of the output bit which is used to
+decrease the spindle speed. Only applicable to manual spindles. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1173"></A>SPINDLE_INCREASE_INDEX
+= 9 </FONT>
+<P>
+<FONT COLOR="#000000">The location of the output bit which is used to
+increase the spindle speed. Only applicable to manual spindles. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1177"></A>ESTOP_WRITE_INDEX =
+10 </FONT>
+<P>
+<FONT COLOR="#000000">The location of the output bit which is used to
+cause an ESTOP. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1181"></A>SPINDLE_BRAKE_INDEX
+= 11 </FONT>
+<P>
+<FONT COLOR="#000000">The location of the output bit which is used to
+engage or release the spindle brake.</FONT>
+<P>
+<FONT COLOR="#000000">The following entries set the polarities for the
+digital I/O points. These can be set by trial-and-error, or by noting
+the levels and any inverting done by the electronics between the sensors
+and actuators and the electronics. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1187"></A>ESTOP_SENSE_POLARITY
+= 1 </FONT>
+<P>
+<FONT COLOR="#000000">The polarity of the sensed estop input bit. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1191"></A>LUBE_SENSE_POLARITY
+= 1 </FONT>
+<P>
+<FONT COLOR="#000000">The polarity of the sensed lube level bit. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1195"></A>SPINDLE_FORWARD_POLARITY
+= 0 </FONT>
+<P>
+<FONT COLOR="#000000">The polarity of the sensed spindle forward bit. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1199"></A>SPINDLE_REVERSE_POLARITY
+= 0 </FONT>
+<P>
+<FONT COLOR="#000000">The polarity of the sensed spindle reverse bit. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1203"></A>MIST_COOLANT_POLARITY
+= 0 </FONT>
+<P>
+<FONT COLOR="#000000">The polarity of the sensed mist coolant bit. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1207"></A>FLOOD_COOLANT_POLARITY
+= 0 </FONT>
+<P>
+<FONT COLOR="#000000">The polarity of the sensed flood coolant bit. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1211"></A>SPINDLE_DECREASE_POLARITY
+= 1 </FONT>
+<P>
+<FONT COLOR="#000000">The polarity of the sensed spindle decrease bit. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1215"></A>SPINDLE_INCREASE_POLARITY
+= 1 </FONT>
+<P>
+<FONT COLOR="#000000">The polarity of the sensed spindle increase bit. </FONT>
+<P>
+<FONT COLOR="#000000">ESTOP_WRITE_POLARITY = 1 </FONT>
+<P>
+<FONT COLOR="#000000">The polarity of the sensed estop activation bit. </FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1223"></A>SPINDLE_BRAKE_POLARITY
+= 0 </FONT>
+<P>
+<FONT COLOR="#000000">The polarity of the sensed spindle brake bit.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1227"></A>[EMCSERVER] section</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1231"></A>EMCSERVER = emcsvr</FONT>
+<P>
+<FONT COLOR="#000000">Name of NML server, e.g., emcsvr; if not found then
+none will run.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1235"></A>[EMCSTRIP] section.
+Section for emc stripchart parameters.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1239"></A>EMCSTRIP = emcstripchart</FONT>
+<P>
+<FONT COLOR="#000000">Name of strip chart display program e.g. emcstripchart,
+if not found then none will run.</FONT>
+<P>
+<FONT COLOR="#000000"><A NAME="1243"></A>OPTIONS = -f emcstrip.conf.ferror</FONT>
+<P>
+<FONT COLOR="#000000">Options for emcstripchart ussually -f something.conf.
+This file says which variables to plot, colors etc. -u changes the
+update rate.</FONT>
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html623"
+  HREF="node25.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html617"
+  HREF="node23.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html613"
+  HREF="node23.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html619"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html621"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html624"
+  HREF="node25.html">6.3 Configuring EMC</A>
+<B> Up:</B> <A NAME="tex2html618"
+  HREF="node23.html">6.2 Configuring EMC</A>
+<B> Previous:</B> <A NAME="tex2html614"
+  HREF="node23.html">6.2 Configuring EMC</A>
+ &nbsp; <B>  <A NAME="tex2html620"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html622"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

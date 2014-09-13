@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>First Move </TITLE>
+<META NAME="description" CONTENT="First Move ">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node97.html">
+<LINK REL="previous" HREF="node83.html">
+<LINK REL="up" HREF="node82.html">
+<LINK REL="next" HREF="node92.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1711"
+  HREF="node92.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1705"
+  HREF="node82.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1699"
+  HREF="node90.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1707"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1709"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1712"
+  HREF="node92.html">Programming Entry Moves</A>
+<B> Up:</B> <A NAME="tex2html1706"
+  HREF="node82.html">12.2 Cutter Radius Compensation</A>
+<B> Previous:</B> <A NAME="tex2html1700"
+  HREF="node90.html">Programming Errors and Limitations</A>
+ &nbsp; <B>  <A NAME="tex2html1708"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1710"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION04322000000000000000">
+First Move </A>
+</H2>
+
+<P>
+<TABLE  WIDTH="0%">
+<TR><TD>
+The algorithm used for the first move when the first move is a straight
+line is to draw a straight line from the destination point which is
+tangent to a circle whose center is at the current point and whose
+radius is the radius of the tool. The destination point of the tool
+tip is then found as the center of a circle of the same radius tangent
+to the tangent line at the destination point. This is shown in Figure
+9. If the programmed point is inside the initial cross section of
+the tool (the circle on the left), an error is signalled.
+
+<P>
+</TD></TR>
+</TABLE>
+
+<TABLE  WIDTH="0%">
+<TR><TD>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><!-- MATH
+ $\resizebox*{3in}{!}{\includegraphics{/usr/share/lyx/EMC_images/Image11.eps}}$
+ -->
+<IMG
+ WIDTH="345" HEIGHT="123" ALIGN="BOTTOM" BORDER="0"
+ SRC="img31.gif"
+ ALT="\resizebox*{3in}{!}{\includegraphics{/usr/share/lyx/EMC_images/Image11.eps}}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><!-- MATH
+ $\resizebox*{3in}{!}{\includegraphics{/usr/share/lyx/EMC_images/Image12.eps}}$
+ -->
+<IMG
+ WIDTH="345" HEIGHT="157" ALIGN="BOTTOM" BORDER="0"
+ SRC="img32.gif"
+ ALT="\resizebox*{3in}{!}{\includegraphics{/usr/share/lyx/EMC_images/Image12.eps}}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+</TD></TR>
+</TABLE>
+
+<P>
+<BR>
+
+<P>
+If the first move after cutter radius compensation has been turned
+on is an arc, the arc which is generated is derived from an auxiliary
+arc which has its center at the programmed center point, passes through
+the programmed end point, and is tangent to the cutter at its current
+location. If the auxiliary arc cannot be constructed, an error is
+signalled. The generated arc moves the tool so that it stays tangent
+to the auxiliary arc throughout the move. This is shown in Figure
+10.
+
+<P>
+Regardless of whether the first move is a straight line or an arc,
+the Z axis may also move at the same time. It will move linearly,
+as it does when cutter radius compensation is not being used.Rotary
+axis motions (A, B, and C axes) are allowed with cutter radius compensation,
+but using them would be very unusual.
+
+<P>
+After the entry moves of cutter radius compensation, the interpreter
+keeps the tool tangent to the programmed path on the appropriate side.
+If a convex corner is on the path, an arc is inserted to go around
+the corner. The radius of the arc is half the diameter given in the
+tool table.
+
+<P>
+When cutter radius compensation is turned off, no special exit move
+takes place. The next move is what it would have been if cutter radius
+compensation had never been turned on and the previous move had placed
+the tool at its current position.
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1713"
+  HREF="node92.html">Programming Entry Moves</A>
+<LI><A NAME="tex2html1714"
+  HREF="node93.html">General Method</A>
+<LI><A NAME="tex2html1715"
+  HREF="node94.html">Simple Method</A>
+<LI><A NAME="tex2html1716"
+  HREF="node95.html">Other Items Where Cutter Radius Compensation is Performed.</A>
+<LI><A NAME="tex2html1717"
+  HREF="node96.html">Algorithms for Cutter Radius Compensation</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1711"
+  HREF="node92.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1705"
+  HREF="node82.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1699"
+  HREF="node90.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1707"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1709"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1712"
+  HREF="node92.html">Programming Entry Moves</A>
+<B> Up:</B> <A NAME="tex2html1706"
+  HREF="node82.html">12.2 Cutter Radius Compensation</A>
+<B> Previous:</B> <A NAME="tex2html1700"
+  HREF="node90.html">Programming Errors and Limitations</A>
+ &nbsp; <B>  <A NAME="tex2html1708"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1710"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

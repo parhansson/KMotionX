@@ -1,0 +1,30 @@
+G0 X0 Y0 Z0        (Rapid move to zero)
+F400
+(BUF,SetBitBuf0)
+G2 X0 Y0.5 I0 J0.25  (2 revs CW circle with bit on)
+G2 X0 Y0 I0 J-0.25
+G2 X0 Y0.5 I0 J0.25
+G2 X0 Y0 I0 J-0.25    
+(BUF,ClearBitBuf0)
+G3 X0 Y0.5 I0 J0.25  (1 rev CCW)
+G3 X0 Y0 I0 J-0.25
+					 (Change two bits)
+(BUF,SetBitBuf0)  
+(BUF,ClearBitBuf1)
+G4 P2			     (Pause 2 seconds..Toggle bit)
+(BUF,ClearBitBuf0)
+G4 P2				 
+(BUF,SetBitBuf0)
+G4 P2
+(BUF,ClearBitBuf0)
+G4 P2
+(BUF,SetBitBuf0)
+
+(USR,User Call Back)
+
+#1000 = 1234
+M3   (SimpleGCode PC example configures M3 as a Callback)
+#1000 = 9999
+M105 (SimpleGCode PC example configures M105 as a Callback)
+M2
+

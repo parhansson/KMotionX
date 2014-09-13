@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Example 2 - Incremented drilling</TITLE>
+<META NAME="description" CONTENT="Example 2 - Incremented drilling">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node107.html">
+<LINK REL="previous" HREF="node105.html">
+<LINK REL="up" HREF="node104.html">
+<LINK REL="next" HREF="node107.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1934"
+  HREF="node107.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1928"
+  HREF="node104.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1922"
+  HREF="node105.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1930"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1932"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1935"
+  HREF="node107.html">Example 3 - An</A>
+<B> Up:</B> <A NAME="tex2html1929"
+  HREF="node104.html">13.5 Sample Variable Programs</A>
+<B> Previous:</B> <A NAME="tex2html1923"
+  HREF="node105.html">Example 1 - Drilling</A>
+ &nbsp; <B>  <A NAME="tex2html1931"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1933"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION04452000000000000000">
+Example 2 - Incremented drilling</A>
+</H2>
+
+<P>
+The lines of code below illustrate the technique of incrementing variables
+along with using those variables during the running of a program.
+Again lines N10 and N12 assign initial values to the variables that
+will be used. Line N14 moves the machine to the location of the hole
+to be drilled while N16 and N18 perform the operation. Line N20 increments
+both variables. In the illustrated code #1000 is increased by 2 and
+#1001 is increased by 1. Taken together, lines N14 through 18 are
+a loop (although this version of RS274NGC does not implement looping)
+and the code is just copied and pasted into the program for the number
+of times the operation is to be repeated.
+
+<P>
+<TT><FONT SIZE="-1">N10 #1000 = 0 (x distance for first hole)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N12 #1001 = 0 (y distance for first holes)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N14 G55 g0 x#1000 y#1001 z1 (move to first
+hole)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N16 g1 f4 z2 (drill)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N18 g0 z0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N20 #1000 = [#1000 + 2] #1001 = [1001
++ 1]</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N14 G55 g0 x#1000 y#1001 z1 (move to second
+hole)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N16 g1 f4 z2 (drill)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N18 g0 z0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N20 #1000 = [#1000 + 2] #1001 = [1001
++ 1]</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N14 G55 g0 x#1000 y#1001 z1 (move to third
+hole)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N16 g1 f4 z2 (drill)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N18 g0 z0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N20 #1000 = [#1000 + 2] #1001 = [1001
++ 1]</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N14 G55 g0 x#1000 y#1001 z1 (move to fourth
+hole)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N16 g1 f4 z2 (drill)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N18 g0 z0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N52 g53 x0 y0 z0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N54 m2</FONT></TT>
+<P>
+
+
+<P>
+Since the EMC interpreter doesn't care what the lines are numbered,
+the above code will run as is. It would look somewhat better if it
+were renumbered. Again only the variable values need to be changed
+to move the location of the set of holes. In this case, the code will
+produce a diagonal set of four holes. Each hole is two inches in x
+and one inch in y away from the previous hole.
+
+<P>
+A cautionary note must be included here. Once the machine tool is
+into the program, there is no good way to know where it is except
+to observe the machine itself. Stopping and then restarting from anywhere
+but the top line is an invitation to disaster because the values of
+the variables have been changed by the program itself.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1934"
+  HREF="node107.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1928"
+  HREF="node104.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1922"
+  HREF="node105.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1930"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1932"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1935"
+  HREF="node107.html">Example 3 - An</A>
+<B> Up:</B> <A NAME="tex2html1929"
+  HREF="node104.html">13.5 Sample Variable Programs</A>
+<B> Previous:</B> <A NAME="tex2html1923"
+  HREF="node105.html">Example 1 - Drilling</A>
+ &nbsp; <B>  <A NAME="tex2html1931"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1933"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

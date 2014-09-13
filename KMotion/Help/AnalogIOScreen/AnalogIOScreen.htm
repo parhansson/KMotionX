@@ -1,0 +1,235 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Analog IO Screen</title>
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+</head>
+
+<body>
+
+<p><i><b><font size="5">Analog I/O Status Screen</font></b></i></p>
+<p><map name="FPMap0">
+<area href="#ADCs" shape="rect" coords="5, 33, 194, 193">
+<area href="#DACs" shape="rect" coords="192, 35, 353, 191">
+<area href="#PWMs" shape="rect" coords="351, 33, 467, 194">
+<area href="#Dest" shape="rect" coords="6, 196, 316, 327">
+<area href="#Modes" shape="rect" coords="313, 193, 402, 329">
+<area href="#Done" shape="rect" coords="400, 194, 440, 331">
+<area href="#Small_bar_charts" shape="rect" coords="441, 195, 468, 330"></map>
+<img border="0" src="AnalogStatus.PNG" width="473" height="366" usemap="#FPMap0"></p>
+<p><i>(Click on above image to jump to relative topic)</i></p>
+<p>&nbsp;</p>
+<p>The <b><i>Analog</i></b><i><b> I/O Status Screen</b></i> displays various 
+analog measurements and commands including:</p>
+<ul>
+  <li>Measured +/10 V ADC inputs</li>
+  <li>Measured current flow per axis</li>
+  <li>Commanded +/10 V DAC outputs</li>
+  <li>Commanded 0-4V DAC outputs</li>
+  <li>Commanded PWM power amp settings</li>
+  <li>Commanded Destinations of each axis</li>
+  <li>Measured Position of each axis</li>
+  <li>Status and Mode of each axis</li>
+</ul>
+<p><i><b>KMotion</b></i> has a number of 12-bit ADC and DAC channels that may be 
+used either as servo channel inputs and outputs or as general purpose data 
+acquisition and command signals.&nbsp; </p>
+<h3><u><b><a name="ADCs">ADC's</a></b></u></h3>
+<p><b><i>KMotion's </i></b>ADC channels may also be read by a host computer via 
+the Console Script Command: ADCn, or by a on-board C program via the ADC(n) 
+macro.&nbsp; These commands return ADC counts in the range of -2048 to 2047 
+counts.</p>
+<p>The first four of <i><b>KMotion's</b></i> eight on-board ADC channels are 
+general purpose +/- 10V inputs.&nbsp; Note that in order for these to operate 
+properly, the on-board 5V to +/- 15V power generation must be enabled. The input 
+buffers are inverting such that nominally +10V corresponds to -2048 ADC counts, 
+0 V corresponds to 0 ADC counts and -10V corresponds to +2047 ADC counts.&nbsp; 
+See the input circuit <a href="../Schematics/Connectors.htm#Analog_I/O_circuit">
+here</a>.&nbsp; Both the ADCs and DACs are designed to have slightly larger 
+(nominally 2%) than +/- 10V range to account for component tolerance errors.&nbsp; 
+In this way the ranges may always be scaled and offset to provide exact +/-10 V 
+ranges. </p>
+<p>Certain of <b><i>KMotion's </i></b>servo input modes allow ADC inputs as 
+position information instead of digital encoder inputs.&nbsp; Such as <i>ADC 
+Input mode</i> and <i>Resolver Input</i> modes.&nbsp; The <i>Resolver</i> servo 
+input mode requires two ADC channels configured as sine and cosine signals.&nbsp; 
+There are insufficient ADC channels for more than two axis to be configured as
+<i>Resolver</i> input mode.&nbsp; When configuring an axis for a mode utilizing 
+an ADC input the corresponding InputChannel(s) (0 and 1) for the axis must be 
+set appropriately.&nbsp; Additionally, the corresponding Input Gains and Offsets 
+for the axis may be used to correct for scale and offsets in either the ADC 
+channels or the sensor itself.</p>
+<p>&nbsp;</p>
+<p>Of <i><b>KMotion's</b></i> <i>eight</i> on-board ADC channels, <i>four</i> of 
+the channels are dedicated to measuring current flow through each axis of the 
+on-board power amplifiers.&nbsp; ADC Channels 4-7 normally corresponding to axis 
+0-3 (if default <i>output channel</i> mapping is used).&nbsp; Since each axis 
+consists of two full-bridge power amplifiers, the measured current per axis is 
+the sum of <i>both</i> full bridges.<font face="Times New Roman">&nbsp; This 
+provides a convenient means to determine abnormal conditions such as stalled 
+motors or open motor coils.&nbsp; This feature is designed to make an 
+approximate measurement of axis current, not a precise measurement of axis 
+current.</font></p>
+<p><font face="Times New Roman">The range of current measurement is fixed at 
+nominally 0 - 4.85 Amps. Since each of </font><i><b>KMotion's </b></i>
+<font face="Times New Roman">full bridge power amplifiers are rated for 3 Amps 
+continuous (per full bridge) and are normally utilized to drive a 4 phase motor 
+(such as a stepper motor), a worst case current per axis occurs when <i>both</i> 
+coils are conducting 0.707 of 3 Amps or&nbsp; 4.24 amps.&nbsp; The 4.85 Amp 
+range provides some margin beyond this.&nbsp; An zero current corresponds to an 
+ADC reading in counts of -2048 and 4.85Amps corresponds to an reading of +2047 
+counts.</font></p>
+<p><font face="Times New Roman"><a name="Small_bar_charts">Small bar charts</a> on the screen also provide an 
+indication of current in each axis, see below.&nbsp; The graph displays a green 
+bar from 0 to 100% full which corresponds to 0 to 3A of current.&nbsp; Currents 
+higher than 3A show a full red bar which may indicate an over current situation 
+if more than 3A is flowing in any one of the two full bridge circuits.</font></p>
+<p><img border="0" src="Analog1.gif"></p>
+<p>&nbsp;</p>
+<p><u><b><a name="DACs">DAC's</a></b></u></p>
+<p><b><i>KMotion's </i></b>DAC channels may be set by a host computer via the 
+Console Script Command: DACn=x, or by a on-board C program via the DAC(n,x) 
+macro.&nbsp; These commands set the DAC counts in the range of -2048 to 2047 
+counts.</p>
+<p>The first four of <i><b>KMotion's</b></i> eight on-board DAC channels are 
+general purpose +/- 10V outputs.&nbsp; Note that in order for these to operate 
+properly, the on-board 5V to +/- 15V power generation must be enabled. The 
+output buffers are inverting such that nominally +10V corresponds to -2048 ADC 
+counts, 0 V corresponds to 0 ADC counts and -10V corresponds to +2047 ADC counts 
+(similar to the ADC readings).&nbsp; See the output circuit
+<a href="../Schematics/Connectors.htm#Analog_I/O_circuit">here</a>.&nbsp; Both 
+the ADCs and DACs are designed to have slightly larger (nominally 2%) than +/- 
+10V range to account for component tolerance errors.&nbsp; In this way the 
+ranges may always be scaled and offset to provide exact +/-10 V ranges. </p>
+<p>The next four of <i><b>KMotion's</b></i> eight on-board DAC channels are 
+general purpose 0 - 4V outputs.&nbsp; These outputs do <i>not</i> require the 
+on-board 5V to +/- 15V power generation to be enabled. 0 V corresponds to -2048 
+ADC counts and +4V corresponds to +2047 ADC counts. </p>
+<p>&nbsp;</p>
+<p><u><b><a name="PWMs">PWM's</a></b></u></p>
+<p>The state of <b><i>KMotion's </i></b>eight PWM (Pulse Width Modulators) are 
+displayed in the top right area of the status screen.&nbsp;&nbsp; The PWM's are 
+connected to on-board <i>Full Bridge Drivers</i> to allow direct control of 
+various motors or loads.&nbsp; See the description of
+<a href="../PWM_Description/PWM_Description.htm">KMotion's Power Amplifiers and 
+PWM's</a> for details.&nbsp; The PWM's may operate independently to drive a full 
+bridge driver, or they may function as a pair of PWM's connected to a pair of 
+Full Bridge drivers to drive a
+<a href="../PWM_Description/PWM_Description.htm#3_Phase_mode">3 phase load</a>.&nbsp; 
+The default and recommended PWM assignment is to have:</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;Axis 0 configured to utilize 
+PWM 0 and 1</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;Axis 1 configured to utilize 
+PWM 2 and 3</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;Axis 2 configured to utilize 
+PWM 4 and 5</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;Axis 3 configured to utilize 
+PWM 6 and 7</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">However the PWMs may be reassigned by 
+changing the OutputChan0 and OutputChan1 parameters for an axis.&nbsp; Only 
+consecutive even and odd PWMS (0/1, 2/3, 4/5, or 6/7) may be paired to drive a 3 
+phase load.</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">Therefore, there are three possible 
+modes for each PWM channels:</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<ul>
+  <li>
+  <p style="margin-top: 0; margin-bottom: 0">Normal Independent</li>
+  <li>
+  <p style="margin-top: 0; margin-bottom: 0">Recirculating Independent</li>
+  <li>
+  <p style="margin-top: 0; margin-bottom: 0">3 Phase - paired</li>
+</ul>
+<p style="margin-top: 0; margin-bottom: 0">If a PWM channel is operating in 
+Normal mode, the PWM channel status will show the value in counts (-255 ... 
++255) and the percent of full scale.</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">If a PWM channel is operating in 
+Recirculating mode, the PWM channel status will show the value in counts (-511 
+... +511), followed by an &quot;R&quot;, and the percent of full scale.</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">If a pair of PWM channels is 
+operating in 3 Phase mode, the PWM channel status will show the value in counts 
+(-230 ... 230) after the first PWM channel and the phase angle in degrees after 
+second PWM channel.</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">The example status below shows PWM 
+channels 0 and 1 operating in 3 phase mode, PWM channels 2-5 operating in Normal 
+mode, and PWM channels 6 and 7 operating in Recirculating mode.</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">
+<img border="0" src="PWMStatus.PNG" width="115" height="158"></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><u><b><a name="Dest">Dest</a></b></u></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">This section of status displays the 
+currently commanded destination for each axis.&nbsp; The Destination is the 
+theoretically desired position for the axis.&nbsp; If a move is in progress, 
+this is the current point along the desired trajectory of the motion.&nbsp; The 
+units are in position units for the axis.</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><u><b>Pos</b></u></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">This section of status displays the 
+currently measured position for each axis.&nbsp; Depending on the input mode for 
+the axis, this position may represent an encoder position, a resolver position, 
+or an absolute position based on an ADC reading.&nbsp; An axis operating as an 
+open loop microstepper&nbsp; mode may have no position sensor at all.&nbsp; In 
+this case the position value is meaningless and ignored.</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><u><b>Enable</b></u></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">Displays whether an axis is enabled 
+or not.&nbsp; Clicking on the Enabled checkbox will enable the axis if disabled 
+or disable the axis if enabled.</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><u><a name="Modes"><b>Mode</b>s</a></u></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">Displays the currently configured 
+input and output modes for each axis.&nbsp; The input mode determines what 
+technique is used to determine the axis's measured position.&nbsp; The output 
+mode determines how the axis's output should be driven.</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">Valid input modes are:</p>
+<ul>
+  <li>
+  <p style="margin-top: 0; margin-bottom: 0">Encoder</li>
+  <li>
+  <p style="margin-top: 0; margin-bottom: 0">ADC</li>
+  <li>
+  <p style="margin-top: 0; margin-bottom: 0">Resolver</li>
+  <li>
+  <p style="margin-top: 0; margin-bottom: 0">User Input<br>
+&nbsp;</li>
+</ul>
+<p style="margin-top: 0; margin-bottom: 0">Valid output modes are:</p>
+<ul>
+  <li>
+  <p style="margin-top: 0; margin-bottom: 0">Microstep</li>
+  <li>
+  <p style="margin-top: 0; margin-bottom: 0">DC Servo</li>
+  <li>
+  <p style="margin-top: 0; margin-bottom: 0">3PH Servo</li>
+  <li>
+  <p style="margin-top: 0; margin-bottom: 0">4PH Servo</li>
+  <li>
+  <p style="margin-top: 0; margin-bottom: 0">DAC Servo<br>
+&nbsp;</li>
+</ul>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><u><b><a name="Done">Done</a></b></u></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">Displays whether an axis operating as 
+an independent axis (not a coordinated motion axis) has completed its last 
+trajectory.</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+
+</body>
+
+</html>

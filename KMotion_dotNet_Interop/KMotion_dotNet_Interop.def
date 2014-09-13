@@ -1,0 +1,10 @@
+; KMotion_dotNet_Interop.def : Declares the module parameters for the DLL.
+
+LIBRARY      "KMotion_dotNet_Interop"
+
+EXPORTS
+    ; Explicit exports can go here
+	DllCanUnloadNow     PRIVATE
+	DllGetClassObject   PRIVATE
+	DllRegisterServer   PRIVATE
+	DllUnregisterServer PRIVATE

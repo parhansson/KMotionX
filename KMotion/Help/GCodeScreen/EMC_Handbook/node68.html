@@ -1,0 +1,215 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>11.1 G80 </TITLE>
+<META NAME="description" CONTENT="11.1 G80 ">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node69.html">
+<LINK REL="previous" HREF="node66.html">
+<LINK REL="up" HREF="node66.html">
+<LINK REL="next" HREF="node69.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1354"
+  HREF="node69.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1348"
+  HREF="node66.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1342"
+  HREF="node67.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1350"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1352"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1355"
+  HREF="node69.html">11.2 G81 Cycle</A>
+<B> Up:</B> <A NAME="tex2html1349"
+  HREF="node66.html">11. Canned Cycles</A>
+<B> Previous:</B> <A NAME="tex2html1343"
+  HREF="node67.html">11.0.1 Preliminary Motion</A>
+ &nbsp; <B>  <A NAME="tex2html1351"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1353"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION04210000000000000000">
+11.1 G80 </A>
+</H1>
+
+<P>
+G80<A NAME="2247"></A> turns off all motion. You should think of it as the
+off position on a rotary switch where the other positions are the
+different possible motion modes. In the EMC interpreter, G80 is one
+of the modal codes so any other code will replace it. The result of
+the following lines of code is the same.
+
+<P>
+<TT><FONT SIZE="-2">N1000 G90 G81 X1 Y1 Z1.5 R2.8 (absolute distance
+canned cycle)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">N1001 G80 (turn off canned cycle motion)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">N1002 G0 X0 Y0 Z0 (turn on rapid traverse and
+move to coordinate home)</FONT></TT>
+<P>
+
+
+<P>
+produces the same final position and machine state as 
+
+<P>
+<TT><FONT SIZE="-2">N1000 G90 G81 X1 Y1 Z1.5 R2.8 (absolute distance
+canned cycle) </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">N1001 G0 X0 Y0 Z0 (turn on rapid traverse and
+move to coordinate home)</FONT></TT>
+<P>
+
+
+<P>
+The advantage of the first set is that, the G80 line clearly turns
+off the G81 canned cycle. With the first set of blocks, the programmer
+must turn motion back on with G0, as is done in the next line, or
+any other motion mode G word. 
+
+<P>
+Example 1 - Use of a canned cycle as a modal motion code 
+
+<P>
+If a canned cycle is not turned off with G80 or another motion word,
+the canned cycle will attempt to repeat itself using the next block
+of code that contains an X, Y, or Z word. The following file drills
+(G81) a set of eight holes as shown. (note the z position change after
+the first four holes.) 
+
+<P>
+<TABLE  WIDTH="0%">
+<TR><TD>
+<TT><FONT SIZE="-2">N100 G90 G0 X0 Y0 Z0 (coordinate
+home) </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">N110 G1 X0 G4 P0.1 </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">N120 G81 X1 Y0 Z0 R1 (canned drill cycle) </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">N130 X2 </FONT></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-2">N140 X3 </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">N150 X4 </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">N160 Y1 Z0.5 </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">N170 X3 </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">N180 X2 </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">N190 X1 </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">N200 G80 (turn off canned cycle) </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">N210 G0 X0 (rapid home moves) </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">N220 Y0 </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">N220 Z0 </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">N220 M2 (program end)</FONT></TT>
+<P>
+
+
+<P>
+</TD></TR>
+</TABLE>
+
+<TABLE  WIDTH="0%">
+<TR><TD>
+<BR>
+<BR>
+<!-- MATH
+ $\resizebox*{2.5in}{!}{\includegraphics{/usr/share/lyx/EMC_images/G81mult.eps}}$
+ -->
+<IMG
+ WIDTH="288" HEIGHT="226" ALIGN="BOTTOM" BORDER="0"
+ SRC="img15.gif"
+ ALT="\resizebox*{2.5in}{!}{\includegraphics{/usr/share/lyx/EMC_images/G81mult.eps}}"> 
+<BR>
+<BR>
+
+<P>
+</TD></TR>
+</TABLE>
+
+<P>
+<BR>
+
+<P>
+The use of G80 in line n200 is optional because the G0 on the next
+line will turn off the G81 cycle. But using the G80. as example 1
+shows, will provide for an easily readable canned cycle. Without it,
+it is not so obvious that all of the blocks between N120 and N200
+belong to the canned cycle.
+
+<P>
+If you use G80 and do not set another modal motion code soon after,
+you may get one of the following error messages.
+
+<P>
+<BLOCKQUOTE>
+<TT><FONT SIZE="-1">Cannot use axis commands with G80</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">Coordinate setting given with G80</FONT></TT></BLOCKQUOTE>
+<P>
+<BLOCKQUOTE>
+
+</BLOCKQUOTE>
+These should serve as a reminder that you need to write in a new motion
+word.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1354"
+  HREF="node69.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1348"
+  HREF="node66.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1342"
+  HREF="node67.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1350"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1352"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1355"
+  HREF="node69.html">11.2 G81 Cycle</A>
+<B> Up:</B> <A NAME="tex2html1349"
+  HREF="node66.html">11. Canned Cycles</A>
+<B> Previous:</B> <A NAME="tex2html1343"
+  HREF="node67.html">11.0.1 Preliminary Motion</A>
+ &nbsp; <B>  <A NAME="tex2html1351"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1353"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

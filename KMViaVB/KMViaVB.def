@@ -1,0 +1,27 @@
+
+
+EXPORTS
+        KMViaVB_Test1
+        KMViaVB_Test2
+        KMViaVB_Test3
+
+        KMViaVB_New
+		KMViaVB_Free
+
+		KMViaVB_WriteLineReadLine
+		KMViaVB_WriteLineWithEcho
+		KMViaVB_WriteLine
+		KMViaVB_ReadLineTimeOut
+		KMViaVB_WaitToken
+		KMViaVB_KMotionLock
+		KMViaVB_USBLocation
+		KMViaVB_ReleaseToken
+		KMViaVB_Failed
+		KMViaVB_CheckForReady
+		KMViaVB_LoadCoff
+		KMViaVB_CompileAndLoadCoff
+		KMViaVB_ServiceConsole
+
+		KMViaVB_SetConsoleCallback
+
+		KMViaVB_ListLocations

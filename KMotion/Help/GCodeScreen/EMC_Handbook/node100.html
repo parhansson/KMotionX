@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>13.1 Types of Variables</TITLE>
+<META NAME="description" CONTENT="13.1 Types of Variables">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node101.html">
+<LINK REL="previous" HREF="node99.html">
+<LINK REL="up" HREF="node99.html">
+<LINK REL="next" HREF="node101.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1847"
+  HREF="node101.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1841"
+  HREF="node99.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1835"
+  HREF="node99.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1843"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1845"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1848"
+  HREF="node101.html">13.2 Units of Variables</A>
+<B> Up:</B> <A NAME="tex2html1842"
+  HREF="node99.html">13. Programming With Variables</A>
+<B> Previous:</B> <A NAME="tex2html1836"
+  HREF="node99.html">13. Programming With Variables</A>
+ &nbsp; <B>  <A NAME="tex2html1844"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1846"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION04410000000000000000">
+13.1 Types of Variables</A>
+</H1>
+
+<P>
+There are two ways to define variables for use in part programs. The
+most obvious is an explicit reference to the variable in the currently
+used variable file. Each time the EMC starts up it loads a variable
+file. The default variable file is emc.var but this can be changed
+in the .ini file. For convenience, this paper uses emc.var as if it
+were the currently loaded file.
+
+<P>
+When the following line is placed in emc.var, it explicitly defines
+a variable.
+
+<P>
+1000 55
+
+<P>
+The number 1000 is the name of the variable, and once you have defined
+it and read it into the interpreter, you can use that name in your
+g-code program if you place a hash sign in front of it. With the line
+above, we also assigned variable #1000 the value of 55 by placing
+that number on the same line after the variable name. Any time that
+you name a variable and assign a value to it in emc.var you have explicitely
+defined that variable. 
+
+<P>
+Implicit reference to a variable is done when a name is used within
+a program but no reference is made to that variable in the variable
+file. The following line of code in a part program will initialize
+a variable named 1000 and assign it a value of 55.
+
+<P>
+#1000 = 55
+
+<P>
+Implicit variables initialize to zero value if no assignment is made
+before a variable is first used. Implicit variables disappear when
+the EMC interpreter is shut down but will hold a current value as
+long as the EMC is running.
+
+<P>
+Explicit variables act just like implicit variables while the EMC
+is running but reloading the variable file will reset explicit variables
+to the value that they are assigned in the variable file. When EMC
+is shut down normally, the current values of all explicit variables
+are written into emc.var. Since explicit variables can change value
+from one run of EMC to the next, they may not contain the values that
+you expect when you restart your machine.
+
+<P>
+The EMC doesn't care very much what we name variables or what we use
+them for. For explicitly defined variables, the EMC cares only that
+they are two numbers in a row on a line by themselves in the emc.var
+file. For implicitly defined variables, the EMC cares not a whit.
+The only complaints that you might get from the EMC is if a reference
+to a variable makes a reference to an unknown word, or is out of range
+for a distance, or concerns tool compensation. While you are writing
+or using variables you will want to refer to and probably stay away
+from those variables listed in emc.ini that are used to set up the
+coordinate systems.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1847"
+  HREF="node101.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1841"
+  HREF="node99.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1835"
+  HREF="node99.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1843"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1845"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1848"
+  HREF="node101.html">13.2 Units of Variables</A>
+<B> Up:</B> <A NAME="tex2html1842"
+  HREF="node99.html">13. Programming With Variables</A>
+<B> Previous:</B> <A NAME="tex2html1836"
+  HREF="node99.html">13. Programming With Variables</A>
+ &nbsp; <B>  <A NAME="tex2html1844"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1846"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

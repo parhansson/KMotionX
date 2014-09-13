@@ -1,0 +1,195 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>KMotion with Resolver</title>
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+</head>
+
+<body>
+
+<p><font size="4" face="Arial"><b><i>Configuring a Resolver as Input to KMotion</i></b></font></p>
+<p><font face="Arial"><b><a href="http://dynomotion.com/Videos/Resolver.wmv">Here 
+is a video overview</a>.</b></font></p>
+<p><font face="Arial"><img border="0" src="ResolverMovie.jpg" width="320" height="240"></font></p>
+<p>&nbsp;</p>
+<p><font face="Arial">This example configuration shows a Resolver used as a 
+KMotion input device.&nbsp; A Resolver serves a purpose much like a digital 
+encoder.&nbsp; A Resolver is physically somewhat similar to a transformer with 
+two output windings called sine and cosine outputs.&nbsp; For a given excitation 
+input, the amplitude of the sine output is proportional to the sine of the 
+mechanical rotor position, and the amplitude of the cosine output is 
+proportional the the cosine of the mechanical rotor position.&nbsp;&nbsp; By 
+driving the excitation coil of a Resolver and measuring the amplitude of the 
+sine and cosine outputs, the mechanical rotor position can be determined.&nbsp; 
+Although a Resolver is an analog device there are some significant advantages.&nbsp; 
+A resolver is a high reliability device originally developed for military 
+applications.&nbsp; Because a Resolver is able to determine the rotor position 
+in an absolute manner for an entire shaft revolution it is not possible to 
+&quot;lose&quot; position of a fraction of a shaft revolution, as with an encoder.&nbsp; 
+If the position is &quot;lost&quot; it must be lost&nbsp; by a complete multiple of an 
+entire shaft rotation.&nbsp; Often older CNC systems used Resolvers as their 
+feedback device.&nbsp; When using KMotion to retrofit an older system with 
+resolvers, because KMotion may be used with resolvers, it is not necessary to 
+modify the original system to change to digital encoders. </font></p>
+<p><font face="Arial">Note: many older systems used a resolver in a somewhat reverse manner.&nbsp; 
+The controller excited the sine and cosine coils in a manner such that third 
+coil would generate a signal proportional to the <i>difference</i> between the 
+desired rotor position and the actual rotor position.&nbsp; This difference was 
+then used to directly drive the servo motors to reduce the error.&nbsp; 
+Operating in this manner the controller has no information on the actual rotor 
+position or&nbsp; the following error between the desired and actual rotor 
+positions.&nbsp;&nbsp;&nbsp; A resolver originally used in this manner may still 
+be used in the manner described in this example.</font></p>
+<p><font face="Arial">Shown below is a schematic symbol of a Resolver. The arrow 
+indicates a varying coupling between the excitation input and the output coils 
+as a function of rotor angle.</font></p>
+<p><font face="Arial"><img border="0" src="ResolverSymbol.PNG" width="480" height="424"></font></p>
+<p><font face="Arial">Here is a typical resolver unit (manufactured by Singer) with 6 wires, two 
+for each of the three coils.&nbsp; The wiring of a resolver can usually be 
+determined using a simple ohmmeter.&nbsp; The ohm meter can be used to determine 
+which pair of wires belong to a coil.&nbsp; Furthermore the sine and cosine 
+coils should have a very similar resistance and usually different from the 
+excitation coil.&nbsp; In the resolver shown below the excitation coil has a 
+resistance of 20 ohms and the sine/cosine oils have a resistance of 37 ohms.&nbsp; 
+Swapping the sine and cosine coils will simply reverse the measured motion.</font></p>
+<p><font face="Arial"><img border="0" src="ResolverCloseup.JPG" width="410" height="343"></font></p>
+<p>&nbsp;</p>
+<p><font face="Arial">Resolvers may be interfaced to KMotion in one of two ways.&nbsp; One method 
+is where an external circuit or module is available to excite the resolver and 
+determine the sine and cosine magnitudes externally.&nbsp; In this case only the 
+sine and cosine magnitude signals need to be connected to ADC inputs and 
+&quot;Resolver&quot; input mode can be selected.&nbsp;&nbsp;&nbsp; For further information 
+regarding this interface method see the Configuration Screen Setup.</font></p>
+<p><font face="Arial">A second method is where KMotion performs the excitation and synchronously 
+samples the AC outputs to determine and track the Resolver position.&nbsp; The 
+second method doesn't require an external Resolver Control Module or control 
+circuit.&nbsp; Only a single diode and two filter capacitors are required.&nbsp; 
+This is the method used in this example configuration.&nbsp; The method does 
+require a KMotion User Program (shown below written in C) to switch the resolver 
+excitation on and off and to sample the output waveforms at the appropriate 
+times to determine the amplitudes.</font></p>
+<p><font face="Arial">KMotion's Aux Switch output is used in this example to excite the resolver's 
+input coil with a 5V square wave.&nbsp; +5V is applied to one end of the coil 
+and the Aux Switch drives the opposite end of the coil to ground.&nbsp; This 
+applies +5V to the coil which causes current to ramp up in the coil.&nbsp; When 
+the switch is turned off, current is allowed to recirculate through a diode 
+which will cause the current to ramp down due to the coil's internal resistance.&nbsp; 
+This processes is repeated every 4 User Program Time Slices (180us each) or 
+every 720us (1.4KHz).&nbsp; The User Program computes the resolver position on 
+both the positive and negative transitions so the effective update rate is 2.8 
+KHz.&nbsp; This Aux Switch output, and single diode, may be used to drive 
+several resolvers.</font></p>
+<p><font face="Arial">The two output coils of each resolver are each connected to an ADC input with 
+the other ends of the coils connected to ground.&nbsp; 0.2uF filter capacitors 
+are used to smooth the output waveforms and should be located near the KMotion 
+Board.</font></p>
+<p><font face="Arial">The example layout below shows the connections for a single resolver.&nbsp; 
+Because KMotion has only 4 ADC inputs, KMotion is limited to interfacing to two 
+resolvers.&nbsp; If more axes are required then digital encoders must be used.&nbsp; 
+For testing purposes a small DC torque motor is shown connected to the resolver.&nbsp; 
+The DC motor is driven from one PWM output using the +12V supply.&nbsp; A more 
+likely scenario for an actual CNC retrofit would be to use the existing motor 
+power amplifiers driven by KMotion's +/-10V DAC outputs.&nbsp; </font> </p>
+<p>&nbsp;</p>
+<p><font face="Arial"><img border="0" src="ResolverLayoutTitles.jpg" width="672" height="585"></font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><font face="Arial">A wiring diagram for a complete 2 axis resolver is shown below.&nbsp; Also 
+shown is the DAC output connections for connecting to external power amplifiers 
+with +/-10 V Inputs.</font></p>
+<p><font face="Arial"><img border="0" src="ResolverWiring.PNG" width="1196" height="812"></font></p>
+<p><font face="Arial">This is a KMotion User Program which basically loops every 4 time slices 
+(720us), switches the 5V excitation, samples the ADC readings, computes the 
+output magnitudes, and calls an internal function (DoResolverInput2) that 
+computes the rotor angle and updates the axis's Position.&nbsp;&nbsp; 
+DoResolverInput2 internally multiplies the measured angle (in Radians) by 
+1000/(2 pi) so that 1 shaft revolution will be seen as 1000.0 counts.&nbsp; This 
+causes numeric values to have similar ranges as with digital encoders. </font> </p>
+<div style="border-style: solid; border-width: 3px; padding-left: 4px; padding-right: 4px; padding-top: 1px; padding-bottom: 1px">
+	<pre style="margin-top: 0; margin-bottom: 0"><font face="Courier New">#include &quot;KMotionDef.h&quot;</font></pre>
+	<pre style="margin-top: 0; margin-bottom: 0">&nbsp;</pre>
+	<pre style="margin-top: 0; margin-bottom: 0"><font face="Courier New">// Two Axis Resolver Program  1/6/08
+//
+// outputs square wave to both resolvers using Aux Switch Output
+//
+// then samples output coils near positive and negative peaks
+// takes the difference to compute magnitudes
+//</font></pre>
+	<pre style="margin-top: 0; margin-bottom: 0"><font face="Courier New">// these ratios are used to match the amplitudes of sine:cosine</font></pre>
+	<pre style="margin-top: 0; margin-bottom: 0"><font face="Courier New">
+#define RATIO0 (978.0f/768.0f)  // size j/size k
+#define RATIO1 (950.0f/709.0f)  // size n/size m</font></pre>
+	<pre style="margin-top: 0; margin-bottom: 0">&nbsp;</pre>
+	<pre style="margin-top: 0; margin-bottom: 0"><font face="Courier New">main()
+{
+	int i=0;
+	int k0,j0,k1,j1;
+	int m0,n0,m1,n1;
+	</font></pre>
+	<pre style="margin-top: 0; margin-bottom: 0"><font face="Courier New">	SetBit(28);  //+/-15V on
+	SetBitDirection(30,1);  	// configure AUX switch as output
+	DefineCoordSystem(0,1,-1,-1);	// Define 2 axis system
+	</font></pre>
+	<pre style="margin-top: 0; margin-bottom: 0"><font face="Courier New">	Delay_sec(0.1);			// wait for +/- 15V to be stable</font></pre>
+	<pre style="margin-top: 0; margin-bottom: 0"><font face="Courier New">	for (;;)			// repeat forever
+	{
+		WaitNextTimeSlice();	// wait a few servo cycles
+		WaitNextTimeSlice();
+		Delay_sec(10e-6); 	// wait for ADC conversion to complete
+		k0=ADC(0);		// Sample all the ADCs
+		j0=ADC(1);
+		m0=ADC(2);
+		n0=ADC(3);
+		SetBit(30);		// Switch the resolver excitation
+		</font></pre>
+	<pre style="margin-top: 0; margin-bottom: 0"><font face="Courier New">		//compute &amp; track position based on measured magnitudes
+		DoResolverInput2(ch0,(k1-k0)*RATIO0,j1-j0);  
+		DoResolverInput2(ch1,(m1-m0)*RATIO1,n1-n0);
+		</font></pre>
+	<pre style="margin-top: 0; margin-bottom: 0"><font face="Courier New">		WaitNextTimeSlice(); 	// wait a few servo cycles
+		WaitNextTimeSlice();
+		Delay_sec(10e-6); 	// wait for ADC conversion to complete
+		k1=ADC(0);		// Sample all the ADCs
+		j1=ADC(1);
+		m1=ADC(2);
+		n1=ADC(3);
+		ClearBit(30);		// Switch the resolver excitation
+		</font></pre>
+	<pre style="margin-top: 0; margin-bottom: 0"><font face="Courier New">		//compute &amp; track position based on measured magnitudes
+		DoResolverInput2(ch0,(k1-k0)*RATIO0,j1-j0);
+		DoResolverInput2(ch1,(m1-m0)*RATIO1,n1-n0);</font></pre>
+	<pre style="margin-top: 0; margin-bottom: 0">&nbsp;</pre>
+	<pre style="margin-top: 0; margin-bottom: 0"><font face="Courier New">#if 0	// enable this to print the magnitudes occasionally
+		if (++i==1000)
+		{
+			i=0;
+			printf(&quot;%5.0f %5d\n&quot;,k1-k0,j1-j0);
+		}
+#endif
+	}
+}</font></pre>
+</div>
+<p>&nbsp;</p>
+<p><font face="Arial">The Configuration Screen input mode is shown here set to &quot;User Input&quot;.&nbsp; 
+This allows the User Program shown above to be in charge of setting the current 
+position.</font></p>
+<p><font face="Arial"><img border="0" src="ResolverConfigScreen.PNG" width="507" height="515"></font></p>
+<p>&nbsp;</p>
+<p><font face="Arial">Here is a Move Plot of a move of 1000 which corresponds to 
+1 shaft revolution of the encoder.&nbsp; Not the Command (Blue) and Measured 
+(Red) positions are nearly overlaid.</font></p>
+<p><font face="Arial"><img border="0" src="ResolverStep.PNG" width="897" height="580"></font></p>
+<p>&nbsp;</p>
+<p><font face="Arial">Zooming in on the position gives an indication of the 
+position resolution and noise level.&nbsp; The signal shown below has a range of 
+approximately +/- 0.5 counts where 1 count is 1/1000 of a shaft resolution.&nbsp; 
+So for example on a system with a 5 pitch lead screw (0.200 inches / rev) this 
+would correspond to +/- 0.1 mils (~ 2.5um).</font></p>
+<p><font face="Arial"><img border="0" src="ResolverNoise.PNG" width="897" height="580"></font></p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

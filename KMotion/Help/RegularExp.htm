@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Find Replace Regular Expressions</title>
+</head>
+
+<body>
+
+<p><i><b>Regular Expressions</b></i> allow a powerful find and replace 
+functionality.</p>
+<p>[1] char matches itself, unless it is a special character (metachar): . \ [ ] 
+* + ^ $</p>
+<p>[2] . matches any character.</p>
+<p>[3] \ matches the character following it, except when followed by a left or 
+right round bracket, a digit 1 to 9 or a left or right angle bracket. (see [7], 
+[8] and [9])&nbsp; It is used as an escape character for all other 
+meta-characters, and itself. When used in a set ([4]), it is treated as an 
+ordinary character.</p>
+<p>[4] [set] matches one of the characters in the set.&nbsp; If the first 
+character in the set is &quot;^&quot;, it matches a character NOT in the set, i.e. 
+complements the set. A shorthand S-E is used to specify a set of characters S 
+upto E, inclusive. The special characters &quot;]&quot; and &quot;-&quot; have no special meaning if 
+they appear as the first chars in the set.&nbsp; examples: match:&nbsp; [a-z] 
+any lowercase alpha [^]-] any char except ] and - [^A-Z] any char except 
+uppercase alpha [a-zA-Z] any alpha</p>
+<p>[5] * any regular expression form [1] to [4], followed by closure char (*) 
+matches zero or more matches of that form.</p>
+<p>[6] + same as [5], except it matches one or more.</p>
+<p>[7] a regular expression in the form [1] to [10], enclosed as \(form\) 
+matches what form matches. The enclosure creates a set of tags, used for [8] and 
+for pattern substitution. The tagged forms are numbered starting from 1.</p>
+<p>[8] a \ followed by a digit 1 to 9 matches whatever a previously tagged 
+regular expression ([7]) matched. </p>
+<p>[9] \&lt; a regular expression starting with a \&lt; construct\&gt; and/or ending with 
+a \&gt; construct, restricts the pattern matching to the beginning of a word, 
+and/or the end of a word. A word is defined to be a character string beginning 
+and/or ending with the characters A-Z a-z 0-9 and _. It must also be preceded 
+and/or followed by any character outside those mentioned.</p>
+<p>[10] a composite regular expression xy where x and y are in the form [1] to 
+[10] matches the longest match of x followed by a match for y.</p>
+<p>[11] ^ a regular expression starting with a ^ character $ and/or ending with 
+a $ character, restricts the pattern matching to the beginning of the line, or 
+the end of line. [anchors] Elsewhere in the pattern, ^ and $ are treated as 
+ordinary characters.<br>
+&nbsp;</p>
+<p><i><b>Example: to replace comment lines that begin with a ; and proceed to 
+the end of the line with comments that are enclosed within (*&nbsp; *)</b></i></p>
+<p><i><b>Change:</b></i></p>
+<p><b>&nbsp; ;This is a comment</b></p>
+<p><i><b>To:</b></i></p>
+<p><b>&nbsp; (* This is a comment *)</b></p>
+<p>&nbsp;</p>
+<p><i><b>Specify:</b></i></p>
+<p><b>Find : (a semicolon, then tag any and all characters to the end of line as 
+tag #1) </b></p>
+<p><b>;\(.*\)$</b></p>
+<p><b>Replace with ( parenthesis, asterisk, space, the tagged characters,&nbsp; 
+space,&nbsp; asterisk, parenthesis)</b></p>
+<div style="font-size: 12pt; font-family: 'times new roman', 'new york', times, serif; margin: 0px">
+	<div style="margin: 0px">
+		<b>(* \1 *)</b></div>
+</div>
+<p>&nbsp;</p>
+<p>Acknowledgements:<br>
+<br>
+Regular expression pattern matching and replacement By: Ozan S. Yigit (oz) Dept. 
+of Computer Science York University<br>
+Original code available from <a href="http://www.cs.yorku.ca/~oz/">
+http://www.cs.yorku.ca/~oz/</a> Translation to C++ by Neil Hodgson neilh@scintilla.org<br>
+These routines are the PUBLIC DOMAIN equivalents of regex routines as found in 
+4.nBSD UN*X, with minor extensions.<br>
+These routines are derived from various implementations found in software tools 
+books, and Conroy's grep. They are NOT derived from licensed/restricted 
+software.<br>
+For more interesting/academic/complicated implementations, see Henry Spencer's 
+regexp routines, or GNU Emacs pattern matching module.<br>
+&nbsp;</p>
+
+</body>
+
+</html>

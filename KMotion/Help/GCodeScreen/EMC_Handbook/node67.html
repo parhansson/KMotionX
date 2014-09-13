@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>11.0.1 Preliminary Motion </TITLE>
+<META NAME="description" CONTENT="11.0.1 Preliminary Motion ">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="previous" HREF="node66.html">
+<LINK REL="up" HREF="node66.html">
+<LINK REL="next" HREF="node68.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1340"
+  HREF="node68.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1334"
+  HREF="node66.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1330"
+  HREF="node66.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1336"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1338"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1341"
+  HREF="node68.html">11.1 G80</A>
+<B> Up:</B> <A NAME="tex2html1335"
+  HREF="node66.html">11. Canned Cycles</A>
+<B> Previous:</B> <A NAME="tex2html1331"
+  HREF="node66.html">11. Canned Cycles</A>
+ &nbsp; <B>  <A NAME="tex2html1337"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1339"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION04201000000000000000">
+11.0.1 Preliminary Motion </A>
+</H2>
+
+<P>
+Preliminary motion may be confusing on first read. It should come
+clear as you work through the examples in G80 and G81 below. Preliminary
+motion is a set of motions that is common to all of the milling canned
+cycles. These motions are computed at the time the canned cycle block
+is encountered by the interpreter. They move the tool into the proper
+location for the execution of the canned cycle itself.
+
+<P>
+These motions will be different depending on whether the canned cycle
+is to be executed using absolute distances or incremental distances.
+These motions will also be affected by the initial position of the
+z axis when the canned cycle block is encountered in a program.
+
+<P>
+If the current Z position is below the R position, the Z axis is traversed
+to the R position. This happens only once, regardless of the value
+of L.
+
+<P>
+In addition, for each repeat as specified by L, one or two moves are
+made before the rest of the cycle: 1. a straight traverse parallel
+to the XY-plane to the given XY-position 2. a straight traverse of
+the Z-axis only to the R position, if it is not already at the R position.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1340"
+  HREF="node68.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1334"
+  HREF="node66.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1330"
+  HREF="node66.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1336"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1338"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1341"
+  HREF="node68.html">11.1 G80</A>
+<B> Up:</B> <A NAME="tex2html1335"
+  HREF="node66.html">11. Canned Cycles</A>
+<B> Previous:</B> <A NAME="tex2html1331"
+  HREF="node66.html">11. Canned Cycles</A>
+ &nbsp; <B>  <A NAME="tex2html1337"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1339"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

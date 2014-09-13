@@ -1,0 +1,369 @@
+﻿<!DOCTYPE HTML>
+<html>
+	<head> 
+		<title></title>
+		<link type="text/css" rel="stylesheet"  href="./Content/Site.css" />
+		<link type="text/css" rel="stylesheet"  href="./Content/Themes/vader/jquery-ui-1.8.17.custom.css" />
+		<script type="text/javascript" src="./Scripts/jquery-1.7.1.min.js" ></script>
+		<script type="text/javascript" src="./Scripts/jquery-ui-1.8.17.custom.min.js" ></script>
+		<script type="text/javascript" src="./Scripts/JQUIDefs.js" ></script>
+		<script type="text/javascript" src="./Scripts/CommandHooks.js" ></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            $('.commandtype').html(window.external.GetCommandOptions);
+            window.external.LoadInterpreterTPEditor();
+            window.external.LoadInterpreterAxisEditor();
+            window.external.LoadCommandEditor(1, 120);
+            $('.commandtype').change(function() {
+                window.external.SaveCommandEditor(1, 120);
+                window.external.LoadCommandEditor(1, 120);
+                $('.commandbutton').off('click'); 
+
+                $('.commandbutton').click(function() {
+                    var id = $(this).attr('data-commandid');
+                    window.external.SetCommandFileName(id);
+                });
+            });
+            //SaveData
+
+            $('#savedata').click(function() {
+                window.external.SaveInterpreterTPEditor();
+                window.external.SaveInterpreterAxisEditor();
+                window.external.SaveCommandEditor(1, 120);
+                window.external.SaveInterpreterData();
+            });
+            $('.commandbutton').click(function() {
+            var id = $(this).attr('data-commandid');
+            window.external.SetCommandFileName(id);
+            });
+        });
+    </script>
+	</head>
+	<body class="controllerbody" > 
+	<div id="bg"> 
+	</div>
+            <div>
+  <div id="settingstabs">
+	<ul>
+		<li><a href="#settingstabs-1">M3-M9</a></li>
+		<li><a href="#settingstabs-2">M100-M109</a></li>
+		<li><a href="#settingstabs-3">M110-M119</a></li>
+		<li><a href="#settingstabs-4">Commands</a></li>
+		<li><a href="#settingstabs-5">Motion Parameters</a></li>
+	</ul>
+	<div id="settingstabs-1"> 
+	<div>
+	<select class="commandtype" id="commandtype3">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand3" data-commandname="M3" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype4">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand4" data-commandname="M4" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype5">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand5" data-commandname="M5" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype6">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand6" data-commandname="M6" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype7">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand7" data-commandname="M7" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype8">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand8" data-commandname="M8" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype9">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand9" data-commandname="M9" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype10">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand10" data-commandname="S" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div>
+	</div>
+	<div id="settingstabs-2">
+	<div>
+	<select class="commandtype" id="commandtype100">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand100" data-commandname="M100" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype101">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand101" data-commandname="M101" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype102">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand102" data-commandname="M102" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype103">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand103" data-commandname="M103" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype104">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand104" data-commandname="M104" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype105">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand105" data-commandname="M105" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype106">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand106" data-commandname="M106" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype107">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand107" data-commandname="M107" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div> 
+	 	<div>
+	<select class="commandtype" id="commandtype108">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand108" data-commandname="M108" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div> 
+	 	<div>
+	<select class="commandtype" id="commandtype109">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand109" data-commandname="M109" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div> 
+	</div>
+	<div id="settingstabs-3">
+	<div>
+	<select class="commandtype" id="commandtype110">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand110" data-commandname="M110" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype111">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand111" data-commandname="M111" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div> 
+	 	<div>
+	<select class="commandtype" id="commandtype112">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand112" data-commandname="M112" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div> 
+	 	<div>
+	<select class="commandtype" id="commandtype113">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand113" data-commandname="M113" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div> 
+	 	<div>
+	<select class="commandtype" id="commandtype114">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand114" data-commandname="M114" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div> 
+	 	<div>
+	<select class="commandtype" id="commandtype115">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand115" data-commandname="M115" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div> 
+	 	<div>
+	<select class="commandtype" id="commandtype116">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand116" data-commandname="M116" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div> 
+	 	<div>
+	<select class="commandtype" id="commandtype117">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand117" data-commandname="M117" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div> 
+	 	<div>
+	<select class="commandtype" id="commandtype118">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand118" data-commandname="M118" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div> 
+	 	<div>
+	<select class="commandtype" id="commandtype119">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand119" data-commandname="M119" data-showcommandindex="false" data-editcommandname="false"></div> 
+	 </div> 
+	
+	</div>
+	<div id="settingstabs-4">
+	<div>
+	<select class="commandtype" id="commandtype11">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand11" data-commandname="Command 1" data-showcommandindex="false" data-editcommandname="true"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype12"> 
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand12" data-commandname="Command 2" data-showcommandindex="false" data-editcommandname="true"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype13"> 
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand13" data-commandname="Command 3" data-showcommandindex="false" data-editcommandname="true"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype14">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand14" data-commandname="Command 4" data-showcommandindex="false" data-editcommandname="true"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype15">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand15" data-commandname="Command 5" data-showcommandindex="false" data-editcommandname="true"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype16">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand16" data-commandname="Command 6" data-showcommandindex="false" data-editcommandname="true"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype17">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand17" data-commandname="Command 7" data-showcommandindex="false" data-editcommandname="true"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype18">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand18" data-commandname="Command 8" data-showcommandindex="false" data-editcommandname="true"></div> 
+	 </div> 
+	 	<div>
+	<select class="commandtype" id="commandtype19">
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand19" data-commandname="Command 9" data-showcommandindex="false" data-editcommandname="true"></div> 
+	 </div>
+	 	<div>
+	<select class="commandtype" id="commandtype20"> 
+	</select>
+		 <div class="commandeditor" style="width:900px" id="editcommand20
+		 " data-commandname="Command 10" data-showcommandindex="false" data-editcommandname="true"></div> 
+	 </div>
+	</div>
+	<div id="settingstabs-5">
+		
+ <div id="tplannercontainer">
+ <h3 style=" text-align:center; margin: 15px 5px 5px 5px; font-family:Trebuchet MS;">Trajectory Planner / Axis Settings</h3>
+ <table class="tplannertable">
+ <tr class="tplannerrow">
+ <th class="tplannerheader">Break Angle</th>
+ <th class="tplannerheader">Look Ahead</th>
+ <th class="tplannerheader">Collinear Tolerance</th>
+ <th class="tplannerheader">Corner Tolerance</th>
+ <th class="tplannerheader">Facet Angle</th>
+ </tr>
+ 
+ <tr class="tplannerrow"> 
+ <td class="tplannerunits">degrees</td>
+ <td class="tplannerunits">seconds</td>
+ <td class="tplannerunits">inches</td>
+ <td class="tplannerunits">inches</td>
+ <td class="tplannerunits">degrees</td>
+ </tr>
+ <tr class="tplannerrow"> 
+ <td><input class="tplannertext" id="tplannerbreakangle" type="text" /></td>
+ <td><input class="tplannertext" id="tplannerlookahead" type="text" /></td>
+ <td><input class="tplannertext" id="tplannercollineartolerance" type="text" /></td>
+ <td><input class="tplannertext" id="tplannercornertolerance" type="text" /></td>
+ <td><input class="tplannertext" id="tplannerfacetangle" type="text" /></td>
+ </tr>
+ </table>
+ </div>
+ 
+ <div id="axisparamcontainer"> 
+ <table class="axisparamtable">
+ <tr class="axisparamrow">
+ <th class="axisparamheader">Axis</th>
+ <th class="axisparamheader">Index</th>
+ <th class="axisparamheader">Counts Per Inch</th>
+ <th class="axisparamheader">Max Accel</th>
+ <th class="axisparamheader">Max Velocity</th>
+ <th class="axisparamheader">Jog Velocity</th>
+ </tr>
+ 
+ <tr class="axisparamrow"> 
+ <td><p class="axisparamlabel" id="axisnamelabelX">X</p></td>
+ <td><input class="axisparamtext" id="axisindexX" type="text" /></td>
+ <td><input class="axisparamtext" id="axiscountsX" type="text" /></td>
+ <td><input class="axisparamtext" id="axisaccelX" type="text" /></td>
+ <td><input class="axisparamtext" id="axisvelX" type="text" /></td>
+ <td><input class="axisparamtext" id="axisjogvelX" type="text" /></td>
+ </tr>
+ 
+ <tr class="axisparamrow"> 
+ <td><p class="axisparamlabel" id="axisnamelabelY">Y</p></td>
+ <td><input class="axisparamtext" id="axisindexY" type="text" /></td>
+ <td><input class="axisparamtext" id="axiscountsY" type="text" /></td>
+ <td><input class="axisparamtext" id="axisaccelY" type="text" /></td>
+ <td><input class="axisparamtext" id="axisvelY" type="text" /></td>
+ <td><input class="axisparamtext" id="axisjogvelY" type="text" /></td>
+ </tr>
+ 
+ <tr class="axisparamrow"> 
+ <td><p class="axisparamlabel" id="axisnamelabelZ">Z</p></td>
+ <td><input class="axisparamtext" id="axisindexZ" type="text" /></td>
+ <td><input class="axisparamtext" id="axiscountsZ" type="text" /></td>
+ <td><input class="axisparamtext" id="axisaccelZ" type="text" /></td>
+ <td><input class="axisparamtext" id="axisvelZ" type="text" /></td>
+ <td><input class="axisparamtext" id="axisjogvelZ" type="text" /></td>
+ </tr>
+ 
+ <tr class="axisparamrow"> 
+ <td><p class="axisparamlabel" id="axisnamelabelA">A</p></td>
+ <td><input class="axisparamtext" id="axisindexA" type="text" /></td>
+ <td><input class="axisparamtext" id="axiscountsA" type="text" /></td>
+ <td><input class="axisparamtext" id="axisaccelA" type="text" /></td>
+ <td><input class="axisparamtext" id="axisvelA" type="text" /></td>
+ <td><input class="axisparamtext" id="axisjogvelA" type="text" /></td>
+ </tr>
+ 
+ <tr class="axisparamrow"> 
+ <td><p class="axisparamlabel" id="axisnamelabelB">B</p></td>
+ <td><input class="axisparamtext" id="axisindexB" type="text" /></td>
+ <td><input class="axisparamtext" id="axiscountsB" type="text" /></td>
+ <td><input class="axisparamtext" id="axisaccelB" type="text" /></td>
+ <td><input class="axisparamtext" id="axisvelB" type="text" /></td>
+ <td><input class="axisparamtext" id="axisjogvelB" type="text" /></td>
+ </tr>
+ 
+ <tr class="axisparamrow"> 
+ <td><p class="axisparamlabel" id="axisnamelabelC">C</p></td>
+ <td><input class="axisparamtext" id="axisindexC" type="text" /></td>
+ <td><input class="axisparamtext" id="axiscountsC" type="text" /></td>
+ <td><input class="axisparamtext" id="axisaccelC" type="text" /></td>
+ <td><input class="axisparamtext" id="axisvelC" type="text" /></td>
+ <td><input class="axisparamtext" id="axisjogvelC" type="text" /></td>
+ </tr>
+ </table>
+ </div>
+	</div>
+</div>
+
+ <button id="savedata" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" style="left:700px; top:530px">Save Data</button>
+ 
+            <div id="statusbar">
+                <p id="connectedvalue"></p>
+                <p id="kflopversionvalue"></p>
+               <button id="mainpagebutton" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  Main </button>
+               <button id="offsetspagebutton" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  Offsets </button>
+               <button id="settingspagebutton" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all" > 
+                  Settings </button>
+            </div>
+             
+            </div>
+	</body>
+</html>

@@ -1,0 +1,28 @@
+G20 (inches mode)
+F30
+G10L2P1X0Y0Z0 (Set G54 offset to 0,0,0 used by default) 
+G10L2P2X2Y0Z0 (Set G55 offset to 2,0,0)
+G10L2P3X0Y2Z0 (Set G55 offset to 0,2,0)
+
+G54 (Set to coordinate system 1 - already by default)
+G0 x0y0z0 (Draw a box) 
+G1 x1
+y1
+x0
+y0
+
+G55 (Set to coordinate system 2)
+G0 x0y0z0 (Draw a box) 
+G1 x1
+y1
+x0
+y0
+
+G56 (Set to coordinate system 3)
+G0 x0y0z0 (Draw a box) 
+G1 x1
+y1
+x0
+y0
+
+M2

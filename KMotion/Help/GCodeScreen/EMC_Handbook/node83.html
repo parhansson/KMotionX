@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>12.2.1 Cutter Radius Compensation Detail</TITLE>
+<META NAME="description" CONTENT="12.2.1 Cutter Radius Compensation Detail">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node91.html">
+<LINK REL="previous" HREF="node82.html">
+<LINK REL="up" HREF="node82.html">
+<LINK REL="next" HREF="node84.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1594"
+  HREF="node84.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1588"
+  HREF="node82.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1582"
+  HREF="node82.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1590"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1592"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1595"
+  HREF="node84.html">Programming Instructions</A>
+<B> Up:</B> <A NAME="tex2html1589"
+  HREF="node82.html">12.2 Cutter Radius Compensation</A>
+<B> Previous:</B> <A NAME="tex2html1583"
+  HREF="node82.html">12.2 Cutter Radius Compensation</A>
+ &nbsp; <B>  <A NAME="tex2html1591"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1593"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION04321000000000000000">
+12.2.1 Cutter Radius Compensation Detail</A>
+</H2>
+
+<P>
+The cutter radius compensation capabilities of the interpreter enable
+the programmer to specify that a cutter should travel to the right
+or left of an open or closed contour in the XY-plane composed of arcs
+of circles and straight line segments. The contour may be the outline
+of material not to be machined away, or it may be a tool path to be
+followed by an exactly sized tool. This figure shows two examples
+of the path of a tool cutting using cutter radius compensation so
+that it leaves a triangle of material remaining.
+
+<P>
+<TABLE  WIDTH="0%">
+<TR><TD>
+In both examples, the shaded triangle represents material which should
+remain after cutting, and the line outside the shaded triangle represents
+the path of the tip of a cutting tool. Both paths will leave the shaded
+triangle uncut. The one on the left (with rounded corners) is the
+path the interpreter will generate. In the method on the right (the
+one not used), the tool does not stay in contact with the shaded triangle
+at sharp corners. 
+
+<P>
+</TD></TR>
+</TABLE>
+
+<TABLE  WIDTH="0%">
+<TR><TD>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><!-- MATH
+ $\resizebox*{2.5in}{!}{\includegraphics{/usr/share/lyx/EMC_images/Image9.eps}}$
+ -->
+<IMG
+ WIDTH="288" HEIGHT="164" ALIGN="BOTTOM" BORDER="0"
+ SRC="img29.gif"
+ ALT="\resizebox*{2.5in}{!}{\includegraphics{/usr/share/lyx/EMC_images/Image9.eps}}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+</TD></TR>
+</TABLE>
+
+<P>
+<BR>
+
+<P>
+Z axis motion may take place while the contour is being followed in
+the XY plane. Portions of the contour may be skipped by retracting
+the Z axis above the part, following the contour to the next point
+at which machining should be done, and re-extending the Z-axis. These
+skip motions may be performed at feed rate (G1) or at traverse rate
+(G0). Inverse time feed rate (G93) or units per minute feed rate (G94)
+may be used with cutter radius compensation. Under G94, the feed rate
+will apply to the actual path of the cutter tip, not to the programmed
+contour.
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1596"
+  HREF="node84.html">Programming Instructions</A>
+<LI><A NAME="tex2html1597"
+  HREF="node85.html">D Number</A>
+<LI><A NAME="tex2html1598"
+  HREF="node86.html">Tool Table</A>
+<LI><A NAME="tex2html1599"
+  HREF="node87.html">Two Kinds of Contour</A>
+<LI><A NAME="tex2html1600"
+  HREF="node88.html">Material Edge Contour </A>
+<LI><A NAME="tex2html1601"
+  HREF="node89.html">Tool Path Contour</A>
+<LI><A NAME="tex2html1602"
+  HREF="node90.html">Programming Errors and Limitations </A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1594"
+  HREF="node84.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1588"
+  HREF="node82.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1582"
+  HREF="node82.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1590"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1592"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1595"
+  HREF="node84.html">Programming Instructions</A>
+<B> Up:</B> <A NAME="tex2html1589"
+  HREF="node82.html">12.2 Cutter Radius Compensation</A>
+<B> Previous:</B> <A NAME="tex2html1583"
+  HREF="node82.html">12.2 Cutter Radius Compensation</A>
+ &nbsp; <B>  <A NAME="tex2html1591"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1593"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

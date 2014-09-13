@@ -1,0 +1,7 @@
+POC     FMS     LEN     DIAM    COMMENT
+
+1       1       0.0     0.0     first tool
+2       2       0.0     0.0
+3       3       1.0     0.5
+4       4       2.0     1.0
+32      32      0.0     0.0     last tool

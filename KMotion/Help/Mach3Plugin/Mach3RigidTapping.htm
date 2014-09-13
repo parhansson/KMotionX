@@ -1,0 +1,521 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Mach3 Rigid Tapping</title>
+</head>
+
+<body>
+
+<p style="margin-top: 0; margin-bottom: 0"><b><i><font face="Arial" size="6">Mach3 
+Plugin - Rigid Tapping</font></i></b></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">To&nbsp;perform 
+Rigid Tapping from Mach3 the tapping parameters are set into GCode Variables, 
+then a Macro (M84) is called which downloads the parameters to KFLOP, notifies 
+KFlop to perform the Tap Cycle, then waits until KFLOP sets a variable 
+indicating the operation has completed.</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">A requirement for 
+Rigid Tapping is that the Spindle has encoder feedback and is possible to move 
+in a fairly controlled manner.&nbsp; The Z axis motion is &quot;geared&quot; to the 
+measured Spindle Encoder Position throughout the cycle. </font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">There are three 
+parts to the process: The GCode, the M84 Macro, and the KFlop User Program.&nbsp; 
+Examples can be found <a href="http://www.dynomotion.com/Software/RigidTap/">
+here</a>.</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">&nbsp; </font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><u><b><font face="Arial">Example 
+Rigid Tap Call From GCode</font></b></u></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">We use a Macro M84 
+as Mach3 uses the normal G84 Tap cycle for a floating tapholder technique and 
+doesn't currently support a rigid tap GCode.</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Note that the 
+forward cutting rate (RPM) and the retraction rate (RPM) can be defined 
+separately.&nbsp; A cyclic forward/retract motion can be specified to cut the 
+thread to the total depth.&nbsp; If a simple single motion is desired, set the Z 
+depth forward motion to the Z depth Total. </font></p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">&nbsp; </font></p>
+<p>G0X0Y0Z5<br>
+<br>
+(Call a Rigid Tap Sequence)<br>
+#10=20 (TPI - Threads per inch)<br>
+#11=700 (Forward Cutting RPM)<br>
+#12=1000 (Retract RPM)<br>
+#13=0.75 (Z depth Total inches)<br>
+#14=0.2 (Z depth Forward per Motion)<br>
+#15=0.05 (Z depth Retract per Motion)<br>
+M84<br>
+<br>
+G0X4Y0Z5<br>
+<br>
+(Call a Rigid Tap Sequence)<br>
+#10=20 (TPI - Threads per inch)<br>
+#11=700 (Forward Cutting RPM)<br>
+#12=1000 (Retract RPM)<br>
+#13=0.75 (Z depth Total inches)<br>
+#14=0.2 (Z depth Forward per Motion)<br>
+#15=0.05 (Z depth Retract per Motion)<br>
+M84<br>
+<br>
+M2</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><u><b><font face="Arial">Mach3 M84 
+Macro </font></b></u></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">This macro moves the GCode Tapping 
+Variables to Mach3 User DROs, downloads then to KFLOP UserData variables, 
+Triggers KFLOP to perform the Tap Cycle, then waits until KFLOP sets a User Data 
+Variable indicating the cycle is complete.</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">'<font color="#008000">Macro for 
+Rigid Tappin with Dynomotion KFLOP<br>
+'<br>
+' pass variables to KFLOP<br>
+'<br>
+' Var DRO KFLOP UserVar Description<br>
+' #10 1010 18 19 TPI - Threads per inch<br>
+' #11 1011 20 21 Forward Cutting RPM<br>
+' #12 1012 22 23 Retract RPM<br>
+' #13 1013 24 25 Z depth Total inches<br>
+' #14 1014 26 27 Z depth Forward per Motion<br>
+' #15 1015 28 29 Z depth Retract per Motion<br>
+' 1016 30 31 Set by KFLOP when complete<br>
+</font><br>
+<font color="#008000">'Move the GCode Vars into DROS and send them to KFLOP User 
+Vars</font><br>
+<font color="#0000FF">For</font> i=0 <font color="#0000FF">To</font> 5 <br>
+Call SetUserDRO(1010+i, GetVar(10+i)) <br>
+NotifyPlugins(19010+i)<br>
+<font color="#0000FF">Next </font>i<br>
+<br>
+<font color="#0000FF">Call</font> SetUserDRO(1016, 0)<font color="#008000"> 
+'clear the complete flag</font><br>
+NotifyPlugins(19010+6) <br>
+<br>
+NotifyPlugins(10084) <font color="#008000">'do the TAP!! </font><br>
+<br>
+<font color="#0000FF">While</font> GetUserDRO(1016)=0 <br>
+Sleep(50)<br>
+NotifyPlugins(18016) <font color="#008000">'upload the complete flag</font><br>
+<font color="#0000FF">Wend</font> </p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><u><b>KFLOP Notify User C Program 
+that performs the Rigid Tap Cycle</b></u></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">The C Program that performs the Rigid 
+Tap Cycle.&nbsp; This assumes that the Spindle axis can be controlled like a 
+Servo Axis within KFLOP (although it is not defined as an axis within Mach3).&nbsp; 
+The defines must be set per your specific system.&nbsp; A low pass filter is 
+used to smooth the commanded Z motion for the case where the Spindle Motion 
+might be too Jerky for the Z Axis to follow without possibly stalling, it also 
+smoothes the response that would be otherwise stepped because user programs only 
+execute every other servo sample.&nbsp; A Tau of 0.001 performs as a low pass 
+filter with a time constant of 1ms.&nbsp;&nbsp;&nbsp; </p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;;color:blue">#include</span><span style="font-size:10.0pt;font-family:&quot;Courier New&quot;"> 
+&quot;KMotionDef.h&quot;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;;color:green">//Plugin calls for Mach3 
+NotifyPlugins Commands</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;;color:green">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;;color:green">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;;color:blue">void</span><span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;"> Tap(<span style="color:blue">void</span>);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">main()</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">{</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue">int</span> 
+msg = persist.UserData[6];&nbsp; <span style="color:green">// Mach3 notify Message 
+10000-10999</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;;color:green">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf(&quot;Mach3 Notify Call, 
+Message = %d\n&quot;,msg); </span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue">if</span> 
+(msg==10084)</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Tap();</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">}</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;;color:green">//&nbsp; R I G I D&nbsp;&nbsp; T A P P 
+I N G </span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;;color:green">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;;color:blue">#define</span><span style="font-size:10.0pt;font-family:&quot;Courier New&quot;"> 
+ZAXIS 7</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;;color:blue">#define</span><span style="font-size:10.0pt;font-family:&quot;Courier New&quot;"> 
+SPINDLE_AXIS 6</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;;color:blue">#define</span><span style="font-size:10.0pt;font-family:&quot;Courier New&quot;"> 
+Z_CNTS_PER_INCH -20000.0</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;;color:blue">#define</span><span style="font-size:10.0pt;font-family:&quot;Courier New&quot;"> 
+CNTS_PER_REV (8192*14/16)</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;;color:blue">#define</span><span style="font-size:10.0pt;font-family:&quot;Courier New&quot;"> 
+TAU 0.001</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;;color:blue">double</span><span style="font-size:10.0pt;font-family:&quot;Courier New&quot;"> 
+SlaveGain,ToCut,TotalCut,Z0,S0;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;;color:blue">void</span><span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;"> DoSlave(<span style="color:blue">void</span>);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;;color:blue">void</span><span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;"> DoTap(<span style="color:blue">double</span> 
+Dist, <span style="color:blue">double</span> Rate, <span style="color:blue">
+double</span> TPI);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;;color:blue">void</span><span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;"> Tap(<span style="color:blue">void</span>)</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">{</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:green">//&nbsp; 
+#10&nbsp; 1010&nbsp;&nbsp;&nbsp; 18 19&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TPI</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:green">//&nbsp; 
+#11&nbsp; 1011&nbsp;&nbsp;&nbsp; 20 21&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Forward Cutting RPM</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:green">//&nbsp; 
+#12&nbsp; 1012&nbsp;&nbsp;&nbsp; 22 23&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retract RPM</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:green">//&nbsp; 
+#13&nbsp; 1013&nbsp;&nbsp;&nbsp; 24 25&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Z depth Total inches</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:green">//&nbsp; 
+#14&nbsp; 1014&nbsp;&nbsp;&nbsp; 26 27&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Z depth Forward per Motion</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:green">//&nbsp; 
+#15&nbsp; 1015&nbsp;&nbsp;&nbsp; 28 29&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Z depth Retract per Motion</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:green">//&nbsp; 
+#16&nbsp; 1015&nbsp;&nbsp;&nbsp; 30 31&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Complete Flag</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;;color:green">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue">
+double</span> TPI &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = *(<span style="color:blue">double</span> 
+*)&amp;persist.UserData[18];</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue">
+double</span> CutRPM &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = *(<span style="color:blue">double</span> 
+*)&amp;persist.UserData[20];</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue">
+double</span> RetractRPM &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = *(<span style="color:blue">double</span> 
+*)&amp;persist.UserData[22];</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue">
+double</span> ZDist &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = *(<span style="color:blue">double</span> 
+*)&amp;persist.UserData[24];</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue">
+double</span> ZForward&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = *(<span style="color:blue">double</span> 
+*)&amp;persist.UserData[26];</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue">
+double</span> ZReverse&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = *(<span style="color:blue">double</span> 
+*)&amp;persist.UserData[28];</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue">
+double</span> FeedRate &nbsp; = CutRPM/(TPI*60);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue">
+double</span> RetractRate &nbsp;&nbsp;&nbsp;&nbsp; = RetractRPM/(TPI*60.0);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf(&quot;TPI = %f\n&quot;,TPI);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf(&quot;FeedRate = %f\n&quot;,FeedRate);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf(&quot;RetractRate = %f\n&quot;,RetractRate);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf(&quot;ZDist = %f\n&quot;,ZDist);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf(&quot;ZForward= %f\n&quot;,ZForward);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf(&quot;ZReverse = %f\n&quot;,ZReverse);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:green">// 
+Slave the Z Axis to the Spindle</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SlaveGain = Z_CNTS_PER_INCH/(CNTS_PER_REV 
+* TPI);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Z0 = chan[ZAXIS].Dest;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S0 = chan[SPINDLE_AXIS].Dest;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:green">// 
+in case there is significant spindle position error move there first</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Move(ZAXIS,(chan[SPINDLE_AXIS].Position-S0)*SlaveGain+Z0);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue">while</span> 
+(!CheckDone(ZAXIS)) ;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TotalCut=0.0;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue">while</span> 
+(TotalCut &lt; ZDist)</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue">
+if</span> (TotalCut + ZForward &gt; ZDist) <span style="color:green">// last feed</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:green">// yes, do any remaining</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+DoTap(ZDist-TotalCut, FeedRate, TPI);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:green">// retract fully</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DoTap(-ZDist, 
+RetractRate, TPI);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TotalCut=ZDist;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue">
+else</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:green">// no, just cut a bit</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DoTap(ZForward, 
+FeedRate, TPI);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DoTap(-ZReverse, 
+RetractRate, TPI);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TotalCut+=ZForward-ZReverse;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Delay_sec(1.0);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Move(ZAXIS,Z0);&nbsp;&nbsp;
+<span style="color:green">// move back to where we started </span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue">while</span> 
+(!CheckDone(ZAXIS)) ;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *(<span style="color:blue">double</span> 
+*)&amp;persist.UserData[30]=1.0;&nbsp; <span style="color:green">// set flag that we are 
+complete</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf(&quot;Tap Complete\n&quot;);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">}</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;;color:blue">void</span><span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;"> DoTap(<span style="color:blue">double</span> 
+Dist, <span style="color:blue">double</span> Rate, <span style="color:blue">
+double</span> TPI)</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">{</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:green">// 
+Tap down</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MoveRelAtVel(SPINDLE_AXIS, 
+Dist*TPI*CNTS_PER_REV, Rate*TPI*CNTS_PER_REV);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue">while</span>(!CheckDone(SPINDLE_AXIS))</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DoSlave();</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">}</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;;color:blue">void</span><span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;"> DoSlave(<span style="color:blue">void</span>)</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">{</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+MoveExp(ZAXIS,(chan[SPINDLE_AXIS].Dest-S0)*SlaveGain+Z0, TAU);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size:
+10.0pt;font-family:&quot;Courier New&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WaitNextTimeSlice();</span></p>
+<p class="MsoNormal" style="margin-top: 0; margin-bottom: 0">
+<span style="font-size:10.0pt;line-height:115%;font-family:
+&quot;Courier New&quot;">}</span></p>
+
+</body>
+
+</html>

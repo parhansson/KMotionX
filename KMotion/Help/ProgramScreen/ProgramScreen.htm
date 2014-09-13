@@ -1,0 +1,220 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<title>Program Screen</title>
+</head>
+
+<body>
+
+<div align="center">
+  <center>
+  <table border="0" cellpadding="0" cellspacing="8" width="920">
+    <tr>
+      <td align="right" valign="top" width="325">&nbsp; </td>
+      <td valign="bottom" width="571"><i><b><font size="5">C Program Screen</font></b></i></td>
+    </tr>
+    <tr>
+      <td valign="top" width="325">
+      <p style="margin-top: 0; margin-bottom: 0"><i><strong><font size="2">C</font><font size="2" face="Arial Black">onstants:</font></strong></i><font size="2" face="Arial Black"><br>
+      FALSE 0<br>
+      TRUE 1</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font size="2" face="Arial Black"><br>
+      PI 3.14159265358979323846264<br>
+      PI_F 3.1415926535f<br>
+      TWO_PI (2.0 * PI)<br>
+      TWO_PI_F (2.0f * PI_F )<br>
+      PI_2F (PI_F&nbsp; * 0.5f) <br>
+&nbsp;</font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial Black" size="2">TRAJECTORY_OFF 0 <br>
+      TRAJECTORY_INDEPENDENT 1<br>
+      TRAJECTORY_LINEAR 2 <br>
+      TRAJECTORY_CIRCULAR 3<br>
+      TRAJECTORY_SPECIAL 4</font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      &nbsp;</p>
+      <p style="margin-top: 0; margin-bottom: 0"><font size="2" face="Arial Black">
+      <i><b>Axis Input Modes</b></i><br>
+      ENCODER_MODE 1</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font size="2" face="Arial Black">
+      ADC_MODE 2</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font size="2" face="Arial Black">
+      RESOLVER 3</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font size="2" face="Arial Black">
+      USER_INPUT_MODE 4</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font size="2" face="Arial Black">
+      <br>
+      <i><b>Axis Output Modes</b></i><br>
+      MICROSTEP_MODE 1</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font size="2" face="Arial Black">
+      DC_SERVO_MODE 2</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font size="2" face="Arial Black">BRUSHLESS_3PH_MODE 3<br>
+      BRUSHLESS_4PH_MODE 4<br>
+      </font><font size="2" face="Arial Black">
+      DAC_SERVO_MODE 4<br>
+      <br>
+      <br>
+      <strong><i>Data Gather/Plot</i></strong><i><strong> Functions:</strong></i><br>
+      void SetupGatherAllOnAxis(int c,&nbsp;</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font size="2" face="Arial Black">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      int n_Samples);<br>
+      void TriggerGather();<br>
+      int CheckDoneGather();<br>
+&nbsp;</font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial Black" size="2"><i><strong>Analog I/O Functions:</strong></i><br>
+      ADC(ch); </font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font size="2" face="Arial Black">DAC(ch, value);
+      </font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font size="2" face="Arial Black"><br>
+      <strong><i>Power Amp</i></strong><i><strong> Functions:</strong></i><br>
+      void WritePWMR(int ch, int v);<br>
+      void WritePWM(int ch, int v);
+      </font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial Black" size="2">void Write3PH(int ch, float v,&nbsp;</font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial Black" size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      double 
+      angle_in_cycles);<br>
+      void Write4PH(int ch, float v,&nbsp;</font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial Black" size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      double 
+      angle_in_cycles);<br>
+      <br>
+      <i><strong>Timer Functions:</strong></i></font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial Black" size="2">double Time_sec();<br>
+      void WaitUntil(double time_sec);<br>
+      void Delay_sec(double sec);<br>
+      double WaitNextTimeSlice(void);<br>
+      <br>
+      <i><strong>Axis Move Functions:</strong></i><br>
+      void DisableAxis(int ch);<br>
+      void EnableAxisDest(int ch, double Dest);<br>
+      void EnableAxis(int ch);<br>
+      void Zero(int ch);<br>
+      void Move(int ch, double x);<br>
+      void MoveRel(int ch, double dx);<br>
+      int CheckDone(int ch);<br>
+      void MoveXYZ(double x, double y, double z);<br>
+      int CheckDoneXYZ();<br>
+      void DefineCoordSystem(int axisx, int axisy,</font>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial Black" size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      int axisz, int axis a);<br>
+      <br>
+		<i><strong>Digitial I/O Functions:</strong></i><br>
+      <a name="SetBitDirection"></a>void SetBitDirection(int bit, int dir);<br>
+      int GetBitDirection(int bit);<br>
+      <a name="SetBit"></a>void SetBit(int bit);<br>
+      <a name="ClearBit"></a>void ClearBit(int bit);<br>
+      <a name="SetStateBit"></a>void SetStateBit(int bit, int state);<br>
+      <a name="ReadBit"></a>int ReadBit(int bit);<br>
+      <br>
+      <i><strong>Print to Console Screen Functions:</strong></i><br>
+      </font><font size="2" face="Arial Black">int printf(const char *format, 
+		...);</font><font size="2"> </font>
+		<p style="margin-top: 0; margin-bottom: 0">
+      &nbsp;<p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial Black" size="2">
+      <i><strong>Print to Windows File Functions:</strong></i><br>
+		</font><font face="Arial Black"><font size="2">FILE *fopen(const char*, 
+		const char*); <br>
+		int fprintf(FILE *f, const char * format, ...);<br>
+		int fclose(FILE *f); </font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</font><p style="margin-top: 0; margin-bottom: 0">
+      &nbsp;<p style="margin-top: 0; margin-bottom: 0">
+      <strong><i><font face="Arial Black" size="2">Thread Functions</font></i></strong><font face="Arial Black" size="2"><i><strong>:</strong></i><br>
+      </font><font face="Arial Black" size="2">void StartThread(int thread);
+      </font>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial Black" size="2">void PauseThread(int thread); </font>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial Black" size="2">void ThreadDone(); </font>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial Black" size="2">int ResumeThread(int thread); </font><font size="3">
+      <br>
+&nbsp;</font><p style="margin-top: 0; margin-bottom: 0"><font size="2" face="Arial Black">
+      <i><strong>Math Functions:</strong></i></font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font size="2" face="Arial Black">
+      double sqrt(double x);<br>
+      double exp(double x);<br>
+      double log(double x);<br>
+      double log10(double x);<br>
+      double pow(double x, double y);<br>
+      double sin(double x);<br>
+      double cos(double x);<br>
+      double tan(double x);<br>
+      double asin(double x);<br>
+      double acos(double x);<br>
+      double atan(double x);<br>
+      double atan2(double y, double x); </font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font size="2" face="Arial Black"><br>
+      float sqrtf (float x);<br>
+      float expf (float x);<br>
+      float logf (float x);<br>
+      float log10f(float x);<br>
+      float powf (float x, float y);<br>
+      float sinf (float x);<br>
+      float cosf (float x);<br>
+      float tanf (float x);<br>
+      float asinf (float x);<br>
+      float acosf (float x);<br>
+      float atanf (float x);<br>
+      float atan2f(float y, float x); <br>
+      &nbsp;</font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      &nbsp;</td>
+      <td valign="top" width="571"><font size="3">
+      <img border="0" src="ProgramScreenfiles/ProgramScreen.png" width="565" height="568"><br>
+      </font><br>
+      The <b><i>C Program</i></b><i><b> Screen</b></i> allows the user to edit 
+      C language programs, compile, link, download, and run them within the <i>
+      <b>KMotion</b></i> board.&nbsp; C programs executing within the <i><b>
+      KMotion</b></i> board have direct access to all the Motion, I/O, and other 
+      miscellaneous functions incorporated into <i><b>KMotion</b></i> System. 
+      <p>One of the most powerful features of the <i><b>KMotion</b></i> system 
+      is the ability for a user to compile and download native DSP programs and 
+      have them run in real time.&nbsp; Native DSP code runs faster than 
+      interpreted code.&nbsp; The TMS320C67x DSP that powers the <i><b>KMotion</b></i> 
+      system has hardware support for both 32 bit <i>and</i> 64 bit floating point 
+      math.&nbsp; Multiple threads (programs) may execute simultaneously (up to 
+      7).&nbsp; The integrated C compiler allows with a single 
+      pushbutton
+      <img border="0" src="Progra1.gif" align="center" vspace="5" hspace="2"> to 
+      save, compile, link, download, and execute all within a fraction 
+      of a second.&nbsp; After programs have been developed and tested they may 
+      be <a href="../ConfigurationScreen/ConfigurationScreen.htm#FLASH">flashed into memory</a> and run stand alone with no host connection.</p>
+      <p>Other features of the <b><i>C Program</i></b><b><i> Screen </i></b>
+      include a rich text editor with syntax highlighting,&nbsp; keyword
+      <a href="ShowDropDown.htm">drop down lists</a>, <a href="ShowTips.htm">
+      function tips</a>, unlimited
+      <a title="How to access undo/redo" href="ShowContextMenu.htm">undo/redo</a>, 
+      and <a target="_self" href="ShowContextMenu.htm">Find/Replace with regular 
+      expressions</a>. </p>
+      <p>&nbsp;</p>
+      <p>See&nbsp;list on left for available constants and functions.</p>
+      <p><img border="0" src="ProgramScreenfiles/Arrow.png" width="88" height="31"><p>For a 
+      more details on the functions, see
+      the
+      <a href="../../../DSP_KFLOP/KMotionDef.h">KMotionDef.h</a> header file.&nbsp; 
+      This file is normally included into a user program so that all accessible 
+      base functions and data structures are defined.<p>See
+        <a href="../../../DSP_KFLOP/PC-DSP.h">PC-DSP.h</a> for common
+        definitions between the&nbsp; PC host and <i><b>KMotion</b></i> DSP.<p>&nbsp;</td>
+    </tr>
+  </table>
+  </center>
+</div>
+
+</body>
+
+</html>

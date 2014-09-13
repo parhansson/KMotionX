@@ -1,0 +1,338 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>2.1.2.4 Configuring the kernel</TITLE>
+<META NAME="description" CONTENT="2.1.2.4 Configuring the kernel">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="previous" HREF="node11.html">
+<LINK REL="up" HREF="node8.html">
+<LINK REL="next" HREF="node13.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html427"
+  HREF="node13.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html421"
+  HREF="node8.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html417"
+  HREF="node11.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html423"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html425"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html428"
+  HREF="node13.html">3. Getting and setting</A>
+<B> Up:</B> <A NAME="tex2html422"
+  HREF="node8.html">2.1.2 rtl2.0 and rtl2.2</A>
+<B> Previous:</B> <A NAME="tex2html418"
+  HREF="node11.html">2.1.2.3 The linux link</A>
+ &nbsp; <B>  <A NAME="tex2html424"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html426"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION02212400000000000000">
+2.1.2.4 Configuring the kernel</A>
+</H3>
+
+<P>
+This is a part of the process that mystifies me still. When I first
+installed the real time patch to Red Hat 5.2 and used Tim's install
+script, www.ktmarketing.com http://www.ktmarketing.com I never
+really appreciated all of the work that went into setting up that
+config file. I just accepted his file and went on. 
+
+<P>
+You can do essentially the same thing with the new kernel (not with
+his RH5.2 file) but you will wind up without a lot of the things that
+you may want and some things that you will need.&nbsp; All of the config
+choices will present you with a list of default options that you can
+accept, but that list is limited in what it's kernel will do for you.
+
+<P>
+The first thing that I need to do is look at what is running on my
+system right now.
+
+<P>
+<TT><FONT SIZE="-2">[root@localhost src]#</FONT></TT> <TT><I><FONT COLOR="#000000"><FONT SIZE="-2">/sbin/lsmod</FONT></FONT></I></TT>
+<TT><FONT COLOR="#008000"></FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">Module&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Size&nbsp;&nbsp;Used&nbsp;by
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">nls_cp437&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3580&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;(autoclean)
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">vfat&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;11004&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;(autoclean)
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">fat&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;32640&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;(autoclean)&nbsp;[vfat]
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">nls_iso8859-1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2052&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;(autoclean)
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">sound&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;64184&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;(autoclean)&nbsp;(unused)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">soundcore&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3524&nbsp;&nbsp;&nbsp;3&nbsp;&nbsp;(autoclean)&nbsp;[sound]
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">soundlow&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;300&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;(autoclean)&nbsp;[sound]
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">lockd&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;33256&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;(autoclean)
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">sunrpc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;56612&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;(autoclean)&nbsp;[lockd]
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">slhc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4392&nbsp;&nbsp;&nbsp;0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">supermount&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;14880&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;(autoclean)
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">nfs&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;31832&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;(autoclean)</FONT></TT>
+<P>
+
+
+<P>
+Now, I warn you that the list of modules running on your system may
+be very different from those running on mine. But at least I have
+a start at knowing what needs to be included when I run make oldconfig,
+make config, make menuconfig, or make xconfig. You will want to be
+certain that each of the modules returned by the /sbin/lsmod command
+is included in your .config file.
+
+<P>
+It also took me a while to discover that the exact name of the module
+is included in the help files that are available when you run make
+menuconfig or make xconfig. There is a lot of confusion that can develop
+between the all caps variable names and the actual module name. 
+
+<P>
+I have included a few lines of a .config file below so that you can
+see how one is setup.
+
+<P>
+This is cryptic stuff. Each parameter is given a name by someone far
+away. Those names are all uppercase and where multiple words are used
+the space between is underlined. Parameters that are not used are
+commented # out. Parameters that are used have a y or an m after
+the equals sign. A y means that the parameter will be included directly
+in the kernel when it is compiled. An m means that the parameter will
+be compiled as a module and will be installed in the kernel whenever
+it is needed and removed when it is not needed. 
+
+<P>
+<TT><FONT SIZE="-2"># </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2"># Automatically generated make config: don't
+edit </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2"># </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2"># Code maturity level options </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2"># </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">CONFIG_EXPERIMENTAL=y </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2"># Processor type and features </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2"># </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2"># CONFIG_M386 is not set </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2"># CONFIG_M486 is not set </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">CONFIG_M586=y </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2"># CONFIG_M586TSC is not set </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2"># CONFIG_M686 is not set </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">CONFIG_X86_WP_WORKS_OK=y </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">CONFIG_X86_INVLPG=y </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">CONFIG_X86_BSWAP=y </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">CONFIG_X86_POPAD_OK=y </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">CONFIG_1GB=y </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2"># CONFIG_2GB is not set </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2"># CONFIG_MATH_EMULATION is not set </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">CONFIG_MTRR=y </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2"># CONFIG_SMP is not set</FONT></TT>
+<P>
+
+
+<P>
+&#34;So what?'' You say. Well the heart of this config thing
+is that each of the modules that was listed when I entered /sbin/lsmod
+needs to be included when you go through your config setup. But the
+modules listed are not the only way that the kernel is configured.
+There are also a bunch of parameters that are compiled right into
+the kernel itself.
+
+<P>
+So being a &#34;quick and dirty&#34; kind of installer,
+I could just copy the .config file from the old kernel structure to
+the new. But that will leave out essential information that is a part
+of the real time kernel. And as the first line in the file above says
+&#34;# Automatically generated make config: don't edit.&#34;
+It is my understanding that you will need to go through the entire
+process of making a new .config in order to be certain that you have
+all of the essential stuff. (If you know better, let me know and I'll
+revise this.)
+
+<P>
+So let's compare the four methods we can use to manually set up a
+config file and then pick one or more and do it. These will be brief
+descriptions with visuals. I'm going to make sure that I am in the
+correct directory before I enter the config command.
+
+<P>
+<TT><FONT SIZE="-2">[root@localhost linux]#</FONT></TT> <TT><I><FONT COLOR="#000000"><FONT SIZE="-2">pwd</FONT></FONT></I></TT>
+<TT><FONT COLOR="#008000"></FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">/usr/src/rtlinux-2.0/linux</FONT></TT>
+<P>
+
+
+<P>
+Yes, I am in the correct location for the configuration process. So
+I need to select the method that I will use. The possibilities again
+are:
+
+<P>
+
+<UL>
+<LI>make oldconfig
+</LI>
+<LI>make config
+</LI>
+<LI>make menuconfig
+</LI>
+<LI>make xconfig
+</LI>
+</UL>
+This is what each looks like.
+
+<P>
+
+<UL>
+<LI><B>make oldconfig</B>
+</LI>
+</UL>
+<TT><FONT SIZE="-2">[root@localhost linux]#</FONT></TT> <TT><I><FONT COLOR="#000000"><FONT SIZE="-2">make
+config</FONT></FONT></I></TT> <TT><FONT COLOR="#008000"></FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">rm -f include/asm </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">( cd include ; ln -sf asm-i386 asm) </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">/bin/sh scripts/Configure arch/i386/config.in
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2"># </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2"># Using defaults found in arch/i386/defconfig
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2"># </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">* </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">* Code maturity level options </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">* </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">Prompt for development and/or incomplete code/drivers
+(CONFIG_EXPERIMENTAL) [N/y/?]</FONT></TT>
+<P>
+
+
+<P>
+This is quick and is done directly in the console window. There is
+no help and no description beyond the parameter name. It is also linear
+- it runs from the first entry in <TT><FONT COLOR="#000000">"Using defaults found in arch/i386/defconfig"</FONT></TT>
+to the last one. Then it writes the file and suggests your next step.
+
+<P>
+
+<UL>
+<LI>make menuconfig
+</LI>
+</UL>
+The second way of making a config file is menu oriented. To start
+this method you can just enter make menuconfig at the prompt.
+
+<P>
+<TT><FONT SIZE="-2">[root@localhost linux]#</FONT></TT> <TT><I><FONT COLOR="#000000"><FONT SIZE="-2">make
+menuconfig</FONT></FONT></I></TT> <TT><FONT COLOR="#008000"></FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">rm -f include/asm </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">( cd include ; ln -sf asm-i386 asm) </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">make -C scripts/lxdialog all </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">make[1]: Entering directory `/usr/src/rtlinux-2.2/linux/scripts/lxdialog'</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">..</FONT></TT>
+<P>
+
+
+<P>
+After a bit of checking and compiling, the following window shows
+up. [install/images/konsol02.gif]
+
+<P>
+<!-- MATH
+ $\resizebox*{5in}{!}{\includegraphics{/usr/share/lyx/EMC_images/konsol02.eps}}$
+ -->
+<IMG
+ WIDTH="575" HEIGHT="337" ALIGN="BOTTOM" BORDER="0"
+ SRC="img7.gif"
+ ALT="\resizebox*{5in}{!}{\includegraphics{/usr/share/lyx/EMC_images/konsol02.eps}}"> 
+
+<P>
+<FONT COLOR="#000000">This seems to be a little more friendly. It also
+allows you to skip around among the many sections of the config file
+and repeat your work in each section. It may take a bit of reading
+to figure out how to move around within the menu system and what to
+do next. The following screen shows the processor type and features
+menu.</FONT> [install/images/konsol03.gif]
+
+<P>
+<!-- MATH
+ $\resizebox*{5in}{!}{\includegraphics{/usr/share/lyx/EMC_images/konsol03.eps}}$
+ -->
+<IMG
+ WIDTH="575" HEIGHT="337" ALIGN="BOTTOM" BORDER="0"
+ SRC="img8.gif"
+ ALT="\resizebox*{5in}{!}{\includegraphics{/usr/share/lyx/EMC_images/konsol03.eps}}"> 
+
+<P>
+You can navigate around the menu choices with the up and down arrow
+keys. You can also navigate across the select, exit, and help items
+with the left and right arrow keys. Whenever a parameter is highlighted,
+you can select it with y, deselect it with n, or make it a module
+with m. The help files are very helpful here.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html427"
+  HREF="node13.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html421"
+  HREF="node8.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html417"
+  HREF="node11.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html423"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html425"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html428"
+  HREF="node13.html">3. Getting and setting</A>
+<B> Up:</B> <A NAME="tex2html422"
+  HREF="node8.html">2.1.2 rtl2.0 and rtl2.2</A>
+<B> Previous:</B> <A NAME="tex2html418"
+  HREF="node11.html">2.1.2.3 The linux link</A>
+ &nbsp; <B>  <A NAME="tex2html424"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html426"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

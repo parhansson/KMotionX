@@ -1,0 +1,228 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Jon Elson's Example</TITLE>
+<META NAME="description" CONTENT="Jon Elson's Example">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="previous" HREF="node91.html">
+<LINK REL="up" HREF="node82.html">
+<LINK REL="next" HREF="node98.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1796"
+  HREF="node98.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1790"
+  HREF="node82.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1786"
+  HREF="node96.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1792"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1794"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1797"
+  HREF="node98.html">Endnotes</A>
+<B> Up:</B> <A NAME="tex2html1791"
+  HREF="node82.html">12.2 Cutter Radius Compensation</A>
+<B> Previous:</B> <A NAME="tex2html1787"
+  HREF="node96.html">Algorithms for Cutter Radius</A>
+ &nbsp; <B>  <A NAME="tex2html1793"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1795"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION04323000000000000000">
+Jon Elson's Example</A>
+</H2>
+
+<P>
+All further system-specific information refers to NIST's EMC program,
+but much of it applies to most modern CNC controls. My method of checking
+these programs is to first select tool zero, which always has a diameter
+of zero, so offset commands are essentially ignored. Then, I tape
+a sheet of paper to a piece of material that sits level in my vise,
+as a sort of platen. I install a spring-loaded pen in the spindle.
+This is a standard ballpoint pen refill cartridge made of metal, in
+a 1/2&#34; diameter steel housing. It has a spring that loads
+the pen against the front, and a 'collet' at the front that allows
+the pen to retract against the spring, but keeps it centered within
+a few thousandths of an inch. I run the program with tool zero selected,
+and it draws a line at the actual part's outline. (see figure below)
+Then, I select a tool with the diameter of the tool I intend to use,
+and run the program again. (Note that Z coordinates in the program
+may need to be changed to prevent plunging the pen through the platen.)
+Now, I get to see whether the G41 or G42 compensation that I specified
+will cut on the desired side of the part. If it doesn't, I then edit
+the opposite compensation command into the program, and try again.
+Now, with the tool on the correct side of the work, you get to see
+if there are any places where the tool is 'too fat' to fit in a concave
+part of the surface. My old Allen-Bradley 7320 was pretty forgiving
+on this, but EMC is a complete stickler. If you have ANY concavity
+where two lines meet at less than 180 degrees on the side that a tool
+of finite size cuts on, EMC will stop with an error message there.
+Even if the gouge will be .0001&#34; deep. So, I always make
+the approach on the lead-in and lead-out moves such that they just
+nip the corner of the part a tiny bit, providing an angle just over
+180 degrees, so that EMC won't squawk. This requires some careful
+adjustment of the starting and ending points, which are not compensated
+by cutter radius, but must be chosen with an approximate radius in
+mind.
+
+<P>
+The operative commands are :
+
+<P>
+G40 - Cancel Cutter compensation
+<BR>
+G41 - Cutter Compensation, Tool Left of Path
+<BR>
+G42 - Cutter Compensation, Tool Right of Path
+
+<P>
+Here is a short file that cuts one side of a part with multiple convex
+and concave arcs, and several straight cuts, too. It is to clamp a
+high speed drilling spindle to the side of the main Bridgeport spindle.
+Most of these commands are straight from Bobcad/CAM, but lines N15
+and N110 were added by me, and some of the coordinates around those
+lines had to be fudged a bit by me.
+
+<P>
+<TT><FONT SIZE="-1">N10 G01 G40 X-1.3531 Y3.4</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N15 F10 G17 G41 D4 X-0.7 Y3.1875 (COMP LEAD IN)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N20 X0. Y3.1875</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N40 X0.5667 F10</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N50 G03 X0.8225 Y3.3307 R0.3</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N60 G02 X2.9728 Y4.3563 R2.1875</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N70 G01 X7.212 Y3.7986</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N80 G02 X8.1985 Y3.2849 R1.625</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N90 G03 X8.4197 Y3.1875 R0.3</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N100 G01 X9.</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N110 G40 X10.1972 Y3.432 (COMP LEAD OUT</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N220 M02</FONT></TT>
+<P>
+
+
+<P>
+Line 15 contains G41 D4, which means that the diameter of the tool
+described as tool #4 in the tool table will be used to offset the
+spindle by 1/2 the diameter, which is, of course, the tool's radius.
+Note that the line with the G41 command contains the endpoint of the
+move where the radius compensation is interpolated in. What this means
+is that at the beginning of this move, there is no compensation in
+effect, and at the end, the tool is offset by 100% of the selected
+tool radius. Immediately after the G41 is D4, meaning that the offset
+is by the radius of tool number 4 in the tool table. Note that tool
+DIAMETERS are entered in the tool table. (Jon's tool diameter is about
+0.4890)
+
+<P>
+But, note that in line 110, where the G40 'cancel cutter compensation'
+command is, that cutter compensation will be interpolated out in this
+move. The way I have these set up, the moves in lines 15 and 110 are
+almost exactly parallel to the X axis, and the difference in Y coordinates
+is to line the tool up outside the portion of the program where cutter
+compensation is in force.
+
+<P>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><!-- MATH
+ $\resizebox*{5in}{!}{\includegraphics{/usr/share/lyx/EMC_images/partdraw1.eps}}$
+ -->
+<IMG
+ WIDTH="575" HEIGHT="192" ALIGN="BOTTOM" BORDER="0"
+ SRC="img35.gif"
+ ALT="\resizebox*{5in}{!}{\includegraphics{/usr/share/lyx/EMC_images/partdraw1.eps}}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+Some other things to note are that the program starts with a G40,
+to turn off any compensation that was in effect. This saves a lot
+of hassle when the program stops due to a concavity error, but leaves
+the compensation turned on. Also note in line 15 that G17 is used
+to select the XY plane for circular interpolation. I have used the
+radius form of arc center specification rather than the I,J form.
+EMC is very picky about the radius it computes from I,J coordinates,
+and they must match at the beginning and end of the move to within
+10&#94;-11 internal units, so you will have lots of problems
+with arbitrary arcs. Usually, if you do an arc of 90 degrees, centered
+at (1.0,1.0) with a radius of 1&#34;, everything will go fine,
+but if it has a radius that can not be expressed exactly in just a
+few significant digits, or the arc is a strange number of degrees,
+then there will be trouble with EMC. The R word clears up all that
+mess, and is a lot easier to work with, anyway. If the arc is more
+than 180 degrees, R should be negative.
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1798"
+  HREF="node98.html">Endnotes </A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1796"
+  HREF="node98.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1790"
+  HREF="node82.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1786"
+  HREF="node96.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1792"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1794"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1797"
+  HREF="node98.html">Endnotes</A>
+<B> Up:</B> <A NAME="tex2html1791"
+  HREF="node82.html">12.2 Cutter Radius Compensation</A>
+<B> Previous:</B> <A NAME="tex2html1787"
+  HREF="node96.html">Algorithms for Cutter Radius</A>
+ &nbsp; <B>  <A NAME="tex2html1793"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1795"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

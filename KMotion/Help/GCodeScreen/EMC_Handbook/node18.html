@@ -1,0 +1,301 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>5. INSTALLING THE NIST EMC SOFTWARE</TITLE>
+<META NAME="description" CONTENT="5. INSTALLING THE NIST EMC SOFTWARE">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="previous" HREF="node14.html">
+<LINK REL="up" HREF="node2.html">
+<LINK REL="next" HREF="node19.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html510"
+  HREF="node19.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html504"
+  HREF="node2.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html500"
+  HREF="node17.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html506"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html508"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html511"
+  HREF="node19.html">II. Part 2 -</A>
+<B> Up:</B> <A NAME="tex2html505"
+  HREF="node2.html">I. Part 1 -</A>
+<B> Previous:</B> <A NAME="tex2html501"
+  HREF="node17.html">4.3 Ray's three disk</A>
+ &nbsp; <B>  <A NAME="tex2html507"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html509"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION02500000000000000000">
+5. INSTALLING THE NIST EMC SOFTWARE</A>
+</H1>
+
+<P>
+The NIST EMC software can be installed on Linux PCs, Sun Solaris boxes,
+or most any Unix machine. Currently the distribution is set up for
+Linux.
+
+<P>
+0. For LINUX installations only: Download and install the New Mexico
+Tech RT-Linux, real-time patches and modules. If you have a system
+using a 2.0.x kernel get the kernel sources for 2.0.36 and RT-Linux
+patches and modules version 09J. If you have a 2.2.x kernel use RT-Linux
+2.0 and kernel 2.2.13. The kernel sources are available from http://www.kernel.org.
+The New Mexico Tech RT-Linux patches and modules are available from
+http://www.rtlinux.org.
+
+<P>
+0.a: Follow the instructions from www.rtlinux.org for installing the
+RT-Linux, however I have the following additional recommendations.
+- For RedHat Linux 5.2 users, check out Tim Goldstein<A NAME="415"></A>'s
+installation instructions at 
+<BR>
+http://206.19.206.56/installemc.htm - Get the archive with the pre-patched
+kernel sources rather than patching your own. - Before untarring the
+archive move any existing directory or link /usr/src/linux to a different
+name. - Untar the archive in the directory /usr/src. - After untarring
+the archive create a symbolic link so that /usr/src/linux points to
+the linux directory that was included in the archive. For example
+cd /usr/src ln -s rtlinux-2.0/linux linux
+
+<P>
+- When you configure the kernel, under Loadable Module Support say
+Yes to set version info and to enable the Kernel module loader, and
+under Processor type say no to Symmetric Multi-processing support
+unless you actually have a multi-processor system. - Test the examples
+in the rtl directory, before trying to install EMC. Make sure the
+min and max values out of the measurements example are in the thousands
+and not in the millions.
+
+<P>
+1. Download the appropriate .tgz file from either the subdirectory
+for your platform. Read the README file within those subdirectories
+for the details. The linux_2_0_36 directory contains the code/binaries
+tested under linux kernel version 2.0.36 with RedHat 5.2 and the New
+Mexico Tech RT-Linux patch 09J. Th linux_2_2_13 directory contains
+the code/binaries tested under linux kernel version 2.2.13 with RedHat
+6.1 and the New Mexico Tech RT-Linux patch 2.0. All the distributions
+contain the NIST Real-time Control System (RCS) header files and linkable
+library, EMC source code, and other miscellaneous files. The RCS source
+code is not included in this archive, since it would make it larger,
+but is available at http://www.isd.mel.nist.gov/projects/rcs_lib.
+
+<P>
+2. Log in to your Linux PC. Become root.
+
+<P>
+3. Copy the EMC distribution archive from wherever you downloaded
+it to into /usr/local, cd there, and unpack the archive. This looks
+like:
+
+<P>
+<TT><FONT SIZE="-2">root&gt; cp emc-&lt;date&gt;.tgz /usr/local root&gt; cd /usr/local
+root&gt; tar xzvf emc-&lt;date&gt;.tgz</FONT></TT>
+<P>
+
+
+<P>
+4. You should see the following files in /usr/local:
+
+<P>
+readme - more instructions
+<BR>
+packup - a script for making the .gz files below
+<BR>
+putback - a script for checking the code back in to NIST
+<BR>
+install - a script for installing and compiling this software
+<BR>
+compile - a script for just compiling this software
+<BR>
+clean - a script for removing EMC/RCS software (not alltar.gz)
+<BR>
+rcslib.inc - a list of files used by packup to build the RCS archive
+<BR>
+rcslib.exc - ones not to include
+<BR>
+emc.inc - a list of files used by packup to build the EMC archive
+<BR>
+emc.exc - ones not to include 
+<BR>
+floppy.inc - a list of these files, for building the floppy 
+<BR>
+skel.tgz - the gzip archive for the directory skeleton 
+<BR>
+rcslib.tgz - the gzip RCS archive 
+<BR>
+emc.tgz - the gzip EMC archive 
+<BR>
+linux.tgz - the full archive
+
+<P>
+5. Run the 'install' script:
+
+<P>
+<TT><FONT SIZE="-2">root&gt; ./install</FONT></TT>
+<P>
+
+
+<P>
+The install script creates the directory skeleton for emc/plat; unzips
+the RCS code; and unzips the EMC code and compiles it.
+
+<P>
+6. For linux_2_0_36 only: You will need to setup shared memory.
+The linux 2.2.13 distribution of EMC uses mbuff which is a more flexible
+and automatic method than the linux 2.0.36 described below.
+
+<P>
+Edit the file lilo.conf to add the line indicated. You should set
+the mem value to 1 Mb less than the total amount of memory you have
+in your system.
+
+<P>
+<TT><FONT SIZE="-2">image=/boot/vmlinuz label=linux root=/dev/hda3
+append=&#34;mem=31m&#34;</FONT></TT> &lt;- add this read-only
+
+<P>
+For a 64 MB machine, the &#34;31&#34; would be &#34;63&#34;,
+etc.
+
+<P>
+Run lilo, as root:
+
+<P>
+<TT><FONT SIZE="-2">root&gt; lilo</FONT></TT>
+<P>
+
+
+<P>
+and reboot.
+
+<P>
+7. Run the Controller in simulation.
+
+<P>
+To run the EMC code on a real machine, you need to set up all the
+hardware, create the wrappers or use ones provided, configure system
+parameters via the INI files, and code up the discrete I/O controller
+or use one provided. However, you can just run a simulation &#34;out
+of the box.&#34; 
+
+<P>
+This is done by running the bash script, emc.run, from the top-level
+emc directory.
+
+<P>
+The script will run several programs in the background, and then start
+a graphical user interface. There are several different interfaces
+that can be configured, but the current default tkemc is shown in
+tkemc.gif in this directory.
+
+<P>
+Before you can do anything you will need to come out of E-STOP (press
+the &lt;F1&gt; key) and turn the machine on (press the &lt;F2&gt; key).
+
+<P>
+You can then jog the axis using the arrow keys and page up/page down.
+Press F4 to go to Auto mode where you can run rs274ngc G-code part
+programs. The example programs are in the programs subdirectory. cds.ngc
+is a standard circle-diamond-square program.
+
+<P>
+You may want to run tkbackplot or emcplot3d (not yet available) to
+better visualize what is going on.
+
+<P>
+8. Trouble Shooting.
+
+<P>
+9. Editing and Recompiling
+
+<P>
+You may need to recompile the EMC code for a number of reasons. You
+may have modified the source code, or you may have downloaded just
+a few new files. To recompile, do the following:
+
+<P>
+<TT><FONT SIZE="-1">root&gt;</FONT></TT> <TT><I><FONT SIZE="-1">cd /usr/local</FONT></I></TT>
+<TT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">root&gt;</FONT></TT> <TT><I><FONT SIZE="-1">./compile</FONT></I></TT>
+<P>
+
+
+<P>
+If you want to compile code in any of the subdirectories individually,
+cd to the EMC source directory and run individual makes:
+
+<P>
+<TT><FONT COLOR="#000000"><FONT SIZE="-1">root&gt;</FONT></FONT></TT> <TT><I><FONT COLOR="#000000"><FONT SIZE="-1">cd
+/usr/local/emc/src</FONT></FONT></I></TT>&nbsp;
+<BR><TT><FONT COLOR="#000000"><FONT SIZE="-1">root&gt;</FONT></FONT></TT> <TT><I><FONT COLOR="#000000"><FONT SIZE="-1">make
+PLAT=linux clean depend install</FONT></FONT></I></TT>
+<P>
+
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html510"
+  HREF="node19.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html504"
+  HREF="node2.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html500"
+  HREF="node17.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html506"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html508"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html511"
+  HREF="node19.html">II. Part 2 -</A>
+<B> Up:</B> <A NAME="tex2html505"
+  HREF="node2.html">I. Part 1 -</A>
+<B> Previous:</B> <A NAME="tex2html501"
+  HREF="node17.html">4.3 Ray's three disk</A>
+ &nbsp; <B>  <A NAME="tex2html507"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html509"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,37 @@
+(To use this as a USB Test set the Break)
+(Angle to a large number ie 30 degrees)
+(and the colinear Tolerance and corner)
+(Tolerance to zero so that the segments)
+(are downloaded exactly as created)
+
+(The Trajectory planner Acceleration and)
+(Velocities should also be set high so as)
+(to not be limiting the speed ie 10 ips)
+(and 300 in/sec^2)
+
+(On my i7 W7 32 computer running KMotion429)
+(the max number of sides is 600)
+
+(0.1 x 2 x PI / [100/60] = .377 seconds/rev)
+(1250 / 0.377 = 3315 segments/sec)
+
+
+
+(simple polygon)
+#1=0 (start angle)
+#2=1500 (number of sides)
+#3=0.1 (radius)
+#4=100 (number of loops)
+#5=0
+G20 G90
+G0 X#3 Y0
+F100
+M98 P100 L[#2*#4+1]
+M2
+
+O100
+G1 X[cos[#1] * #3 + #5] Y[sin[#1] * #3]
+#1 = [#1 + 360.0 / #2]
+#5 = [#5 +0.00001]
+M99
+

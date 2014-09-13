@@ -1,0 +1,74 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>G Viewer Setup</title>
+</head>
+
+<body>
+
+<p><font size="4" face="Arial"><b><i>G Viewer Setup Screen</i></b></font></p>
+<p>
+<font face="Arial">
+<img border="0" src="KMotionCNCfiles/GViewerSetup.PNG"></font></p>
+<p><font face="Arial">The G Viewer Setup Screen sets the imaging parameters for the
+<a href="GCodeViewerScreen.htm">G Code Viewer Screen</a>. </font> </p>
+<p><font face="Arial">Besides the G code tools paths, the G Code Viewer Screen displays several 
+objects, namely a Tool, a Box, and an Axis Symbol.&nbsp; The Tool Object and 
+Axis Symbol are 3D VRML files that may be changed if desired.&nbsp;&nbsp; 
+KMotionCNC comes with default files shown below.&nbsp; </font> </p>
+<p><i><b><font size="4" face="Arial">Tool Shape</font></b></i></p>
+<p><font face="Arial"><img border="0" src="KMotionCNCfiles/Tool.png" align="left" hspace="15"></font></p>
+<p><font face="Arial">The default Tool Shape is located at: <b>&lt;Install Dir&gt;\KMotion\Data\Tool.wrl</b>, 
+but maybe easily changed by entering or browsing to a new file<b>.&nbsp;&nbsp;
+</b>An excellent free program to create VRML files is available at&nbsp;
+<a href="http://www.artofillusion.org">http://www.artofillusion.org</a>.&nbsp;&nbsp;&nbsp; 
+The default Tool file is a 1 inch diameter sphere at the end of a 1 inch 
+diameter cylinder which is 3 inches long.&nbsp; In the VRML file the origin 
+(0,0,0) is at the center of the sphere.&nbsp;&nbsp; The Tool Scale and offsets 
+allow the Tool Shape to be shifted and scaled as desired.&nbsp; As shown above 
+an offset of (0,0,0.5) shifts the tool such that the origin is at the very tip 
+of the tool.&nbsp; The scale of 0.10 then reduces the tool &quot;size&quot; from 1 inch to 
+0.10 inch.</font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><i><b><font size="4" face="Arial">Axis Scale</font></b></i></p>
+<p><font face="Arial"><img border="0" src="KMotionCNCfiles/Axes.png" align="left" hspace="15"></font></p>
+<p><font face="Arial">The Axis file name and location is hard coded as: <b>&lt;Install Dir&gt;\KMotion\Data\Axis.wrl.&nbsp;
+</b>The Axis shape is always drawn at the origin.&nbsp; It's size may be changed 
+by changing the Axis Scale value.&nbsp; If a different Axis Shape is desired the 
+Axis.wrl file must be overwritten with a new file.</font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><i><b><font size="4" face="Arial">Box</font></b></i></p>
+<p><font face="Arial"><img border="0" src="KMotionCNCfiles/Box.png" align="left" hspace="15"></font></p>
+<p><font face="Arial">The Box serves two purposes.&nbsp; If enabled for display, it aids the 3D 
+visualization and perspective of the tool paths.&nbsp; It is also expected to 
+represent the working extents of the machine.&nbsp; When &quot;zooming out&quot; to one of 
+the preset Top, Side, or Front Views, it is used to frame the view extents.&nbsp;&nbsp;&nbsp; 
+Therefore the Box Size parameters should be set to the working extents of the 
+machine.&nbsp; With an offset of 0,0,0 the origin will be located at the center 
+of the Box.&nbsp; This is the preferred arrangement, however if required the Box 
+may be displayed offset by entering Box Offset values other than zero</font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><i><b><font size="4" face="Arial">Include Rotational Axes</font></b></i></p>
+<p>
+<img border="0" src="KMotionCNCfiles/IncludeRotateABC.png" width="235" height="77" align="left" hspace="15"><font face="Arial">Includes 
+the rotational effect of rotational axis if they represent a type of cylindrical 
+dimension at a relatively fixed radius.&nbsp;&nbsp; The A axis rotates about the 
+X Axis, the B axis rotates about the Y axis, and the C axis rotates about the Z 
+axis.&nbsp; The example view below shows G Code plotted using B, Y , and Z Axes.&nbsp; 
+The B motion is wrapped around the Y axis.&nbsp; The Z motion then moves away 
+from the Y axis, and the Y motion is in the Y direction.</font></p>
+<p>&nbsp;</p>
+<p>
+<img border="0" src="KMotionCNCfiles/RotateAboutB.png" width="250" height="233" hspace="15"></p>
+
+</body>
+
+</html>

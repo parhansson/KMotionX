@@ -1,0 +1,664 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>KMotion Connectors</title>
+</head>
+
+<body>
+
+<p><i><b><font size="4">KMotion - Connector Pinouts</font></b></i></p>
+<p>&nbsp;</p>
+<p><font size="4"><b><i>JR1 - 5V Power (regulated +/- 5%)</i></b></font> </p>
+<p>Typical current = 0.7Amps with no user I/O connected.&nbsp; 
+More current may be required dependent on the amount of Digital I/O and Analog 
++/- 15V consumed by the user.&nbsp; Up to 2 watts of +/-15 volts is generated on 
+board from this 5V supply (most of which is available for external use).&nbsp;&nbsp; 
+5V @ 2.5A should be more than sufficient under all conditions.&nbsp; The 12V 
+input is not used internally by the board, but is routed to pins on the 37pin DB 
+Motor connector and the 16 pin Aux Connector for the convenience of the user.&nbsp; 
+5V power is also routed to the 37pin DB Motor connector, 5V power may be applied 
+at whichever connector is more convenient.&nbsp; This connector is only rated 
+for 6.5Amps per connection, if more total motor current is required, power 
+should be externally routed to the 37pin DB Supply 0-3 inputs directly.</p>
+<p>This connector is a standard PC-disk drive power connector 
+which makes it easy to drive the board and small to medium size motors (&lt; 12V) 
+with an inexpensive PC power supply and very few external connections.&nbsp; 
+Simply plug the PC power supply here, jumper the +12V signals on the DB37 Pin 
+connector to the desired motor supply inputs, and connect your motors.&nbsp; </p>
+<p><img border="0" src="power4pin.png" width="284" height="218"></p>
+<p><img border="0" src="PowerPhoto.JPG" width="492" height="238"></p>
+<p>&nbsp;</p>
+<p><i><b><font size="4">JDP1 - Motor/Motor Supply (12-55V) Connector</font></b></i></p>
+<p>The <i><b>KMotion</b></i> motion control board is basically a 4 axis Motor 
+controller that consists of 8 full bridge drivers (see figure 1).&nbsp; A full 
+bridge driver is able to apply a positive or negative voltage to a load using 
+only a single positive supply.&nbsp; The load is connected across the OUTA and 
+OUTB terminals.&nbsp; The 8 full bridge drivers are grouped into 4 pairs, where 
+a pair of full bridge drivers are associated with a motor axis.&nbsp; This is 
+because some types of motors (stepper motors or 3-phase motors require more than 
+a single full bridge to drive them).&nbsp; </p>
+<p><img border="0" src="Connec1.gif" width="481" height="320"></p>
+<p>Each axis (and pair of full bridge drivers) share a common power supply pin, 
+heat sink, encoder input, and current sense circuitry.&nbsp; Each axis may be of 
+a different type (DC-Brush, 3-phase brushless, or stepper) and may use a 
+different supply voltage (12-55V DC).&nbsp; If a DC-Brush motor is used for an axis only one 
+of the full bridge drivers are used, the other is left unconnected.&nbsp; 
+3-phase brushless motors use 1<font face="Times New Roman">½</font> full bridges 
+(3 - half bridges), and stepper motors have 2 coils which require both full 
+bridges.</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="100%" id="AutoNumber1">
+  <tr>
+    <td width="6%" align="center">
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</td>
+    <td width="32%" align="center">
+    <p style="margin-top: 0; margin-bottom: 0"><b>Motor type DC -Brush</b></td>
+    <td width="28%" align="center">
+    <p style="margin-top: 0; margin-bottom: 0"><b>Motor type - 3 Phase brushless</b></td>
+    <td width="34%" align="center">
+    <p style="margin-top: 0; margin-bottom: 0"><b>Motor type - Stepper</b></td>
+  </tr>
+  <tr>
+    <td width="6%" align="center">
+    <p style="margin-top: 0; margin-bottom: 0"><b>Axis 0</b></td>
+    <td width="32%" align="center">
+    <p style="margin-top: 0; margin-bottom: 0">Connect Motor across OUTA0-OUTB0</p>
+    <p style="margin-top: 0; margin-bottom: 0">Leave OUTA1-OUTB1 disconnected</td>
+    <td width="28%" align="center">
+    <p style="margin-top: 0; margin-bottom: 0">Connect Phase A to OUTA0</p>
+    <p style="margin-top: 0; margin-bottom: 0">Connect Phase B to OUTB0</p>
+    <p style="margin-top: 0; margin-bottom: 0">Connect Phase C to OUTA1</p>
+    <p style="margin-top: 0; margin-bottom: 0">Leave OUTB1 disconnected</td>
+    <td width="34%" align="center">
+    <p style="margin-top: 0; margin-bottom: 0">Connect Coil A across OUTA0-OUTB0</p>
+    <p style="margin-top: 0; margin-bottom: 0">Connect Coil B across OUTA1-OUTB1</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="6%" align="center">
+    <p style="margin-top: 0; margin-bottom: 0"><b>Axis 1</b></td>
+    <td width="32%" align="center">
+    <p style="margin-top: 0; margin-bottom: 0">Connect Motor across OUTA2-OUTB2</p>
+    <p style="margin-top: 0; margin-bottom: 0">Leave OUTA3-OUTB3 disconnected</td>
+    <td width="28%" align="center">
+    <p style="margin-top: 0; margin-bottom: 0">Connect Phase A to OUTA2</p>
+    <p style="margin-top: 0; margin-bottom: 0">Connect Phase B to OUTB2</p>
+    <p style="margin-top: 0; margin-bottom: 0">Connect Phase C to OUTA3</p>
+    <p style="margin-top: 0; margin-bottom: 0">Leave OUTB3 disconnected</td>
+    <td width="34%" align="center">
+    <p style="margin-top: 0; margin-bottom: 0">Connect Coil A across OUTA2-OUTB2</p>
+    <p style="margin-top: 0; margin-bottom: 0">Connect Coil B across OUTA3-OUTB3</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="6%" align="center">
+    <p style="margin-top: 0; margin-bottom: 0"><b>Axis 2</b></td>
+    <td width="32%" align="center">
+    <p style="margin-top: 0; margin-bottom: 0">Connect Motor across OUTA4-OUTB4</p>
+    <p style="margin-top: 0; margin-bottom: 0">Leave OUTA5-OUTB5 disconnected</td>
+    <td width="28%" align="center">
+    <p style="margin-top: 0; margin-bottom: 0">Connect Phase A to OUTA4</p>
+    <p style="margin-top: 0; margin-bottom: 0">Connect Phase B to OUTB4</p>
+    <p style="margin-top: 0; margin-bottom: 0">Connect Phase C to OUTA5</p>
+    <p style="margin-top: 0; margin-bottom: 0">Leave OUTB5 disconnected</td>
+    <td width="34%" align="center">
+    <p style="margin-top: 0; margin-bottom: 0">Connect Coil A across OUTA4-OUTB4</p>
+    <p style="margin-top: 0; margin-bottom: 0">Connect Coil B across OUTA5-OUTB5</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="6%" align="center">
+    <p style="margin-top: 0; margin-bottom: 0"><b>Axis 3</b></td>
+    <td width="32%" align="center">
+    <p style="margin-top: 0; margin-bottom: 0">Connect Motor across OUTA6-OUTB6</p>
+    <p style="margin-top: 0; margin-bottom: 0">Leave OUTA7-OUTB7 disconnected</td>
+    <td width="28%" align="center">
+    <p style="margin-top: 0; margin-bottom: 0">Connect Phase A to OUTA6</p>
+    <p style="margin-top: 0; margin-bottom: 0">Connect Phase B to OUTB6</p>
+    <p style="margin-top: 0; margin-bottom: 0">Connect Phase C to OUTA7</p>
+    <p style="margin-top: 0; margin-bottom: 0">Leave OUTB7 disconnected</td>
+    <td width="34%" align="center">
+    <p style="margin-top: 0; margin-bottom: 0">Connect Coil A across OUTA6-OUTB6</p>
+    <p style="margin-top: 0; margin-bottom: 0">Connect Coil B across OUTA7-OUTB7</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p>Also available on this connector is PBRST#.&nbsp; Short PBRST# to ground to 
+reset the board.&nbsp; This signal is internally de-bounced.&nbsp; Under normal 
+conditions, on-board power up reset should suffice so this pin may be left 
+disconnected.&nbsp; Also connecting this pin to the DOG pin will enable the on board 
+watchdog circuitry, whenever there is no DSP/FPGA activity  detected for 1 second the 
+board will be automatically reset.&nbsp; This is not normally required and may 
+be left disconnected. </p>
+<p><img border="0" src="Motor37pin.png" width="832" height="414"></p>
+<p><img border="0" src="MotorPhoto.JPG" width="500" height="206"></p>
+<p><font size="4"><b><i>JP2 - JTAG </i></b></font></p>
+<p>This connector is only used for advanced debugging using an XDS510 JTAG in 
+circuit emulator.&nbsp; A small amount of regulated 3.3V (&lt;0.5 Amp) is available 
+on this connector if needed for external use.</p>
+<p><img border="0" src="JTAG14pin.png" width="513" height="387"></p>
+<p>&nbsp;</p>
+<p><font size="4"><b><i><a name="JP3"></a>JP3 - Digital/Analog IO</i></b></font></p>
+<p>4 channels of +/- 10V analog inputs, 4 channels of +/- 10V analog outputs, 4 
+channels of 0-4V analog outputs, 22 LVTTL bi-directional digital I/O, and +5, 
++15, -15 power supply outputs.&nbsp; Many Digital I/O bits are pre-defined as 
+encoder, home, or limit inputs (see table below) but if not required for the 
+particular application may be used as general purpose I/O.&nbsp; Digital Outputs 
+may sink/source 10 ma.&nbsp; Digital I/O is LVTTL (3.3V) but is 5 V tolerant.</p>
+<p><font color="#FF0000">
+<span style="font-weight: 700; font-style: italic; background-color: #FFFFFF">
+Caution! This connector contains +/- 15 v signals.&nbsp; Shorts to low voltage 
+pins are likely to cause permanent damage to the board!&nbsp; </span></font></p>
+<p><img border="0" src="IO40pin.png" width="376" height="429"></p>
+<p><img border="0" src="DigitalAnalogPhoto.JPG" width="498" height="155"></p>
+<p>&nbsp;</p>
+<table border="2" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="71%" id="AutoNumber2" height="389">
+  <tr>
+    <td width="10%" height="9" align="center"><font face="Courier New" size="2">
+    Pin</font></td>
+    <td width="16%" height="9" align="center"><font face="Courier New" size="2">
+    Name</font></td>
+    <td width="74%" height="9"><font face="Courier New" size="2">Description</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="20" align="center">
+    <font face="Courier New" size="2">1</font></td>
+    <td width="16%" height="10" align="center">
+    <font face="Courier New" size="2">ADC0_10V</font></td>
+    <td width="74%" height="10"><font face="Courier New" size="2">ADC Chan 0 +/- 
+    10V input</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">2</font></td>
+    <td width="16%" height="10" align="center">
+    <font face="Courier New" size="2">ADC1_10V</font></td>
+    <td width="74%" height="10"><font face="Courier New" size="2">ADC Chan 1 +/- 
+    10V input</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">3</font></td>
+    <td width="16%" height="10" align="center">
+    <font face="Courier New" size="2">ADC2_10V</font></td>
+    <td width="74%" height="10"><font face="Courier New" size="2">ADC Chan 2 +/- 
+    10V input</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">4</font></td>
+    <td width="16%" height="10" align="center">
+    <font face="Courier New" size="2">ADC3_10V</font></td>
+    <td width="74%" height="10"><font face="Courier New" size="2">ADC Chan 3 +/- 
+    10V input</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">5</font></td>
+    <td width="16%" height="10" align="center">
+    <font face="Courier New" size="2">DAC0_10V</font></td>
+    <td width="74%" height="10"><font face="Courier New" size="2">DAC Chan 0 +/- 
+    10V output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">6</font></td>
+    <td width="16%" height="10" align="center">
+    <font face="Courier New" size="2">DAC1_10V</font></td>
+    <td width="74%" height="10"><font face="Courier New" size="2">DAC Chan 1 +/- 
+    10V output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="8" align="center"><font face="Courier New" size="2">
+    7</font></td>
+    <td width="16%" height="10" align="center">
+    <font face="Courier New" size="2">DAC2_10V</font></td>
+    <td width="74%" height="10"><font face="Courier New" size="2">DAC Chan 2 +/- 
+    10V output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">8</font></td>
+    <td width="16%" height="10" align="center">
+    <font face="Courier New" size="2">DAC3_10V</font></td>
+    <td width="74%" height="10"><font face="Courier New" size="2">DAC Chan 3 +/- 
+    10V output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">9</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">DAC4</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">DAC Chan 4 
+    0-4V output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">10</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">DAC5</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">DAC Chan 5 
+    0-4V output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">11</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">DAC6</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">DAC Chan 6 
+    0-4V output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">12</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">DAC7</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">DAC Chan 7 
+    0-4V output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">13</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">VM15</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">-15V @ 0.07 
+    Amps Output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">14</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">V15</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">+15V @ 0.07 
+    Amps Output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">15</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO0</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O or Axis 0 Encoder Input Phase A</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">16</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO1</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O or Axis 0 Encoder Input Phase B</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">17</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO2</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O or Axis 1 Encoder Input Phase A</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">18</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO3</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O or Axis 1 Encoder Input Phase B</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">19</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO4</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O or Axis 2 Encoder Input Phase A</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">20</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO5</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O or Axis 2 Encoder Input Phase B</font></td>
+  </tr>
+</table>
+<table border="2" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="71%" id="AutoNumber3" height="388">
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">21</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO6</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O or Axis 3 Encoder Input Phase A</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">22</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO7</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O or Axis 3 Encoder Input Phase B</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">23</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO8</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O or Axis 0 Home or Step 0 output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">24</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO9</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O or Axis 1 Home or Dir 0 output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">25</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO10</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O or Axis 2 Home or Step 1 output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">26</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO11</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O or Axis 3 Home or Dir 1 output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">27</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO12</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O or Axis 0 + Limit or Step 2 output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="8" align="center"><font face="Courier New" size="2">
+    28</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO13</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O or Axis 0 - Limit or Dir 2 output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">29</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO14</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O or Axis 1 + Limit or Step 3 output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">30</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO15</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O or Axis 1 - Limit or Dir 3 output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">31</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO16</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O or Axis 2 + Limit</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">32</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO17</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O or Axis 2 - Limit</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">33</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO18</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O or Axis 3 + Limit</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">34</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO19</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O or Axis 3 - Limit</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">35</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO20</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">36</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO21</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">37</font></td>
+    <td width="15%" height="19" align="center">
+    <font face="Courier New" size="2">VDD5</font></td>
+    <td width="75%" height="19"><font face="Courier New" size="2">+5 Volts 
+    Output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">38</font></td>
+    <td width="15%" height="19" align="center">
+    <font face="Courier New" size="2">VDD5</font></td>
+    <td width="75%" height="19"><font face="Courier New" size="2">+5 Volts 
+    Output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">39</font></td>
+    <td width="15%" height="19" align="center">
+    <font face="Courier New" size="2">GND</font></td>
+    <td width="75%" height="19"><font face="Courier New" size="2">Digital and 
+    Analog Ground</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">40</font></td>
+    <td width="15%" height="19" align="center">
+    <font face="Courier New" size="2">GND</font></td>
+    <td width="75%" height="19"><font face="Courier New" size="2">Digital and 
+    Analog Ground</font></td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p><i><font size="4"><b><a name="JP4">JP4</a> - Aux Connector</b></font></i></p>
+<p>Auxiliary connector which supplies power, reset, one 0-4V DAC, and 8 digital 
+I/O normally connected to optional expansion daughter boards.&nbsp; If no 
+expansion module is required these digital I/O may be used for general purpose 
+use.&nbsp; Note: IO20 and IO21 are also routed to JP3 </p>
+<p><img border="0" src="Aux16pin.png" width="311" height="348"></p>
+<p><img border="0" src="AuxPhoto.JPG" width="489" height="218"></p>
+<table border="2" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="71%" id="AutoNumber4" height="389">
+  <tr>
+    <td width="10%" height="9" align="center"><font face="Courier New" size="2">
+    Pin</font></td>
+    <td width="16%" height="9" align="center"><font face="Courier New" size="2">
+    Name</font></td>
+    <td width="74%" height="9"><font face="Courier New" size="2">Description</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="20" align="center">
+    <font face="Courier New" size="2">1</font></td>
+    <td width="15%" height="19" align="center">
+    <font face="Courier New" size="2">VDD5</font></td>
+    <td width="75%" height="19"><font face="Courier New" size="2">+5 Volts 
+    Output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">2</font></td>
+    <td width="15%" height="19" align="center">
+    <font face="Courier New" size="2">VDD12</font></td>
+    <td width="75%" height="19"><font face="Courier New" size="2">+12 Volts 
+    Output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">3</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">DAC7</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">DAC Chan 7 
+    0-4V output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">4</font></td>
+    <td width="16%" height="10" align="center">
+    <font face="Courier New" size="2">RESET#</font></td>
+    <td width="74%" height="10"><font face="Courier New" size="2">Power up Reset 
+    (low true) output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">5</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO20</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">6</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO21</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="8" align="center"><font face="Courier New" size="2">
+    7</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO22</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">8</font></td>
+    <td width="15%" height="19" align="center">
+    <font face="Courier New" size="2">GND</font></td>
+    <td width="75%" height="19"><font face="Courier New" size="2">Digital and 
+    Analog Ground</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">9</font></td>
+    <td width="15%" height="19" align="center">
+    <font face="Courier New" size="2">GND</font></td>
+    <td width="75%" height="19"><font face="Courier New" size="2">Digital and 
+    Analog Ground</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">10</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO23</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">11</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO24</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">12</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO25</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">13</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO26</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">14</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">IO27</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">Gen Purpose 
+    LVTTL I/O</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">15</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">VM15</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">-15V @ 0.07 
+    Amps Output</font></td>
+  </tr>
+  <tr>
+    <td width="10%" height="19" align="center">
+    <font face="Courier New" size="2">16</font></td>
+    <td width="16%" height="19" align="center">
+    <font face="Courier New" size="2">V15</font></td>
+    <td width="74%" height="19"><font face="Courier New" size="2">+15V @ 0.07 
+    Amps Output</font></td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p><font size="4"><b><i>Fan and Aux Switches</i></b></font></p>
+<p><i><b>Kmotion</b></i> contains two SPST switches to ground capable of driving 
+up to 30V @ 2A.&nbsp; One is dedicated to driving the cooling fan and one is 
+available for another use.&nbsp; If the fan is not required by the application 
+(less than 2Amps drawn on all axis) it may also be used to drive an external 
+load.&nbsp; Each of the switches is connected to a 2 pin connector.&nbsp; One of 
+the pins is connected to the 5V supply and the other pin is switched to ground.&nbsp; 
+If the load requires 5V (i.e.. a 5V fan) it may be connected directly across the 
+2 pins.&nbsp; If other than a 5V load is required, then external user supplied 
+wiring to the supply is required and only the pin that is switched to ground 
+should be connected.&nbsp; See below.</p>
+<p>&nbsp;</p>
+<p><img border="0" src="FanSwitch.PNG" width="244" height="271"><img border="0" src="AuxSwitch.PNG" width="253" height="278"></p>
+<p>&nbsp;</p>
+<p><a name="Auxillary Switch Example"></a>Here is an example of how a solenoid 
+may be driven with the Auxiliary Switch:</p>
+<p>&nbsp;</p>
+<p><img border="0" src="AuxSwitchExample.PNG" width="547" height="320"></p>
+<p>&nbsp;</p>
+<p><font size="4"><b><i><a name="Analog_I/O_circuit">Analog I/O circuit</a></i></b></font></p>
+<p>Circuit diagram of analog I/O buffers showing conversion from industry 
+standard +/- 10V ranges to onboard 0-4V ADC/DAC converters.&nbsp; Note 50K input 
+impedance.&nbsp; REFP = 4V, REFK = 1.43V</p>
+<p><img border="0" src="AnalogCircuit.png" width="771" height="178"></p>
+
+</body>
+
+</html>

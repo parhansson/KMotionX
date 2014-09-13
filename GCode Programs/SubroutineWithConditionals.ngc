@@ -1,0 +1,30 @@
+G20
+#100 = 5
+
+(examples of logical operations)
+(result is 1 if condition is true)
+(result is 0 if condition is false)
+
+#101 = [#100 >  5]
+#102 = [#100 >= 5]
+#103 = [#100 <  5]
+#104 = [#100 <= 5]
+#105 = [#100 =  5]
+#106 = [#100 <> 5]
+
+(subroutine call can be looped a number of times)
+(the L or Q word may be used to specify the count)
+(if neither L or Q is specified a count of 1 is used)
+(if the count is 0 the subroutine will not be called at all)
+
+M98 P1 L3  (example using L to specify the loop count)
+M98 P1 Q3  (example using Q to specify the loop count)
+
+M98 P1 L#100  (example using a variable loop count)
+
+M98 P1 L[5 > 4]  (example using a conditional as a loop count)
+M2
+
+O1
+#200 = [#200+1]
+M99

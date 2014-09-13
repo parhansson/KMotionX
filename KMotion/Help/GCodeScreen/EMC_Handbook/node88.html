@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Material Edge Contour </TITLE>
+<META NAME="description" CONTENT="Material Edge Contour ">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node89.html">
+<LINK REL="previous" HREF="node87.html">
+<LINK REL="up" HREF="node83.html">
+<LINK REL="next" HREF="node89.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1671"
+  HREF="node89.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1665"
+  HREF="node83.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1659"
+  HREF="node87.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1667"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1669"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1672"
+  HREF="node89.html">Tool Path Contour</A>
+<B> Up:</B> <A NAME="tex2html1666"
+  HREF="node83.html">12.2.1 Cutter Radius Compensation</A>
+<B> Previous:</B> <A NAME="tex2html1660"
+  HREF="node87.html">Two Kinds of Contour</A>
+ &nbsp; <B>  <A NAME="tex2html1668"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1670"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION04321500000000000000">
+Material Edge Contour </A>
+</H3>
+
+<P>
+When the contour is the edge of the material, the outline of the edge
+is described in the NC program. For a material edge contour, the value
+for the diameter in the tool table is the actual value of the diameter
+of the tool. The value in the table must be positive. The NC code
+for a material edge contour is the same regardless of the (actual
+or intended) diameter of the tool. 
+
+<P>
+Example 1 : 
+
+<P>
+Here is an NC program which cuts material away from the outside of
+the triangle in figure above. In this example, the cutter compensation
+radius is the actual radius of the tool in use, which is 0.5, The
+value for the diameter in the tool table is twice the radius, which
+is 1.0.
+
+<P>
+<TT>N0010 G41 G1 X2 Y2 (turn compensation on and make entry move)</TT>
+
+<P>
+<TT>N0020 Y-1 (follow right side of triangle)</TT>
+
+<P>
+<TT>N0030 X-2 (follow bottom side of triangle)</TT>
+
+<P>
+<TT>N0040 X2 Y2 (follow hypotenuse of triangle)</TT>
+
+<P>
+<TT>N0050 G40 (turn compensation off)</TT>
+
+<P>
+This will result in the tool following a path consisting of an entry
+move and the path shown on the left going clockwise around the triangle.
+Notice that the coordinates of the triangle of material appear in
+the NC code. Notice also that the tool path includes three arcs which
+are not explicitly programmed; they are generated automatically.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1671"
+  HREF="node89.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1665"
+  HREF="node83.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1659"
+  HREF="node87.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1667"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1669"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1672"
+  HREF="node89.html">Tool Path Contour</A>
+<B> Up:</B> <A NAME="tex2html1666"
+  HREF="node83.html">12.2.1 Cutter Radius Compensation</A>
+<B> Previous:</B> <A NAME="tex2html1660"
+  HREF="node87.html">Two Kinds of Contour</A>
+ &nbsp; <B>  <A NAME="tex2html1668"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1670"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

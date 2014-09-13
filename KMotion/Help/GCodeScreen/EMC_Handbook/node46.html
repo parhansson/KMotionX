@@ -1,0 +1,228 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>10.1 Blocks </TITLE>
+<META NAME="description" CONTENT="10.1 Blocks ">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node47.html">
+<LINK REL="previous" HREF="node45.html">
+<LINK REL="up" HREF="node45.html">
+<LINK REL="next" HREF="node47.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1026"
+  HREF="node47.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1020"
+  HREF="node45.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1014"
+  HREF="node45.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1022"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1024"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1027"
+  HREF="node47.html">10.2 Numbers</A>
+<B> Up:</B> <A NAME="tex2html1021"
+  HREF="node45.html">10. G Code Basics</A>
+<B> Previous:</B> <A NAME="tex2html1015"
+  HREF="node45.html">10. G Code Basics</A>
+ &nbsp; <B>  <A NAME="tex2html1023"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1025"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION04110000000000000000">
+10.1 Blocks </A>
+</H1>
+
+<P>
+The basic unit of the nc program is the '<A NAME="2130"></A>block', which
+is seen in printed form as a 'line' of text. Each block can contain
+one or more 'words', which consist of a letter, describing a setting
+to be made, or a function to be performed, followed by a numeric field,
+supplying a value to that function. A permissible block of input is
+currently restricted to a maximum of 256 characters. 
+
+<P>
+The following order is required for the construction of a block.
+
+<P>
+
+<OL>
+<LI>An optional block delete character, which is a slash / . 
+</LI>
+<LI>An optional line number. 
+</LI>
+<LI>Any number of segments, where a segment is a word or a comment. 
+</LI>
+<LI>An end of line character.
+</LI>
+</OL>
+The interpreter allows words starting with any letter except N (which
+denotes a line number and must be first) to occur in any order. Execution
+of the block will be the same regardless of the order. 
+
+<P>
+An example of a program block would be
+
+<P>
+N0001 G0 X123.05
+
+<P>
+This block is constructed using three words, N0001, G0, and X123.05.
+The meanings of each of these words is described in detail below.
+In essence, the n word numbers the line, the g0 word tells the machine
+to get to its destination as quickly as it can, and the final position
+of the x axis is to be 123.05. Since it is constructed with a preceding
+slash, this block could be deleted during a run if optional block
+delete were activated. 
+
+<P>
+There are some general considerations when writing nc code for the
+EMC: 
+
+<P>
+
+<UL>
+<LI>The interpreter allows spaces and tabs anywhere within a block of
+code. The result of the interpretation of a block will be the same
+as it would if any white spaces were not there. This makes some strange-looking
+input legal. The line &#34;g0x +0. 12 34y 7&#34; is equivalent
+to &#34;g0 x+0.1234 y7&#34;, for example.
+</LI>
+<LI>Blank lines are allowed in the input by the interpreter. They are
+ignored.
+</LI>
+<LI>The interpreter also assumes input is case insensitive. Any letter
+may be in upper or lower case without changing the meaning of a line.
+</LI>
+</UL>
+Whenever you write nc programs, you would do well to be considerate
+of others who may have to read that code, even though the interpreter
+itself does not care about white space and case. Unless you are really
+up against the 256 character block size limit, white space between
+words and the absence of it within words makes a block much easier
+to understand. 
+
+<P>
+There are a number of limitations about the number or types of words
+that can be strung together into a block. The interpreter uses the
+following rules: 
+
+<P>
+
+<UL>
+<LI>A line may have zero to four G words. 
+</LI>
+<LI>Two G words from the same modal group may not appear on the same line. 
+</LI>
+<LI>A line may have zero to four M words. 
+</LI>
+<LI>Two M words from the same modal group may not appear on the same line. 
+</LI>
+<LI>For all other legal letters, a line may have only one word beginning
+with that letter.
+</LI>
+</UL>
+Don't worry to much about modal codes or the order of execution of
+the words within a block of nc program just yet. These will become
+clear as you work your way through the definitions of the permissible
+words listed in the next unit. 
+
+<P>
+For now it is enough to remember that a program block is more than
+the words that are written in it. Various words can be combined to
+specify multi-axis moves, or perform special functions. While a block
+of code has a specific order of execution, it must be considered to
+be a single command. All of the words within a block combine to produce
+a single set of actions which may be very different from the actions
+assigned to the same words were they placed in separate blocks. A
+simple example using axis words should illustrate this point. 
+
+<P>
+n1 x6 - moves from the current x location to x6 
+<BR>
+n2 y3 - moves from current y location to y3 at x6 
+<BR>
+n3 z2 - moves from current z location to z2 at x6 and y3 
+
+<P>
+n10 x6 y3 z2 - moves on a single line from current x, y, z to x6 y3
+z2
+
+<P>
+The final position of the first three blocks (n1-n3) and the (n10)
+block are the same. The first set of blocks might be executed in sequence
+to move the tool around an obstacle while the path of the tool for
+the combined block (n10) might run it into the part or the fixture. 
+
+<P>
+To make the specification of an allowable line of code precise, NIST
+defined it in a production language (With Syntax Notation). These
+definitions appear as Table *** at the end of this chapter. In order that the definition in the appendix
+not be unwieldy, many constraints imposed by the interpreter are omitted
+from that appendix. The list of error messages elsewhere in the Handbook
+indicates all of the additional constraints. 
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1026"
+  HREF="node47.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1020"
+  HREF="node45.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1014"
+  HREF="node45.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1022"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1024"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1027"
+  HREF="node47.html">10.2 Numbers</A>
+<B> Up:</B> <A NAME="tex2html1021"
+  HREF="node45.html">10. G Code Basics</A>
+<B> Previous:</B> <A NAME="tex2html1015"
+  HREF="node45.html">10. G Code Basics</A>
+ &nbsp; <B>  <A NAME="tex2html1023"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1025"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

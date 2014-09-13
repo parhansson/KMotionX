@@ -1,0 +1,104 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Closed Loop Stepper</title>
+</head>
+
+<body>
+
+<p class="MsoNormal"><i><b><font size="5" face="Arial">Configuring Closed Loop Step and Direction Outputs</font></b></i></p>
+<p class="MsoNormal"><span style="font-family: Arial">The Closed Loop Stepper 
+Mode works much the same as open loop Step and Direction Output Mode except 
+there is also an error feedback correction term. &nbsp;In fact, if the gains of 
+the correction term (PIDs) are set to zero then the mode will behave the same as an 
+open loop Step Direction Mode.&nbsp; This mode is much easier to “tune” than a stepper driven as a 
+brushless motor and unlike a brushless motor there are no commutation issues.&nbsp; &nbsp;A good application for this mode is a stepper with linear 
+glass scales.&nbsp; The main feature is the position feed forward with fixed gain of 1.0. &nbsp;See 
+the flow diagram below.&nbsp; Without any correction it behaves just like a stepper. &nbsp; As correction gains are 
+added, corrections for drift, friction, load forces, or even a miss step are 
+made. &nbsp;One 
+disadvantage is that the motor can still stall.&nbsp; After the stall and after 
+the motion stops the servo loop could then gradually correct the position which 
+could be of value in some applications.</span></p>
+<p class="MsoNormal">&nbsp;</p>
+<p class="MsoNormal"><span style="font-family: Arial">&nbsp;<img border="0" src="CLStepFlowDiag.PNG" width="1069" height="434">&nbsp;</span></p>
+<p class="MsoNormal"><font face="Arial">To Configure an axis a a Closed Loop Servo select &quot;CL Step&quot; 
+as the output mode for the axis as shown below.&nbsp; Any input mode may be used 
+as position feedback, but the most common is a quadrature encoder either on the 
+motor shaft or as a linear glass scale.&nbsp; </font> </p>
+<p class="MsoNormal"><font face="Arial">Note that an Input gain of 1.25 is used in this example.&nbsp; 
+This was calculated from the ratio of the number of &#956;Steps/rev 
+to the number of encoder counts/rev.&nbsp; (A micro stepper amplifier set to 50 
+microsteps/full setp and a standard stepper motor with 200 full steps/rev will 
+have 10,000 &#956;Steps/rev, a rotary encoder with 2000 
+lines/rev will profuce 8000 quadrature counts/rev, 10000/8000 = 1.25).&nbsp; The 
+raw axis units will be in &#956;Steps.</font></p>
+<p class="MsoNormal"><font face="Arial">Max Following Error may be used to trip an axis disable 
+when exceeded.</font></p>
+<p class="MsoNormal">
+<font face="Arial">
+<img border="0" src="CLConfiguration.PNG" width="507" height="515"></font></p>
+<p class="MsoNormal">&nbsp;</p>
+<p class="MsoNormal"><font face="Arial">Important PID parameters are shown below circled in red.&nbsp; 
+The I (Integrator) gain of 0.01 is probably the most important.&nbsp; Your 
+system may require more or less.&nbsp; Too much and the system may over shoot or 
+become unstable (oscillate).&nbsp; Too little and corrections will be made 
+slowly.&nbsp; Because we are measure the position and also commanding a position 
+Integrator control works well.&nbsp; An integrator will ramp the output at a 
+rate proportional to the amount of the error.&nbsp; This &quot;slowing as we get 
+closer&quot; will result in an exponential curve approaching the target.&nbsp; 
+Backlash, friction, delays, and other factors will eventually cause the system 
+to overshoot and become unstable with too much gain. </font> </p>
+<p class="MsoNormal"><font face="Arial">Max limits may also be useful for limiting the correction.&nbsp; 
+In this example the limits are set to large values.&nbsp; Limiting the max error 
+to a small value will limit the maximum slew rate of the Integrator.&nbsp; Max 
+Output and Max Integrator are similar for an Integrator only compensator and 
+will limit the maximum amount of correction that can be made.</font></p>
+<p class="MsoNormal">
+<font face="Arial">
+<img border="0" src="CLStepWithCorrectionPosCmd.PNG" width="897" height="580"></font></p>
+<p class="MsoNormal">&nbsp;</p>
+<p class="MsoNormal"><font face="Arial">A 2nd order Low Pass Filter is also used in this example to 
+make the system more stable by reducing high frequency corrections.&nbsp; Note a 
+cutoff frequency of 100Hz with Q 1.4 is used.&nbsp; After specifying the filter 
+the Compute Button must be pressed to compute the Z domain IIR Coeffiecients 
+that are downloaded and used by KFlop.</font></p>
+<p class="MsoNormal">
+<font face="Arial">
+<img border="0" src="CLLowPassFilter.PNG" width="760" height="491"></font></p>
+<p class="MsoNormal">&nbsp;</p>
+<p class="MsoNormal"><font face="Arial">Test Mechanism with Size 34 Stepper with encoder connected 
+to a Dummy Load.</font></p>
+<p class="MsoNormal"><font face="Arial"><img border="0" src="Size34.JPG" width="600" height="257"></font></p>
+<p class="MsoNormal">&nbsp;</p>
+<p class="MsoNormal"><span style="font-family: Arial">Test Move of a Size34 Stepper 
+with 50 usteps/full step forward and backward at 4000sps</span></p>
+<p class="MsoNormal"><span style="font-family: Arial">With PID gain zero (no 
+correction).&nbsp;&nbsp; Note encoder shows errors of ~100uSteps</span></p>
+<p class="MsoNormal"><font face="Arial">
+<img border="0" src="CLStepNoCorrection.PNG" width="897" height="580"></font></p>
+<p class="MsoNormal"><span style="font-family: Arial">&nbsp;</span></p>
+<p class="MsoNormal"><span style="font-family: Arial">&nbsp;Integrator gain now set 
+at 0.01.&nbsp; Also 2<sup>nd</sup> Order 100Hz Low Pass Filter Q=1.4 used</span></p>
+<p class="MsoNormal"><span style="font-family: Arial">&nbsp;Note error is 
+reduced.&nbsp; 
+Blue plot is position error, green is the Output (correction offset)</span></p>
+<p class="MsoNormal"><span style="font-family: Arial">&nbsp;<img border="0" src="CLStepWithCorrection.PNG" width="897" height="580"></span></p>
+<p class="MsoNormal"><span style="font-family: Arial">&nbsp;</span></p>
+<p class="MsoNormal"><span style="font-family: Arial">A Bode Plot of the 
+Compensator PID + LP Filter response.&nbsp; I=0.010 and 2nd order Low Pass 100Hz @ 
+Q=1.4.&nbsp; Red plot is Magnitude. </span></p>
+<p class="MsoNormal"><span style="font-family: Arial">Note that errors less than 
+about 20 Hz will be corrected.&nbsp; Correction gain drops below 1 (0db) at higher 
+frequencies.</span></p>
+<p class="MsoNormal"><font face="Arial">
+<img border="0" src="CLStepComp.PNG" width="857" height="552"></font></p>
+<p class="MsoNormal"><span style="font-family: Arial">&nbsp;</span></p>
+<p class="MsoNormal"><span style="font-family: Arial">&nbsp;</span></p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

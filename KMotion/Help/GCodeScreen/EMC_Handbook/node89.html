@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Tool Path Contour</TITLE>
+<META NAME="description" CONTENT="Tool Path Contour">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node90.html">
+<LINK REL="previous" HREF="node88.html">
+<LINK REL="up" HREF="node83.html">
+<LINK REL="next" HREF="node90.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1685"
+  HREF="node90.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1679"
+  HREF="node83.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1673"
+  HREF="node88.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1681"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1683"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1686"
+  HREF="node90.html">Programming Errors and Limitations</A>
+<B> Up:</B> <A NAME="tex2html1680"
+  HREF="node83.html">12.2.1 Cutter Radius Compensation</A>
+<B> Previous:</B> <A NAME="tex2html1674"
+  HREF="node88.html">Material Edge Contour</A>
+ &nbsp; <B>  <A NAME="tex2html1682"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1684"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION04321600000000000000">
+Tool Path Contour</A>
+</H3>
+
+<P>
+When the contour is a tool path contour, the path is described in
+the NC program. It is expected that (except for during the entry moves)
+the path is intended to create some part geometry. The path may be
+generated manually or by a post-processor, considering the part geometry
+which is intended to be made. For the interpreter to work, the tool
+path must be such that the tool stays in contact with the edge of
+the part geometry, as shown on the left side of Figure 7. If a path
+of the sort shown on the right of Figure 7 is used, in which the tool
+does not stay in contact with the part geometry all the time, the
+interpreter will not be able to compensate properly when undersized
+tools are used.
+
+<P>
+For a tool path contour, the value for the cutter diameter in the
+tool table will be a small positive number if the selected tool is
+slightly oversized and will be a small negative number if the tool
+is slightly undersized. As implemented, if a cutter diameter value
+is negative, the interpreter compensates on the other side of the
+contour from the one programmed and uses the absolute value of the
+given diameter. If the actual tool is the correct size, the value
+in the table should be zero.
+
+<P>
+Tool Path Contour example
+
+<P>
+Suppose the diameter of the cutter currently in the spindle is 0.97,
+and the diameter assumed in generating the tool path was 1.0. Then
+the value in the tool table for the diameter for this tool should
+be -0.03. Here is an NC program which cuts material away from the
+outside of the triangle in the figure.
+
+<P>
+<TT><FONT SIZE="-1">N0010 G1 X1 Y4.5 (make alignment move)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0020 G41 G1 Y3.5 (turn compensation on and make first
+entry move)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0030 G3 X2 Y2.5 I1 (make second entry move)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0040 G2 X2.5 Y2 J-0.5 (cut along arc at top of tool
+path)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0050 G1 Y-1 (cut along right side of tool path)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0060 G2 X2 Y-1.5 I-0.5 (cut along arc at bottom right
+of tool path)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0070 G1 X-2 (cut along bottom side of tool path)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0080 G2 X-2.3 Y-0.6 J0.5 (cut along arc at bottom
+left of tool path)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0090 G1 X1.7 Y2.4 (cut along hypotenuse of tool path)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0100 G2 X2 Y2.5 I0.3 J-0.4 (cut along arc at top of
+tool path)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0110 G40 (turn compensation off)</FONT></TT>
+<P>
+
+
+<P>
+This will result in the tool making an alignment move and two entry
+moves, and then following a path slightly inside the path shown on
+the left in Figure 7 going clockwise around the triangle. This path
+is to the right of the programmed path even though G41 was programmed,
+because the diameter value is negative.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1685"
+  HREF="node90.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1679"
+  HREF="node83.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1673"
+  HREF="node88.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1681"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1683"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1686"
+  HREF="node90.html">Programming Errors and Limitations</A>
+<B> Up:</B> <A NAME="tex2html1680"
+  HREF="node83.html">12.2.1 Cutter Radius Compensation</A>
+<B> Previous:</B> <A NAME="tex2html1674"
+  HREF="node88.html">Material Edge Contour</A>
+ &nbsp; <B>  <A NAME="tex2html1682"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1684"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

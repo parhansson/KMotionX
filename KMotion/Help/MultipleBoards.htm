@@ -1,0 +1,66 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Multiple Boards</title>
+</head>
+
+<body>
+
+<p><font size="5"><b><i>Using Multiple KMotion Boards</i></b></font></p>
+<p>The <i><b>KMotion</b></i> Driver Library allows multiple PC processes 
+(applications), each running multiple threads of execution, to communicate with 
+multiple <i><b>KMotion</b></i> boards simultaneously.&nbsp; Each <i><b>KMotion</b></i> 
+board is identified by a USB <i>location</i> <i>identifier </i>where it is 
+connected.&nbsp; A USB location identifier is a 32 bit integer.&nbsp; USB 
+devices are arranged in a tree structure of hubs and nodes.&nbsp; Each 
+hexadecimal digit of the USB location specifies a branch in the tree structure.&nbsp; 
+For the purposes of the <i><b>KMotion</b></i> Driver Library, a USB location 
+identifier may simply be considered a unique integer that will remain the same 
+as long as the structure of the USB tree is not altered.&nbsp;&nbsp; Adding or 
+removing USB devices will not change the location of a connected <i><b>KMotion</b></i> 
+board.</p>
+<p>Selecting the USB Locations menu of the <i><b>KMotion</b></i> Setup and 
+Tuning application, will display a list of all currently connected <i><b>KMotion</b></i> 
+boards.&nbsp; The Checkmark indicates which board the application is currently 
+communicating with.&nbsp;&nbsp; To switch to a different board, select the USB 
+location from the list.</p>
+<p><img border="0" src="Multip1.gif"></p>
+<p>&nbsp;</p>
+<p>When launching the <i><b>KMotion</b></i> Setup and Tuning application, a 
+command line parameter may be specified to connect to a specific USB location 
+(see below on how to setup a shortcut to connect to a specific location).&nbsp; 
+Multiple shortcuts may be setup to connect to individual boards.</p>
+<p>&nbsp;</p>
+<p>
+<img border="0" src="KMotionShortcut.PNG" width="367" height="509" align="left"></p>
+<p>&nbsp;</p>
+<p><img border="0" src="Multip2.gif" hspace="10" vspace="10"></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><font face="Times New Roman">The <i><b>KMotion</b></i> Driver Library has a 
+function to list the USB locations of all currently connected <i><b>KMotion</b></i> 
+boards. See:</font></p>
+<p><b><font face="Courier New">
+<a href="KMotionDLLDriver/KMotionDLL.htm#ListLocations">int ListLocations(int 
+*nlocations, int *list);</a></font></b></p>
+<p>&nbsp;</p>
+<p><font face="Times New Roman">When making <i><b>KMotion</b></i> Driver Library 
+function calls specify the USB <i>location identifier </i>of the desired board 
+as the board parameter shown in the example below.&nbsp; Specifying a board 
+value of 0 may be used if there is only one board in a particular system.&nbsp; 
+This will result in a connection to the first available board.</font></p>
+<p><b><font face="Courier New">int CKMotionDLL::WriteLineReadLine(<font color="#FF0000">int 
+board</font>, const char *s, char *response)<br>
+&nbsp;</font></b></p>
+
+</body>
+
+</html>

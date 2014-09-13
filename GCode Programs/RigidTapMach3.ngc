@@ -1,0 +1,8 @@
+(Call a Rigid Tap Sequence)
+#10=20    (TPI)
+#11=6     (IPM)
+#12=6     (IPM)
+#13=0.75  (inches total)
+#14=0.1   (inches forward)
+#15=0.05  (inches backward)
+M84

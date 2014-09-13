@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>7.3 Where's the driver?</TITLE>
+<META NAME="description" CONTENT="7.3 Where's the driver?">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node32.html">
+<LINK REL="previous" HREF="node30.html">
+<LINK REL="up" HREF="node28.html">
+<LINK REL="next" HREF="node32.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html723"
+  HREF="node32.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html717"
+  HREF="node28.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html711"
+  HREF="node30.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html719"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html721"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html724"
+  HREF="node32.html">7.4 What is the</A>
+<B> Up:</B> <A NAME="tex2html718"
+  HREF="node28.html">7. Servo To Go</A>
+<B> Previous:</B> <A NAME="tex2html712"
+  HREF="node30.html">7.2 Options in extstgmot.c</A>
+ &nbsp; <B>  <A NAME="tex2html720"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html722"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION03230000000000000000">
+7.3 Where's the driver?</A>
+</H1>
+
+<P>
+Or sometimes the question is &#34;is there a Servo To Go driver
+for Linux in there? If so where is it?&#34;. EMC's modular design
+is quite elegant, although it makes this particular question hard
+to answer. Are stg.c (for Model 1) and stg2.c (for Model 2) the drivers?
+No, these are modules which customize the driver for the Servo To
+Go card when they are linked in. They implement functions that the
+driver uses.
+
+<P>
+Can I point to the drivers? Yes, there's stgmod.o and stg2mod.o (and
+some variants) for RT-Linux. They are installable kernel modules.
+Communication with the driver is typically by a shared memory area
+(the other option is to use a fifo). The driver commands are listed
+in emcmot.h.
+
+<P>
+<BR><HR>
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

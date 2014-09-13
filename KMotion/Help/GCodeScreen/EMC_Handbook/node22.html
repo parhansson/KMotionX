@@ -1,0 +1,322 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>6.1.1 Setting up Stepper Motors</TITLE>
+<META NAME="description" CONTENT="6.1.1 Setting up Stepper Motors">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="previous" HREF="node21.html">
+<LINK REL="up" HREF="node21.html">
+<LINK REL="next" HREF="node23.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html596"
+  HREF="node23.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html590"
+  HREF="node21.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html586"
+  HREF="node21.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html592"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html594"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html597"
+  HREF="node23.html">6.2 Configuring EMC</A>
+<B> Up:</B> <A NAME="tex2html591"
+  HREF="node21.html">6.1 Parallel Port Connection</A>
+<B> Previous:</B> <A NAME="tex2html587"
+  HREF="node21.html">6.1 Parallel Port Connection</A>
+ &nbsp; <B>  <A NAME="tex2html593"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html595"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION03111000000000000000">
+6.1.1 Setting up Stepper Motors</A>
+</H2>
+
+<P>
+Currently the EMC supports stepper motors with a 2-bit step-and-direction
+interface, with bits mapped to the parallel port. Each parallel port
+has 12 bits of output and 5 bits of input. The outputs are used to
+drive the step and direction of each motor. 12 bits of output mean
+that up to 6 stepper motors can be controlled. The inputs can be used
+to detect limit or home switch trips. 5 bits of input mean that only
+one axes can get full positive, negative, and home switch inputs.
+The EMC mapping compromises for 3 axes of stepper motor control, with
+all positive limit switches being mapped to one input, all negative
+limit switches being mapped to another input, and all home switches
+being mapped to a third input. Other permutations are possible, of
+course, and can be changed in the software. You could also add 2 additional
+parallel ports (LPT2, LPT3), and get 36 bits of output and 15 bits
+of input. Some parallel ports also let you take 4 outputs and use
+them as inputs, for 8 outputs and 9 inputs for each parallel port.
+This would let you get 3 axes of control and full switch input per
+parallel port. See Using the PC parallel port for digital I/O for
+more information on the parallel port.
+
+<P>
+<A NAME="455"></A>The pin outs for the
+EMC stepper motor interface using the first parallel port
+<BR>
+Only Step/Dir function is available with steppermod, whilst all options
+can be used with freqmod and smdromod.
+<P>
+
+
+<P>
+The bracketed numbers for the Two Phase function refer
+to the connections on a Bridgeport BOSS driver.
+<BR>&nbsp;
+<BR><TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT">IO Pin</TD>
+<TD ALIGN="LEFT"><TT><FONT SIZE="-1">Function</FONT></TT></TD>
+<TD ALIGN="LEFT">Function</TD>
+<TD ALIGN="LEFT">Function</TD>
+<TD ALIGN="LEFT">Function</TD>
+</TR>
+<TR><TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT">Step/Dir</TD>
+<TD ALIGN="LEFT">Quadrature</TD>
+<TD ALIGN="LEFT">Two phase</TD>
+<TD ALIGN="LEFT">Four phase</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">D0, pin 2</FONT></TT></TD>
+<TD ALIGN="LEFT">X direction</TD>
+<TD ALIGN="LEFT">X CW</TD>
+<TD ALIGN="LEFT">X Phase 0 (P19)</TD>
+<TD ALIGN="LEFT">X Phase 0</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">D1, pin 3</FONT></TT></TD>
+<TD ALIGN="LEFT">X clock</TD>
+<TD ALIGN="LEFT">X CCW</TD>
+<TD ALIGN="LEFT">X Phase 1 (P13)</TD>
+<TD ALIGN="LEFT">X Phase 1</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">D2, pin 4</FONT></TT></TD>
+<TD ALIGN="LEFT">Y direction</TD>
+<TD ALIGN="LEFT">Y CW</TD>
+<TD ALIGN="LEFT">Y Phase 0 (P19)</TD>
+<TD ALIGN="LEFT">X Phase 2</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">D3, pin 5</FONT></TT></TD>
+<TD ALIGN="LEFT">Y clock</TD>
+<TD ALIGN="LEFT">Y CCW</TD>
+<TD ALIGN="LEFT">Y Phase 1 (P13)</TD>
+<TD ALIGN="LEFT">X Phase 3</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">D4, pin 6</FONT></TT></TD>
+<TD ALIGN="LEFT">Z direction</TD>
+<TD ALIGN="LEFT">Z CW</TD>
+<TD ALIGN="LEFT">Z Phase 0 (P19)</TD>
+<TD ALIGN="LEFT">Y Phase 0</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">D5, pin 7</FONT></TT></TD>
+<TD ALIGN="LEFT">Z clock</TD>
+<TD ALIGN="LEFT">Z CCW</TD>
+<TD ALIGN="LEFT">Z Phase 1 (P13)</TD>
+<TD ALIGN="LEFT">Y Phase 1</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">D6, pin 8</FONT></TT></TD>
+<TD ALIGN="LEFT">A direction</TD>
+<TD ALIGN="LEFT">A CW</TD>
+<TD ALIGN="LEFT">A Phase 0 (P19)</TD>
+<TD ALIGN="LEFT">Y Phase 2</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">D7, pin 9</FONT></TT></TD>
+<TD ALIGN="LEFT">A clock</TD>
+<TD ALIGN="LEFT">A CCW</TD>
+<TD ALIGN="LEFT">A Phase 1 (P13)</TD>
+<TD ALIGN="LEFT">Y Phase 3</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">C0, pin 1</FONT></TT></TD>
+<TD ALIGN="LEFT">B direction</TD>
+<TD ALIGN="LEFT">B CW</TD>
+<TD ALIGN="LEFT">B Phase 0 (P19)</TD>
+<TD ALIGN="LEFT">Z Phase 0</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">C1, pin 14</FONT></TT></TD>
+<TD ALIGN="LEFT">B clock</TD>
+<TD ALIGN="LEFT">B CCW</TD>
+<TD ALIGN="LEFT">B Phase 1 (P13)</TD>
+<TD ALIGN="LEFT">Z Phase 1</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">C2, pin 16</FONT></TT></TD>
+<TD ALIGN="LEFT">C direction</TD>
+<TD ALIGN="LEFT">C CW</TD>
+<TD ALIGN="LEFT">C Phase 0 (P19)</TD>
+<TD ALIGN="LEFT">Z Phase 2</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">C3, pin 17</FONT></TT></TD>
+<TD ALIGN="LEFT">C clock</TD>
+<TD ALIGN="LEFT">C CCW</TD>
+<TD ALIGN="LEFT">C Phase 1 (P13)</TD>
+<TD ALIGN="LEFT">Z Phase 3</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">S3, pin 15</FONT></TT></TD>
+<TD ALIGN="LEFT">X/Y/Z/ lim +</TD>
+<TD ALIGN="LEFT">X/Y/Z/ lim +</TD>
+<TD ALIGN="LEFT">X/Y/Z/ lim +</TD>
+<TD ALIGN="LEFT">X/Y/Z/ lim +</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">S4, pin 13</FONT></TT></TD>
+<TD ALIGN="LEFT">X/Y/Z/ lim -</TD>
+<TD ALIGN="LEFT">X/Y/Z/ lim -</TD>
+<TD ALIGN="LEFT">X/Y/Z/ lim -</TD>
+<TD ALIGN="LEFT">X/Y/Z/ lim -</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">S5, pin 12</FONT></TT></TD>
+<TD ALIGN="LEFT">X/Y/Z/ home</TD>
+<TD ALIGN="LEFT">X/Y/Z/ home</TD>
+<TD ALIGN="LEFT">X/Y/Z/ home</TD>
+<TD ALIGN="LEFT">X/Y/Z/ home</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">S6, pin 11</FONT></TT></TD>
+<TD ALIGN="LEFT">Probe</TD>
+<TD ALIGN="LEFT">Probe</TD>
+<TD ALIGN="LEFT">Probe</TD>
+<TD ALIGN="LEFT">Probe</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">S7, pin 10</FONT></TT></TD>
+<TD ALIGN="LEFT">spare</TD>
+<TD ALIGN="LEFT">spare</TD>
+<TD ALIGN="LEFT">spare</TD>
+<TD ALIGN="LEFT">spare</TD>
+</TR>
+</TABLE>
+<P>
+
+
+<P>
+<A NAME="477"></A>Pin out for the second
+parallel port - Used with bridgeportio.
+<BR>
+IO assignments can be changed within the ini file.
+<BR>&nbsp;
+<BR><TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">IO Pin</FONT></TT></TD>
+<TD ALIGN="LEFT"><TT><FONT SIZE="-1">Function</FONT></TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">D0, pin 2</FONT></TT></TD>
+<TD ALIGN="LEFT"><TT><FONT SIZE="-1">Spindle reverse</FONT></TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">D1, pin 3</FONT></TT></TD>
+<TD ALIGN="LEFT"><TT><FONT SIZE="-1">Spindle Forward</FONT></TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">D2, pin 4</FONT></TT></TD>
+<TD ALIGN="LEFT"><TT><FONT SIZE="-1">spare</FONT></TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">D3, pin 5</FONT></TT></TD>
+<TD ALIGN="LEFT"><TT><FONT SIZE="-1">Spindle on</FONT></TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">D4, pin 6</FONT></TT></TD>
+<TD ALIGN="LEFT"><TT><FONT SIZE="-1">spare</FONT></TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">D5, pin 7</FONT></TT></TD>
+<TD ALIGN="LEFT"><TT><FONT SIZE="-1">spare</FONT></TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">D6, pin 8</FONT></TT></TD>
+<TD ALIGN="LEFT"><TT><FONT SIZE="-1">Mist Coolant</FONT></TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">D7, pin 9</FONT></TT></TD>
+<TD ALIGN="LEFT"><TT><FONT SIZE="-1">Flood coolant</FONT></TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">C0, pin 1</FONT></TT></TD>
+<TD ALIGN="LEFT"><TT><FONT SIZE="-1">Speed decrease</FONT></TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">C1, pin 14</FONT></TT></TD>
+<TD ALIGN="LEFT"><TT><FONT SIZE="-1">Speed increase</FONT></TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">C2, pin 16</FONT></TT></TD>
+<TD ALIGN="LEFT"><TT><FONT SIZE="-1">Estop output</FONT></TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">C3, pin 17</FONT></TT></TD>
+<TD ALIGN="LEFT"><TT><FONT SIZE="-1">Spindle brake</FONT></TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">S3, pin 15</FONT></TT></TD>
+<TD ALIGN="LEFT"><TT><FONT SIZE="-1">spare</FONT></TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">S4, pin 13</FONT></TT></TD>
+<TD ALIGN="LEFT"><TT><FONT SIZE="-1">Estop input</FONT></TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">S5, pin 12</FONT></TT></TD>
+<TD ALIGN="LEFT"><TT><FONT SIZE="-1">Lube input</FONT></TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">S6, pin 11</FONT></TT></TD>
+<TD ALIGN="LEFT"><TT><FONT SIZE="-1">spare</FONT></TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT><FONT SIZE="-1">S7, pin 10</FONT></TT></TD>
+<TD ALIGN="LEFT"><TT><FONT SIZE="-1">Spare</FONT></TT></TD>
+</TR>
+</TABLE>
+<P>
+
+
+<P>
+Stepper motor control is implemented using a second real-time task
+that runs at 100 microseconds. This task writes the parallel port
+output with bits set or cleared based on whether the a pulse should
+be raised or lowered. This gives an effective period of 200 microseconds
+for a full up-and-down pulse, or a 5 kilohertz frequency.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html596"
+  HREF="node23.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html590"
+  HREF="node21.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html586"
+  HREF="node21.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html592"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html594"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html597"
+  HREF="node23.html">6.2 Configuring EMC</A>
+<B> Up:</B> <A NAME="tex2html591"
+  HREF="node21.html">6.1 Parallel Port Connection</A>
+<B> Previous:</B> <A NAME="tex2html587"
+  HREF="node21.html">6.1 Parallel Port Connection</A>
+ &nbsp; <B>  <A NAME="tex2html593"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html595"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

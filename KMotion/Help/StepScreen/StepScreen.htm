@@ -1,0 +1,316 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Step Response Screen</title>
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+</head>
+
+<body>
+
+<p><i><b><font size="5">Step Response Screen</font></b></i></p>
+<p><map name="FPMap1">
+<area href="#PID" shape="rect" coords="4, 31, 241, 76">
+<area href="#max_limits" shape="rect" coords="19, 80, 211, 174">
+<area href="#Motion_Profile" shape="rect" coords="9, 178, 134, 280">
+<area href="#Feed_Forward" shape="rect" coords="132, 175, 243, 258">
+<area href="#Axis_Control" shape="rect" coords="144, 255, 247, 365">
+<area href="#Dead_Band" shape="rect" coords="10, 282, 149, 370">
+<area href="#Measurement" shape="rect" coords="32, 366, 216, 485">
+<area href="#Save/Load_Data" shape="rect" coords="112, 486, 225, 566">
+<area href="#drop_down_list" shape="rect" coords="377, 30, 864, 69">
+<area href="#Step_Response_Screen" shape="rect" coords="279, 66, 892, 564">
+</map>
+<img border="0" src="StepScreen.PNG" width="897" height="580" usemap="#FPMap1"></p>
+<p><i>(Click on above image to jump to relative topic)</i></p>
+<p>The <a name="Step_Response_Screen"> <b><i>Step Response</i></b><b><i> Screen</i></b></a> allows changes to system 
+tuning parameters and allows measurement and graphs of the system's time 
+response for either a Move Profile or a Step Function.&nbsp; The graph shown 
+above is of an applied step function of 400 counts.&nbsp; The graphs shown below 
+are of a profiled move (and back) of 400 counts.&nbsp; The first has the Output 
+drive hidden and the second has the Output drive displayed.&nbsp; Click on the 
+graphs for a larger view. Note that the Output drive signal contains large 
+spikes.&nbsp; This is the result of quantization error in the measured position.&nbsp; 
+Quantization error in the measured position makes it appear to the system as if 
+there was no motion, and then suddenly as if there was a relatively quick motion 
+of one count in a single servo sample cycle.&nbsp; This is a
+<a href="../BodeScreen/BodeScreen.htm#linear">non-linear effect</a>.&nbsp; In 
+some cases these &quot;spikes&quot; may exceed the output range causing saturation a still 
+further non-linear effect.&nbsp; A low pass filter may be used to &quot;smooth&quot; the 
+output, see the <a href="../FilterScreen/FilterScreen.htm">IIR Filter Screen</a>, 
+but has limits.&nbsp; Attempting too much &quot;smoothing&quot; by setting a lower 
+frequency will eventually have an effect on the performance of the system, 
+reducing the <a href="../BodeScreen/BodeScreen.htm#phase_margin">phase margin</a>. 
+Normally, the cutoff frequency of the low pass filter should be significantly 
+larger than the system bandwidth.</p>
+
+<p><a href="MoveGraphBig.PNG">
+<img border="0" src="MoveGraph.PNG" width="449" height="290"></a></p>
+<p><a href="MoveGraphOutputBig.PNG">
+<img border="0" src="MoveGraphOutput.PNG" width="449" height="290"></a></p>
+<p>&nbsp;</p>
+<p>There are three basic time domain plot types that may be selected from the
+<a name="drop_down_list">drop down list</a>, which are shown below.</p>
+<p><img border="0" src="StepSc1.gif"></p>
+<p>They consist of either:</p>
+<ol>
+  <li>Commanded Position,&nbsp; Measured Position, and Motor Output</li>
+  <li>Position Error and Motor Output</li>
+  <li>Commanded Velocity, Measured Velocity, and Motor Output</li>
+</ol>
+<p>For all three plot types the Motor Output is always displayed as a secondary
+<i>Y</i> axis on the right side of the graph.&nbsp; The other plotted values are 
+on the primary left <i>Y</i> axis.&nbsp; The <i>X</i> axis is always time in 
+seconds.&nbsp; After a particular plot type has been selected, each individual 
+plot variable may be displayed or hidden by selecting the checkbox with the 
+corresponding name (and color) of the variable.</p>
+<p>Any portion of the graph may be zoomed by left-click dragging across the 
+graph. Simply select the area of interest.&nbsp; Right clicking on the graph 
+will bring up a context menu that allows zooming out completely or to the 
+previous zoom level.</p>
+<p>Below is an example of a graph of <i>Position Error </i>(for the same 400 
+count move shown above)<i>.</i>&nbsp; Position Error is defined as Measured 
+Position - Commanded Position.&nbsp; The same data as that is plotted in the 
+Command/Position plots is used, however instead of plotting both values, the 
+difference is plotted.&nbsp; Note that because the Measured Position is 
+quantized to integer encoder counts, the quantization effect is also observed in 
+the Position Error.</p>
+<p>&nbsp;</p>
+<p><map name="FPMap0">
+<area href="PosErrorGraphBig.PNG" shape="rect" coords="3, 6, 447, 287"></map>
+<img border="0" src="PosErrorGraph.PNG" width="449" height="290" usemap="#FPMap0"></p>
+<p>&nbsp;</p>
+<p>The third type of plot displays the Velocity of the Commanded and/or Measured 
+Position.&nbsp; Velocity units are <i>Position</i> <i>Units</i> per second.&nbsp; 
+When a Move is commanded, a motion profile is computed which achieves the motion 
+in the shortest time without exceeding the maximum allowed velocity, 
+acceleration, or jerk.&nbsp; Because the Command is a theoretical profile 
+computed using floating point arithmetic, it is very smooth. The blue graph 
+immediately below shows such a plot.&nbsp; In a velocity graph, <i>slope</i> in 
+the graph represents acceleration. In this case a relatively low value specified 
+for maximum jerk causes the changes in slope to be gradual.&nbsp;&nbsp; The 
+second plot below is the same data but with the <i>Measured</i> velocity 
+displayed along with the Commanded velocity.&nbsp; Because of encoder resolution 
+limitations, measured velocity calculated using a simple position difference per 
+sample period tends to be highly quantized as shown.&nbsp; In this example even 
+at our peak velocity at ~ 23,000 position counts per second this results in a 
+maximum of only 3 position counts per servo sample period.</p>
+<p>&nbsp;</p>
+<p><a href="VelCmdOnlyGraphBig.PNG">
+<img border="0" src="VelCmdOnlyGraph.PNG" width="449" height="290"></a></p>
+<p><a href="VelGraphBig.PNG">
+<img border="0" src="VelGraph.PNG" width="449" height="290"></a></p>
+<p>&nbsp;</p>
+<p>The velocity graph below, shows the effect of setting the maximum allowed 
+jerk to a very large value (100X higher than the graph above).&nbsp; Note how 
+the slope of the velocity changes abruptly which represents a high rate of 
+change of acceleration (jerk).</p>
+<p>&nbsp;</p>
+<p><a href="VelCmdOnlyHiJerkGraphBig.PNG">
+<img border="0" src="VelCmdOnlyHiJerkGraph.PNG" width="449" height="290"></a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><u><b>Tuning Parameters - <a name="PID">PID</a></b></u></p>
+<p><img border="0" src="StepSc2.gif" align="left" hspace="10" vspace="10">The 
+PID (proportional, integral, and derivative) gains set the amount of feedback of 
+the error itself (proportional), the integration of the error (integral), and 
+the derivative of the position (derivative) that is applied to the output.&nbsp; 
+Also see the <a href="../ServoFlowDiagram.htm">KMotion Servo Flow Diagram</a>.</p>
+<p>The units of the proportional gain are in Output Units/Position Units.&nbsp; 
+For example if the Position Units are in encoder counts, and the Output Units 
+are in <a href="../AnalogIOScreenKFLOP/AnalogIOScreen.htm#PWMs">PWM counts</a>, then 
+a gain of 10.0 would apply an output drive of 10 PWM for an error of 1 encoder 
+count.</p>
+<p>The units of the integral gain are in Output Units/Position Units per <i>
+Servo Sample Time</i>.&nbsp;&nbsp; <i><b>KMotion's</b></i> <i>
+<a name="Servo_Sample_Time">Servo Sample Time</a></i> 
+is fixed at 90<font face="Times New Roman">µ</font>s.&nbsp; An integrator 
+basically sums the position error every servo sample.&nbsp; For example, with an 
+integral gain of 10, and an error of 1 encoder count for 5 servo samples, an 
+output drive of 50 PWM counts would be applied&nbsp; Integrator gain is normally 
+used to achieve high accuracy.&nbsp; This is because even a very small error 
+will eventually integrate to a large enough value for there to be an corrective 
+action.&nbsp; In fact, having any integrator gain at all guarantees a steady 
+state error (average error) of zero.&nbsp; This effect also guarantees that 
+there will always be some overshoot in response to a step function, otherwise 
+the average error could not be equal to zero.</p>
+<p>The units of the derivative gain are in Output Units/Position Units x <i>
+Servo Sample Time</i>.&nbsp;&nbsp; The derivative term is simply the change in 
+position from one servo sample to the next.&nbsp; For example, with a derivative 
+gain of 10, and a position change of 1 encoder count from the previous servo 
+sample, an output drive of -10 PWM counts would be applied.&nbsp; The negative 
+sign shows that the output is applied in a manner to oppose motion. Derivative 
+gain has the effect of applying damping, which is a force proportional and 
+opposite to the current velocity.&nbsp; Although derivative gain is often used 
+successfully in a control system, consider using a lead/lag filter which 
+performs in a similar manner, but doesn't have the undesirable feature of 
+increasing gain at high frequencies.</p>
+<p><u><b>Tuning Parameters - <a name="max_limits">max limits</a></b></u><a name="max_limits"><img border="0" src="StepSc3.gif" align="left" hspace="10" vspace="10"></a></p>
+<p><i><b>KMotion's</b></i> <i>max limits</i> allow several points in the
+<a href="../ServoFlowDiagram.htm">Servo Flow Diagram</a> to be clamped, or 
+limited to a specified range.&nbsp; The limits in the flow diagram are shown as 
+a clamp symbol<img border="0" src="StepSc9.gif">.&nbsp; This capability is often 
+useful in controlling how the system responds to extreme situations.</p>
+<p>Maximum <i>output</i> limit is used to limit the maximum applied value, in 
+counts,&nbsp; to the output drive.&nbsp; The output drive may be either one of 
+the on-board <a href="../AnalogIOScreenKFLOP/AnalogIOScreen.htm#PWMs">PWM outputs</a> 
+or a <a href="../AnalogIOScreenKFLOP/AnalogIOScreen.htm#DACs">DAC value</a> that 
+drives an external amplifier.&nbsp; </p>
+<p>Maximum <i>integrator</i> limit is used to restrict the maximum value of the 
+integrator.&nbsp; This effect is often used to avoid an effect referred to as 
+integrator &quot;<i>wind up</i>&quot;.&nbsp; Without any integrator limit, consider the 
+case where somehow a substantial error is maintained for a significant period of 
+time.&nbsp; For example turning a motor shaft by hand for several seconds.&nbsp; 
+During this time the integrator would ramp up to an extremely large value.&nbsp; 
+When the motor shaft was released, it would accelerate at maximum and overshoot 
+the target by a huge amount until the integrator could ramp back down to a 
+reasonable value.&nbsp; This often results in a servo slamming into a limit.&nbsp; 
+The maximum integrator limit prevents this from occurring.&nbsp; Often the main 
+purpose for using an integrator is to overcome static friction in order to 
+reduce the final error to zero.&nbsp; This usually requires only a small 
+fraction of total output range.&nbsp; In almost all cases it is of no value to 
+allow the integrator to exceed the maximum output value.</p>
+<p>Maximum <i>error</i> limits the maximum value allowed to pass through the 
+servo compensator.&nbsp; The units are the same as position units.&nbsp; 
+Typically, when a servo loop is operating normally, its following error is a 
+small value.&nbsp; When some extreme even occurs, such as a sudden large step 
+command, or possibly a large disturbance the error may become very large.&nbsp; 
+In some cases there may be benefit to limiting the error to a reasonable value.
+</p>
+<p><u><b>Tuning Parameters - </b><b><a name="Motion_Profile">Motion Profile</a></b></u></p>
+<p><img border="0" src="StepSc11.gif" align="left" hspace="10" vspace="10"></p>
+<p>The Motion Profile parameters set the maximum allowed velocity (in position 
+units per second), the maximum allowed acceleration (in position units per 
+second<sup>2</sup>), and the maximum allowed jerk (in position units per second<sup>3</sup>).&nbsp; 
+These parameters will be utilized for any independent (non coordinated motion) 
+move command for the axis.&nbsp; The acceleration and jerk also apply to jog 
+commands (move at continuous velocity) for the axis.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><u><b>Tuning Parameters - <a name="Feed_Forward">Feed Forward</a></b></u><a name="Feed_Forward"><img border="0" src="StepSc4.gif" align="left" hspace="10" vspace="10"></a></p>
+<p><i><b>KMotion's</b></i> <i>Feed Forward</i> may often be used to dramatically 
+reduce the following error in a system.&nbsp; See the
+<a href="../ServoFlowDiagram.htm">Servo Flow Diagram</a> to see precisely how it 
+is implemented.&nbsp;&nbsp; The idea behind feed forward is to observe the 
+velocity and acceleration of the command signal and anticipate a required output 
+and to apply it without waiting for an error to develop.&nbsp; </p>
+<p>Most motion systems are constructed in manner where some sort of motor force 
+is used to accelerate a mass.&nbsp; In these cases whenever an acceleration is 
+required a force proportional to the acceleration will be required to achieve 
+it.&nbsp; Acceleration feed forward may be used to reduce the amount that the 
+feedback loop must correct.&nbsp; In fact, proper feed forward reduces the 
+requirement on the feedback from the total force required to accelerate the 
+mass, to only the variation in the force required to accelerate the mass. </p>
+<p>Similarly most servo systems require some amount of force that is 
+proportional to velocity simply to maintain a constant velocity.&nbsp; This 
+might be due to viscous friction, or possibly motor back emf (electro motive 
+force).&nbsp; In any case velocity feed forward may be used to reduce the 
+demands of the feedback loop resulting in smaller following error.</p>
+<p>The normal procedure to optimize feed forward is to select plot type - 
+position error, and measure moves using the <i>Move Command</i> (Step functions 
+should <i>not</i> be used as step functions are instantaneous changes in 
+position that represent infinite velocity and acceleration). </p>
+<p>Note that in the <a href="../ServoFlowDiagram.htm">Servo Flow Diagram</a> the 
+feed forward is injected <i>before</i> the final
+<a href="../FilterScreen/FilterScreen.htm">IIR Filter</a>.&nbsp; This allows any 
+feed forward waveforms to be conditioned by this filter.&nbsp; Feed forward 
+pulses may be relatively sharp pulses to make rapid accelerations that may often 
+tend to disturb a mechanical resonance in the system.&nbsp; Usually a system 
+with a sharp resonance will benefit from a notch filter to improve the stability 
+and performance of the servo loop.&nbsp; By placing the notch filter as the last 
+filter in the servo loop, the feed forward waveform will also pass through this 
+filter and the result is that the feed forward will cause less excitation of the 
+mechanism than it would otherwise..&nbsp; </p>
+<p>&nbsp;</p>
+<p><u><b>Tuning Parameters - <a name="Dead_Band">Dead Band</a></b></u></p>
+<p><img border="0" src="StepSc5.gif" align="left" hspace="10" vspace="10"></p>
+<p>Dead band is used to apply a different gain to the region near zero than the 
+rest of the region.&nbsp; Usually either zero gain or a gain much less than 1 is 
+used within the dead band range.&nbsp;&nbsp; See the
+<a href="../ServoFlowDiagram.htm">Servo Flow Diagram</a> for the exact location 
+of where the dead band is inserted.&nbsp; Dead band is a means of introducing 
+&quot;slop&quot; into a system.&nbsp; This usually results in less accuracy and 
+performance, but may reduce or eliminate limit cycle oscillations while resting 
+at the target position.&nbsp; </p>
+<p>&nbsp;</p>
+<p><img border="0" src="StepSc10.gif" align="left" hspace="10" vspace="10">The 
+values shown (range = 0, gain = 1) are used to defeat any dead band.&nbsp; The 
+chart shows the resulting input/output for range = 2, gain = 0.&nbsp; The slope 
+of the graph is always 1 outside of the specified +/- range, and the specified 
+gain with the +/- range.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><u><b><a name="Measurement">Measurement</a></b></u></p>
+<p><img border="0" src="StepSc6.gif" align="left" hspace="10" vspace="10">To 
+perform a measurement and display the response, select the time duration to 
+gather data, and the move or step size to perform, and press either the Move or 
+Step buttons.&nbsp; If the axis is currently enabled, it will be disabled, all 
+parameters from all screens will be downloaded, the axis will be enabled, the 
+move or step will be performed&nbsp; while the data is gathered, the data will 
+then be uploaded and plotted.</p>
+<p>A <i>Move</i> will hold position for a short time, perform a motion of the 
+specified amount from the current location, pause for a short time, and then a 
+second motion back to the original location.</p>
+<p>A <i>Step</i> will hold position for a short time, perform a step of the 
+specified amount from the current location, pause for a short time, and then a 
+second step back to the original location.</p>
+<p>The maximum time that data may be collected is 3.5 seconds (3.5 seconds / 90<font face="Times New Roman">µ</font>s 
+= 38,888 data points).&nbsp; Note that collecting data at this rate allows 
+zooming while still maintaining high resolution.</p>
+<p>&nbsp;</p>
+<p><u><b><a name="Axis_Control">Axis Control</a></b></u></p>
+<p><img border="0" src="StepSc7.gif" align="left" hspace="10" vspace="10"></p>
+<p>The Axis Control buttons are present to conveniently disable (Kill), Zero, or 
+Enable an axis.&nbsp; If the axis becomes unstable (possible due to a gain 
+setting too high), the Kill button may be used to disable the axis, the gain 
+might then be reduced, and then the axis may be enabled.&nbsp; The Enable button 
+downloads all parameters from all screens before enabling the axis in the same 
+manner as the <i><a href="#Measurement">Measurement</a></i> buttons described above.</p>
+<p><i>Note for brushless output modes that commutate the motor based on the 
+current position, Zeroing the position may adversely affect the commutation.</i></p>
+<p>&nbsp;</p>
+<p><b><u><a name="Save/Load_Data">Save/Load Data</a></u></b></p>
+<p><img border="0" src="StepSc8.gif" align="left" hspace="10" vspace="10"></p>
+<p>The 
+Save/Load Data buttons allow the captured Step Plot to be saved to a text file 
+and re-loaded at a later time.&nbsp; The text file format also allows the data 
+to be imported into some other program for display or analysis.&nbsp; The file 
+format consists of one line of header followed by one line of 5 comma separated 
+values, one line for each sample.&nbsp;&nbsp; The values are:</p>
+<p>&nbsp;</p>
+<ol>
+  <li>Sample Number</li>
+  <li>Time, Seconds</li>
+  <li>Command</li>
+  <li>Position</li>
+  <li>Output</li>
+</ol>
+<p>&nbsp;</p>
+<p>Example of data file follows:</p>
+<p style="margin-top: 0; margin-bottom: 0">
+Sample,Time,Command,Position,Output<br>
+0,0,5,5,-0.3301919<br>
+1,9e-005,5,5,-0.3300979<br>
+2,0.00018,5,5,-0.3300258<br>
+3,0.00027,5,5,-0.3299877<br>
+4,0.00036,5,5,-0.3299999<br>
+5,0.00045,5,5,-0.3300253<br>
+6,0.00054,5,5,-0.3300359<br>
+7,0.00063,5,5,-0.3300304<br>
+8,0.00072,5,5,-0.3300199<br>
+9,0.00081,5,5,-0.3300156<br>
+10,0.0009,5,5,-0.3300157<br>
+62<br>
+<b><font size="5">.</font></b></p>
+<p style="margin-top: 0; margin-bottom: 0"><b><font size="5">.</font></b></p>
+<p style="margin-top: 0; margin-bottom: 0"><b><font size="5">.</font></b></p>
+
+</body>
+
+</html>

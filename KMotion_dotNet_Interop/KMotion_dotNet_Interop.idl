@@ -1,0 +1,10 @@
+// KMotion_dotNet_Interop.idl : type library source for KMotion_dotNet_Interop.dll
+// This file will be processed by the MIDL compiler to produce the
+// type library (KMotion_dotNet_Interop.tlb).
+
+[ uuid(14FF0ECB-96A7-44BF-9039-44776C283828), version(1.0) ]
+library KMotion_dotNet_Interop
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+};

@@ -1,0 +1,73 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>KMotion Coordinated Motion</title>
+</head>
+
+<body>
+
+<p><font size="5"><b><i>KMotion Coordinated Motion</i></b></font></p>
+<p><b><i>KMotion </i></b>allows linear and circular coordinated motions to be 
+performed in real time.</p>
+<p><img border="0" src="Segments.png" width="616" height="404"></p>
+<p>Path <i>segments</i> are downloaded into a buffer within the <i><b>KMotion</b></i> 
+board.&nbsp; This buffer is called the <i>Coordinated Motion Buffer</i> and may 
+contain up to MAX_SEGMENTS (40,000) motion segments.&nbsp; Segments are defined 
+by a linear or circular path as well as a parametric equation (3rd order) which 
+describes the motion along the path as a function of time.&nbsp; Often the same 
+path may be defined in the several segments in order to utilize different 
+parametric equations for different sections of the path. As shown above, one 
+section of a path might undergo acceleration while another section of a path 
+might maintain constant velocity.&nbsp; Buffered I/O Bit Commands (<a href="Cmd.htm#SetBitBuf">SetBitBuf</a>,
+<a href="Cmd.htm#ClearBitBuf">ClearBitBuf</a>, or <a href="Cmd.htm#SetStateBit">
+SetStateBitBuf</a>) may also be downloaded into the buffer before, after, or 
+between segments.&nbsp; This allows I/O&nbsp; to occur (i.e. switching on or off 
+a LASER) at exact times while the motion is being performed.&nbsp; Virtual I/O 
+bits may also be set or cleared to trigger other programs to perform customized 
+functions.</p>
+<p>Script commands are supported to:</p>
+<ul>
+  <li>Open the Coordinated Motion Buffer - <a href="Cmd.htm#OpenBuf">OpenBuf</a></li>
+  <li>Download Linear, Arcs, or Buffered Bit commands to the buffer -
+  <a href="Cmd.htm#Linear">Linear</a>, <a href="Cmd.htm#LinearHex">LinearHex</a>,
+  <a href="Cmd.htm#Arc">Arc</a>, <a href="Cmd.htm#ArcHex">ArcHex</a>,
+  <a href="Cmd.htm#ArcXZ">ArcXZ</a>, <a href="Cmd.htm#ArcHexXZ">ArcHexXZ</a>,
+	<a href="Cmd.htm#ArcYZ">ArcYZ</a>, <a href="Cmd.htm#ArcHexYZ">ArcHexYZ</a>
+  <a href="Cmd.htm#SetBitBuf">SetBitBuf</a>, <a href="Cmd.htm#ClearBitBuf">
+  ClearBitBuf</a>, or <a href="Cmd.htm#SetStateBit">SetStateBitBuf</a></li>
+  <li>Launch execution of the Coordinated Motion Buffer -
+  <a href="Cmd.htm#ExecBuf">ExecBuf</a></li>
+  <li>Check the status of the Coordinated Motion Buffer -
+  <a href="Cmd.htm#CheckDoneBuf">CheckDoneBuf</a></li>
+	<li>Check how much of the Coordinated Motion Buffer has been Executed -<a href="Cmd.htm#ExecTime">ExecTime</a></li>
+</ul>
+<p>&nbsp;</p>
+<p><b><u><font size="4">Coordinate System</font></u></b></p>
+<p><i><b>KMotion</b></i> <i>Coordinated Motion</i> commands operate on a defined 
+coordinate system.&nbsp; The coordinate system is a mapping of the <i>X, Y , Z</i>, 
+<i>A, B, and C</i> axes to specific <i><b>KMotion</b></i> Axes Channels using the
+<a href="Cmd.htm#DefineCS">DefineCS</a> or DefineCSEX command.&nbsp; If all 6 axes are not 
+required in the coordinate system, then the unused axes may be assigned a 
+channel number of -1 to indicate that the axis is unassigned.</p>
+<p>The <a href="Cmd.htm#MoveXYZA">MoveXYZABC</a> and
+<a href="Cmd.htm#CheckDoneXYZA">CheckDoneXYZABC</a> commands also move and check 
+the assigned channel axis that have been defined in the Coordinate System.</p>
+<p>&nbsp;</p>
+<p><u><b><font size="4">GCode, Coordinated Motion Library, Trajectory Planner</font></b></u></p>
+<p>In most cases a <i><b>KMotion</b></i> user will not compute and download <i>
+Coordinated Motion</i> segments directly.&nbsp; Instead the GCode library or 
+Coordinated Motion Library functions may be used to simply define a path with a 
+defined maximum velocity and acceleration, and the Trajectory Planner will 
+automatically compute the necessary coordinated motion segments for the path.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

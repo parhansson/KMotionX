@@ -1,0 +1,221 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>2.1.2.3 The linux link</TITLE>
+<META NAME="description" CONTENT="2.1.2.3 The linux link">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node12.html">
+<LINK REL="previous" HREF="node10.html">
+<LINK REL="up" HREF="node8.html">
+<LINK REL="next" HREF="node12.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html415"
+  HREF="node12.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html409"
+  HREF="node8.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html403"
+  HREF="node10.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html411"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html413"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html416"
+  HREF="node12.html">2.1.2.4 Configuring the kernel</A>
+<B> Up:</B> <A NAME="tex2html410"
+  HREF="node8.html">2.1.2 rtl2.0 and rtl2.2</A>
+<B> Previous:</B> <A NAME="tex2html404"
+  HREF="node10.html">2.1.2.2 Download and tar</A>
+ &nbsp; <B>  <A NAME="tex2html412"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html414"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION02212300000000000000">
+2.1.2.3 The linux link</A>
+</H3>
+
+<P>
+<FONT COLOR="#000000">Some of the compiler operations that you are about
+to invoke with make, require that the linux kernel stuff be found
+in the /usr/src/linux directory. Your new Mandrake system may or may
+not have such a directory. You can find out using the explorer shown
+above or you can use the console. If you use the explorer, you may
+have some difficulty removing a link by deleting it. I found some
+kind of conflict that developed so I'll only show the console procedures
+below. </FONT>
+<P>
+The konsole window allows you to repeat commands by pressing the up
+arrow until you get to the command that you wish to enter again. This
+feature makes it&nbsp; so that you do not have to type all commands. You
+can just find the one you want and repeat it by pressing enter or
+return. (note that in the directory command ls -l that l is lowercase
+L) 
+
+<P>
+<TT><FONT SIZE="-2">[root@localhost&nbsp;/root]#&nbsp;</FONT><I><FONT COLOR="#000000"><FONT SIZE="-2">cd&nbsp;</FONT></FONT></I><B><I><FONT COLOR="#000000"><FONT SIZE="-2">/</FONT></FONT></I></B><I><FONT COLOR="#000000"><FONT SIZE="-2">usr/src</FONT></FONT></I><B><FONT COLOR="#008000"></FONT></B></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">[root@localhost&nbsp;src]#&nbsp;</FONT><I><FONT COLOR="#000000"><FONT SIZE="-2">ls
+-l</FONT></FONT></I><FONT COLOR="#008000"></FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">total&nbsp;12</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">drwxr-xr-x&nbsp;&nbsp;&nbsp;7&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4096&nbsp;May&nbsp;16&nbsp;06:47&nbsp;RPM/
+</FONT></TT>&nbsp;
+<BR><TT><FONT COLOR="#000000"><FONT SIZE="-2">lrwxrwxrwx&nbsp;&nbsp;&nbsp;1&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;12&nbsp;Jun&nbsp;4&nbsp;17:16&nbsp;linux
+-&gt; linux-2.2.14/</FONT></FONT></TT> <TT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">drwxr-xr-x&nbsp;&nbsp;20&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4096&nbsp;May&nbsp;16&nbsp;10:42&nbsp;linux-2.2.14/
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">drwxr-xr-x&nbsp;&nbsp;&nbsp;4&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4096&nbsp;Nov&nbsp;25&nbsp;1999&nbsp;rtlinux-2.2/</FONT></TT>
+<P>
+
+
+<P>
+I see from the fifth line that - linux -&gt;linux-2.2.14. So the linux
+file in this directory is a link. Since it is only a link I can delete
+it and then check to make sure it is gone. 
+
+<P>
+<TT><FONT SIZE="-2">[root@localhost src]#</FONT></TT> <TT><I><FONT COLOR="#000000"><FONT SIZE="-2">rm
+linux</FONT></FONT></I></TT> <TT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">rm: remove `linux'? y </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">[root@localhost src]#</FONT></TT> <TT><I><FONT COLOR="#000000"><FONT SIZE="-2">ls
+-l</FONT></FONT></I><FONT COLOR="#008000"></FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">total 12</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">drwxr-xr-x&nbsp;&nbsp;&nbsp;7 root&nbsp;&nbsp;&nbsp;&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4096&nbsp;May&nbsp;16&nbsp;06:47&nbsp;RPM/
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">drwxr-xr-x&nbsp;&nbsp;20 root&nbsp;&nbsp;&nbsp;&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4096&nbsp;May&nbsp;16&nbsp;10:42&nbsp;linux-2.2.14/
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">drwxr-xr-x&nbsp;&nbsp;&nbsp;4 root&nbsp;&nbsp;&nbsp;&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4096&nbsp;Nov&nbsp;25&nbsp;&nbsp;1999&nbsp;rtlinux-2.2/</FONT></TT>
+<P>
+
+
+<P>
+Now if it is a real directory with a bunch of sub directories, I'd
+need to move it to some other location. I'd do that by first seeing
+that it was a directory rather than a link to a directory. 
+
+<P>
+<TT><FONT SIZE="-2">[root@localhost src]#</FONT></TT> <TT><I><FONT COLOR="#000000"><FONT SIZE="-2">ls
+-l</FONT></FONT></I></TT> <TT><FONT COLOR="#008000"></FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">total 16</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">drwxr-xr-x&nbsp;&nbsp;&nbsp;7 root&nbsp;&nbsp;&nbsp;&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4096
+May&nbsp;16&nbsp;06:47&nbsp;RPM/</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">drwxr-xr-x&nbsp;&nbsp;&nbsp;3 root&nbsp;&nbsp;&nbsp;&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4096
+Jun&nbsp;&nbsp;4&nbsp;17:36&nbsp;linux/</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">drwxr-xr-x&nbsp;&nbsp;20 root&nbsp;&nbsp;&nbsp;&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4096
+May&nbsp;16&nbsp;10:42&nbsp;linux-2.2.14/</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">drwxr-xr-x&nbsp;&nbsp;&nbsp;4 root&nbsp;&nbsp;&nbsp;&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4096
+Nov&nbsp;25&nbsp;&nbsp;1999&nbsp;rtlinux-2.2/</FONT></TT>
+<P>
+
+
+<P>
+I see from the light red line that linux is a common directory -
+its line begins with d rather than l and it just has a / after its
+name. I need to move this linux directory out of the way before I
+compile a new kernel.&nbsp;I'll called it linuxold. The mv command with
+the linux name and linuxold as the new name, does&nbsp;the deed for me. 
+
+<P>
+<TT><FONT SIZE="-2">[root@localhost src]#</FONT></TT> <TT><I><FONT COLOR="#000000"><FONT SIZE="-2">mv
+linux&nbsp;linuxold</FONT></FONT></I><FONT COLOR="#008000"></FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">[root@localhost src]#</FONT></TT> <TT><I><FONT COLOR="#000000"><FONT SIZE="-2">ls
+-l</FONT></FONT></I></TT> <TT><FONT COLOR="#008000"></FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">total 16 </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">drwxr-xr-x&nbsp;&nbsp;&nbsp;&nbsp;7 root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4096&nbsp;May&nbsp;16&nbsp;06:47&nbsp;RPM/
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">drwxr-xr-x&nbsp;&nbsp;&nbsp;20 root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4096&nbsp;May&nbsp;16&nbsp;10:42&nbsp;linux-2.2.14/
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">drwxr-xr-x&nbsp;&nbsp;&nbsp;&nbsp;3 root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4096&nbsp;Jun&nbsp;&nbsp;4&nbsp;17:36&nbsp;linuxold/
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">drwxr-xr-x&nbsp;&nbsp;&nbsp;&nbsp;4 root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4096&nbsp;Nov&nbsp;25&nbsp;&nbsp;1999&nbsp;rtlinux-2.2/</FONT></TT>
+<P>
+
+
+<P>
+Now you need to make a new link in place of the old /usr/src/linux
+
+<P>
+<TT><FONT SIZE="-2">[root@localhost src]#</FONT></TT> <TT><I><FONT COLOR="#000000"><FONT SIZE="-2">ln
+-s&nbsp;rtlinux-2.2/linux&nbsp;linux</FONT></FONT></I></TT> <TT><FONT COLOR="#008000"></FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">[root@localhost src]#</FONT></TT> <TT><I><FONT COLOR="#000000"><FONT SIZE="-2">ls
+-l</FONT></FONT></I></TT> <TT><FONT COLOR="#008000"></FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">total 16 </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">drwxr-xr-x&nbsp;&nbsp;&nbsp;7&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4096
+May&nbsp;16&nbsp;06:47&nbsp;RPM/ </FONT></TT>&nbsp;
+<BR><TT><FONT COLOR="#000000"><FONT SIZE="-2">lrwxrwxrwx&nbsp;&nbsp;&nbsp;1&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></FONT></TT><FONT COLOR="#000000">&nbsp;&nbsp;</FONT><TT><FONT COLOR="#000000"><FONT SIZE="-2">17
+Jun&nbsp;&nbsp;4&nbsp;17:49&nbsp;linux -&gt; rtlinux-2.2/linux/</FONT></FONT><FONT COLOR="#ff0000"></FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">drwxr-xr-x&nbsp;&nbsp;20&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4096
+May&nbsp;16&nbsp;10:42&nbsp;linux-2.2.14/ </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">drwxr-xr-x&nbsp;&nbsp;&nbsp;3&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4096
+Jun&nbsp;&nbsp;4&nbsp;17:36&nbsp;linuxold/ </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-2">drwxr-xr-x&nbsp;&nbsp;&nbsp;4&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4096
+Nov&nbsp;25&nbsp;&nbsp;1999&nbsp;rtlinux-2.2/</FONT></TT>
+<P>
+
+
+<P>
+Make certain that the link goes from /usr/src/linux to the realtime/linux.
+Not the other way round. With this done we are ready to get down to
+work.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html415"
+  HREF="node12.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html409"
+  HREF="node8.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html403"
+  HREF="node10.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html411"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html413"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html416"
+  HREF="node12.html">2.1.2.4 Configuring the kernel</A>
+<B> Up:</B> <A NAME="tex2html410"
+  HREF="node8.html">2.1.2 rtl2.0 and rtl2.2</A>
+<B> Previous:</B> <A NAME="tex2html404"
+  HREF="node10.html">2.1.2.2 Download and tar</A>
+ &nbsp; <B>  <A NAME="tex2html412"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html414"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

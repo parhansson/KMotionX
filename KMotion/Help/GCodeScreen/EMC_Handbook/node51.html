@@ -1,0 +1,253 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>10.6 Preparatory Words </TITLE>
+<META NAME="description" CONTENT="10.6 Preparatory Words ">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node52.html">
+<LINK REL="previous" HREF="node50.html">
+<LINK REL="up" HREF="node45.html">
+<LINK REL="next" HREF="node52.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1096"
+  HREF="node52.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1090"
+  HREF="node45.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1084"
+  HREF="node50.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1092"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1094"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1097"
+  HREF="node52.html">10.7 Basic Motion and</A>
+<B> Up:</B> <A NAME="tex2html1091"
+  HREF="node45.html">10. G Code Basics</A>
+<B> Previous:</B> <A NAME="tex2html1085"
+  HREF="node50.html">10.5 Axis Words</A>
+ &nbsp; <B>  <A NAME="tex2html1093"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1095"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION04160000000000000000">
+10.6 Preparatory Words </A>
+</H1>
+
+<P>
+<A NAME="2164"></A>Some G words alter the state of the machine so that
+it changes from cutting straight lines to cutting arcs. Other G words
+cause the interpretation of numbers as millimeters rather than inches.
+While still others set or remove tool length or diameter offsets.
+Most of the G words tend to be related to motion or sets of motions.
+Table 4 lists the currently available g words.
+
+<P>
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">G0</TD>
+<TD ALIGN="LEFT">Rapid positioning</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G1</TD>
+<TD ALIGN="LEFT">Linear interpolation</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G2</TD>
+<TD ALIGN="LEFT">Circular/helical interpolation (clockwise)</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G3</TD>
+<TD ALIGN="LEFT">Circular/helical interpolation (c-clockwise)</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G4</TD>
+<TD ALIGN="LEFT">Dwell</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G10</TD>
+<TD ALIGN="LEFT">Coordinate system origin setting</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G17</TD>
+<TD ALIGN="LEFT">XY plane selection</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G18</TD>
+<TD ALIGN="LEFT">XZ plane selection</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G19</TD>
+<TD ALIGN="LEFT">YZ plane selection</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G20</TD>
+<TD ALIGN="LEFT">Imperial system selection</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G21</TD>
+<TD ALIGN="LEFT">Metric system selection</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G40</TD>
+<TD ALIGN="LEFT">Cancel cutter diameter compensation</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G41</TD>
+<TD ALIGN="LEFT">Start cutter diameter compensation left</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G42</TD>
+<TD ALIGN="LEFT">Start cutter diameter compensation right</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G43</TD>
+<TD ALIGN="LEFT">Tool length offset (plus)</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G49</TD>
+<TD ALIGN="LEFT">Cancel tool length offset</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G53</TD>
+<TD ALIGN="LEFT">Motion in machine coordinate system</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G54</TD>
+<TD ALIGN="LEFT">Use preset work coordinate system 1</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G55</TD>
+<TD ALIGN="LEFT">Use preset work coordinate system 2</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G56</TD>
+<TD ALIGN="LEFT">Use preset work coordinate system 3</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G57</TD>
+<TD ALIGN="LEFT">Use preset work coordinate system 4</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G58</TD>
+<TD ALIGN="LEFT">Use preset work coordinate system 5</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G59</TD>
+<TD ALIGN="LEFT">Use preset work coordinate system 6</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G59.1</TD>
+<TD ALIGN="LEFT">Use preset work coordinate system 7</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G59.2</TD>
+<TD ALIGN="LEFT">Use preset work coordinate system 8</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G59.3</TD>
+<TD ALIGN="LEFT">Use preset work coordinate system 9</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G80</TD>
+<TD ALIGN="LEFT">Cancel motion mode (includes canned)</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G81</TD>
+<TD ALIGN="LEFT">Drilling canned cycle</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G82</TD>
+<TD ALIGN="LEFT">Drilling with dwell canned cycle</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G83</TD>
+<TD ALIGN="LEFT">Chip-breaking drilling canned cycle</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G84</TD>
+<TD ALIGN="LEFT">Right hand tapping canned cycle</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G85</TD>
+<TD ALIGN="LEFT">Bring, no dwell, feed out canned cycle</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G86</TD>
+<TD ALIGN="LEFT">Boring, spindle stop, rapid out canned</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G87</TD>
+<TD ALIGN="LEFT">Back boring canned cycle</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G88</TD>
+<TD ALIGN="LEFT">Boring, spindle stop, manual out canned</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G89</TD>
+<TD ALIGN="LEFT">Boring, dwell, feed out canned cycle</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G90</TD>
+<TD ALIGN="LEFT">Absolute distance mode</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G91</TD>
+<TD ALIGN="LEFT">Incremental distance mode</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G92</TD>
+<TD ALIGN="LEFT">Offset coordinate systems</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G92.2</TD>
+<TD ALIGN="LEFT">Cancel offset coordinate systems</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G93</TD>
+<TD ALIGN="LEFT">Inverse time feed mode</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G94</TD>
+<TD ALIGN="LEFT">Feed per minute mode</TD>
+</TR>
+<TR><TD ALIGN="CENTER">G98</TD>
+<TD ALIGN="LEFT">Initial level return in canned cycles</TD>
+</TR>
+<TR><TD ALIGN="CENTER">&nbsp;</TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+</TR>
+</TABLE>
+
+<P>
+Table 4 G Code List
+
+<P>
+Tool diameter compensation (g40, g41, g42) and tool length compensation
+(g43, g49) are covered in a separate page. Canned milling cycles (g80
+- g89, g98) are covered in their own page. Coordinate systems and
+how to use them is also covered in a separate page. (g10, G53 - G59.3,
+G92, G92.2) 
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1096"
+  HREF="node52.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1090"
+  HREF="node45.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1084"
+  HREF="node50.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1092"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1094"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1097"
+  HREF="node52.html">10.7 Basic Motion and</A>
+<B> Up:</B> <A NAME="tex2html1091"
+  HREF="node45.html">10. G Code Basics</A>
+<B> Previous:</B> <A NAME="tex2html1085"
+  HREF="node50.html">10.5 Axis Words</A>
+ &nbsp; <B>  <A NAME="tex2html1093"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1095"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

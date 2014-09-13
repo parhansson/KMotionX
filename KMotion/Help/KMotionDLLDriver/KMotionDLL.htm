@@ -1,0 +1,841 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<title>KMotion DLL Driver</title>
+<style>
+<!--
+	.ft2{font-size:15px;font-family:Times;color:#000000;}
+-->
+</style>
+</head>
+
+<body>
+
+<div align="center">
+  <center>
+  <table border="0" cellpadding="0" cellspacing="8" width="1043">
+    <tr>
+      <td align="right" valign="top" width="151">
+      <p align="left"><font face="Courier New"><i><b><font size="4">KMotion Quick Reference</font></b></i><font size="4">&nbsp;
+      </font> </font> </td>
+      <td valign="bottom" width="868"><i><b><font size="5" face="Courier New">KMotionDLL</font></b></i></td>
+    </tr>
+    <tr>
+      <td valign="top" width="151">
+      <p style="margin-top: 0; margin-bottom: 0"><font size="4" face="Courier New"><i><b>Send
+      Commands</b></i></font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Courier New" size="2"><a href="#WriteLine">WriteLine</a></font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><a href="#WriteLineReadLine"><font face="Courier New" size="2">WriteLineReadLine</font></a><font face="Courier New" size="2">
+      <br>
+      </font><a href="#ReadLineTimeOut"><font face="Courier New" size="2">ReadLineTimeOut</font></a></p>
+      <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+      <p style="margin-top: 0; margin-bottom: 0"><font size="4" face="Courier New"><i><b>Board
+      Locks</b></i></font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Courier New" size="2"><a href="#WaitToken">WaitToken</a></font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Courier New" size="2"><a href="#KMotionLock">KMotionLock</a></font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Courier New" size="2"><a href="#ReleaseToken">ReleaseToken</a></font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Courier New" size="2"><a href="#Failed">Failed</a></font></p>
+      <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+      <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Courier New" size="4"><b><i>Console</i></b></font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Courier New" size="2"><a href="#ServiceConsole">ServiceConsole</a></font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Courier New" size="2"><a href="#SetConsoleCallback">SetConsoleCallback</a></font></p>
+      <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Courier New" size="4"><b><i>Coff
+      Loader</i></b></font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Courier New" size="2"><a href="#LoadCoff">LoadCoff</a></font></p>
+      <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Courier New" size="4"><b><i>C</i></b></font><b><i><font face="Courier New" size="4">ompiler</font></i></b></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Courier New" size="2"><a href="#CompileAndLoadCoff">
+      CompileAndLoadCoff</a></font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      &nbsp;</p>
+      <p style="margin-top: 0; margin-bottom: 0"><b><i>
+      <font face="Courier New" size="4">USB</font></i></b></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Courier New" size="2"><a href="#ListLocations">ListLocations</a></font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      &nbsp;</p>
+      </td>
+      <td valign="top" width="868">
+        <p style="border-top-style: solid; line-height:200%"><b><font face="Courier New" size="3">
+		CKMotionDLL(int board);</font></b></p>
+        <p><font size="3">Creates a CKMotionDLL object to be used to communicate 
+		to a specific board.</font></p>
+        <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0"><i><font size="3">board&nbsp;</font></i></p>
+        <blockquote>
+          <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0"><font size="3">specifies
+          which board in the system the </font>object is associated with</p>
+			<p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0">&nbsp;</p>
+        </blockquote>
+        <p style="border-top-style: solid; line-height:200%"><b><font face="Courier New" size="3">
+		<a name="WriteLine0"></a>int WriteLine(const char *s);</font></b></p>
+        <p><font size="3">Writes a null terminated string of characters to a
+        specified <i><b>KMotion</b></i> Board.&nbsp; There is no wait for any response.</font></p>
+        <p><b><font size="3">Return Value</font></b></p>
+        <p><font size="3">0 if successful, non-zero if unsuccessful (invalid
+        board specified)&nbsp;</font></p>
+        <p><b><font size="3">Parameters</font></b></p>
+        <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0">
+		<font size="3">s</font></p>
+        <blockquote>
+          <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0"><font size="3">Null
+          terminated string to send</font></p>
+          <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">&nbsp;</p>
+        </blockquote>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0"><font size="3"><b>Example</b></font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">&nbsp;</p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font face="Courier New" size="2">#include &quot;KMotionDLL.h&quot;</font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font size="2" face="Courier New">CKMotionDLL KM(0);</font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">&nbsp;</p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font size="2" face="Courier New">if
+        (KM.WriteLine(&quot;Move0=1000&quot;) MyError();</font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">&nbsp;</p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">&nbsp;</p>
+        <p style="word-spacing: 0; line-height: 200%; text-indent: 0; border-top-style: solid; margin: 0"><font face="Courier New" size="3"><b>	int
+        <a name="WriteLineReadLine">WriteLineReadLine</a>(const char *s, char *response);</b></font></p>
+        <p><font size="3">Writes a null terminated string of characters to a
+        specified <i><b>KMotion</b></i> Board.&nbsp; Waits for a response string.&nbsp; This
+        command is thread safe.&nbsp; It waits for the token for the specified
+        board, sends the command, waits for the response, then releases the
+        board.</font></p>
+        <p><b><font size="3">Return Value</font></b></p>
+        <p><font size="3">0 if successful, non-zero if unsuccessful (invalid
+        board specified, timeout on the response)&nbsp;</font></p>
+        <p><b><font size="3">Parameters</font></b></p>
+        <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0">
+		<font size="3">s</font></p>
+        <blockquote>
+          <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0"><font size="3">Null
+          terminated string to send</font></p>
+          <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">&nbsp;</p>
+        </blockquote>
+        <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0"><font size="3"><i>response</i></font></p>
+        <blockquote>
+          <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0"><font size="3">Buffer
+          to receive the null terminated string received as response</font></p>
+        </blockquote>
+        <blockquote>
+          <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">&nbsp;</p>
+        </blockquote>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0"><font size="3"><b>Example</b></font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">&nbsp;</p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font face="Courier New" size="2">#include &quot;KMotionDLL.h&quot;</font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font size="2" face="Courier New">CKMotionDLL KM(0);</font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font size="2" face="Courier New">char
+        resp[256];</font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">&nbsp;</p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">
+        <font size="2" face="Courier New"><span style="letter-spacing: 0">while&nbsp;(1)</span></font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">
+        <font size="2" face="Courier New"><span style="letter-spacing: 0">{</span></font></p>
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0"><font size="2" face="Courier New"><span style="letter-spacing: 0">	if (KM.WriteLineReadLine(0, &quot;CheckDone0&quot;,resp) MyError();</span></font></pre>
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0"><font size="2" face="Courier New"><span style="letter-spacing: 0">	if (strcmp(resp,&quot;1&quot;)==0) break;</span></font></pre>
+        <font face="Courier New" size="2">
+  </center>
+        </font>
+      <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0"><font size="2" face="Courier New"><span style="letter-spacing: 0">}</span></font></pre>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+      <p style="word-spacing: 0; line-height: 200%; text-indent: 0; border-top-style: solid; margin: 0" align="left"><font face="Courier New" size="3"><b>	int
+      <a name="ReadLineTimeOut">ReadLineTimeOut</a>(char *buf, int TimeOutms);</b></font></p>
+      <p align="left"><font size="3">Waits for a response string from a
+      previously issued command.&nbsp; Note in a multi-process or multi thread
+      environment the <i><b>KMotion</b></i> board should be locked prior to issuing a command
+      that has a response(s), Otherwise there is a possibility that another
+      process or thread may receive the expected response.</font></p>
+      <p align="left"><b><font size="3">Return Value</font></b></p>
+      <p align="left"><font size="3">0 if successful, non-zero if unsuccessful
+      (invalid board specified, timeout on the response)&nbsp;</font></p>
+      <p align="left"><b><font size="3">Parameters</font></b></p>
+      	<p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left">
+		<font size="3">buf</font></p>
+      <blockquote>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="3">Buffer
+        to receive the Null terminated string received as response</font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+      </blockquote>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="3">TimeOutms</font></p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+      <blockquote>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="3">Amount
+        of time to receive a response</font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+      </blockquote>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="3"><b>Example</b></font></p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font face="Courier New" size="2">#include &quot;KMotionDLL.h&quot;</font></p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">
+      <font size="2" face="Courier New">CKMotionDLL KM(0);</font></p>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New">char resp1[256];</font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New">char resp2[256];</font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New">char resp3[256];</font></pre>
+      </div>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">
+      <font size="2" face="Courier New"><span style="letter-spacing: 0">	// first get the token for the board to allow uninterrupted access<br>
+	if (KM.WaitToken()!=KMOTION_LOCKED) MyError();<br>
+      <br>
+	// tell the board to send 24 (32 bit) words at offset 0<br>
+	if (KM.WriteLine(&quot;GetGatherHex 0 24&quot;)) MyError();<br>
+      <br>
+	// receive the data (8 hex words per line)<br>
+			if (KM.ReadLineTimeout(</span>resp1<span style="letter-spacing: 0">))
+      MyError();<br>
+			if (KM.ReadLineTimeout(</span>resp2<span style="letter-spacing: 0">))
+      MyError();<br>
+			if (KM.ReadLineTimeout(</span>resp3</font><span style="letter-spacing: 0"><font size="2" face="Courier New">))
+      MyError();<br>
+      <br>
+	// release our access to the board<br>
+      <br>
+      KM.ReleaseToken();</font><font size="3" face="Courier New"><br>
+      <br>
+      </font>
+      </span></p>
+      <p style="word-spacing: 0; line-height: 200%; text-indent: 0; border-top-style: solid; margin: 0" align="left"><font face="Courier New" size="3"><b>	int
+      <a name="WaitToken">WaitToken</a>();</b></font></p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font face="Courier New" size="3"><b><br>
+      </b></font><font size="3">Waits until the token for the specified <i><b>KMotion</b></i>
+      board can be obtained.&nbsp; Call this function whenever uninterrupted
+      access to a <i><b>KMotion</b></i> board is required.&nbsp; For example before a command
+      where several lines of response will be returned.&nbsp; Release the token
+      as quickly as possible by calling the <a href="#ReleaseToken">ReleaseToken</a>
+      function as all other access to the locked board will be blocked until
+      released.</font></p>
+      <p align="left"><b><font size="3">Return Value</font></b></p>
+      <p align="left"><font size="3">0 if successful, non-zero if unsuccessful
+      (invalid board specified)&nbsp;</font></p>
+      <p align="left"><b><font size="3">Parameters</font></b></p>
+		<p align="left">none</p>
+      	<p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">
+		<font size="3"><b>Example</b></font></p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font face="Courier New" size="2">#include &quot;KMotionDLL.h&quot;</font></p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">
+      <font size="2" face="Courier New">CKMotionDLL KM(0);</font></p>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New">char resp1[256];</font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New">char resp2[256];</font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New">char resp3[256];</font></pre>
+      </div>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">
+      <font size="2" face="Courier New"><span style="letter-spacing: 0">	// first get the token for the board to allow uninterrupted access<br>
+	if (KM.WaitToken()!=KMOTION_LOCKED) MyError();<br>
+      <br>
+	// tell the board to send 24 (32 bit ) words at offset 0<br>
+	if (KM.WriteLine(&quot;GetGatherHex 0 24&quot;)) MyError();<br>
+      <br>
+	// receive the data  (8 hex words per line)<br>
+			if (KM.ReadLineTimeout(</span>resp1<span style="letter-spacing: 0">))
+      MyError();<br>
+			if (KM.ReadLineTimeout(</span>resp2<span style="letter-spacing: 0">))
+      MyError();<br>
+			if (KM.ReadLineTimeout(</span>resp3<span style="letter-spacing: 0">))
+      MyError();<br>
+      <br>
+	// release our access to the board<br>
+      <br>
+      KM.ReleaseToken();</span></font></p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+      <p style="word-spacing: 0; line-height: 200%; text-indent: 0; border-top-style: solid; margin: 0" align="left"><font face="Courier New" size="3"><b>	int
+      <a name="KMotionLock">KMotionLock</a>();</b></font></p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="3">Attempts
+      to obtain the token of the specified <i><b>KMotion</b></i> board..&nbsp; Call this
+      function whenever uninterrupted access to a <i><b>KMotion</b></i> board is
+      required.&nbsp; For example before a command where several lines of
+      response will be returned.&nbsp; Release the token as quickly as possible
+      by calling the <i><a href="#ReleaseToken">ReleaseToken</a></i> function as
+      all other access to the locked board will be blocked until released.&nbsp;
+      This function is similar to the <i><a href="#WaitToken">WaitToken</a></i>
+      function, except that it returns immediately (instead of waiting) if the
+      board is already locked.</font></p>
+      <p align="left"><b><font size="3">Return Value</font></b></p>
+      <p align="left">KMOTION_LOCKED=0,        // (and token is locked) if KMotion is available for use<br>
+	KMOTION_IN_USE=1,        // if already in use<br>
+	KMOTION_NOT_CONNECTED=2  // if error or not able to connect<br>
+      </p>
+      <p align="left"><b><font size="3">Parameters</font></b></p>
+      	<p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">
+		<font size="3"><b>Example</b></font></p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+      <div align="left">
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font face="Courier New" size="2">#include &quot;KMotionDLL.h&quot;</font></p>
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New">CKMotionDLL KM(0);</font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New">char resp1[256];</font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New">char resp2[256];</font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New">char resp3[256];</font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New">int result;</font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New"><span style="letter-spacing: 0">// first get the token for the board to allow uninterrupted access
+do</span></font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New"><span style="letter-spacing: 0">{</span></font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New"><span style="letter-spacing: 0">	result = KM.KMotionLock();</span></font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><span style="letter-spacing: 0"><font size="2" face="Courier New">	if (result == </font></span><font size="2" face="Courier New">KMOTION_NOT_CONNECTED</font><span style="letter-spacing: 0"><font face="Courier New" size="2">) MyError();</font></span></pre>
+      </div>
+      <div align="left" style="width: 628px; height: 232px">
+        <div align="left">
+          <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><span style="letter-spacing: 0"><font size="2" face="Courier New">	if (result == </font></span><font face="Courier New">KMOTION_IN_USE</font><span style="letter-spacing: 0"><font face="Courier New" size="2">) DoOtherProcessing();</font></span></pre>
+        </div>
+        <div align="left">
+          <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><span style="letter-spacing: 0"><font face="Courier New" size="2">} while( result != KMOTION_LOCKED)
+
+// tell the board to send 24 (32 bit) words at offset 0
+if (KM.WriteLine(&quot;GetGatherHex 0 24&quot;)) MyError();
+
+// receive the data (8 hex words per line)
+if (KM.ReadLineTimeout(</font></span><font size="2" face="Courier New">resp1<span style="letter-spacing: 0">)) MyError();
+if (KM.ReadLineTimeout(</span>resp2<span style="letter-spacing: 0">)) MyError();
+if (KM.ReadLineTimeout(</span>resp3<span style="letter-spacing: 0">)) MyError();
+
+// release our access to the board
+
+KM.ReleaseToken(board);</span></font></pre>
+        </div>
+      </div>
+        <p style="word-spacing: 0; line-height: 200%; text-indent: 0; border-top-style: solid; margin: 0" align="left">
+        <font face="Courier New" size="3"><b>	void
+      <a name="ReleaseToken">ReleaseToken</a>();</b></font></p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font face="Courier New" size="3"><b><br>
+      </b></font>Releases<font size="3"> the previously obtained token of the
+      specified <i><b>KMotion</b></i> board.&nbsp; See <a href="#WaitToken">WaitToken</a> and <a href="#KMotionLock">LockKMotion</a>
+      functions.&nbsp; The token should always be released as quickly as
+      possible as all other access to the locked board will be blocked until
+      released.&nbsp;&nbsp;</font></p>
+      <p align="left"><b><font size="3">Return Value</font></b></p>
+      <p align="left">none - the function can not fail<br>
+      </p>
+      <p align="left"><b><font size="3">Parameters</font></b></p>
+      <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left">
+		<i>none</i></p>
+      	<p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">
+		<font size="3"><b>Example</b></font></p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+      <div align="left">
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font face="Courier New" size="2">#include &quot;KMotionDLL.h&quot;</font></p>
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New">CKMotionDLL KM(0);</font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New">char resp1[256];</font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New">char resp2[256];</font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New">char resp3[256];</font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New">int result;</font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New"><span style="letter-spacing: 0">// first get the token for the board to allow uninterrupted access
+do</span></font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New"><span style="letter-spacing: 0">{</span></font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New"><span style="letter-spacing: 0">	result = KM.KMotionLock();</span></font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><span style="letter-spacing: 0"><font size="2" face="Courier New">	if (result == </font></span><font size="2" face="Courier New">KMOTION_NOT_CONNECTED</font><span style="letter-spacing: 0"><font face="Courier New" size="2">) MyError();</font></span></pre>
+      </div>
+      <div align="left" style="width: 629px; height: 182px">
+        <div align="left">
+          <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><span style="letter-spacing: 0"><font size="2" face="Courier New">	if (result == </font></span><font face="Courier New">KMOTION_IN_USE</font><span style="letter-spacing: 0"><font face="Courier New" size="2">) DoOtherProcessing();</font></span></pre>
+        </div>
+        <div align="left">
+          <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><span style="letter-spacing: 0"><font face="Courier New" size="2">} while(result != KMOTION_LOCKED)
+
+
+// tell the board to send 24 (32 bit) words at offset 0
+if (KM.WriteLine(&quot;GetGatherHex 0 24&quot;)) MyError();
+
+// receive the data (8 hex words per line)
+if (KM.ReadLineTimeout(</font></span><font size="2" face="Courier New">resp1<span style="letter-spacing: 0">)) MyError();
+if (KM.ReadLineTimeout(</span>resp2<span style="letter-spacing: 0">)) MyError();
+if (KM.ReadLineTimeout(</span>resp3<span style="letter-spacing: 0">)) MyError();
+
+// release our access to the board
+
+KM.ReleaseToken();</span></font></pre>
+        </div>
+      </div>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+      <p style="word-spacing: 0; line-height: 200%; text-indent: 0; border-top-style: solid; margin: 0" align="left"><font face="Courier New" size="3"><b>	int
+      <a name="Failed">Failed</a>();</b></font></p>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font face="Courier New" size="3"><b>
+</b></font></pre>
+      </div>
+      <div align="left">
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="3">This
+        function should be called whenever an error is detected with a <i><b>KMotion</b></i>
+        board.&nbsp; This function disconnects the driver, flags the board as
+        disconnected, and displays the error message shown below.&nbsp; A user
+        program may typically detect a timeout error or invalid data error if
+        the <i><b>KMotion</b></i> board is powered down or unplugged while communication is in
+        progress.&nbsp; Calling this function will force any subsequent attempts
+        to access the board to wait for a board to be connected, re-connect,
+        flush any buffers, etc...</font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="3">"Read Failed - Auto Disconnect"</font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+        <p align="left"><b><font size="3">Return Value</font></b></p>
+        <p align="left">always 0 - the function can not fail<br>
+        </p>
+        <p align="left"><b><font size="3">Parameters</font></b></p>
+        <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left">
+		<i>none</i></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+		<p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+		<p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">
+		<font size="3"><b>Example</b></font></p>
+        <div align="left">
+          <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+        </div>
+        <div align="left">
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font face="Courier New" size="2">#include &quot;KMotionDLL.h&quot;</font></p>
+          <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New">CKMotionDLL KM(0);</font></pre>
+        </div>
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font face="Courier New" size="2">if (KM.KMotionLock() == KMOTION_LOCKED) // see if we can get access
+{
+	// upload bulk status
+
+	if (UploadStatus())
+	{
+</font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font face="Courier New" size="2">		// error reading status
+		KM.Failed();
+	}
+</font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font face="Courier New" size="2">	KM.ReleaseToken();
+}</font><font face="Courier New" size="3">
+</font></pre>
+      </div>
+      <p style="word-spacing: 0; line-height: 200%; text-indent: 0; border-top-style: solid; margin: 0" align="left"><font face="Courier New" size="3"><b>	int
+      <a name="LoadCoff">LoadCoff</a>(int Thread, const char *Name, bool PackToFlash);</b></font></p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font face="Courier New" size="3"><b><br>
+      </b></font></p>
+      <div align="left">
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="3">This
+        function downloads a compiled C program to the memory of the specified
+        <i><b>KMotion</b></i> board.&nbsp;&nbsp;</font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="3">C
+        Programs that run in the <i><b>KMotion</b></i> Board are normally compiled using the
+        included and integrated compiler in the <i><b>KMotion</b></i> Application.&nbsp;&nbsp;
+        Using the <i><b>KMotion</b></i> Application the user's C Program should be loaded into
+        a selected thread and compiled.&nbsp; This will automatically generate a
+        COFF executable with the same name and in the same directory as the C
+        Source code, but with a .out extension.&nbsp; It is the users
+        responsibility to keep track of which thread the COFF executable was
+        compiled to execute in.&nbsp;</font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="3">The
+        downloaded code may then be executed by issuing the &quot;Execute&quot;
+        command</font></p>
+        <p align="left"><b><font size="3">Return Value</font></b></p>
+        <p align="left">returns 0 - if successful<br>
+        </p>
+        <p align="left"><b><font size="3">Parameters</font></b></p>
+        <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left">
+		<i>T<font size="3">hread&nbsp;</font></i></p>
+        <blockquote>
+          <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left">
+			KMotion Thread that the program should be loaded into</p>
+        </blockquote>
+        <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left">
+		<i><font size="3">Name&nbsp;</font></i></p>
+        <blockquote>
+          <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left"><font size="3">Filename
+          of coff file to download</font></p>
+        </blockquote>
+        <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left">
+		<i><font size="3">PackToFlash&nbsp;</font></i></p>
+        <blockquote>
+          <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left"><font size="3">Internal
+          system command always specify as false</font></p>
+        </blockquote>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="3"><b>Example</b></font></p>
+        <div align="left">
+          <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+        </div>
+        <div align="left">
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font face="Courier New" size="2">#include &quot;KMotionDLL.h&quot;</font></p>
+          <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0"><font size="2" face="Courier New">
+          CKMotionDLL KM(0);</font></div>
+        <div align="left">
+          <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">
+          <font size="2" face="Courier New">unsigned int EntryPoint;</font></div>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">&nbsp;</p>
+          <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+          <font face="Courier New" size="2">if (KM.LoadCoff(1, &quot;C:\\test.out&quot;, false)) return 1;<br>
+          <br>
+          KM.WriteLine(&quot;Execute 0&quot;);<br>
+          </font>
+<font face="Courier New" size="3">
+          <br>
+</font>
+      </div>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+      <p style="word-spacing: 0; line-height: 200%; text-indent: 0; border-top-style: solid; margin: 0" align="left"><font face="Courier New" size="3"><b>	int
+      <a name="ServiceConsole">ServiceConsole</a>();</b></font></p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><b><font size="3"><br>
+      </font></b><font size="3">Services the <i><b>KMotion</b></i> <i>Console</i> data
+      stream.&nbsp; The <i>Console</i> is a place where all unsolicited data,
+      such as errors, or data &quot;Printed&quot; by user programs goes
+      to.&nbsp; In between processing commands, <i><b>KMotion</b></i> uploads any unsolicited
+      data it may have up to the host.&nbsp; The KMotionDLL driver buffers this
+      data until some process declares itself as a <i>Console Handler (See </i></font><font face="Courier New" size="3"><b>SetConsoleCallback)</b></font><font size="3">
+      and makes calls to this function <i>ServiceConsole</i>.</font></p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="3">This
+      function should be called at regular intervals.&nbsp; If console data is
+      available a call back to the Console Handler will&nbsp;</font></p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">occur
+      with one line of data.</p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><b><font size="3">Return
+      Value</font></b></p>
+      <p align="left">returns 0 - if successful<br>
+      </p>
+      <p align="left"><b><font size="3">Parameters</font></b></p>
+      	<p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">
+		<font size="3"><b>Example</b></font></p>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+      <div align="left">
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font face="Courier New" size="2">#include &quot;KMotionDLL.h&quot;</font></p>
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New">CKMotionDLL KM(0);</font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">int ConsoleHandler(const char *buf)
+{
+	MyLogData(buf);
+	return 0;
+}</pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">KM.SetConsoleCallback(ConsoleHandler);</pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">KM.ServiceConsole();
+</pre>
+      </div>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font face="Courier New" size="3"><b><br>
+      </b></font></p>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 200%; text-indent: 0; border-top-style: solid; margin: 0"><font face="Courier New" size="3"><b>int <a name="SetConsoleCallback">SetConsoleCallback</a>(CONSOLE_HANDLER *ch);</b></font></pre>
+      </div>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font face="Courier New" size="2"><br>
+      </font></p>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">
+      Sets the user provided console callback function.</p>
+      <p align="left"><b><font size="3">Return Value</font></b></p>
+      <p align="left">returns 0 - if successful<br>
+      </p>
+      <p align="left"><b><font size="3">Parameters</font></b></p>
+      	<p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left">
+      <i>c<font size="3">h
+      </font></i></p>
+      <blockquote>
+        <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left">
+        name of console handler function</p>
+      </blockquote>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">
+        <font size="3"><b>Example</b></font></p>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+      <div align="left">
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font face="Courier New" size="2">#include &quot;KMotionDLL.h&quot;</font></p>
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="2" face="Courier New">CKMotionDLL KM(0);</font></pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">int ConsoleHandler(const char *buf)
+{
+	MyLogData(buf);
+	return 0;
+}</pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+		<div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">.</pre>
+      </div>
+		<div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">.</pre>
+      </div>
+		<div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">.</pre>
+      </div>
+		<div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">KM.SetConsoleCallback(ConsoleHandler);</pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">KM.ServiceConsole();</pre>
+      </div>
+        <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+        <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+        <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+        <div align="left">
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 200%; text-indent: 0; border-top-style: solid; margin: 0"><font face="Courier New" size="3"><b>int <a name="CompileAndLoadCoff">CompileAndLoadCoff</a>(const char *Name, int Thread);</b></font></pre>
+      </div>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">
+      <b><font face="Courier New">or</font></b></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">
+        <b><font face="Courier New">int CompileAndLoadCoff(const char 
+        *Name, int Thread, </font></b></p>
+      </div>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 250px; margin: 0" align="left">
+        <b><font face="Courier New">char *Err, int MaxErrLen);</font></b></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+        <div align="left">
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">
+        <font face="Times New Roman">Compiles the specified
+        <a href="../ProgramScreen/ProgramScreen.htm">C Program</a> file, 
+        downloads the object code to the specified Thread space, and sets the 
+        Entry Point, for the specified thread.&nbsp; Two versions of the 
+        function are supplied; one returns any error messages, the other does 
+        not.</font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="3">The
+        downloaded code may then be executed by issuing the 
+        <a href="../Cmd.htm#Execute">Execute</a>
+        command.</font><font face="Times New Roman"><br>
+        </font></p>
+        <p align="left"><b><font size="3">Return Value</font></b></p>
+      <p align="left">returns 0 - if successful<br>
+      </p>
+      <p align="left"><b><font size="3">Parameters</font></b></p>
+      	<p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left">
+		<i><font size="3">Name
+      </font></i></p>
+      <blockquote>
+        <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left"><font size="3">Filename
+        of C Program to compile and download</font></p>
+      </blockquote>
+      <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left">
+      <i>T<font size="3">hread
+      </font></i></p>
+      <blockquote>
+        <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left">
+        Thread number where the program is to be compiled for and downloaded 
+        into.&nbsp; Valid range 1...7.</p>
+      </blockquote>
+      <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left">
+      <i>E<font size="3">rr
+      </font></i></p>
+      <blockquote>
+        <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left">
+        Caller's supplied buffer for any error messages</p>
+      </blockquote>
+      <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left">
+      <i><font face="Times New Roman">MaxErrLen</font><font size="3">
+      </font></i></p>
+      <blockquote>
+        <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left">
+        Length of caller's supplied buffer for any error messages</p>
+      </blockquote>
+        <blockquote>
+        <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left">&nbsp;</p>
+      </blockquote>
+      <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left"><font size="3"><b>Example</b></font></p>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font face="Courier New" size="2">#include &quot;KMotionDLL.h&quot;</font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font size="2" face="Courier New">CKMotionDLL
+        KM(0);</font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">&nbsp;</p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font size="2" face="Courier New">if
+        (KM.CompileAndLoadCoff(&quot;C:\\MyProgram.c&quot;, 
+        1) MyError();</font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font size="2" face="Courier New">if
+        (KM.WriteLine(&quot;Execute1&quot;) MyError();</font></p>
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">
+</pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+          <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+          <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+          <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+          <div align="left">
+        <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+        <div align="left">
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 200%; text-indent: 0; border-top-style: solid; margin: 0"><font face="Courier New" size="3"><b>in</b></font><b><font face="Courier New" size="3">t <a name="ListLocations">ListLocations</a>(int *nlocations, int *list);</font></b></pre>
+      </div>
+      </div>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">
+        <b><font face="Courier New"><br>
+        </font></b><font face="Times New Roman">Returns the number of currently 
+        connected KMotion boards and a list of their USB location identifiers</font></p>
+        <div align="left">
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</p>
+        <p align="left"><b><font size="3">Return Value</font></b></p>
+      <p align="left">returns 0 - if successful<br>
+      </p>
+      <p align="left"><b><font size="3">Parameters</font></b></p>
+      <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left">
+      <i><font face="Times New Roman" size="3">nlocations</font></i></p>
+      <blockquote>
+        <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left">
+        pointer to integer where the number of locations should be returned</p>
+      </blockquote>
+      <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left">
+      <i>L<font size="3">ist
+      </font></i></p>
+      <blockquote>
+        <p style="word-spacing: 0; line-height: 150%; margin-left: 0; margin-top: 0; margin-bottom: 0" align="left">
+        pointer to array to be filled in with the list of USB location 
+        identifiers</p>
+      </blockquote>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">
+        <font size="3"><b>Example</b></font></p>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+      <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font face="Courier New" size="2">#include &quot;KMotionDLL.h&quot;</font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font size="2" face="Courier New">CKMotionDLL
+        KM(0);</font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">&nbsp;</p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font size="2" face="Courier New">int n_boards;</font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font size="2" face="Courier New">int BoardList[256];</font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">&nbsp;</p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        <font size="2" face="Courier New">if
+        (KM.ListLocations(&amp;n_boards, 
+        BoardList) MyError();</font></p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        &nbsp;</p>
+        <p style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
+        &nbsp;</p>
+      </div>
+      </div>
+          <div align="left">
+        <pre style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0" align="left">&nbsp;</pre>
+      </div>
+    </td>
+    </tr>
+  <center>
+    <tr>
+      <td valign="top" width="151">
+      </td>
+      <td valign="top" width="868"></td>
+    </tr>
+  </table>
+  </center>
+</div>
+
+</body>
+
+</html>

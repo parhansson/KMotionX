@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>General Method</TITLE>
+<META NAME="description" CONTENT="General Method">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node94.html">
+<LINK REL="previous" HREF="node92.html">
+<LINK REL="up" HREF="node91.html">
+<LINK REL="next" HREF="node94.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1744"
+  HREF="node94.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1738"
+  HREF="node91.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1732"
+  HREF="node92.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1740"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1742"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1745"
+  HREF="node94.html">Simple Method</A>
+<B> Up:</B> <A NAME="tex2html1739"
+  HREF="node91.html">First Move</A>
+<B> Previous:</B> <A NAME="tex2html1733"
+  HREF="node92.html">Programming Entry Moves</A>
+ &nbsp; <B>  <A NAME="tex2html1741"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1743"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION04322200000000000000">
+General Method</A>
+</H3>
+
+<P>
+The general method includes programming an alignment move and two
+entry moves. The entry moves given above will be used as an example.
+Here is the relevant code again:
+
+<P>
+<TT><FONT SIZE="-1">N0010 G1 X1 Y4.5 (make aligment move to point C)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0020 G41 G1 Y3.5 (turn compensation on and make first
+entry move to point B)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N0030 G3 X2 Y2.5 I1 (make second entry move to point
+A)</FONT></TT>
+<P>
+
+
+<P>
+See Figure 11. The figure shows the two entry moves but not the alignment
+move.
+
+<P>
+First, pick a point A on the contour where it is convenient to attach
+an entry arc. Specify an arc outside the contour which begins at a
+point B and ends at A tangent to the contour (and going in the same
+direction as it is planned to go around the contour). The radius of
+the arc should be larger than half the diameter given in the tool
+table. Then extend a line tangent to the arc from B to some point
+C, located so that the line BC is more than one radius long.
+
+<P>
+<TABLE  WIDTH="0%">
+<TR><TD>
+After the construction is finished, the code is written in the reverse
+order from the construction. Cutter radius compensation is turned
+on after the alignment move and before the first entry move. In the
+code above, line N0010 is the alignment move, line N0020 turns compensation
+on and makes the first entry move, and line N0030 makes the second
+entry move.
+
+<P>
+</TD></TR>
+</TABLE>
+
+<TABLE  WIDTH="0%">
+<TR><TD>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><!-- MATH
+ $\resizebox*{3in}{!}{\includegraphics{/usr/share/lyx/EMC_images/Image13.eps}}$
+ -->
+<IMG
+ WIDTH="345" HEIGHT="210" ALIGN="BOTTOM" BORDER="0"
+ SRC="img33.gif"
+ ALT="\resizebox*{3in}{!}{\includegraphics{/usr/share/lyx/EMC_images/Image13.eps}}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+</TD></TR>
+</TABLE>
+
+<P>
+<BR>
+
+<P>
+In this example, the arc AB and the line BC are fairly large, but
+they need not be. For a tool path contour, the radius of arc AB need
+only be slightly larger than the maximum possible deviation of the
+radius of the tool from the exact size. Also for a tool path contour,
+the side chosen for compensation should be the one to use if the tool
+is oversized. As mentioned earlier, if the tool is undersized, the
+interpreter will switch sides.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1744"
+  HREF="node94.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1738"
+  HREF="node91.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1732"
+  HREF="node92.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1740"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1742"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1745"
+  HREF="node94.html">Simple Method</A>
+<B> Up:</B> <A NAME="tex2html1739"
+  HREF="node91.html">First Move</A>
+<B> Previous:</B> <A NAME="tex2html1733"
+  HREF="node92.html">Programming Entry Moves</A>
+ &nbsp; <B>  <A NAME="tex2html1741"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1743"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

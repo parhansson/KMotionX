@@ -1,0 +1,86 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Data Gathering</title>
+</head>
+
+<body>
+
+<p><font size="5"><b><i>Data Gathering</i></b></font></p>
+<p><i><b>KMotion</b></i> provides a flexible method for capturing data of all 
+types every servo sample period (90<font face="Times New Roman">µ</font>s).&nbsp; 
+This same method is how <b><i>KMotion</i></b> gathers step response and Bode 
+plot data.&nbsp; </p>
+<p>Basically a list of addresses and data types are defined.&nbsp; An end 
+address of where to stop capturing data is set, and when triggered the Servo 
+Interrupt will capture the specified data values.&nbsp; All values are converted 
+to double precision numbers before being placed into the gather buffer.&nbsp; 
+The maximum size of the Gather Buffer is 1,000,000 double precision values (8 
+MBytes).</p>
+<p><font face="Arial" size="2">#define MAX_GATHER_DATA 1000000 // Size of gather 
+buffer (number of doubles, 8 bytes each). <br>
+&nbsp;</font></p>
+<p>The following example shows how to setup to capture the two PWM drives (for a 
+stepper motor) and the commaned destination for a 0.5 second time period, 
+trigger the capture, make a simple move, wait until the capture is complete, and 
+print the results.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><b><font face="Courier New" size="2">#include &quot;KMotionDef.h&quot;<br>
+<br>
+main()<br>
+{</font></b></p>
+<blockquote>
+  <p><b><font face="Courier New" size="2">int i,n_Samples = 0.5 / TIMEBASE;<br>
+  <br>
+  gather.Inject = FALSE; // Don't inject any Data anywhere<br>
+  <br>
+  gather.list[0].type = GATHER_LASTPWM_TYPE; // Gather PWM 0<br>
+  gather.list[0].addr = &amp;LastPWM[0];<br>
+  <br>
+  gather.list[1].type = GATHER_LASTPWM_TYPE; // Gather PWM 1<br>
+  gather.list[1].addr = &amp;LastPWM[1];<br>
+  <br>
+  gather.list[2].type = GATHER_DOUBLE_TYPE; // Gather Dest axis 0<br>
+  gather.list[2].addr = &amp;chan[0].Dest;<br>
+  <br>
+  gather.list[3].type = GATHER_END_TYPE; <br>
+  <br>
+  gather.bufptr = (double *)0xfffffffc; // force more than endbuf<br>
+  gather.endptr = gather_buffer + 3 * n_Samples;<br>
+  <br>
+  TriggerGather(); // start capturing data<br>
+  <br>
+  MoveRel(0,20); // Start a motion<br>
+  <br>
+  while (!CheckDoneGather()) ; // what till all captured<br>
+  <br>
+  // print all captured data (every 50th sample)<br>
+  <br>
+  for (i=0; i&lt;n_Samples; i+=10)<br>
+  printf(&quot;%d,%f,%f,%f\n&quot;, i,gather_buffer[i*3],<br>
+  gather_buffer[i*3+1],<br>
+  gather_buffer[i*3+2]); <br>
+&nbsp;</font></b></p>
+</blockquote>
+<p><b><font face="Courier New" size="2">}<br>
+&nbsp;</font></b></p>
+<p><font face="Times New Roman">Data will be printed to the <i><b>KMotion</b></i> 
+Console Screen which is also written to a permanent log file at:</font></p>
+<p><b><font face="Arial" size="2">&lt;KMotionInstallDir&gt;\KMotion\Data\LogFile.txt</font></b></p>
+<p><font face="Times New Roman">Normally data scrolls off of the Console Screen 
+into the permanent log file, to flush all data into the log file, exit the <b>
+<i>KMotion </i></b>application.</font></p>
+<p><font face="Times New Roman">An Excel plot of the captured data is shown 
+below.</font></p>
+<p>&nbsp;</p>
+<p><img border="0" src="GatherExamplePlot.PNG" width="669" height="352"></p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

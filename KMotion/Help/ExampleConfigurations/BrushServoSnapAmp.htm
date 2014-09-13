@@ -1,0 +1,216 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Brush Servo with SnapAmp</title>
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+</head>
+
+<body>
+
+<p><font size="4" face="Arial"><b><i>Configuring DC Brush Motor with SnapAmp and Single-Ended 
+Encoder to KMotion</i></b></font></p>
+<p><font face="Arial"><b><font size="4"><i>T</i></font>his example will proceed through the 
+following steps</b></font></p>
+<ol>
+	<li><font face="Arial"><b><a href="#Wiring_the_Motor,_encoder,_and_Power">Wiring the Motor, encoder, and Power</a></b></font></li>
+	<li><font face="Arial"><b><a href="#Configuring_the_Software">Configuring the Software</a></b></font></li>
+	<li><font face="Arial"><b><a href="#Testing_the_encoder">Testing the encoder</a></b></font></li>
+	<li><font face="Arial"><b><a href="#Testing_the_Motor_Amplifier">Testing the Motor/Amplifier</a></b></font></li>
+	<li><font face="Arial"><b><a href="#Closing_the_loop">Closing the loop</a></b></font></li>
+	<li><font face="Arial"><b><a href="#Tuning_the_Servo">Tuning the Servo</a></b></font></li>
+	<li><font face="Arial"><b>
+	<a href="#Executing_a_simple_C_Program_Motion_Sequence">Executing a simple C Program Motion Sequence</a></b></font></li>
+</ol>
+<p>&nbsp;</p>
+<p><font face="Arial"><b><a href="http://dynomotion.com/Videos/DCBrush.wmv">Here 
+is a video overview</a>.</b></font></p>
+<p>&nbsp;</p>
+<p><font face="Arial"><u><b><a name="Wiring_the_Motor,_encoder,_and_Power">Wiring the Motor, encoder, and Power</a></b></u></font></p>
+<p><font face="Arial">This example configuration shows a single dc brush motor 
+connected to the first of 4 available full bridge drivers on a single SnapAmp 
+1000.&nbsp; A single-ended encoder is connected to KMotion's JP3 connector as 
+encoder input #0 for Servo feedback.&nbsp; (The KMotion board is hidden 
+underneath the SnapAmp in the photo).&nbsp;&nbsp; Note: Encoders typically come 
+as one of two types - differential outputs (having A+, A-, B+, B-) or single 
+ended outputs (A B).&nbsp; A differential encoder may be used as a single ended 
+encoder by only using the A+ and B+ signals (and leaving the A- and B- 
+unconnected).&nbsp; However single ended signals are more susceptible to noise 
+than differential signals.&nbsp; KMotion has 4 single ended encoder inputs.&nbsp; 
+SnapAmp 1000 has 4 differential encoder inputs.&nbsp; In this example a KMotion 
+single-ended encoder input is used.&nbsp; Some encoders have a index pulse that 
+occurs once per revolution usually labeled as channel Z.&nbsp; In this example 
+the index is not used and is not connected.</font></p>
+<p>&nbsp;</p>
+<p><font face="Arial"><img border="0" src="SnapBrush.jpg" width="800" height="735"></font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><font face="Arial"><img border="0" src="KMotionEnc0Wiring.PNG" width="755" height="497"></font></p>
+<p><font face="Arial"><img border="0" src="SnapToBrush.PNG" width="479" height="396"></font></p>
+<p><font face="Arial"><u><b><a name="Configuring_the_Software">Configuring the Software</a></b></u></font></p>
+<p><font face="Arial">After the motor and encoder connections have been made, the software is 
+configured and the encoder feedback and motor is tested. </font> </p>
+<p><font face="Arial">Although any of KMotion's 8 axes could be used, axis 4 will be configured 
+since axes 0-3 are normally used for KMotion's on-board amplifiers.&nbsp; </font> </p>
+<p><font face="Arial">In the KMotion Executive program three screens involve setting an axis's 
+configuration:&nbsp; The Configuration Screen, the Step Response Screen, and the 
+Filters Screen.&nbsp; These three screens and our choice of initial settings are 
+shown below:</font></p>
+<p>&nbsp;</p>
+<p><font face="Arial">Execute the KMotion executive program and set the Options for a single 
+SnapAmp.&nbsp; See below:</font></p>
+<p><font face="Arial"><img border="0" src="SelectSingleSnap.PNG"></font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><font face="Arial">On the Configuration screen Axis Channel 4 is selected, the input type is set 
+to Encoder at encoder channel 0, the output type is set to DC Servo at PWM 
+channel 8, and a very large following error is set.</font></p>
+<p><font face="Arial"><img border="0" src="ConfigEncoderBrush.PNG" width="507" height="515"></font></p>
+<p>&nbsp;</p>
+<p><font face="Arial">On the Filters Screen all filters are disabled by &quot;Clearing&quot; all filters to 
+have a gain of 1.</font></p>
+<p><font face="Arial"><img border="0" src="FiltersOff.PNG" width="760" height="491"></font></p>
+<p>&nbsp;</p>
+<p><font face="Arial">The Step Screen servo loop (PID) parameters are set to only very low 
+proportional gain.&nbsp; The max output is set to a small value that should 
+still allow some motor motion.&nbsp; SnapAmp DC Servo mode outputs current 
+commands in the range of -1000 to +1000 which corresponds to approximately 
+-30Amps to +30 Amps.&nbsp; So a max output of 100 will limit the current to 3 
+Amps.&nbsp; Although the Integrator will not be initially used we set the max 
+integrator to also be 100.&nbsp;&nbsp;&nbsp; The max error is set to a large 
+number.&nbsp; The motion profile parameters are set to values that we will 
+expect to eventually achieve.&nbsp;&nbsp; Our example uses a low speed torque 
+motor being driven off of only 12V.&nbsp; This encoder has 4000 counts/rev so a 
+speed of 50,000 cnts/sec corresponds to 12.5 rev/sec (750 RPM).</font></p>
+<p><font face="Arial">With the Motor Power Supply tuned off, pushing the Enable button will 
+download the parameters from all screens and enable the axis without any motor 
+motion.&nbsp; This will allow us to ensure the axis is properly wired and 
+configured as encoder input and of the correct encoder channel.</font></p>
+<p><font face="Arial"><img border="0" src="StepScreenLowGain.PNG" width="897" height="580"></font></p>
+<p>&nbsp;</p>
+<p><font face="Arial"><u><b><a name="Testing_the_encoder">Testing the encoder</a></b></u></font></p>
+<p><font face="Arial">We can now rotate the motor/encoder shaft by hand and should observe counts 
+on Axis Channel 4 on the Analog Status Screen.&nbsp; Note if one of the other 
+axis's configurations also is defined as input Encoder channel 0 then that axis 
+may count as well.&nbsp; The default configuration for axis 0 is Encoder input 
+from channel 0.&nbsp; To avoid confusion, disable any other axis by selecting 
+that axis, define the input/output types as &quot;No Input&quot; and &quot;No Output&quot;, then 
+download, then disable the axis.&nbsp; To test the encoder, rotate the encoder 
+and check if the expected number of counts per rev are obtained.&nbsp; Rotating 
+the axis the opposite direction should count in the opposite direction.</font></p>
+
+<p><font face="Arial"><img border="0" src="CountsChanging.PNG" width="480" height="613"></font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><font face="Arial"><u><b><a name="Testing_the_Motor_Amplifier">Testing the Motor Amplifier</a></b></u></font></p>
+<p><font face="Arial">In order to test the Motor Amplifier functionality Console commands (PWMC - 
+Pulse-Width-Modulation Current Mode) will be entered to drive the motor in the 
+forward and reverse direction.&nbsp; The axis should and must be disabled to 
+issue these commands, otherwise they will be immediately overwritten with servo 
+output commands.&nbsp;&nbsp; Small values should be used initially.&nbsp; Note: 
+PWMC commands may only be used with a SnapAmp (Software Version 2.31 or later), the KMotion onboard amplifiers do 
+not have current feedback mode so PWM commands should be used instead.&nbsp;&nbsp; 
+SnapAmps's PWMC current commands range from -1000 to +1000 which corresponds to 
+approximately -30Amps to +30 Amps.&nbsp; So a value such as 100 might be used to 
+provide a drive of 3 Amps.</font></p>
+<p><font face="Arial">Before issuing the PWMC commands, SnapAmp's peak current fault levels should 
+be set.&nbsp;&nbsp; After verifying that the axis is disabled (on the Analog 
+Status Screen), load and execute the following program to set the peak 
+current limits.&nbsp; The Fault Green LED on the SnapAmp should turn off.&nbsp; 
+The &quot;I'm alive&quot; Green LED should remain blinking.</font></p>
+<p><font face="Arial"><img border="0" src="SetHighCurLimits.PNG" width="587" height="328"></font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><font face="Arial">Setup the Console Screen as shown below.&nbsp; Sending the commands should 
+drive the motor in one direction, then no motor drive, then drive in the other 
+direction respectively.</font></p>
+<p><font face="Arial"><img border="0" src="ConsolePWMC.PNG" width="525" height="446"></font></p>
+<p>&nbsp;</p>
+<p><u><b><font size="4" face="Arial"><a name="Closing_the_loop">Closing the loop</a></font></b></u></p>
+<p><font face="Arial">If the motor and encoder are working we are ready to attempt to close the 
+servo feedback loop.&nbsp; All that is required is to enable the axis by 
+pressing &quot;Enable&quot; on the Step response Screen.&nbsp;&nbsp; Normally one of two 
+things will occur.&nbsp; Either the axis will respond as a weak servo, or the 
+servo will have positive instead of negative feedback and runaway from the 
+target destination rather than toward the target destination.</font></p>
+<p><font face="Arial">If the servo has positive instead of negative feedback, something should be 
+reversed.&nbsp; Either the Motor leads may be reversed, the encoder signals may 
+be reversed, or a Input Gain of -1 may be entered on the Configuration Screen 
+(as shown below).</font></p>
+<p><font face="Arial"><img border="0" src="NegInputGain.PNG" width="346" height="105"></font></p>
+<p><font face="Arial">If the servo has proper feedback and responds as a weak servo, as the 
+motor/encoder shaft is turned the servo will cause torque to restore the 
+position back to where it was.&nbsp; With the example proportional gain of 0.01, 
+turning the sharft 1 turn should generate an error&nbsp; of 4000 counts.&nbsp; 
+4000 counts multiplied by a gain of 0.01 = 40 PWMC counts or 40 / 1000 * 30Amps 
+= 1.2 Amps.</font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><font face="Arial"><u><b><a name="Tuning_the_Servo">Tuning the Servo</a></b></u></font></p>
+<p><font face="Arial">Once the servo loop is functional Servo Tuning should be performed to move 
+the performance, hopefully up to the desired levels.&nbsp; Servo tuning is a 
+complex subject that has been written about extensively.&nbsp; The basic idea is 
+to increase the feedback gains in order to reduce following errors and speed of 
+response without going unstable (oscillating wildly).&nbsp; KMotion 
+has extensive plotting tools to help tune and understand how well a set of 
+parameters performs.</font></p>
+<p><font face="Arial">To test the current performance, disable the axis, manually move it to a 
+position where it may move +10000 counts, then push the &quot;Move&quot; button.&nbsp; A 
+plot such as that shown below should be observed.&nbsp; Set the plot type and 
+axis selections to agree with those shown below.&nbsp; The blue plot is the 
+desired path as defined by the motion profile and the motion is made for 10,000 
+counts and then a second motion is made back to zero.&nbsp; The red plot is the 
+measured encoder position.&nbsp; Note that the red plot attempts to follow the 
+blue plot but with a large error of thousands of counts.&nbsp; Gradually 
+increase the P gain (possibly by factors of 2) while pushing the Move button and 
+the following error should reduce.&nbsp; At some point the system will probably go 
+into oscillation and become unstable.&nbsp; It may be necessary to disable the 
+axis, reduce the gain, and re-enable the axis.&nbsp;&nbsp; </font> </p>
+<p><font face="Arial"><img border="0" src="PoorPlot.PNG" width="897" height="580"></font></p>
+<p>&nbsp;</p>
+<p><font face="Arial">Increasing the gain 500X (from 0.01 to 5) results in a much better response.&nbsp; 
+Notice the blue (desired) plot is almost completely hidden behind the red measured 
+plot.&nbsp;&nbsp; However by zooming in to the purple rectangle (left click 
+mouse drag) we can see oscillation.&nbsp;&nbsp; See the second plot below.</font></p>
+<p><font face="Arial"><img border="0" src="BetterPlot.PNG" width="897" height="580"></font></p>
+<p><font face="Arial">
+<img border="0" src="Oscillation.PNG" width="897" height="580"></font></p>
+
+<p>&nbsp;</p>
+<p><font face="Arial">Increasing the derivative gain can often reduce 
+oscillation.&nbsp; In the plot below we have set the D gain to 16.&nbsp; Notice 
+the oscillation has been reduced.</font></p>
+<p><font face="Arial">
+<img border="0" src="DerivativeGain.PNG" width="897" height="580"></font></p>
+<p>&nbsp;</p>
+<p><font face="Arial">A Bode plot is useful in understanding the frequency 
+response and for designing advanced servo loop filters.&nbsp; Below is the Bode 
+plot response of the system.&nbsp; Important features to look for in a Bode plot 
+is where the Magnitude (blue plot) first passes through the 0 db line.&nbsp; 
+This is the bandwidth of the system.&nbsp; Another important measure is the 
+&quot;phase margin&quot;&nbsp; which is how far away the phase is from -180 degrees when 
+the magnitude is at 0db.&nbsp; In this case the phase margin is 28 degrees.&nbsp; 
+See the Bode Screen in the main Help section for more information</font></p>
+<p><font face="Arial">
+<img border="0" src="BodePlot65Hz.PNG" width="857" height="552"></font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><font face="Arial"><u><b>
+<a name="Executing_a_simple_C_Program_Motion_Sequence">Executing a simple C Program Motion Sequence</a></b></u></font></p>
+<p><font face="Arial">The C program below is an example of a simple program to 
+perform a sequence of moves and repeat.&nbsp; There are 5 moves of 8000 counts 
+(2 motor revs) and then a move back to the start.&nbsp;&nbsp; After each small 
+move there is a wait until the motion is complete followed by a 0.2 second 
+delay.&nbsp; <a href="http://dynomotion.com/Videos/DCBrush.wmv">Here</a> is a 
+video of the mechanism executing the motion.</font></p>
+<p><font face="Arial">
+<img border="0" src="MoveMechanism.PNG" width="548" height="644"></font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

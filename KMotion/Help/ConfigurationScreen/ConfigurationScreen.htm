@@ -1,0 +1,645 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Configuration Screen</title>
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+</head>
+
+<body>
+
+<p><i><b><font size="5">Configuration and FLASH Screen</font></b></i></p>
+<p><map name="FPMap0">
+<area alt="Jump to channel selection description" coords="12, 34, 140, 64" shape="rect" href="#channel_">
+<area alt="Jump to Axis Mode Description" coords="9, 79, 163, 195" shape="rect" href="#Axis_Modes">
+<area alt="Jump to Microstepper Amplitude description" coords="153, 28, 419, 63" shape="rect" href="#Microstepper_Amplitude">
+<area alt="Jump to Max Following Error description" coords="170, 63, 420, 93" shape="rect" href="#Max_Following_Error">
+<area alt="Jump to InvDistPerCycle description" coords="172, 94, 421, 122" shape="rect" href="#Inv_Dist_Per_Cycle">
+<area alt="Jump to Lead Compensation description" coords="176, 122, 422, 155" shape="rect" href="#Lead_Compensation">
+<area alt="Jump to Input Channel description" coords="9, 204, 252, 305" shape="rect" href="#Input_Channels">
+<area alt="Jump to Output Channel description" coords="11, 306, 257, 407" shape="rect" href="#Output_Channels">
+<area alt="Jump to Limit Switch Options description" coords="12, 396, 417, 554" shape="rect" href="#Limit_Switch_Options">
+<area alt="Jump to Axis Parameters Utility Functions description" coords="29, 560, 382, 606" shape="rect" href="#Utilities">
+<area alt="Jump to Launch Threads description" coords="430, 45, 558, 235" shape="rect" href="#Launch_on_Power_U">
+<area alt="Jump to Flash memory description" coords="429, 247, 559, 395" shape="rect" href="#FLASH">
+<area href="#Master/Slave_Settings" shape="rect" coords="255, 157, 420, 287">
+<area href="#Backlash_Settings" shape="rect" coords="257, 287, 422, 401">
+</map>
+<img border="0" src="ConfigurationScreen.PNG" usemap="#FPMap0"></p>
+<p><i>(Click on above image to jump to relative topic)</i></p>
+<p>The <i><b> Configuration and FLASH Screen</b></i> displays and allows changes 
+to <i><b>KMotion's</b></i> configuration and allows the configuration, new 
+firmware, or user programs to be FLASH'ed to non volatile memory.</p>
+<p><img border="0" src="Config1.gif" align="left" hspace="10" vspace="10">Each axis 
+<a name="channel_">channel</a> is configured independently.&nbsp; To view or make changes to a configuration first select the desired axis 
+channel using the channel drop down.&nbsp; Note that changing an 
+axis on any screen switches the active channel on all other screens 
+simultaneously.</p>
+<p>The parameters for each 
+axis's configuration are grouped into three classes:&nbsp; Definitions, Tuning, 
+and Filters.&nbsp; Each class of parameters are displayed on three corresponding 
+screens:&nbsp; </p>
+<ul>
+  <li>Configuration Screen</li>
+  <li>Step Response Screen</li>
+  <li>IIR Filter Screen</li>
+</ul>
+<p>The <i>Configuration Screen</i> contains <i>definition</i> parameters that should be set once 
+and remain set unless a physical change to the hardware is made.&nbsp; For 
+example, a Stepper motor might be replaced with a Brushless Motor and Encoder.&nbsp; </p>
+<p>The <i>Step Response Screen</i> contains parameters that are <i>tuning</i> related and 
+are located where the tuning response is most often adjusted and checked.&nbsp; 
+For example, PID (proportional, intparameters are located there.&nbsp; </p>
+<p>The <i>IIR Filter Screen </i>contains parameters related to servo 
+<i>filters</i>.</p>
+<p>&nbsp;</p>
+<p><u><b><a name="Utilities">Utilities</a></b></u></p>
+<p><img border="0" src="Config13.png" width="362" height="45"></p>
+<p>Configuration settings are normally defined and tested using the KMotion 
+Screens.&nbsp; After they have been determined to work properly they can be 
+converted to C code and placed into a C program&nbsp; that can then be used by 
+applications to configure KFLOP without needing to use KMotion Screens.&nbsp; 
+Axis Channel Settings can also be loaded/saved to disk files.&nbsp; See
+<a href="http://dynomotion.com/Help/FlashHelp/Parameters/index.html">Flash Video</a></p>
+<p>The buttons along the bottom of the Configuration Screen allow a set of axis 
+parameters to be:</p>
+<ul>
+  <li>Saved or Loaded from a disk file (*.mot)&nbsp; </li>
+  <li>Uploaded or Downloaded to KFLOP</li>
+  <li>Converted to equivalent C Code for use in a
+  <a href="../ProgramScreen/ProgramScreen.htm"><b><i>KFLOP</i></b> <i>C 
+  Program</i></a><i> (note you will not see anything happen but the data will be 
+	placed in the clipboard.&nbsp; Paste it into a C Program to see it)</i></li>
+</ul>
+<p>Note that these buttons operate on all parameters (for one axis) from all 
+screens as a unit. </p>
+<p>&nbsp;</p>
+<p><img border="0" src="ImportExportC.png" width="281" height="51"></p>
+<p>To completely synchronize <b>all</b> the Configuration Screens (Config/Flash, 
+Step Response, and Filters) for <b>all</b> axes to a C Program use the <b>Export 
+All to Open C Program Button</b>.&nbsp; To Import all settings from a C Program 
+select the <b>Import All from Open C Program</b> Button.&nbsp; The C program 
+must be open on the C Program Screen.&nbsp; In both cases the C Program will be 
+scanned&nbsp; to find blocks of axis settings and will determine which axis 
+exist in the C Program.&nbsp; The results of the scan will be displayed before 
+importing or exporting the settings.&nbsp; The dialog box below shows an example 
+where 3 channels were found.&nbsp; Select OK to proceed with the import.</p>
+<p><img border="0" src="ImportAxesFound.png" width="377" height="234"></p>
+<p>&nbsp;</p>
+<p><u><b><a name="Axis_Modes">Axis Modes</a></b></u></p>
+<p style="margin-top: 0; margin-bottom: 0">
+<img border="0" src="Config3.png" align="left" hspace="10" vspace="10"><img border="0" src="Config4.png" align="left" hspace="10" vspace="10"></p>
+<p style="margin-top: 0; margin-bottom: 0">
+Use the respective dropdown to set either the axis Input or 
+Output Mode.&nbsp; The input mode defines the type of position measurement (if 
+required) for the axis.&nbsp; Closed loop control always requires some type of position 
+measurement.&nbsp; For open loop stepper motor control, position measurement is 
+optional.&nbsp; The output mode determines how the output command should be 
+achieved.&nbsp; Either by driving the on board PWMs and Full Bridge Drivers to 
+control a specific type of motor, by driving a DAC signal that will drive an 
+external power amplifier, or by driving Step and Direction digital outputs.&nbsp; 
+For External Step and Direction Outputs see <font face="Arial">
+<a href="../StepAndDirection/StepAndDir.htm">Step and Direction Output Mode</a> 
+and <a href="../ClosedLoopStep/ClosedLoopStepper.htm">Closed Loop Step/Dir Output Mode</a>.</font></p>
+<p style="margin-top: 0; margin-bottom: 0">
+&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">
+&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">
+&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><u><b><a name="Input_Channels">Input Channels</a></b></u></p>
+<p><img border="0" src="Config5.gif" align="left" hspace="10" vspace="10"></p>
+<p>The Input Channels section specifies which channels for the selected input 
+device will be used.&nbsp; Some Input Modes require two devices to be specified 
+and some Input Modes only require one device.&nbsp; If the selected Input Mode 
+only requires one device then the second Input Channel (Input Chan 1) is not 
+used and my be set to any number.&nbsp; This may be the channel of an Encoder input or an ADC 
+input depending on the selected input mode.&nbsp; Resolvers requires two ADC 
+input channels (for sine and cosine), for all other modes the second channel 
+number is not used.</p>
+<p>The gain and offset parameters are applied to the respective input device.&nbsp; 
+The gain is applied before the offset, i.e.<i> x' = ax+b, </i>where a is the 
+gain and b is the offset.<i>.</i>&nbsp; </p>
+<p><i>Incremental encoders </i>only utilize the gain parameter which may be used 
+to scale or reverse (using a negative gain) the measurement.&nbsp; </p>
+<p><font face="Times New Roman">A <i>Resolver</i> is a device that generates analog sine and cosine signals 
+as it's shaft angle changes.&nbsp; Either one or multiple sine and cosine waves 
+may be produced per revolution of a resolver.&nbsp; An encoder that generates 
+analog sine and cosine signals may also be connected to a <i><b>KMotion</b></i> 
+as though it was a resolver.&nbsp; Resolver inputs may utilize both gains and 
+offsets and be adjusted such that the sine and cosine ADC measurements are 
+symmetrical about zero and have the same amplitude.&nbsp; Gain and offset errors 
+may be introduced by either the ADC input circuitry and/or the Resolver itself.&nbsp; 
+If one were to plot the sine vs. cosine signals as a resolver's position 
+changes, the result should be circle.&nbsp; <i><b>KMotion</b></i> computes the 
+arctangent of the point on the circle (also keeping track of the number of 
+rotations)&nbsp; to obtain the current position.&nbsp; An offset or elliptical 
+&quot;circle&quot; will result in a distorted position measurement throughout the cycle.&nbsp; 
+Therefore note that adjusting the gains and offsets will result in changing the 
+linearity of the position measurement, not the scale of the position measurement 
+itself.&nbsp; The scale of a resolver input will always be 2&#960; 
+radians per cycle.</font></p>
+<p><font face="Times New Roman">An ADC input uses a single absolute ADC channel 
+input to obtain the position measurement.&nbsp; Gain0 and Offset0 may be used to 
+modify the ADC counts from -2048 .. +2047 to and desired range.</font></p>
+<p>&nbsp;</p>
+<p><font face="Times New Roman"><u><b><a name="Output_Channels">Output Channels</a></b></u></font></p>
+<p>
+<font face="Times New Roman">
+<img border="0" src="Config6.png" align="left" hspace="10" vspace="10" width="248" height="104"></font></p>
+<p><font face="Times New Roman">The Output Channels section specifies which channels for the selected output 
+device will be used.&nbsp; Some Output Modes require two devices to be specified 
+and some Output Modes only require one device.&nbsp; For Output modes that only 
+require one output device the second device will be disabled.&nbsp; If the selected Output Mode 
+only requires one device then the second Output Channel (Output Chan 1) is not 
+used and my be set to any number.&nbsp; The specified output device may be the channel of a&nbsp;
+<a href="../PWM_Description/PWM_Description.htm">PWM</a> connected to an 
+on-board power amplifier, a Step/Direction Generator, or a DAC that is used to drive an external power 
+amplifier.&nbsp; </font> </p>
+<p><font face="Times New Roman">Stepper mode and 4 phase brushless mode require two channels of PWM to be 
+specified.&nbsp;&nbsp;&nbsp; </font> </p>
+<p><font face="Times New Roman">DC Servo motor (Brush motor type) only require one PWM channel.&nbsp;
+</font> </p>
+<p><font face="Times New Roman">3 Phase brushless motors require a consecutive pair of PWM channels.&nbsp; In 
+3 Phase output mode, only the Output Channel 0 value is used and must be set to 
+an even PWM number.</font></p>
+<p><font face="Times New Roman">For Step and Direction output mode and CL Step (Closed Loop Step/Dir), the output channel 0 is used to specify 
+which Step/Direction Generator will be used and drive mode (active high/low or open collector) will be 
+used.&nbsp; Each Step/Direction Generator has assigned I/O Pins.&nbsp; See <a href="../StepAndDirection/StepAndDir.htm">Step and Direction 
+Output Mode</a>.</font></p>
+<p><font face="Times New Roman">Some output devices support the application of a 
+gain and offset.&nbsp; See also the related Console Commands
+<a href="../Cmd.htm#OutputGain">OutputGain</a> and
+<a href="../Cmd.htm#OutputOffset">OutputOffset</a>.</font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><u><b><a name="Microstepper_Amplitude">Microstepper Amplitude</a>, Max 
+Following Error, Inv Dist Per Cycle, Lead Compensation</b></u></p>
+<p><img border="0" src="Config10.gif" align="left" hspace="10" vspace="10"></p>
+<p><i>Microstepper Amplitude</i> is only applicable to configurations with 
+output mode of Microstepper.&nbsp; This parameter sets the amplitude (of the 
+sine wave) in PWM counts (0 .. 255) that will be output to the sine and cosine 
+PWM channels while moving slowly or at rest.&nbsp; Note that at higher speeds <i>
+<b>KMotion</b></i> has the ability to increase the amplitude to compensate for 
+motor inductance effects and <i>may</i> actually be higher.&nbsp; See <i>Lead 
+Compensation</i> in this same section.</p>
+<p><i><a name="Max_Following_Error">Max Following Error</a></i> is applicable to 
+all closed loop servo output modes (DC Servo, 3 Phase Brushless, 4 Phase 
+brushless, and DAC Servo).&nbsp; Whenever the commanded destination and the 
+measured position differ by greater than this value, the axis will be disabled 
+(if this axis is a member of the defined coordinate system, then any coordinated 
+motion will also stop).&nbsp; To disable following errors set this parameter to 
+a large value.</p>
+<p><i><a name="Inv_Dist_Per_Cycle">Inv Dist Per Cycle</a></i> applies to 
+Stepper, 3 Phase, and 4 Phase motors.&nbsp; For a stepper motor, the <i>distance 
+per cycle</i> defines the distance that the commanded destination should change 
+by for a motor coil to be driven through a complete sinusoidal cycle.&nbsp; 
+Parameter should be entered as the inverse (reciprocal) of the distance per 
+cycle.&nbsp; Stepper motors are most often characterized by shaft angle change 
+per &quot;Full Step&quot;.&nbsp; A motor coil is driven through a complete cycle every 
+four - &quot;Full Steps&quot;.&nbsp; See the following examples:</p>
+<p style="margin-top: 0; margin-bottom: 0">Example #1 : A mechanism moves 0.001&quot; 
+for each full step of a step motor&nbsp; It is desired for commanded distance to 
+be in inches.</p>
+<p style="margin-top: 0; margin-bottom: 0">Result: One Cycle = 4 full steps = 
+0.004&quot;,&nbsp; Thus InvDistPerCycle = 1.0/0.004 = 250.0 (cycles/inch).&nbsp; 
+Commanding a move of 1.00 will generate 250 sine waves, or the equivalent of 
+1000 full steps, or one inch of movement..</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">Example #2 : InvDistPerCycle is left 
+at the default value of 1.0</p>
+<p style="margin-top: 0; margin-bottom: 0">Result: Move units are in cycles.&nbsp; 
+Commanding a move of 50 will generate 50 sine waves, or the equivalent of 200 
+full steps, or one revolution of a 200 Step or 1.8 degree motor.</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">For 3 Phase or 4 Phase motors, <i>Inv 
+Dist Per Cycle</i> represents the inverse of the distance for one complete 
+commutation cycle.&nbsp; See the example below.</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">Example #1 : A 3 phase motor/encoder 
+has a 4096 count per revolution encoder which is used for position feedback and 
+for motor commutation.&nbsp; InputGain0 is set to 1.0 so position measurement 
+remains as encoder counts.&nbsp; The motor design is&nbsp; such that the 
+commutation goes through 3 complete cycles each motor revolution.&nbsp; </p>
+<p style="margin-top: 0; margin-bottom: 0">Result: One Cycle = 4096 counts/3.0&nbsp; 
+Thus InvDistPerCycle = 3.0/4096 = 0.000732421875.&nbsp; </p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">Note that it is important to use a 
+high degree of precision to avoid commutation errors after moving to very large 
+positions (or at constant velocity for a long period of time).&nbsp; <b><i>
+KMotion</i></b> maintains <i>Inv Dist Per Cycle</i> (as well as position) as a 
+double precision (64 bit) floating point number for this reason (<i>more than 70 
+years</i> at 1 MHz would be required to have 1 count of error)</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p><i><a name="Lead_Compensation">Lead Compensation</a></i> may be used to 
+compensate for motor inductance.&nbsp; When a voltage is applied to a coil at a 
+low frequencies, the current flow is dictated by the coil's resistance and is 
+constant.&nbsp; As the frequency increases at some point, where
+<img border="0" src="Config14.gif" align="middle">, the inductance, <i>L</i>,&nbsp; 
+begins to dominate and the current drops (see plot below).&nbsp; <i><b>KMotion's</b></i> 
+Lead Compensator has the opposite effect, it has a constant gain of 1 and at 
+some point increases with frequency.&nbsp; The Lead Compensation parameter sets 
+(indirectly) the frequency where this occurs.&nbsp; If the frequency is set to 
+match the frequency of the motor, the effects will cancel, and the motor current 
+(and torque) will remain constant to a much higher frequency.&nbsp; </p>
+<p>This assumes that the nominal drive voltage is lower than the available 
+supply voltage.&nbsp; For example, a 5V stepper motor might be driven with a 15V 
+supply to allow head room for the applied voltage to be increased at high 
+frequencies (speeds).</p>
+<p>
+<img border="0" src="Lead.PNG" width="367" height="416" align="left" hspace="10" vspace="10">The 
+simple formula that implements the Lead Compensation is:</p>
+<p><i>v ' = v + <font face="Times New Roman">&#916;v L</font></i></p>
+<p><font face="Times New Roman">where <i>v</i> is the voltage before the 
+compensation, <i>v'</i> is the voltage after the compensation, </font>
+<font face="Times New Roman"><i>&#916;v </i>is the change in output voltage from the 
+last servo sample, and <i>L</i> is the Lead Compensation value.</font></p>
+<p>The following formula will compute the &quot;knee&quot; frequency for a particular <i>
+lead</i> and servo sample rate (normally <i>T</i>=90 us). </p>
+<p><img border="0" src="Config11.gif"></p>
+<p>or the inverse of this formula will provide the lead value to position the 
+knee at a particular frequency.</p>
+<p><img border="0" src="Config12.gif"></p>
+<p>The Following table generated from the above formula may also be used.&nbsp; 
+For most motors the Lead Compensation values will be within the range of 5 - 20.&nbsp;</p>
+<p>&nbsp;</p>
+<table x:str border="0" cellpadding="0" cellspacing="0" width="128" style="border-collapse:
+ collapse;width:96pt" id="table1">
+  <colgroup>
+    <col width="64" span="2" style="width:48pt">
+  </colgroup>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" width="64" style="height: 11.25pt; width: 48pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border: .5pt solid windowtext; padding: 0px">
+    Freq, Hz</td>
+    <td width="64" style="width: 48pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: .5pt solid windowtext; border-bottom: .5pt solid windowtext; padding: 0px">
+    Lead</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    50</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="35.368943256247597" x:fmla="=1/(2*SIN(PI()*0.00009*A2))">
+    35.37</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    60</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="29.474551373773313" x:fmla="=1/(2*SIN(PI()*0.00009*A3))">
+    29.47</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    70</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="25.26433879118882" x:fmla="=1/(2*SIN(PI()*0.00009*A4))">
+    25.26</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    80</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="22.106738275321486" x:fmla="=1/(2*SIN(PI()*0.00009*A5))">
+    22.11</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    90</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="19.650879141661783" x:fmla="=1/(2*SIN(PI()*0.00009*A6))">
+    19.65</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    100</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="17.686238980031852" x:fmla="=1/(2*SIN(PI()*0.00009*A7))">
+    17.69</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    120</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="14.739396617979526" x:fmla="=1/(2*SIN(PI()*0.00009*A8))">
+    14.74</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    140</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="12.634643965232044" x:fmla="=1/(2*SIN(PI()*0.00009*A9))">
+    12.63</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    160</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="11.056197415107047" x:fmla="=1/(2*SIN(PI()*0.00009*A10))">
+    11.06</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    180</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="9.8286216352586244" x:fmla="=1/(2*SIN(PI()*0.00009*A11))">
+    9.83</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    200</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="8.8466554305123175" x:fmla="=1/(2*SIN(PI()*0.00009*A12))">
+    8.85</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    220</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="8.0433144077904757" x:fmla="=1/(2*SIN(PI()*0.00009*A13))">
+    8.04</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    240</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="7.3739423085753133" x:fmla="=1/(2*SIN(PI()*0.00009*A14))">
+    7.37</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    260</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="6.8076232648508865" x:fmla="=1/(2*SIN(PI()*0.00009*A15))">
+    6.81</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    280</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="6.3222745167845238" x:fmla="=1/(2*SIN(PI()*0.00009*A16))">
+    6.32</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    300</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="5.9017020433359715" x:fmla="=1/(2*SIN(PI()*0.00009*A17))">
+    5.90</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    350</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="5.060793988468709" x:fmla="=1/(2*SIN(PI()*0.00009*A18))">
+    5.06</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    400</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="4.4304095028431743" x:fmla="=1/(2*SIN(PI()*0.00009*A19))">
+    4.43</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    450</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="3.9403746160818915" x:fmla="=1/(2*SIN(PI()*0.00009*A20))">
+    3.94</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    500</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="3.5485850132346117" x:fmla="=1/(2*SIN(PI()*0.00009*A21))">
+    3.55</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    550</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="3.2282471008198352" x:fmla="=1/(2*SIN(PI()*0.00009*A22))">
+    3.23</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    600</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="2.961498539881942" x:fmla="=1/(2*SIN(PI()*0.00009*A23))">
+    2.96</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    650</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="2.7359731484405181" x:fmla="=1/(2*SIN(PI()*0.00009*A24))">
+    2.74</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    700</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="2.5428379886361303" x:fmla="=1/(2*SIN(PI()*0.00009*A25))">
+    2.54</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    750</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="2.3756156190479381" x:fmla="=1/(2*SIN(PI()*0.00009*A26))">
+    2.38</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    800</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="2.2294480024208414" x:fmla="=1/(2*SIN(PI()*0.00009*A27))">
+    2.23</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    850</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="2.1006202106927718" x:fmla="=1/(2*SIN(PI()*0.00009*A28))">
+    2.10</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    900</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="1.9862428950391324" x:fmla="=1/(2*SIN(PI()*0.00009*A29))">
+    1.99</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    950</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="1.8840350285600813" x:fmla="=1/(2*SIN(PI()*0.00009*A30))">
+    1.88</td>
+  </tr>
+  <tr height="15" style="height:11.25pt">
+    <td height="15" style="height: 11.25pt; font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: .5pt solid windowtext; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num>
+    1000</td>
+    <td style="font-size: 8.0pt; text-align: center; color: windowtext; font-weight: 400; font-style: normal; text-decoration: none; font-family: Arial; vertical-align: bottom; white-space: nowrap; border-left: medium none; border-right: .5pt solid windowtext; border-top: medium none; border-bottom: .5pt solid windowtext; padding: 0px" x:num="1.7921718261860802" x:fmla="=1/(2*SIN(PI()*0.00009*A31))">
+    1.79</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p>
+<img border="0" src="Lead0TimePlot.PNG" width="429" height="326" hspace="10" vspace="10">&nbsp; </p>
+<p>This plot above displays a simple 0.5 second motion with no Lead Compensation 
+for a Microstepper Motor.&nbsp; Position axis shown on the primary (left axis) 
+for the red plot has units of cycles.&nbsp; PWM output shown on the secondary 
+(right axis) for the green plot has units of PWM counts.&nbsp; Move parameters 
+are: Vel=200 cycles/sec, Accel=200 cycles/sec<sup>2</sup>, Jerk=10000 
+cycles/sec3<sup>.&nbsp; </sup>Note that regardless of velocity PWM amplitude is 
+constant</p>
+<p>
+<img border="0" src="Lead27TimePlot.PNG" width="431" height="324" hspace="10" vspace="10"></p>
+<p>This plot displays the same 0.5 second motion with Lead Compensation = 27.0.&nbsp; 
+All other parameters same as above.&nbsp; Note how PWM amplitude increases with 
+velocity</p>
+<p>&nbsp;</p>
+<p>If motor parameters are unknown, a trial and error approach may be used to 
+find the best lead compensation value.&nbsp; The following procedure may be used:</p>
+<ol>
+  <li>Set Lead Compensation to zero</li>
+  <li>Increase motor speed until a drop in torque is first detected</li>
+  <li>Increase Lead Compensation until normal torque is restored</li>
+</ol>
+<p>Setting the Lead Compensation too high should be avoided, as it may cause 
+over current in the motor at medium speeds or voltage distortion due to 
+saturation (clipping).</p>
+<p><b><a name="Master/Slave_Settings">Master/Slave Settings</a></b></p>
+<p>
+<img border="0" src="MasterSlave.png" width="161" height="125" hspace="10" vspace="10" align="left"></p>
+<p>Configures the axis to be slaved to another axis.&nbsp; If slaved when the 
+master axis moves, this axis will be commanded to move by an amount as scaled by 
+the slave gain.&nbsp; If the Slave Gain is negative the slaved axis will move in 
+the opposite direction as the Master.&nbsp; See also Console commands
+<a href="../Cmd.htm#SlaveGain">SlaveGain</a> and <a href="../Cmd.htm#MasterAxis">
+MasterAxis</a>.&nbsp; Setting the Master axis as -1 will disable slaving for 
+this axis.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><b><a name="Backlash_Settings">Backlash Settings</a></b></p>
+<p>
+<img border="0" src="Backlash.png" hspace="10" vspace="10" align="left"></p>
+<p>Configures the Backlash Compensation for the axis.&nbsp; To compensate for 
+backlash in an axis, an offset in the commanded position may be applied when 
+moving in the positive direction, and not applied when moving in the negative 
+direction.&nbsp; The amount and rate at which the offset is applied is specified 
+here.&nbsp; See also <a href="../Cmd.htm#BacklashMode">BacklashMode</a>,
+<a href="../Cmd.htm#BacklashAmount">BacklashAmount</a> and
+<a href="../Cmd.htm#BacklashRate">BacklashRate</a> Console commands. </p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><u><b><a name="Limit_Switch_Options">Limit Switch Options</a></b></u></p>
+<p>
+<img border="0" src="Config7.png" align="left" hspace="10" vspace="10" width="412" height="216"></p>
+<p><i><b>KMotion</b></i> has the ability to monitor limit switch inputs for each 
+axis and stop motion when a physical limit switch is detected.&nbsp; The limit 
+switch options allow this feature to be enabled or disabled for each limit 
+(positive or negative), what specific bit to be monitored for each limit, what 
+polarity of the bit indicates contact with the limit, and what action to perform 
+when a limit is detected. </p>
+<p>Select <i>Watch Limit </i>to enable limit switch monitoring.&nbsp; </p>
+<p>Select <i>Stop when low</i> to select negative true logic for the limit 
+(motion will be stopped when a low level is detected).&nbsp; </p>
+<p>Specify a <i>bit no.</i> for which bit is to be monitored for the limit 
+condition.&nbsp; See the <a href="../DigitalIOScreenKFLOP/DigitalIOScreen.htm">
+Digital IO Screen</a> for current I/O bit status and a recommended bit 
+assignment for limit switches (bits 12 through 19).&nbsp; If in a particular 
+application it isn't critical to determine which Limit Switch (either positive 
+or negative, or even which axis) the number of digital I/O bits consumed by 
+limit switches may be reduced by &quot;wire ORing&quot; (connecting in parallel) multiple 
+switches together.&nbsp; In this case, the same bit number may be specified more 
+than one place.</p>
+<p>The Action drop down specifies what action should be performed when a limit 
+is encountered.</p>
+<p><i>Kill Motor Drive</i> - will completely disable the axis whenever the limit 
+condition is present.&nbsp; Note that it will not be possible to re-enable the 
+axis (and move out of the limit) while the limit condition is still present and 
+this mode remains to be selected.</p>
+<p><i>Disallow drive into limit</i> - will disable the axis whenever the limit 
+condition is present <i>and</i> a motion is made into the direction of the 
+limit.&nbsp; This mode will allow the axis to be re-enabled while inside the 
+limit and will allow a move away from the limit.</p>
+<p>Stop Movement - this action will keep the axis enabled, but will FeedHold the 
+Coordinate System.&nbsp; This will cause commanded positions to decelerate to a 
+stop in a controlled manner.&nbsp; Independent motions will decelerate to a stop 
+in the same manner as a Jog to zero speed would cause.&nbsp; Coordinated Motion 
+will decelerate all axes to a stop along the motion path.</p>
+<p>The FeedHold mode will remain and prevent any further motion until cleared.&nbsp; 
+In KMotion the <img border="0" src="ConfigFeedHold.png" width="41" height="36"> 
+button will flash and can be pushed to clear the Feedhold.&nbsp; In KMotionCNC 
+Feedhold cna be cleared by pushing
+<img border="0" src="ConfigFeedHoldCNC.png" width="98" height="87">.&nbsp; If 
+further motion is attempted into the Soft Limit another Feedhold will occur.&nbsp; 
+However if no motion, or motion out of the Limit, Feedhold will remain clear and 
+the motion will be allowed.. </p>
+<p><b><a name="Soft_Limits">Soft Limits</a></b></p>
+<p>Soft Limits will always prevent motion in the same manner as a Hardware Limit 
+with the Stop Movement Action Selected.&nbsp; This occurs regardless of the 
+Action Type Selected for the Hardware Limit Switches.&nbsp; To disable Soft 
+Limits set them to a huge range which could never occur.&nbsp; Soft Limits 
+prevent motion within KFLOP when Jogging, moving and so forth.&nbsp; They also 
+are are uploaded by Applications such as KMotionCNC and used to prevent motion 
+during Trajectory Planing.</p>
+<p>&nbsp;</p>
+<p><u><b><a name="Launch_on_Power_U">Launch on Power U</a>p</b></u></p>
+<p><img border="0" src="Config8.gif" align="left" hspace="10" vspace="10"></p>
+<p>The launch on power up configuration specifies which User Programs are to be 
+automatically launched on power up for stand alone operation of <i><b>KMotion</b></i>.&nbsp; 
+See the <a href="../ProgramScreen/ProgramScreen.htm">C Program Screen</a> for 
+information on how to Edit, Compile, and Download a C program into <b><i>KMotion</i></b> 
+for execution into one (or more) of the 7 Thread program spaces within <i><b>
+KMotion</b></i>.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>To configure a program execute on 
+power up, perform the following steps:</p>
+<ol>
+  <li>
+  <p style="margin-top: 0; margin-bottom: 0"><i>Compile and Download</i> a C 
+  Program to a particular Thread Space.</p></li>
+  <li>
+  <p style="margin-top: 0; margin-bottom: 0">Select <i>Launch on Power Up</i> 
+  for the same Thread.</p></li>
+  <li>
+  <p style="margin-top: 0; margin-bottom: 0"><i>Flash</i> the User Memory (see 
+  following section).</p></li>
+  <li>
+  <p style="margin-top: 0; margin-bottom: 0"><i>Disconnect</i> the Host USB 
+  cable</p></li>
+  <li>
+  <p style="margin-top: 0; margin-bottom: 0"><i>Cycle Power</i> on the <i><b>
+  KMotion</b></i></p></li>
+</ol>
+<p>&nbsp;</p>
+<p><u><b><a name="FLASH">FLASH</a></b></u></p>
+<p><img border="0" src="Config9.gif" align="left" hspace="10" vspace="10"></p>
+<p>The entire user memory space may be Flashed into nonvolatile memory by 
+depressing the <i>Flash - User Memory</i> button.&nbsp; This saves all of the 
+axis configurations, all user program thread spaces, and the user persistent 
+data section.&nbsp; On all subsequent power up resets, <i><b>KMotion</b></i> 
+will revert to that saved configuration. (note that it is preferred to have the 
+host, or a user program, configure the board before each use rather than relying 
+on the exact state of a KMotion set to a particular state at some point in the 
+past).</p>
+<p>To upgrade the system firmware in a <i><b>KMotion use </b></i>the <i>Flash - 
+New Version</i> button.&nbsp; The user will be prompted to select a <b>
+DSPKMotion.out</b> COFF file from within the <i><b>KMotion</b></i> Install 
+Directory to download and Flash.&nbsp; Note that all user programs and data will 
+be deleted from <i><b>KMotion </b></i>when loading a new version.&nbsp; </p>
+<p>After the firmware has been flashed it is necessary to re-boot the <i><b>
+KMotion</b></i> in order for the new firmware to become active.</p>
+<p>It is important that the <b>&lt;Install Directory&gt;\DSP_KMotion\DSPKMotion.out</b> 
+file match the firmware that is flashed into <i><b>KMotion</b></i>.&nbsp; User C 
+programs are <i>Linked</i> using this file to make calls and to access data 
+located within the <i><b>KMotion</b></i> firmware. Whenever a user program is 
+compiled and linked using this file, the timestamp of this file is compared 
+against the timestamp of the executing firmware (if a <i><b>KMotion</b></i> is 
+currently connected).&nbsp; If the timestamps differ, the following message will 
+be displayed, and it is not recommended to continue.&nbsp; The &quot;Version&quot; Console 
+Script Command may also be used to check the firmware version.</p>
+<p><img border="0" src="Config6.jpg"></p>
+<p>&nbsp;</p>
+<p>In all cases while flashing firmware or user programs the process should not 
+be interrupted or a corrupted flash image may result which renders the board 
+un-bootable.&nbsp; However if this occurs the <i>Flash Recovery </i>mode<i> </i>
+may be used to recover from the situation.&nbsp; To perform the recovery, press 
+the <i>Flash Recovery </i>button and follow the dialog prompts to:</p>
+<ol>
+  <li>Select the firmware file to boot</li>
+  <li>Turn off <i><b>KMotion</b></i></li>
+  <li>Turn on KMotion</li>
+  <li>After <i><b>KMotion</b></i> boots, Flash the New Version&nbsp; </li>
+</ol>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

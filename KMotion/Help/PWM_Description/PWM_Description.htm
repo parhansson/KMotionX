@@ -1,0 +1,103 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>PWM Descriptions</title>
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+</head>
+
+<body>
+
+<h1><i>KMotion's Power Amplifiers and PWM's</i></h1>
+<p>&nbsp;</p>
+<p>The basic component of <i><b>KMotion's</b></i> switching power amplifiers is 
+the <i>Half Bridge</i> (see below).&nbsp; A half bridge allows one point to be 
+connected to either Motor Power (V +) or ground by ether closing switch S1 or S2 
+(but never both at the same time).&nbsp; The 4 Axis <i><b>KMotion</b></i> board 
+contains a total of <i>sixteen</i> half bridges.</p>
+<p><img border="0" src="../Schematics/HalfBridge.PNG" width="145" height="216"></p>
+<p>To control a simple 2 point load (such as one of the two coils of a stepper 
+motor) two half bridges are connected into what is called a <i>Full Bridge</i> (or 
+sometimes referred to as an <i>H Bridge</i>). </p>
+<p><img border="0" src="../Schematics/FullBridge.PNG" width="208" height="186"></p>
+<p>By closing specific switches, voltage may be applied either direction to the 
+load or the load may be shorted (which applies 0 volts across the load) and may 
+allow current to recirculate through the load.&nbsp; See the 3 diagrams below.&nbsp; 
+This technique is what allows <b><i>KMotion</i></b> to apply positive voltage, 
+negative voltage, or zero voltage to a particular load using only a single 
+positive 
+supply.&nbsp; Furthermore, in order to provide a <i>variable</i> voltage to a 
+load, a method of PWM (Pulse Width Modulation) is utilized which rapidly (@ 
+~30KHz) switches between two of the three states.&nbsp; By varying the amount of 
+time spent in the various states the average voltage that is applied to the load 
+may be controlled.</p>
+<p>There are two possible methods of performing PWM. <i><b>KMotion</b></i> refers to the two 
+methods as <i>Normal</i> (in some literature this is referred to as locked 
+anti-phase) or <i>Recirculating.&nbsp; </i></p>
+<p>The <i>Normal</i> method always switches between the first two states shown 
+below (positive and negative).&nbsp; If the desired average voltage is <i>
+positive</i>, then the positive state will be applied for a <i>longer</i> time 
+than the negative state.&nbsp; If the desired average voltage is <i>negative</i>, 
+then the positive state will be applied for a <i>shorter</i> time than the 
+negative state.&nbsp; For example, if +50% of the supply voltage is desired, 
+then 75% of the time positive will be applied, and 25% of the time negative will 
+be applied.&nbsp; Note that if the desired average voltage is <i>zero</i>, then 
+the positive state will be applied for an equal time as the negative state.&nbsp; 
+The advantage of this method is that the controlled voltage is very linear 
+through zero.&nbsp; The slight disadvantage of this method is somewhat larger 
+current ripple.&nbsp; Current ripple also becomes larger as the load inductance 
+decreases.&nbsp; Most motors have relatively large inductances so this method 
+works well and provides the best performance.&nbsp; However for loads with 
+little or no inductance (such as a light bulb) this method is inappropriate as 
+full current will always flow regardless of the +/- duty cycle.</p>
+<p>The <i>Recirculating </i>method always switches between the zero state and <i>
+either</i> the positive state <i>or</i> the negative state depending on whether 
+the desired voltage is either positive or negative.&nbsp; For example, if +50% 
+of the supply voltage is desired, then 50% of the time <i>positive</i> will be 
+applied, and 50% of the time <i>zero</i> will be applied.&nbsp; Note that if the 
+desired average voltage is <i>zero</i>, then the zero state will be applied 100% 
+of the time.&nbsp; This might be considered more of a true &quot;off&quot; condition, than 
+the above method which switches equally between positive and negative.&nbsp; The 
+advantage of this method is that there is less current ripple and will even work 
+with non inductive loads (like a light bulb).&nbsp; The disadvantage of this 
+method is the slight nonlinearity through zero that occurs when transitioning 
+from a very short positive pulse to a very short negative pulse.&nbsp; Every 
+real switch has a minimum turn on and turn off period which limits the smallest 
+size of a pulse.</p>
+<p>&nbsp;</p>
+<p>
+<img border="0" src="../Schematics/FullBridgeOneDir.PNG" width="208" height="216"></p>
+<p>&nbsp;</p>
+<p>
+<img border="0" src="../Schematics/FullBridgeOpposite.PNG" width="218" height="226"></p>
+<p>&nbsp;</p>
+<p>
+<img border="0" src="../Schematics/FullBridgeRecirculate.PNG" width="208" height="216"></p>
+<p>&nbsp;</p>
+<p><i><b>KMotion</b></i> also has a <i><a name="3_Phase_mode">3 Phase mode</a></i> 
+where two full bridges (only 1/2 of the second is used) and two PWM timers work 
+in a special configuration in order to drive a 3 phase brushless motor.&nbsp; 
+See the circuit configuration below.&nbsp; Here the supply voltage may be 
+effectively applied at any phase angle (direction toward any of the 3 loads).&nbsp; 
+The method utilized is analogous to the <i>Normal</i> mode described above and 
+has smooth transitions through reversals.</p>
+<p>&nbsp;</p>
+<p>
+<img border="0" src="../Schematics/ThreePhaseBridge.PNG" width="297" height="335"></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

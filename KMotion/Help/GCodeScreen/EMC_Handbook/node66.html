@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>11. Canned Cycles</TITLE>
+<META NAME="description" CONTENT="11. Canned Cycles">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node80.html">
+<LINK REL="previous" HREF="node45.html">
+<LINK REL="up" HREF="node44.html">
+<LINK REL="next" HREF="node67.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1315"
+  HREF="node67.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1309"
+  HREF="node44.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1303"
+  HREF="node65.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1311"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1313"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1316"
+  HREF="node67.html">11.0.1 Preliminary Motion</A>
+<B> Up:</B> <A NAME="tex2html1310"
+  HREF="node44.html">III. Part 3 -</A>
+<B> Previous:</B> <A NAME="tex2html1304"
+  HREF="node65.html">Modal Codes</A>
+ &nbsp; <B>  <A NAME="tex2html1312"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1314"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION04200000000000000000">
+11. Canned Cycles</A>
+</H1>
+
+<P>
+Canned Cycles G81 through G89 have been implemented for milling. This
+section describes how each cycle has been implemented. In addition
+G80 and G98/G99 are considered here because their primary use is related
+to canned cycles.
+
+<P>
+All canned cycles are performed with respect to the XY plane With
+the current 3 axis interpreter, no A, B, C-axis motion is allowed
+during canned cycles inverse time feed rate is not allowed cutter
+radius compensation is not allowed Each of the canned cycles defines
+a new machine motion mode. As a motion mode, they will stay in effect
+until replaced by another motion G word or by G80 as described below.
+
+<P>
+All canned cycles use X, Y, R, and Z values in the NC code. These
+values are used to determine X, Y, R, and Z positions. The R (usually
+meaning retract) position is along the Z-axis. Some canned cycles
+use additional arguments that are listed with the specific cycle.
+
+<P>
+In absolute distance mode, the X, Y, R, and Z values are absolute
+positions in the current coordinate system. In incremental distance
+mode, X, Y, and R values are treated as increments to the current
+position and Z as an increment from the Z-axis position before the
+move involving Z takes place.
+
+<P>
+A repeat feature has been implemented. The L word represents the number
+of repeats. If the repeat feature is used, it is normally used in
+incremental distance mode, so that the same sequence of motions is
+repeated in several equally spaced places along a straight line. EMC
+allows L &gt; 1 in absolute distance mode to mean &#34;do the same
+cycle in the same place several times.&#34; Omitting the L value
+is equivalent to specifying L=1. 
+
+<P>
+When L&gt;1 in incremental mode, the X and Y positions are determined
+by adding the given X and Y values either to the current X and Y positions
+(on the first go-around) or to the X and Y positions at the end of
+the previous go-around (on the second and successive go-arounds).
+The R and Z positions do not change during the repeats.
+
+<P>
+The number of repeats of a canned cycle only works for in the block
+containing L word. If you want to repeat a canned cycle using the
+repeat feature by placing a new L word on each line for which you
+want repeats.
+
+<P>
+The height of the retract move at the end of each repeat (called &#34;clear
+Z&#34; in the descriptions below) is determined by the setting
+of the retract_mode: either to the original Z position (if that is
+above the R position and the retract_mode is G98, OLD_Z), or otherwise
+to the R position. (See G98/G99 below)
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><UL>
+<LI><A NAME="tex2html1317"
+  HREF="node67.html">11.0.1 Preliminary Motion </A>
+</UL>
+<BR>
+<LI><A NAME="tex2html1318"
+  HREF="node68.html">11.1 G80 </A>
+<LI><A NAME="tex2html1319"
+  HREF="node69.html">11.2 G81 Cycle </A>
+<LI><A NAME="tex2html1320"
+  HREF="node70.html">11.3 G82 Cycle </A>
+<LI><A NAME="tex2html1321"
+  HREF="node71.html">11.4 G83 Cycle</A>
+<LI><A NAME="tex2html1322"
+  HREF="node72.html">11.5 G84 Cycle</A>
+<LI><A NAME="tex2html1323"
+  HREF="node73.html">11.6 G85 Cycle</A>
+<LI><A NAME="tex2html1324"
+  HREF="node74.html">11.7 G86 Cycle</A>
+<LI><A NAME="tex2html1325"
+  HREF="node75.html">11.8 G87 Cycle</A>
+<LI><A NAME="tex2html1326"
+  HREF="node76.html">11.9 G88 Cycle</A>
+<LI><A NAME="tex2html1327"
+  HREF="node77.html">11.10 G89 Cycle</A>
+<LI><A NAME="tex2html1328"
+  HREF="node78.html">11.11 G98 G99</A>
+<LI><A NAME="tex2html1329"
+  HREF="node79.html">11.12 Why use a canned cycle?</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1315"
+  HREF="node67.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1309"
+  HREF="node44.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1303"
+  HREF="node65.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1311"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1313"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1316"
+  HREF="node67.html">11.0.1 Preliminary Motion</A>
+<B> Up:</B> <A NAME="tex2html1310"
+  HREF="node44.html">III. Part 3 -</A>
+<B> Previous:</B> <A NAME="tex2html1304"
+  HREF="node65.html">Modal Codes</A>
+ &nbsp; <B>  <A NAME="tex2html1312"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1314"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

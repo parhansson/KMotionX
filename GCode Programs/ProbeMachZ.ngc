@@ -1,0 +1,3 @@
+G31 Z-4.0 F40 (Probe in Z)
+G1 Z #2002 (move back to trip point)
+M30

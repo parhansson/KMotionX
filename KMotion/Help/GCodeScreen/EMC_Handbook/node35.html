@@ -1,0 +1,275 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>8.1 Ray's Experience </TITLE>
+<META NAME="description" CONTENT="8.1 Ray's Experience ">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node36.html">
+<LINK REL="previous" HREF="node34.html">
+<LINK REL="up" HREF="node34.html">
+<LINK REL="next" HREF="node36.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html783"
+  HREF="node36.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html777"
+  HREF="node34.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html771"
+  HREF="node34.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html779"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html781"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html784"
+  HREF="node36.html">8.2 Tim's Experience</A>
+<B> Up:</B> <A NAME="tex2html778"
+  HREF="node34.html">8. PID Axis Tuning</A>
+<B> Previous:</B> <A NAME="tex2html772"
+  HREF="node34.html">8. PID Axis Tuning</A>
+ &nbsp; <B>  <A NAME="tex2html780"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html782"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION03310000000000000000">
+8.1 Ray's Experience </A>
+</H1>
+
+<P>
+All three variables (6+ really) look at what is happening between
+commanded and actual position in the emc. My comments below may be
+a bit unsatisfying for those who are accustomed to very precise things
+but they come from a number of years of twiddling with servo controls. 
+
+<P>
+P - process variable. 
+
+<P>
+----------- 
+
+<P>
+This is the gain control. It is a bit like the volume on a music system.
+If it is set too low you can't follow the lyrics. If it's set too
+high the windows rattle and the neighbors fuss. 
+
+<P>
+Some authors refer to P as proportional band. Think of it as a pair
+of lines, one ahead of the commanded position and one behind it. Actual
+position should be somewhere between the lines. If the actual position
+is farther behind then that below line the controller will run the
+axis flat out to reach the slower line. Conversely, if the actual
+position is ahead of the above line the controller will do all it
+can to bring actual position down to that upper bound. 
+
+<P>
+As long as the actual position is between the lines, the controller
+will ramp gain up and down so that actual approaches commanded. 
+
+<P>
+The larger the P number the narrower the space between these lines.
+Set P too low and your axis works like a dedicated couch potato during
+super bowl or world soccer finals - even a fire may not rouse it.
+This condition is rather easy to spot because the axis is sluggish. 
+
+<P>
+Set P too high and your axis will develop palsy. On most machines
+you can hear this condition by putting your ear to the motor. You
+may want to do this when others aren't watching - or use a stethoscope
+or a long socket extension - or perhaps the graph function. 
+
+<P>
+Palsy will sound like a hum or grind when the motor is sitting still
+or moving very slowly. You can also feel palsy if you wrap your hand
+around the ball screw or grip the drive belt or pulley. (disclaimer
+- This demonstration is done by a professional with only three remaining
+fingers, don't try this at home) 
+
+<P>
+Deadband may mask too much P when a motor is sitting still so you
+may want to move the axis very slowly and listen to the sounds around
+each step. If the axis keeps up with commanded position at high speed
+and during acceleration and there is not a lot of ringing, grinding,
+jumping at very low speed, then you are real close.
+
+<P>
+&nbsp;
+
+<P>
+I - Integral variable. 
+
+<P>
+----------- 
+
+<P>
+Integral works a bit like a shock absorber. Any change in either actual
+or commanded position gets rounded off or averaged in so that acceleration/deceleration
+brought about by P is absorbed and released more slowly over time. 
+
+<P>
+No integral and you get the full P effect of change in commanded position.
+Too much integral and the axis seems to wander off on it's own without
+much regard for P. A little integral may smooth out some of the frequency
+jumps when a stepper is running right near one of those troublesome
+rates.
+
+<P>
+&nbsp;
+
+<P>
+D - Derivative variable 
+
+<P>
+------------ 
+
+<P>
+Derivative works like passing gear for acceleration or a jake-brake
+for stopping. Whenever commanded position changes rapidly, d will
+really kick the amp/motor in the *** to follow the rate-of-change
+of the axis command rather than the difference between commanded and
+actual position. 
+
+<P>
+Derivative works against inertia so if you've got lots of iron to
+start or stop dial some in. But derivative will increase palsy so
+you have to balance it against gain.
+
+<P>
+&nbsp;
+
+<P>
+FF1-3 Feed Forward variables 
+
+<P>
+--- 
+
+<P>
+I know very little about the effect of these variables.&nbsp; My first
+experience with them is while using EMC.&nbsp; I need to include an idea
+from Jon Elson and his work with servos and his Bridgeport.&nbsp; He has
+used a value up to 8.0 for FF1 with a somewhat reduced acceleration
+to very successfully minimize following error.&nbsp; The relevant portions
+of his ini file are: 
+
+<P>
+<TT><FONT SIZE="-1">DEFAULT_VELOCITY =&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.75</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">MAX_VELOCITY =&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.5 </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">DEFAULT_ACCELERATION =&nbsp;&nbsp;2.0 </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">MAX_ACCELERATION =&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.0 </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">MAX_VELOCITY =&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.2 </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">P =&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;100.000 </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">I =&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.000
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">D =&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.000
+</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">FF0 =&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.000 </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">FF1 =&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7.500 </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">FF2 =&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.000</FONT></TT>
+<P>
+
+
+<P>
+Your results will no doubt vary.
+
+<P>
+&nbsp;
+
+<P>
+<TT><FONT SIZE="-1">T - Test </FONT></TT>
+<P>
+
+
+<P>
+---- 
+
+<P>
+The final proof of tuning is in the cutting. So after your best guess
+with all the watching, hearing, feeling done to each axis, get out
+a chunk of soft aluminum, a small end or ball mill, and begin to mill
+circles or arcs that pass 90 degrees between each pair of axis. I
+like outside circles because you can hold them up to the light and
+see how the finish looks near the quadrants. 
+
+<P>
+Digital systems will give you some steps as one axis approaches zero
+and the other approaches the set feedrate so don't expect a perfect
+mirror arc finish. Backlash and backlash compensation also affect
+the appearance here. Servo drives will work better than steppers.
+(digital vs analog) But the smoother the saw teeth the better. 
+
+<P>
+Be prepared to spend some metal on this! And make a list of your settings,
+changes, and a better/worse judgment about the result of each change.
+On occasion I've spent pages of paper and made piles of swarf to get
+a stubborn machine to where I wanted it. 
+
+<P>
+&nbsp;
+
+<P>
+Good luck and may the electromotive force be with you. 
+
+<P>
+Ray &lt;rehenry@up.net&gt; 
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html783"
+  HREF="node36.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html777"
+  HREF="node34.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html771"
+  HREF="node34.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html779"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html781"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html784"
+  HREF="node36.html">8.2 Tim's Experience</A>
+<B> Up:</B> <A NAME="tex2html778"
+  HREF="node34.html">8. PID Axis Tuning</A>
+<B> Previous:</B> <A NAME="tex2html772"
+  HREF="node34.html">8. PID Axis Tuning</A>
+ &nbsp; <B>  <A NAME="tex2html780"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html782"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

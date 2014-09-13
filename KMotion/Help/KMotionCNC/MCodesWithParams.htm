@@ -1,0 +1,63 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>MCodes with Parameters</title>
+</head>
+
+<body>
+
+<p><b><i><font face="Arial" size="5">MCodes with Parameters</font></i></b></p>
+<p><font face="Arial">KMotionCNC allows MCodes 100-119 with parameters when 
+configured to Execute a KFLOP User C Program.&nbsp; The P Q and R words in the 
+GCode block will be downloaded to KFLOP's persist.UserData variables before the 
+C program is executed.&nbsp; The parameters will be placed into consecutive 
+KFLOP variables as 32-bit floating point values starting with the variable 
+specified in the&nbsp; MCode Configuration.&nbsp; Zero, one, two, or all three 
+parameters may be specified in the GCode block (line).&nbsp; The order they are 
+placed into the variables will always be in the P Q R order where any or all of 
+the parameters will be omitted if they are not explicitly specified in the GCode 
+Block.&nbsp; If no parameters are specified then the MCode number will be stored 
+into the one Var specified.</font></p>
+<p><u><b><i><font face="Arial">Example M Code Configuration</font></i></b></u></p>
+<p>
+<img border="0" src="KMotionCNCfiles/MCodeConfig.png" width="981" height="30"></p>
+<p>&nbsp;</p>
+<p><u><i><b><font face="Arial">Example M Code Usage with all 3 parameters:</font></b></i></u></p>
+<p><b><font face="Arial">M110 P1.23 Q4.56 R-1</font></b></p>
+<p>&nbsp;</p>
+<p><u><i><b><font face="Arial">Example C Code accessing parameters:</font></b></i></u></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: blue">#include</span><span style="font-size: 10.0pt; font-family: Courier New">
+<span style="color:#A31515">&quot;KMotionDef.h&quot;</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: #A31515">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">main()</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">{</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf(<span style="color:#A31515">&quot;P 
+= %f Q = %f R = %f\n&quot;</span>,</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *(<span style="color:blue">float</span> 
+*)&amp;persist.UserData[0],</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *(<span style="color:blue">float</span> 
+*)&amp;persist.UserData[1],</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *(<span style="color:blue">float</span> 
+*)&amp;persist.UserData[2]);</span></p>
+<p class="MsoNormal" style="margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; line-height: 115%; font-family: Courier New">}</span></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><u><b><i><font face="Arial">Printed 
+Result</font></i></b></u></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">P = 1.230000 Q = 
+4.560000 R = -1.000000</font></p>
+
+</body>
+
+</html>

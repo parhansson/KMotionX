@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>8. PID Axis Tuning</TITLE>
+<META NAME="description" CONTENT="8. PID Axis Tuning">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node41.html">
+<LINK REL="previous" HREF="node28.html">
+<LINK REL="up" HREF="node19.html">
+<LINK REL="next" HREF="node35.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html763"
+  HREF="node35.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html757"
+  HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html751"
+  HREF="node33.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html759"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html761"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html764"
+  HREF="node35.html">8.1 Ray's Experience</A>
+<B> Up:</B> <A NAME="tex2html758"
+  HREF="node19.html">II. Part 2 -</A>
+<B> Previous:</B> <A NAME="tex2html752"
+  HREF="node33.html">7.5 stgdiag</A>
+ &nbsp; <B>  <A NAME="tex2html760"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html762"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION03300000000000000000">
+8. PID Axis Tuning</A>
+</H1>
+
+<P>
+Axis tuning is a critical part of most emc setups. Until recently
+we have been able to ignore tuning by using steppers and steppermod.o.
+You can still do this but the newer motion files, freqmod and smdromod
+allow stepper users much smoother and better control of axis motion.
+Smdromod.o even allows stepper users to feed back actual position
+using a home built feedback board. (no more lost steps) But the consequence
+of these newer motion systems is that users must now learn some of
+the basics of axis tuning. 
+
+<P>
+The description of PID tuning that follows is not intended to be exhaustive
+or rigorous but should get the beginning emc user started with these
+newer motion files and at least able to keep their axis from tripping
+out on overtravel. This page assumes that the reader is acquainted
+with the emc.ini file where tuning values are stored for each axis. 
+
+<P>
+There are a number of excellent internet resources that will extend
+this description. A few links are listed at the end of this page.
+There are several auto tuning and computational tuning procedures
+but these have not been tested with EMC. 
+
+<P>
+P - proportional, I - integral, and D - derivative are three common
+mathematical techniques that are applied to the task of getting a
+working process to follow a setpoint. In the case of EMC the process
+we want to control is actual axis position and the setpoint is the
+commanded axis position. PID is NIST's chosen way to connect these
+two things. 
+
+<P>
+A mechanical system, something like a pantograph, will serve to illustrate
+the control problem. With a pantograph you can trace the stylus around
+a pattern and the pen or pencil will produce the result. The stylus
+is the commanded position, the pen the actual. The pattern need not
+be the same size as the resulting drawing. That relationship depends
+upon the linkage. 
+
+<P>
+With a pantograph, we can consider the question, &#34;How good
+is the drawing?&#34; The answer depends upon several factors,
+speed of movement, detail in the pattern, sharpness of the stylus
+and pencil, size of stylus and pencil, differences in size between
+the two, etc. 
+
+<P>
+When we get to electrical or electronic systems like EMC, instead
+of a hard linkage between the pattern and the product, we have signals
+created by reading nc program code, reading jog commands, or reading
+position from a digital image or drawing. These signals are sent to
+an amplifier and its output is sent to a motor. Most often the mechanical
+system driven by the motor has a feedback device that returns actual
+position to EMC. 
+
+<P>
+EMC, or any computer controlled machine. should be thought of as a
+pantograph made with rubber bands in place of some of the rods and
+squishy bearings for some of the joints. PID tuning allows the integrator
+to control the stiffness of the rubber bands and the squashiness of
+the joints. With a mechanical pantograph the forces are all controlled
+by the fingers on the stylus. If the fingers are capable of 0.0001
+offsets in motion then the results will be that fine. Starting, stopping,
+and changing the direction of the pen's inertia is also totally dependent
+upon the fingers of the operator. But with an electrical system, all
+of these things must be accounted for in the signals that produce
+the motion. 
+
+<P>
+In any system that reproduces motion, one of the major &#34;goodness&#34;
+factors is what we call following error. Following error is a way
+of quantifying how close the actual position is to the commanded position
+while the tool follows the range of movements that can be commanded. 
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html765"
+  HREF="node35.html">8.1 Ray's Experience </A>
+<LI><A NAME="tex2html766"
+  HREF="node36.html">8.2 Tim's Experience</A>
+<LI><A NAME="tex2html767"
+  HREF="node37.html">8.3 Jon's Experience </A>
+<LI><A NAME="tex2html768"
+  HREF="node38.html">8.4 Fred's PID Report </A>
+<LI><A NAME="tex2html769"
+  HREF="node39.html">8.5 Links </A>
+<LI><A NAME="tex2html770"
+  HREF="node40.html">8.6 Print Resources</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html763"
+  HREF="node35.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html757"
+  HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html751"
+  HREF="node33.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html759"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html761"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html764"
+  HREF="node35.html">8.1 Ray's Experience</A>
+<B> Up:</B> <A NAME="tex2html758"
+  HREF="node19.html">II. Part 2 -</A>
+<B> Previous:</B> <A NAME="tex2html752"
+  HREF="node33.html">7.5 stgdiag</A>
+ &nbsp; <B>  <A NAME="tex2html760"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html762"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

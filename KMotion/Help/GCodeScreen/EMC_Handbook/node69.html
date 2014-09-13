@@ -1,0 +1,279 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>11.2 G81 Cycle </TITLE>
+<META NAME="description" CONTENT="11.2 G81 Cycle ">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node70.html">
+<LINK REL="previous" HREF="node68.html">
+<LINK REL="up" HREF="node66.html">
+<LINK REL="next" HREF="node70.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1368"
+  HREF="node70.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1362"
+  HREF="node66.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1356"
+  HREF="node68.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1364"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1366"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1369"
+  HREF="node70.html">11.3 G82 Cycle</A>
+<B> Up:</B> <A NAME="tex2html1363"
+  HREF="node66.html">11. Canned Cycles</A>
+<B> Previous:</B> <A NAME="tex2html1357"
+  HREF="node68.html">11.1 G80</A>
+ &nbsp; <B>  <A NAME="tex2html1365"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1367"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION04220000000000000000">
+11.2 G81 Cycle </A>
+</H1>
+
+<P>
+The G81<A NAME="2288"></A> cycle is intended for drilling.
+
+<P>
+0. Preliminary motion, as described above.
+
+<P>
+1. Move the Z-axis only at the current feed rate to the Z position.
+
+<P>
+2. Retract the Z-axis at traverse rate to clear Z. This cycle was
+used in the description of G80 above but is explained in detail here.
+
+<P>
+Example 2 - Absolute Position G81
+
+<P>
+Suppose the current position is (1, 2, 3) and the following line of
+NC code is interpreted.
+
+<P>
+G90 G81 G98 X4 Y5 Z1.5 R2.8
+
+<P>
+This calls for absolute distance mode (G90) and OLD_Z retract mode
+(G98) and calls for the G81 drilling cycle to be performed once. The
+X value and X position are 4. The Y value and Y position are 5. The
+Z value and Z position are 1.5. The R value and clear Z are 2.8. OLD_Z
+is 3. 
+
+<P>
+The following moves take place. 
+
+<P>
+1. a traverse parallel to the XY plane to (4,5,3) 
+
+<P>
+2. a traverse parallel to the Z-axis to (4,5,2.8). 
+
+<P>
+3. a feed parallel to the Z-axis to (4,5,1.5) 
+
+<P>
+4. a traverse parallel to the Z-axis to (4,5,3)
+
+<P>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><IMG
+ WIDTH="540" HEIGHT="284" ALIGN="BOTTOM" BORDER="0"
+ SRC="img16.gif"
+ ALT="\includegraphics{/usr/share/lyx/EMC_images/G81ex1.eps}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+Example 2 - Absolute Position G81
+
+<P>
+Suppose the current position is (1, 2, 3) and the following line of
+NC code is interpreted. 
+
+<P>
+G91 G81 G98 X4 Y5 Z-0.6 R1.8 L3 
+
+<P>
+This calls for incremental distance mode (G91) and OLD_Z retract
+mode (G98). It also calls for the G81 drilling cycle to be repeated
+three times. The X value is 4, the Y value is 5, the Z value is -0.6
+and the R value is 1.8. The initial X position is 5 (=1+4), the initial
+Y position is 7 (=2+5), the clear Z position is 4.8 (=1.8+3), and
+the Z position is 4.2 (=4.8-0.6). OLD_Z is 3.
+
+<P>
+The first preliminary move is a traverse along the Z axis to (1,2,4.8),
+since OLD_Z &lt; clear Z.
+
+<P>
+The first repeat consists of 3 moves.
+
+<P>
+1. a traverse parallel to the XY-plane to (5,7,4.8)
+
+<P>
+2. a feed parallel to the Z-axis to (5,7, 4.2)
+
+<P>
+3. a traverse parallel to the Z-axis to (5,7,4.8) The second repeat
+consists of 3 moves. The X position is reset to 9 (=5+4) and the Y
+position to 12 (=7+5).
+
+<P>
+1. a traverse parallel to the XY-plane to (9,12,4.8)
+
+<P>
+2. a feed parallel to the Z-axis to (9,12, 4.2)
+
+<P>
+3. a traverse parallel to the Z-axis to (9,12,4.8) The third repeat
+consists of 3 moves. The X position is reset to 13 (=9+4) and the
+Y position to 17 (=12+5).
+
+<P>
+1. a traverse parallel to the XY-plane to (13,17,4.8)
+
+<P>
+2. a feed parallel to the Z-axis to (13,17, 4.2)
+
+<P>
+3. a traverse parallel to the Z-axis to (13,17,4.8)
+
+<P>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><IMG
+ WIDTH="698" HEIGHT="578" ALIGN="BOTTOM" BORDER="0"
+ SRC="img17.gif"
+ ALT="\includegraphics{/usr/share/lyx/EMC_images/G81ex2.eps}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+Example 3 - Relative Position G81
+
+<P>
+Now suppose that you execute the first g81 block of code but from
+(0, 0, 0) rather than from (1, 2, 3). 
+
+<P>
+G90 G81 G98 X4 Y5 Z1.5 R2.8 Since OLD_Z is below the R value, it
+adds nothing for the motion but since the initial value of Z is less
+than the value specified in R, there will be an initial Z move during
+the preliminary moves. 
+
+<P>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><IMG
+ WIDTH="705" HEIGHT="329" ALIGN="BOTTOM" BORDER="0"
+ SRC="img18.gif"
+ ALT="\includegraphics{/usr/share/lyx/EMC_images/G81.eps}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+Example 4 - Absolute G81 R &gt; Z
+
+<P>
+This is a plot of the path of motion for the second g81 block of code.
+
+<P>
+G91 G81 G98 X4 Y5 Z-0.6 R1.8 L3 
+
+<P>
+Since this plot starts with (0, 0, 0), the interpreter adds the initial
+Z 0 and R 1.8 and rapids to that location. After that initial z move,
+the repeat feature works the same as it did in example 3 with the
+final z depth being 0.6 below the R value.
+
+<P>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><IMG
+ WIDTH="492" HEIGHT="236" ALIGN="BOTTOM" BORDER="0"
+ SRC="img19.gif"
+ ALT="\includegraphics{/usr/share/lyx/EMC_images/G81a.eps}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+Example 5 - Relative position R &gt; Z
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1368"
+  HREF="node70.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1362"
+  HREF="node66.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1356"
+  HREF="node68.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1364"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1366"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1369"
+  HREF="node70.html">11.3 G82 Cycle</A>
+<B> Up:</B> <A NAME="tex2html1363"
+  HREF="node66.html">11. Canned Cycles</A>
+<B> Previous:</B> <A NAME="tex2html1357"
+  HREF="node68.html">11.1 G80</A>
+ &nbsp; <B>  <A NAME="tex2html1365"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1367"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

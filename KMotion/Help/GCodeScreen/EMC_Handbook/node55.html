@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>G2 Circular/Helical Interpolation (Clockwise)</TITLE>
+<META NAME="description" CONTENT="G2 Circular/Helical Interpolation (Clockwise)">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node56.html">
+<LINK REL="previous" HREF="node54.html">
+<LINK REL="up" HREF="node52.html">
+<LINK REL="next" HREF="node56.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1163"
+  HREF="node56.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1157"
+  HREF="node52.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1151"
+  HREF="node54.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1159"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1161"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1164"
+  HREF="node56.html">G3 Circular/Helical Interpolation (Counterclockwise)</A>
+<B> Up:</B> <A NAME="tex2html1158"
+  HREF="node52.html">10.7 Basic Motion and</A>
+<B> Previous:</B> <A NAME="tex2html1152"
+  HREF="node54.html">G1 Linear Interpolation</A>
+ &nbsp; <B>  <A NAME="tex2html1160"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1162"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION04173000000000000000">
+G2 Circular/Helical Interpolation (Clockwise)</A>
+</H2>
+
+<P>
+<A NAME="2186"></A>G2 causes clockwise circular motion to be generated at
+a specified feed rate (F). The generated motion can be 2-dimensional,
+or 3-dimensional (helical). On a common 3-axis mill, one would normally
+encounter lots of arcs generated for the X,Y plane, with Z axis motion
+happening independently (2 axis moves in G17 plane). But, the machine
+is capable of making helical motion, just by mixing Z axis moves in
+with the circular interpolation.
+
+<P>
+When coding circular moves, you must specify where the machine must
+go and where the center of the arc is in either of two ways: By specifying
+the center of the arc with I and J words, or giving the radius as
+an R word.
+
+<P>
+I is the incremental distance from the X starting point to the X coordinate
+of the center of the arc. J is the incremental distance from the Y
+starting point to the Y coordinate of the center of the arc.
+
+<P>
+Examples:
+
+<P>
+G1 X0.0 Y1.0 F20.0 --go to X1.0, Y0.0 at a feed rate of 20 inches/minute
+
+<P>
+G2 X1.0 Y0.0 I0.0 J-1.0 --go in an arc from X0.0, Y1.0 to X1.0 Y0.0,
+with the center of the arc at X0.0, Y0.0
+
+<P>
+G1 X0.0 Y1.0 F20.0 --go to X1.0, Y0.0 at a feed rate of 20 inches/minute
+
+<P>
+G2 X1.0 Y0.0 R1.0 --go in an arc from X0.0, Y1.0 to X1.0 Y0.0, with
+a radius of R=1.0
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1163"
+  HREF="node56.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1157"
+  HREF="node52.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1151"
+  HREF="node54.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1159"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1161"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1164"
+  HREF="node56.html">G3 Circular/Helical Interpolation (Counterclockwise)</A>
+<B> Up:</B> <A NAME="tex2html1158"
+  HREF="node52.html">10.7 Basic Motion and</A>
+<B> Previous:</B> <A NAME="tex2html1152"
+  HREF="node54.html">G1 Linear Interpolation</A>
+ &nbsp; <B>  <A NAME="tex2html1160"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1162"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,258 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Controlling KMotionCNC from KFLOP</title>
+</head>
+
+<body>
+
+<p><b><i><font face="Arial" size="5">Controlling KMotionCNC from KFLOP</font></i></b></p>
+<p><font face="Arial">User KFLOP C Programs can request actions to be performed 
+by the KMotionCNC Application running on the PC by setting various command codes 
+into special persist.UserData variables.&nbsp; The special UserData variables 
+are being continuously uploaded with the Bulk Status record that KMotionCNC 
+requests at approximately 10 times per second to update the DROs and so forth.&nbsp; 
+If a command code is uploaded, KMotionCNC attempts to perform the requested 
+action, then changes the UserData Command Value to a result code.&nbsp; Zero 
+indicates success and a negative value indicates an error code (all commands are 
+positive).&nbsp; So the typical process involves:</font></p>
+<p><font face="Arial">#1 - KFLOP stores command into a Persist Var to request an 
+action</font></p>
+<p><font face="Arial">#2 - The command is uploaded to KMotionCNC with the next 
+status request</font></p>
+<p><font face="Arial">#3 - KMotionCNC performs the action</font></p>
+<p><font face="Arial">#4 - KMotionCNC clears the Persist Var to indicate 
+completion&nbsp; </font></p>
+<p><font face="Arial">#5 - KFLOP detects the command Var has been cleared to 
+know the action was successful and complete</font></p>
+<p><font face="Arial">The Status uploads several Persist Vars which permits 
+additional parameters to be uploaded with the command to KMotionCNC if required 
+by the action to be performed.&nbsp; If extra parameters or data is required, 
+then one of the uploaded parameters will specify where that data is located.</font></p>
+<p><font face="Arial">The number of UserData variables has now been expanded 
+from 100 to 200 Variables and Variables 100-107 are the special vars constantly 
+uploaded with bulk status.&nbsp; This is defined in the PC-DSP.h file as:</font></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: blue">#define</span><span style="font-size: 10.0pt; font-family: Courier New"> 
+PC_COMM_PERSIST 100&nbsp; <span style="color:green">// First Persist Variable that is 
+uploaded in status</span></span></p>
+<p class="MsoNormal" style="margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; line-height: 115%; font-family: Courier New; color: blue">
+#define</span><span style="font-size: 10.0pt; line-height: 115%; font-family: Courier New"> 
+N_PC_COMM_PERSIST 8&nbsp; <span style="color:green">// Number of Persist Variables 
+that are uploaded in status</span></span></p>
+<p><font face="Arial">Currently supported actions include:</font></p>
+<ul>
+	<li><font face="Arial">EStop</font></li>
+	<li><font face="Arial">Halt</font></li>
+	<li><font face="Arial">Execute</font></li>
+	<li><font face="Arial">Single Step</font></li>
+	<li><font face="Arial">Set FRO</font></li>
+	<li><font face="Arial">Inc/dec FRO</font></li>
+	<li><font face="Arial">Set X,Y,Z,A,B,C DROs</font></li>
+	<li><font face="Arial">Push a User Defined Action Button</font></li>
+	<li><font face="Arial">Execute an M Code</font></li>
+	<li><font face="Arial">Display a Message Box</font></li>
+	<li><font face="Arial">Get/Set GCode #Vars</font></li>
+	<li><font face="Arial">Execute a MDI line of GCode</font></li>
+</ul>
+<p>&nbsp;</p>
+<p><font face="Arial">A new example called KFLOPtoPCCmdExamples.c is included 
+which demonstrates how to invoke these actions from a KFLOP User C Program.&nbsp; 
+The following helper functions are included in the example that simplify 
+invoking the actions by setting the proper persist variables.&nbsp; They are:</font></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: green">// 
+Trigger a message box on the PC to be displayed</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: green">// 
+defines for MS Windows message box styles and Operator</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: green">// 
+response IDs are defined in the KMotionDef.h file </span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: blue">int</span><span style="font-size: 10.0pt; font-family: Courier New"> 
+MsgBox(<span style="color:blue">char</span> *s, <span style="color:blue">int</span> 
+Flags)</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: green">// put 
+the MDI string (Manual Data Input - GCode) in the </span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: green">// 
+gather buffer and tell the App where it is</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: blue">int</span><span style="font-size: 10.0pt; font-family: Courier New"> 
+MDI(<span style="color:blue">char</span> *s)</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: green">// Put a 
+Float as a parameter and pass the command to the App</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: blue">int</span><span style="font-size: 10.0pt; font-family: Courier New"> 
+DoPCFloat(<span style="color:blue">int</span> cmd, <span style="color:blue">
+float</span> f)</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: green">// Put 
+an integer as a parameter and pass the command to the App</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: blue">int</span><span style="font-size: 10.0pt; font-family: Courier New"> 
+DoPCInt(<span style="color:blue">int</span> cmd, <span style="color:blue">int</span> 
+i)</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: green">// Pass 
+a command to the PC and wait for it to handshake</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: green">// that 
+it was received by either clearing the command</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: green">// or 
+changing it to a negative error code</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: blue">int</span><span style="font-size: 10.0pt; font-family: Courier New"> 
+DoPC(<span style="color:blue">int</span> cmd)</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-family: Arial">The Example code to make use of the helper 
+functions is in the example as:</span></p>
+<p class="MsoNormal" style="margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; line-height: 115%; font-family: Courier New; color: green">
+&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">main()</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">{</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:blue">int</span> Answer;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:blue">double</span> *pD = (<span style="color:blue">double</span> 
+*)persist.UserData;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+DoPC(PC_COMM_ESTOP);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+DoPC(PC_COMM_HALT);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+DoPC(PC_COMM_EXECUTE);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+DoPC(PC_COMM_SINGLE_STEP);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+DoPCFloat(PC_COMM_SET_FRO,0.25f);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+DoPCFloat(PC_COMM_SET_FRO_INC,1.1f);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+DoPCFloat(PC_COMM_SET_X,0.0);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+DoPCFloat(PC_COMM_SET_Y,0.0);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+DoPCFloat(PC_COMM_SET_Z,1.25);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+DoPCInt(PC_COMM_USER_BUTTON,3);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+DoPCInt(PC_COMM_MCODE,3);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Answer = MsgBox(<span style="color:#A31515">&quot;Hello 
+World&quot;</span>,MB_YESNO|MB_ICONEXCLAMATION);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:blue">if</span> (Answer == IDYES)</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf(<span style="color:#A31515">&quot;Answer 
+is Yes\n&quot;</span>);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:blue">else</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf(<span style="color:#A31515">&quot;Answer 
+is No\n&quot;</span>);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MDI(<span style="color:#A31515">&quot;G0 
+X1.2 Y2.2 Z3.3&quot;</span>);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:green">// put 3 double values in the persist vars </span>
+</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pD[10] = 
+123.456;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pD[11] = 1000.0;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pD[12] = 999.9;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:green">// transfer up to the GCode Vars</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+SetVars(100,3,10);&nbsp; <span style="color:green">// Upload 3 to GCode 100 from 
+persist 10&nbsp;&nbsp; </span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MDI(<span style="color:#A31515">&quot;#100 
+= [#100 + 1]&quot;</span>);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+</p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:green">// read them back into different persist Vars</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+GetVars(100,3,13);&nbsp; <span style="color:green">// Download 3 from GCode 100 to 
+persist 13 </span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: green">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf(<span style="color:#A31515">&quot;%f 
+%f %f\n&quot;</span>,pD[13],pD[14],pD[15]);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">}</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-bottom: .0001pt">
+&nbsp;</p>
+<p class="MsoNormal" style="line-height: normal; margin-top: 0; margin-bottom: 0">
+&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+
+</body>
+
+</html>

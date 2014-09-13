@@ -1,0 +1,369 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Mach3 Plugin + KMotion</title>
+</head>
+
+<body>
+
+<p style="margin-top: 0; margin-bottom: 0"><b><i><font face="Arial" size="5">&nbsp;</font><font face="Arial" size="6">Mach3 
+Plugin</font></i></b></p>
+<p style="margin-top: 0; margin-bottom: 0"><b><i><font face="Arial" size="4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</font></i></b></p>
+<p style="margin-top: 0; margin-bottom: 0"><img border="0" src="Mach3PlusKFlop.PNG" width="525" height="175">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </p>
+<p style="margin-top: 0; margin-bottom: 0"><b><i><font face="Arial" size="4">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+KMotion/KFlop&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mach3</font></i></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </p>
+<p>&nbsp;</p>
+<p><font face="Arial"><b>Mach3</b> is a popular CNC program available for purchase through
+<a href="http://www.artsoftcontrols.com/">ArtSoftControls</a>.</font></p>
+<p><font face="Arial">Traditionally Mach3 has relied on little hardware support and performed low 
+level motion and even stepper motor step pulses directly by the PC.&nbsp; The 
+pulses were output using the PC's 
+parallel port.&nbsp; This required a special Microsoft Windows Kernel driver with a high 
+interrupt rate and was limited to 50~100K steps per second.</font></p>
+<p><font face="Arial">Mach3 has the capability for adding &quot;plugins&quot; that allow additional 
+functionality and hardware support.&nbsp; <b><i>DynoMotion</i></b> has developed a plugin that 
+allows Mach3 to work with a <i><b>KMotion</b></i> or <i><b>KFLOP</b></i> Motion 
+Controller.&nbsp; The offloads most of the real-time requirements from the PC, 
+allows USB connectivity, much higher step rates, and allows easily adding 
+other motor types including brushless servos. </font></p>
+<p><font face="Arial">This is an overview of the overall setup process of 
+getting 
+Mach3 and KMotion to play together.</font></p>
+
+<div style="font-size: 10pt; font-family: arial, helvetica, sans-serif; margin: 0px">
+	<div style="font-size: 10pt; font-family: arial, helvetica, sans-serif; margin: 0px">
+		<font face="Arial" size="3">1.&nbsp;Install Mach3</font></div>
+	<div style="font-size: 10pt; font-family: arial, helvetica, sans-serif; margin: 0px">
+		<font face="Arial" size="3">2. Install KMotion</font></div>
+	<div style="font-size: 10pt; font-family: arial, helvetica, sans-serif; margin: 0px">
+		<font face="Arial" size="3">3.&nbsp;Within KMotion configure/tune your motors</font></div>
+	<div style="font-size: 10pt; font-family: arial, helvetica, sans-serif; margin: 0px">
+		<font face="Arial" size="3">4. Within KMotion create a configuration and initialization program</font></div>
+	<div style="font-size: 10pt; font-family: arial, helvetica, sans-serif; margin: 0px">
+		<font face="Arial" size="3">5.&nbsp;Within Mach3 - configure plugin (enter name of KMotion Init program )</font></div>
+	<div style="font-size: 10pt; font-family: arial, helvetica, sans-serif; margin: 0px">
+		<font face="Arial" size="3">6. Within Mach3 - configure motor tuning (set resolution, speeds, and 
+		acceleration)</font></div>
+	<div style="font-size: 10pt; font-family: arial, helvetica, sans-serif; margin: 0px">
+		<font face="Arial" size="3">7. Within Mach3 - configure IO Bits.&nbsp;
+		</font> </div>
+	<div style="font-size: 10pt; font-family: arial, helvetica, sans-serif; margin: 0px">
+		<div style="font-size: 10pt; font-family: arial, helvetica, sans-serif; margin: 0px">
+		&nbsp;<p><font size="3">Note: when using encoder feedback see also:
+		<a href="Mach3Encoders.htm">Mach3 Encoder Setup</a></font></p>
+		<p><font size="3">Note: for configuring probing see also:
+		<a href="Mach3Probe.htm">Mach3 G31 Probe Setup</a></font></p>
+		<p><font size="3">Note: for information regarding operating steppers in 
+		closed loop see also: <a href="../ClosedLoopStep/ClosedLoopStepper.htm">
+		Closed Loop Steppers</a></font></p>
+		<p><font size="3">Note: For passing Parameters see also:
+		<a href="Mach3DROs.htm">Passing DROs</a></font></p>
+		<p><font size="3">Note: For Rigid Tapping see also:
+		<a href="Mach3RigidTapping.htm">Mach3 Rigid Tapping</a></font></p>
+		<p>&nbsp;</p>
+		<p><b><font face="Arial" size="3">1.&nbsp;Install Mach3</font></b></p>
+		<p><font face="Arial" size="3">Mach3 should be installed <i>before</i> 
+		KMotion so that the KMotion installation program can copy the necessary 
+		files (Dynomotion.dll) into the Mach3 plugin directory.&nbsp; The 
+		KMotion installation will also add a registry entry under &quot;App Paths&quot; so 
+		that Mach3.exe will have access to the necessary KMotion DLL libraries, 
+		programs, and data files</font></p>
+		<p><font face="Arial" size="3">It is not necessary to load the Mach3 
+		Kernel driver.</font></p>
+		<p><font face="Arial" size="3">If KMotion has already been installed, it 
+		should be re-installed to make the necessary links between the programs.</font></p>
+		<p>&nbsp;</div>
+	<div style="font-size: 10pt; font-family: arial, helvetica, sans-serif; margin: 0px">
+		&nbsp;<p style="margin-top: 0; margin-bottom: 0"><b>
+		<font face="Arial" size="3">2. Install KMotion</font></b></div>
+	<div style="font-size: 10pt; font-family: arial, helvetica, sans-serif; margin: 0px">
+		&nbsp;<p style="margin-top: 0; margin-bottom: 0">
+		<font face="Arial" size="3">At the end of the KMotion installation an 
+		option to install the Mach3 Plugin will be displayed.&nbsp; </font></p>
+		<p><font face="Arial" size="3">Check the Mach3 Plugin option and select 
+		Next.&nbsp; </font></p>
+		<p><img border="0" src="InstallOption.PNG" width="479" height="364"></p>
+		<p>&nbsp;</p>
+		<p><font face="Arial" size="3">You will be prompted to enter the 
+		directory where Mach3 was installed. </font></p>
+		<p><img border="0" src="Mach3Dir.PNG" width="479" height="364"></p>
+		<p><font face="Arial" size="3">A check will be made that a valid 
+		Mach3.exe exists in that directory, and the Dynomotion.dll will be 
+		copied to the plugins subdirectory.</font></p>
+		<p>&nbsp;</p>
+		<p>&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><b>
+		<font face="Arial" size="3">3.&nbsp;Within KMotion configure/tune your motors</font></b></div>
+	<div style="font-size: 10pt; font-family: arial, helvetica, sans-serif; margin: 0px">
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="3">
+		Follow the normal procedures to use the KMotion Executive program to 
+		configure and tune all of your motor axes.&nbsp; The simplest method to 
+		configure the system is to enter and change values in the various 
+		KMotion Executive Screens, download them to the KMotion Board, and test 
+		and tune for correct operation using the Step Response Screen as well as 
+		Console commands.&nbsp; </font></p>
+		<p>&nbsp;</p>
+		<p>&nbsp;</p>
+		<p><b><font face="Arial" size="3">4. Within KMotion create a configuration and initialization program</font></b></div>
+	<div style="font-size: 10pt; font-family: arial, helvetica, sans-serif; margin: 0px">
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="3">
+		After each axis is functioning properly, the configuration for that axis 
+		can be copied to the clipboard as a valid C program code.&nbsp; </font>
+		</p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="3">
+		See the circled button below. </font></p>
+		<p><img border="0" src="ConfigToClipboard.PNG"></p>
+		<p>&nbsp;</p>
+		<p><font size="3">C Code to configure axis 0 might look like the code 
+		shown below.&nbsp; Detailed knowledge of C programming is not required 
+		to paste these into a User Program.&nbsp; The configuration for each 
+		axis should be pasted into a single program.&nbsp; Later this program 
+		may be executed at any time to completely configure the KMotion Board.&nbsp; 
+		The KMotion Executive program would not be needed to do this.&nbsp; The 
+		RESET button from within Mach3 will be configured to execute this 
+		program. </font></p>
+		<p>c<font face="Courier New">h0-&gt;InputMode=ENCODER_MODE;<br>
+		ch0-&gt;OutputMode=MICROSTEP_MODE;<br>
+		ch0-&gt;Vel=100.000000;<br>
+		ch0-&gt;Accel=1000.000000;<br>
+		ch0-&gt;Jerk=10000.000000;<br>
+		ch0-&gt;P=1.000000;<br>
+		ch0-&gt;I=0.000000;<br>
+		ch0-&gt;D=0.000000;<br>
+		ch0-&gt;FFAccel=0.000000;<br>
+		ch0-&gt;FFVel=0.000000;<br>
+		ch0-&gt;MaxI=200.000000;<br>
+		ch0-&gt;MaxErr=200.000000;<br>
+		ch0-&gt;MaxOutput=200.000000;<br>
+		ch0-&gt;DeadBandGain=1.000000;<br>
+		ch0-&gt;DeadBandRange=0.000000;<br>
+		ch0-&gt;InputChan0=0;<br>
+		ch0-&gt;InputChan1=1;<br>
+		ch0-&gt;OutputChan0=0;<br>
+		ch0-&gt;OutputChan1=1;<br>
+		ch0-&gt;LimitSwitchOptions=0x0;<br>
+		ch0-&gt;InputGain0=1.000000;<br>
+		ch0-&gt;InputGain1=1.000000;<br>
+		ch0-&gt;InputOffset0=0.000000;<br>
+		ch0-&gt;InputOffset1=0.000000;<br>
+		ch0-&gt;invDistPerCycle=1.000000;<br>
+		ch0-&gt;Lead=0.000000;<br>
+		ch0-&gt;MaxFollowingError=1000000000.000000;<br>
+		ch0-&gt;StepperAmplitude=250.000000;<br>
+		<br>
+		ch0-&gt;iir[0].B0=1.000000;<br>
+		ch0-&gt;iir[0].B1=0.000000;<br>
+		ch0-&gt;iir[0].B2=0.000000;<br>
+		ch0-&gt;iir[0].A1=0.000000;<br>
+		ch0-&gt;iir[0].A2=0.000000;<br>
+		<br>
+		ch0-&gt;iir[1].B0=1.000000;<br>
+		ch0-&gt;iir[1].B1=0.000000;<br>
+		ch0-&gt;iir[1].B2=0.000000;<br>
+		ch0-&gt;iir[1].A1=0.000000;<br>
+		ch0-&gt;iir[1].A2=0.000000;<br>
+		<br>
+		ch0-&gt;iir[2].B0=1.000000;<br>
+		ch0-&gt;iir[2].B1=0.000000;<br>
+		ch0-&gt;iir[2].B2=0.000000;<br>
+		ch0-&gt;iir[2].A1=0.000000;<br>
+		ch0-&gt;iir[2].A2=0.000000;<br>
+&nbsp;</font></p>
+		<p><font face="Arial" size="3">Besides C code to configure each axis, 
+		other commands such as those shown highlighted below may be used to 
+		enable each axis (and set the destination) and to define which axis 
+		channels are in the coordinated motion system.&nbsp; The DefineCoordSystem(0,1,-1,-1); 
+		statement defines a two axis coordinate system where X is axis channel 
+		0, Y is axis channel 1, and the Z and A axes are not used. </font>
+		</p>
+		<p><font face="Arial" size="3">The circled button can be used to save, 
+		compile, download, and run the C program in one step.&nbsp; Note that 
+		once a C program has been executed to change configuration settings 
+		within the KMotion Board, the values in the KMotion Executive screens 
+		may be different from the current settings within the board.&nbsp; To 
+		synchronize the screens with what is actually in the board the channel should be 
+		&quot;Uploaded&quot;.</font></p>
+		<p><font face="Arial" size="3">Additional initialization operations may 
+		also be added to the C Progam.&nbsp; These might include brushless motor 
+		phase finding, homing, activating IO bits, etc.. </font></p>
+		<p><font face="Arial"><img border="0" src="ProgramScreen.PNG" width="594" height="494"></font></p>
+		<p>&nbsp;</p>
+		<p><font size="3" face="Arial">After the Initialization program is finalized and 
+		working it should be saved in a known location so that Mach3 may be 
+		configured to execute it as described in the next step.</font></p>
+		<p>&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><b>
+		<font face="Arial" size="3">5.&nbsp;Within Mach3 - configure plugin (enter name of KMotion Init program)</font></b></div>
+	<div style="font-size: 10pt; font-family: arial, helvetica, sans-serif; margin: 0px">
+		&nbsp;<p style="margin-top: 0; margin-bottom: 0">
+		<font face="Arial" size="3">We are now ready to Execute Mach3.&nbsp; The 
+		first time Mach3 is executed after adding the Dynomotion Plugin Mach3 
+		will prompt the user which Motion Device should be used.&nbsp; The Dynomotion Plugin should be selected.&nbsp; After the Mach3 Application 
+		comes up use the Config|Config Plugins menu to bring up the Config 
+		Plugins dialog shown below.</font></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0">
+		<font face="Arial">
+		<img border="0" src="ConfigurePlugin.PNG" width="500" height="347"></font></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="3">
+		Next click in the circled area to bring up the Dynomotion Plugin 
+		Configuration Screen.</font></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0">
+		<font face="Arial">
+		<img border="0" src="DynoPluginConfig.PNG"></font></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="3">
+		Specify the <i>KMotion Initialize User Program</i> that was created in step 4 above (you 
+		may browse to the file using the &gt;&gt; button).</font></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="3">
+		Options to automatically run the program on Mach3 Startup or only once 
+		after Mach3 Startup may also be selected.</font></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="3">
+		Mach3 generates Spindle Messages for On, Off, and Speed Changes.&nbsp; 
+		Specify a KMotion Spindle Speed User Program to handle and perform 
+		appropriate actions for the various Mach3 Spindle Messages.&nbsp; A 
+		default <b>SpindleMach3.c</b> program is included in the default installation 
+		that will simply print the messages and desired speeds requested by 
+		Mach3.&nbsp; Note that speed is a relative fraction of the max currently 
+		selected pulley's speed.&nbsp; Because KFlop/KMotion is likely to be 
+		controlling the motor speed regardless of the selected pulley, this is 
+		usually more appropriate.&nbsp; An appropriate User Program to perform 
+		the appropriate actions to actually drive the spindle should be created 
+		to replace the default program that simply prints the requested 
+		operation.&nbsp; There are included examples for Spindles controlled by 
+		a DAC output (SpindleMach3DAC.c) and for Spindles controlled by Step/Dir 
+		outputs (SpindleMach3Jog.c).</font></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="3">
+		Spindle Speed measurement and Single point threading is also supported.&nbsp; 
+		A quadrature encoder is required on the spindle.&nbsp; Specify the 
+		Sensor Type as 1 to enable the Spindle measurement.&nbsp; Configure the 
+		Axis Channel that is configured to read the encoder (Note this is not 
+		the encoder channel, rather it is the axis that has the encoder channel 
+		configured as its input).&nbsp; Specify the Update time, Tau, and 
+		counts/rev.&nbsp; See <a href="../Cmd.htm#ConfigSpindle">here</a> for 
+		more information.&nbsp; </font></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="3">
+		Mach3 Home requests may be passed to a User Program to activate any 
+		desired Home Sequence.&nbsp; An example skeleton program which just 
+		prints the Mach3 home requests is included as <b>HomeMach3.c.&nbsp; </b>Another example for use with encoders is described
+		<a href="Mach3Encoders.htm#Zero_Buttons">here</a>.</font></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="3">
+		Mach3 permits a general purpose mechanism to make custom calls to any 
+		Plugin that are passed through to a KFlop Custom Notify User Program.&nbsp;&nbsp; 
+		Placing a NotifyPlugins(10xxx) call in VB Script of either a Screen 
+		Button or Macro command may then trigger behavior in KMotion/KFlop.&nbsp; 
+		Message Codes from 10000 to 10999 will be sent to KFlop (all others are 
+		ignored).&nbsp; Plugin executions are automatically queued and executed 
+		in the sequence they were requested (the previous must complete before 
+		the next is launched).&nbsp; An example skeleton program which just 
+		prints the Mach3 notify requests is included as <b>NotifyMach3.c.&nbsp;
+		</b>Another example for use with encoders is described
+		<a href="Mach3Encoders.htm#Zero_Buttons">here</a>.</font></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="3">
+		An I/O bit may be defined that is activated when Mach3 goes into the 
+		offline state.&nbsp; Neg True Polarity may be checked if it is desirable 
+		for the bit to be driven low in the off-line state rather than high.</font></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="3">
+		The <i>Windows Buffer ahead Time </i>may be changed to keep more or less 
+		buffering ahead in the KMotion Board.&nbsp; Using a value too small may 
+		cause the buffer to run empty and &quot;starve&quot; for data if Windows becomes 
+		non-responsive for longer than that amount of time.&nbsp; Using a value 
+		too large will cause feed rate changes and feed hold commands to be less 
+		responsive.</font></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="3">
+		The plugin can be configured to <i>Automatically run Initialize on Mach 
+		Startup </i>if desired.&nbsp; <font color="#FF0000"> <b>Caution</b>:</font>This option should be left 
+		off if there is any potential danger with unexpected machine motion when 
+		launching Mach3.</font></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><font size="3" face="Arial">After setting 
+		al parameters press OK to save the parameters into the Mach3 XML 
+		parameter file and return to the main Mach Screen.&nbsp; Pushing Mach3's 
+		Reset button will now execute the Initialize program.</font></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><b>
+		<font face="Arial" size="3">6. Within Mach3 - configure motor tuning (set resolution, speeds, and 
+		acceleration)</font></b></div>
+	<div style="font-size: 10pt; font-family: arial, helvetica, sans-serif; margin: 0px">
+		&nbsp;<p style="margin-top: 0; margin-bottom: 0">
+		<font size="3" face="Arial">Select <b>Config|Motor Tuning</b> to bring up the 
+		Motor Tuning Dialog.&nbsp; This screen allows the setting of Machine 
+		resolution, Max Velocity, and Max Acceleration for each axis in use.&nbsp; 
+		Note that the sliders are typically not very useful since the max step 
+		rates are much higher using a KMotion Motion Controller than with the 
+		original PC Generated Steps.&nbsp; It's usually best to just enter 
+		values directly into the cells. </font></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0">
+		<font face="Arial">
+		<img border="0" src="MotorTuning.PNG" width="680" height="427"></font></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><font size="3" face="Arial">After the 
+		parameters have been entered and saved, Press OK to return to the main 
+		screen. </font></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;<p style="margin-top: 0; margin-bottom: 0">&nbsp;<p style="margin-top: 0; margin-bottom: 0">
+		<font face="Arial" size="3">
+		<b>7. Within Mach3 - configure IO Bits</b>.&nbsp; </font> </div>
+		<p><font face="Arial"><font size="3">Various M Codes may be used within Mach3 to activate 
+		IO bits on KMotion.&nbsp; Select the Menu <b>Config|Ports &amp; Pins</b> to bring 
+		up the Dialog shown below.&nbsp; When using the KMotion Plugin, Pin 
+		Numbers now correspond to <i>KMotion IO Bit Numbers</i> rather than 
+		Parallel port Pins.&nbsp; Some of the terminology on the screen may be 
+		misleading as it was designed expecting to use a parallel port.&nbsp; 
+		For IO bit numbers less than 128 specify <b>Port#1</b>.&nbsp; For IO bit numbers 128 or larger, subtract 128 from the bit number and 
+		specify <b>Port #2</b> instead of Port #1.&nbsp; Extended Virtual IO 
+		bits 1024-1151 may also be accessed by specifying <b>Port #3</b> and 
+		subtracting 1024 from the bit number (note:&nbsp; the first 32 Virtual 
+		IO will consume less USB bandwidth because they are uploaded in the 
+		KFLOP Bulk Status record so use the first 32 if possible).&nbsp; <p>Note 
+		Mach3 typically defaults after an initial install with Output #1 enabled 
+		for spindle control on Pin0 (as shown below).&nbsp; Bit 0 is often used 
+		on a KMotion board as an Encoder input.&nbsp; Having Mach configure the 
+		IO bit as an output will cause the encoder to be inoperable.&nbsp; 
+		Disable the output if this is the case.&nbsp; </font>
+		<p><img border="0" src="PortsAndPins.PNG" width="713" height="423"></font></div>
+</div>
+
+<p>&nbsp;</p>
+<p><font face="Arial">That's it!&nbsp; Reset should now properly initialize the machine.&nbsp; 
+Jogging and G Code should now be functional.&nbsp; </font> </p>
+<p>&nbsp;</p>
+<p><font face="Arial">Refer to the Mach3 documentation for more information on advanced features.&nbsp; 
+</font> </p>
+<p><font face="Arial">Here is how a GCode file appears on Mach3 Mill.</font></p>
+<p><font face="Arial"><img border="0" src="Mach3Screen.PNG" width="522" height="397"></font></p>
+
+<p>&nbsp;</p>
+<p><font face="Arial">Here the same example GCode file cut (or more accurately burned) into a piece 
+of wood using a Harbor Freight Mini-mill driven with KMotion and Mach3.</font></p>
+<p><font face="Arial"><img border="0" src="DynoMotionOnMach.JPG" width="500" height="267"></font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

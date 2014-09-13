@@ -1,0 +1,65 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>KMotion/KFlop Multi-tasking</title>
+</head>
+
+<body>
+
+<p class="MsoNormal" align="center" style="text-align: left"><b><i><u>
+<span style="font-family: Arial">KMotion/KFlop Preemptive Multitasking</span></u></i></b></p>
+<p><img border="0" src="MultiTasking.PNG" width="888" height="175"></p>
+<p class="MsoNormal" style="text-align: justify; margin-top: 0; margin-bottom: 0">
+<span style="font-family: Arial">KMotion/KFlop</span><span style="font-family:Arial"> 
+uses a simple method of preemptive multitasking (multiple programs or &quot;Threads&quot; 
+running at the same time).&nbsp; Each Thread consists of an area of memory where 
+a program can be loaded, A CPU Stack for that program, and a potential time 
+slice of the CPU.&nbsp; User Programs (Threads) and 
+the System Thread context switch every Servo Interrupt and sequence in a round 
+robin order.</span></p>
+<p class="MsoNormal" style="text-align: justify; margin-top: 0; margin-bottom: 0">
+&nbsp;</p>
+<p class="MsoNormal" style="text-align: justify; margin-top: 0; margin-bottom: 0">
+<font face="Arial">The main thing to understand is that two programs that ever 
+need to be running at the same time need to be assigned to different threads. 
+The KFLOP system Thread runs all the time in Thread #0. So Thread #0 may never 
+be used. In a typical KMotionCNC system the Init.c program is usually assigned 
+to thread #1 and runs forever. If other UserButtons (or MCodes) run C Programs 
+that do something and terminate (Exec/Wait option) then these might all be 
+assigned to use Thread#2. If your programs run for a longer time where a 3rd or 
+4th program might be Launched so they all overlap in time, then they must all be 
+assigned to different Threads.<br>
+<br>
+All Threads are killed (stop executing) when the Big Red Stop Button is pushed - 
+except for thread #7. So use thread #7 for anything you wish to continue to run 
+after a Stop.<br>
+</font><span style="font-family:Arial">&nbsp;</span></p>
+<p class="MsoNormal" style="text-align: justify; margin-top: 0; margin-bottom: 0">
+<span style="font-family:Arial">The above example shows a case where two User 
+Threads are currently active.&nbsp; </span></p>
+<p class="MsoNormal" style="text-align: justify; margin-top: 0; margin-bottom: 0">
+<span style="font-family:Arial">&nbsp;</span></p>
+<p class="MsoNormal" style="text-align: justify; margin-top: 0; margin-bottom: 0">
+<span style="font-family:Arial">The C function WaitNextTimeSlice() can be used 
+to wait until the next context switch occurs and return immediately at the 
+beginning of the next time slice.&nbsp; This can assure that the User Program can 
+execute for a few microseconds without being interrupted and at a very stable 
+rate (with a few microseconds of jitter).</span></p>
+<p class="MsoNormal" style="text-align: justify; margin-top: 0; margin-bottom: 0">
+<span style="font-family:Arial">&nbsp;</span></p>
+<p class="MsoNormal" style="text-align: justify; margin-top: 0; margin-bottom: 0">
+<span style="font-family:Arial">The time period between executions of each user 
+thread is a function of the number of active User Threads:</span></p>
+<p class="MsoNormal" style="text-align: justify; margin-top: 0; margin-bottom: 0">
+<span style="font-family:Arial">&nbsp;</span></p>
+<p class="MsoNormal" style="text-align: justify; margin-top: 0; margin-bottom: 0">
+<span style="font-family:Arial">Period = (# User Threads + 1) * TIMEBASE </span>
+</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

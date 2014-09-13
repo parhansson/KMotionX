@@ -1,0 +1,94 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Digital IO Screen</title>
+</head>
+
+<body>
+
+<p><i><b><font size="5">Digital I/O Screen</font></b></i></p>
+<p><img border="0" src="DigitalIOScreenKFLOP.PNG" width="479" height="533"></p>
+<p><img border="0" src="DigitalIOScreenSnap0.png" width="479" height="533"></p>
+<p><img border="0" src="DigitalIOScreenSnap1.png" width="479" height="533"></p>
+<p><img border="0" src="DigitalIOScreenKanalog.png" width="479" height="533"></p>
+<p><img border="0" src="DigitalIOScreenKStep.png" width="479" height="533"></p>
+<p>The <i><b>Digital I/O Screen</b></i> displays and allows changes to the 
+current state of <b><i>KFLOP</i></b> digital I/O bits.&nbsp; Digital IO 
+bits are present on the <i><b>KFLOP</b></i> as well as any additional option cards (such as 
+with two SnapAmps or Kanalog as shown above).&nbsp; IO bits are numbered 0-167.&nbsp;&nbsp;&nbsp; </p>
+<p><b><i>KFLOP</i></b> has a number of digital I/O bits that may be used as <i>
+GPIO</i> (General Purpose Inputs or Outputs) or as specific dedicated functions 
+(ie. encoder inputs).&nbsp; There are 46 bits that may be utilized as GPIO (bits 0 - 
+45).&nbsp; Each bit may be independently defined as either an input or an 
+output.&nbsp; On Power UP <i><b>KMotion</b></i> defines all I/O as inputs by 
+default.&nbsp; Any bit may be configured as an output by checking the 
+corresponding box in the &quot;Output&quot; columns.&nbsp; Alternately, the bits may be 
+configured by a C program running within the <i><b>KMotion</b></i> (See
+<a href="../ProgramScreen/ProgramScreen.htm#SetBitDirection">
+SetBitDirection()</a>) or by Script commands (See
+<a href="../ConsoleScreen/ConsoleScreen.htm#SETBITDIRECTION">
+SetBitDirection</a>) sent to the <i><b>KMotion</b></i>. </p>
+<p><b>KFLOP</b> bits 0-15 are connected to the JP7 connector normally which may 
+be used to connect to auxiliary option boards such as Kanalog.&nbsp; These bits 
+are available for User use if no option cards are requiring them in the system&nbsp;
+<font color="#FF0000">If they are used to communicate 
+to an option board care should be taken to not issue any User IO commands to 
+these bits.</font></p>
+<p><i><b>KFLOP</b></i> bits 16 - 25 are connected to the Aux#0 connector 
+normally used as a high-speed communication bus to connect to auxiliary option 
+boards such as SnapAmps.&nbsp; These bits are available for User use if no 
+option cards are requiring them in the system.&nbsp; <font color="#FF0000">If they are used to communicate 
+to an option board care should be taken to not issue any User IO commands to 
+these bits.</font></p>
+<p>The <i>State</i> of each I/O bit may be observed in the corresponding 
+checkbox under the &quot;State&quot; columns.&nbsp; If the bit is defined as an output, 
+clicking on the &quot;State&quot; checkbox will toggle the bit.&nbsp; Alternately, the 
+bits may be read, set, or cleared by a C program running within the <i><b>
+KMotion</b></i> (See <a href="../ProgramScreen/ProgramScreen.htm#ReadBit">
+ReadBit()</a>, <a href="../ProgramScreen/ProgramScreen.htm#SetBit">
+SetBit()</a>, <a href="../ProgramScreen/ProgramScreen.htm#ClearBit">
+ClearBit()</a>, or
+<a href="../ProgramScreen/ProgramScreen.htm#SetStateBit">SetStateBit()</a>) 
+or by Script commands (See
+<a href="../ConsoleScreen/ConsoleScreen.htm#READBIT">ReadBit</a>,
+<a href="../ConsoleScreen/ConsoleScreen.htm#SETBIT">SetBit</a>,
+<a href="../ConsoleScreen/ConsoleScreen.htm#CLEARBIT">ClearBit</a>, or
+<a href="../ConsoleScreen/ConsoleScreen.htm#SETSTATEBIT">SetStateBit</a>) 
+sent to the <i><b>KMotion</b></i>. </p>
+<p>Additionally, <i>buffered</i> commands may change the state of Digital I/O 
+bits.&nbsp; <i>Buffered</i> I/O commands are I/O commands that are inserted into 
+the coordinated motion buffer.&nbsp; When it is required that I/O bits be 
+changed at exact times within a motion sequence, <i>buffered</i> I/O commands 
+may be inserted into the motion buffer (see
+<a href="../ConsoleScreen/ConsoleScreen.htm#SETBITBUF">SetBitBuf</a>,
+<a href="../ConsoleScreen/ConsoleScreen.htm#CLEARBITBUF">ClearBitBuf</a>, 
+and <a href="../ConsoleScreen/ConsoleScreen.htm#SETSTATEBITBUF">
+SetStateBitBuf</a>).&nbsp; In this case the I/O commands occur when they are 
+encountered within the motion sequence.&nbsp; The <i><b>KMotion</b></i> GCode 
+interpreter allows buffered I/O commands to be inserted within motion sequences 
+by using a special form of GCode comment (See
+<a href="../GCodeScreen/GCodeScreen.htm#BUF">buffered GCode Commands</a>).</p>
+<p>See the <a href="../SchematicsKFLOP/ConnectorsKFLOP.htm"><i><b>KFLOP</b></i> 
+Hardware Connector Descriptions</a>,
+<a href="../SchematicsSnap/SnapAmpConnectors.htm">SnapAmp Hardware Connector 
+Descriptions</a>, <a href="../SchematicsKanalog/ConnectorsKanalog.htm">
+Kanalog HardwareConnector Descriptions</a>, or
+<a href="../SchematicsKStep/ConnectorsKStep.htm">KStep Hardware Connector 
+Descriptions</a> for which IO bits are connected to the various connectors on 
+those optional boards.</p>
+<p><b><i><font color="#FF0000">Caution: Shorting High Voltage (greater than 3.3V 
+or 5V depending on pin tolerance) to any Digital I/O 
+bit will be likely to cause permanent board damage.</font> </i></b></p>
+<p>Digital I/O bits 46 and 47 are dedicated to the control of the two LED's on
+<b><i>KFLOP.&nbsp; </i></b>These two outputs are configured as outputs and tuned 
+on when <b><i>KFLOP</i></b> powers up.&nbsp; The are available for use as User 
+status if desired.<br>
+&nbsp;</p>
+
+</body>
+
+</html>

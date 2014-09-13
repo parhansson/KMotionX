@@ -1,0 +1,228 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>B.3.4 Introduction To Terminal Commands</TITLE>
+<META NAME="description" CONTENT="B.3.4 Introduction To Terminal Commands">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node131.html">
+<LINK REL="previous" HREF="node129.html">
+<LINK REL="up" HREF="node126.html">
+<LINK REL="next" HREF="node131.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2313"
+  HREF="node131.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html2307"
+  HREF="node126.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html2301"
+  HREF="node129.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html2309"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html2311"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html2314"
+  HREF="node131.html">B.3.5 A Brief List</A>
+<B> Up:</B> <A NAME="tex2html2308"
+  HREF="node126.html">B.3 Entering Text Commands.</A>
+<B> Previous:</B> <A NAME="tex2html2302"
+  HREF="node129.html">B.3.3 Graphical Terminals</A>
+ &nbsp; <B>  <A NAME="tex2html2310"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html2312"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION05234000000000000000">
+B.3.4 Introduction To Terminal Commands</A>
+</H2>
+
+<P>
+When a terminal starts it will show you some sort of prompt that says
+it is ready to accept a command. This prompt will most likely show
+you who you are and where you are. On this PC that prompt looks like
+[root@surfer ray]# This prompt says that I am root and I am at
+a PC named surfer and I am in the directory named ray. If you are
+curious who you really are you can issue the command 
+
+<P>
+
+<DL COMPACT>
+<DT>
+<DD>whoami&lt;enter&gt;
+</DD>
+</DL>which gets me the answer ``root.'' Issuing the command
+
+<P>
+
+<DL COMPACT>
+<DT>
+<DD>pwd&lt;enter&gt;
+</DD>
+</DL>is equivalent to asking the question where am I? This command gets
+me the answer /home/ray.
+
+<P>
+This is in essence how the entire text mode of Linux works works.
+At a prompt, you enter a command and press the &lt;enter&gt; key. 
+
+<P>
+The command may have arguments that go along with it. Let me illustrate
+with the Linux equivalent of the ms-dos dir command. That command
+is ls (lower case LS). The response that I get to this command is
+a window full of file names. They may arranged in multiple columns,
+but that depends upon the size of the terminal window and the length
+of the file names. A brief list follows.
+
+<P>
+
+<DL COMPACT>
+<DT>
+<DD>bash-2.05$&nbsp;ls
+
+<P>
+158533.pdf
+
+<P>
+189458.pdf
+
+<P>
+IntPS.jpg
+</DD>
+</DL>The ls command will take arguments so if I issue the command ls -l
+I will get a different listing that the first one.
+
+<P>
+
+<DL COMPACT>
+<DT>
+<DD>bash-2.05$&nbsp;ls&nbsp;-l
+
+<P>
+total&nbsp;34284
+
+<P>
+-rw-r-r-&nbsp;1&nbsp;ray&nbsp;ray&nbsp;&nbsp;299330&nbsp;Apr&nbsp;14&nbsp;17:53&nbsp;158533.pdf
+
+<P>
+-rw-r-r-&nbsp;1&nbsp;ray&nbsp;ray&nbsp;&nbsp;42089&nbsp;Apr&nbsp;14&nbsp;17:53&nbsp;189458.pdf
+
+<P>
+-rw-r-r-&nbsp;1&nbsp;ray&nbsp;ray&nbsp;&nbsp;300768&nbsp;May&nbsp;23&nbsp;17:13&nbsp;IntPS.jpg
+</DD>
+</DL>There are several ways that you can use to find out about the arguments
+that a command will take. In a terminal window you can issue the command
+info or man followed by the command that you want to study. Most graphical
+environments have help systems that are easier to use than these terminal
+commands. If I issue the 
+
+<P>
+
+<DL COMPACT>
+<DT>
+<DD>info&nbsp;ls
+</DD>
+</DL>command with the ls argument as above, Linux runs a program called
+info that returns what it can find about the command ls. Among all
+of the info stylized report, I can find out that 
+
+<P>
+
+<UL>
+<LI>`ls': List directory contents
+</LI>
+<LI>The `ls' program lists information about files (of any type, including
+directories). 
+</LI>
+<LI>Options and file arguments can be intermixed arbitrarily, as usual.
+</LI>
+<LI>by default `ls' lists the contents of directories, not recursively, 
+</LI>
+<LI>omitts files with names beginning with `.'. 
+</LI>
+<LI>By default, the output is sorted alphabetically.
+</LI>
+</UL>
+The fact that you entered a single word, info, and the terminal executed
+a program named info is the significant point here. There are thousands
+of commands. Any file marked with executable permissions is an acceptable
+command to the terminal. If this file resides in a directory that
+is not included in the normal Linux path, you will have to preceed
+the filename with a ./ so that Linux assumes that you want to look
+for this command in the current directory.
+
+<P>
+There are many different ``command shells'' available to users
+of Linux. Right now I can almost hear you gasp - ``I don't really
+want to know this.'' Most all of the shells will execute a command
+like ls and will start a binary file for you. Which shell you are
+running becomes important if the file that you want to run is a script.
+Under dos we commonly wrote script files and gave them a .bat extension.
+
+<P>
+These script files become important for EMC users because the .run
+files that start the EMC are script files. Fortunately, writers of
+good script files, include a line at the top of their script file
+that specifies the shell that the file is written to run with. Any
+terminal will see such a line and switch itself to the shell specified.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html2313"
+  HREF="node131.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html2307"
+  HREF="node126.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html2301"
+  HREF="node129.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html2309"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html2311"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html2314"
+  HREF="node131.html">B.3.5 A Brief List</A>
+<B> Up:</B> <A NAME="tex2html2308"
+  HREF="node126.html">B.3 Entering Text Commands.</A>
+<B> Previous:</B> <A NAME="tex2html2302"
+  HREF="node129.html">B.3.3 Graphical Terminals</A>
+ &nbsp; <B>  <A NAME="tex2html2310"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html2312"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

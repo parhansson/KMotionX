@@ -1,0 +1,28 @@
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeachMotion", "TeachMotion.csproj", "{E7D47A1E-7C83-4BCA-BD53-4266D04F6F13}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AD2E9DCD-263B-4396-858F-A6CF16A9457D} = {AD2E9DCD-263B-4396-858F-A6CF16A9457D}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JoyStick", "JoyStick\JoyStick.csproj", "{AD2E9DCD-263B-4396-858F-A6CF16A9457D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E7D47A1E-7C83-4BCA-BD53-4266D04F6F13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7D47A1E-7C83-4BCA-BD53-4266D04F6F13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7D47A1E-7C83-4BCA-BD53-4266D04F6F13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7D47A1E-7C83-4BCA-BD53-4266D04F6F13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD2E9DCD-263B-4396-858F-A6CF16A9457D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD2E9DCD-263B-4396-858F-A6CF16A9457D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD2E9DCD-263B-4396-858F-A6CF16A9457D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD2E9DCD-263B-4396-858F-A6CF16A9457D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

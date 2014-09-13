@@ -1,0 +1,57 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>SnapAmp Motor Diagnostic Tutorial</title>
+</head>
+
+<body>
+
+<p><i><b><font size="4">SnapAmp Stepper Motor Diagnostic Tutorial</font></b></i></p>
+<p>Shown below is a plotted motion of 400 cycles (1600 full steps) with quite 
+gradual acceleration up to a velocity of 255 cycles/sec (1000 sps)</p>
+<p>A noise from the motor is heard during about the middle half of the motion.&nbsp; 
+Here the motor position and current in both stepper coils is plotted.&nbsp; </p>
+<p>
+<img border="0" src="SnapAmpTutorial/AxisCurrentChatter.PNG" width="897" height="580">
+</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>Zooming in on the beginning of the motion shows nice current waveforms 90 
+degrees out of phase.</p>
+<p>
+<img border="0" src="SnapAmpTutorial/AxisCurrentChatterBeginning.PNG" width="897" height="580"></p>
+<p>&nbsp;</p>
+<p>Here is a plot of the Velocity and the commanded output Voltage of one of the 
+coils.&nbsp; Note how as the Velocity increases the lead compensation (set at 
+55) increases the amplitude.&nbsp; Referring back to the first current plot 
+above we can see that the current amplitude is maintained at about 1.4 amps 
+throughout the motion.&nbsp; Showing the lead compensation is set properly.</p>
+<p>
+<img border="0" src="SnapAmpTutorial/AxisVelocityChatter.PNG" width="897" height="580"></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>Zooming in on the current waveform at around 1 second where the motor noise 
+seems to begin.</p>
+<p>
+<img border="0" src="SnapAmpTutorial/AxisCurrentChatter1sec.PNG" width="897" height="580"></p>
+<p>&nbsp;</p>
+<p>Zooming still further at 0.98 seconds where the odd behavior seems most 
+pronounced.</p>
+<p>
+<img border="0" src="SnapAmpTutorial/AxisCurrentChatter1secZoom.PNG" width="897" height="580"></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>Current Waveforms with no Lead - Current drops and motor immediately stalls</p>
+<p>
+<img border="0" src="SnapAmpTutorial/AxisCurrentNoLead.PNG" width="897" height="580"></p>
+<p>&nbsp;</p>
+
+<p>Zooming in on the initial stall region</p>
+<p>
+<img border="0" src="SnapAmpTutorial/AxisCurrentNoLeadZoomStall.PNG" width="897" height="580"></p>
+
+</body>
+
+</html>

@@ -1,0 +1,28 @@
+'Macro for Rigid Tappin with Dynomotion KFLOP
+'
+' pass variables to KFLOP
+'
+' Var   DRO   KFLOP UserVar  Description
+'  #10  1010    18 19          TPI - Threads per inch
+'  #11  1011    20 21          Forward Cutting RPM
+'  #12  1012    22 23          Retract RPM
+'  #13  1013    24 25          Z depth Total inches
+'  #14  1014    26 27          Z depth Forward per Motion
+'  #15  1015    28 29          Z depth Retract per Motion
+'       1016    30 31          Set by KFLOP when complete
+
+'Move the GCode Vars into DROS andsend them to KFLOP User Vars
+For i=0 To 5 
+  Call SetUserDRO(1010+i, GetVar(10+i)) 
+  NotifyPlugins(19010+i)
+Next i
+
+Call SetUserDRO(1016, 0) 'clear the complete flag
+NotifyPlugins(19010+6) 'clear the complete flag
+ 
+NotifyPlugins(10084) 'do the TAP!!  
+
+While GetUserDRO(1016)=0 
+  Sleep(50)
+  NotifyPlugins(18016) 'upload the complete flag
+Wend 

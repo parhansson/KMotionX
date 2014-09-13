@@ -1,0 +1,265 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Example 4 - Milling an inside circle</TITLE>
+<META NAME="description" CONTENT="Example 4 - Milling an inside circle">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node109.html">
+<LINK REL="previous" HREF="node107.html">
+<LINK REL="up" HREF="node104.html">
+<LINK REL="next" HREF="node109.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1962"
+  HREF="node109.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1956"
+  HREF="node104.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1950"
+  HREF="node107.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1958"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1960"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1963"
+  HREF="node109.html">Example 5 - Iterated</A>
+<B> Up:</B> <A NAME="tex2html1957"
+  HREF="node104.html">13.5 Sample Variable Programs</A>
+<B> Previous:</B> <A NAME="tex2html1951"
+  HREF="node107.html">Example 3 - An</A>
+ &nbsp; <B>  <A NAME="tex2html1959"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1961"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION04454000000000000000">
+Example 4 - Milling an inside circle</A>
+</H2>
+
+<P>
+<TABLE  WIDTH="0%">
+<TR><TD>
+Inside milling with cutter compensation requires a little more complexity
+on the approach and setup of the cutter compensation but the use of
+variables works much the same way that it did in the four sided example
+above.
+
+<P>
+For this example we want to drill an initial hole inside the circle
+and then change to the end mill and return to the hole and start the
+approach there. The first step is to list the steps that we need to
+take to complete this task.
+
+<P>
+</TD></TR>
+</TABLE>
+
+<TABLE  WIDTH="0%">
+<TR><TD>
+<BR>
+<BR>
+<DIV ALIGN="CENTER"><!-- MATH
+ $\resizebox*{1\columnwidth}{!}{\includegraphics{/usr/share/lyx/EMC_images/varfig10.eps}}$
+ -->
+<IMG
+ WIDTH="483" HEIGHT="323" ALIGN="BOTTOM" BORDER="0"
+ SRC="img45.gif"
+ ALT="\resizebox*{1\columnwidth}{!}{\includegraphics{/usr/share/lyx/EMC_images/varfig10.eps}}"> </DIV>
+<P>
+<DIV ALIGN="CENTER"></DIV>
+<BR>
+<BR>
+
+<P>
+</TD></TR>
+</TABLE>
+
+<P>
+<BR>
+
+<P>
+
+<UL>
+<LI>Machine home
+</LI>
+<LI>Load a drill for starting hole
+</LI>
+<LI>Set drill length and coordinates
+</LI>
+<LI>Compute approach hole location and move to it
+</LI>
+<LI>Drill the hole
+</LI>
+<LI>Retract drill
+</LI>
+<LI>Move home
+</LI>
+<LI>Change tool to end mill
+</LI>
+<LI>Pick up tool length and move to approach hole
+</LI>
+<LI>Plunge end mill
+</LI>
+<LI>Set feed rate, tool diameter compensation and arc approach first point
+</LI>
+<LI>First half circle
+</LI>
+<LI>Second half circle
+</LI>
+<LI>Move away from circle
+</LI>
+<LI>Retract mill
+</LI>
+<LI>Move home
+</LI>
+</UL>
+We will use five variables for this example, the coordinate system
+to be used, the pocket numbers that the drill and mill will occupy,
+the diameter of the end mill, and the diameter of the circle to be
+cut. Since the math is a little bit easier to follow, we assume that
+the coordinate system will be set for the center of the circle to
+be milled.
+
+<P>
+For the initial test of this program, the relevant portion of the
+variable file looked like those lines below.
+
+<P>
+The emc.var file addition for pocket milling of a circle
+
+<P>
+<TT><FONT SIZE="-1">Coordinate system to use is variable 1100.</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">1100 56</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">Drill pocket number in variable 1101 below.</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">1101 1</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">Mill pocket number in variable 1102 below.</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">1102 2</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">Finished Hole Diameter in variable 1103 below.</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">1103 2.5000</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">End Mill Diameter in variable 1104 below.</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">1104 0.5000</FONT></TT>
+<P>
+
+
+<P>
+By using variables we are able to easily adjust the size of the hole
+that will be cut and the size of the cutter. By making the tool slots
+also variables, the code can be used over and over in the same program
+with different combinations. Editing sizes is relatively easy for
+the operator during final setup and run because the variables are
+explicit. One caution here is that both #1104 and the size of the
+tool defined in the emc.tbl need to be about the same size.
+
+<P>
+Example 4 uses one half of the radius of the finished circle as the
+radius of the tool approach for tool diameter compensation. (see figure
+11) The edge of the tool is placed on this arc before the compensation
+move is begun. For large circles this approach may waste some time
+getting from the initial location to the start of the circle cut.
+A change in the approach point arithmetic expression could move the
+approach point closer to the edge of the circle.
+
+<P>
+Pocket milling of a circle
+
+<P>
+<TT><FONT SIZE="-1">N010 (Var #1100 is coordinate system number)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N020 (Var #1101 is drill tool slot)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N030 (Var #1102 is mill tool slot)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N040 (Var #1103 is hole diameter)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N050 (Var #1104 is tool diameter)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N060 G#1100 G0 X0 Y0 Z0 (machine home from
+previous work)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N070 (place your tool load routine about here)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N080 G55 T#1000 M6 G43 H#1000 (pick up drill
+and offsets for this hole)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N090 X[#1002/4] Y[-1*[[#1002/4]-[#1003/2]]]
+Z0 (move to initial position)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N100 G1 F5 Z-1 (drill starting hole)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N110 F25 Z0 (retract quill)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N110 G53 G0 X0 Y0 Z0 (go back to tool change
+position)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N130 (place your tool load routine about here)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N140 T#1001 M6 G43 H#1001 (pick up mill) </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N150 X[#1002/4] Y[-1*[[#1002/4]-[#1003/2]]]
+Z0 (mill to initial position)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N160 G1 F5 Z-1 (mill starting hole)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N170 G17 G41 D2 G3 F3 X[#1002/2] Y0 R[#1002/4]
+(offset arc to start)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N180 X[-1*[#1002/2]] R[#1002/2]
+(cut the first half circle)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N190 X[#1002/2] R[#1002/2] (cut the
+second half circle)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N200 G40 T0 M6 G43 H0 G0 Z0 (drop offsets and
+retract quill)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N210 G53 G0 X0 Y0 Z0 (go home)</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">N220 M2</FONT></TT>
+<P>
+
+
+<P>
+One limitation of the code above is that tool diameter can't be larger
+than the radius (d/2) of the finished hole or the EMC will generate
+a cutting compensation error message.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1962"
+  HREF="node109.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1956"
+  HREF="node104.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1950"
+  HREF="node107.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1958"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1960"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1963"
+  HREF="node109.html">Example 5 - Iterated</A>
+<B> Up:</B> <A NAME="tex2html1957"
+  HREF="node104.html">13.5 Sample Variable Programs</A>
+<B> Previous:</B> <A NAME="tex2html1951"
+  HREF="node107.html">Example 3 - An</A>
+ &nbsp; <B>  <A NAME="tex2html1959"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1961"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

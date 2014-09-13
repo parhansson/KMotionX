@@ -1,0 +1,735 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<title>G Code Screen</title>
+<style>
+<!--
+	.ft2{font-size:12pt;font-family:Arial;color:#000000}
+-->
+</style>
+</head>
+
+<body>
+
+<div align="center">
+  <center>
+  <table border="0" cellpadding="0" cellspacing="8" width="1010">
+    <tr>
+      <td valign="top" width="161" rowspan="3">
+      <p align="left"><font face="Arial"><i><b><font size="4">G Code Quick Reference</font></b></i></font><p align="left">
+		<font face="Arial">
+      <strong><i>G Codes</i></strong></font><font size="2" face="Arial"><br>
+      <b>G0</b> X3.5 Y5.0 Z1.0 A2.0 (Rapid move)</font><p style="margin-top: 0; margin-bottom: 0"><font size="2" face="Arial">
+      <b>G1</b> X3.5 Y5.0 Z1.0 A2.0(linear move)</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font size="2" face="Arial">
+      <b>G2</b> X0.0 Y0.5 I0 J0.25 (CW Arc move)</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font size="2" face="Arial">
+      <b>G3</b> X0.0 Y0.5 I0 J0.25 (CCW Arc move)</font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial" size="2"><b>G4</b> P0.25 </font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial" size="2">(Dwell seconds)</font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      &nbsp;</p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial" size="2"><b>G10L2Pn</b> G10L2P1X0Y0Z0 </font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial" size="2">(Set Fixture Offset #n)</font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      &nbsp;</p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial" size="2"><b>G17 Arcs in XY plane</b></font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial" size="2"><b>G18 Arcs in XZ plane</b></font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial" size="2"><b>G19 Arcs in YZ plane</b></font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial" size="2">&nbsp;</font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial" size="2"><b>G20</b> Inch units</font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial" size="2"><b>G21</b> mm units</font></p>
+		<p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial" size="2">&nbsp;</font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial" size="2"><b>G28</b> Move to Reference Position #1</font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial" size="2"><b>G30 </b>Move to Reference Position #2</font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      &nbsp;</p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial" size="2"><b>G40</b> Tool Comp Off</font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial" size="2"><b>G41</b> Tool Comp On </font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial" size="2">(Left of Contour)</font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial" size="2"><b>G42</b> Tool Comp On</font></p>
+		<p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial" size="2">(Right of Contour)</font></p>
+      <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>G43 Hn</b> (Tool #n length 
+		comp On)</font></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>G49</b> </font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">(Tool length comp 
+		off)</font></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      G53</b> Absolute Coord</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      G54</b> Fixture Offset 1</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      G55</b> Fixture Offset 2</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      G56</b> Fixture Offset 3</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      G57</b> Fixture Offset 4</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      G58</b> Fixture Offset 5</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      G59</b> Fixture Offset 6</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      G59.1</b> Fixture Offset 7</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      G59.2</b> Fixture Offset 8</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      G59.3</b> Fixture Offset 9</font></p>
+      <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      G90 </b>Absolute Coordinates</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      G91 </b>Relative Coordinates</font></p>
+      <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      G92/G52 </b>Set Global Offset</font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><b><font face="Arial" size="2">G92 X0Y0Z0</font></b></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      G92.1 Clear Global Offset</b></font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><b>
+		<font face="Arial" size="2">G92.2 Clear Leave Vars</font></b></p>
+		<p style="margin-top: 0; margin-bottom: 0"><b>
+		<font face="Arial" size="2">G92.3 Load Vars </font></b></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><b>
+		<font face="Arial" size="2">G96 Spindle RPM mode</font></b></p>
+		<p style="margin-top: 0; margin-bottom: 0"><b>
+		<font face="Arial" size="2">G97 Dmax CSS mode</font></b></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+      <i><strong>M Codes:</strong></i></font><font size="2" face="Arial"><br>
+      <b>M0</b> (Program Stop)</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font size="2" face="Arial">
+      <b>M2</b> (Program End+Reset)</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      M3</b> Spindle CW</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      M4 </b>Spindle CCW</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      M5</b> Spindle Stop</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      M6</b> Tool Change</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      M7</b> Mist On</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      M8</b> Flood On</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      M9</b> Mist/Flood Off</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font size="2" face="Arial">
+      <b>M30</b> (Program End)</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      M98</b> <b>P</b>xxx Call Subroutine</font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
+		<b>M99</b> Return from Sub</font></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+      <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+      <i><strong>Other Codes:</strong></i></font><font size="2" face="Arial"><br>
+      <b>F</b> (Set Feed rate in/min or mm/min)</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      S</b> (Spindle Speed)</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+      D</b> (Tool)</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
+		O</b> Subroutine Label</font></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial">
+      <i><strong>Comments:</strong></i></font><p style="margin-top: 0; margin-bottom: 0">
+      <strong style="font-weight: 400"><font face="Arial" size="2">
+		<i>(</i>Simple Comment)</font></strong><p style="margin-top: 0; margin-bottom: 0">
+      <strong style="font-weight: 400"><font face="Arial" size="2">(MSG,OK 
+		toContinue?) </font></strong><font size="2" face="Arial">
+      <br>
+      </font><strong style="font-weight: 400">
+		<font face="Arial" size="2">(CMD,EnableAxis0) </font></strong>
+		<font size="2" face="Arial">
+      <br>
+      </font><strong style="font-weight: 400">
+		<font face="Arial" size="2"><a name="BUF"></a>(BUF,SetBitBuf29) </font></strong>
+		<font size="2" face="Arial">
+      <br>
+      <br>
+      </font> 
+		<font face="Arial">
+      <i><b><a href="#Other_GCode_Commands">More GCodes</a></b></i></font><p style="margin-top: 0; margin-bottom: 0">
+      &nbsp;<p style="margin-top: 0; margin-bottom: 0">
+      &nbsp;<p style="margin-top: 0; margin-bottom: 0">
+      <b><i><font face="Arial">Keyboard Hot Keys</font></i></b><p style="margin-top: 0; margin-bottom: 0">
+      &nbsp;<p style="margin-top: 0; margin-bottom: 0">
+      <b><font face="Arial" size="2">ESC - Stop</font></b><p style="margin-top: 0; margin-bottom: 0">
+      <b><font face="Arial" size="2">F2 - KeyJog on/off</font></b><p style="margin-top: 0; margin-bottom: 0">
+      <b><font face="Arial" size="2">F3 - FeedHold</font></b><p style="margin-top: 0; margin-bottom: 0">
+      <b><font face="Arial" size="2">F5 - Run/Halt</font></b><p style="margin-top: 0; margin-bottom: 0">
+      <b><font face="Arial" size="2">F9 - Spindle On CW</font></b><p style="margin-top: 0; margin-bottom: 0">
+      <b><font face="Arial" size="2">F10 - Spindle On CCW</font></b><p style="margin-top: 0; margin-bottom: 0">
+      <b><font face="Arial" size="2">F11 - Spindle Off</font></b><p style="margin-top: 0; margin-bottom: 0">
+      &nbsp;<p style="margin-top: 0; margin-bottom: 0">
+      <b><i><font face="Arial">KeyJog Mode</font></i></b><p style="margin-top: 0; margin-bottom: 0">
+      <b><u><font face="Arial" size="2"><i>(</i></font></u><i><font face="Arial" size="2">shift=fast)</font></i></b><p style="margin-top: 0; margin-bottom: 0">
+      <i><b><font face="Arial" size="2">(ctrl=step)</font></b></i><p style="margin-top: 0; margin-bottom: 0">
+      <b><font face="Arial" size="2">x y - Arrow Keys</font></b><p style="margin-top: 0; margin-bottom: 0">
+      <b><font face="Arial" size="2">z - page up/down</font></b><p style="margin-top: 0; margin-bottom: 0">
+      <b><font face="Arial" size="2">A - num - +</font></b><p style="margin-top: 0; margin-bottom: 0">
+      &nbsp;<p style="margin-top: 0; margin-bottom: 0">
+      &nbsp;</td>
+      <td valign="bottom" width="825">
+		<img border="0" src="KMotionCNCfiles/Logo.png" width="256" height="72" align="left" hspace="20"><p style="margin-top: 0; margin-bottom: 0">
+		<font face="Arial"><i><b><font size="4">Other KMotionCNC Screens</font></b></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+		see also <i><b><a href="../index.htm">KMotion OnLine Help</a></b></i></font><p style="margin-top: 0; margin-bottom: 0">
+		<font face="Arial"><a href="GCodeViewerScreen.htm">G Code 
+		Viewer Screen</a></font><p style="margin-top: 0; margin-bottom: 0">
+		<font face="Arial"><a href="GViewerSetup.htm">G Code Viewer Setup Screen</a></font><p style="margin-top: 0; margin-bottom: 0">
+		<font face="Arial"><a href="ToolSetupScreenM3.htm">Tool Setup Screen</a></font><p style="margin-top: 0; margin-bottom: 0">
+		&nbsp;</td>
+    </tr>
+    <tr>
+      <td valign="top" width="825" align="left">
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial">
+      <map name="FPMap0">
+		<area alt="Axis Display Help " href="#Display" shape="rect" coords="0, 21, 187, 183">
+		<area alt="Custom Button Help" href="#Custom_Buttons" shape="rect" coords="236, 561, 565, 594">
+		<area alt="Units and Coordinate System Help" href="#Coordinate" shape="rect" coords="288, 63, 347, 176">
+		<area alt="Fixture Offset Help" href="#Fixture_Offset" shape="rect" coords="249, 241, 343, 302">
+		<area alt="Tool Selection/Display Help" href="#Tool" shape="rect" coords="281, 186, 336, 239">
+		<area alt="File Load Save Help" href="#File_New_/_Open/_Save" shape="rect" coords="345, 23, 538, 50">
+		<area alt="Control Execution Help" href="#Execute_Controls" shape="rect" coords="539, 20, 625, 48">
+		<area alt="Show Tool Viewer / G Code Viewer Help" href="#Show_Tool_Setup_/_G_Code_Viewer_" shape="rect" coords="669, 22, 715, 50">
+		<area alt="File Selector Help" href="#File Selector" shape="rect" coords="915, 89, 963, 281">
+		<area alt="Simulate Help" href="#Simulate" shape="rect" coords="916, 282, 966, 375">
+		<area alt="Feed Rate Override Help" href="#Execute_Controls" shape="rect" coords="23, 334, 81, 403">
+		<area alt="Emergency Stop Help" href="#Emergency_Stop" shape="rect" coords="24, 514, 106, 590">
+		<area alt="Manual Data Entry Help" href="#Manual_Entry" shape="rect" coords="341, 531, 817, 564">
+		<area href="#Coordinate_System_Origin" shape="rect" coords="270, 29, 323, 60">
+		<area href="#Simulate" shape="rect" coords="774, 299, 813, 350">
+		<area href="#G_Code_Edit_Window" shape="rect" coords="371, 51, 752, 526">
+		<area href="#File Selector" shape="rect" coords="774, 126, 809, 290">
+		<area href="#Keyboard_Jog" shape="rect" coords="6, 240, 89, 286">
+		<area href="#Feed_Hold" shape="rect" coords="123, 519, 209, 593">
+		<area href="#Zero/Set_Origin" shape="rect" coords="189, 21, 270, 188">
+		<area href="#Jog_Buttons" shape="polygon" coords="87, 189, 197, 189, 194, 404, 220, 404, 217, 515, 11, 513, 10, 410, 89, 411, 88, 321, 8, 321, 9, 285, 94, 285">
+		<area href="#Block_Delete" shape="rect" coords="773, 367, 816, 422">
+		<area href="#Feed_Rate_Override" shape="rect" coords="226, 309, 367, 524">
+		</map>
+      <img border="0" src="KMotionCNCfiles/KMotionCNC.png" usemap="#FPMap0"></font></p>
+		<p style="margin-top: 0; margin-bottom: 0">
+      &nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><i><font face="Arial">(Click on Image to Jump to 
+		related help)</font></i></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial"><b><i>KMotionCNC </i></b>allows the user to edit, execute, and view G Code Programs.&nbsp; GCode is a historical language 
+      for defining Linear/Circular/Helical Interpolated Motions often used to 
+      program numerically controlled machines (CNC Machines).</font></p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">KMotion 
+		has various screen &quot;faces&quot;.&nbsp; The one shown above is for &quot;Basic 6 
+		axes&quot;.&nbsp; Others may be selected on the
+		<a href="ToolSetupScreenFiles.htm">Tool Setup Screen</a>.</font></p><p style="margin-top: 0; margin-bottom: 0">&nbsp;<p style="margin-top: 0; margin-bottom: 0">
+		&nbsp;<p style="margin-top: 0; margin-bottom: 0">
+		&nbsp;<p style="margin-top: 0; margin-bottom: 0">
+		<font face="Arial">
+		<img border="0" src="KMotionCNCfiles/image001.gif" width="90" height="35" align="left" hspace="15" vspace="-5"></font><p style="margin-top: 0; margin-bottom: 0">
+		<font face="Arial">
+		See the Quick Reference at 
+      left for commonly used G Code commands.</font><p style="margin-top: 0; margin-bottom: 0">
+		&nbsp;<p style="margin-top: 0; margin-bottom: 0">
+		&nbsp;<p>
+		<i><b><a name="Display"><font size="4" face="Arial">Display</font></a></b></i><p>
+		<font face="Arial">
+		<img border="0" src="KMotionCNCfiles/Display.PNG" align="left" hspace="15"></font><p>
+		<font face="Arial">The 4 axis Display along the top of the screen indicated the current 
+		position of each axis.&nbsp; The units of the display are in either mm 
+		or inches depending on the current mode of the interpreter (see
+		<a href="#Coordinate">Coordinate System Units)</a>.&nbsp; 
+		</font> 
+		<p>
+		<font face="Arial">The displayed position will match the g -code programmed position (i.e. 
+		last G1 commanded position) which is not necessarily the actual machine 
+		tool position if global or fixture offsets are in use.</font><p>
+		<font face="Arial">The color of the display gives an indication of current status.&nbsp; 
+		</font> 
+		<p>
+		<font face="Arial"><b><font color="#00FF00">
+		<span style="background-color: #000000">Green</span></font></b> - indicates normal status, hardware is connected, axis is enabled, 
+		and the displayed position is the current commanded tool position in GCode 
+		coordinates.&nbsp; 
+		</font> 
+		<p>
+		<font face="Arial"><b><font color="#FF8000">
+		<span style="background-color: #000000">Orange</span></font></b> - indicates normal status, hardware is connected, axis is enabled, 
+		and the displayed position is the current tool position in Raw Machine 
+		Coordinates (G53 without any Global Offset (G92) or Fixture Offset 
+		(G54+).&nbsp; 
+		</font> 
+		<p>
+		<font face="Arial"><font color="#FFFFFF">
+		<span style="font-weight: 700; background-color: #000000">White</span></font> - indicates simulation mode is selected.&nbsp; The displayed 
+		position is the current position after the last line of interpreted G 
+		code.</font><p>
+		<font face="Arial"><font color="#FFFF00"><b>
+		<span style="background-color: #000000">Yellow</span></b></font> - indicates hardware disconnected or axis disabled.&nbsp; The 
+		displayed position is invalid</font><p>
+		<span style="background-color: #000000"><b>
+		<font face="Arial" color="#0099FF">Cyan</font></b></span><font face="Arial"> - 
+		indicates normal status, hardware is connected, axis is enabled, and the 
+		displayed position is the current measured tool position in GCode 
+		coordinates.&nbsp; Available when Encoders or other feedback device is 
+		used and the Encoder mode is selected on the Tool Setup | Trajectory 
+		Planner Screen.</font><p>
+		&nbsp;<p>
+		<b><i><font face="Arial" size="4"><a name="Zero/Set_Origin">Zero/Set Origin</a></font></i></b><p>
+		<img border="0" src="KMotionCNCfiles/ZeroSet.PNG" width="105" height="32"><p>
+		<font face="Arial">Allows zeroing or setting the respective axis.&nbsp; This is 
+		accomplished by adjusting the Global Offsets (G52/G92) or by adjusting 
+		the currently selected Fixture Offset.&nbsp; Which is offset is adjusted 
+		is determined &nbsp;by the Tool Setup Parameter described
+		<a href="ToolSetupScreenTP.htm#Zero_Using_Fixture_Offsets">here</a>.&nbsp; The original 
+		Raw Machine Coordinates will remain unchanged, so the effect of these 
+		operations will only be apparent if displaying Machine Coordinates is 
+		de-selected, see below.&nbsp; For further information see
+		<a href="GCodeOffsets.htm">system offsets</a>. 
+		</font> 
+		<p>
+		&nbsp;<p>
+		<b><i><font face="Arial" size="4"><a name="Coordinate_System_Origin">
+		Coordinate System Origin</a></font></i></b><p>
+		<img border="0" src="KMotionCNCfiles/MachineCoord.PNG" width="107" height="24" align="left"><p>
+		&nbsp;<p>
+		<font face="Arial">When checked, the displayed position is the current 
+		tool position in Raw Machine Coordinates (G53 without any Global offset 
+		(G92) or Fixture Offset (G54+).&nbsp; Machine coodinates are relative to 
+		the fixed machine home position.</font><p>
+		<font face="Arial">Unchecked displays the normal GCode Coordinate 
+		relative to the &quot;floating&quot; origin which may be moved by changing either 
+		the global offset (G92) and/or a Fixture Offset. </font>
+		<p>
+		&nbsp;<p><b><i><font face="Arial" size="4"><a name="Coordinate">Coordinate</a> 
+		System Units / Mode</font></i></b><p>
+		<font face="Arial">
+		<img border="0" src="KMotionCNCfiles/UnitsCoord.PNG" width="143" height="68" align="left" hspace="15"></font><p>
+		<font face="Arial">Displays the current mode of the G code interpreter.&nbsp;
+		</font>
+		<p>
+		&nbsp;<p>
+		&nbsp;<p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial"><b>G20</b> selects English Inch units</font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      <font face="Arial"><b>G21</b> selects Metric mm units </font></p>
+      <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial"><b>
+      G90 </b>selects Absolute Coordinates</font></p>
+      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial"><b>
+      G91 </b>selects Relative Coordinates</font></p>
+      <p style="margin-top: 0; margin-bottom: 0">
+      &nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0">
+      &nbsp;</p>
+      <p><b><i><font face="Arial" size="4"><a name="Fixture_Offset">Fixture Offset</a></font></i></b><p>
+		<font face="Arial">
+		<img border="0" src="KMotionCNCfiles/Fixture.PNG" align="left" hspace="15"></font><p>
+		<font face="Arial">Displays and allows changing of the current Fixture 
+		Offset.&nbsp; <i>KMotionCNC</i> supports 9 Fixture offsets.&nbsp; Each 
+		Fixture may be programmed to introduce an arbitrary x,y,z,a offset.&nbsp; 
+		Use the <b>G10L2Pn</b> command to set the offset associated with the 
+		fixture #n.&nbsp; An example might be:</font><p>
+		<font face="Arial"><b>G10 L2 P3 X10.0 Y20.0 Z30.0</b>&nbsp;&nbsp; which 
+		sets Fixture Offset #3 to (10,20,30)</font><p>
+		<font face="Arial">Executing the command <b>G56</b> (or by selecting 3 - 
+		G56 in the drop down list) will cause Fixture offset #3 to be in use in 
+		subsequent commands until a different Fixture is selected.&nbsp; (See 
+		also - <a href="GCodeOffsets.htm">G Code Offsets</a>).</font><p>
+		<font face="Arial">
+		<img border="0" src="KMotionCNCfiles/FixtureEdit.png" width="109" height="81" align="left" hspace="15"></font><p>
+		<font face="Arial">The &quot;set&quot; button can be used to automatically compute 
+		and change the current fixture offset so that the current position 
+		becomes the new origin.</font><p>
+		<font face="Arial">The &quot;edit&quot; button can be used to view, change, or 
+		save the fixture offsets.&nbsp; <a href="EditFixtureOffsets.htm">See</a>.</font><p>
+		&nbsp;<p>
+		<i><b><font face="Arial" size="4"><a name="Tool">Tool</a></font></b></i><p>
+		<font face="Arial">
+		<img border="0" src="KMotionCNCfiles/ToolSelector.PNG" align="left" hspace="15" width="79" height="202" vspace="11"></font><p>
+		<font face="Arial">Displays and allows changing of the currently 
+		selected Tool.&nbsp; <i>KMotionCNC</i> supports up to 99 tool definitions.&nbsp; 
+		GCode selects tools using several different commands for different 
+		purposes.&nbsp; The value displayed here is the value selected by the <b>
+		T</b> command, which is the tool to be loaded into the spindle by a 
+		automatic tool changer.&nbsp; The T command is normally followed by a M6 
+		command that receives the tool number and physically loads the tool.&nbsp; 
+		Selecting a tool in the the dropdown list will effectively cause a T#M6 
+		command to be executed, where # is the selected tool number.&nbsp; </font>
+		<p>
+		<font face="Arial">Besides changing tools with the T command, D and H 
+		commands are used to apply tool properties from the tool table.&nbsp; 
+		The tool definitions are specified in a text file that is selected on 
+		the <a href="ToolSetupScreenFiles.htm">ToolSetup Screen</a>.</font><p>
+		<font face="Arial">A tool definition consists of the tool number (FMS), 
+		the pocket where it is located if there is a tool changer available (POC), 
+		the length of the tool (LEN), the diameter of the tool (DIAM), and an 
+		optional comment.</font></p>
+		<p>
+		<font face="Arial">Executing the <b>D#</b> command will select which 
+		Tool parameters are to be used for radius compensation (<b>G40,G41,G42</b>).&nbsp; </font>
+		<p>
+		<font face="Arial">Executing the <b>H#</b> command will select which 
+		Tool parameters are to be used for length compensation (<b>G43,G49</b>).&nbsp; </font>
+		<p>
+		<font face="Arial">See below for an example Tool Table</font><font SIZE="2"><p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">POC 
+		FMS&nbsp; LEN&nbsp;&nbsp; DIAM&nbsp; COMMENT</font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">1&nbsp;&nbsp;&nbsp; 
+		1&nbsp;&nbsp; 0.0&nbsp;&nbsp; 0.0&nbsp;&nbsp; first tool</font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">2&nbsp;&nbsp;&nbsp; 
+		2&nbsp;&nbsp; 0.0&nbsp;&nbsp; 0.0</font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">3&nbsp;&nbsp;&nbsp; 
+		3&nbsp;&nbsp; 1.0&nbsp;&nbsp; 0.5</font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">4&nbsp;&nbsp;&nbsp; 
+		4&nbsp;&nbsp; 2.0&nbsp;&nbsp; 1.0</font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">32&nbsp; 
+		32&nbsp;&nbsp; 0.0&nbsp;&nbsp; 0.0&nbsp;&nbsp; last tool</font></p>
+		</font>
+		<p>
+		The Tool Table may also be edited in a window using the <b>edit</b> button. <p>
+		&nbsp;<p>
+		<b><i><font face="Arial" size="4"><a name="File_New_/_Open/_Save">File 
+		New / Open/ Save</a></font></i></b><p>
+		<font face="Arial">
+		<img border="0" src="KMotionCNCfiles/FileOpenSave.PNG" width="204" height="39" align="left" hspace="15"></font><p>
+		<font face="Arial">This group of pushbuttons allow a G Code file to be loaded or saved to or from the 
+		edit window.&nbsp; The edit window allows the user to quickly switch 
+		between 7 loaded G Code files.&nbsp;&nbsp; Once a file is loaded into 
+		one of the edit windows, the name of that file will persist between 
+		sessions.</font><p>
+		&nbsp;<p>
+		<b><i><font face="Arial" size="4"><a name="Execute_Controls">Execute Controls</a></font></i></b><p>
+		<img border="0" src="KMotionCNCfiles/GO.bmp" width="57" height="57">&nbsp;&nbsp;
+		<img border="0" src="KMotionCNCfiles/Halt.bmp" width="57" height="57"><font face="Arial"><img border="0" src="KMotionCNCfiles/Execute.PNG" hspace="15" vspace="10">This 
+		group of pushbuttons allow the control of G Code execution.&nbsp; <i><b>
+		Restart</b></i> will reset the instruction pointer
+		<img border="0" src="KMotionCNCfiles/InstructionPointer.png"> to the first line of the 
+		file.&nbsp; <font color="#008000"><b><i>Cycle Start</i></b></font> will begin continuous execution from 
+		where the current instruction pointer
+		<img border="0" src="KMotionCNCfiles/InstructionPointer.png"> is located on the left of 
+		the edit window.&nbsp; <i><b>Single Step</b></i> will execute one single 
+		line of G code&nbsp; where the current instruction pointer is currently 
+		pointing.&nbsp; Note that the instruction pointer may be moved to any 
+		line by right clicking on the line within the edit window and selecting 
+		Set Next Statement.</font><p>
+		<font face="Arial"><font color="#990000"><i><b>Halt</b></i> (available 
+		when GCode is running) </font>will cause a feedhold to be 
+		initiated so that any coordinated tool motion will decelerate along the 
+		intended path.&nbsp; Once motion comes to a complete stop, the GCode 
+		Interpreter will abort and back up to the state of the line of GCode 
+		that created the current Tool motion.</font><p>
+		&nbsp;<p>
+		<b><i><font face="Arial" size="4">
+		<a name="Show_Tool_Setup_/_G_Code_Viewer_">Show Tool Setup / G Code Viewer 
+		</a>Screens</font></i></b><p>
+		<font face="Arial">
+		<img border="0" src="KMotionCNCfiles/ShowToolViewer.PNG" width="105" height="37" align="left" hspace="15"></font><p>
+		<font face="Arial">This group of buttons bring additional screens into view.&nbsp; The
+		<a href="ToolSetupScreenM3.htm">Tool Setup Screen </a>is used to configure 
+		the system's parameters.&nbsp; Machine Axis 
+		distance/velocity/accelerations.&nbsp; M Code and User Button Actions 
+		Actions, Tool and Setup definition files, and Jog Button and Joystick 
+		rates. The <a href="GCodeViewerScreen.htm">G Code Viewer 
+		Screen</a> allows real-time, 3D viewing of the machine tool paths either 
+		during actual machine operation or during simulation. 
+		</font> 
+		<p>
+		&nbsp;<p>
+		<b><i><font face="Arial" size="4"><a name="G_Code_Edit_Window">G Code Edit Window</a></font></i></b><p>
+		<font face="Arial">
+		<img border="0" src="KMotionCNCfiles/Editor.PNG" align="left" hspace="15"></font><p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		The Edit Window displays the loaded G-Code and allows editing.&nbsp; 
+		G-Code color syntax highlighting makes the code more readable.&nbsp; A 
+		right mouse click will bring up the context menu shown.&nbsp; 
+		<p>
+		Unlimited Undo/Redo is supported by right mouse clicking or 
+		Ctrl-Z/Ctrl-Y hot keys.<p>
+		Find and Find/Replace are supported by right mouse clicking.&nbsp; 
+		Ctrl-F hot key for Find.<p>
+		Set Next Statement can be used to move the current point of execution to 
+		the point where the mouse was clicked.&nbsp; A reverse search and 
+		analysis of the preceding lines will be performed to attempt to 
+		determine an appropriate starting position and conditions for the 
+		specified line.&nbsp; A Safe/Resume process and movement may be 
+		performed when execution is continued.&nbsp; Starting in the middle of a 
+		GCode sequence can be complex.&nbsp; It is up to the Operator to make 
+		certain that the state and current conditions are appropriate. 
+		<p>
+		Note that 
+		Transform Sel will bring up a utility dialog (shown below) that allows 
+		the selected G-Code to be scaled or offset.<p>
+		<img border="0" src="KMotionCNCfiles/Transform.PNG" width="378" height="289"><p>
+		Show/Hide Line numbers can be selected to display GCode Line numbers in 
+		the Left Margin.<p>
+		&nbsp;<p>
+		<b><i><font face="Arial" size="4"><a name="File Selector">File Selector</a></font></i></b><p>
+		<font face="Arial">
+		<img border="0" src="KMotionCNCfiles/FileSelector.PNG" width="46" height="180" align="left" hspace="15"></font><p>
+		<font face="Arial">The file selector shows which of the 7 loaded G Code files is currently 
+		active for editing.&nbsp; The Main Window Title also displays the loaded 
+		filename for the selected file.&nbsp; The file number is highlighted in green when that 
+		file is currently executing G Code.&nbsp; Only one G Code file is 
+		allowed to execute at a particular time.</font><p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		<b><i><font face="Arial" size="4"><a name="Simulate">Simulate</a></font></i></b><p>
+		<font face="Arial">
+		<img border="0" src="KMotionCNCfiles/Simulate.png" align="left" hspace="15"></font><p>
+		<font face="Arial">Enables Simulation Mode which allows viewing and verification of a G 
+		Code Program with or without any actual hardware connected.&nbsp; When 
+		Simulation mode is enabled no actual machine motion will be made.&nbsp; 
+		Executing or Single Stepping through a G Code program will change the 
+		Displayed Position and Plot the machine tool path on the
+		<a href="GCodeViewerScreen.htm">G Code Viewer Screen</a>.&nbsp; 
+		In Simulation Mode the Numeric <a href="#Display">Display</a> Color 
+		changes to white to indicate the display is not showing the actual 
+		machine tool position.&nbsp; While in Simulation mode the
+		<a href="#Jog_Buttons">Jog Buttons and Gamepad buttons</a> will also 
+		change the displayed position and tool position on the G Code Viewer 
+		Screen without causing any actual machine tool motion. 
+		</font>
+		<p>
+		<font face="Arial">To perform a quick simulation for plotting or job 
+		extents verification the Run button may be used.&nbsp; Note that certain 
+		Jobs with manual operations, probing, etc. may not be possible to 
+		simulate.&nbsp;&nbsp; </font> 
+		<p>
+		&nbsp;<p>
+		<b><i><font face="Arial" size="4"><a name="Block_Delete">Block Delete</a></font></i></b><p>
+		<font face="Arial">
+		<img border="0" src="KMotionCNCfiles/BlockDelete.png" align="left" hspace="15" width="46" height="67"></font><p>
+		<font face="Arial">When checked, any line with a single '/' character at 
+		the beginning of the line will be deleted (skipped).&nbsp; When 
+		unchecked the line will be executed normally while ignoring the '/' 
+		character.&nbsp; The Initial state of Block Delete can be configured in 
+		the <a href="ToolSetupScreenFiles.htm#Setup_File">Tool Setup File</a>.</font><p>
+		&nbsp;<p>
+		<b><i><font face="Arial" size="4"><a name="Feed_Hold">Feed Hold</a></font></i></b><p>
+		<font face="Arial">
+		<img border="0" src="KMotionCNCfiles/FeedHold.PNG" align="left" hspace="15"></font><p>
+		<font face="Arial">Feed Hold may be used to immediately decelerate all 
+		axes to a controlled stop.&nbsp; Any coordinated motion in progress will 
+		decelerate along the defined buffered path.&nbsp; When stopped in feed 
+		hold, the button will be shown in a toggled state.&nbsp; To resume 
+		motion toggle the feed hold button off.&nbsp; Note that while stopped 
+		that the current GCode line may be advanced one or more lines past the 
+		current tool position because the Interpreter and Trajectory planner 
+		works ahead to allow motion to be buffered.&nbsp;
+		<a href="#Execute_Controls">Halt</a> may also be selected to exit the 
+		feedhold state.&nbsp; Halt will cause the Interpreter to abort and back 
+		up to the GCode line that generated the current tool position.</font><p>
+		&nbsp;<p>
+		<i><b><font face="Arial" size="4"><a name="Emergency_Stop">Emergency Stop</a></font></b></i><p>
+		<font face="Arial">
+		<img border="0" src="KMotionCNCfiles/Stop.PNG" width="88" height="80" align="left" hspace="15"></font><p>
+		<font face="Arial">Emergency Stop may be used to immediately stop all 
+		motion.&nbsp; Any commands in motion will be aborted and all axes will 
+		be disabled.&nbsp; After depressing Emergency Stop the system must be 
+		re-initialized and the G Code Interpreter state will be lost.&nbsp;&nbsp; 
+		Use Halt to stop in a controlled manner after the next line of GCode has 
+		been completed.</font><p>
+		<font face="Arial">The ESC key may also be use to initiate an Emergency 
+		Stop whenever the KMotionCNC Screen has the focus.</font><p>
+		&nbsp;<p>
+		<b><i><font face="Arial" size="4"><a name="Manual_Entry">Manual Entry</a></font></i></b><p>
+		<font face="Arial">
+		<img border="0" src="KMotionCNCfiles/Manual.PNG" width="594" height="192" align="left" hspace="15"></font><p>
+		<font face="Arial">The Manual Entry cell allows the user to quickly enter a single line of 
+		G Code and Send it to the interpreter for execution.&nbsp; The last 10 
+		entered commands are saved in a drop down list for quick re-entry.</font><p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		<b><i><font face="Arial" size="4"><a name="Jog_Buttons">Jog Buttons</a></font></i></b><p>
+		<font face="Arial">
+		<img border="0" src="KMotionCNCfiles/JogButtons.PNG" align="left" hspace="15"></font><p>
+		<font face="Arial">The Jog buttons may be used to move any of the axes.&nbsp; Pushing and 
+		holding any of the arrow buttons will cause continuous motion.&nbsp; There are 
+		2 buttons in each direction for each axis.&nbsp; The second button moves 
+		at twice the rate as the first.&nbsp; The speeds for each axis may be 
+		specified in the <a href="ToolSetupScreenTP.htm">Tool Setup Screen</a>.</font><p>
+		<font face="Arial">There is also a Step button (square dot) for each 
+		axis and direction that will move an exact step size (as specified in 
+		the step size selection).&nbsp; The center button will stop a step in 
+		progress (useful for aborting large steps).</font><p>
+		<font face="Arial">A USB Gamepad such as the one shown below may also be used to Jog the 
+		System.&nbsp; Simply connect the Gamepad and it should become 
+		immediately active.&nbsp; The left Joystick controls x and y and the 
+		right joystick controls z and a.&nbsp; The same speed parameters in the 
+		Tool Setup Screen control both the Jog pushbuttons on the screen and the 
+		Gamepad.</font><p>
+		<font face="Arial">The Jog buttons and Gamepad are also active in simulation mode</font><p>
+		&nbsp;<p>
+		&nbsp;<p>
+		<font face="Arial">&nbsp;&nbsp; 
+		<img border="0" src="KMotionCNCfiles/Gamepad.png" align="left"></font><p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		&nbsp;<p>
+		<b><i><font face="Arial" size="4"><a name="Keyboard_Jog">Keyboard Jog</a></font></i></b><p>
+		<img border="0" src="KMotionCNCfiles/KeyboardJog.PNG" width="110" height="57" align="left" hspace="11"><font face="Arial">Toggling 
+		on Keyboard Jog allows keyboard keys that are normally used for Windows 
+		navigation to be used for Jog Functions.&nbsp; These include keys such 
+		as arrow, page up/down, +, - etc.&nbsp;&nbsp; Hovering the mouse cursor 
+		over a Button will display a tool tip that indicates a keyboard key that 
+		may be used instead of the mouse.&nbsp; Mouse clicking into an edit cell 
+		that requires the use of arrow keys will automatically de select 
+		Keyboard Jogging.&nbsp;&nbsp; The F2 key may be used to toggle Keyboard 
+		Jogging. </font>
+		<p>
+		&nbsp;<p>
+		<b><i><font face="Arial" size="4"><a name="Feed_Rate_Override">Feed/Spindle Rate Override</a></font></i></b><p>
+		<font face="Arial">
+		<img border="0" src="KMotionCNCfiles/FeedRate.PNG" align="left" hspace="15"></font><p>
+		<font face="Arial">Feed Rate Override provides a means to adjust the feedrate while the 
+		machine is in operation without having to modify the G Code.&nbsp; The 
+		Feed Rate is specified within the G Code using the F command and the 
+		Feed Rate Override is a multiplicative factor that is applied to that 
+		value.&nbsp; For example F100 would specify a Feed rate of 100 
+		inches/minute (or 100 mm/minute if the interpreter is in metric mm 
+		mode), with a feed rate override of 1.5 the actual attempted feed rate 
+		would be 150 inches/minute (or 150 mm/minute in mm mode).&nbsp; 
+		</font> 
+		<p>
+		<font face="Arial">Note that this speed will only be used if all the axes involved will 
+		remain below the maximum allowed speeds set on the
+		<a href="ToolSetupScreenTP.htm">Tool Setup Screen</a>.&nbsp;&nbsp; 
+		Additionally, short vectors with sharp corners (greater than the 
+		specified break angle) that require stopping may be limited due to 
+		acceleration limits.&nbsp;&nbsp; KMotionCNC uses complex algorithms to 
+		ensure that velocities and accelerations remain below user specified 
+		limits.&nbsp; So if the Feed Rate Override or (Specified Feed rate 
+		itself) doesn't seem to be having the expected result, check if the 
+		maximum velocities and accelerations are limiting.</font><p>
+		<font face="Arial">The Feed Rate Override may be changed either by using the slider or by 
+		typing a value and pressing the apply button.</font><p>
+		<font face="Arial">Note that because motions are planned ahead and downloaded to the Motion 
+		Controller ahead of time, that the feed rate override will take a short 
+		amount of time to have an effect.&nbsp; The amount of time that the 
+		trajectory planner looks ahead is specified on the Tool Setup Screen and 
+		is normally set at from 1 to 3 seconds.&nbsp; The main limitation to 
+		making this value very short is the worst case response time of 
+		Microsoft Windows™ and the PC 
+		hardware being used.&nbsp;&nbsp; </font> <p>
+		<font face="Arial">Two numbers at the top of the screen show the last 
+		commanded F (feedrate) setting and the actual instantaneous feedrate.&nbsp; 
+		The actual Feedrate is also plotted as a bar graph as a ratio of actual 
+		feed rate/last programmed feed rate.</font><p>
+		<font face="Arial">Similar controls and displays are made for Spindle 
+		Control and correspond to the last specified S value in the GCode.</font><p>
+		<font face="Arial">3 buttons allow the spindle to be turned on CW, on 
+		CCW, or off to the last specified S setting and Override.&nbsp; If 
+		Spindle Speed feedback is available in the system the current spindle 
+		speed (in RPM) and bar graph will display the ratio of actual Spindle 
+		Speed/last programmed Spindle Speed.</font><p>
+		&nbsp;<p>
+		<i><b><font face="Arial" size="4"><a name="Custom_Buttons">Custom Buttons</a></font></b></i><p>
+		<font face="Arial">
+		<img border="0" src="KMotionCNCfiles/UserButtons.PNG" align="left" hspace="15"></font><p>
+		<font face="Arial">KMotionCNC allows up to 5 Custom Buttons to be displayed and defined for 
+		special operations.&nbsp; Which of these buttons are visible, what they 
+		display as a title, and what action they perform are all definable on 
+		the <a href="ToolSetupScreenButtons.htm">Tool Setup Screen</a>.</font><p>
+		<font face="Arial">The actions that the buttons perform are 
+		defined by the User in the same manner as the actions that M Codes perform.&nbsp; 
+		These may be simple actions such as setting an Output to turn something 
+		on or may be a complex operation that involves invoking a program.&nbsp; 
+		Normally one or more buttons will be used to initialize and configure 
+		the motion controller and/or home the machine.</font><p>
+		&nbsp;<p>
+		<i><b><font size="4" face="Arial"><a name="Other_GCode_Commands">Other GCode Commands</a></font></b></i><p>
+		<font face="Arial"><i><b>KMotion's</b></i> G Code interpreter 
+      was derived from the Open Source EMC G Code Interpreter.&nbsp;Click here 
+      for the <a href="../GCodeScreen/EMC_Handbook/node45.html">EMC User 
+      Manual</a> (Only the G Code portions of the manual, Chapters 10-14 pertain to <i><b>KMotion</b></i> G 
+      Code)</font><p><font face="Arial">Specially coded comments embedded within a GCode program may be 
+      used to issue <i><b>KMotion</b></i> Console Script commands directly to <i>
+      <b>KMotion</b></i>.&nbsp; 
+      </font> 
+      <p><font face="Arial">A comment in the form: (CMD,xxxxxx) will issue the command xxxxxx 
+      immediately to <i><b>KMotion</b></i> as soon as it is encountered by the 
+      Interpreter.&nbsp; Any <i><b>KMotion</b></i> command that does not 
+      generate a response may be used in this manner.</font><p>
+		<font face="Arial">A comment in the form: (BUF,xxxxxx) 
+      will place the command xxxxxx into <i><b>KMotion's</b></i> coordinated 
+      motion buffer.&nbsp; Coordinated motion sequences are download to a motion 
+      buffer within <i><b>KMotion</b></i> before they are executed.&nbsp; This 
+      guarantees smooth uninterrupted motion. See
+		<a href="SynchronousIOCommands.htm">here</a>. The BUF command form allows a 
+      command to be inserted within the buffer so they are executed at an exact 
+      time within the motion sequence.&nbsp; Only the following <i><b>KMotion</b></i> 
+      Script commands&nbsp; may be used in this manner.&nbsp; 
+      </font> 
+      <p><font face="Arial">SetBitBuf, ClearBitBuf, SetStateBitBuf WaitBitBuf, 
+		WaitNotBitBuf.</font><p>
+		<font face="Arial">Additionally, a comment in 
+      the form: (MSG,xxxxxx) will pause GCode Execution and display a pop-up 
+      message window displaying the message xxxxxxx.</font></td>
+    </tr>
+    <tr>
+      <td valign="top" width="825" align="left">
+      &nbsp;</td>
+    </tr>
+  </table>
+  </center>
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,245 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Bode Screen</title>
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+</head>
+
+<body>
+
+<p><i><b><font size="5">Bode Plot Screen</font></b></i></p>
+<p><map name="FPMap0">
+<area href="#Measurement" shape="rect" coords="14, 35, 137, 66">
+<area href="#Amplitude" shape="rect" coords="13, 72, 215, 157">
+<area href="#Measurement" shape="rect" coords="12, 166, 194, 260">
+<area href="#Axis_Control" shape="rect" coords="13, 261, 114, 391">
+<area href="#Save/Load_Data" shape="rect" coords="14, 393, 124, 448">
+<area href="#Update_Pushbutton" shape="rect" coords="14, 450, 123, 487">
+<area href="#PlotType" shape="rect" coords="328, 34, 834, 68">
+<area href="#0_db_crossover" shape="rect" coords="264, 510, 782, 540">
+<area href="#Bode_plot" shape="rect" coords="254, 74, 849, 509"></map>
+<img border="0" src="BodeScreen.PNG" width="857" height="552" usemap="#FPMap0"></p>
+<p><i>(Click on above image to jump to relative topic)</i></p>
+<p>The <i><b> Bode Plot Screen</b></i> allows the measurement of a servo loop 
+and graphs the open loop response.&nbsp; A Bode Plot is by far the most common 
+means used to measure and understand the behavior of a control loop.&nbsp; <i>
+<b>KMotion</b></i> contains advanced built-in 
+features to allow rapid Bode Plot measurement and display.&nbsp; The current PID and IIR Filter transfer 
+functions may also be superimposed and graphed.</p>
+<p>A <a name="Bode_Plot">Bode Plot</a> is a plot of magnitude and&nbsp; phase of a system with respect 
+to frequency.&nbsp; Any linear system that is driven by a sinusoidal input for a 
+long time, will output an sinusoidal signal of the same frequency.&nbsp; The output signal may be shifted in phase and of a different magnitude than the 
+input.&nbsp; A Bode plot is a graph of both the change in phase and the relative 
+change in magnitude (expressed in decibels, db), as a function of frequency.</p>
+<p>A Bode plot is a useful tool used to examine the stability of a servo 
+feedback loop.&nbsp; If a system has an open loop gain of -1 (magnitude of 0 db 
+and phase of -180 degrees), then if it is placed into a negative feedback loop, 
+it will become unstable and oscillate.&nbsp; Because a system's gain and phase 
+vary as function of frequency, if the system has a magnitude of 0db and phase of 
+-180 degrees at <i>any frequency</i> it will be unstable and oscillate at that 
+frequency.&nbsp; The way to avoid an unstable system is to avoid having 
+simultaneous 
+conditions of 0db and -180 degrees occur at any frequency.&nbsp; Where the 
+magnitude of the system is 0db the amount that the phase is different from -180 
+degrees is called the <i><a name="phase_margin">phase margin</a></i>.&nbsp; The larger the phase margin the 
+more stable the system.&nbsp; Similarly where the phase is -180 degrees the 
+amount that the magnitude is different from 0db is called the <i>gain margin</i>.&nbsp; 
+Again the larger the gain margin, the more stable the system.&nbsp; As a general 
+rule of thumb, for a system to be reasonably stable it should have a phase 
+margin of at least 30 degrees and a gain margin of at least 3 db.</p>
+<p>The Bode Plot Screen attempts to identify and measure the
+<a name="0_db_crossover">0 db crossover</a> frequency (the first point where the 
+open loop magnitude becomes less than 1, often defined as the system bandwidth, 
+228 Hz on the example above), the gain and phase margins, and one or two sharp 
+peaks in the magnitude data after the crossover.&nbsp; Some mechanical systems 
+have sharp resonant peaks that may cause the system to go unstable if these 
+peaks approach the 0 db line and have phase near -180 degrees.&nbsp; A notch 
+filter placed at these frequencies may increase performance.&nbsp; The 
+measurements are displayed under the graph as shown below.</p>
+<p><img border="0" src="BodeSc6.gif"></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>
+<img border="0" src="OpenClosedLoop.PNG" width="432" height="326" align="left" hspace="10" vspace="10"></p>
+<p>The most direct method for obtaining the open loop response, is to 
+break the servo loop open, inject a signal into the system and measure the 
+output.&nbsp; However this is usually impractical as most systems will run out 
+of their linear range if driven in an open loop manner.&nbsp; <i><b>KMotion</b></i> 
+operates the servo loop in its normal closed loop form, injects a command 
+signal, measures the position response, and mathematically derives&nbsp; the 
+open loop response.&nbsp; This does require that the servo loop function in some 
+form as a stable closed loop servo <i>before</i> a measurement may be made.&nbsp; 
+Performance is not a requirement so low gains might be used to obtain an initial 
+stable system.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><img border="0" src="BodeSc2.gif" align="left" hspace="10" vspace="10"></p>
+<p>To perform a <i>Bode Plot</i> <a name="Measurement">Measurement</a>: select 
+the <i>channel</i> to measure, select the desired <a href="#Amplitude"><i>
+Amplitude</i> and <i>Cutoff Frequency</i></a> for the stimulus to be injected, 
+select the <i># of sample</i>s to average, and depress the <i>Measure</i> 
+Pushbutton.&nbsp; All current Configuration Parameters (from the
+<a href="../ConfigurationScreen/ConfigurationScreen.htm">Configuration Screen</a>), 
+Tuning Parameters (from the <a href="../StepScreen/StepScreen.htm">Step Response 
+Screen</a>), and Filter Parameters (from the
+<a href="../FilterScreen/FilterScreen.htm">IIR Filter Screen</a>) will be 
+downloaded, the selected Axis channel will be enabled, and the measurement will 
+begin.</p>
+<p>While the measurement is in progress the number of samples acquired will be 
+displayed and the <i>Measure</i> Pushbutton will change to a <i>Stop</i> 
+Pushbutton.&nbsp; Pushing the Stop button will stop acquiring data after the 
+current sample is complete. </p>
+<p>Depending on the type of plot requested (either Time Domain or Frequency 
+Domain) either the last acquired time domain measurement will be displayed or 
+the <i>average</i> all the frequency domain measurement so far acquired will be 
+displayed.</p>
+<p>&nbsp;</p>
+<p>
+<img border="0" src="NoiseRegions.PNG" width="314" height="298" align="left" vspace="10" hspace="10">Unfortunately Bode Plots often have regions that are very noisy.&nbsp; But <i>
+fortunately</i> these are almost always in regions that are not important to us. 
+At frequencies where the open loop gain is very high (usually at low 
+frequencies),&nbsp; the servo loop performs very well, and the <i>Position</i> 
+closely matches the <i>Command </i>signal.&nbsp; In this case, the calculation 
+of the <i>Error</i> signal (see above) is calculated by taking the difference 
+between two nearly equal values.&nbsp; A small error in Position measurement 
+will then result in a relatively large error in the calculated error value.&nbsp; 
+Similarly, when the system has a very low gain (usually at high frequencies), 
+the position signal is very small and often highly influenced by noise, or if an 
+encoder is used, by encoder resolution.&nbsp; The regions of interest in order to 
+determine system stability, are where the open loop gain is near 0db and the 
+measurements are normally very accurate.</p>
+<p>Additionally, instead of injecting sine waves at various frequencies 
+individually, <i><b>KMotion</b></i> uses a technique where a random noise signal 
+that is rich in <i>many</i> frequencies is injected.&nbsp; Using a method 
+involving an FFT (Fast Fourier Transform) of the input and output, the entire 
+frequency response may be obtained at once.</p>
+<p>Bode Plot analysis is fundamentally based on the assumption that the system being 
+analyzed is <i><a name="linear">linear</a></i>.&nbsp; Linear in this context means that any signal 
+injected into a system that provides a response, might be broken into parts, 
+each piece injected separately, and all the resulting responses when summed 
+would equal the original response.&nbsp; If a system being measured does not 
+meet this criteria then the result is basically useless and meaningless.&nbsp; 
+Masses, Springs, Dampers, Inductors, Resistors, Capacitors, and all combinations 
+thereof are examples of devices which produce very linear effects.&nbsp; Static 
+friction, Saturation, and Encoder count quantization, are examples of non-linear 
+effects.</p>
+<p><img border="0" src="BodeSc1.gif" align="left" hspace="10" vspace="10"><a name="Amplitude"></a>It is 
+therefore very important to verify that while the system is being measured that 
+it is operating in its linear range.&nbsp; This usually entails that the system 
+isn't being driven too hard (or too fast), so that the drive to the system (<i>Output</i>) 
+is not reaching saturation.&nbsp; Additionally, it is important to verify that 
+the system is being driven sufficiently hard (or slowly enough) that a 
+measurable <i>Position</i> change is being observed.&nbsp; The <i>Noise 
+Injection Amplitude </i>and <i>Cutoff Frequency</i> should be adjusted to 
+optimize these conditions.&nbsp; <i>Noise</i> <i>Amplitude</i> has the same 
+units as <i>Position</i> Measurement.&nbsp; It should be noted that setting the
+<i>Cutoff Frequency</i> very low, may reduce the high frequency stimulation to 
+the system to such a point that the higher frequency measurements are invalid or 
+very noisy. </p>
+<p><a name="PlotType"></a>The Bode Plot Screen allows the measurement data to be 
+viewed in the <i>time domain</i> in order to check the signal amplitudes so that 
+the optimal signal levels may be used in order to minimize the non-linear 
+effects of saturation and quantization.&nbsp; Select the Plot Type drop down 
+list shown below to switch between frequency domain and dime domain displays.</p>
+<p><img border="0" src="PlotTypes.PNG" width="491" height="58"></p>
+<p>A typical time domain measurement is shown below.&nbsp; The <i>blue</i> graph 
+shows the random stimulus to the system.&nbsp; The <i>red</i> graph shows the 
+system's response, which in this example is the output of an encoder.&nbsp; Note 
+that the position is quantized to integer counts and has a range of 
+approximately 10 counts.&nbsp; This is nearly the minimum number of counts to 
+expect a reasonable Bode Plot measurement.&nbsp; A larger range of encoder 
+counts could be obtained by driving the system harder by increasing the Noise 
+Injection Amplitude, provided there is additional output drive available. </p>
+<p>&nbsp;</p>
+<p><img border="0" src="CommandAndPosition.PNG" width="857" height="552"></p>
+
+<p>&nbsp;</p>
+<p>The graphs below include the output drive signal shown in <i>green</i>.&nbsp; 
+Note that the output drive is on the verge of saturating at the maximum allowed 
+output value (example is from a 3 phase brushless motor, maximum allowed PWM 
+counts of 230).&nbsp; This shows that we are driving the system as hard as 
+possible without saturating in order to obtain the most accurate measurement.&nbsp;
+</p>
+<p>Another means of improving the measurement accuracy (as well as servo 
+performance in general) is obviously to increase the encoder resolution if 
+economically or otherwise feasible. </p>
+<p><img border="0" src="CommandPositionOutput.PNG" width="857" height="552"></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><u><b><a name="Compensator_Response">Compensator Response</a></b></u></p>
+<p><img border="0" src="Compensator.PNG" width="620" height="295"></p>
+<p>The <i>Bode Plot Screen</i> is also capable of graphing a <i>Bode Plot</i> of 
+the combined PID and IIR Filters.&nbsp; This is often referred to as the <i>
+Compensator</i> for the system.&nbsp; The Cyan graph shows the magnitude of the 
+compensator and the violet graph shows the phase of the compensator.&nbsp; 
+Notice that in this example the maximum phase has been adjusted to match the 0 
+db crossover frequency of the system (~ 233 Hz) to maximize the system phase 
+margin.</p>
+<p>&nbsp;</p>
+<p><img border="0" src="FilterMagAndPhase.PNG" width="857" height="552"></p>
+<p>&nbsp;</p>
+<p><u><b><a name="Axis_Control">Axis Control</a></b></u></p>
+<p><img border="0" src="BodeSc3.gif" align="left" hspace="10" vspace="10"></p>
+<p>The Axis Control buttons are present to conveniently disable (Kill), Zero, or 
+Enable an axis.&nbsp; If the axis becomes unstable (possible due to a gain 
+setting too high), the Kill button may be used to disable the axis, the gain 
+might then be reduced, and then the axis may be enabled.&nbsp; The Enable button 
+downloads all parameters from all screens before enabling the axis in the same 
+manner as the <i><a href="#Measurement">Measure</a></i> button described above.</p>
+<p><i>Note for brushless output modes that commutate the motor based on the 
+current position, Zeroing the position may adversely affect the commutation.</i></p>
+<p>&nbsp;</p>
+<p><u><b><a name="Save/Load_Data">Save/Load Data</a></b></u></p>
+<p><img border="0" src="BodeSc4.gif" align="left" hspace="10" vspace="10">The 
+Save/Load Data buttons allow the captured Bode Plot to be saved to a text file 
+and re-loaded at a later time.&nbsp; The text file format also allows the data 
+to be imported into some other program for display or analysis.&nbsp; The file 
+format consists of one line of header followed by one line of 9 comma separated 
+values, one line for each frequency.&nbsp;&nbsp; The values are:</p>
+<p>&nbsp;</p>
+<ol>
+  <li>Frequency in Hz</li>
+  <li>Input Stimulus - Real Part of complex number</li>
+  <li>Input Stimulus - Complex Part of complex number (always zero)</li>
+  <li>Measured Closed Loop Output - Real Part of complex number</li>
+  <li>Measured Closed Loop Output - Complex Part of complex number </li>
+  <li>Open loop Magnitude - in decibels</li>
+  <li>Open loop Phase - in degrees</li>
+  <li>Open loop Magnitude - in decibels - &quot;smoothed&quot;</li>
+  <li>Open loop Phase - in degrees - &quot;smoothed&quot;</li>
+</ol>
+<p>Example of data file follows:</p>
+<p style="margin-top: 0; margin-bottom: 0">
+Freq,InputRe,InputIm,OutputRe,OutputIm,Mag,Phase,SmoothMag,SmoothPhase<br>
+0,2.329706e+007,0,2.344316e+007,0,44.10739,-180,0,0<br>
+5.425347,1.968735e+007,0,1.98995e+007,-32055.19,39.34598,-171.5001,39.34598,-171.5001<br>
+10.85069,1.816919e+007,0,1.848909e+007,-713239.6,27.48402,-116.3662,29.58283,-139.1553<br>
+16.27604,2.024904e+007,0,2.124962e+007,-1383543,21.91849,-129.5997,25.14718,-134.5283<br>
+21.70139,1.53403e+007,0,1.645491e+007,-1651059,18.38331,-129.7526,22.70204,-127.6139<br>
+27.12674,1.225619e+007,0,1.301412e+007,-1336369,18.60411,-125.4229,20.60267,-123.6751<br>
+32.55208,7014539,0,7393482,-958714.3,17.18516,-118.9553,18.9778,-119.2762<br>
+<b><font size="5">.</font></b></p>
+<p style="margin-top: 0; margin-bottom: 0"><b><font size="5">.</font></b></p>
+<p style="margin-top: 0; margin-bottom: 0"><b><font size="5">.</font></b></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><u><b><a name="Update_Pushbutton">
+Update Pushbutton</a></b></u></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">
+<img border="0" src="BodeSc5.gif" align="left" hspace="10" vspace="10">The 
+Update button may be used to update the displayed <i>
+<a href="#Compensator_Response">compensator</a></i> graph if any parameters (on 
+other screens) have been modified and not downloaded or otherwise acted upon.&nbsp; 
+If Measure, Download, Step, Move, Save, Close, or Enable is used on this or the 
+any other screen then this command is unnecessary, however if none of these 
+commands is performed, then this button may be used to update the graph. </p>
+
+</body>
+
+</html>

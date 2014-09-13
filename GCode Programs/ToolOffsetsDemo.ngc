@@ -1,0 +1,34 @@
+G20 (inches mode)
+F30
+G0 x0y0z0 (Draw a box) 
+G1 x1
+y1
+x0
+y0
+
+G0 x-1y0
+D3G42 (Select tool - Comp On - Tool is on Right of contour)
+G1 x0y0z0 (Draw a box) 
+x1
+y1
+x0
+y0
+
+G40 (comp off)
+G10L2P2x-2y-2z0
+G55
+
+G0 x0y0z0 (Draw a box) 
+G1 x1
+y1
+x0
+y0
+
+G0 x-1y0
+D3G42 (Select tool - Comp On - Tool is on Right of contour)
+G1 x0y0z0 (Draw a box) 
+x1
+y1
+x0
+y0
+M2

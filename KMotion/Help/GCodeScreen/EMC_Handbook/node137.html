@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>D. Notes on LYX and docbook</TITLE>
+<META NAME="description" CONTENT="D. Notes on LYX and docbook">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node139.html">
+<LINK REL="previous" HREF="node133.html">
+<LINK REL="up" HREF="node118.html">
+<LINK REL="next" HREF="node138.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2409"
+  HREF="node138.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html2403"
+  HREF="node118.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html2397"
+  HREF="node136.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html2405"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html2407"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html2410"
+  HREF="node138.html">D.0.1 Fonts</A>
+<B> Up:</B> <A NAME="tex2html2404"
+  HREF="node118.html">IV. Part 4 Waffle</A>
+<B> Previous:</B> <A NAME="tex2html2398"
+  HREF="node136.html">C.1.1 GNU Free Documentation</A>
+ &nbsp; <B>  <A NAME="tex2html2406"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html2408"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION05400000000000000000">
+D. Notes on LYX and docbook</A>
+</H1>
+
+<P>
+This file illustrates the generation of docbook documents with LYX.
+
+<P>
+Using the docbook_example.lyx as a basis to see if it is a practical
+exercise, a page will need to written noting any hints and tips discovered.
+
+<P>
+First tip is to cut'n paste table and figure methods to the relevant
+chapters.
+
+<P>
+Although *.eps graphics are claimed to be required for rendering
+- These are spec'ed as *png in HTML output - Images can in fact
+use any valid extension which will be echoed in the output. Bare in
+mind that if a pdf document is required, the images need to be in
+a postscript format first. Perhaps an effort should be made to convert
+ALL images to png as a matter of course.
+
+<P>
+Conversion is a simple matter of using Imagemagic from the command
+line with :-
+
+<P>
+<TT><I><FONT COLOR="#000000"><FONT SIZE="-1">convert image.gif image.eps</FONT></FONT></I></TT>&nbsp;
+<BR><TT><I><FONT COLOR="#000000"><FONT SIZE="-1">convert image.gif image.png</FONT></FONT></I></TT>
+<P>
+
+
+<P>
+Using anything other than *.eps can cause problems with ghostscript
+on startup, and also some problems with generating pdf docs. I'm not
+sure that a <B>Docbook book (SGML)</B> layout is the best one to
+use. It will be a trade off due to the way various options are implemented
+across the range of layouts. Without resorting to writing an EMC specific
+DTD, a compromise will have to be decided upon (personally, I favor
+a plain <B>book</B> layout).
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><UL>
+<LI><A NAME="tex2html2411"
+  HREF="node138.html">D.0.1 Fonts</A>
+</UL></UL>
+<!--End of Table of Child-Links-->
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html2409"
+  HREF="node138.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html2403"
+  HREF="node118.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html2397"
+  HREF="node136.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html2405"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html2407"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html2410"
+  HREF="node138.html">D.0.1 Fonts</A>
+<B> Up:</B> <A NAME="tex2html2404"
+  HREF="node118.html">IV. Part 4 Waffle</A>
+<B> Previous:</B> <A NAME="tex2html2398"
+  HREF="node136.html">C.1.1 GNU Free Documentation</A>
+ &nbsp; <B>  <A NAME="tex2html2406"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html2408"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

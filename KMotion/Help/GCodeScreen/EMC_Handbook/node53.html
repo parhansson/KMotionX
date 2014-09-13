@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>G0 Rapid Positioning </TITLE>
+<META NAME="description" CONTENT="G0 Rapid Positioning ">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node54.html">
+<LINK REL="previous" HREF="node52.html">
+<LINK REL="up" HREF="node52.html">
+<LINK REL="next" HREF="node54.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1135"
+  HREF="node54.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1129"
+  HREF="node52.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1123"
+  HREF="node52.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1131"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1133"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1136"
+  HREF="node54.html">G1 Linear Interpolation</A>
+<B> Up:</B> <A NAME="tex2html1130"
+  HREF="node52.html">10.7 Basic Motion and</A>
+<B> Previous:</B> <A NAME="tex2html1124"
+  HREF="node52.html">10.7 Basic Motion and</A>
+ &nbsp; <B>  <A NAME="tex2html1132"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1134"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION04171000000000000000">
+G0 Rapid Positioning </A>
+</H2>
+
+<P>
+<A NAME="2170"></A>Using a G0 in your code is equivalent to saying &#34;go
+rapidly to point xxx yyyy&#34;. This code causes motion to occur
+at the maximum traverse rate. 
+
+<P>
+Example:
+
+<P>
+N100 G0 X10.00 Y5.00 
+
+<P>
+This line of code causes the spindle to rapid travel from wherever
+it is currently to coordinates X= 10&#34;, Y=5&#34; 
+
+<P>
+When more than one axis is programmed on the same line, they move
+simultaneously until each axis arrives at the programmed location.
+Note that the axes will arrive at the same time, since the ones that
+would arrive before the last axis gets to the end are slowed down.
+The overall time for the move is exactly the same as if they all went
+at their max speeds and the last axis to arrive stops the clock. 
+
+<P>
+To set values for rapid travel in EMC, one would look for this line
+in the appropriate emc.ini file: 
+
+<P>
+[AXIS_#] MAX_VELOCITY = (units/second) 
+
+<P>
+The previous value for the rapid rate, [TRAJ] MAX_VELOCITY, is
+still used as the upper bound for the tool center point velocity.
+You can make this much larger than each of the individual axis values
+to ensure that the axes will move as fast as they can. 
+
+<P>
+One thing to remember when doing rapid positioning, is to make sure
+that there are no obstacles in the way of the tool or spindle while
+making a move. G0 code can make spectacular crashes, if Z is not clear
+of clamps, vices, uncut parts, etc.....Try to raise the tool out of
+the way to a &#34;safe&#34; level before making a rapid. 
+
+<P>
+I like to put a G0 Z2.0 (Z value depending on clamp height) towards
+the beginning of my code, before making any X or Y moves.
+
+<P>
+Example:
+
+<P>
+N100 G0 Z1.5 --move spindle above obstacles
+
+<P>
+N110 G0 X2.0 Y1.5 --rapid travel to first location
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1135"
+  HREF="node54.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1129"
+  HREF="node52.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1123"
+  HREF="node52.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1131"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1133"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1136"
+  HREF="node54.html">G1 Linear Interpolation</A>
+<B> Up:</B> <A NAME="tex2html1130"
+  HREF="node52.html">10.7 Basic Motion and</A>
+<B> Previous:</B> <A NAME="tex2html1124"
+  HREF="node52.html">10.7 Basic Motion and</A>
+ &nbsp; <B>  <A NAME="tex2html1132"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1134"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

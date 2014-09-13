@@ -1,0 +1,636 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>6.4 Tuning freqmod</TITLE>
+<META NAME="description" CONTENT="6.4 Tuning freqmod">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="previous" HREF="node25.html">
+<LINK REL="up" HREF="node20.html">
+<LINK REL="next" HREF="node28.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html662"
+  HREF="node28.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html656"
+  HREF="node20.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html652"
+  HREF="node26.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html658"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html660"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html663"
+  HREF="node28.html">7. Servo To Go</A>
+<B> Up:</B> <A NAME="tex2html657"
+  HREF="node20.html">6. Hardware</A>
+<B> Previous:</B> <A NAME="tex2html653"
+  HREF="node26.html">6.3.1 Some Ini File</A>
+ &nbsp; <B>  <A NAME="tex2html659"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html661"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION03140000000000000000">
+6.4 Tuning freqmod</A>
+</H1>
+
+<P>
+When If you have stepper motors and a stepper motor controller that
+requires phase stepping, then freqmod.o is a solution. Phase stepping
+requires the computer to output the motor phase signals directly,
+the stepper driver is just an amplifier.
+
+<P>
+This procedure version 1.0 John Sheahan 11 September 2001, Developed
+with linux kernel2.2.18 / rtlinux-rtl3.0-6 / :emc-2.07. Setup of linux/emc
+is covered elsewhere and must be done first
+
+<P>
+Setup The assumption is that your stepper motors are running on the
+bench. Put a marker on the shaft so that rotation is clear. I used
+wood scraps. Connect the stepper controller to the chosen parallel
+port, wire up the steppers. Don't power up the steppers yet. 
+
+<P>
+As I'm a shell dinosaur I'll describe things that way. Adjust suitably
+for GUI operation.
+
+<P>
+to test the base setup:
+
+<P>
+<TT><FONT SIZE="-1"># get to the relevant directory</FONT></TT>
+<P>
+
+
+<P>
+<TT><I><FONT COLOR="#000000"><FONT SIZE="-1">/usr/local/emc</FONT></FONT></I></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1"># become root</FONT></TT>
+<P>
+
+
+<P>
+<TT><I><FONT COLOR="#000000"><FONT SIZE="-1">su - </FONT></FONT></I></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1"># run the simulation. Note, the motors will not turn
+and are not needed, yet.</FONT></TT>
+<P>
+
+
+<P>
+<TT><I><FONT COLOR="#000000"><FONT SIZE="-1">./sim.run</FONT></FONT></I></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1"># hit F1 to get from ESTOP state to ESTOP RESET</FONT></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1"># hit F2 to get to ON state</FONT></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1"># try the arrow keys and pageup pagedown to jog the
+motors</FONT></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1"># hit F4 to get to AUTO state</FONT></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1"># click file -&gt; open</FONT></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1"># click cds.ngc</FONT></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1"># click open</FONT></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1"># view -&gt;&nbsp; backplot</FONT></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1"># click run</FONT></TT>
+<P>
+
+
+<P>
+wait and watch the windows scroll. 
+
+<P>
+This was intended to test the base install and introduce a little
+functionality. Next step is to make the software run with YOUR motors.
+Choose a name for your setup. I'll use table as I'm building a routing
+table. Substitute _yourname_ for table in the rest.
+
+<P>
+<TT><FONT SIZE="-1"># copy the sim files as we now know they work :)</FONT></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1"># copy the runfile. If you do this with a gui, ensure
+the file is executable after</FONT></TT>
+<P>
+
+
+<P>
+<TT><I><FONT COLOR="#000000"><FONT SIZE="-1">cp -p sim.run table.run</FONT></FONT></I></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1"># copy the variables</FONT></TT>
+<P>
+
+
+<P>
+<TT><I><FONT COLOR="#000000"><FONT SIZE="-1">cp sim.var table.var</FONT></FONT></I></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1"># copy the tool file</FONT></TT>
+<P>
+
+
+<P>
+<TT><I><FONT COLOR="#000000"><FONT SIZE="-1">cp sim.tbl table.tbl</FONT></FONT></I></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1"># copy the nml file</FONT></TT>
+<P>
+
+
+<P>
+<TT><I><FONT COLOR="#000000"><FONT SIZE="-1">cp sim.nml table.nml</FONT></FONT></I></TT>
+<P>
+
+
+<P>
+Now we need to change the references in the new files. With your favorite
+editor, in table.run, change the line
+
+<P>
+<TT><FONT SIZE="-1">INIFILE=sim.ini</FONT></TT>
+<P>
+
+
+<P>
+to read
+
+<P>
+<TT><FONT SIZE="-1">INIFILE=table.ini</FONT></TT>
+<P>
+
+
+<P>
+The nml and tbl files should be ok for now. The real work comes in
+the ini file. tuning the .ini file with your favorite editor initial
+requirements You need to have this information to hand:
+
+<P>
+what units you want to operate the machine in, inches or mm
+
+<P>
+the leadscrew pitch [each axis]
+
+<P>
+the number of steps per revolution [each axis]
+
+<P>
+the maximum velocity each axis can run at.
+
+<P>
+this is getting harder, might be limited by the computer, the steppers,
+stepper driver, or fear.
+
+<P>
+the maximum acceleration for each axis
+
+<P>
+you might calculate this or just experiment Now edit table.ini Adjust
+the sections as described here. I'm mostly only going to discuss what
+needs to be changed. 
+
+<P>
+<TT><FONT SIZE="-1">[EMC]</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">MACHINE = Stepper Stan</FONT></TT>d
+
+<P>
+set the name string to whatever you want.
+
+<P>
+<TT><FONT SIZE="-1">NML_FILE = table.nml</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">DEBUG = 0x7FFFFFFF</FONT></TT>
+<P>
+
+
+<P>
+bring it down to 0x3 or 0x0 as soon as things are making sense
+
+<P>
+<TT><FONT SIZE="-1">RS274NGC_STARTUP_CODE=G20</FONT></TT>
+<P>
+
+
+<P>
+set this to G20 to accept inches, or G21 for the rest of the world.
+This is the default unit for GCODE commands
+
+<P>
+<TT><FONT SIZE="-1">[DISPLAY] is ok as is. </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">[TASK] is ok as is. </FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">[RS274NGC]</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">PARAMETER_FILE = table.var</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">[EMCMOT]</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">PLAT = realtime</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">EMCMOT = freqmod.o</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">STEPPING_TYPE = 1</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">; 0= drn,clock ; 1 == phase step ; 2 == table driven,
+see emcmot.c</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">; only works with freqmod.o</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">PERIOD = 0.000050</FONT></TT>
+<P>
+
+
+<P>
+this one is tricky, its the interrupt time for the timer ISR in seconds.
+If you make it too fast (small number), your computer will lock solid.
+50us works for a 150MHz computer. If your cpu is faster, shrink this
+time accordingly. It should be as small as practical, and should divide
+cleanly into CYCLE_TIME. The smaller this is the faster and smoother
+your steppers can be controlled.
+
+<P>
+<TT><FONT SIZE="-1">[TRAJ]</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">LINEAR_UNITS = 1.0</FONT></TT>
+<P>
+
+
+<P>
+1.0 is good if you are going to use metric for the rest of the numbers
+in this section. If you prefer inches, set to 0.03937007874016
+
+<P>
+<TT><FONT SIZE="-1">CYCLE_TIME = 0.010</FONT></TT>
+<P>
+
+
+<P>
+controls the rate trajectory will be computed.
+
+<P>
+<TT><FONT SIZE="-1">DEFAULT_VELOCITY = 0.03</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">MAX_VELOCITY = 2.60</FONT></TT>
+<P>
+
+
+<P>
+this needs to be bigger than any of the axis limits. Don't make it
+too small, as the Z axis will behave very strangely!
+
+<P>
+<TT><FONT SIZE="-1">DEFAULT_ACCELERATION = 1.5</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">MAX_ACCELERATION = 2.0</FONT></TT>
+<P>
+
+
+<P>
+choose this to keep your motors tracking.
+
+<P>
+[AXIS_0] note, all the axis have the same format, described once.
+
+<BR><TT><FONT SIZE="-1">UNITS = 1.0</FONT></TT>
+<P>
+
+
+<P>
+as above [TRAJ]linear_units
+
+<P>
+<TT><FONT SIZE="-1">MAX_VELOCITY = 1.2</FONT></TT>
+<P>
+
+
+<P>
+an appropriate limit for this axis and your motors.
+
+<P>
+<TT><FONT SIZE="-1">P = 10.000</FONT></TT>
+<P>
+
+
+<P>
+gain constant. this may need tuning later, see various comments on
+PID tuning in other documents. 10 worked for me.
+
+<P>
+<TT><FONT SIZE="-1">I = 0.0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">D = 0.0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">FF0 = 0.0</FONT></TT>
+<P>
+
+
+<P>
+I got too much endpoint error unless this was 0.
+
+<P>
+<TT><FONT SIZE="-1">FF1 = 0.0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">FF2 = 0.0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">BACKLASH = 0.000</FONT></TT>
+<P>
+
+
+<P>
+tweak this later to match your measured mechanical performance
+
+<P>
+<TT><FONT SIZE="-1">DEADBAND = 0.010</FONT></TT>
+<P>
+
+
+<P>
+set this to just over half what your single step resolution is, ie
+a little more than 1/INPUT_SCALE
+
+<P>
+<TT><FONT SIZE="-1">CYCLE_TIME = 0.0010000</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">INPUT_SCALE = 133.333333333 0</FONT></TT>
+<P>
+
+
+<P>
+I have 200 step/rev stepper motors and a 1.5mm/turn leadscrew (cheap!)
+so I get 200/1.5 = 133.3 steps/mm. Offset is zero.
+
+<P>
+<TT><FONT SIZE="-1">OUTPUT_SCALE = 133.333333333 0.000000000</FONT></TT>
+<P>
+
+
+<P>
+set this the same as INPUT_SCALE
+
+<P>
+<TT><FONT SIZE="-1">MIN_LIMIT = -100.0</FONT></TT>
+<P>
+
+
+<P>
+this is the travel limit from home of your axis
+
+<P>
+<TT><FONT SIZE="-1">MAX_LIMIT = 100.0</FONT></TT>
+<P>
+
+
+<P>
+the travel limit in the positive direction
+
+<P>
+<TT><FONT SIZE="-1">MIN_OUTPUT = -100</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">MAX_OUTPUT = 100</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">FERROR = 4.000</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">MIN_FERROR = 1.000</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">HOMING_VEL = 0.1</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">HOME_OFFSET = 0.0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">ENABLE_POLARITY = 0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">MIN_LIMIT_SWITCH_POLARITY = 0</FONT></TT>
+<P>
+
+
+<P>
+these polarity settings set the way your limit switches are wired.
+If the system will not come out of RESET state, change to 1
+
+<P>
+<TT><FONT SIZE="-1">MAX_LIMIT_SWITCH_POLARITY = 0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">HOME_SWITCH_POLARITY = 0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">HOMING_POLARITY = 1</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">JOGGING_POLARITY = 1</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">FAULT_POLARITY = 1</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">[EMCIO]</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">EMCIO = bridgeportio</FONT></TT>
+<P>
+
+
+<P>
+this is probably silly, and will require a second parallel port in
+your computer. consider a different setting here. Advice please.
+
+<P>
+<TT><FONT SIZE="-1">TOOL_TABLE = table.tbl</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">ESTOP_SENSE_POLARITY = 0</FONT></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1">to let it start.</FONT></TT>
+<P>
+
+
+<P>
+<TT><FONT SIZE="-1">LUBE_SENSE_POLARITY = 0</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">[EMCSERVER]</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE="-1">; EMCSERVER = emcsvr</FONT></TT>
+<P>
+
+
+<P>
+comment it out, not using it currently
+
+<P>
+now test it now all that typing is done, lets make the motors spin!
+Here is a suggested test procedure. Power up the stepper drivers (preferably
+with the steppers not mechanically connected to anything, as that
+may make expensive noises 
+
+<P>
+execute <TT><I><FONT COLOR="#000000"><FONT SIZE="-1">./table.run.</FONT></FONT></I></TT>
+<P>
+
+
+<P>
+hit F1. (with the cursor in the nice blue window) state should change
+from ESTOP to ESTOP_RESET. If not, you probably have ESTOP_SENSE_POLARITY<A NAME="1680"></A>
+backwards, swap 1 and 0. 
+
+<P>
+alternatively you only have one parallel port and would be better
+off with EMCIO = minimillio
+
+<P>
+hit F2. State should now become ON. If not, one of your SWITCH_POLARITY
+settings is probably reversed. You can use scripts/IO_Show.tcl to
+check this, if the upper right hand column is red, you need a 0 in
+the POLARITY setting.
+
+<P>
+try jogging the axis by hitting the cursor arrow keys, and pageup
+/ pagedown. The motors should move a tad. now try a bigger move at
+full speed.Lets use some gcode.
+
+<P>
+hit F5, state should change to MDI for manual entry. 
+
+<P>
+type g0x0 &lt;return&gt;
+
+<P>
+this should move the X axis 1 mm (or 1 inch if that's the RS274NGC_STARTUP_CODE
+default chosen).
+
+<P>
+type g0x10y10z5 &lt;return&gt;
+
+<P>
+all three motors should move off to x=10 y=10 z=5 checks, please everyone
+add more. 
+
+<P>
+if the motors rattle backwards and forwards a step, your deadzone
+is too small. click on the axis to fix, click settings-&gt;calibration,
+edit deadband, click ok.
+
+<P>
+if the final displayed value is too different to the final requested
+value, your deadband is too big. Or you may have too high FF coefficients.
+
+<P>
+if your motors emit funny noises when stopped or moving, your gain
+(p) is too high.
+
+<P>
+if your motor gets there very slowly, your P gain is too low.
+
+<P>
+if you get 'following' errors, your P gain is too low, or your output_scale
+is wrong. calibration check 
+
+<P>
+type g0x0y0z0 &lt;return&gt;
+
+<P>
+this gets things back to zero. Arrange the motor position and shaft
+marker so you can see them. 
+
+<P>
+now lets ask for a 1-motor-revolution move. I have 1.5mm pitch leadscrews,
+so:
+
+<P>
+type g01x1.5y1.5z1.5f10 &lt;return&gt;
+
+<P>
+I just asked to move to 1.5mm on all three axis, at 10mm/minute. Adjust
+for your leadscrew pitch.
+
+<P>
+the motors should turn exactly 1 revolution. If not, the following
+is possible: 
+
+<P>
+you miscalculated or mistyped the distance.
+
+<P>
+the motor body moved
+
+<P>
+the shaft marker moved (it got me!)
+
+<P>
+the input_scale setting is wrong on that axis now switch to auto
+mode (F4 or the mouse) and file-&gt;open the skeleton file. click run
+and watch it all whir. then its probably time to connect up more mechanics
+and test some more. 
+
+<P>
+John Sheahan
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html662"
+  HREF="node28.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html656"
+  HREF="node20.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html652"
+  HREF="node26.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html658"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html660"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html663"
+  HREF="node28.html">7. Servo To Go</A>
+<B> Up:</B> <A NAME="tex2html657"
+  HREF="node20.html">6. Hardware</A>
+<B> Previous:</B> <A NAME="tex2html653"
+  HREF="node26.html">6.3.1 Some Ini File</A>
+ &nbsp; <B>  <A NAME="tex2html659"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html661"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

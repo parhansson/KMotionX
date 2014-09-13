@@ -1,0 +1,379 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>9.2 configuration file</TITLE>
+<META NAME="description" CONTENT="9.2 configuration file">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="previous" HREF="node42.html">
+<LINK REL="up" HREF="node41.html">
+<LINK REL="next" HREF="node44.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html891"
+  HREF="node44.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html885"
+  HREF="node41.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html881"
+  HREF="node42.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html887"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html889"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html892"
+  HREF="node44.html">III. Part 3 -</A>
+<B> Up:</B> <A NAME="tex2html886"
+  HREF="node41.html">9. Using the Strip</A>
+<B> Previous:</B> <A NAME="tex2html882"
+  HREF="node42.html">9.1 Hints for EMC</A>
+ &nbsp; <B>  <A NAME="tex2html888"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html890"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION03420000000000000000">
+9.2 configuration file</A>
+</H1>
+
+<P>
+Specifies a file from which to read configuration information. If
+unspecified, the current working directory is checked for a file named
+&#34;gstripchart.conf&#34;, the user's home directory is
+checked for a file named &#34;.gstripchart.conf&#34;, and
+the /etc directory is checked for a file named &#34;gstripchart.conf&#34;.
+The first such file found is used.
+
+<P>
+geometry
+<BR>
+A standard X11 geometry specification of the form WxH+X+Y.
+
+<P>
+chart-interval
+<BR>
+slider-interval
+<BR>
+Specifies the time interval in seconds between updates to the chart
+window and slider window. If unspecified, the chart window will be
+updated every 5 seconds and the slider window will be updated every
+0.2 seconds.
+
+<P>
+chart-filter
+<BR>
+slider-filter
+<BR>
+Specifies the time constant in seconds to be used in low-pass filtering
+the data displayed in the chart or slider windows. A time constant
+of 0 seconds turns low-pass filtering off, which can result in a jumpy
+display. A time constant in the same range as the interval parameter,
+described above, is usually a good choice. Much larger values cause
+display updates to become sluggish. If unspecified, no low pass filtering
+is performed in either window.
+
+<P>
+menubar
+<BR>
+Adds an application menubar to the main window. Normally this is omitted,
+and the menu is popped up by right-clicking on the chart window.
+
+<P>
+omit-slider
+<BR>
+Causes the display of the slider window to be suppressed. 
+
+<P>
+Configuration
+<BR>
+The configuration file has a paragraph of configuration information
+for each parameter to be plotted. Each of these paragraphs are comprised
+of a series of RFC-822 style &#34;keyword: value&#34; pairs,
+beginning with an &#34;identifier:&#34; line. A comment
+can be included by putting a sharp sign (#) in the first column of
+a line. 
+
+<P>
+The following keywords are available. Some are optional; some are
+only used by certain display types; many have reasonable default values,
+as described below. 
+
+<P>
+identifier:
+<BR>
+Introduces a parameter definition, and assigns a name to the parameter.
+This line *must* be the first line of a parameter description.
+
+<P>
+active:
+<BR>
+If a parameter is marked &#34;active = no&#34;, it will
+be ignored. This provides a convenient way to disable a parameter
+without deleting it from a parameter file.
+
+<P>
+id_char:
+<BR>
+Provides a single-character abbreviation for a parameter. Currently
+unused, this is intended for the non-existent character-graphics display
+mode.
+
+<P>
+color:
+<BR>
+Determines the color to be used in displaying a parameter. The color
+names and their RGB values are taken from X11/rgb.txt.
+
+<P>
+filename:
+<BR>
+The file from which a parameter value is read. When a filename beginning
+with a &#34;|&#34; is supplied, input lines will be read
+from a pipe.
+
+<P>
+pattern:
+<BR>
+The pattern which identifies the line from which a parameter value
+is to be extracted. If no pattern is provided, the first line of the
+file is used.
+
+<P>
+fields:
+<BR>
+The number of fields to be split out of the first line which matches
+the pattern. Splitting is done on whitespace.
+
+<P>
+equation:
+<BR>
+An equation used to obtain the value to be plotted for this parameter.
+
+<P>
+maximum:
+<BR>
+The largest value that can be displayed. Any value in excess of the
+maximum will be plotted at the top of the display. If omitted, a default
+value of 1.0 is used.
+
+<P>
+minimum:
+<BR>
+The smallest value that can be displayed. Any value less than the
+minimum will be plotted at the bottom of the display. If omitted,
+a default value of 0.0 is used.
+
+<P>
+nml:
+<BR>
+The name of the variable to read from NML to use for this plot. If
+an equation is specified this variable becomes keyword one or $1.
+Adding this keyword makes the filename and pattern keywords irrelevant.
+See the list of variables available.
+
+<P>
+emcmot:
+<BR>
+The name of the variable to read from EMCMOT to use for this plot.
+If an equation is specified this variable becomes field one or $1.
+Adding this keyword makes the filename and pattern keywords irrelevant.
+See the list of variables available. On each iteration, a value to
+be displayed is obtained for each parameter in the configuration file.
+The file named in the &#34;filename&#34; line is opened
+- either as a pipe if the filename begins with a pipe character (|),
+or as a regular file otherwise - and a line is read. 
+
+<P>
+If a pattern was specified, lines are read until one is found that
+contains the pattern string anywhere in the line. This line is split
+into the number of whitespace separated fields specified in the &#34;fields&#34;
+line. Each of these fields is interpreted as a floating point number. 
+
+<P>
+A value is obtained by evaluating the &#34;equation&#34;
+line using these field values. The first (or only) value is denoted
+by $1, the next by $2, and so forth. The difference between the
+field values between the last and the current iteration is denoted
+by ~1, ~2, and so forth. The elapsed
+time in seconds between the last and current iteration is ~t.
+The requested update interval is $i (and the delta is ~i,
+but will always be zero). All the usual infix arithmetic operators
+are available. 
+
+<P>
+If libgtop support has been compiled into the gstripchart program,
+a value can be obtained from this library. This provides a portable
+method of obtaining many system performance parameters. The following
+libgtop parameters are available: 
+
+<P>
+CPU Statistics
+
+<P>
+cpu_total, cpu_user, cpu_nice, cpu_sys, cpu_idle, and cpu_freq
+
+<P>
+Memory Statistics
+
+<P>
+mem_total, mem_used, mem_free, mem_shared, mem_buffer, mem_cached,
+mem_user, mem_locked
+
+<P>
+Swap Statistics
+
+<P>
+swap_total, swap_used, swap_free, swap_pagein, swap_pageout
+
+<P>
+Uptime Statistics
+
+<P>
+uptime, idletime
+
+<P>
+Loadavg Statistics
+
+<P>
+loadavg_running, loadavg_tasks, loadavg_1m, loadavg_5m, loadavg_15m
+
+<P>
+Network Statistics
+
+<P>
+net_pkts_in, net_pkts_out, net_pkts_total,
+net_bytes_in, net_bytes_out, net_bytes_total, net_errs_in,
+net_errs_out, net_errs_total
+<P>
+
+
+<P>
+Note that the network statistics don't use the libgtop library. Instead,
+the values are read directly from /proc/net/dev, and so are only available
+under Linux. These are all signed long integer quantities, except
+for uptime, idletime, and the three loadavg values which are floating
+point values.
+
+<P>
+NML Variables This is the list of variables that can be read from
+NML. The array_index should be replaced with an appropriate integer.
+
+<P>
+task.heartbeat, task.mode, task.state, task.execState,
+task.interpState, task.motionLine, task.currentLine, task.readLine,
+motion.heartbeat, motion.traj.linearUnits, motion.traj.angularUnits,
+motion.traj.cycleTime, motion.traj.axes, motion.traj.mode, motion.traj.enabled,
+motion.traj.inpos, motion.traj.queue, motion.traj.activeQueue, motion.traj.queueFull,
+motion.traj.id, motion.traj.paused, motion.traj.scale, motion.traj.position.tran.x,
+motion.traj.position.tran.y, motion.traj.position.tran.z, motion.traj.actualPosition.tran.x,
+motion.traj.actualPosition.tran.y, motion.traj.actualPosition.tran.z,
+motion.traj.velocity, motion.traj.acceleration, motion.traj.maxVelocity,
+motion.traj.maxAcceleration, motion.axis[array_index].units,
+motion.axis[array_index].p, motion.axis[array_index].i,
+motion.axis[array_index].d, motion.axis[array_index].ff0,
+motion.axis[array_index].ff1, motion.axis[array_index].ff2,
+motion.axis[array_index].backlash, motion.axis[array_index].bias,
+motion.axis[array_index].maxError, motion.axis[array_index].deadband,
+motion.axis[array_index].cycleTime, motion.axis[array_index].inputScale,
+motion.axis[array_index].inputOffset, motion.axis[array_index].outputScale,
+motion.axis[array_index].outputOffset, motion.axis[array_index].minPositionLimit,
+motion.axis[array_index].maxPositionLimit, motion.axis[array_index].minOutputLimit,
+motion.axis[array_index].maxOutputLimit, motion.axis[array_index].maxFerror,
+motion.axis[array_index].minFerror, motion.axis[array_index].homingVel,
+motion.axis[array_index].homeOffset, motion.axis[array_index].enablePolarity,
+motion.axis[array_index].minLimitSwitchPolarity, motion.axis[array_index].maxLimitSwitchPolarity,
+motion.axis[array_index].homeSwitchPolarity, motion.axis[array_index].homingPolarity,
+motion.axis[array_index].faultPolarity, motion.axis[array_index].setpoint,
+motion.axis[array_index].ferrorCurrent, motion.axis[array_index].output,
+motion.axis[array_index].input, motion.axis[array_index].inpos,
+motion.axis[array_index].homing, motion.axis[array_index].homed,
+motion.axis[array_index].fault, motion.axis[array_index].enabled,
+motion.axis[array_index].minSoftLimit, motion.axis[array_index].maxSoftLimit,
+motion.axis[array_index].minHardLimit, motion.axis[array_index].maxHardLimit,
+motion.axis[array_index].overrideLimits, motion.axis[array_index].scale,
+motion.axis[array_index].ferrorHighMark, io.heartbeat, io.cycleTime,
+io.tool.toolPrepped, io.tool.toolInSpindle, io.spindle.speed, io.spindle.direction,
+io.spindle.brake, io.spindle.increasing, io.spindle.enabled, io.coolant.mist,
+io.coolant.flood, , io.lube.on, io.lube.level, , io.aux.estop, io.aux.estopIn,
+io.aux.dout[array_index], io.aux.din[array_index], io.aux.aout[array_index],
+io.aux.ain[array_index]
+<P>
+
+
+<P>
+EMCMOT Variables This is the list of variables that can be read from
+emcmot. 
+
+<P>
+heartbeat, computeTime, pos.tran.x, pos.tran.y,
+pos.tran.z, axisPos[0], axisPos[1], axisPos[2], ferrorCurrent[0],
+ferrorCurrent[1], ferrorCurrent[2], ferrorHighMark[0],
+ferrorHighMark[1], ferrorHighMark[2], output[0], output[1],
+output[2], input[0], input[1], input[2], actualPos.tran.x,
+actualPos.tran.y, actualPos.tran.z, id, depth, activeDepth, queueFull,
+motionFlag, axisFlag[0], axisFlag[1], axisFlag[2], axisPolarity[0],
+axisPolarity[1], axisPolarity[2], paused, overrideLimits,
+tMin, tMax, tAvg, sMin, sMax, sAvg, nMin, nMax, nAvg
+<P>
+
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html891"
+  HREF="node44.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html885"
+  HREF="node41.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html881"
+  HREF="node42.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html887"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html889"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html892"
+  HREF="node44.html">III. Part 3 -</A>
+<B> Up:</B> <A NAME="tex2html886"
+  HREF="node41.html">9. Using the Strip</A>
+<B> Previous:</B> <A NAME="tex2html882"
+  HREF="node42.html">9.1 Hints for EMC</A>
+ &nbsp; <B>  <A NAME="tex2html888"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html890"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

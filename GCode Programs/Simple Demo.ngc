@@ -1,0 +1,11 @@
+(cmd,EnableAxis0) 		(Issue Command to KMotion)
+G0 X0 Y0 Z0 A0 			(4 axis rapid move back to zero)
+F400           			(set feed rate to 400 in/min)
+G2 X0 Y0.5 I0 J0.25		(1/2 inch CW circle)
+G2 X0 Y0 I0 J-0.25
+G4 P0					(Dwell zero to finish motion) 
+(MSG,OK to Continue?)   (Display a message to user)
+G1 X0.5 Y0.5			(Linear move to 0.5,0.5)
+G1 X0.0 Y0.0			(Linear move back to zero)
+M2						(Program End)
+

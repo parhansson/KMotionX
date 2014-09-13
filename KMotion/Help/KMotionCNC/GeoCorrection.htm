@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Geo Correction Table</title>
+</head>
+
+<body>
+
+<p><u><b><i><font face="Arial" size="4">Geo Correction Table</font></i></b></u></p>
+<p><font face="Arial">The KMotion Coordinated Motion/Trajectory 
+Planner/Kinematics Libraries contain a powerful Geometric Correction Capability.&nbsp; A Geometric correction table can be used to correct for 
+Geometric distortion from the Theoretical CAD Space to the Corrected Actuator 
+space.</font></p>
+<p><font face="Arial">&nbsp;
+<img border="0" src="KMotionCNCfiles/GridDistorted.png" width="657" height="326">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</font></p>
+<p><font face="Arial">The area of the CAD Space to be corrected is defined by a 
+number of rows and columns and an XY Grid size.&nbsp; A CAD point falling within 
+a grid uses a bilinear interpolation from the 4 points making up the grid region 
+to map to actuator space.</font></p>
+<p><font face="Arial">There is also a Z coordinate associated with each grid 
+point.&nbsp; The mapping applies this as a Z offset in order to flatten the XY 
+plane if necessary.&nbsp; If no flattening is required then the z values should 
+all be specified as zero in the table.</font></p>
+<p><font face="Arial">Normally a Geo Correction Table is defined to be large 
+enough to map the entire range of motion of the system.&nbsp; However, for 
+points outside the range of the Table the closest grid region is extrapolated to 
+form the result.&nbsp; The largest Table currently allowed is a 4000x4000 array.</font></p>
+<p><font face="Arial">When a Geo Correction Table has been loaded Arcs are 
+automatically broken into small line segments internally where each segment's 
+endpoints are Geocorrected into actuator space.&nbsp; This is necessary because 
+an Arc in CAD space in unlikely to still be an Arc in Actuator Space.&nbsp; The 
+Trajectory Planner <a href="ToolSetupScreenTP.htm#Trajectory_Planner">Collinear 
+Tolerance</a> Setting is used to determine how small of line segments are used.&nbsp; 
+Line segment lengths will be chosen small enough to not deviate from the true 
+Arc by more than the Collinear Tolerance.&nbsp; For most systems a value of 
+0.001 inches should be used.&nbsp; </font></p>
+<p><font face="Arial">The smallest possible Geo Table consists of a single 
+rectangle consisting of 4 points (2 rows and 2 columns).&nbsp; In this case the 
+entire infinite CAD Space plane is mapped to the Actuator Space using a single 
+set of transformation equations.&nbsp; </font></p>
+<p><font face="Arial">The Example below shows how the table can be used to form 
+a simple transformation:</font></p>
+<p>
+<img border="0" src="KMotionCNCfiles/TransformPlusMinus.png" width="805" height="531"></p>
+<p>
+&nbsp;</p>
+<p>
+<font face="Arial">Corresponding Geo File</font></p>
+<p>
+<font face="Arial">Simple 2x2 grid on CAD Space Grid Spacing of 1 inch in X and 
+1 inch in Y.</font></p>
+<p>
+<font face="Arial">Then 4 grid points (row,col,X,Y,Z)</font></p>
+<p>
+<i><font face="Arial">See file as &lt;Install&gt;\KMotion\Data\MeasurementsPlusMinus.txt</font></i></p>
+<p>
+<font face="Arial">2,2<br>
+1,1<br>
+    -0.5,-0.5<br>
+0,0,-1, 0, 0<br>
+0,1, 0,-1, 0<br>
+1,0, 0, 1, 0<br>
+1,1, 1, 0, 0</font></p>
+<p>
+&nbsp;</p>
+
+</body>
+
+</html>

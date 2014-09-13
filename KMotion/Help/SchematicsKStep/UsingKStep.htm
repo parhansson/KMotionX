@@ -1,0 +1,470 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Using KStep</title>
+<style>
+<!--
+div.Section1
+	{page:Section1;}
+-->
+</style>
+</head>
+
+<body>
+
+<p style="margin-top: 0; margin-bottom: 0"><i><b>
+<font face="Arial Black" size="5">Using 
+KSTEP</font></b></i></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">KStep is a high 
+efficiency 4-axis microstepping drive that can drive motors up to 5Amps @ 48V.&nbsp; 
+In addition to the 4 motor drives KStep also provides addition I/O features:&nbsp; 
+(16) 12-24V opto isolated filtered inputs, (2) opto-isolated relay driver type 
+outputs good for 0.1A @ 30V, and one isolated PMW to Analog output.&nbsp; All 
+controller signals are 3.3V LVTTL compatable.&nbsp; There is also an on-board 
+voltage clamp circuit to protect against regenerative over voltage.&nbsp; KStep 
+is designed to snap together with KFLOP for plug and play operation.&nbsp; A 
+single 1:1 26-pin ribbon cable will provide all logic power, Step/Dir Signals, 
+Enable, Relay driver, Analog PWM, and Opto input connections.&nbsp; Two KSteps 
+can be stacked to drive a total of 8 motors.&nbsp; </font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">
+<img border="0" src="KStep550.png" width="550" height="464"></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<i><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<font size="4">Figure 1 - KStep</font></b></i></font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">
+<img border="0" src="KStepKFLOPCloseUp855.png" width="855" height="639"></p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<i><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<font size="4">Figure 2 - KStep + KFLOP</font></b></i></font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<div class="Section1">
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><i><b>
+	<font face="Arial" size="4">Configuring KFLOP for use with KStep</font></b></i></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Configuring 
+	KStep is fairly straightforward as it is normally an open loop system 
+	(although it is possible to operate in
+	<a href="../ClosedLoopStep/ClosedLoopStepper.htm">closed loop stepper mode</a>) 
+	so all feedback, servo, PID, Filter, Feedforward, commutation parameters are 
+	not used and amy be ignored.&nbsp; KStep is basically a
+	<a href="../StepAndDirection/StepAndDir.htm">Step/Dir</a> drive so it makes 
+	use of the Step/Dir Output mode in KFLOP.&nbsp; See the items circled in red 
+	below.&nbsp; Note output mode type &quot;Step Dir&quot; is selected.&nbsp; Shown is 
+	the Output Channel selection for KStep Motor #0.&nbsp; Note that output 
+	channel 8 is selected instead of 0 to select the LVTTL output mode required 
+	by KStep.&nbsp; See <a href="../StepAndDirection/StepAndDir.htm">here</a> 
+	for more information.&nbsp; Motors #0, #1, #2, and #3 would be selected as 
+	8, 9, 10, 11 respectively.&nbsp; Output gain may be specified as -1 to 
+	reverse the direction of motion.</font></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Note: for the 
+	pulse polarity and pulse time to be set properly the following line of C 
+	Code needs to be executed after every power up.&nbsp; With the default 
+	settings there is marginal timing on direction setup which may result in 
+	&quot;drift&quot; caused by a microstep in the wrong direction when changing 
+	directions.&nbsp; This line of Code is already included in the Example C 
+	Initialization Programs (ie InitKStep3Axis.c)</font></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">	
+	FPGA(STEP_PULSE_LENGTH_ADD) = 63 + 0x80; // set polarity and pulse length to 
+	4us<br>
+&nbsp;</font></p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Example Axis 
+	configurations are also provided as KStepAxis0.mot, KStepAxis1.mot, 
+	KStepAxis2.mot, KStepAxis3.mot</font></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+	<img border="0" src="ConfigStepDir.png" width="293" height="373"></font></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Limit switch 
+	options may also be selected.&nbsp; KStep 12-24V Opto inputs are commonly 
+	used as Limit switch inputs and are referenced as Input Bits 168-183.&nbsp; 
+	Using NC type limit switches will mean that the inputs are normally high and 
+	go open and low when activated.&nbsp; In this case the &quot;Stop when low&quot; 
+	option should be selected.&nbsp;&nbsp; For more info see
+	<a href="../ConfigurationScreen/ConfigurationScreen.htm#Limit_Switch_Options">
+	here</a>.</font></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0">
+	<img border="0" src="KStepLimits.png" width="327" height="156"></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Motion profile 
+	settings on the Step Response Screen are used</font></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+	<img border="0" src="KStepProfile.png" width="128" height="108"></font></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><b><i>
+	<font face="Arial" size="4">Enable KStep Amplifiers</font></i></b></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">An amplifier 
+	enable signal is required to enable the KStep Full Bridge Amplifiers.&nbsp; 
+	One signal enables all 4 of the KStep amplifiers.&nbsp; The enable signal is 
+	positive true meaning it requires a high level 3.3V LVTTL (sourcing) signal 
+	to enable the drives.&nbsp; With the standard&nbsp; JP36 26-pin ribbon 
+	connector to KFLOP this signal is connected to KFLOP IO 45 which must be set 
+	as an output and set high to enable the drives.&nbsp;&nbsp;&nbsp; The enable 
+	signal is optically isolated from the KSTEP VBB and GND when operating KSTEP 
+	in isolated mode.</font></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">If JP36 is not 
+	used then a 3.3V enable signal may alternately be applied to a screw 
+	terminal on J6.&nbsp; Or when two KSteps are stacked for driving 8 motors 
+	the screw terminals on J6 may be used as an output on the first KStep to 
+	daisy chain the enable signal to the second KStep. </font></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">For testing 
+	purposes KStep may be enabled using the Digital I/O Screen as shown below.</font></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0">
+	<img border="0" src="DigitalEnable.png" width="479" height="533"></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">From C code 
+	the Amplifiers may be enabled with the code shown below.</font></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0pt">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	SetBitDirection(45,1);&nbsp; <span style="color:green">// set Enable Signal as 
+	Output</span></span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0pt">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	SetBit(45);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:green">// Enable the KStep 
+	Amplifiers</span></span></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Additionally, 
+	code might be added to enable the amplifiers as soon as motion is detected 
+	and disabled after a period of time with no motion.&nbsp; Here is an 
+	example:</font></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-bottom: .0001pt">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<span style="color:blue">double</span> T0, LastX=0, LastY=0, LastZ=0;</span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<span style="color:blue">for</span> (;;) <span style="color:green">// loop 
+	forever</span></span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {</span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	WaitNextTimeSlice();</span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+	</p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<span style="color:green">// Service Amplifier disable after no activity for 
+	a while</span></span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<span style="color:blue">if</span> (ch0-&gt;Dest != LastX || ch1-&gt;Dest != LastY 
+	|| ch2-&gt;Dest != LastZ)</span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {</span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<span style="color:green">// we moved - enable KStep Amplifers</span></span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	SetBit(45);</span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	T0 = Time_sec();&nbsp; <span style="color:green">// record the time and position 
+	of last motion</span></span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	LastX=ch0-&gt;Dest;</span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	LastY=ch1-&gt;Dest;</span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	LastZ=ch2-&gt;Dest; </span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<span style="color:blue">else</span></span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {</span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<span style="color:blue">if</span> (Time_sec() &gt; T0 + 10.0) ClearBit(45);</span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><b><i>
+	<font face="Arial" size="4">Digital Status</font></i></b></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The Opto 
+	Isolated 12-24V Digital Inputs can be 
+	observed by selecting the Virtual Tab of the Digital I/O Screen.&nbsp; The 
+	16 opto inputs will be shown as active when current is flowing through the 
+	opto circuit.&nbsp; For input circuit and pinouts
+	<a href="ConnectorsKStep.htm#Optically_isolated_Inputs">see</a>.&nbsp; The 
+	KStep Opto Inputs are actually virtual inputs that are multiplexed in 
+	through KFLOP I/O.&nbsp; KFLOP can perform this multiplexing automatically 
+	by setting the global variable <b>KStepPresent.</b>&nbsp; The following line 
+	of C code should be added to your Init.c program:</font></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">KStepPresent=TRUE;</font></p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">&nbsp;</font></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0">
+	<img border="0" src="KStepDigital.png" width="479" height="533"></p>
+	<p style="margin-top: 0; margin-bottom: 0">
+	&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><b><i>
+	<font face="Arial" size="4">Relay Driver Outputs</font></i></b></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The Opto 
+	Isolated 24V outputs can be 
+	observed and controlled by selecting the KFLOP tab of the Digital I/O Screen.&nbsp; The 
+	2 opto outputs will be shown as active when the outputs are conducting 
+	current.&nbsp; The KStep outputs are the same as the standard KFLOP outputs 
+	except they are opto isolated and amplified to handle up to 24V.&nbsp; For 
+	output circuit and pinouts
+	<a href="ConnectorsKStep.htm#Relay_Driver_Outputs">see</a>.</font></p>
+	<p style="margin-top: 0; margin-bottom: 0">
+	&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0">
+	<img border="0" src="DigitalRelayOutputs.png" width="479" height="533"></p>
+	<p style="margin-top: 0; margin-bottom: 0">
+	&nbsp;</p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-family: Arial">To make use of the outputs within a C 
+	program the following C code shows an example of enabling both the outputs, 
+	turning them on, then turning them off. </span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	SetBitDirection(0,1);&nbsp; <span style="color:green">//set as output</span></span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	SetBitDirection(1,1);&nbsp; <span style="color:green">//set as output</span></span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SetBit(0);&nbsp;
+	<span style="color:green">// turn output on</span></span></p>
+	<p class="MsoNormal" style="margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; line-height: 115%; font-family: Courier New">
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SetBit(1);&nbsp; <span style="color:green">// turn output on</span></span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	ClearBit(0);&nbsp; <span style="color:green">// turn output o</span></span><font size="2" color="#008000"><span style="font-family: Courier New">ff</span></font></p>
+	<p class="MsoNormal" style="margin-top: 0; margin-bottom: 0">
+	<span style="font-size: 10.0pt; line-height: 115%; font-family: Courier New">
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ClearBit(1);&nbsp; <span style="color:green">// turn output o</span></span><font size="2" color="#008000"><span style="font-family: Courier New">ff</span></font></p>
+	<p style="margin-top: 0; margin-bottom: 0">
+	&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><b><i>
+	<font face="Arial" size="4">Analog Output</font></i></b></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The KStep 
+	Analog output is a low Speed (10ms time constant) isolated analog output 
+	that is commonly used as a VFD Spindle Speed Control signal.&nbsp; KFLOP 
+	outputs a 3.3V digital PWM on IO 44 to KSTEP which optically isolates and 
+	filters it to create an analog signal.&nbsp; Isolated power and ground 
+	(often supplied by the VFD) are required.&nbsp; The analog output voltage 
+	will be a proportion of the supplied voltage relative to the duty cycle of 
+	the PWM signal.&nbsp; For example a 75% high duty cycle will provide a 
+	voltage which is approximately 75% of the supplied voltage.</font></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">To configure 
+	KFLOP to output the appropriate PWM signal into KSTEP the configuration code 
+	below should be used.&nbsp; There is an FPGA option to move PWM0 (which 
+	normally is output on connector JP6 with the other 7 PWM outputs) over to 
+	JP7 Pin5 IO44.&nbsp; IO44 must also be configured as an output, the PWM 
+	Prescale Divider set to a reasonable value, and the PWM enabled.</font></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: .0001pt">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	FPGA(KAN_TRIG_REG)=4;&nbsp; <span style="color:green">// Mux PWM0 to JP7 Pin5 IO 
+	44 for KSTEP </span></span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: .0001pt">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	SetBitDirection(44,1);&nbsp; <span style="color:green">// define bit as an output</span></span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: .0001pt">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	FPGA(IO_PWMS_PRESCALE) = 46;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:green">// divide 
+	clock by 46 (1.4 KHz)</span></span></p>
+	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: .0001pt">
+	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	FPGA(IO_PWMS+1) = 1;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:green">// Enable</span></span></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The Analog 
+	output has nonlinearity near the 0% duty cycle region due to opto coupler 
+	pulse shaping effects.&nbsp; The nonlinearity can be mostly corrected in 
+	software through calibration.&nbsp; Below is a raw uncorrected analog output 
+	with a PWM frequency of 1.4KHz (PWM Prescale = 46).</font></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+	<img border="0" src="AnalogRaw.png" width="601" height="507"></font></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Using a 
+	correction algorithm where the PWM value that will most closely produce the 
+	desired output voltage is determined from a table lookup approach for the 
+	first 7 PWM counts, and a simple linear interpolation is used for 
+	determining PWM settings 7 through 240 the linearized results are shown 
+	below. Although now linear there is still low resolution for settings below 
+	~5% full scale.</font></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	<p style="margin-top: 0; margin-bottom: 0">
+	<img border="0" src="AnalogCorrected.png" width="603" height="502"></p>
+	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+	</div>
+
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-family: Arial">Below is the C function used to linearize the 
+output.</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: green">// 
+PWM-&gt;Analog Correction</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: green">//</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: green">// 
+assume very non-linear for first few count and linear thereafter </span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: green">//</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: green">// 
+Measure output ratio for first 0-7 counts then at 240</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: green">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: blue">float</span><span style="font-size: 10.0pt; font-family: Courier New"> 
+V[]=</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">{</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">0.001,&nbsp;
+<span style="color:green">// count = 0</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">0.031,&nbsp;
+<span style="color:green">// count = 1</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">0.044,&nbsp;
+<span style="color:green">// count = 2</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">0.054,&nbsp;
+<span style="color:green">// count = 3</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">0.062,&nbsp;
+<span style="color:green">// count = 4</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">0.069,&nbsp;
+<span style="color:green">// count = 5</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">0.074,&nbsp;
+<span style="color:green">// count = 6</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">0.079&nbsp;&nbsp;
+<span style="color:green">// count = 7</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">};</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: blue">float</span><span style="font-size: 10.0pt; font-family: Courier New"> 
+V240=0.970;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New; color: blue">int</span><span style="font-size: 10.0pt; font-family: Courier New"> 
+CorrectAnalog(<span style="color:blue">float</span> v)</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">{</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:blue">int</span> r;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:blue">float</span> v2=2.0f*v;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:green">// compare with half way points to determine closest 
+count</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:blue">if</span> (v2 &lt; V[1]+V[0]) <span style="color:blue">
+return</span> 0;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:blue">if</span> (v2 &lt; V[2]+V[1]) <span style="color:blue">
+return</span> 1;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:blue">if</span> (v2 &lt; V[3]+V[2]) <span style="color:blue">
+return</span> 2;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:blue">if</span> (v2 &lt; V[4]+V[3]) <span style="color:blue">
+return</span> 3;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:blue">if</span> (v2 &lt; V[5]+V[4]) <span style="color:blue">
+return</span> 4;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:blue">if</span> (v2 &lt; V[6]+V[5]) <span style="color:blue">
+return</span> 5;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:blue">if</span> (v2 &lt; V[7]+V[6]) <span style="color:blue">
+return</span> 6;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:green">// must be 7 or higher do linear interpolation</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r = (<span style="color:blue">int</span>)(7.5 
++ (v-V[7])/(V240-V[7])*(240.0f-7.0f));</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:blue">if</span> (r&gt;255) r=255;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:blue">return</span> r;</span></p>
+<p class="MsoNormal" style="margin-top: 0; margin-bottom: 0">
+<span style="font-size: 10.0pt; line-height: 115%; font-family: Courier New">}</span></p>
+
+</body>
+
+</html>

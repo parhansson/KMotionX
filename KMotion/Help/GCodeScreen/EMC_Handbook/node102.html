@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>13.3 Changing Variable Values</TITLE>
+<META NAME="description" CONTENT="13.3 Changing Variable Values">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node103.html">
+<LINK REL="previous" HREF="node101.html">
+<LINK REL="up" HREF="node99.html">
+<LINK REL="next" HREF="node103.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1875"
+  HREF="node103.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1869"
+  HREF="node99.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1863"
+  HREF="node101.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1871"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1873"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1876"
+  HREF="node103.html">13.4 Writing blocks using</A>
+<B> Up:</B> <A NAME="tex2html1870"
+  HREF="node99.html">13. Programming With Variables</A>
+<B> Previous:</B> <A NAME="tex2html1864"
+  HREF="node101.html">13.2 Units of Variables</A>
+ &nbsp; <B>  <A NAME="tex2html1872"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1874"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION04430000000000000000">
+13.3 Changing Variable Values</A>
+</H1>
+
+<P>
+The variable assignment operator allows you to change the value of
+a variable while a gcode program is running. Any reference to a variable
+name followed by an equals sign and a number or an expression in brackets
+[ ] will assign that number to the named variable.
+
+<P>
+#1002 = [#1000 + #1001]
+
+<P>
+In the case of the previous line, #1002 takes on the value of the
+sum of two other variables. Variables can be assigned any values that
+can be computed within a program.
+
+<P>
+One interesting case of assignment comes from the fact that you can
+assign a variable it's own value so incrementing is permitted by the
+interpreter.
+
+<P>
+#1000 = [#1000 + 1]
+
+<P>
+If you increment or change a variable while a program is running it
+will hold its new value for the next run of the same program. It will
+continue to hold the last value when you start a different program.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1875"
+  HREF="node103.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1869"
+  HREF="node99.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1863"
+  HREF="node101.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1871"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1873"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1876"
+  HREF="node103.html">13.4 Writing blocks using</A>
+<B> Up:</B> <A NAME="tex2html1870"
+  HREF="node99.html">13. Programming With Variables</A>
+<B> Previous:</B> <A NAME="tex2html1864"
+  HREF="node101.html">13.2 Units of Variables</A>
+ &nbsp; <B>  <A NAME="tex2html1872"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1874"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

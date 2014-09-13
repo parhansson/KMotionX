@@ -1,0 +1,291 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>13. Programming With Variables</TITLE>
+<META NAME="description" CONTENT="13. Programming With Variables">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="next" HREF="node110.html">
+<LINK REL="previous" HREF="node80.html">
+<LINK REL="up" HREF="node44.html">
+<LINK REL="next" HREF="node100.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1823"
+  HREF="node100.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1817"
+  HREF="node44.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1811"
+  HREF="node98.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1819"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1821"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1824"
+  HREF="node100.html">13.1 Types of Variables</A>
+<B> Up:</B> <A NAME="tex2html1818"
+  HREF="node44.html">III. Part 3 -</A>
+<B> Previous:</B> <A NAME="tex2html1812"
+  HREF="node98.html">Endnotes</A>
+ &nbsp; <B>  <A NAME="tex2html1820"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1822"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION04400000000000000000">
+13. Programming With Variables</A>
+</H1>
+
+<P>
+RS274NGC makes provision for the inclusion of variables in the numeric
+part of program words. Variables can be named with any number up to
+5399. You can access the value of a variable in a gcode program by
+placing a hash (#) sign before the number/name of the variable that
+you want to reference. Often in the EMC literature the terms variables
+and parameters are used to refer to the same thing.
+
+<P>
+For those who learned part programming on older machine tool controls,
+the inclusion of variables makes for some strange looking program
+blocks. But variables can be very useful programming tools. This unit
+develops the concepts of variables as a gcode programming tool and
+applies them to five common milling tasks.
+
+<P>
+Before we begin, you need to understand that the NGC development defined
+a lot of variables and how they should be used in machine control.
+But the EMC and its interpreter only takes advantage of a few of these
+variables and those only for its built in coordinate system. You can
+see which ones, all in the 5000 + range if you view the emc.var or
+generic.var files shipped with EMC. A typical variable file is listed
+below. We will add and use several variables that do not have predefined
+functions in the EMC.
+
+<P>
+Format is: 
+<BR>&lt;variable&gt; &lt;value&gt; 
+<BR>&lt;variable&gt; runs from 1 to 5399 inclusive, &lt;value&gt; is a number.
+<BR>
+Units for &lt;value&gt; are INCHES, the default units for RS-274-NGC. 
+
+<P>
+Lines not of that form, or blank lines, are considered comments. Don't
+enter a line beginning with two numbers unless you mean it. 
+<BR>
+You can put whatever you want in here as user variables, but some
+are reserved. See the RS-274-NGC manual for the reserved variables.
+<BR>
+This file is loaded into the interpreter at the beginning, and dumped
+from the controller at the end.
+<BR>
+Only variables you put explicitly in here will be dumped out from
+the interpreter. 
+
+<P>
+<TABLE  WIDTH="0%">
+<TR><TD>
+Axes offsets for G92
+<BR>
+5211 0.000000 
+<BR>
+5212 0.000000 
+<BR>
+5213 0.000000 
+<P>
+
+
+<P>
+Coordinate system for G54 - the default used at start
+<BR>
+5221 0.000000
+<BR>
+5222 0.000000 
+<BR>
+5223 0.000000 
+<P>
+
+
+<P>
+Coordinate system for G55 
+<BR>
+5241 0.000000
+<BR>
+5242 0.000000
+<BR>
+5243 0.000000 
+<P>
+
+
+<P>
+Coordinate system for G56
+<BR>
+5261 0.000000
+<BR>
+5262 0.000000
+<BR>
+5263 0.000000 
+<P>
+
+
+<P>
+Coordinate system for G57
+<BR>
+5281 0.000000
+<BR>
+5282 0.000000
+<BR>
+5283 0.000000
+<P>
+
+
+<P>
+Coordinate system for G58
+<BR>
+5301 0.000000
+<BR>
+5302 0.000000
+<BR>
+5303 0.000000
+<P>
+
+
+<P>
+Coordinate system for G59
+<BR>
+5321 0.000000
+<BR>
+5322 0.000000
+<BR>
+5323 0.000000 
+<P>
+
+
+<P>
+Coordinate system for G59.1
+<BR>
+5341 0.000000
+<BR>
+5342 0.000000
+<BR>
+5343 0.000000 
+<P>
+
+
+<P>
+Coordinate system for G59.2
+<BR>
+5361 0.000000
+<BR>
+5362 0.000000
+<BR>
+5363 0.000000 
+<P>
+
+
+<P>
+Coordinate system for G59.3
+<BR>
+5381 0.000000
+<BR>
+5382 0.000000
+<BR>
+5383 0.000000
+<P>
+
+
+<P>
+</TD></TR>
+</TABLE>
+
+<P>
+<BR>
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1825"
+  HREF="node100.html">13.1 Types of Variables</A>
+<LI><A NAME="tex2html1826"
+  HREF="node101.html">13.2 Units of Variables</A>
+<LI><A NAME="tex2html1827"
+  HREF="node102.html">13.3 Changing Variable Values</A>
+<LI><A NAME="tex2html1828"
+  HREF="node103.html">13.4 Writing blocks using variables</A>
+<LI><A NAME="tex2html1829"
+  HREF="node104.html">13.5 Sample Variable Programs</A>
+<UL>
+<LI><A NAME="tex2html1830"
+  HREF="node105.html">Example 1 - Drilling a pattern from a variable location</A>
+<LI><A NAME="tex2html1831"
+  HREF="node106.html">Example 2 - Incremented drilling</A>
+<LI><A NAME="tex2html1832"
+  HREF="node107.html">Example 3 - An outside milled four cornered object</A>
+<LI><A NAME="tex2html1833"
+  HREF="node108.html">Example 4 - Milling an inside circle</A>
+<LI><A NAME="tex2html1834"
+  HREF="node109.html">Example 5 - Iterated Run</A>
+</UL></UL>
+<!--End of Table of Child-Links-->
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1823"
+  HREF="node100.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1817"
+  HREF="node44.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1811"
+  HREF="node98.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1819"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1821"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1824"
+  HREF="node100.html">13.1 Types of Variables</A>
+<B> Up:</B> <A NAME="tex2html1818"
+  HREF="node44.html">III. Part 3 -</A>
+<B> Previous:</B> <A NAME="tex2html1812"
+  HREF="node98.html">Endnotes</A>
+ &nbsp; <B>  <A NAME="tex2html1820"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1822"
+  HREF="node140.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

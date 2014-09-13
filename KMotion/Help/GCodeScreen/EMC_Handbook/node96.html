@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-1 (1.68)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Algorithms for Cutter Radius Compensation</TITLE>
+<META NAME="description" CONTENT="Algorithms for Cutter Radius Compensation">
+<META NAME="keywords" CONTENT="Handbook">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="Handbook.css">
+
+<LINK REL="previous" HREF="node95.html">
+<LINK REL="up" HREF="node91.html">
+<LINK REL="next" HREF="node97.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1784"
+  HREF="node97.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.gif"></A> 
+<A NAME="tex2html1778"
+  HREF="node91.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.gif"></A> 
+<A NAME="tex2html1774"
+  HREF="node95.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.gif"></A> 
+<A NAME="tex2html1780"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.gif"></A> 
+<A NAME="tex2html1782"
+  HREF="node140.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1785"
+  HREF="node97.html">Jon Elson's Example</A>
+<B> Up:</B> <A NAME="tex2html1779"
+  HREF="node91.html">First Move</A>
+<B> Previous:</B> <A NAME="tex2html1775"
+  HREF="node95.html">Other Items Where Cutter</A>
+ &nbsp; <B>  <A NAME="tex2html1781"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1783"
+  HREF="node140.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION04322500000000000000">
+Algorithms for Cutter Radius Compensation</A>
+</H3>
+
+<P>
+The interpreter allows the entry and exit moves to be arcs. The behavior
+for the intermediate moves is the same, except that some situations
+treated as errors in the interpreter are not treated as errors in
+other machine controls. 
+
+<P>
+Data for Cutter Radius Compensation 
+
+<P>
+The interpreter machine model keeps three data items for cutter radius
+compensation: the setting itself (right, left, or off), program_x,
+and program_y. The last two represent the X and Y positions which
+are given in the NC code while compensation is on. When compensation
+is off, these both are set to a very small number (10 -20 ) whose
+symbolic value (in a #define) is &#34;unknown&#34;. The
+interpreter machine model uses the data items current_x and current_y
+to represent the position of the center of the tool tip (in the currently
+active coordinate system) at all times.
+
+<P>
+<BR><HR>
+<ADDRESS>
+root
+2003-05-26
+</ADDRESS>
+</BODY>
+</HTML>

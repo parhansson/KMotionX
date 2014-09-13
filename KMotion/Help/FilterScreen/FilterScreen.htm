@@ -1,0 +1,177 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>IIR Filter Screen</title>
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+</head>
+
+<body>
+
+<p><i><b><font size="5">IIR Filter Screen</font></b></i></p>
+<p><map name="FPMap0">
+<area href="#Supported_filter_types" shape="rect" coords="4, 35, 754, 215">
+<area href="#Compute_" shape="rect" coords="8, 218, 77, 250">
+<area href="#Compute_" shape="rect" coords="259, 218, 327, 251">
+<area href="#Compute_" shape="rect" coords="507, 216, 571, 250">
+<area href="#Clear" shape="rect" coords="13, 374, 75, 412">
+<area href="#Clear" shape="rect" coords="261, 375, 321, 411">
+<area href="#Clear" shape="rect" coords="515, 376, 576, 411">
+<area href="#Z-domain_coefficients" shape="polygon" coords="79, 226, 81, 253, 13, 254, 11, 368, 79, 367, 81, 426, 256, 427, 255, 370, 333, 371, 333, 426, 516, 427, 515, 363, 578, 364, 577, 432, 753, 432, 750, 225, 578, 224, 577, 252, 505, 253, 504, 221, 329, 223, 329, 254, 255, 254, 252, 223">
+<area href="#C_Code_to_Clipboard" shape="rect" coords="113, 438, 220, 485">
+<area href="#Download" shape="rect" coords="305, 445, 424, 483"></map>
+<img border="0" src="FilterScreen.PNG" width="760" height="491" usemap="#FPMap0"></p>
+<p>The <i><b> IIR Filter Screen</b></i> allows setting various IIR (Infinite 
+Impulse Response) <i>Filters</i> into the control loop.&nbsp; <i><b>KMotion</b></i> 
+allows up to three - 2nd order bi-quadratic stages per axis to be connected in cascade.&nbsp; 
+See the <a href="../ServoFlowDiagram.htm">KMotion Servo Flow Diagram</a> for the 
+placement of the IIR Filters.&nbsp; </p>
+<p><i><b>KMotion</b></i> implements the filters using 
+<a name="Z-domain_coefficients">Z-domain coefficients</a> 
+shown on the bottom half of the screen.&nbsp; Because of the common confusion of the 
+names and signs of the coefficients, the transfer function form is shown for 
+reference.</p>
+<p><img border="0" src="Filter1.gif"></p>
+<p>Note that setting B0=1.0 and all other coefficients, B1, B2, A1, and A2, to 
+zero causes a transfer function of unity, effectively bypassing the filter.&nbsp; A
+<a name="Clear">Clear</a> pushbutton is available to conveniently set this mode. </p>
+<p><img border="0" src="Filter2.gif"></p>
+<p>&nbsp;</p>
+<p>The top portion of each filter section allows various common filters to be 
+specified in the s-domain.&nbsp; <a name="Supported_filter_types">Supported filter types</a> are: 
+<a href="#Low_Pass_(1st_order)">1st order Low Pass</a>, 
+<a href="#Low_Pass_(2nd_order)">2nd Order Low Pass</a>, <a href="#Notch">Notch</a>, and two real 
+<a href="#Pole-Zero">poles and zeros</a> and are selected using a 
+drop-down list box..&nbsp; Z-domain is a place holder used as a reminder that 
+the z-domain coefficients were determined directly by some other means.&nbsp; 
+The form of each of the filters in the s-domain is shown below.&nbsp;&nbsp;&nbsp;
+</p>
+<p><map name="FPMap1">
+<area href="#Low_Pass_(1st_order)" shape="rect" coords="3, 3, 157, 41">
+<area href="#Low_Pass_(2nd_order)" shape="rect" coords="2, 39, 157, 54">
+<area href="#Notch" shape="rect" coords="3, 54, 155, 68">
+<area href="#Pole-Zero" shape="rect" coords="3, 68, 157, 83"></map>
+<img border="0" src="Filter3.gif" usemap="#FPMap1"></p>
+<p><a href="#Low_Pass_(1st_order)"><img border="0" src="Filter4.gif"></a></p>
+<p><a href="#Low_Pass_(2nd_order)"><img border="0" src="Filter5.gif"></a></p>
+<p><a href="#Notch"><img border="0" src="Filter6.gif"></a></p>
+<p><a href="#Pole-Zero"><img border="0" src="Filter7.gif"></a></p>
+<p>&nbsp;</p>
+<p>If an s-domain filter type is selected and its corresponding parameters 
+specified, then depressing the <i><a name="Compute_">Compute</a></i> pushbutton will convert the 
+s-domain transfer function to the z-domain using Tustin's approximation (with 
+frequency pre-warping) and automatically fills in the z-domain coefficients.&nbsp; 
+Note that <b><i>KMotion</i></b> always utilizes the current (most recently 
+computed or entered) z-domain coefficients, regardless of any changes that might 
+be made to the s-domain section. </p>
+<p>Note that the <a href="../BodeScreen/BodeScreen.htm">Bode Plot Screen</a> has 
+the capability to graph the combined transfer function of all three IIR filters 
+and the PID filter.&nbsp; This is referred to as the <i>Servo Compensation</i>.&nbsp; 
+To view the transfer function of a <i>single</i> IIR filter, set the other 
+filter and PID sections to unity (for PID set P=1, I=0, D=0 or for an IIR Filter 
+B0=1, B1= B2=A1=A2=0).</p>
+<p>Below are examples of each of the s-domain filter types (shown individually):</p>
+<p><u><b><a name="Low_Pass_(1st_order)">Low Pass (1st order)</a></b></u></p>
+<p>A <i>Low Pass</i> filter is commonly used in a servo system to reduce high 
+frequency noise (or spikes) in the output.&nbsp; It also has the desirable 
+effect of decreasing the gain at high frequencies.&nbsp; If a system's gain at 
+high frequencies is increased sufficiently to reach 0 db it may become unstable.&nbsp; 
+Unfortunately it has the effect of introducing phase lag (negative phase) which 
+will reduce the <a href="../BodeScreen/BodeScreen.htm#phase_margin">phase margin</a>.&nbsp; 
+A 1st order Low Pass filter has 45 degrees phase&nbsp; and attenuation of -3db 
+at the specified cutoff frequency.&nbsp; The cutoff frequency should normally be 
+specified much higher than the servo bandwidth in order to have only a small 
+phase lag at the system's bandwidth.</p>
+<p><img border="0" src="Filter9.gif" align="left" hspace="10" vspace="10"><a href="LowPassBig.PNG"><img border="0" src="LowPass.PNG" width="296" height="217"></a></p>
+<p>&nbsp;</p>
+<p><u><b><a name="Low_Pass_(2nd_order)">Low Pass (2nd order)</a></b></u></p>
+<p>A <i>2nd order Low Pass</i> filter is commonly used in a similar manner as a
+<a href="#Low_Pass_(1st_order)">1st order low pass filter</a>, except that it 
+has higher attenuation than a 1st order low pass filter.&nbsp; Unfortunately it 
+also introduces more phase lag than a 1st order low pass filter.&nbsp; In most 
+cases the cutoff frequency for a 2nd order low pass filter will have to be 
+specified at a higher frequency than a 1st order filter, in order to have 
+similar phase lag at the system bandwidth frequency.&nbsp; Even so, the 2nd 
+order low pass filter is usually preferable in that it provides slightly more 
+high frequency attenuation and &quot;smoothing&quot; of the output.</p>
+<p>A 2nd order Low Pass filter also allows a Q parameter which changes the 
+sharpness of the filter.&nbsp; A smaller value of Q results in a sharper filter 
+at the expense of some peaking (gain increases before decreasing).&nbsp; A Q 
+value of 1.41 (called a Butterworth filter), shown immediately below, is the 
+minimal value that may be specified without peaking. </p>
+<p><img border="0" src="Filter10.gif" align="left" hspace="10" vspace="10"></p>
+<p><a href="LowPass2ndBig.PNG">
+<img border="0" src="LowPass2nd.PNG" width="296" height="217"></a></p>
+<p>A Q value of 0.7 shows &quot;peaking&quot;.</p>
+<p><img border="0" src="Filter11.gif" align="left" hspace="10" vspace="10"></p>
+<p><a href="LowPass2ndQ7Big.PNG">
+<img border="0" src="LowPass2ndQ7.PNG" width="296" height="215"></a></p>
+<p>&nbsp;</p>
+<p><u><b><a name="Notch">Notch</a></b></u></p>
+<p>A <i>Notch</i> filter is commonly used in servo system when a sharp 
+mechanical resonance would otherwise cause a system to become unstable.&nbsp; A 
+Notch filter is able to attenuate a very localized range of frequencies.&nbsp; 
+It has a damping factor, <font face="Times New Roman"><i>&#951;</i>, which effects 
+sharpness or width of the notch.&nbsp; The</font> disadvantage of using a notch 
+filter is some phase lag which tends to decrease
+<a href="../BodeScreen/BodeScreen.htm#phase_margin">phase margin</a>.&nbsp; The 
+introduced phase lag will be less the narrower the notch is (less damping), as 
+well as the distance the notch frequency is above the system bandwidth.</p>
+<p>Shown below are two notch filters both at 400 Hz, one with 0.2 damping and 
+the other with 0.4 damping.</p>
+<p><img border="0" src="Filter12.gif" align="left" hspace="10" vspace="10"></p>
+<p>&nbsp;<a href="Notchp2Big.PNG"><img border="0" src="Notchp2.PNG" width="294" height="218"></a></p>
+<p><img border="0" src="Filter13.gif" align="left" hspace="10" vspace="10"></p>
+<p><a href="Notchp4Big.PNG"><img border="0" src="Notchp4.PNG" width="296" height="215"></a></p>
+<p>&nbsp;</p>
+<p><u><b><a name="Pole-Zero">Pole-Zero</a></b></u></p>
+<p>A <i>Pole-Zero</i> filter is commonly used in a lead-lag configuration shown 
+below to shift the phase positive at the 0 db crossover frequency of the system 
+in order to increase <a href="../BodeScreen/BodeScreen.htm#phase_margin">phase 
+margin</a>.&nbsp; The filter shown has maximum positive phase of approximately 
+80 degrees at 200 Hz.&nbsp; This is accomplished by setting the N1,N2 (zeros or 
+numerator frequencies) 2X <i>lower</i> than 200 Hz (100 Hz), and the D1,D2 
+(poles or denominator frequencies) 2X <i>higher</i> than this (400 Hz).&nbsp; A 
+lead-lag filter (or compensator) may often be used in place of derivative gain 
+(in the PID stage), and has a significant advantage of lower high frequency 
+gain.&nbsp; If a system's gain at high frequencies is increased sufficiently to 
+reach 0 db it may become unstable.</p>
+<p><img border="0" src="Filter8.gif" align="left" hspace="10" vspace="10"></p>
+<p><a href="LeadLagBig.PNG"><img border="0" src="LeadLag.PNG" width="296" height="215"></a></p>
+<p>&nbsp;</p>
+<p><u><b>Copy <a name="C_Code_to_Clipboard">C Code to Clipboard</a></b></u></p>
+<p><img border="0" src="Filter14.gif" align="left" hspace="10" vspace="10"></p>
+<p>This pushbutton causes the current z-domain filter coefficients to be copied 
+to the clipboard in a form that may be pasted directly into a <i><b>KMotion</b></i> 
+C Program, see also the <a href="../ProgramScreen/ProgramScreen.htm">C Program 
+Screen</a>. </p>
+<p>&nbsp;</p>
+<p><b><font face="Courier New" size="2">ch0-&gt;iir[0].B0=232.850006;<br>
+ch0-&gt;iir[0].B1=-450.471008;<br>
+ch0-&gt;iir[0].B2=217.869995;<br>
+ch0-&gt;iir[0].A1=1.001990;<br>
+ch0-&gt;iir[0].A2=-0.250994;<br>
+<br>
+ch0-&gt;iir[1].B0=1.000000;<br>
+ch0-&gt;iir[1].B1=0.000000;<br>
+ch0-&gt;iir[1].B2=0.000000;<br>
+ch0-&gt;iir[1].A1=0.000000;<br>
+ch0-&gt;iir[1].A2=0.000000;<br>
+<br>
+ch0-&gt;iir[2].B0=0.175291;<br>
+ch0-&gt;iir[2].B1=0.350583;<br>
+ch0-&gt;iir[2].B2=0.175291;<br>
+ch0-&gt;iir[2].A1=0.519908;<br>
+ch0-&gt;iir[2].A2=-0.221073;<br>
+</font></b><br>
+&nbsp;</p>
+<p><u><b><a name="Download">Download</a></b></u></p>
+
+<p><img border="0" src="Filter15.gif" align="left" hspace="10" vspace="10"></p>
+<p>The <i>Download</i> push button downloads the filters for the selected axis 
+(along with all axis configuration and tuning parameters) to the <i><b>KMotion</b></i>.</p>
+
+</body>
+
+</html>

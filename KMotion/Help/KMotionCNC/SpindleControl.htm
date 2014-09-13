@@ -1,0 +1,469 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>KMotionCNC Spindle Control</title>
+</head>
+
+<body>
+
+<p><b><i><font face="Arial" size="5">KMotionCNC Spindle Control</font></i></b></p>
+<p><u><b><i><font face="Arial"><a href="#Overview">Overview</a></font></i></b></u></p>
+<p><u><b><i><font face="Arial"><a href="#Basic_Configuration">Basic Configuration</a></font></i></b></u></p>
+<p><u><b><i><font face="Arial"><a href="#User_Program_Configuration">User 
+Program Configuration</a></font></i></b></u></p>
+<p><u><i><b><font face="Arial"><a href="#CSS_-_Constant_Surface_Speed">CSS - 
+Constant Surface Speed</a></font></b></i></u></p>
+<p><i><b><font face="Arial"><a href="#Step-by-step_Recap">Step-by-step Recap</a></font></b></i></p>
+<p><i><b><font face="Arial"><a href="#Video">Video</a></font></b></i></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><u><b><i><font face="Arial"><a name="Overview">Overview</a></font></i></b></u></p>
+<p><font face="Arial">KMotionCNC allows the User to configure how the Spindle is 
+to be be controlled.&nbsp; Four basic actions that need to be defined are:</font></p>
+<p><font face="Arial">M3 - Turns on the Spindle in a CW direction</font></p>
+<p><font face="Arial">M4 - Turns on the Spindle in a CCW direction</font></p>
+<p><font face="Arial">M5 - Turns off the Spindle</font></p>
+<p><font face="Arial">Snnnn - Sets the desired RPM or Constant Surface Speed in 
+feet/min or meters/min</font></p>
+<p>&nbsp;</p>
+<p><font face="Arial">To configure what action is to take place for each of the four 
+functions the Tool Setup must be configured to either do the operations directly, 
+or by invoking a KFLOP User C Program.</font></p>
+<p><font face="Arial">For the most basic cases where only one or two control IO 
+bits are required for On/Off/Direction the IO operations can be configured 
+directly.&nbsp; If Speed can be controlled by simple open loop scaling/limiting 
+of a DAC output then speed control can also be configured directly.&nbsp;&nbsp;
+</font></p>
+<p><font face="Arial">For more complex cases and to allow control of virtually 
+any type of Spindle, through any type of interface, KMotionCNC can be configured 
+to invoke User programs to perform the four tasks listed above.&nbsp; Spindles 
+might need to be controlled in a variety of different ways: Open Loop, Closed 
+Loop, DACs, PWMs, Step/Dir, ModBus, Rs232, etc...&nbsp; Although this requires a 
+small program to be written, it provides maximal flexibility and full control to 
+the system designer.&nbsp;&nbsp; Usually with only a few lines of code the 
+desired task may be performed.&nbsp; Common examples are provided.&nbsp; </font></p>
+<p><font face="Arial">For G96/G97 - CSS (Constant Surface Speed) an additional 
+program is required to run continuously in KFLOP which changes spindle speed 
+continuously as a function of X position (radius).&nbsp; See the CSSJog.c 
+example.</font></p>
+<p><font face="Arial">If a quadrature encoder is installed on the spindle it may 
+be used for Spindle Speed Measurement and Display.&nbsp; See the Threading 
+Configuration described
+<a href="ToolSetupScreenTP.htm#Threading/Spindle_Settings">here</a>.</font></p>
+<p>&nbsp;</p>
+<p><u><b><i><font face="Arial"><a name="Basic_Configuration">Basic Configuration</a></font></i></b></u></p>
+<p><font face="Arial">For basic configurations where the spindle CW/CCW/OFF can 
+be controlled with one or two IO bits (normally Kanalog Relay Driver or Opto 
+Outputs) and with speed control from a Kanalog DAC then no C programming is 
+required.&nbsp; An example configuration is shown below.&nbsp; Note the S action 
+is mapped to Kanalog DAC #7 with a negative scale of -2.047.&nbsp; Kanalog DAC 
+outputs are inverting such that negative DAC counts result in a positive 
+voltage.&nbsp;&nbsp; The assumption in this case is that an S value of 1000RPM 
+would correspond to -2047 DAC counts or +10V.&nbsp; And the allowed range is 
+from -2047 to 0 counts (0V to +10V).</font></p>
+<p><font face="Arial">An additional advantage to using I/O bits rather than C 
+Programs is that they I/O commands will be embedded within the motion stream and 
+will occur synchronously with the motion and without any pause in the motion.&nbsp; 
+This is especially useful for faster systems with Lasers/Engravers/Extruders 
+instead of a traditional Spindle.&nbsp;&nbsp; For more information on buffered 
+IO commands see <a href="SynchronousIOCommands.htm">here</a>.</font></p>
+<p>
+<img border="0" src="KMotionCNCfiles/SpindleBasic.png" width="840" height="259"></p>
+<p>&nbsp;</p>
+<p><u><b><i><font face="Arial"><a name="User_Program_Configuration">User Program Configuration</a></font></i></b></u></p>
+<p><font face="Arial">For more advanced functionality User C Programs may be 
+assigned for each of the spindle actions.&nbsp; For systems that have a spindle 
+that can be controlled with an axis channel the C Programs listed below can be 
+used directly with little or no modification.&nbsp; This assumes that axis 
+channel has already been configured much like the other axes in the system and 
+can be moved using Axis Jog Commands.&nbsp; Spindles such as this are types that 
+can be driven like a servo with feedback, or as an open loop Step/Dir drive.&nbsp; 
+The only requirement is that a KFLOP axis channel can be used for control.&nbsp; 
+This also allows acceleration (and Jerk) to be controlled by the axis channel 
+for smooth speed changes.</font></p>
+<p><font face="Arial">The example configuration below shows the four spindle 
+tasks assigned to four C programs.&nbsp; Each of the programs run temporarily to 
+perform their function and should never execute concurrently so each can use the 
+same Thread.&nbsp; See <a href="../Multitasking.htm">here</a> for more 
+information on Threads.&nbsp; M3, M4, and M5 do not pass any parameter so the VAR 
+should be assigned to ay unused Variable such as #1.&nbsp; For S the speed value 
+is passed in the VAR parameter.&nbsp; If G96/G97 CSS is to be used then the same 
+VAR should be used as the G96 speed is passed.&nbsp; This VAR number is defined 
+in PC-DSP.h as&nbsp; </font></p><font SIZE="2" COLOR="#0000ff">
+<p><font face="Consolas">#define</font></font><font SIZE="2" face="Consolas"> 
+PC_COMM_CSS_S 113 </font><font SIZE="2" COLOR="#008000"><font face="Consolas">// 
+S speed setting in inches/sec</font></p>
+</font>
+<p>
+<img border="0" src="KMotionCNCfiles/SpindleCSS.png" width="848" height="261"></p>
+<p>&nbsp;</p>
+<p><font face="Arial">In most cases the four C programs can be used without any 
+modification.&nbsp; The programs all include a common file called 
+MySpindleDefs.h that contain settings that are likely to require customization 
+for any particular system.&nbsp; The file and parameters are defined and 
+described below.&nbsp; Each of the four C programs includes this file with an 
+include statement of:&nbsp; #include &quot;MySpindleDefs.h&quot;.&nbsp; This should be 
+placed immediately after the #include &quot;KMotionDef.h&quot; (which includes 
+and defines all the 
+standard KFLOP definitions).<br>
+<br>
+&nbsp;</font></p>
+<p><font face="Arial">MySpindleDefs.h</font></p>
+<font FACE="Consolas" SIZE="2" COLOR="#0000ff">
+<p style="margin-top: 0; margin-bottom: 0">#define</font><font FACE="Consolas" SIZE="2"> 
+SPINDLEAXIS 6 </font><font FACE="Consolas" SIZE="2" COLOR="#008000">// Axis 
+Channel to Jog to rotate Spindle</p>
+</font><font FACE="Consolas" SIZE="2" COLOR="#0000ff">
+<p style="margin-top: 0; margin-bottom: 0">#define</font><font FACE="Consolas" SIZE="2"> 
+FACTOR (1000/60.0) </font><font FACE="Consolas" SIZE="2" COLOR="#008000">// to 
+convert RPM to counts/sec (counts/rev / 60.0sec)</p>
+</font><font FACE="Consolas" SIZE="2" COLOR="#0000ff">
+<p style="margin-top: 0; margin-bottom: 0">#define</font><font FACE="Consolas" SIZE="2"> 
+SPINDLECW_BIT 154 </font><font FACE="Consolas" SIZE="2" COLOR="#008000">// bit 
+to activate to cause CW rotation</p>
+</font><font FACE="Consolas" SIZE="2" COLOR="#0000ff">
+<p style="margin-top: 0; margin-bottom: 0">#define</font><font FACE="Consolas" SIZE="2"> 
+SPINDLECCW_BIT 155 </font><font FACE="Consolas" SIZE="2" COLOR="#008000">// bit 
+to activate to cause CCW rotation</p>
+</font><font FACE="Consolas" SIZE="2" COLOR="#0000ff">
+<p style="margin-top: 0; margin-bottom: 0">#define</font><font FACE="Consolas" SIZE="2"> 
+SPEEDVAR 99 </font><font FACE="Consolas" SIZE="2" COLOR="#008000">// global 
+persistant variable to store latest speed</p>
+</font><font FACE="Consolas" SIZE="2" COLOR="#0000ff">
+<p style="margin-top: 0; margin-bottom: 0">#define</font><font FACE="Consolas" SIZE="2"> 
+STATEVAR 98 </font><font FACE="Consolas" SIZE="2" COLOR="#008000">// global 
+persistant variable to store latest state (-1=CCW,0=off,1=CW)</p>
+</font><font FACE="Consolas" SIZE="2" COLOR="#0000ff">
+<p style="margin-top: 0; margin-bottom: 0">#define</font><font FACE="Consolas" SIZE="2"> 
+KMVAR PC_COMM_CSS_S </font><font FACE="Consolas" SIZE="2" COLOR="#008000">// 
+variable KMotionCNC will pass speed parameter (113)</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p><font face="Arial">These C Programs (located in the &lt;Install Directory&gt;\C 
+Programs\SpindleUsingJogs\CSS directory) are written in a manner to handle a 
+common issue with Spindles which is that a Speed change while the Spindle is 
+commanded off should not be immediately applied.&nbsp; The four programs use two 
+global variables to maintain the latest state and speed.&nbsp; This allows a 
+speed change (when off) to be delayed until the spindle is turned on, but also 
+be applied immediately if already on.&nbsp; In the example above VARs 99 and 98 
+are used for this purpose.</font></p>
+<p>&nbsp;</p>
+<p><u><i><b><font face="Arial"><a name="CSS_-_Constant_Surface_Speed">CSS - 
+Constant Surface Speed</a></font></b></i></u></p>
+<p><font face="Arial">Constant Surface Speed allows a lathe cutting tool to 
+maintain a constant linear rate regardless of the current radius (or diameter) 
+as the spindle RPM is continuously adjusted as a function of the radius.</font></p>
+<p><font face="Arial">Here is a simple GCode Program that uses G96 CSS mode</font></p>
+<font FACE="Consolas" SIZE="2">
+</font>
+<p><font face="Consolas" size="2">G90 G21&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+(Absolute mm)<br>
+G00 X50.8 Y0 Z50.8&nbsp; (Rapid to starting position)<br>
+G96 M3 D2500 S159.6 (CSS should be 1000RPM at R=25.4mm)<br>
+G1 X2.54 Z25.4 F350 (Change X - radius)<br>
+G1 X50.8 Z0<br>
+G1 X2.54 F5000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (Change X - radius faster)<br>
+G1 X50.8 Z0<br>
+G1 X2.54&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+(Change X - radius faster)<br>
+G1 X50.8 Z0<br>
+M05&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+(Spindle off)<br>
+G0 Z50.8<br>
+G97 M3 S500&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (Run at normal RPM 
+Mode)<br>
+G4 P3<br>
+M2 </font></p>
+<p><font face="Arial">G96/G97 CSS requires some additional C Program 
+functionality to be running within KFLOP.&nbsp; When KMotionCNC decodes a G96 
+command to enter CSS mode it does so by setting a number of VAR parameters 
+within KFLOP.&nbsp; A program continuously running within KFLOP will detect the 
+CSS mode and set the Spindle RPM as a function of the X axis position (radius) 
+and requested surface speed.&nbsp; The five variables set by KMotionCNC to 
+control CSS are listed in the shared header file PC-DSP.h as and define which persist 
+variables the data will be placed:</font></p><font SIZE="2" COLOR="#008000">
+<p style="margin-top: 0; margin-bottom: 0"><font face="Consolas">// Persist 
+Variable used with CSS Constant Surface speed for Spindle</font></p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Consolas">// These 
+parameters will be set when GCode switches to G97 CSS mode</font></p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Consolas">// A User 
+program in KFLOP must be running to monitor the mode an x position</font></p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Consolas">// and alter 
+the spindle RPM appropriately.</font></p>
+</font><font SIZE="2" COLOR="#0000ff">
+<p style="margin-top: 0; margin-bottom: 0"><font face="Consolas">#define</font></font><font SIZE="2" face="Consolas"> 
+PC_COMM_CSS_MODE 110 </font><font SIZE="2" COLOR="#008000">
+<font face="Consolas">// Mode 1=Normal RPM mode. 2=CSS</font></p>
+</font><font SIZE="2" COLOR="#0000ff">
+<p style="margin-top: 0; margin-bottom: 0"><font face="Consolas">#define</font></font><font SIZE="2" face="Consolas"> 
+PC_COMM_CSS_X_OFFSET 111 </font><font SIZE="2" COLOR="#008000">
+<font face="Consolas">// X axis counts for Radius zero</font></p>
+</font><font SIZE="2" COLOR="#0000ff">
+<p style="margin-top: 0; margin-bottom: 0"><font face="Consolas">#define</font></font><font SIZE="2" face="Consolas"> 
+PC_COMM_CSS_X_FACTOR 112 </font><font SIZE="2" COLOR="#008000">
+<font face="Consolas">// X axis factor to convert counts to inches </font></p>
+</font><font SIZE="2" COLOR="#0000ff">
+<p style="margin-top: 0; margin-bottom: 0"><font face="Consolas">#define</font></font><font SIZE="2" face="Consolas"> 
+PC_COMM_CSS_S 113 </font><font SIZE="2" COLOR="#008000"><font face="Consolas">// 
+S speed setting in inches/sec</font></p>
+</font><font SIZE="2" COLOR="#0000ff">
+<p style="margin-top: 0; margin-bottom: 0"><font face="Consolas">#define</font></font><font SIZE="2" face="Consolas"> 
+PC_COMM_CSS_MAX_RPM 114 </font><font SIZE="2" COLOR="#008000">
+<font face="Consolas">// Limit max RPM to this value as Radius approaches zero</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+</font>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">MODE: defines whether CSS is active 
+or not.&nbsp; G96 sets all CSS parameters and then switches the mode to 2.&nbsp; 
+G97 (normal fixed RPM Mode) sets the Mode to 1.&nbsp; On Power up the Mode will 
+be 0.&nbsp;&nbsp; X_OFFSET allows KFLOP to relate a position in counts to a 
+radius from the spindle axis.&nbsp; It consists of all GCode Offsets converted 
+to X axis counts.&nbsp; X_FACTOR is the inverse of the X axis resolution which 
+allows KFLOP to do a simple multiplication to convert X axis counts to inches.&nbsp; 
+S: is the desired surface speed in inches/sec (converted from GCode units of 
+feet/min or meters/min).&nbsp; MAX_RPM: specifies the maximum allowed RPM.&nbsp; 
+As the radius approaches zero the required RPM to maintain a specified surface 
+speed will approach infinity.&nbsp; Any computed RPM beyond this value will be 
+limited to this value. The max RPM may be specified on the line of GCode with 
+the D word.&nbsp; If no D word is specified on the same line as the G96 then the 
+limit will be sent as 1e9 RPM.</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">In most cases the supplied function 
+ServiceCSS() shown below can be used.&nbsp; See C Program comments below on how 
+to include this file into your Initialization C file and add a call to it in a 
+continuous loop.&nbsp; If you already have a continuous loop in your 
+Initialization C File then add a call ServiceCSS() within it.&nbsp; If there is 
+not already an loop add one as shown in the comments below.</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:green">// Handle CSS (Constant Surface Speed) 
+messages from KMotionCNC)</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:green">//</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:green">// This code assumes you have an Axis 
+Channel Configured to control</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:green">// Spindle speed and Jog Calls can be 
+made to control speed</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:green">//</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:green">// Include this function into your main 
+Init Thead code and call it</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:green">// continuously from a forever loop 
+similar to that shown here</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:green">//#include &quot;KMotionDef.c&quot;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:green">//#include &quot;MySpindleDefs.h&quot;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:green">//#include &quot;CSSJog.c&quot;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:green">//main()</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:green">//{</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:green">//&nbsp;&nbsp;&nbsp;&nbsp; for (;;)</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:green">//&nbsp;&nbsp;&nbsp;&nbsp; {</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:green">//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WaitNextTimeSlice();</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:green">//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ServiceCSS();</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:green">//&nbsp;&nbsp;&nbsp;&nbsp; }</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:green">//}</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:blue">int</span><span style="font-size:9.5pt;
+font-family:Consolas">&nbsp;&nbsp; *css_mode = &amp;persist.UserData[PC_COMM_CSS_MODE];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:green">// Mode 1=Normal RPM mode. 2=CSS</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:blue">float</span><span style="font-size:9.5pt;
+font-family:Consolas"> *css_xoff = &amp;persist.UserData[PC_COMM_CSS_X_OFFSET];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:green">// X axis counts for Radius zero</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:blue">float</span><span style="font-size:9.5pt;
+font-family:Consolas"> *css_xfactor = &amp;persist.UserData[PC_COMM_CSS_X_FACTOR];
+<span style="color:green">// X axis factor to convert counts to inches </span>
+</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:blue">float</span><span style="font-size:9.5pt;
+font-family:Consolas"> *css_s = &amp;persist.UserData[PC_COMM_CSS_S];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:green">// S speed setting in inches/sec</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:blue">float</span><span style="font-size:9.5pt;
+font-family:Consolas"> *css_max_rpm = &amp;persist.UserData[PC_COMM_CSS_MAX_RPM];&nbsp;
+<span style="color:green">// Limit max RPM to this value as Radius approaches 
+zero</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:blue">double</span><span style="font-size:
+9.5pt;font-family:Consolas"> css_T=0;&nbsp; <span style="color:green">// update only 
+every so often</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:blue">#define</span><span style="font-size:
+9.5pt;font-family:Consolas"> CSS_UPDATE_DT 0.05</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:blue">void</span><span style="font-size:9.5pt;
+font-family:Consolas"> ServiceCSS(<span style="color:blue">void</span>)</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">{</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;&nbsp;&nbsp; <span style="color:blue">float</span> rpm;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;&nbsp;&nbsp; <span style="color:blue">double</span> T=Time_sec();</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;&nbsp;&nbsp; <span style="color:blue">if</span> (*css_mode == 
+2 &amp;&amp; T &gt; css_T) <span style="color:green">// check if we are in CSS mode and it 
+is time to update</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;&nbsp;&nbsp; {</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; css_T=T+CSS_UPDATE_DT;&nbsp;
+<span style="color:green">// determine next time to update</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:green">// convert axis 
+position to distance from center in inches</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue">float</span> radius 
+= fast_fabs((chan[CS0_axis_x].Dest - *css_xoff) * *css_xfactor);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue">if</span> (radius &gt; 
+0.0f)</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rpm = *css_s / (radius * (TWO_PI_F/60.0f));</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue">else</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rpm = *css_max_rpm;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue">if</span> (rpm &gt; *css_max_rpm) 
+rpm = *css_max_rpm;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue">if</span> (persist.UserData[STATEVAR]!=0)&nbsp;
+<span style="color:green">// if spindle is already on, ramp to new speed</span></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Jog(SPINDLEAXIS,rpm * FACTOR);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas;color:green">//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf(&quot;xoff=%f radius= %f 
+xfactor=%f s=%f(ips) maxrpm=%f rpm=%f\n&quot;,*css_xoff,radius,*css_xfactor,*css_s,*css_max_rpm,rpm);</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;&nbsp;&nbsp; }</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">}</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-bottom: .0001pt">
+<span style="font-size:
+9.5pt;font-family:Consolas">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-bottom: .0001pt">
+<span style="font-family: Arial; font-weight: 700; font-style: italic; text-decoration: underline">
+<a name="Step-by-step_Recap">Step-by-step Recap</a></span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-bottom: .0001pt">
+<span style="font-family: Arial">This sequence is applicable for Spindles that 
+can be driven with a KFLOP Axis Channel:</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-bottom: .0001pt">
+<span style="font-family: Arial">#1 - Electrically Interface your spindle</span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-bottom: .0001pt">
+<span style="font-family: Arial">#2 - Using KMotion.exe configure your Spindle 
+Axis Channel and test that KMotion Console Screen Jog commands can successfully 
+control it. </span></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-bottom: .0001pt">
+<span style="font-family: Arial">#3 - Modify </span><font face="Arial">MySpindleDefs.h 
+with settings that apply for your system</font></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-bottom: .0001pt">
+<font face="Arial">#4 - Configure KMotionCNC | Tool Setup | M3 - M9</font><span style="font-family: Arial">&nbsp;| 
+M3, M4, M5, and S</span></p>
+<p class="MsoNormal"><font face="Arial">#5 - If Spindle encoder feedback is 
+available configure KMotionCNC | Tool Setup | Trajectory Planner | Threading</font></p>
+<p class="MsoNormal"><font face="Arial">#6 - if CSS is desired include and add
+</font><span style="font-family: Arial">ServiceCSS() to a continuous loop in 
+your Initialization C File</span><font face="Arial"> </font></p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">&nbsp;</p>
+<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
+<span style="font-family: Arial"><u><i><b><a name="Video">Video</a></b></i></u>&nbsp;</span></p>
+<p class="MsoNormal"><font face="Arial"><span style="line-height: 115%">&nbsp;Simple
+<a href="http://youtu.be/f7Ljo4LHids">Video</a> of final GCode running CSS GCode.</span></font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+
+</body>
+
+</html>

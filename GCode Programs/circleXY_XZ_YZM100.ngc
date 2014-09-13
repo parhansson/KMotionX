@@ -1,0 +1,11 @@
+G20					(Engish mode, inches)
+F12  
+G0 X0 Y0 Z0  		(Rapid move to 0)
+M100 
+G17					(XY plane)
+G2 Y0 Z0 I0 J0.25	
+G18					(XZ plane)
+G2 Y0 Z0 I0 K0.25	
+G19					(YZ plane)
+G2 Y0 Z0 J0 K0.25	
+M2
