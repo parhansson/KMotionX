@@ -1,7 +1,7 @@
 // GCodeInterpreter.cpp : Defines the entry point for the DLL application.
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "rs274ngc_return.h"
 #include "rs274ngc.h"
 #include "GCodeInterpreter.h"
@@ -82,8 +82,11 @@ MOTION_PARAMS *CGCodeInterpreter::GetMotionParams()
 }
 
 
-
+#ifdef _WINDOWS
 DWORD DoExecuteShell(LPDWORD lpdwParam)
+#else
+void * DoExecuteShell(void *lpdwParam)
+#endif
 {
 	CGCodeInterpreter *p=(CGCodeInterpreter*)lpdwParam;
 
@@ -395,6 +398,7 @@ int CGCodeInterpreter::DoExecuteComplete()
 
 int CGCodeInterpreter::LaunchExecution()
 {
+#ifdef _WINDOWS
 	DWORD ID;
 	
 
@@ -407,6 +411,23 @@ int CGCodeInterpreter::LaunchExecution()
 		this,							 /* argument to thread function   */ 
 		0,                           /* use default creation flags    */ 
 		&ID);   
+#else
+	//printf("%s:%d LaunchExecution\n",__FILE__,__LINE__);
+    pthread_t thr;
+    if(pthread_create(&thr, NULL, &::DoExecuteShell, this))
+    {
+        printf("Could not create thread\n");
+        return -1;
+    }
+    //Do not wait for thread to join.
+    /*
+    if(pthread_join(thr, NULL))
+    {
+        printf("Could not join thread\n");
+        return -1;
+    }
+    */
+#endif
 
 	return 0;
 }
@@ -764,6 +785,7 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 
 int CGCodeInterpreter::ExecutePC(const char *Name)
 {
+#ifdef _WINDOWS
 	SECURITY_ATTRIBUTES sa          = {0};
 	STARTUPINFO         si          = {0};
 	PROCESS_INFORMATION pi          = {0};
@@ -843,6 +865,10 @@ int CGCodeInterpreter::ExecutePC(const char *Name)
 	CloseHandle (hPipeInputWrite);
 	
 	return exitcode;
+#else
+#pragma message("\n" __FILE__ " TODO implement int CGCodeInterpreter::ExecutePC(const char *Name)\n")
+	return 0;
+#endif
 }
 
 

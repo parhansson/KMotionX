@@ -96,7 +96,7 @@ public:
 	int StraightFeedAccel(double DesiredFeedRate_in_per_sec, double DesiredAccel,
 				     double x, double y, double z, double a, double b, double c, int sequence_number, int ID);
 
-	int CCoordMotion::Dwell(double seconds, int sequence_number=0);
+	int /*CCoordMotion::*/Dwell(double seconds, int sequence_number=0);
 
 	int ReadCurAbsPosition(double *x, double *y, double *z, double *a, double *b, double *c, bool snap=false);
 
@@ -161,8 +161,8 @@ public:
 
 	void SetTPParams();
 
-	int CCoordMotion::GetRapidSettings();
-	int CCoordMotion::GetRapidSettingsAxis(int axis,double *Vel,double *Accel,double *Jerk, double *SoftLimitPos, double *SoftLimitNeg, double CountsPerInch);
+	int /*CCoordMotion::*/GetRapidSettings();
+	int /*CCoordMotion::*/GetRapidSettingsAxis(int axis,double *Vel,double *Accel,double *Jerk, double *SoftLimitPos, double *SoftLimitNeg, double CountsPerInch);
 	bool RapidParamsDirty;
 
 	void SetPreviouslyStoppedAtSeg(SEGMENT *segs_to_check,int i);

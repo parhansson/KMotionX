@@ -30,14 +30,14 @@
 /*               -p        pause before running                         */
 /*                                                                      */
 /************************************************************************/
-#include "stdafx.h"
+#include "StdAfx.h"
 
 #define KMotionBd 1
 
-#include "PARAMS.h"
-#include "VERSION.h"
-#include "COFF.h"
-#include "CLOAD.h"
+#include "PARAMS.H"
+#include "VERSION.H"
+#include "COFF.H"
+#include "CLOAD.H"
 
 
 #define MIN(a,b) ((a)<(b)?(a):(b))
@@ -89,10 +89,12 @@ unsigned long time();
 /*--------------------------------------------------------------------------*/
 FILE *fopen();
 char *strrchr(), *malloc(), *realloc();
-
+#ifdef _WINDOWS
 unsigned char far *pageloc = (unsigned char far *)DEFPAGE;
-
-unsigned long reloc = 0;                 /* RELOCATION AMOUNT               */
+#else
+unsigned char *pageloc = (unsigned char *)DEFPAGE;
+#endif
+uint32_t      reloc = 0;                 /* RELOCATION AMOUNT               */
 int           quiet = 0;                 /* NO BANNER                       */
 int           sflag = 0;                 /* SRAM MAPPED IN FOR EPROM       */
 int           iflag = 0;                 /* ALLOW SDB TO INTERRUPT PC      */
@@ -212,14 +214,16 @@ int mem_write(unsigned char *buffer, int nbytes, T_ADDR addr, int page)
 	{
 		sprintf(s,"LOADDATA %X %X",addr,nbytes);
 	}
-	
+#ifdef SIMULATE_LOADCOFF
+	printf("%s:%d %s\n",__FILE__,__LINE__,s);
+#else
 	if (KMotionDLL->WaitToken()) return 0;
 	if (KMotionDLL->WriteLine(s))
 	{
 		KMotionDLL->ReleaseToken();
 		return 0;
 	}
-
+#endif
 
 
 	for (i=0; i<nbytes; i+=BytesPerLine)
@@ -235,14 +239,19 @@ int mem_write(unsigned char *buffer, int nbytes, T_ADDR addr, int page)
 
 			strcat(s,x);
 		}
+#ifdef SIMULATE_LOADCOFF
+		printf("%s:%d %s\n",__FILE__,__LINE__,s);
+#else
 		if (KMotionDLL->WriteLine(s))
 		{
 			KMotionDLL->ReleaseToken();
 			return 0;
 		}
+#endif
 	}
-
+#ifndef SIMULATE_LOADCOFF
 	KMotionDLL->ReleaseToken();
+#endif
 	return 1;
 }
 

@@ -4,20 +4,26 @@
 /*********************************************************************/
 
 
-#include "stdafx.h"
+#include "StdAfx.h"
 
 #define KMotionBd 1
 
-#include "PARAMS.h"
-#include "VERSION.h"
-#include "COFF.h"
-#include "CLOAD.h"
+#include "PARAMS.H"
+#include "VERSION.H"
+#include "COFF.H"
+#include "CLOAD.H"
 
 
-extern CString MainPathDLL;
-extern CString MainPath;
-extern CString MainPathRoot;
-
+#ifndef _WINDOWS
+static char *normalize_slashes(char *path)
+{
+    char *p;
+    for (p = path; *p; ++p)
+        if (*p == '\\')
+            *p = '/';
+    return path;
+}
+#endif
 
 CKMotionDLL::CKMotionDLL(int boardid)
 { 
@@ -25,8 +31,36 @@ CKMotionDLL::CKMotionDLL(int boardid)
 	PipeOpen=false;
 	ServerMessDisplayed=false;
 
-	PipeMutex = new CMutex(FALSE,"KMotionPipe",NULL);
+#ifndef _WINDOWS
+	char* mainPath;
+    if(!(mainPath = getenv("KMOTION_BIN"))){
+    	mainPath = getenv("PWD");
+    }
+    char resolvedMainPath[MAX_PATH +1];
+    realpath(mainPath, resolvedMainPath);
+    sprintf(MainPath.GetBuffer(MAX_PATH),"%s",resolvedMainPath);
+    MainPath.ReleaseBuffer();
+	printf("%s:%d Environment KMOTION_BIN resolved to %s\n",__FILE__,__LINE__,MainPath.c_str());
 
+
+    char* rootDir;
+    char resolvedMainPathRoot[MAX_PATH +1];
+    char mainPathRoot[MAX_PATH +1];
+    if(!(rootDir = getenv("KMOTION_ROOT"))){
+		rootDir = getenv("PWD");
+		sprintf(mainPathRoot,"%s/..",rootDir);
+	} else {
+		sprintf(mainPathRoot,"%s",rootDir);
+	}
+
+    realpath(mainPathRoot, resolvedMainPathRoot);
+    sprintf(MainPathRoot.GetBuffer(MAX_PATH),"%s",resolvedMainPathRoot);
+    MainPathRoot.ReleaseBuffer();
+    printf("%s:%d Environment KMOTION_ROOT resolved to %s\n",__FILE__,__LINE__,MainPathRoot.c_str());
+
+#endif
+
+	PipeMutex = new CMutex(FALSE,"KMotionPipe",NULL);
 	ConsoleHandler=NULL;
 	ErrMsgHandler=NULL;
 }
@@ -261,7 +295,7 @@ int CKMotionDLL::LoadCoff(int Thread, const char *Name, int PackToFlash)
 	unsigned int EntryPoint;
 
 	if (Thread==0) return 1;
-
+#ifndef SIMULATE_LOADCOFF
 	if (PackToFlash==0 && CheckKMotionVersion()) return 1; 
 
 	if (PackToFlash==0)
@@ -269,11 +303,12 @@ int CKMotionDLL::LoadCoff(int Thread, const char *Name, int PackToFlash)
 		s.Format("Kill %d", Thread);  // make sure the Thread isn't running
 		if (WriteLine(s)) return 1;
 	}
+#endif
 	
 	int result =  ::LoadCoff(this, Name, &EntryPoint, PackToFlash);
 
 	if (result) return result;
-
+#ifndef SIMULATE_LOADCOFF
 	if (Thread >= 0 && PackToFlash==0)
 	{
 		// Set the entry point for the thread
@@ -282,7 +317,7 @@ int CKMotionDLL::LoadCoff(int Thread, const char *Name, int PackToFlash)
 		result = WriteLine(s);
 		if (result) return result;
 	}
-
+#endif
 	return 0;
 }
 
@@ -339,8 +374,12 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 	if (ServerMessDisplayed) 
 		return 1;
 
-	LPTSTR lpszPipename = "\\\\.\\pipe\\kmotionpipe"; 
 
+#ifdef _WINDOWS
+	LPTSTR lpszPipename = "\\\\.\\pipe\\kmotionpipe"; 
+#else
+	LPTSTR lpszPipename = SOCK_PATH;
+#endif
 	try
 	{
 		PipeMutex->Lock();
@@ -445,6 +484,8 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 
 int CKMotionDLL::LaunchServer()
 {
+
+#ifdef _WINDOWS
 	SECURITY_ATTRIBUTES sa          = {0};
 	STARTUPINFO         si          = {0};
 	PROCESS_INFORMATION pi          = {0};
@@ -508,6 +549,20 @@ int CKMotionDLL::LaunchServer()
 	// You don't want to read or write to them accidentally.
 	CloseHandle(hPipeOutputWrite);
 	CloseHandle(hPipeInputRead);
+#elif defined(__APPLE__)
+	//The daemon is currently not supported on Apple
+	char command[1024];
+	sprintf(command, "%s/%s", MainPath.c_str(),"KMotionServer");
+	printf("%s:%d Launch KMotionServer first: %s\n",__FILE__,__LINE__,command);
+	PipeMutex->Unlock();
+	exit(1);
+#else
+    char command[1024];
+    sprintf(command, "%s/%s", MainPath.c_str(),"KMotionServer");
+    printf("%s:%d Launching KMotionServer %s\n",__FILE__,__LINE__, command);
+    system(command);
+
+#endif
 
 	return 0;
 }
@@ -553,6 +608,7 @@ int CKMotionDLL::CompileAndLoadCoff(const char *Name, int Thread, char *Err, int
 
 int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardType, int Thread, char *Err, int MaxErrLen)
 {
+#ifdef _WINDOWS
 	SECURITY_ATTRIBUTES sa          = {0};
 	STARTUPINFO         si          = {0};
 	PROCESS_INFORMATION pi          = {0};
@@ -643,7 +699,7 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	cmd.Format(" -text %08X -g -nostdinc " + IncSrcPath1 + IncSrcPath2 + " -o ",GetLoadAddress(Thread,BoardType));
 	cmd = Compiler + cmd;
 	cmd += "\"" + OFile + "\" \"" + Name + "\" \"" + BindTo +"\"";
-	
+
 	CreateProcess (
 		NULL,
 		cmd.GetBuffer(0), 
@@ -712,8 +768,72 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 		strncpy(Err,Errors,MaxErrLen);
 
 	return exitcode;
-}
+#else
 
+	//normalize_slashes()
+
+	if (Thread==0) return 1;
+	CString Compiler = COMPILER;
+	FILE *f=fopen(Compiler,"r");  // try if compiler is on path
+
+	if (f==NULL)
+	{
+		Compiler = MainPath + "/" + COMPILER;
+
+		f=fopen(Compiler,"r");  // try in the released directory next
+		if (f==NULL)
+		{
+			Compiler = MainPathRoot + "/tcc-0.9.26/" + COMPILER;
+			f=fopen(Compiler,"r");  // try in the released directory next
+			if (f==NULL)
+			{
+				DoErrMsg("Error Locating c67-tcc Compiler");
+				return 1;
+			}
+		}
+	}
+	fclose(f);
+
+
+	CString BindTo,IncSrcPath1,IncSrcPath2;
+
+	if (BoardType == BOARD_TYPE_KMOTION)
+		IncSrcPath1="-I" + MainPathRoot + "/DSP_KMotion";
+	else
+		IncSrcPath1="-I" + MainPathRoot + "/DSP_KFLOP";
+
+	IncSrcPath2="-I" + ExtractPath(Name);
+
+	if (BoardType == BOARD_TYPE_KMOTION)
+		BindTo = MainPathRoot + "/DSP_KMotion/DSPKMotion.out";
+	else
+		BindTo = MainPathRoot + "/DSP_KFLOP/DSPKFLOP.out";
+
+
+	char command[MAX_LINE +1];
+
+	sprintf(command,"%s -Wl,-Ttext,%08X -Wl,--oformat,coff -static -nostdinc -nostdlib %s %s -o \"%s\" %s %s",
+			Compiler.c_str(),
+			GetLoadAddress(Thread,BoardType),
+			IncSrcPath1.c_str(),
+			IncSrcPath2.c_str(),
+			OutFile,
+			Name,
+			BindTo.c_str());
+
+	//Original TCC67 Windows version shipped with KMotion
+	//tcc -text 80050000 -g -nostdinc -I./DSP_KFLOP -I./ -o Gecko3Axis.out Gecko3Axis.c ./DSP_KFLOP/DSP_KFLOP.out
+	// -text replaced by -Wl,-Ttext,address
+	//http://manpages.ubuntu.com/manpages/lucid/man1/tcc.1.html
+
+
+	//compile with debug flag is currently not supported -g
+	//c67-tcc -Wl,-Ttext,80050000 -Wl,--oformat,coff -static -nostdinc -nostdlib -I./ -o ~/Desktop/Gecko3AxisOSX.out Gecko3Axis.c DSPKFLOP.out
+	printf("%s\n",command);
+	int exitCode = system(command);
+	return exitCode;
+#endif
+}
 
 
 void CKMotionDLL::ConvertToOut(int thread, const char *InFile, char *OutFile, int MaxLength)
@@ -731,7 +851,7 @@ void CKMotionDLL::ConvertToOut(int thread, const char *InFile, char *OutFile, in
 
 		IFile.MakeLower();
 
-		if (IFile.Right(2)= ".c")
+		if (IFile.Right(2) == ".c")
 		{
 			OFile = InFileWithCase.Left(InFileWithCase.GetLength()-2);
 		}
@@ -750,7 +870,6 @@ void CKMotionDLL::ConvertToOut(int thread, const char *InFile, char *OutFile, in
 
 		OFile += ThreadString;
 	}
-
 	strncpy(OutFile,OFile,MaxLength);
 }
 
@@ -764,7 +883,12 @@ CString CKMotionDLL::ExtractPath(CString InFile)
 	do
 	{
 		pos=next_pos;
+#ifdef _WINDOWS
 		next_pos = InFile.Find('\\',pos+1);
+#else
+		//backslash to slash
+		next_pos = InFile.Find('/',pos+1);
+#endif
 	}
 	while (next_pos!=-1);
 
@@ -817,6 +941,9 @@ int CKMotionDLL::CheckKMotionVersion(int *type, bool GetBoardTypeOnly)
 			OutFile = MainPathRoot +"\\DSP_KMotion\\DSPKMotion.out";
 			if (type) *type = BOARD_TYPE_KMOTION;
 		}
+#ifndef _WINDOWS
+		OutFile.Replace("\\", "/");
+#endif
 		if (GetBoardTypeOnly) return 0;
 
 		int result = ExtractCoffVersionString(OutFile,CoffVersion.GetBuffer(81));	
@@ -824,10 +951,15 @@ int CKMotionDLL::CheckKMotionVersion(int *type, bool GetBoardTypeOnly)
 
 		if (result)
 		{
+#ifdef _WINDOWS
 			ms.Format("Error Extracting Version Information from file\r\r"
 				" %s",
 				OutFile.GetBuffer(0));
-			
+#else
+			ms.Format("Error Extracting Version Information from file\n"
+							" %s",
+							OutFile.GetBuffer(0));
+#endif
 			DoErrMsg(ms);
 			return 1;
 		}

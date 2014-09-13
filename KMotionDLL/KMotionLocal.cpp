@@ -5,7 +5,7 @@
 
 
 
-#include "stdafx.h"
+#include "StdAfx.h"
 
 #pragma data_seg (".SHARED") // any name you like
 

@@ -49,14 +49,14 @@ int reloc_read(RELOC *rptr);         /* READ AND SWAP A RELOC ENTRY           */
 int reloc_size(short type);          /* RETURN SIZE IN BYTES OF RELOC FIELD   */
 int reloc_sym(int index) ;           /* LOOKUP A SYMBOL IN THE RELOC SYMTAB   */
 									 /* EXTRACT RELOC FIELD FROM DATA         */
-unsigned long unpack(unsigned char *data, int fieldsz, int wordsz,int bit_addr);                              /* BIT ADDRESS WITHIN BYTE      */
+uint32_t unpack(unsigned char *data, int fieldsz, int wordsz,int bit_addr);                              /* BIT ADDRESS WITHIN BYTE      */
 
 						             /* INSERT RELOCATED FIELD INTO DATA      */
-void repack(unsigned long objval, unsigned char *data,
+void repack(uint32_t objval, unsigned char *data,
 			int fieldsz, int wordsz, int bit_addr);
 
 int           cload_lineno();        /* READ AND RELOCATE LINENO ENTRIES      */
-void swap4byte(long *addr);          /* BYTE-SWAP A 32-BIT VALUE              */
+void swap4byte(int32_t *addr);       /* BYTE-SWAP A 32-BIT VALUE              */
 void swap2byte(unsigned short *addr);/* BYTE-SWAP A 16-BIT VALUE              */
 
 

@@ -3,9 +3,9 @@
 /****************************************************************************/
 
 #if KMotionBd
-typedef unsigned long  T_ADDR;          /* TYPE FOR TARGET ADDRESS          */
+typedef uint32_t	   T_ADDR;          /* TYPE FOR TARGET ADDRESS          */
 typedef unsigned char  T_DATA;          /* TYPE FOR TARGET DATA WORD        */
-typedef unsigned long  T_SIZE;          /* TYPE FOR CINIT SIZE FIELD        */
+typedef uint32_t	   T_SIZE;          /* TYPE FOR CINIT SIZE FIELD        */
 
 #define MAGIC 194                       /* Kmotion/Code Composer            */
 

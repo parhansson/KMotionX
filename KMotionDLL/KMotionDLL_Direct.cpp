@@ -5,14 +5,14 @@
 
 
 
-#include "stdafx.h"
+#include "StdAfx.h"
 
 #define KMotionBd 1  // used within coff loader
 
-#include "PARAMS.h"
-#include "VERSION.h"
-#include "COFF.h"
-#include "CLOAD.h"
+#include "PARAMS.H"
+#include "VERSION.H"
+#include "COFF.H"
+#include "CLOAD.H"
 
 
 
@@ -96,6 +96,8 @@ int CKMotionDLL_Direct::MapBoardToIndex(int BoardID)
 
 int CKMotionDLL_Direct::ListLocations(int *nlocations, int *list)
 {
+#ifndef LIB_FTDI
+
 	FT_HANDLE ftHandle;
 	FT_DEVICE ftDevice;
 	DWORD deviceID;
@@ -189,6 +191,8 @@ int CKMotionDLL_Direct::ListLocations(int *nlocations, int *list)
 		*nlocations=0;
 		return 1;
 	}
+#endif
+	return 0;
 }
 
 

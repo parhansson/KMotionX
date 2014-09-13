@@ -95,7 +95,7 @@ axes not compiled in.
 
 /****************************************************************************/
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>

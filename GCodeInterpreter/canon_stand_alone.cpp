@@ -21,8 +21,19 @@ stdout to a file.
 */
 #define _CRT_SECURE_NO_DEPRECATE 1
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "rs274ngc_return.h"
+
+#ifndef _WINDOWS
+long GetTickCount()
+{
+    struct timeval tv;
+    if(gettimeofday(&tv, NULL) != 0)
+        return 0;
+
+    return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+}
+#endif
 
 #define AND              &&
 #define IS               ==
@@ -820,7 +831,11 @@ void GET_EXTERNAL_PARAMETER_FILE_NAME(char *filename, int max_size)
 	CString Name;
 
 	if (GC->VarsFile[0] == 0)
+#ifdef _WINDOWS
 		Name=(CString)(GC->CoordMotion->MainPathRoot) + "\\GCode Programs\\emc.var";
+#else
+		Name=(CString)(GC->CoordMotion->MainPathRoot) + "/GCode Programs/emc.var";
+#endif
 	else
 		Name=GC->VarsFile;
 

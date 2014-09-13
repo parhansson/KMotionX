@@ -1,19 +1,41 @@
-// KMotionIO.cpp: implementation of the CKMotionIO class.
-/*********************************************************************/
-/*         Copyright (c) 2003-2006  DynoMotion Incorporated          */
-/*********************************************************************/
+/*
+Copyright (c) 2014, P.Hansson
+All rights reserved.
 
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+The views and conclusions contained in the software and documentation are those
+of the authors and should not be interpreted as representing official policies,
+either expressed or implied, of the FreeBSD Project.
+ */
+// KMotionIO.cpp: implementation of the CKMotionIO class.
 
 
 #include "StdAfx.h"
-
+#include <stdlib.h>
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
-
-
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -34,24 +56,26 @@ CKMotionIO::CKMotionIO()
 	USB_Loc_ID=-1;
     BoardIDAssigned=false;
 
-#ifndef _WINDOWS
-    //FT_SetVIDPID(VENDOR, PRODUCT);
-    FT_SetVIDPID(1027, 62001);
-#endif
+    if ((ftdi = ftdi_new()) == 0)
+   {
+        fprintf(stderr, "ftdi_new failed\n");
+        exit(EXIT_FAILURE);
+    }
 }
 
 
 CKMotionIO::~CKMotionIO()
 {
 	delete Mutex;
+	ftdi_free(ftdi);
 }
 
 bool CKMotionIO::RequestedDeviceAvail(CString *Reason)
 {
-	FT_STATUS ftStatus;
-	FT_DEVICE ftDevice;
-	DWORD deviceID;
+	int ftStatus;
 	int i, numDevs, list[MAX_BOARDS];
+	struct ftdi_device_list *devlist, *curdev;
+	char Manufacturer[128];
 	char SerialNumber[16]; 
 	char Description[64]; 
 
@@ -62,71 +86,56 @@ bool CKMotionIO::RequestedDeviceAvail(CString *Reason)
 
 	for (i=0; i<16; i++) list[i]=-1;
 
-	numDevs=-1;
-
-	ftStatus = FT_ListDevices(list,&numDevs,FT_LIST_ALL|FT_OPEN_BY_LOCATION);
-	
-	if (numDevs==0)
+	numDevs = ftStatus = ftdi_usb_find_all(ftdi, &devlist, VENDOR, PRODUCT );
+	if (ftStatus < 0)
 	{
+		Mutex->Unlock();
+		fprintf(stderr, "%s:%d ftdi_usb_find_all failed: %d (%s)\n", __FILE__,__LINE__,ftStatus, ftdi_get_error_string(ftdi));
+		if (Reason) *Reason="No KMotion devices available";
+		return false;
+	} else if (numDevs < 1 || numDevs >= MAX_BOARDS)
+	{
+		ftdi_list_free(&devlist);
 		Mutex->Unlock();
 		if (Reason) *Reason="No KMotion devices available";
 		return false;
 	}
-
-	if (numDevs < 1 || numDevs >= MAX_BOARDS) 
-	{
-		Mutex->Unlock();
-		if (Reason) *Reason="No KMotion devices available";
-		return false;
-	}
-
 	// go through the list and remove any non-dynomotion boards
-	for (i=0; i<numDevs; i++)
+	i = 0;
+	for (curdev = devlist; curdev != NULL; i++)
 	{
-		if (list[i] != -1)
+		if ((ftStatus = ftdi_usb_get_strings(ftdi, curdev->dev, Manufacturer, 128, Description, 128, NULL, 0)) < 0)
 		{
-			ftStatus = FT_OpenEx((void *)list[i], FT_OPEN_BY_LOCATION, &ftHandle); 
+			fprintf(stderr, "%s:%d ftdi_usb_get_strings failed: %d (%s)\n", __FILE__,__LINE__,ftStatus, ftdi_get_error_string(ftdi));
+		   // FT_Open failed
+		   list[i] = -1;  // mark as unusable
+		}
+		else
+		{
 
-			if(ftStatus != FT_OK)
-			{ 
-			   // FT_Open failed 
-			   list[i] = -1;  // mark as unusable 
-			} 
-			else
+			if (strstr(Description,"KFLOP")== NULL &&
+				strstr(Description,"KMotion")== NULL &&
+				strstr(Description,"Dynomotion")== NULL)
 			{
-				ftStatus = FT_GetDeviceInfo( 
-					  ftHandle, 
-					  &ftDevice, 
-					  &deviceID, 
-					  SerialNumber, 
-					  Description, 
-					  NULL 
-					  ); 
+/*
+				// remove it from the list
+				for (int k=i+1; k<numDevs; k++)
+					list[k-1] = list[k];  // shift up
 
-				if (ftStatus == FT_OK) 
-				{
-					FT_Close(ftHandle);
-
-					if (strstr(Description,"KFLOP")== NULL &&
-						strstr(Description,"KMotion")== NULL &&
-						strstr(Description,"Dynomotion")== NULL)
-					{
-						// remove it from the list
-						for (int k=i+1; k<numDevs; k++)
-							list[k-1] = list[k];  // shift up
-						
-						numDevs--;
-						i--; // redo this slot since it was deleted and things shifted up
-					}
-				}
+				numDevs--;
+				i--; // redo this slot since it was deleted and things shifted up
+*/
+			} else {
+				//save index
+				list[i] = i;
 			}
 		}
+		curdev = curdev->next;
 	}
 
 
 	// if USB Location is undefined select the first from
 	// the list that is not already taken
-
 	if (!BoardIDAssigned)
 	{
 		for (i=0; i<numDevs && !BoardIDAssigned; i++)
@@ -167,7 +176,7 @@ bool CKMotionIO::RequestedDeviceAvail(CString *Reason)
 	if (i==numDevs)
 	{
 		Mutex->Unlock();
-		if (Reason) Reason->Format("KMotion not found on USB Location %08X\r\r"
+		if (Reason) Reason->Format("KMotion not found on USB Location %08X\n"
 								   "Unable to open device",USB_Loc_ID);
 		return false;
 	}
@@ -184,7 +193,7 @@ int CKMotionIO::Connect()
 {
 	CString reason;
 
-	FT_STATUS ftStatus;
+	int ftStatus;
 
 	if (NonRespondingCount==2) return 1;
 
@@ -212,8 +221,7 @@ int CKMotionIO::Connect()
 
 	for (;;) 
 	{
-		ftStatus = FT_OpenEx((void *)USB_Loc_ID,FT_OPEN_BY_LOCATION,&ftHandle);
-
+		ftStatus = ftdi_usb_open_desc_index(ftdi, VENDOR, PRODUCT, NULL, NULL, USB_Loc_ID);
 		
 		if (ftStatus == FT_OK) 
 		{
@@ -228,7 +236,7 @@ int CKMotionIO::Connect()
 			
 			if (FlushInputBuffer())
 			{
-				FT_Close(ftHandle);
+				ftdi_usb_close(ftdi);
 				Mutex->Unlock();
 				return 1;
 			}
@@ -259,7 +267,8 @@ int CKMotionIO::Connect()
 
 int CKMotionIO::NumberBytesAvailToRead(int *navail, bool ShowMessage)
 {
-	FT_STATUS ftStatus;
+	/*
+	int ftStatus;
 	DWORD EventDWord;
 	DWORD RxBytes;
 	DWORD TxBytes;
@@ -285,17 +294,18 @@ int CKMotionIO::NumberBytesAvailToRead(int *navail, bool ShowMessage)
 		Mutex->Unlock();
 		return 0;
 	}
+	*/
+	return 0;
 }
 
 
 int CKMotionIO::ReadBytesAvailable(char *RxBuffer, int maxbytes, DWORD *BytesReceived, int timeout_ms)
 {
-	FT_STATUS ftStatus;
-	DWORD EventDWord;
-	DWORD RxBytes;
-	DWORD TxBytes;
+	int ftStatus;
+	int RxBytes;
 
 	Mutex->Lock();
+/*
 	ftStatus=FT_GetStatus(ftHandle,&RxBytes,&TxBytes,&EventDWord);
 
 	if (ftStatus != FT_OK)
@@ -304,16 +314,18 @@ int CKMotionIO::ReadBytesAvailable(char *RxBuffer, int maxbytes, DWORD *BytesRec
 		Mutex->Unlock();
 		return 1;
 	}
-
 	if ((int)RxBytes > maxbytes) RxBytes = maxbytes-1; // leave room for null
-
+*/
+	RxBytes = maxbytes-1; // leave room for null
 	RxBuffer[0]=0;  // set buf empty initially
 	*BytesReceived=0;
-
+/*
 	if (RxBytes > 0) 
 	{
-		ftStatus = FT_Read(ftHandle,RxBuffer,RxBytes,BytesReceived);
-		if (ftStatus == FT_OK) 
+*/
+
+		*BytesReceived = ftStatus = ftdi_read_data(ftdi,(unsigned char *)RxBuffer,RxBytes);
+		if (ftStatus >= FT_OK)
 		{
 			RxBuffer[*BytesReceived]=0;  // null terminate
 		}
@@ -323,8 +335,9 @@ int CKMotionIO::ReadBytesAvailable(char *RxBuffer, int maxbytes, DWORD *BytesRec
 			Mutex->Unlock();
 			return 1;
 		}
+/*
 	}
-
+*/
 	Mutex->Unlock();
 	return 0;
 }
@@ -362,7 +375,8 @@ int CKMotionIO::CheckForReady()
 	{
 		if (m_Connected)
 		{
-			if (!NumberBytesAvailToRead(&nbytes, true) && nbytes>0)
+			//if (!NumberBytesAvailToRead(&nbytes, true) && nbytes>0)
+			if(true)
 			{
 				result = ReadLineTimeOutRaw(buf, 100);
 				
@@ -594,8 +608,7 @@ int CKMotionIO::WriteLine(const char *s)
 
 int CKMotionIO::WriteLineWithEcho(const char *s)
 {
-	FT_STATUS ftStatus;
-	DWORD BytesWritten;
+	int ftStatus;
 	int length;
 	char s2[MAX_LINE+1];   
 
@@ -606,8 +619,7 @@ int CKMotionIO::WriteLineWithEcho(const char *s)
 	length = strlen(s2);
 
 	Mutex->Lock();
-	ftStatus = FT_Write(ftHandle, s2, length, &BytesWritten);
-
+	ftStatus = ftdi_write_data(ftdi,(unsigned char *)s2,length);
 	Mutex->Unlock();
 
 	return 0;
@@ -615,47 +627,46 @@ int CKMotionIO::WriteLineWithEcho(const char *s)
 
 int CKMotionIO::SetLatency(UCHAR LatencyTimer)
 {
-	FT_STATUS ftStatus;
+	int ftStatus;
 		
 	unsigned char c;
 
 	
 	Mutex->Lock();
 
-	ftStatus = FT_GetLatencyTimer (ftHandle, &c);
+	ftStatus = ftdi_get_latency_timer(ftdi,&c );
+	if(c != LatencyTimer){
+		printf("FT_GetLatencyTimer old value %d\n", c);
+		ftStatus = ftdi_set_latency_timer(ftdi,LatencyTimer );
 
-	ftStatus = FT_SetLatencyTimer(ftHandle,LatencyTimer);
-	
-	if (ftStatus == FT_OK) 
-	{ 
-		ftStatus = FT_GetLatencyTimer (ftHandle, &c);
-
-		// LatencyTimer set 
-
-		ftStatus = FT_SetChars (ftHandle, '\n', 1, 0,0);
-
-		if (ftStatus == FT_OK) 
-		{ 
-			// Event set 
-
-			Mutex->Unlock();
-			return 0;
-		}
-		else 
-		{ 
+		if (ftStatus < FT_OK)
+		{
 			// FT_SetLatencyTimer FAILED!
-			ErrorMessageBox("Unable to set USB Event Character");
+			ErrorMessageBox("Unable to set USB Latency timer");
 			Mutex->Unlock();
 			return 1;
 		}
 	}
+	// LatencyTimer set
+
+
+	ftStatus = ftdi_set_event_char(ftdi,'\n',1);
+
+	if (ftStatus == FT_OK)
+	{
+		// Event set
+
+		Mutex->Unlock();
+		return 0;
+	}
 	else 
 	{ 
 		// FT_SetLatencyTimer FAILED!
-		ErrorMessageBox("Unable to set USB Latency timer");
+		ErrorMessageBox("Unable to set USB Event Character");
 		Mutex->Unlock();
 		return 1;
 	}
+
 }
 
 
@@ -685,22 +696,23 @@ int CKMotionIO::WriteLineReadLine(const char *send, char *response)
 
 int CKMotionIO::FlushInputBuffer()
 {
-	FT_STATUS ftStatus;
-	DWORD RxBytes;
-	DWORD TxBytes;
+	int ftStatus;
 	DWORD BytesReceived;
 	DWORD BytesWritten;
-	DWORD EventDWord;
 	char s[10];
 	char RxBuffer[500];
 
-	ftStatus = FT_Purge(ftHandle,FT_PURGE_RX|FT_PURGE_TX);
-	if (ftStatus != FT_OK) 	return 1;
+	ftStatus = ftdi_usb_purge_buffers(ftdi);
+	if (ftStatus != FT_OK){
+		fprintf(stderr, "%s:%d ftdi_usb_purge_buffers failed: %d (%s)\n", __FILE__,__LINE__,ftStatus, ftdi_get_error_string(ftdi));
+		return 1;
+	}
 
 
 	// discard any data in the read queue in the driver
 
 	DWORD t0=timeGetTime();
+/*
 	do
 	{
 		ftStatus=FT_GetStatus(ftHandle,&RxBytes,&TxBytes,&EventDWord);
@@ -714,7 +726,7 @@ int CKMotionIO::FlushInputBuffer()
 		}
 	}
 	while (RxBytes > 0 && timeGetTime()-t0 < CONNECT_TIMEOUT);
-
+*/
 
 
 	if (SendAbortOnConnect)
@@ -725,9 +737,11 @@ int CKMotionIO::FlushInputBuffer()
 		s[1]=0;
 
 
-		ftStatus = FT_Write(ftHandle, s, 1, &BytesWritten);
-		if (ftStatus != FT_OK) 
+		BytesWritten = ftStatus = ftdi_write_data(ftdi,(unsigned char *)s,1);
+		if (ftStatus < FT_OK){
+			fprintf(stderr, "%s:%d ftdi_write_data failed: %d (%s)\n", __FILE__,__LINE__,ftStatus, ftdi_get_error_string(ftdi));
 			return 1;
+		}
 		if (BytesWritten != 1) 
 			return 1;
 
@@ -735,6 +749,8 @@ int CKMotionIO::FlushInputBuffer()
 		// wait and be sure chars are transmitted
 
 		t0=timeGetTime();
+		/*
+
 		do
 		{
 			ftStatus=FT_GetStatus(ftHandle,&RxBytes,&TxBytes,&EventDWord);
@@ -770,21 +786,20 @@ int CKMotionIO::FlushInputBuffer()
 
 			if (NonRespondingCount == 2)
 			{
-				ErrorMessageBox("KMotion present but not responding\r\r"
+				ErrorMessageBox("KMotion present but not responding\n"
 								"Correct problem and restart application");
 			}
 			return 1;
 		}
 		
 		if (RxBytes != 3) return 1;
-
+*/
 		NonRespondingCount=0;
 
 		// read the 3 bytes
 
-		ftStatus = FT_Read(ftHandle,RxBuffer,RxBytes,&BytesReceived);
-		
-		if (ftStatus != FT_OK) return 1; 
+		BytesReceived = ftStatus = ftdi_read_data(ftdi,(unsigned char *)RxBuffer,3);
+		if (ftStatus < FT_OK) return 1;
 		if (BytesReceived != 3) return 1; 
 
 		if (RxBuffer[0] != '\x1b') return 1; 
@@ -793,12 +808,12 @@ int CKMotionIO::FlushInputBuffer()
 	}
 
 	// verify there are no transmit or receive characters
-
+/*
 	ftStatus=FT_GetStatus(ftHandle,&RxBytes,&TxBytes,&EventDWord);
 	if (ftStatus != FT_OK) return 1;
 	if (RxBytes != 0) return 1; 
 	if (TxBytes != 0) return 1; 
-	
+*/
 	// OK looks like we are in sync
 
 	return 0;
@@ -814,7 +829,10 @@ int CKMotionIO::Failed()
 	
 	m_Connected=false;
 	
-	FT_Close(ftHandle);
+    if (ftdi_usb_close(ftdi) < 0)
+    {
+        fprintf(stderr, "%s:%d unable to close ftdi device: (%s)\n", __FILE__,__LINE__, ftdi_get_error_string(ftdi));
+    }
 	
 	if (!FailMessageAlreadyShown)
 		ErrorMessageBox("Read Failed - Auto Disconnect");
@@ -832,7 +850,10 @@ int CKMotionIO::Disconnect()
 	
 	m_Connected=false;
 	
-	FT_Close(ftHandle);
+    if (ftdi_usb_close(ftdi) < 0)
+    {
+        fprintf(stderr, "%s:%d unable to close ftdi device: (%s)\n", __FILE__,__LINE__, ftdi_get_error_string(ftdi));
+    }
 	
 	Mutex->Unlock();
 	return 0;
@@ -868,15 +889,16 @@ int CKMotionIO::KMotionLock()
 {
 	int result;
 	int board = this - KMotionLocal.KMotionIO;
-
+	CString reason;
 	if (!Mutex->Lock(3000)) return KMOTION_NOT_CONNECTED;
 
 	if (!m_Connected)
 	{
 		// try to connect
 
-		if (!RequestedDeviceAvail(NULL))
+		if (!RequestedDeviceAvail(&reason))
 		{
+			ErrorMessageBox(reason);
 			NonRespondingCount=0;
 			Mutex->Unlock();  // no such device available
 			return KMOTION_NOT_CONNECTED; 
@@ -982,7 +1004,8 @@ int CKMotionIO::ServiceConsole()
 
 	if (KMotionLock() == KMOTION_LOCKED)  // quick check if it is available
 	{
-		if (!NumberBytesAvailToRead(&nbytes, false) && nbytes>0)
+		//if (!NumberBytesAvailToRead(&nbytes, false) && nbytes>0)
+		if(true)
 		{
 			// some data in the buffer
 
@@ -1027,6 +1050,7 @@ int CKMotionIO::SetConsoleCallback(SERVER_CONSOLE_HANDLER *ch)
 
 int CKMotionIO::ErrorMessageBox(const char *s)
 {
+	printf("%s:%d ErrorMessageBox: %s\n",__FILE__,__LINE__,s);
 	ErrMsg = s;
 	return 0;
 }

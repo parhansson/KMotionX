@@ -13,7 +13,7 @@
 
 /*********************************************************************/
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "rs274ngc_return.h"
 //#include <stdlib.h>  /* for atof, atoi */
 //#include <string.h>

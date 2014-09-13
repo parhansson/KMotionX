@@ -31,15 +31,76 @@
 #include <conio.h>
 #include <math.h>
 #include <mmsystem.h>
+#ifndef _WINDOWS
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <unistd.h>
+#include <time.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <string.h>
+#include <fcntl.h>
+#include <ctype.h>
+
+#include <CString.h>
+#include <WinTypes.h>
+#include <MessageBox.h>
+#include <CMutex.h>
+
+#ifndef ASSERT
+	#include <assert.h>
+	#define ASSERT(f) assert((f))
+#endif
+
+#define SOCK_PATH "kmotionsocket"
+
+/*
+#ifndef __EXCEPTIONS
+// Iff -fno-exceptions, transform error handling code to work without it.
+# define __try      if (true)
+# define __catch(X) if (false)
+# define __throw_exception_again
+#else
+// Else proceed normally.
+# define __try      try
+# define __catch(X) catch(X)
+# define __throw_exception_again throw
+#endif
+*/
+
+
+//#ifndef __try
+#define __try
+//#endif
+#define __finally
+#define Sleep(X) usleep(1000*X)
+#define timeBeginPeriod(x)
+#define timeEndPeriod(x)
+
+#define MAX_PATH 256
+
 #include <locale.h>
-#include "HiResTimer.h"
-#include "KMotionApp.h"
+#include <HiResTimer.h>
+
 #include "KMotionDLL.h"
-#include "FTD2xx.h"
-#include "KMotionIO.h"
+#ifdef LIB_FTDI
+#include <ftdi.h>
+#else
+#include <ftd2xx.h>
+#endif
+#include "KmotionIO.h"
 #include "KMotionDLL_Direct.h"
 #include "KMotionLocal.h"
-#include "..\dsp_kmotion\pc-dsp.h"
+#include "../DSP_KMotion/PC-DSP.h"
+
+extern char* _strupr(char* s);
+extern unsigned int timeGetTime();
+
+#endif // _WINDOWS
 
 // TODO: reference additional headers your program requires here
 

@@ -42,13 +42,48 @@
 #include <conio.h>
 #include <math.h>
 #include <mmsystem.h>
+#ifndef _WINDOWS
+#include <pthread.h>
+#include <WinTypes.h>
+#include <MessageBox.h>
+#include <CMutex.h>
+#include <CString.h>
+#include <sys/time.h>
+#include <time.h>
+#include <unistd.h>
+#include <string.h>
+#include <stddef.h>
+
+
+#ifndef ASSERT
+	#include <assert.h>
+	#define ASSERT(f) assert((f))
+#endif
+
+#ifndef M_PI
+	M_PI = 3.14159265358979323846264338327950288
+#endif
+#ifndef PI
+	#define PI M_PI
+//	#define PI 3.141592653589793238
+#endif
+
+#define Sleep(X) usleep(1000*X)
+#define min(X,Y) fmin(X,Y)
+#define MAX_PATH 256
+#define FALSE 0
+#define TRUE 1
+#define _hypot hypot
+#define __int64 int64_t
+
+#endif
 #include <locale.h>
 #include "canon.h"
 #include "rs274ngc.h"
 #include "driver.h"
 #include "PT2D.h"
 #include "PT3D.h"
-#include "KMotionDLL.h"
+#include <KMotionDLL.h>
 #include "TrajectoryPlanner.h"
 #include "Kinematics.h"
 #include "Kinematics3Rod.h"

@@ -22,6 +22,12 @@ extern CHiResTimer Timer;
 #define NO_KMOTION_TIMEOUT false // useful for debugging
 
 typedef int SERVER_CONSOLE_HANDLER (int board, const char *buf);
+#define VENDOR 0x0403
+#define PRODUCT 0xf231
+
+#ifdef LIB_FTDI
+#define FT_OK 0
+#endif
 
 
 class CKMotionIO  
@@ -66,12 +72,17 @@ public:
 protected:
 	int Token;
 	char m_SaveChars[MAX_LINE+1];
+#ifdef LIB_FTDI
+	struct ftdi_context *ftdi;
+#else
 	FT_HANDLE ftHandle;
+#endif
 
 	SERVER_CONSOLE_HANDLER *ConsoleHandler;
 private:
 	int ErrorMessageBox(const char *s);
 	int m_FirmwareVersion;
+
 
 
 };

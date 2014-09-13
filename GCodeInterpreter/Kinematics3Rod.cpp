@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "Kinematics3Rod.h"
 
 #define sqr(x) ((x)*(x))

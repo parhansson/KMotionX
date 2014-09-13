@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "CoordMotion.h"
 #include "HiResTimer.h"
 
@@ -57,7 +57,22 @@ CCoordMotion::CCoordMotion(CKMotionDLL *KM)
 	m_NumLinearNotDrawn=0;
 
 	// Save for everybody what directory we are installed in
+#ifndef _WINDOWS
 
+    char* rootDir;
+    if(!(rootDir = getenv("KMOTION_ROOT"))){
+        	rootDir = getenv("PWD");
+        	printf("Environment KMOTION_ROOT not set, falling back to %s\n",rootDir);
+        	//sprintf(rootDir,"%s/..",rootDir);
+        	sprintf(MainPath,"%s/../KMotion",rootDir);
+        	sprintf(MainPathRoot,"%s/..",rootDir);
+    } else {
+    	sprintf(MainPath,"%s/KMotion",rootDir);
+    	sprintf(MainPathRoot,"%s",rootDir);
+
+    }
+
+#else
 	CString Path;
 
 	GetModuleFileName(GetModuleHandle("GCodeInterpreter.dll"),Path.GetBuffer(MAX_PATH),MAX_PATH);
@@ -94,7 +109,7 @@ CCoordMotion::CCoordMotion(CKMotionDLL *KM)
 	}
 
 	strncpy(MainPath,Path,MAX_PATH);
-
+#endif
 	m_StraightTraverseCallback=NULL;
 	m_StraightTraverseSixAxisCallback=NULL;
 	m_StraightFeedCallback=NULL;
@@ -115,8 +130,11 @@ CCoordMotion::CCoordMotion(CKMotionDLL *KM)
 	m_PreviouslyStoppedID = -1;
 
 	// check for a special Kinematics File
-
+#ifdef _WINDOWS
 	FILE *f = fopen((CString)MainPath + "\\Data\\Kinematics.txt","rt");
+#else
+	FILE *f = fopen((CString)MainPath + "/Data/Kinematics.txt","rt");
+#endif
 
 	if (f)
 	{
@@ -197,13 +215,13 @@ int CCoordMotion::CheckSoftLimitsArc(double XC, double YC, double z,
 
 		if (x_axis>=0)
 		{
-			if (x > SoftLimitPosX+SIGMA) {errmsg=(CString)XSTR+"+"; return 1;}
-			if (x < SoftLimitNegX-SIGMA) {errmsg=(CString)XSTR+"-"; return 1;}
+			if (x > SoftLimitPosX+SIGMA) {errmsg=/*(CString)XSTR+*/"+"; return 1;}
+			if (x < SoftLimitNegX-SIGMA) {errmsg=/*(CString)XSTR+*/"-"; return 1;}
 		}
 		if (y_axis>=0)
 		{
-			if (y > SoftLimitPosY+SIGMA) {errmsg=(CString)YSTR+"+"; return 1;}
-			if (y < SoftLimitNegY-SIGMA) {errmsg=(CString)YSTR+"-"; return 1;}
+			if (y > SoftLimitPosY+SIGMA) {errmsg=/*(CString)YSTR+*/"+"; return 1;}
+			if (y < SoftLimitNegY-SIGMA) {errmsg=/*(CString)YSTR+*/"-"; return 1;}
 		}
 
 		if (DirIsCCW)
@@ -215,8 +233,8 @@ int CCoordMotion::CheckSoftLimitsArc(double XC, double YC, double z,
 		
 	if (z_axis>=0)
 	{
-		if (z > SoftLimitPosZ) {errmsg=(CString)ZSTR+"+"; return 1;}
-		if (z < SoftLimitNegZ) {errmsg=(CString)ZSTR+"-"; return 1;}
+		if (z > SoftLimitPosZ) {errmsg=/*(CString)ZSTR+*/"+"; return 1;}
+		if (z < SoftLimitNegZ) {errmsg=/*(CString)ZSTR+*/"-"; return 1;}
 	}
 	if (a_axis>=0)
 	{
@@ -1198,7 +1216,7 @@ int CCoordMotion::CheckMotionHalt(bool Coord)
 			// There is a chance that the motion path could complete just as the StopImmediate was
 			// in progress.  So see if this was the case.
 
-			if (Coord && response == '1')
+			if (Coord && response == "1")
 			{
 				if (KMotionDLL->WriteLineReadLine("CheckDoneBuf",responsebuf.GetBufferSetLength(MAX_LINE))) {SetAbort(); return 1;}
 				responsebuf.ReleaseBuffer();
@@ -1215,9 +1233,9 @@ int CCoordMotion::CheckMotionHalt(bool Coord)
 				}
 			}
 		}
-		while (!Finished && (response == '1' || response == '2'));
+		while (!Finished && (response == "1" || response == "2"));
 
-		if (response == '0') NotStarted=true;
+		if (response == "0") NotStarted=true;
 
 		if (Coord)
 		{

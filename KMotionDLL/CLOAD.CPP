@@ -48,14 +48,14 @@
 /*   mralloc()          - Application version of realloc().                   */
 /*                                                                            */
 /******************************************************************************/
-#include "stdafx.h"
+#include "StdAfx.h"
 
 #define KMotionBd 1
 
-#include "PARAMS.h"
-#include "VERSION.h"
-#include "COFF.h"
-#include "CLOAD.h"
+#include "PARAMS.H"
+#include "VERSION.H"
+#include "COFF.H"
+#include "CLOAD.H"
 
 
 /*----------------------------------------------------------------------------*/
@@ -98,7 +98,7 @@ typedef struct
 {
    short         rt_index;              /* INDEX OF SYMBOL IN SYMBOL TABLE    */
    short         rt_scnum;              /* SECTION NUMBER SYMBOL DEFINED IN   */
-   unsigned long rt_value;              /* RELOCATED VALUE OF SYMBOL          */
+   uint32_t      rt_value;              /* RELOCATED VALUE OF SYMBOL          */
 } RELOC_TAB;
 
 /*----------------------------------------------------------------------------*/
@@ -182,7 +182,7 @@ int cload_headers()
       }
       entry_point = o_filehdr.entrypt;
    }
-   else if (file_hdr.f_opthdr && fseek(fin, (long)file_hdr.f_opthdr, 1) == -1)
+   else if (file_hdr.f_opthdr && fseek(fin, (int32_t)file_hdr.f_opthdr, 1) == -1)
       return FALSE;
 
    /*-------------------------------------------------------------------------*/
@@ -204,8 +204,8 @@ int cload_headers()
            swap4byte(&sptr->s_paddr);  swap4byte(&sptr->s_vaddr);
            swap4byte(&sptr->s_size);   swap4byte(&sptr->s_scnptr);
            swap4byte(&sptr->s_relptr); swap4byte(&sptr->s_lnnoptr);
-           swap4byte((long *)&sptr->s_nreloc); swap4byte((long *)&sptr->s_nlnno);
-           swap4byte((long *)&sptr->s_flags);
+           swap4byte((int32_t *)&sptr->s_nreloc); swap4byte((int32_t *)&sptr->s_nlnno);
+           swap4byte((int32_t *)&sptr->s_flags);
        }
    }
 
@@ -284,7 +284,7 @@ int cload_sect_data(int s)  /* INDEX OF CURRENT SECTION         */
 {
    SCNHDR       *sptr    = SECT_HDR(s);                       
    T_ADDR        addr    = sptr->s_vaddr; /* CURRENT ADDRESS IN SECTION       */
-   unsigned long nbytes;                  /* BYTE COUNT WITHIN SECTION        */
+   uint32_t 	 nbytes;                  /* BYTE COUNT WITHIN SECTION        */
    int           packet_size;             /* SIZE OF CURRENT DATA BUFFER      */
    int           excess  = 0;             /* BYTES LEFT FROM PREVIOUS BUFFER  */
    unsigned int  n_reloc = 0;             /* COUNTER FOR RELOCATION ENTRIES   */
@@ -329,7 +329,7 @@ int cload_sect_data(int s)  /* INDEX OF CURRENT SECTION         */
       /*----------------------------------------------------------------------*/
       if (need_reloc)
 	 while (n_reloc < sptr->s_nreloc && 
-		(unsigned long)reloc.r_vaddr < addr + BYTETOLOC(packet_size))
+		(uint32_t)reloc.r_vaddr < addr + BYTETOLOC(packet_size))
 	 {
 	    int i = LOCTOBYTE(reloc.r_vaddr - addr);   /* BYTE INDEX OF FIELD */
 
@@ -353,7 +353,7 @@ int cload_sect_data(int s)  /* INDEX OF CURRENT SECTION         */
 	    relocate(&reloc, (unsigned char *)(loadbuf + i), s);
 
 	    if (n_reloc++ < sptr->s_nreloc                                    &&
-	       (fseek(fin, sptr->s_relptr + ((long)n_reloc * RELSZ), 0) == -1 ||
+	       (fseek(fin, sptr->s_relptr + ((int32_t)n_reloc * RELSZ), 0) == -1 ||
 		 !reloc_read(&reloc))) return FALSE;
 	 }
 
@@ -464,7 +464,7 @@ int cload_cinit(
 /******************************************************************************/
 int cload_symbols()
 {
-   long str_size;
+   int32_t str_size;
    int first, next;
    SYMENT sym;
    AUXENT aux;
@@ -486,7 +486,7 @@ int cload_symbols()
    /* TABLE. THEN, ALLOCATE AND READ THE STRING TABLE.                       */
    /*------------------------------------------------------------------------*/
    if (fseek(fin, file_hdr.f_symptr + (file_hdr.f_nsyms * SYMESZ), 0) == -1 ||
-       fread(&str_size, sizeof(long), 1, fin) != 1)
+       fread(&str_size, sizeof(int32_t), 1, fin) != 1)
        str_size = 0;
    else 
    {
@@ -533,7 +533,7 @@ int sym_read(unsigned int index, SYMENT *sym, AUXENT *aux)
     /*------------------------------------------------------------------------*/
     /* READ IN A SYMBOL AND ITS AUX ENTRY.                                    */
     /*------------------------------------------------------------------------*/
-    if (fseek(fin, file_hdr.f_symptr + ((long)index * SYMESZ), 0) == -1 ||
+    if (fseek(fin, file_hdr.f_symptr + ((int32_t)index * SYMESZ), 0) == -1 ||
         fread(sym, SYMESZ, 1, fin) != 1                                 ||
         (sym->n_numaux && fread(aux, SYMESZ, 1, fin) != 1)) return FALSE;
 
@@ -542,7 +542,7 @@ int sym_read(unsigned int index, SYMENT *sym, AUXENT *aux)
         /*--------------------------------------------------------------------*/
 	/* SWAP THE SYMBOL TABLE ENTRY.                                       */
         /*--------------------------------------------------------------------*/
-        if (sym->n_zeroes == 0) swap4byte((long *)(&sym->n_nptr));
+        if (sym->n_zeroes == 0) swap4byte((int32_t *)(&sym->n_nptr));
         swap4byte(&sym->n_value);
         swap2byte((unsigned short *)&sym->n_scnum);
         swap2byte((unsigned short *)&sym->n_type);
@@ -632,8 +632,9 @@ int sym_read(unsigned int index, SYMENT *sym, AUXENT *aux)
 	  /* IT UP IN AN EXTERNAL SYMBOL TABLE.  IF THE SYMBOL IS DEFINED,    */
 	  /* RELOCATE IT ACCORDING TO THE SECTION IT IS DEFINED IN.           */
 	  /*------------------------------------------------------------------*/
+#pragma message("\n" __FILE__ " Fix this (short)0/*aux*/\n")
           if (sym->n_scnum == 0) 
-	     lookup_sym((struct syment *)index, (union auxent *)sym, (short)aux);  // tktk ??
+	     lookup_sym((struct syment *)index, (union auxent *)sym, (short)0/*aux*/);  // tktk ?? //TODO specialare
           else if (sym->n_scnum > 0) 
 	     sym->n_value += reloc_amount[sym->n_scnum - 1];
     }
@@ -692,8 +693,8 @@ int relocate(RELOC         *rp,         /* RELOCATION ENTRY                   */
 {
    int fieldsz = reloc_size(rp->r_type);     /* SIZE OF ACTUAL PATCH VALUE    */
    int wordsz  = MAX(fieldsz, WORDSZ);       /* SIZE OF CONTAINING FIELD      */
-   long objval;                              /* FIELD TO BE PATCHED           */
-   long reloc_amt;                           /* AMOUNT OF RELOCATION          */
+   int32_t objval;                              /* FIELD TO BE PATCHED           */
+   int32_t reloc_amt;                           /* AMOUNT OF RELOCATION          */
 
    /*-------------------------------------------------------------------------*/
    /* LOOK UP THE SYMBOL BEING REFERENCED IN THE RELOCATION SYMBOL TABLE.     */
@@ -765,7 +766,7 @@ int relocate(RELOC         *rp,         /* RELOCATION ENTRY                   */
 	 if (rp->r_symndx != -1)                /* IF NOT INTERNAL RELOCATION */
 	 {
             int shift  = 8 * (4 - fieldsz);
-	    objval     = (long)(objval << shift) >> shift;   /* SIGN EXTEND   */
+	    objval     = (int32_t)(objval << shift) >> shift;   /* SIGN EXTEND   */
 	    reloc_amt -= reloc_amount[s];            
 
             if (rp->r_type == R_GSPPCR16) reloc_amt >>= 4;   /* BITS TO WORDS */
@@ -908,12 +909,12 @@ int reloc_sym(int index)
 /*             a long so it can be relocated.                                 */
 /*                                                                            */
 /******************************************************************************/
-unsigned long unpack(unsigned char *data, int fieldsz, int wordsz,int bit_addr)                              /* BIT ADDRESS WITHIN BYTE      */
+uint32_t unpack(unsigned char *data, int fieldsz, int wordsz,int bit_addr)                              /* BIT ADDRESS WITHIN BYTE      */
 {
    register int i;
    int r = bit_addr;                          /* RIGHT SHIFT VALUE            */
    int l = 8 - r;                             /* LEFT SHIFT VALUE             */
-   unsigned long objval = 0;
+   uint32_t objval = 0;
 
    if (!big_e_target)
    {
@@ -960,7 +961,7 @@ unsigned long unpack(unsigned char *data, int fieldsz, int wordsz,int bit_addr) 
 /* REPACK() - Encode a binary relocated field back into the object data.      */
 /*                                                                            */
 /******************************************************************************/
-void repack(unsigned long objval, unsigned char *data,
+void repack(uint32_t objval, unsigned char *data,
 			int fieldsz, int wordsz, int bit_addr)  
 {
    register int i;
@@ -1011,7 +1012,7 @@ void repack(unsigned long objval, unsigned char *data,
 /*                                                                            */
 /******************************************************************************/
 int cload_lineno(
-   long    filptr,                     /* WHERE TO READ FROM                  */
+   int32_t    filptr,                     /* WHERE TO READ FROM                  */
    int     count,                      /* HOW MANY TO READ                    */
    LINENO *lptr,                       /* WHERE TO PUT THEM                   */
    int     scnum)                      /* SECTION NUMBER OF THESE ENTRIES     */
@@ -1051,9 +1052,9 @@ int cload_lineno(
 /*  SWAP4BYTE() - Swap the order of bytes in a long.                          */
 /*                                                                            */
 /******************************************************************************/
-void swap4byte(long *addr)
+void swap4byte(int32_t *addr)
 {
-    long temp1, temp2, temp3, temp4;
+    int32_t temp1, temp2, temp3, temp4;
 
     temp1 = (*addr)       & 0xFF;
     temp2 = (*addr >> 8)  & 0xFF;
