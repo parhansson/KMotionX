@@ -2,7 +2,7 @@ ODIR=build
 BINDIR=$(BUILD_ROOT)/bin
 LD_LIB_PATH+=$(BINDIR)
 
-IFLAGS=-I$(BUILD_ROOT)/Linux/include/compatibility $(addprefix -I,$(IDIR))
+IFLAGS=-I$(BUILD_ROOT)/KMotionX/include/compatibility $(addprefix -I,$(IDIR))
 
 W_FLAGS=-Wall -Wno-unknown-pragmas
 

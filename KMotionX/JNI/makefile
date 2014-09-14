@@ -1,8 +1,8 @@
 include $(BUILD_ROOT)/config.mak
 SOURCES=KMotionXjni.cpp
 
-IDIR+=$(BUILD_ROOT)/Linux/include
-IDIR+=$(BUILD_ROOT)/Linux/KMotionSupport/include
+IDIR+=$(BUILD_ROOT)/KMotionX/include
+IDIR+=$(BUILD_ROOT)/KMotionX/KMotionSupport/include
 IDIR+=$(BUILD_ROOT)/KMotionDLL
 # need a better way to detect java home
 IDIR+=$(JAVA_HOME)/include

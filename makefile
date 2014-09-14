@@ -1,9 +1,9 @@
 export BUILD_ROOT := $(shell pwd)
 include config.mak
 
-SUBDIRS = Linux/KMotionSupport KMotionDLL GCodeInterpreter Linux/KMotionServer Linux/other
+SUBDIRS = KMotionX/KMotionSupport KMotionDLL GCodeInterpreter KMotionX/KMotionServer KMotionX/other
 ifeq ($(BUILD_JNI),true)
-SUBDIRS += Linux/JNI
+SUBDIRS += KMotionX/JNI
 endif
 
           

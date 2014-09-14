@@ -1,6 +1,6 @@
 include $(BUILD_ROOT)/config.mak
-IDIR+=$(BUILD_ROOT)/Linux/include
-IDIR+=$(BUILD_ROOT)/Linux/KMotionSupport/include
+IDIR+=$(BUILD_ROOT)/KMotionX/include
+IDIR+=$(BUILD_ROOT)/KMotionX/KMotionSupport/include
 
 LD_LIBS+=KMotionSupport
 LD_LIBS+=$(FTDILIB)
