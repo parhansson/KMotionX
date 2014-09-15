@@ -100,7 +100,7 @@ fi
 if test x"$build_java_binding" = "xyes" ; then
 case $targetos in
   Linux)
-  	java_home=`readlink -f /usr/bin/javac | sed "s:bin/javac::"`
+  	java_home=`readlink -f /usr/bin/javac | sed "s:bin/javac::" | sed "s:.$::"`
   ;;
   Darwin)
   	java_home=`/usr/libexec/java_home -v1.7`
