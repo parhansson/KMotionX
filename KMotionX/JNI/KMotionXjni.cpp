@@ -27,14 +27,17 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the FreeBSD Project.
  */
 
-#include  "com_dynomotion_kmotionx_KMotion.h"
 //#include <jni.h>
 #include <iostream>
 #include "stdlib.h"
-#include <CString.h>
-#include <CMutex.h>
+//#include <CString.h>
+//#include <CMutex.h>
 //#include "../../KMotionDLL/KMotionDLL.h"  // KMOtion DLL Header
 #include "../../GCodeInterpreter/StdAfx.h"
+
+//This needs to be included after CString from StdAfx due to an UNUSED macro
+//in OpenJDK 7
+#include  "com_dynomotion_kmotionx_KMotion.h"
 using namespace std;
 
 CKMotionDLL *KM = new CKMotionDLL(0);
@@ -231,12 +234,12 @@ int CreateCallBackReference(JNIEnv *env, JCALLBACK * jcallback, jobject callback
 	// save refs for callback
 	jclass clazz = env->GetObjectClass(jcallback->handler);
 	if (clazz == NULL) {
-		printf("%s:%d CreateCallBackReference. Failed to find class : %s\n",__FILE__,__LINE__);
+		printf("%s:%d CreateCallBackReference. Failed to find class\n",__FILE__,__LINE__);
 		return 1;
 	}
 	jcallback->method = env->GetMethodID(clazz, methodName, methodSignature);
 	if (jcallback->method == NULL) {
-		printf("%s:%d CreateCallBackReference. Unable to get method ref: %s\n",__FILE__,__LINE__);
+		printf("%s:%d CreateCallBackReference. Unable to get method ref: %s %s\n",__FILE__,__LINE__,methodName, methodSignature);
 		return 1;
 	}
 	return 0;
