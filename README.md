@@ -86,22 +86,22 @@ sudo apt-get dist-upgrade
 ```
 
 ######2. Install gcc
-Skip this step if ”gcc --version” is 4.7 or later.
-Install gcc and g++ 4.7. This command installs gcc and g++  4.7 but does not change to 4.7 as default. If you would like to do that here is a guide. (switching-gccg-versions.html) If you do you need to adjust make file to use default installed version.
+Skip this step if ”gcc --version” is 4.7 or later. The current latest version available is 4.8
+Install gcc and g++ 4.8. This command installs gcc and g++ 4.8 but does not change to 4.8 as default. If you would like to do that here is a guide. (switching-gccg-versions.html) If you do you need to adjust make file to use default installed version.
 ```
-sudo apt-get install gcc-4.7 g++-4.7
+sudo apt-get install gcc-4.8 g++-4.8
 ```
-######3. Install libusb
-Installing libusb, there are four options here. I choose option 4.
+######3. Install libftdi
+Skip this step if you will be using ftd2xx driver. However libftdi works a lot better on linux libftdi is an open source ftdi driver that might be used as replacement when running on Linux or MacOSX
+```
+sudo apt-get install libftdi-dev
+```
 
-Option 1: Not needed, I will use ftd2xx driver
+###Install drivers from source
+Installing packages with apt-get might not always result in the latest version depening on your system.
+Here is how you install USB drivers from source. Most people would be satisfied with the version supplied by the package manager on your system.
 
-Option 2: Already installed
-
-Option 3: Install with apt-get. I have not tried this.
-sudo apt-get install libusb-1.0.0
-
-Option 4: Install latest version from source
+######1. Install libusb
 
 Install dependencies
 ```
@@ -117,14 +117,10 @@ make
 sudo make install
 ```
 
-######4. Install libftdi
+######2. Install libftdi
 
 Skip this step if you will be using ftd2xx driver. However libftdi works a lot better on linux libftdi is an open source ftdi driver that might be used as replacement when running on Linux or MacOSX
 
-Option 1: Install package (Not tested on Rasbian)
-sudo apt-get install libftdi-dev
-
-Option 2: Install latest version from source
 Install dependencies
 ```
 sudo apt-get install cmake
@@ -140,7 +136,7 @@ make
 sudo make install
 ```
 
-######5. Update linker cache
+######3. Update linker cache
 Im not sure if this is actually needed. But it can’t hurt.
 sudo ldconfig
 
