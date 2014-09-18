@@ -123,8 +123,9 @@ esac
 #Configure architechture flags
 if test "$arch" = "armv6l" ; then
 #	Raspberry Pi
-	cc=gcc-4.7
+	cc=gcc-4.8
 	ARCH_C_FLAGS="-march=armv6 -mfpu=vfp -mfloat-abi=hard"
+	ARCH_LD_FLAGS="-pthread"
 elif test "$targetos" = "Linux" ; then
 	ARCH_LD_FLAGS="-march=$arch -pthread"
 elif test "$targetos" = "Darwin" ; then
