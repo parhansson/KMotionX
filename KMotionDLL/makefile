@@ -6,7 +6,7 @@ LD_LIBS+=KMotionSupport
 LD_LIBS+=$(FTDILIB)
 
 
-SOURCES=COFFMAIN.cpp CLOAD.cpp StdAfx.cpp KMotionDLL_Direct.cpp KMotionDLL.cpp KMotionLocal.cpp
+SOURCES=COFFMAIN.cpp CLOAD.cpp incX.cpp KMotionDLL_Direct.cpp KMotionDLL.cpp KMotionLocal.cpp
 
 ifeq ($(FTDILIB),ftd2xx)
 SOURCES+=KmotionIO.cpp

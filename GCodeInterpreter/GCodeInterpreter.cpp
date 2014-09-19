@@ -419,14 +419,6 @@ int CGCodeInterpreter::LaunchExecution()
         printf("Could not create thread\n");
         return -1;
     }
-    //Do not wait for thread to join.
-    /*
-    if(pthread_join(thr, NULL))
-    {
-        printf("Could not join thread\n");
-        return -1;
-    }
-    */
 #endif
 
 	return 0;

@@ -2,8 +2,8 @@
 //  main.cpp
 //  GCodeTest
 //
-//  Created by P������r Hansson on 2012-04-20.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by Par Hansson on 2012-04-20.
+//  Copyright (c) 2012 P.Hansson. All rights reserved.
 //
 
 //#define BOOL int

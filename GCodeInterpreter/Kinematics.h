@@ -28,7 +28,7 @@
 // GCODEINTERPRETER_LOCAL is used for non-api symbols.
 
 #ifdef GCODEINTERPRETER_DLL // defined if KMOTIONDLL is compiled as a DLL
-  #ifdef KMOTIONDLL_DLL_EXPORTS // defined if we are building the KMOTIONDLL DLL (instead of using it)
+  #ifdef GCODEINTERPRETER_EXPORTS // defined if we are building the KMOTIONDLL DLL (instead of using it)
     #define GCODEINTERPRETER_API GCODEINTERPRETER_HELPER_API_EXPORT
   #else
     #define GCODEINTERPRETER_API GCODEINTERPRETER_HELPER_API_IMPORT
