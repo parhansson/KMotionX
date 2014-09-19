@@ -55,7 +55,7 @@ Then install libfdti.
 ```
 sudo port install libftdi1
 ```
-Jump to section Install KMotionX
+Jump to section "Install KMotionX" or "Install Java" if you will use the Java binding.
 
 
 ###Ubuntu
@@ -69,6 +69,7 @@ Skip this step if you will be using ftd2xx driver. However libftdi works a lot b
 ```
 sudo apt-get install libftdi-dev
 ```
+Jump to section "Install KMotionX" or "Install Java" if you will use the Java binding.
 
 ###Raspberry Pi
 
@@ -96,8 +97,9 @@ Skip this step if you will be using ftd2xx driver. However libftdi works a lot b
 ```
 sudo apt-get install libftdi-dev
 ```
+Jump to section "Install KMotionX" or "Install Java" if you will use the Java binding.
 
-###Install drivers from source
+###Install drivers from source (Optional)
 Installing packages with apt-get might not always result in the latest version depening on your system.
 Here is how you install USB drivers from source. Most people would be satisfied with the version supplied by the package manager on your system.
 
@@ -140,7 +142,7 @@ sudo make install
 Im not sure if this is actually needed. But it can’t hurt.
 sudo ldconfig
 
-##Install Java
+##Install Java (Optional)
 If you would like to build the java binding you need to install a JDK
 
 ######Mac OS X
@@ -189,11 +191,22 @@ sudo cp KMotionX/usb/etc/udev/rules.d/10.kflop.rules /etc/udev/rules.d/
 ```
 
 ######3. Execute examples
+Plug in your KFlop to an available USB port.
+
+On Ubuntu(ONLY) you need to trigger the kernel to reqest device events to apply correct rules. Otherwise you will not be permitted to communicate with the board. This needs to be done every time you plug it in.
+```
+sudo udevadm trigger
+```
+
+
 Start KMotionServer in background
 ```
 cd bin
 ./KMotionServer &
-Start ExecuteGCode
-./ExecuteGCode
+```
+
+Start executeGCode example
+```
+./executeGCode
 ```
 
