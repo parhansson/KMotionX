@@ -8,6 +8,12 @@
 #ifndef INCX_H_
 #define INCX_H_
 
+#define SOCK_PATH "kmotionsocket"
+#define MAX_PATH 256
+#define Sleep(X) usleep(1000*X)
+#define timeBeginPeriod(x)
+#define timeEndPeriod(x)
+
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -22,8 +28,16 @@
 #include <fcntl.h>
 #include <ctype.h>
 
+#include <CString.h>
+#include <WinTypes.h>
+#include <MessageBox.h>
+#include <CMutex.h>
 
-#define SOCK_PATH "kmotionsocket"
+#ifndef ASSERT
+	#include <assert.h>
+	#define ASSERT(f) assert((f))
+#endif
+
 /*
 #ifndef __EXCEPTIONS
 // Iff -fno-exceptions, transform error handling code to work without it.
@@ -42,21 +56,6 @@
 #define __try
 //#endif
 #define __finally
-#define Sleep(X) usleep(1000*X)
-#define timeBeginPeriod(x)
-#define timeEndPeriod(x)
-
-#define MAX_PATH 256
-
-#include <CString.h>
-#include <WinTypes.h>
-#include <MessageBox.h>
-#include <CMutex.h>
-
-#ifndef ASSERT
-	#include <assert.h>
-	#define ASSERT(f) assert((f))
-#endif
 
 #include <locale.h>
 #include <HiResTimer.h>
@@ -76,5 +75,5 @@ extern char* _strupr(char* s);
 extern unsigned int timeGetTime();
 
 
-
 #endif /* INCX_H_ */
+
