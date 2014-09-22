@@ -174,10 +174,17 @@ git clone https://github.com/parhansson/KMotionX.git
 
 ```
 cd KMotionX
+```
+Configure build for your platform and flavours
+```
 ./configure
+```
+Build project
+```
 make
 ```
 
+Build Tiny C Compiler
 ```
 cd tcc-0.9.26
 ./configure —enable-cross
@@ -185,19 +192,15 @@ make
 cd ..
 ```
 
-######2. Install KFLOP device rules
+######2. Install KFLOP device rules (Linux only)
+This will install a rule that tell your system to grant read and write access to the kflop device for users in group "plugdev"
+If your user is not in that group fix users groups or change the rule before pluging the device in.
 ```
 sudo cp KMotionX/usb/etc/udev/rules.d/10.kflop.rules /etc/udev/rules.d/
 ```
 
 ######3. Execute examples
 Plug in your KFlop to an available USB port.
-
-On Ubuntu(ONLY) you need to trigger the kernel to reqest device events to apply correct rules. Otherwise you will not be permitted to communicate with the board. This needs to be done every time you plug it in.
-```
-sudo udevadm trigger
-```
-
 
 Start KMotionServer in background
 ```
@@ -210,3 +213,33 @@ Start executeGCode example
 ./executeGCode
 ```
 
+
+####Troubleshooting
+executeGCode example says "Operation not permitted"
+  Check device permissions
+```
+ls -la /dev/kflop
+```
+should reveal something like this where 001/005 might be other values
+```  
+lrwxrwxrwx 1 root root 15 Sep 22 18:28 /dev/kflop -> bus/usb/001/005
+```
+then check permissions on target (replace 001/005 with values from previous output)
+```
+ls -la /dev/bus/usb/001/005
+```
+should reveal
+```
+crw-rw-r-T 1 root plugdev 189, 4 Sep 22 18:28 005
+```
+This means users in plugdev group have read and write access to the device
+
+If this is correct go on and check your users groups
+Check that your user is in group plugdev
+```
+groups
+```
+Check that plugdev is present
+```
+pi adm dialout cdrom sudo audio video plugdev games users netdev input spi gpio
+```
