@@ -32,31 +32,35 @@ CKMotionDLL::CKMotionDLL(int boardid)
 	ServerMessDisplayed=false;
 
 #ifndef _WINDOWS
-	char* mainPath;
-    if(!(mainPath = getenv("KMOTION_BIN"))){
-    	mainPath = getenv("PWD");
+
+    char* kmotionRoot;
+    char* kmotionBin;
+    char rootPath[MAX_PATH];
+    char resolved_root[MAX_PATH];
+
+    if(!(kmotionBin = getenv("KMOTION_BIN"))){
+    		//No KMOTION_ROOT environment variable set.
+    		//Assume user is in KMotion/bin directory
+        	sprintf(rootPath,"%s/..",getenv("PWD"));
+        	kmotionBin = realpath(rootPath, resolved_root);
+        	printf("%s:%d Environment KMOTION_BIN resolved to %s\n",__FILE__,__LINE__,kmotionBin);
     }
-    char resolvedMainPath[MAX_PATH +1];
-    realpath(mainPath, resolvedMainPath);
-    sprintf(MainPath.GetBuffer(MAX_PATH),"%s",resolvedMainPath);
+    sprintf(MainPath.GetBuffer(MAX_PATH),"%s",kmotionBin);
     MainPath.ReleaseBuffer();
-	printf("%s:%d Environment KMOTION_BIN resolved to %s\n",__FILE__,__LINE__,MainPath.c_str());
 
 
-    char* rootDir;
-    char resolvedMainPathRoot[MAX_PATH +1];
-    char mainPathRoot[MAX_PATH +1];
-    if(!(rootDir = getenv("KMOTION_ROOT"))){
-		rootDir = getenv("PWD");
-		sprintf(mainPathRoot,"%s/..",rootDir);
-	} else {
-		sprintf(mainPathRoot,"%s",rootDir);
-	}
+    if(!(kmotionRoot = getenv("KMOTION_ROOT"))){
+    		//No KMOTION_ROOT environment variable set.
+    		//Assume user is in KMotion/bin directory
+        	sprintf(rootPath,"%s/..",getenv("PWD"));
+        	kmotionRoot = realpath(rootPath, resolved_root);
+        	printf("%s:%d Environment KMOTION_ROOT resolved to %s\n",__FILE__,__LINE__,kmotionRoot);
 
-    realpath(mainPathRoot, resolvedMainPathRoot);
-    sprintf(MainPathRoot.GetBuffer(MAX_PATH),"%s",resolvedMainPathRoot);
+        	//Save resolved root, used by CoordMotion
+        	setenv("KMOTION_ROOT", kmotionRoot,0);
+    }
+    sprintf(MainPathRoot.GetBuffer(MAX_PATH),"%s",kmotionRoot);
     MainPathRoot.ReleaseBuffer();
-    printf("%s:%d Environment KMOTION_ROOT resolved to %s\n",__FILE__,__LINE__,MainPathRoot.c_str());
 
 #endif
 
