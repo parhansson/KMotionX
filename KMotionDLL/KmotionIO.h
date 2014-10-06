@@ -51,7 +51,7 @@ public:
 	CMutex *Mutex;
 	int NumberBytesAvailToRead(int *navail, bool ShowMessage);
 	int WriteLineReadLine(const char *send, char *response);
-	bool RequestedDeviceAvail(CString *reason);
+	bool RequestedDeviceAvail(char *reason);
 	int ReadLineTimeOut(char *buf, int TimeOutms);
 	int ReadLineTimeOutRaw(char *buf, int TimeOutms);
 	int SetLatency(UCHAR LatencyTimer);

@@ -70,7 +70,7 @@ CKMotionIO::~CKMotionIO()
 	ftdi_free(ftdi);
 }
 
-bool CKMotionIO::RequestedDeviceAvail(CString *Reason)
+bool CKMotionIO::RequestedDeviceAvail(char *Reason)
 {
 	int ftStatus;
 	int i, numDevs, list[MAX_BOARDS];
@@ -91,13 +91,13 @@ bool CKMotionIO::RequestedDeviceAvail(CString *Reason)
 	{
 		Mutex->Unlock();
 		fprintf(stderr, "%s:%d ftdi_usb_find_all failed: %d (%s)\n", __FILE__,__LINE__,ftStatus, ftdi_get_error_string(ftdi));
-		if (Reason) *Reason="No KMotion devices available";
+		if (Reason) strcpy(Reason,"No KMotion devices available");
 		return false;
 	} else if (numDevs < 1 || numDevs >= MAX_BOARDS)
 	{
 		ftdi_list_free(&devlist);
 		Mutex->Unlock();
-		if (Reason) *Reason="No KMotion devices available";
+		if (Reason) strcpy(Reason,"No KMotion devices available");
 		return false;
 	}
 	// go through the list and remove any non-dynomotion boards
@@ -159,7 +159,7 @@ bool CKMotionIO::RequestedDeviceAvail(CString *Reason)
 		if (!BoardIDAssigned)
 		{
 			Mutex->Unlock();
-			if (Reason) *Reason="No KMotion devices available";
+			if (Reason) strcpy(Reason,"No KMotion devices available");
 			return false;
 		}
 	}
@@ -176,7 +176,7 @@ bool CKMotionIO::RequestedDeviceAvail(CString *Reason)
 	if (i==numDevs)
 	{
 		Mutex->Unlock();
-		if (Reason) Reason->Format("KMotion not found on USB Location %08X\n"
+		if (Reason) sprintf(Reason,"KMotion not found on USB Location %08X\n"
 								   "Unable to open device",USB_Loc_ID);
 		return false;
 	}
@@ -191,7 +191,7 @@ bool CKMotionIO::RequestedDeviceAvail(CString *Reason)
 
 int CKMotionIO::Connect()
 {
-	CString reason;
+	char reason[256];
 
 	int ftStatus;
 
@@ -201,7 +201,7 @@ int CKMotionIO::Connect()
 
 	Mutex->Lock();
 
-	if (!RequestedDeviceAvail(&reason))
+	if (!RequestedDeviceAvail(reason))
 	{
 		ErrorMessageBox(reason);
 		Mutex->Unlock();
@@ -889,14 +889,14 @@ int CKMotionIO::KMotionLock()
 {
 	int result;
 	int board = this - KMotionLocal.KMotionIO;
-	CString reason;
+	char reason[256];
 	if (!Mutex->Lock(3000)) return KMOTION_NOT_CONNECTED;
 
 	if (!m_Connected)
 	{
 		// try to connect
 
-		if (!RequestedDeviceAvail(&reason))
+		if (!RequestedDeviceAvail(reason))
 		{
 			ErrorMessageBox(reason);
 			NonRespondingCount=0;

@@ -46,7 +46,7 @@ CKMotionIO::~CKMotionIO()
 	delete Mutex;
 }
 
-bool CKMotionIO::RequestedDeviceAvail(CString *Reason)
+bool CKMotionIO::RequestedDeviceAvail(char *Reason)
 {
 	FT_STATUS ftStatus;
 	FT_DEVICE ftDevice;
@@ -182,7 +182,7 @@ bool CKMotionIO::RequestedDeviceAvail(CString *Reason)
 
 int CKMotionIO::Connect()
 {
-	CString reason;
+	char reason[256];
 
 	FT_STATUS ftStatus;
 
@@ -192,7 +192,7 @@ int CKMotionIO::Connect()
 
 	Mutex->Lock();
 
-	if (!RequestedDeviceAvail(&reason))
+	if (!RequestedDeviceAvail(reason))
 	{
 		ErrorMessageBox(reason);
 		Mutex->Unlock();

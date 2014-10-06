@@ -773,17 +773,17 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	//normalize_slashes()
 
 	if (Thread==0) return 1;
-	CString Compiler = COMPILER;
+	char Compiler[MAX_PATH +1];
+	strcpy(Compiler, COMPILER);;
 	FILE *f=fopen(Compiler,"r");  // try if compiler is on path
 
 	if (f==NULL)
 	{
-		Compiler = MainPath + "/" + COMPILER;
-
+		snprintf(Compiler, MAX_PATH,"%s/%s", MainPath.c_str(),COMPILER);
 		f=fopen(Compiler,"r");  // try in the released directory next
 		if (f==NULL)
 		{
-			Compiler = MainPathRoot + "/tcc-0.9.26/" + COMPILER;
+			snprintf(Compiler, MAX_PATH,"%s/tcc-0.9.26/%s", MainPathRoot.c_str(),COMPILER);
 			f=fopen(Compiler,"r");  // try in the released directory next
 			if (f==NULL)
 			{
@@ -795,31 +795,29 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	fclose(f);
 
 
-	CString BindTo,IncSrcPath1,IncSrcPath2;
-
-	if (BoardType == BOARD_TYPE_KMOTION)
-		IncSrcPath1="-I" + MainPathRoot + "/DSP_KMotion";
-	else
-		IncSrcPath1="-I" + MainPathRoot + "/DSP_KFLOP";
-
-	IncSrcPath2="-I" + ExtractPath(Name);
-
-	if (BoardType == BOARD_TYPE_KMOTION)
-		BindTo = MainPathRoot + "/DSP_KMotion/DSPKMotion.out";
-	else
-		BindTo = MainPathRoot + "/DSP_KFLOP/DSPKFLOP.out";
+	char IncSrcPath1[MAX_PATH +1];
+	char IncSrcPath2[MAX_PATH +1];
+	char BindTo[MAX_PATH +1];
+	if (BoardType == BOARD_TYPE_KMOTION){
+		snprintf(IncSrcPath1, MAX_PATH,"-I%s/DSP_KMotion", MainPathRoot.c_str()) ;
+		snprintf(BindTo, MAX_PATH, "%s/DSP_KMotion/DSPKMotion.out", MainPathRoot.c_str());
+	} else {
+		snprintf(IncSrcPath1, MAX_PATH,"-I%s/DSP_KFLOP", MainPathRoot.c_str()) ;
+		snprintf(BindTo, MAX_PATH, "%s/DSP_KFLOP/DSPKFLOP.out", MainPathRoot.c_str());
+	}
+	snprintf(IncSrcPath2, MAX_PATH,"-I%s", ExtractPath(Name).c_str()) ;
 
 
 	char command[MAX_LINE +1];
 
 	sprintf(command,"%s -Wl,-Ttext,%08X -Wl,--oformat,coff -static -nostdinc -nostdlib %s %s -o \"%s\" %s %s",
-			Compiler.c_str(),
+			Compiler,
 			GetLoadAddress(Thread,BoardType),
-			IncSrcPath1.c_str(),
-			IncSrcPath2.c_str(),
+			IncSrcPath1,
+			IncSrcPath2,
 			OutFile,
 			Name,
-			BindTo.c_str());
+			BindTo);
 
 	//Original TCC67 Windows version shipped with KMotion
 	//tcc -text 80050000 -g -nostdinc -I./DSP_KFLOP -I./ -o Gecko3Axis.out Gecko3Axis.c ./DSP_KFLOP/DSP_KFLOP.out
@@ -876,6 +874,14 @@ void CKMotionDLL::ConvertToOut(int thread, const char *InFile, char *OutFile, in
 
 CString CKMotionDLL::ExtractPath(CString InFile)
 {
+	/*
+	char str[] = "This is a sample string";
+	char * pch;
+	pch=strrchr(str,'s');
+	printf ("Last occurence of 's' found at %d \n",pch-str+1);
+	*/
+	//Last occurrence of 's' found at 18
+
 	int next_pos=0,pos;
 
 	CString OutFile;
