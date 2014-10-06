@@ -59,18 +59,19 @@ CCoordMotion::CCoordMotion(CKMotionDLL *KM)
 	// Save for everybody what directory we are installed in
 #ifndef _WINDOWS
 
-    char* rootDir;
-    if(!(rootDir = getenv("KMOTION_ROOT"))){
-        	rootDir = getenv("PWD");
-        	printf("Environment KMOTION_ROOT not set, falling back to %s\n",rootDir);
-        	//sprintf(rootDir,"%s/..",rootDir);
-        	sprintf(MainPath,"%s/../KMotion",rootDir);
-        	sprintf(MainPathRoot,"%s/..",rootDir);
-    } else {
-    	sprintf(MainPath,"%s/KMotion",rootDir);
-    	sprintf(MainPathRoot,"%s",rootDir);
-
+    char* kmotionRoot;
+    char rootPath[MAX_PATH];
+    char resolved_root[MAX_PATH];
+    if(!(kmotionRoot = getenv("KMOTION_ROOT"))){
+    		//No KMOTION_ROOT environment variable set.
+    		//Assume user is in KMotion/bin directory
+        	sprintf(rootPath,"%s/..",getenv("PWD"));
+        	kmotionRoot = realpath(rootPath, resolved_root);
+        	printf("%s:%d Environment KMOTION_ROOT resolved to %s\n",__FILE__,__LINE__,kmotionRoot);
     }
+	sprintf(MainPath,"%s/KMotion",kmotionRoot);
+	sprintf(MainPathRoot,"%s",kmotionRoot);
+
 
 #else
 	CString Path;
@@ -215,13 +216,13 @@ int CCoordMotion::CheckSoftLimitsArc(double XC, double YC, double z,
 
 		if (x_axis>=0)
 		{
-			if (x > SoftLimitPosX+SIGMA) {errmsg=/*(CString)XSTR+*/"+"; return 1;}
-			if (x < SoftLimitNegX-SIGMA) {errmsg=/*(CString)XSTR+*/"-"; return 1;}
+			if (x > SoftLimitPosX+SIGMA) {errmsg=(CString)""+XSTR+"+"; return 1;}
+			if (x < SoftLimitNegX-SIGMA) {errmsg=(CString)""+XSTR+"-"; return 1;}
 		}
 		if (y_axis>=0)
 		{
-			if (y > SoftLimitPosY+SIGMA) {errmsg=/*(CString)YSTR+*/"+"; return 1;}
-			if (y < SoftLimitNegY-SIGMA) {errmsg=/*(CString)YSTR+*/"-"; return 1;}
+			if (y > SoftLimitPosY+SIGMA) {errmsg=(CString)""+YSTR+"+"; return 1;}
+			if (y < SoftLimitNegY-SIGMA) {errmsg=(CString)""+YSTR+"-"; return 1;}
 		}
 
 		if (DirIsCCW)
@@ -233,8 +234,8 @@ int CCoordMotion::CheckSoftLimitsArc(double XC, double YC, double z,
 		
 	if (z_axis>=0)
 	{
-		if (z > SoftLimitPosZ) {errmsg=/*(CString)ZSTR+*/"+"; return 1;}
-		if (z < SoftLimitNegZ) {errmsg=/*(CString)ZSTR+*/"-"; return 1;}
+		if (z > SoftLimitPosZ) {errmsg=(CString)""+ZSTR+"+"; return 1;}
+		if (z < SoftLimitNegZ) {errmsg=(CString)""+ZSTR+"-"; return 1;}
 	}
 	if (a_axis>=0)
 	{
