@@ -55,14 +55,9 @@ either expressed or implied, of the FreeBSD Project.
 #include <sys/syscall.h>
     //__NR_gettid
 
-
-#include "../../KMotionDLL/KMotionDLL.h"
-#include "../../KMotionDLL/KmotionIO.h"
-#include "../../KMotionDLL/KMotionDLL_Direct.h"
-
-//#include <KMotionDLL.h>
-//#include <KmotionIO.h>
-//#include <KMotionDLL_Direct.h>
+#include <KMotionDLL.h>
+#include <KmotionIO.h>
+#include <KMotionDLL_Direct.h>
 
 
 #define BUFSIZE 4096
@@ -88,7 +83,7 @@ typedef struct str_thdata
 //Array of console socket file descriptor
 int ConsolePipeHandle[MAX_BOARDS];
 
-std::list<CString> ConsoleList[MAX_BOARDS];
+std::list<char*> ConsoleList[MAX_BOARDS];
 const char LOCK_CODES[][22]={"KMOTION_LOCKED","KMOTION_IN_USE","KMOTION_NOT_CONNECTED"};
 const char ENUM_NAMES[][35]={
 		"ENUM_WriteLineReadLine",
@@ -561,15 +556,18 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 			int cbReplyBytes, cbBytesRead, cbWritten;
 			unsigned char Reply;
 			//CString s = ConsoleList[board].RemoveHead();
-			CString s = ConsoleList[board].front();
+			char *str = ConsoleList[board].front();
 			ConsoleList[board].pop_front();
 
-			s.Insert(0,DEST_CONSOLE);
+			char * s = new char [strlen(str)+2];
+			s[0] = DEST_CONSOLE;
+			strcpy(s+1, str);
+			delete []str;
 
-			cbReplyBytes = s.GetLength()+1+1;  // + Term Null + DEST code
+			cbReplyBytes = strlen(s)+1;  // + Term Null, DEST code already accounted for in s
 
 			// Write the message to the pipe. 
-			cbWritten = send(hPipe, s.GetBuffer(0), cbReplyBytes, 0);
+			cbWritten = send(hPipe, s, cbReplyBytes, 0);
 
 			if (cbWritten < 0 || cbReplyBytes != cbWritten) {
 				if (cbWritten < 0){
@@ -602,17 +600,16 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 	{
 		int cbReplyBytes, cbBytesRead, cbWritten;
 		unsigned char Reply;
-		CString s = KMotionDLL.GetErrMsg(board);
+		char s[MAX_LINE+1];
+		s[0] = DEST_ERRMSG;
+		strcpy(s+1,KMotionDLL.GetErrMsg(board));
 
-		s.Insert(0,DEST_ERRMSG);
-
-		cbReplyBytes = s.GetLength()+1+1;  // + Term Null + DEST code
-
+		cbReplyBytes = strlen(s)+1;// + Term Null, DEST code already accounted for in s
 		// Write the message to the pipe. 
-		cbWritten = send(hPipe, s.GetBuffer(0), cbReplyBytes, 0);
+		cbWritten = send(hPipe, s, cbReplyBytes, 0);
 
 		if (cbWritten < 0) {
-			syslog(LOG_ERR,"GetAnswerToRequest Send to DEST_ERRMSG failed: %s", s.GetBuffer(0));
+			syslog(LOG_ERR,"GetAnswerToRequest Send to DEST_ERRMSG(%d) failed: %s",s[0], s+1);
 			logError("send");
 		}
 
@@ -621,7 +618,7 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 		   // Read back 1 byte ack 0xAA from Console Handler
 			cbBytesRead = recv(hPipe, &Reply, 1, 0);
 			if (cbBytesRead < 0) {
-				syslog(LOG_ERR,"GetAnswerToRequest Send to DEST_ERRMSG failed: %s", s.GetBuffer(0));
+				syslog(LOG_ERR,"GetAnswerToRequest Failed to receive Ack(0xAA) on message: %s", s+1);
 				logError("recv");
 			}
 
@@ -634,15 +631,17 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 
 int ConsoleHandler(int board, const char *buf)
 {
-	// check if there is a console handler for
-	// this board
+	// check if there is a console handler for this board
+
+	//remeber to delete to avoid memory leak when popped
+	char *buf2 = new char [strlen(buf) + 1];
+	strcpy(buf2,buf);
 
 	if (ConsolePipeHandle[board])
 	{
 		// there is, add the message to the list
-		syslog(LOG_ERR,"Console message: %s",buf);
-		ConsoleList[board].push_back(buf);
-		//ConsoleList[board].AddTail(buf);
+		syslog(LOG_ERR,"Console message: %s",buf2);
+		ConsoleList[board].push_back(buf2);
 	}
 	return 0;
 }

@@ -2102,20 +2102,23 @@ static int convert_comment2(	/* ARGUMENTS */
 
 static int convert_comment(char *comment)
 {
-	int i,n,r;
-	CString s=comment;
-
-	i=s.Find('(');
-	n=s.Find(')');
+	int r;
+	char *i;
+	char *n;
+	char s[128];
 	
+	i = strchr(comment,'(');
+	n = strchr(comment,')');
 	while (n>i)
 	{
-		r=convert_comment2(s.Mid(i+1,n-i-1).GetBuffer(0));
+		memset(s,'\0',128);
+		strncpy(s,i+1,n-i-1);
+		r=convert_comment2(s);
 
 		if (r != RS274NGC_OK) return r;
 
-		i=s.Find('(',n+1);
-		n=s.Find(')',n+1);
+		i = strchr(n+1,'(');
+		n = strchr(n+1,')');
 	}
 	return r;
 }

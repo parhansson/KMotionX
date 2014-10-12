@@ -81,7 +81,7 @@ public:
 
 	bool GeoTableValid;
 	CPT3D *GeoTable;
-	CString *Table2;
+	//C String *Table2;
 	int NRows,NCols;
 	double GeoSpacingX,GeoSpacingY;
 	double GeoOffsetX,GeoOffsetY;  // Machine coordinates of grid point row=0 col=0

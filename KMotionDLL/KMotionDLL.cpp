@@ -14,15 +14,10 @@
 #include "CLOAD.H"
 
 
-#ifndef _WINDOWS
-static char *normalize_slashes(char *path)
-{
-    char *p;
-    for (p = path; *p; ++p)
-        if (*p == '\\')
-            *p = '/';
-    return path;
-}
+#ifdef _WINDOWS
+extern CString MainPathDLL;
+extern CString MainPath;
+extern CString MainPathRoot;
 #endif
 
 CKMotionDLL::CKMotionDLL(int boardid)
@@ -41,26 +36,24 @@ CKMotionDLL::CKMotionDLL(int boardid)
     if(!(kmotionBin = getenv("KMOTION_BIN"))){
     		//No KMOTION_ROOT environment variable set.
     		//Assume user is in KMotion/bin directory
-        	sprintf(rootPath,"%s/..",getenv("PWD"));
+        	sprintf(rootPath,"%s",getenv("PWD"));
         	kmotionBin = realpath(rootPath, resolved_root);
-        	printf("%s:%d Environment KMOTION_BIN resolved to %s\n",__FILE__,__LINE__,kmotionBin);
+        	//printf("%s:%d Environment KMOTION_BIN resolved to %s\n",__FILE__,__LINE__,kmotionBin);
     }
-    sprintf(MainPath.GetBuffer(MAX_PATH),"%s",kmotionBin);
-    MainPath.ReleaseBuffer();
-
+    sprintf(MainPath, "%s", kmotionBin);
 
     if(!(kmotionRoot = getenv("KMOTION_ROOT"))){
     		//No KMOTION_ROOT environment variable set.
     		//Assume user is in KMotion/bin directory
         	sprintf(rootPath,"%s/..",getenv("PWD"));
         	kmotionRoot = realpath(rootPath, resolved_root);
-        	printf("%s:%d Environment KMOTION_ROOT resolved to %s\n",__FILE__,__LINE__,kmotionRoot);
+        	//printf("%s:%d Environment KMOTION_ROOT resolved to %s\n",__FILE__,__LINE__,kmotionRoot);
 
         	//Save resolved root, used by CoordMotion
-        	setenv("KMOTION_ROOT", kmotionRoot,0);
+        	//This results in Segmentation faults when calling getenv later on
+        	//setenv("KMOTION_ROOT", kmotionRoot,0);
     }
-    sprintf(MainPathRoot.GetBuffer(MAX_PATH),"%s",kmotionRoot);
-    MainPathRoot.ReleaseBuffer();
+    sprintf(MainPathRoot, "%s", kmotionRoot);
 
 #endif
 
@@ -71,7 +64,6 @@ CKMotionDLL::CKMotionDLL(int boardid)
 
 CKMotionDLL::~CKMotionDLL()
 {
-	LPTSTR lpszPipename = "\\\\.\\pipe\\kmotionpipe"; 
 	if (PipeOpen)
 	{
 		PipeOpen=false;
@@ -295,7 +287,7 @@ int CKMotionDLL::SetErrMsgCallback(ERRMSG_HANDLER *ch)
 
 int CKMotionDLL::LoadCoff(int Thread, const char *Name, int PackToFlash)
 {
-	CString s;
+	char s[50];
 	unsigned int EntryPoint;
 
 	if (Thread==0) return 1;
@@ -304,7 +296,7 @@ int CKMotionDLL::LoadCoff(int Thread, const char *Name, int PackToFlash)
 
 	if (PackToFlash==0)
 	{
-		s.Format("Kill %d", Thread);  // make sure the Thread isn't running
+		sprintf(s,"Kill %d", Thread);  // make sure the Thread isn't running
 		if (WriteLine(s)) return 1;
 	}
 #endif
@@ -316,8 +308,7 @@ int CKMotionDLL::LoadCoff(int Thread, const char *Name, int PackToFlash)
 	if (Thread >= 0 && PackToFlash==0)
 	{
 		// Set the entry point for the thread
-		
-		s.Format("EntryPoint%d %X",Thread,EntryPoint);
+		sprintf(s,"EntryPoint%d %X",Thread,EntryPoint);
 		result = WriteLine(s);
 		if (result) return result;
 	}
@@ -369,7 +360,7 @@ int CKMotionDLL::PipeCmdStr(int code, const char *s)
 int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 {
 	unsigned char Reply = 0xAA;
-	CString ErrorMsg;
+	char ErrorMsg[MAX_LINE];
 	bool ReceivedErrMsg=false;
 
 
@@ -382,7 +373,7 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 #ifdef _WINDOWS
 	LPTSTR lpszPipename = "\\\\.\\pipe\\kmotionpipe"; 
 #else
-	LPTSTR lpszPipename = SOCK_PATH;
+	char lpszPipename[] = SOCK_PATH;
 #endif
 	try
 	{
@@ -452,8 +443,8 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 				
 				// because callback might throw an exception, delay doing the User Callback
 				// until everything is received back from the Server and we clean up
-				
-				ErrorMsg=r+1;
+				strcpy(ErrorMsg,r+1);
+				//ErrorMsg=r+1;
 				ReceivedErrMsg=true;
 			}
 			else
@@ -556,16 +547,25 @@ int CKMotionDLL::LaunchServer()
 #elif defined(__APPLE__)
 	//The daemon is currently not supported on Apple
 	char command[1024];
-	sprintf(command, "%s/%s", MainPath.c_str(),"KMotionServer");
+#ifdef _DEAMON
+    //sprintf(command, "%s/%s", MainPath,"KMotionServer");
 	printf("%s:%d Launch KMotionServer first: %s\n",__FILE__,__LINE__,command);
 	PipeMutex->Unlock();
 	exit(1);
 #else
+    sprintf(command, "%s/%s", MainPath,"KMotionServer &");
+    system(command);
+#endif
+
+#else
     char command[1024];
-    sprintf(command, "%s/%s", MainPath.c_str(),"KMotionServer");
+#ifdef _DEAMON
+    sprintf(command, "%s/%s", MainPath,"KMotionServer");
+#else
+    sprintf(command, "%s/%s", MainPath,"KMotionServer &");
+#endif
     printf("%s:%d Launching KMotionServer %s\n",__FILE__,__LINE__, command);
     system(command);
-
 #endif
 
 	return 0;
@@ -579,20 +579,16 @@ int CKMotionDLL::CompileAndLoadCoff(const char *Name, int Thread)
 int CKMotionDLL::CompileAndLoadCoff(const char *Name, int Thread, char *Err, int MaxErrLen)
 {
 	int result,BoardType;
-	CString OutFile;
-	CString BindTo;
-
+	char OutFile[MAX_PATH];
 
 	if (Thread<=0 || Thread>7) 
 	{
-		CString s;
-		s.Format("Invalid Thread Number %d Valid Range (1-7)",Thread);
-		strcpy(Err,s);
+		//TODO MaxErrLen should be honored to avoid segementation fault.
+		sprintf(Err,"Invalid Thread Number %d Valid Range (1-7)",Thread);
 		return 1;
 	}
 	
-	ConvertToOut(Thread,Name,OutFile.GetBuffer(MAX_PATH),MAX_PATH);
-	OutFile.ReleaseBuffer();
+	ConvertToOut(Thread,Name,OutFile,MAX_PATH);
 
 	if (CheckKMotionVersion(&BoardType)) return 1;
 
@@ -692,7 +688,10 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	else
 		IncSrcPath1="-I \"" + MainPathRoot + "\\DSP_KFLOP\" ";
 
-	IncSrcPath2="-I \"" + ExtractPath(Name) + "\"";
+	CString path;
+	ExtractPath(Name,path.GetBufferSetLength(MAX_PATH));
+	path.ReleaseBuffer();
+	IncSrcPath2="-I \"" + path + "\"";
 
 	if (BoardType == BOARD_TYPE_KMOTION)
 		BindTo = MainPathRoot + "\\DSP_KMotion\\DSPKMotion.out";
@@ -783,11 +782,11 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 
 	if (f==NULL)
 	{
-		snprintf(Compiler, MAX_PATH,"%s/%s", MainPath.c_str(),COMPILER);
+		sprintf(Compiler, "%s/%s", MainPath, COMPILER);
 		f=fopen(Compiler,"r");  // try in the released directory next
 		if (f==NULL)
 		{
-			snprintf(Compiler, MAX_PATH,"%s/tcc-0.9.26/%s", MainPathRoot.c_str(),COMPILER);
+			sprintf(Compiler, "%s/KMotionX/tcc-0.9.26/%s", MainPathRoot, COMPILER);
 			f=fopen(Compiler,"r");  // try in the released directory next
 			if (f==NULL)
 			{
@@ -802,19 +801,22 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	char IncSrcPath1[MAX_PATH +1];
 	char IncSrcPath2[MAX_PATH +1];
 	char BindTo[MAX_PATH +1];
+	char path[MAX_PATH +1];
+
 	if (BoardType == BOARD_TYPE_KMOTION){
-		snprintf(IncSrcPath1, MAX_PATH,"-I%s/DSP_KMotion", MainPathRoot.c_str()) ;
-		snprintf(BindTo, MAX_PATH, "%s/DSP_KMotion/DSPKMotion.out", MainPathRoot.c_str());
+		sprintf(IncSrcPath1,"-I\"%s%cDSP_KMotion\"", MainPathRoot, PATH_SEPARATOR) ;
+		sprintf(BindTo, "\"%s%cDSP_KMotion%cDSPKMotion.out\"", MainPathRoot,PATH_SEPARATOR,PATH_SEPARATOR);
 	} else {
-		snprintf(IncSrcPath1, MAX_PATH,"-I%s/DSP_KFLOP", MainPathRoot.c_str()) ;
-		snprintf(BindTo, MAX_PATH, "%s/DSP_KFLOP/DSPKFLOP.out", MainPathRoot.c_str());
+		sprintf(IncSrcPath1,"-I\"%s%cDSP_KFLOP\"", MainPathRoot, PATH_SEPARATOR) ;
+		sprintf(BindTo, "\"%s%cDSP_KFLOP%cDSPKFLOP.out\"", MainPathRoot, PATH_SEPARATOR, PATH_SEPARATOR);
 	}
-	snprintf(IncSrcPath2, MAX_PATH,"-I%s", ExtractPath(Name).c_str()) ;
+	ExtractPath(Name,path);
+	sprintf(IncSrcPath2,"-I\"%s\"", path) ;
 
 
 	char command[MAX_LINE +1];
 
-	sprintf(command,"%s -Wl,-Ttext,%08X -Wl,--oformat,coff -static -nostdinc -nostdlib %s %s -o \"%s\" %s %s",
+	sprintf(command,"%s -Wl,-Ttext,%08X -Wl,--oformat,coff -static -nostdinc -nostdlib %s %s -o \"%s\" \"%s\" %s",
 			Compiler,
 			GetLoadAddress(Thread,BoardType),
 			IncSrcPath1,
@@ -828,10 +830,9 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	// -text replaced by -Wl,-Ttext,address
 	//http://manpages.ubuntu.com/manpages/lucid/man1/tcc.1.html
 
-
 	//compile with debug flag is currently not supported -g
 	//c67-tcc -Wl,-Ttext,80050000 -Wl,--oformat,coff -static -nostdinc -nostdlib -I./ -o ~/Desktop/Gecko3AxisOSX.out Gecko3Axis.c DSPKFLOP.out
-	printf("%s\n",command);
+	debug("%s\n",command);
 	int exitCode = system(command);
 	return exitCode;
 #endif
@@ -840,74 +841,43 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 
 void CKMotionDLL::ConvertToOut(int thread, const char *InFile, char *OutFile, int MaxLength)
 {
-	CString OFile;
-	CString IFile=InFile;
+	int OFileMaxLength;
+	char *OFile;
+	char ThreadString[10];
+	char suffix[5];
+	const char *psuf;
 
-	CString InFileWithCase=InFile;
-	CString ThreadString;
+	OFileMaxLength = strlen(InFile)+10;
+	OFile = new char[OFileMaxLength];
 
-	if (thread>0)
-	{
+	sprintf(ThreadString, "(%d).out",thread);
 
-		ThreadString.Format("(%d).out",thread);
+	memset (OFile,'\0',OFileMaxLength); //ensure empty string as well as null terminated when using strncpy
 
-		IFile.MakeLower();
+	if (thread>0) {
+		psuf = strrchr(InFile,'.');
+		strcpy(suffix, psuf);
+		_strlwr(suffix);
+		if(strcmp(suffix,".c") == 0
+			|| strcmp(suffix,".txt") == 0
+			|| strcmp(suffix,".cpp") == 0){
 
-		if (IFile.Right(2) == ".c")
-		{
-			OFile = InFileWithCase.Left(InFileWithCase.GetLength()-2);
+			strncpy(OFile,InFile,psuf-InFile);//remove suffix
+		} else {
+			strcpy(OFile,InFile); //use original name
 		}
-		else if (IFile.Find(".txt")!=-1)
-		{
-			OFile = InFileWithCase.Left(InFileWithCase.GetLength()-4);
-		}
-		else if (IFile.Find(".cpp")!=-1)
-		{
-			OFile = InFileWithCase.Left(InFileWithCase.GetLength()-4);
-		}
-		else
-		{
-			OFile = InFileWithCase;
-		}
-
-		OFile += ThreadString;
+		strcat(OFile, ThreadString);
 	}
 	strncpy(OutFile,OFile,MaxLength);
+	delete [] OFile;
 }
 
-
-CString CKMotionDLL::ExtractPath(CString InFile)
-{
-	/*
-	char str[] = "This is a sample string";
-	char * pch;
-	pch=strrchr(str,'s');
-	printf ("Last occurence of 's' found at %d \n",pch-str+1);
-	*/
-	//Last occurrence of 's' found at 18
-
-	int next_pos=0,pos;
-
-	CString OutFile;
-
-	do
-	{
-		pos=next_pos;
-#ifdef _WINDOWS
-		next_pos = InFile.Find('\\',pos+1);
-#else
-		//backslash to slash
-		next_pos = InFile.Find('/',pos+1);
-#endif
-	}
-	while (next_pos!=-1);
-
-	if (pos>0)
-		OutFile = InFile.Left(pos);
-	else
-		OutFile = "";
-
-	return OutFile;
+void CKMotionDLL::ExtractPath(const char *InFile, char *path){
+	const char *pch;
+	pch=strrchr(InFile,PATH_SEPARATOR);
+	strcpy(path,InFile);
+	//null terminate string at last slash position
+	path[pch-InFile] ='\0';
 }
 
 unsigned int CKMotionDLL::GetLoadAddress(int thread, int BoardType) 
@@ -923,10 +893,10 @@ unsigned int CKMotionDLL::GetLoadAddress(int thread, int BoardType)
 int CKMotionDLL::CheckKMotionVersion(int *type, bool GetBoardTypeOnly) 
 {
 	int result;
-	CString BoardVersion;
-	CString CoffVersion;
-	CString OutFile;
-	CString ms;
+	char BoardVersion[MAX_LINE];
+	char CoffVersion[81];
+	char OutFile[MAX_PATH];
+	char ms[MAX_LINE];
 
 	if (type) *type = BOARD_TYPE_UNKNOWN;
 
@@ -935,70 +905,61 @@ int CKMotionDLL::CheckKMotionVersion(int *type, bool GetBoardTypeOnly)
 		// Get the firmware date from the KMotion Card which
 		// will be in PT (Pacific Time)
 		ReleaseToken();
-		result = WriteLineReadLine("Version",BoardVersion.GetBufferSetLength(MAX_LINE));
-		BoardVersion.ReleaseBuffer();
+		result = WriteLineReadLine("Version",BoardVersion);
+
 		if (result) return result;
 
 		// now get date stamp from firmware .out file
-
-		if (BoardVersion.Find("KFLOP")==0)
+		//TODO check for first 4 charachters not just anywhere in string
+		//This should solve this. If resultpointer is the same as input the string starts with KFLOP
+		//if(strstr(BoardVersion,"KFLOP") == BoardVersion)
+		if(strstr(BoardVersion,"KFLOP") != NULL)
+		//if (BoardVersion.Find("KFLOP")==0)
 		{
-			OutFile = MainPathRoot +"\\DSP_KFLOP\\DSPKFLOP.out";
+			sprintf(OutFile,"%s%cDSP_KFLOP%cDSPKFLOP.out",MainPathRoot,PATH_SEPARATOR,PATH_SEPARATOR);
 			if (type) *type = BOARD_TYPE_KFLOP;
 		}
 		else
 		{
-			OutFile = MainPathRoot +"\\DSP_KMotion\\DSPKMotion.out";
+			sprintf(OutFile,"%s%cDSP_KMotion%cDSPKMotion.out",MainPathRoot,PATH_SEPARATOR,PATH_SEPARATOR);
 			if (type) *type = BOARD_TYPE_KMOTION;
 		}
-#ifndef _WINDOWS
-		OutFile.Replace("\\", "/");
-#endif
+
 		if (GetBoardTypeOnly) return 0;
 
-		int result = ExtractCoffVersionString(OutFile,CoffVersion.GetBuffer(81));	
-		CoffVersion.ReleaseBuffer();
+		int result = ExtractCoffVersionString(OutFile,CoffVersion);
 
 		if (result)
 		{
-#ifdef _WINDOWS
-			ms.Format("Error Extracting Version Information from file\r\r"
-				" %s",
-				OutFile.GetBuffer(0));
-#else
-			ms.Format("Error Extracting Version Information from file\n"
-							" %s",
-							OutFile.GetBuffer(0));
-#endif
+			sprintf(ms,"Error Extracting Version Information from file" LINE_BREAK LINE_BREAK " %s",OutFile);
 			DoErrMsg(ms);
 			return 1;
 		}
 
-		CoffVersion.Remove('\n');
+		CoffVersion[strlen(CoffVersion)-1] = '\0'; //remove trailing \n
 		
 
 		// check if they match exactly
-
-		if (CoffVersion == BoardVersion) return 0;
-
-		if (BoardVersion.Find("KFLOP")==0)
-			ms.Format("DSP_KFLOP.out Date Stamp Doesn't match KFLOP Firmware\r\r"
-				" Before compiling programs please use Flash/Config Screen and select:\r"
-				" Download New Version.  This will install compatible Firmware with\r"
-				" this version of software\r\r"
-				" %s  KFLOP Firmware\r"
+		if (strcmp(CoffVersion,BoardVersion) == 0) return 0;
+		//TODO check for first 4 charachters not just anywhere in string
+		if(strstr(BoardVersion,"KFLOP") != NULL)
+			sprintf(ms,"DSP_KFLOP.out Date Stamp Doesn't match KFLOP Firmware" LINE_BREAK LINE_BREAK
+				" Before compiling programs please use Flash/Config Screen and select:" LINE_BREAK
+				" Download New Version.  This will install compatible Firmware with" LINE_BREAK
+				" this version of software" LINE_BREAK LINE_BREAK
+				" %s  KFLOP Firmware" LINE_BREAK
 				" %s  DSP_KFLOP.out file",
-				BoardVersion.GetBuffer(0),
-				CoffVersion.GetBuffer(0));
+				BoardVersion,
+				CoffVersion);
 		else
-			ms.Format("DSP_KMotion.out Date Stamp Doesn't match KMotion Firmware\r\r"
-				" Before compiling programs please use Flash/Config Screen and select:\r"
-				" Download New Version.  This will install compatible Firmware with\r"
-				" this version of software\r\r"
-				" %s  KMotion Firmware\r"
+			sprintf(ms,"DSP_KMotion.out Date Stamp Doesn't match KMotion Firmware" LINE_BREAK LINE_BREAK
+				" Before compiling programs please use Flash/Config Screen and select:" LINE_BREAK
+				" Download New Version.  This will install compatible Firmware with" LINE_BREAK
+				" this version of software" LINE_BREAK LINE_BREAK
+				" %s  KMotion Firmware" LINE_BREAK
 				" %s  DSP_KMotion.out file",
-				BoardVersion.GetBuffer(0),
-				CoffVersion.GetBuffer(0));
+				BoardVersion,
+				CoffVersion);
 
 
 		
@@ -1007,6 +968,7 @@ int CKMotionDLL::CheckKMotionVersion(int *type, bool GetBoardTypeOnly)
 		return 1;
 	}
 
+	//Should this return 1
 	return 0;
 }
 
@@ -1268,8 +1230,10 @@ void CKMotionDLL::DoErrMsg(const char *s)
 int CKMotionDLL::GetStatus(MAIN_STATUS& status, bool lock)
 { 
     int i,result,n,token;
-	CString s; 
+	char s[257];
+	char *sp = s;
 	int *p=(int *)&status;
+
 	if(lock)
 	{
 		token = WaitToken( false, 100);
@@ -1277,7 +1241,7 @@ int CKMotionDLL::GetStatus(MAIN_STATUS& status, bool lock)
 	}
 
 	// KMotion is available read the status
-	s.Format("GetStatus");  
+	sprintf(s,"GetStatus");
 	if (WriteLine(s))
 	{
 		if (lock) ReleaseToken();
@@ -1285,31 +1249,26 @@ int CKMotionDLL::GetStatus(MAIN_STATUS& status, bool lock)
 	}
 
 	n=sizeof(status)/sizeof(int);
-
-	s.Empty();
+	memset(s,'\0',257);
 
 	for (i=0; i<n; i++)
 	{
-		if (s.IsEmpty())
+		if (*sp == '\0') //string is empty time to read next line
 		{
-			if (ReadLineTimeOut(s.GetBuffer(257),5000))
+			if (ReadLineTimeOut(s,5000))
 			{
 				if (lock) ReleaseToken();
 				return 1;
 			}
+			sp = s; //Reset pointer
+			// change the CRLF at the to a space and null terminate
+			s[strlen(s)-2]=' ';
+			s[strlen(s)-1]='\0';
 
-			s.ReleaseBuffer();
-
-			// change the CRLF at the to a space
-
-			s.Delete(s.GetLength()-2,2);
-
-			s += ' ';
 		}
 
 		// get a hex 32 bit int which may really be anything
-		
-		result = sscanf(s.GetBuffer(0),"%8X",p++);
+		result = sscanf(sp,"%8x",p++);
 
 		if (result!=1)
 		{
@@ -1317,9 +1276,9 @@ int CKMotionDLL::GetStatus(MAIN_STATUS& status, bool lock)
 			return 1;
 		}
 
-		if (s.GetLength() >=9)
+		if (strlen(sp) >=9)
 		{
-			s.Delete(0,9);
+			sp=sp+9;
 		}
 		else
 		{
@@ -1353,3 +1312,4 @@ int CKMotionDLL::GetStatus(MAIN_STATUS& status, bool lock)
 	if(lock)ReleaseToken(); 
 	return 0;
 }
+

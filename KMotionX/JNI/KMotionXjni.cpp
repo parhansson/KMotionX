@@ -30,8 +30,6 @@ either expressed or implied, of the FreeBSD Project.
 //#include <jni.h>
 #include <iostream>
 #include "stdlib.h"
-//#include <CString.h>
-//#include <CMutex.h>
 //#include "../../KMotionDLL/KMotionDLL.h"  // KMOtion DLL Header
 #include "../../GCodeInterpreter/StdAfx.h"
 
@@ -272,7 +270,7 @@ JNIEXPORT jint JNICALL Java_com_dynomotion_kmotionx_KMotion_WriteLineReadLine
 	(JNIEnv *env, jobject thisObj, jstring request, jbyteArray response){
    // Step 1: Convert the JNI String (jstring) into C-String (char*)
    const char *Request = env->GetStringUTFChars(request, NULL);
-   if (NULL == Request) return NULL;
+   if (NULL == Request) return 0;
 
 	int result;
 	jbyte* jResponse = env->GetByteArrayElements(response, NULL);
@@ -294,7 +292,7 @@ JNIEXPORT jint JNICALL Java_com_dynomotion_kmotionx_KMotion_WriteLine
 	(JNIEnv *env, jobject thisObj, jstring request){
 	// Step 1: Convert the JNI String (jstring) into C-String (char*)
    const char *Request = env->GetStringUTFChars(request, NULL);
-   if (NULL == Request) return NULL;
+   if (NULL == Request) return 0;
    int result = KM->WriteLine(Request);
    env->ReleaseStringUTFChars(request, Request);  // release resources
    return result;
@@ -310,7 +308,7 @@ JNIEXPORT jint JNICALL Java_com_dynomotion_kmotionx_KMotion_WriteLineWithEcho
 	(JNIEnv *env, jobject thisObj, jstring request){
 	// Step 1: Convert the JNI String (jstring) into C-String (char*)
    const char *Request = env->GetStringUTFChars(request, NULL);
-   if (NULL == Request) return NULL;
+   if (NULL == Request) return 0;
    int result = KM->WriteLineWithEcho(Request);
    env->ReleaseStringUTFChars(request, Request);  // release resources
    return result;
@@ -419,7 +417,7 @@ JNIEXPORT jint JNICALL Java_com_dynomotion_kmotionx_KMotion_LoadCoff
 
 	// Step 1: Convert the JNI String (jstring) into C-String (char*)
 	const char *Name = env->GetStringUTFChars(name, NULL);
-	if (NULL == Name) return NULL;
+	if (NULL == Name) return 0;
 
 	int result;
 	result = KM->LoadCoff(threadId, Name, 0);
@@ -438,7 +436,7 @@ JNIEXPORT jint JNICALL Java_com_dynomotion_kmotionx_KMotion_CompileAndLoadCoff__
   (JNIEnv *env, jobject thisObj, jstring name, jint threadId){
 	// Step 1: Convert the JNI String (jstring) into C-String (char*)
 	const char *Name = env->GetStringUTFChars(name, NULL);
-	if (NULL == Name) return NULL;
+	if (NULL == Name) return 0;
 
 	int result;
 	result = KM->CompileAndLoadCoff(Name, threadId);
@@ -455,7 +453,7 @@ JNIEXPORT jint JNICALL Java_com_dynomotion_kmotionx_KMotion_CompileAndLoadCoff__
   (JNIEnv *env, jobject thisObj, jstring name, jint threadId, jbyteArray err, jint maxErrLength){
 	// Step 1: Convert the JNI String (jstring) into C-String (char*)
 	const char *Name = env->GetStringUTFChars(name, NULL);
-	if (NULL == Name) return NULL;
+	if (NULL == Name) return 0;
 
 	int result;
 	jbyte* jErr = env->GetByteArrayElements(err, NULL);
@@ -468,7 +466,7 @@ JNIEXPORT jint JNICALL Java_com_dynomotion_kmotionx_KMotion_CompileAndLoadCoff__
 	Err = (char*)jErr;
 
 	result = KM->CompileAndLoadCoff(Name, threadId, Err, maxErrLength);
-	env->ReleaseByteArrayElements(err, jErr, NULL);
+	env->ReleaseByteArrayElements(err, jErr, 0);
 	env->ReleaseStringUTFChars(name, Name);  // release resources
 	return result;
 }
@@ -483,10 +481,10 @@ JNIEXPORT jint JNICALL Java_com_dynomotion_kmotionx_KMotion_Compile
   (JNIEnv *env, jobject thisObj, jstring name, jstring outFile, jint boardType, jint threadId, jbyteArray err, jint maxErrLength){
 	// Step 1: Convert the JNI String (jstring) into C-String (char*)
 	const char *Name = env->GetStringUTFChars(name, NULL);
-	if (NULL == Name) return NULL;
+	if (NULL == Name) return 0;
 
 	const char *OutFile = env->GetStringUTFChars(outFile, NULL);
-	if (NULL == OutFile) return NULL;
+	if (NULL == OutFile) return 0;
 
 	int result;
 	jbyte* jErr = env->GetByteArrayElements(err, NULL);
@@ -499,7 +497,7 @@ JNIEXPORT jint JNICALL Java_com_dynomotion_kmotionx_KMotion_Compile
 	Err = (char*)jErr;
 
 	result = KM->Compile(Name, OutFile, boardType, threadId, Err, maxErrLength);
-	env->ReleaseByteArrayElements(err, jErr, NULL);
+	env->ReleaseByteArrayElements(err, jErr, 0);
 	env->ReleaseStringUTFChars(name, Name);  // release resources
 	env->ReleaseStringUTFChars(outFile, OutFile);  // release resources
 	return result;
@@ -537,7 +535,7 @@ JNIEXPORT void JNICALL Java_com_dynomotion_kmotionx_KMotion_ConvertToOut
 	OutFile = (char*)jOutFile;
 
 	KM->ConvertToOut(threadId, InFile, OutFile, maxLength);
-	env->ReleaseByteArrayElements(outFile, jOutFile, NULL);
+	env->ReleaseByteArrayElements(outFile, jOutFile, 0);
 	env->ReleaseStringUTFChars(inFile, InFile);  // release resources
 }
 
@@ -610,7 +608,7 @@ JNIEXPORT jint JNICALL Java_com_dynomotion_kmotionx_KMotion_ExtractCoffVersionSt
 
    // Step 1: Convert the JNI String (jstring) into C-String (char*)
    const char *InFile = env->GetStringUTFChars(inFile, NULL);
-   if (NULL == InFile) return NULL;
+   if (NULL == InFile) return 0;
 
 	int result;
 	jbyte* jVersion = env->GetByteArrayElements(version, NULL);
@@ -876,7 +874,7 @@ JNIEXPORT jint JNICALL Java_com_dynomotion_kmotionx_KMotion_Interpret
 
 	int result;
 	const char *FileName = env->GetStringUTFChars(fileName, NULL);
-	if (NULL == FileName) return NULL;
+	if (NULL == FileName) return 0;
 
 	result = Interpreter->Interpret(boardType,FileName,start,end,restart,StatusCallback,CompleteCallback);
 	env->ReleaseStringUTFChars(fileName,FileName);

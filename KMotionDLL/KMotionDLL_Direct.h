@@ -38,7 +38,6 @@ enum
 class KMOTIONDLL_API CKMotionDLL_Direct {
 public:
 	CKMotionDLL_Direct(void);
-
 	int MapBoardToIndex(int board);
 	int WriteLineReadLine(int board, const char *s, char *response);
 	int WriteLine(int board, const char *s);

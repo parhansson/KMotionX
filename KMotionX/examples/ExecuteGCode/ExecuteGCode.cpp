@@ -9,8 +9,7 @@
 //#define BOOL int
 //#define FALSE 0
 #include "../../GCodeInterpreter/StdAfx.h"
-//#include "stdafx.h"
-#include <CString.h>
+
 
 
 /*
@@ -38,9 +37,8 @@ printf("text=%s\n", msg->text);
 // Global Variables
 
 CGCodeInterpreter *Interpreter;
-CString GCodeOutput;
 int	ErrorLineNo, CurrentLineNo;
-CString ErrorMsg;
+char ErrorMsg[512];
 int	exitcode;
 bool Finished;
 void CompleteCallback(int status, int line_no, int sequence_number, const char *err);
@@ -52,22 +50,21 @@ void CompleteCallback(int status, int line_no, int sequence_number, const char *
 {
 	printf("CALLBACK Complete -- status: %d line: %d  error: %s\n", status,line_no,err);
 	ErrorLineNo=line_no;
-	ErrorMsg.append(err);
+	strcpy(ErrorMsg,err);
 	exitcode=status;
 	Finished=true;
 }
 
 void StatusCallback(int line_no, const char *msg)
 {
-	printf("CALLBACK Status -- line: %d message: %s\n", line_no,msg);
+	printf("CALLBACK Status -- line: %d message:\n%s\n", line_no,msg);
 	CurrentLineNo=line_no;
-	GCodeOutput.append(msg);
 }
 
 int UserCallback(const char *msg)
 {
 //	MessageBox(NULL,msg,"SimpleGCode",MB_OK);
-    printf("CALLBACK User -- message: %s\n",msg);
+    printf("CALLBACK User -- message: \n%s\n",msg);
 	return 0;
 }
 
@@ -139,6 +136,13 @@ int main(int argc, char* argv[])
 	// configure the Action for MCode 105 to do a Callback
 	Interpreter->McodeActions[MCODE_ACTIONS_M100_OFFSET+5].Action = M_Action_Callback;
 
+	// configure the Action for MCode 4to execute a program in thread 3
+	Interpreter->McodeActions[4].Action = M_Action_Program_wait_sync;
+	Interpreter->McodeActions[4].dParams[0] = 3;
+	char cfile[256];
+	sprintf(cfile,"%s/../C Programs/BlinkKFLOP.c",rootDir);
+	strcpy(Interpreter->McodeActions[4].String,cfile);
+
 	//CM->m_Simulate = true;
 	Interpreter->SetUserMCodeCallback(UserMCodeCallback);  // Set this to handle MCode Callbacks
 	// Execute the GCode!
@@ -164,7 +168,7 @@ int main(int argc, char* argv[])
 	if (exitcode)
 	{
 		printf("Error in line %d\n",ErrorLineNo);
-		printf("%s\n",ErrorMsg.c_str());
+		printf("%s\n",ErrorMsg);
 	}
 	else
 	{

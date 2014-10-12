@@ -602,10 +602,11 @@ int CKinematics::ReadGeoTable(const char *name)
 	if (name[0]==0) return 0; // passing in no file turns off geocorrection
 	
 	FILE *f = fopen(name,"rt");
-
+	char message[100+MAX_PATH];
 	if (!f)
 	{
-		AfxMessageBox((CString)"Unable to open Geometric Correction File : " + name);
+		sprintf(message, "Unable to open Geometric Correction File : %s",name);
+		AfxMessageBox(message);
 		return 1;
 	}
 
@@ -614,7 +615,8 @@ int CKinematics::ReadGeoTable(const char *name)
 	if (result != 2 || NRows < 2 || NRows > 4000 || NCols < 2 || NCols > 4000)
 	{
 		fclose(f);
-		AfxMessageBox((CString)"Invalid Geometric Correction File (NRows and NCols) : " + name);
+		sprintf(message, "Invalid Geometric Correction File (NRows and NCols) : %s",name);
+		AfxMessageBox(message);
 		return 1;
 	}
 
@@ -623,7 +625,8 @@ int CKinematics::ReadGeoTable(const char *name)
 	if (result != 2)
 	{
 		fclose(f);
-		AfxMessageBox((CString)"Invalid Geometric Correction File (GeoSpacingX and GeoSpacingY) : " + name);
+		sprintf(message, "Invalid Geometric Correction File (GeoSpacingX and GeoSpacingY) : %s",name);
+		AfxMessageBox(message);
 		return 1;
 	}
 
@@ -632,7 +635,8 @@ int CKinematics::ReadGeoTable(const char *name)
 	if (result != 2)
 	{
 		fclose(f);
-		AfxMessageBox((CString)"Invalid Geometric Correction File (GeoOffsetX and GeoOffsetY) : " + name);
+		sprintf(message, "Invalid Geometric Correction File (GeoOffsetX and GeoOffsetY) : %s",name);
+		AfxMessageBox(message);
 		return 1;
 	}
 
@@ -646,7 +650,8 @@ int CKinematics::ReadGeoTable(const char *name)
 		if (result != 5 || row < 0 || row >= NRows || col < 0 || col >= NCols)
 		{
 			fclose(f);
-			AfxMessageBox((CString)"Invalid Geometric Correction File (invalid data value) : " + name);
+			sprintf(message, "Invalid Geometric Correction File (invalid data value) : %s",name);
+			AfxMessageBox(message);
 			return 1;
 		}
 

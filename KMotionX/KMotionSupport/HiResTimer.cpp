@@ -28,8 +28,11 @@ either expressed or implied, of the FreeBSD Project.
  */
 // HiResTimer.cpp: implementation of the CHiResTimer class.
 
-//#include "stdafx.h"
 #include <HiResTimer.h>
+#include <sys/time.h>
+#include <string.h>
+#include <stdio.h>
+#include "MessageBox.h"
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -81,18 +84,18 @@ void CHiResTimer::Split()
 	//VERIFY (nSplit<MAX_TIMES);
 
 	QueryPerformanceCounter(&Times[nSplit]);
-	Desc[nSplit]="";
+	Desc[nSplit][0]='\0';
 	nSplit++;
 }
 
 // grab a split time measurement
 
-void CHiResTimer::Split(CString s)
+void CHiResTimer::Split(const char * s)
 {
 	if (nSplit>=MAX_TIMES) return; 
 
 	QueryPerformanceCounter(&Times[nSplit]);
-	Desc[nSplit]=s;
+	strcpy(Desc[nSplit],s);
 	nSplit++;
 }
 
@@ -102,7 +105,6 @@ void CHiResTimer::Split(CString s)
 double CHiResTimer::Elapsed_Seconds()
 {
 	int64_t t1;
-	//printf("%s:%d\n", __FILE__, __LINE__);
 	QueryPerformanceCounter(&t1);
 
 	int64_t T0,T1,F;
@@ -116,8 +118,8 @@ double CHiResTimer::Elapsed_Seconds()
 	F=Freq;
 
 	result = (T1-T0) / ((double) F);
-	//printf("%s:%d Result %lf\n", __FILE__, __LINE__,result);
-	//printf("Elapsed_Seconds \n\tusec=%lld\n\tdecimalusec%f\n", (long long)(T1-T0), result);
+	//debug("Result %lf\n",result);
+	//debug("Elapsed_Seconds \n\tusec=%lld\n\tdecimalusec%f\n", (long long)(T1-T0), result);
 	return result;
 
 }
@@ -125,9 +127,9 @@ double CHiResTimer::Elapsed_Seconds()
 
 void CHiResTimer::DisplayDiff(int t1, int t0)
 {
-	CString s;
+	char s[128];
 
-	s.Format("From sample %d to %d was %f us",t1,t0,Diff_us(t1,t0));
+	sprintf(s, "From sample %d to %d was %f us",t1,t0,Diff_us(t1,t0));
 
 	if (MessageDisplayed) return;
 
@@ -139,19 +141,17 @@ void CHiResTimer::DisplayDiff(int t1, int t0)
 
 void CHiResTimer::DisplaySplit()
 {
-	CString s,s2;
+	char s[MAX_TEXT + 96];
 
 	for (int i=0; i<nSplit-1; i++)
 	{
-		s.Format("From sample %d to %d was %10.2f us %s",i+1,i,Diff_us(i+1,i),Desc[i+1].GetBuffer());
-
-		s2= s2+s+"\r";
+		sprintf(s,"From sample %d to %d was %10.2f us %s\n",i+1,i,Diff_us(i+1,i),Desc[i+1]);
 	}
 
 	if (MessageDisplayed) return;
 
 	MessageDisplayed=true;
-	MessageBox(0/*NULL*/,s2,"Timer",MB_OK|MB_SYSTEMMODAL);
+	MessageBox(0,s,"Timer",MB_OK|MB_SYSTEMMODAL);
 	MessageDisplayed=false;
 }
 

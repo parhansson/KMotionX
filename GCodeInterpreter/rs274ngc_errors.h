@@ -1,4 +1,4 @@
-char * _rs274ngc_errors[] = {
+const char * _rs274ngc_errors[] = {
 /*   0 */ "No error",
 /*   1 */ "No error",
 /*   2 */ "No error",

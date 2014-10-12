@@ -13,10 +13,8 @@
 #endif // _MSC_VER > 1000
 
 #define MAX_TIMES 100
-
-#include <CString.h>
-#include "MessageBox.h"
-#include <sys/time.h>
+#define MAX_TEXT 256
+#include <inttypes.h>
 
 class CHiResTimer  
 {
@@ -29,12 +27,12 @@ public:
 	void DisplayDiff(int t1, int t0);
 	double Elapsed_Seconds();
 	void Split();
-	void Split(CString s);
+	void Split(const char *s);
 	int nSplit;
 	void DisplaySplit();
 	int64_t Times[MAX_TIMES];
 	int64_t Freq;
-	CString Desc[MAX_TIMES];
+	char Desc[MAX_TIMES][MAX_TEXT];
 	bool MessageDisplayed;
 private:
 	int QueryPerformanceCounter(int64_t *lpPerformanceCount);

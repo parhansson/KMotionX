@@ -12,8 +12,10 @@
 
 #include <afxmt.h>
 #include "../DSP_KFLOP/PC-DSP.h"
+#ifndef _WINDOWS
 #include <SocketWrapper.h>
-
+//#include <CMutex.h>
+#endif
 // The following ifdef block is the standard way of creating macros which make exporting 
 // from a DLL simpler. All files within this DLL are compiled with the KMOTIONDLL_EXPORTS
 // symbol defined on the command line. this symbol should not be defined on any project
@@ -136,8 +138,9 @@ public:
 	int /*CKMotionDLL::*/ExtractCoffVersionString(const char *InFile, char *Version);
     int GetStatus(MAIN_STATUS& status, bool lock);
 	void DoErrMsg(const char *s);
-
-
+#ifndef _WINDOWS
+	char MainPathRoot[256];
+#endif
 private:
 
 	CMutex *PipeMutex;
@@ -152,16 +155,13 @@ private:
 	int Pipe(const char *s, int n, char *r, int *m);
 	int LaunchServer();
 
-	CString ExtractPath(CString InFile);
 
+	void ExtractPath(const char *InFile, char *path);
 #ifdef _WINDOWS
 	CFile PipeFile;
 #else
-	//int PipeFile;
 	SocketWrapper PipeFile;
-	CString MainPathDLL;
-	CString MainPath;
-	CString MainPathRoot;
+	char MainPath[256];
 #endif
 
 };

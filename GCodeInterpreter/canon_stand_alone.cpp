@@ -24,17 +24,6 @@ stdout to a file.
 #include "StdAfx.h"
 #include "rs274ngc_return.h"
 
-#ifndef _WINDOWS
-long GetTickCount()
-{
-    struct timeval tv;
-    if(gettimeofday(&tv, NULL) != 0)
-        return 0;
-
-    return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
-}
-#endif
-
 #define AND              &&
 #define IS               ==
 #define ISNT             !=
@@ -45,8 +34,8 @@ long GetTickCount()
 
 
 
-CString Output;
-CString ErrorOutput;
+char Output[MAX_LINE];
+char ErrorOutput[MAX_LINE];
 CGCodeInterpreter *GC;
 
 
@@ -72,80 +61,80 @@ if (line_number IS -1)
     sprintf(s,"N%d ", line_number);
 
 //  Output += s;
-  Output += "-"; // this looks a little nicer in the KMotion app
+  strcat(Output,"-"); // this looks a little nicer in the KMotion app
 }
 
 #define PRINT0(control) if (1)               \
           {										\
 		   char _s[256];						 \
 		   sprintf(_s,"%5d ", line_number++);    \
-		   Output += _s;                      \
+		   strcat(Output,_s);                  \
            print_nc_line_number();           \
            sprintf(_s,control);                  \
 		   if ('\n'==_s[strlen(_s)-1]) _s[strlen(_s)-1]=0; \
-		   Output += _s;                      \
+		   strcat(Output,_s);                  \
 		   sprintf(_s,"@%.3f\r\n",((double)GetTickCount())/1000.0); \
-		   Output += _s;                      \
+		   strcat(Output,_s);                  \
           } else
 #define PRINT1(control, arg1) if (1)         \
           {										\
 		   char _s[256];						 \
 		   sprintf(_s,"%5d ", line_number++);    \
-		   Output += _s;                      \
+		   strcat(Output,_s);                  \
            print_nc_line_number();           \
            sprintf(_s,control, arg1);            \
 		   if ('\n'==_s[strlen(_s)-1]) _s[strlen(_s)-1]=0; \
-		   Output += _s;                      \
+		   strcat(Output,_s);                  \
 		   sprintf(_s,"@%.3f\r\n",((double)GetTickCount())/1000.0); \
-		   Output += _s;                      \
+		   strcat(Output,_s);                  \
           } else
 #define PRINT2(control, arg1, arg2) if (1)   \
           {										\
 		   char _s[256];						 \
 		   sprintf(_s,"%5d ", line_number++);    \
-		   Output += _s;                      \
+		   strcat(Output,_s);                  \
            print_nc_line_number();           \
            sprintf(_s,control, arg1, arg2);      \
 		   if ('\n'==_s[strlen(_s)-1]) _s[strlen(_s)-1]=0; \
-		   Output += _s;                      \
+		   strcat(Output,_s);                  \
 		   sprintf(_s,"@%.3f\r\n",((double)GetTickCount())/1000.0); \
-		   Output += _s;                      \
+		   strcat(Output,_s);                  \
           } else
 #define PRINT3(control, arg1, arg2, arg3) if (1)         \
           {										\
 		   char _s[256];						 \
 		   sprintf(_s,"%5d ", line_number++);    \
-		   Output += _s;                      \
+		   strcat(Output,_s);                  \
            print_nc_line_number();                       \
            sprintf(_s,control, arg1, arg2, arg3);            \
 		   if ('\n'==_s[strlen(_s)-1]) _s[strlen(_s)-1]=0; \
-		   Output += _s;                      \
+		   strcat(Output,_s);                  \
 		   sprintf(_s,"@%.3f\r\n",((double)GetTickCount())/1000.0); \
-		   Output += _s;                      \
+		   strcat(Output,_s);                  \
           } else
 #define PRINT4(control, arg1, arg2, arg3, arg4) if (1)   \
           {										\
 		   char _s[256];						 \
 		   sprintf(_s,"%5d ", line_number++);    \
-		   Output += _s;                      \
+		   strcat(Output,_s);                  \
            print_nc_line_number();                       \
            sprintf(_s,control, arg1, arg2, arg3, arg4);      \
 		   if ('\n'==_s[strlen(_s)-1]) _s[strlen(_s)-1]=0; \
-		   Output += _s;                      \
+		   strcat(Output,_s);                  \
 		   sprintf(_s,"@%.3f\r\n",((double)GetTickCount())/1000.0); \
-		   Output += _s;                      \
+		   strcat(Output,_s);                  \
           } else
 #define PRINT6(control, arg1, arg2, arg3, arg4, arg5, arg6) if (1) \
           {										\
 		   char _s[256];						 \
 		   sprintf(_s,"%5d ", line_number++);    \
-		   Output += _s;                      \
+		   strcat(Output,_s);                  \
            print_nc_line_number();                                 \
            sprintf(_s,control, arg1, arg2, arg3, arg4, arg5, arg6);    \
 		   if ('\n'==_s[strlen(_s)-1]) _s[strlen(_s)-1]=0; \
-		   Output += _s;                      \
+		   strcat(Output,_s);                  \
 		   sprintf(_s,"@%.3f\r\n",((double)GetTickCount())/1000.0); \
-		   Output += _s;                      \
+		   strcat(Output,_s);                  \
           } else
 
 		  
@@ -828,18 +817,10 @@ CANON_SPINDLE_MODE GET_EXTERNAL_SPINDLE_MODE()
 // An empty string may be placed in filename.
 void GET_EXTERNAL_PARAMETER_FILE_NAME(char *filename, int max_size)
 {
-	CString Name;
-
 	if (GC->VarsFile[0] == 0)
-#ifdef _WINDOWS
-		Name=(CString)(GC->CoordMotion->MainPathRoot) + "\\GCode Programs\\emc.var";
-#else
-		Name=(CString)(GC->CoordMotion->MainPathRoot) + "/GCode Programs/emc.var";
-#endif
+		sprintf(filename, "%s%cGCode Programs%cemc.var",GC->CoordMotion->MainPathRoot,PATH_SEPARATOR,PATH_SEPARATOR);
 	else
-		Name=GC->VarsFile;
-
-	strcpy(filename,Name.GetBuffer(0));
+		sprintf(filename, GC->VarsFile);
 }
 
 // returns the currently active plane

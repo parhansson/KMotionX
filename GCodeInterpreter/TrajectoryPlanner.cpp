@@ -4,11 +4,11 @@
 #include "HiResTimer.h"
 
 #ifdef DEBUG_DOWNLOAD
-extern CString ds;
+extern char ds[MAX_LINE];
 extern FILE *f;
 extern CHiResTimer DTimer;
 
-void PutString(CString s);
+void PutString(const char *s);
 void CloseDiag();
 
 
@@ -1738,7 +1738,7 @@ void MaximizeSegments()
 	double MaxEndVel0,MaxBegVel1;
 
 #ifdef DEBUG_DOWNLOAD
-	ds.Format("MaximizeSegments %f 0 0 %d\n",DTimer.Elapsed_Seconds(),nsegs);
+	sprintf(ds, "MaximizeSegments %f 0 0 %d\n",DTimer.Elapsed_Seconds(),nsegs);
 	PutString(ds);
 #endif
 
@@ -2048,9 +2048,9 @@ int tp_calc_seg_trip_states(int i)
 
 	if (VM==0 || A==0 || D==0)
 	{
-		CString s;
-		s.Format("Vel = %f Accel = %f Decel = %f",VM,A,D);
-		AfxMessageBox("Trajectory Planner has Invalid Velocity or Acceleration " + s,MB_ICONSTOP|MB_OK);
+		char s[192];
+		sprintf(s, "Trajectory Planner has Invalid Velocity or Acceleration Vel = %f Accel = %f Decel = %f",VM,A,D);
+		AfxMessageBox(s,MB_ICONSTOP|MB_OK);
 		return 1;
 	}
 

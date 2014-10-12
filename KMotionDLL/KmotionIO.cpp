@@ -69,14 +69,14 @@ bool CKMotionIO::RequestedDeviceAvail(char *Reason)
 	if (numDevs==0)
 	{
 		Mutex->Unlock();
-		if (Reason) *Reason="No KMotion devices available";
+		if (Reason) strcpy(Reason,"No KMotion devices available");
 		return false;
 	}
 
 	if (numDevs < 1 || numDevs >= MAX_BOARDS) 
 	{
 		Mutex->Unlock();
-		if (Reason) *Reason="No KMotion devices available";
+		if (Reason) strcpy(Reason,"No KMotion devices available");
 		return false;
 	}
 
@@ -150,7 +150,7 @@ bool CKMotionIO::RequestedDeviceAvail(char *Reason)
 		if (!BoardIDAssigned)
 		{
 			Mutex->Unlock();
-			if (Reason) *Reason="No KMotion devices available";
+			if (Reason) strcpy(Reason,"No KMotion devices available");
 			return false;
 		}
 	}
@@ -167,7 +167,7 @@ bool CKMotionIO::RequestedDeviceAvail(char *Reason)
 	if (i==numDevs)
 	{
 		Mutex->Unlock();
-		if (Reason) Reason->Format("KMotion not found on USB Location %08X\r\r"
+		if (Reason) sprintf(Reason,"KMotion not found on USB Location %08X\r\r"
 								   "Unable to open device",USB_Loc_ID);
 		return false;
 	}
@@ -1027,6 +1027,6 @@ int CKMotionIO::SetConsoleCallback(SERVER_CONSOLE_HANDLER *ch)
 
 int CKMotionIO::ErrorMessageBox(const char *s)
 {
-	ErrMsg = s;
+	strcpy(ErrMsg,s);
 	return 0;
 }

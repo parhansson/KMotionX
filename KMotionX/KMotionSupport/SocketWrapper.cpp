@@ -67,10 +67,9 @@ bool SocketWrapper::Open(const char* name, int mode){
 
 	remote.sun_family = AF_UNIX;
 	strcpy(remote.sun_path, name);
-	char buffer[512];
-	char *value = getcwd(buffer, 512);
-
-	printf("%s:%d Trying to connect socket %s\n",__FILE__,__LINE__, buffer);
+	//char buffer[512];
+	//getcwd(buffer, 512);
+	//debug("%s:%d Trying to connect socket %s\n",__FILE__,__LINE__, buffer);
 	int connectResult;
 #ifdef __APPLE__
 	remote.sun_len = sizeof(remote);
@@ -81,7 +80,7 @@ bool SocketWrapper::Open(const char* name, int mode){
 	connectResult = connect(socketDesc, (struct sockaddr *)&remote, len);
 #endif
 	if(connectResult == -1){
-		perror("connect failed:");
+		//perror("connect failed:");
 		return false;
 	} else {
 		return true;

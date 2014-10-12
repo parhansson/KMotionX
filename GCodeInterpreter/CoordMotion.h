@@ -114,7 +114,7 @@ public:
 	int DoRateAdjustments(int i0, int i1);
 	int DoRateAdjustmentsArc(int i, double radius, double theta0, double dtheta, double dcircle);
 
-	int CheckSoftLimits(double x, double y, double z, double a, double b, double c, CString &errmsg);
+	int CheckSoftLimits(double x, double y, double z, double a, double b, double c, char *errmsg);
 	int CheckSoftLimitsArc(double XC, double YC, double Z1,
 						   double SoftLimitPosX,double SoftLimitNegX,
 						   double SoftLimitPosY,double SoftLimitNegY,
@@ -122,7 +122,7 @@ public:
 						   double a, double b, double c, BOOL DirIsCCW, 
 						   double radius, double theta0, double dtheta, 
 						   int x_axis,int y_axis,int z_axis,
-						   char XSTR, char YSTR, char ZSTR, CString &errmsg);
+						   char XSTR, char YSTR, char ZSTR, char *errmsg);
 	
 	CKMotionDLL *KMotionDLL;
 
@@ -181,9 +181,9 @@ private:
 	ARC_FEED_SIX_AXIS_CALLBACK *m_ArcFeedSixAxisCallback;
 	bool m_SegmentsStartedExecuting;
 	int m_NumLinearNotDrawn;
-	CString WriteLineBuffer;
+	char WriteLineBuffer[MAX_LINE];
 	double WriteLineBufferTime;
-	int PutWriteLineBuffer(CString s, double Time);
+	int PutWriteLineBuffer(const char *s, double Time);
 	int FlushWriteLineBuffer();
 	int ClearWriteLineBuffer();
 	int CommitPendingSegments();

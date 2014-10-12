@@ -65,7 +65,7 @@ int CGCodeInterpreter::Interpret(
 	m_restart=restart;
 	m_CompleteFn=CompleteFn;
 	m_StatusFn=StatusFn;
-	m_InFile=fname;
+	strcpy(m_InFile,fname);
 	m_Halt=false;
 	CoordMotion->ClearHalt();
 
@@ -136,30 +136,29 @@ void CGCodeInterpreter::SetVarsFile(char *f)
 
 int CGCodeInterpreter::rs274ErrorExit(int status)
 {
-	CString ErrDescr;
-
+	char ErrDescr[200];
+	ErrDescr[0]='\0';
 	rs274ngc_close();
 
 	if (CoordMotion->GetAbort())
 	{
 		if (CoordMotion->m_AxisDisabled)
 		{
-			ErrDescr="Axis Disabled - GCode Aborted";
+			strcpy(ErrDescr,"Axis Disabled - GCode Aborted");
 			status=1000;
 		}
 		else
 		{
-			ErrDescr="GCode Aborted";
+			strcpy(ErrDescr,"GCode Aborted");
 			status=1001;
 		}
 	}
 	else
 	{
-		rs274ngc_error_text(status,ErrDescr.GetBuffer(200),200);
-		ErrDescr.ReleaseBuffer();
+		rs274ngc_error_text(status,ErrDescr,200);
 	}
 
-	ErrorOutput+=ErrDescr;
+	strcat(ErrorOutput,ErrDescr);
 
 	return status;
 }
@@ -182,7 +181,7 @@ int CGCodeInterpreter::InitializeInterp(void)
 {
 	int status;
 
-	Output="";
+	Output[0]='\0';
 	line_number=0;
 
 	// initialize the trajectory planner
@@ -221,9 +220,8 @@ int CGCodeInterpreter::DoExecute()
 	char trash[INTERP_TEXT_SIZE];
 	char * read_ok;
 	int program_status;
-	CString OutputCRLF;
 
-	ErrorOutput="";
+	ErrorOutput[0]='\0';
 
 	program_status = RS274NGC_OK;
 
@@ -275,15 +273,15 @@ int CGCodeInterpreter::DoExecute()
 		if (result == 1)
 		{
 			if (CoordMotion->m_AxisDisabled)
-				ErrorOutput="Unable to read defined coordinate system axis positions - Axis Disabled ";
+				strcat(ErrorOutput,"Unable to read defined coordinate system axis positions - Axis Disabled ");
 			else
-				ErrorOutput="Unable to read defined coordinate system axis positions ";
+				strcat(ErrorOutput,"Unable to read defined coordinate system axis positions ");
 		}
 
 		if (result != 0) return 1005;
 	}
 
-	status = rs274ngc_open(m_InFile.GetBuffer(0)); 
+	status = rs274ngc_open(m_InFile);
 	if (status != RS274NGC_OK)	return rs274ErrorExit(status);
 
 	if (_setup.percent_flag == ON)
@@ -296,7 +294,7 @@ int CGCodeInterpreter::DoExecute()
 		read_ok = fgets(trash, INTERP_TEXT_SIZE,_setup.file_pointer);
 		if (!read_ok) 
 		{
-			ErrorOutput="Error while reading GCode file ";
+			strcat(ErrorOutput,"Error while reading GCode file ");
 			return NCE_A_FILE_IS_ALREADY_OPEN;
 		}
 	}
@@ -311,12 +309,16 @@ int CGCodeInterpreter::DoExecute()
 
 		SetupTracker.InsertState(&_setup);  // save the interpreter state
 		
-		// give output to caller			
-		Output.Replace("\n","\r\n");
-
+		// give output to caller
+#ifdef _WINDOWS
+		//not needed on linux
+		CString tmpStr = Output;
+		tmpStr.Replace("\n","\r\n");
+		strcpy(Output, tmpStr);
+#endif
 		m_StatusFn(m_CurrentLine,Output);
 		
-		Output="";  // clear it
+		Output[0]='\0';  // clear it
 
 
 		if (((m_end!=-1)&&(m_CurrentLine>m_end)) || (CoordMotion->m_Simulate && m_Halt) || CoordMotion->GetAbort())
@@ -449,7 +451,7 @@ void InvokeStatusCallback(int line_no, const char *msg)
 int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 {
 	MCODE_ACTION *p;
-	CString s;
+	char s[MAX_LINE];
 	double value;
 	int ivalue,ipersist;
 
@@ -472,12 +474,12 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 	case M_Action_Setbit:
 		if (FlushBeforeUnbufferedOperation)  // false for User button
 		{
-			s.Format("SetStateBitBuf%d=%d",(int)p->dParams[0],(int)p->dParams[1]);
+			sprintf(s, "SetStateBitBuf%d=%d",(int)p->dParams[0],(int)p->dParams[1]);
 			if (CoordMotion->DoKMotionBufCmd(s)) return 1;
 		}
 		else
 		{
-			s.Format("SetStateBit%d=%d",(int)p->dParams[0],(int)p->dParams[1]);
+			sprintf(s, "SetStateBit%d=%d",(int)p->dParams[0],(int)p->dParams[1]);
 			if (CoordMotion->DoKMotionCmd(s,FlushBeforeUnbufferedOperation)) return 1;
 		}
 		break;
@@ -486,9 +488,9 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 		if (FlushBeforeUnbufferedOperation)  // false for User button (doesn't make sense for button)
 		{
 			if (p->dParams[1]==0)
-				s.Format("WaitNotBitBuf%d",(int)p->dParams[0]);
+				sprintf(s, "WaitNotBitBuf%d",(int)p->dParams[0]);
 			else
-				s.Format("WaitBitBuf%d",(int)p->dParams[0]);
+				sprintf(s, "WaitBitBuf%d",(int)p->dParams[0]);
 
 			if (CoordMotion->DoKMotionBufCmd(s)) return 1;
 		}
@@ -497,16 +499,16 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 	case M_Action_SetTwoBits:
 		if (FlushBeforeUnbufferedOperation)  // false for User button
 		{
-			s.Format("SetStateBitBuf%d=%d",(int)p->dParams[0],(int)p->dParams[1]);
+			sprintf(s, "SetStateBitBuf%d=%d",(int)p->dParams[0],(int)p->dParams[1]);
 			if (CoordMotion->DoKMotionBufCmd(s)) return 1;
-			s.Format("SetStateBitBuf%d=%d",(int)p->dParams[2],(int)p->dParams[3]);
+			sprintf(s, "SetStateBitBuf%d=%d",(int)p->dParams[2],(int)p->dParams[3]);
 			if (CoordMotion->DoKMotionBufCmd(s)) return 1;
 		}
 		else
 		{
-			s.Format("SetStateBit%d=%d",(int)p->dParams[0],(int)p->dParams[1]);
+			sprintf(s, "SetStateBit%d=%d",(int)p->dParams[0],(int)p->dParams[1]);
 			if (CoordMotion->DoKMotionCmd(s,FlushBeforeUnbufferedOperation)) return 1;
-			s.Format("SetStateBit%d=%d",(int)p->dParams[2],(int)p->dParams[3]);
+			sprintf(s, "SetStateBit%d=%d",(int)p->dParams[2],(int)p->dParams[3]);
 			if (CoordMotion->DoKMotionCmd(s,FlushBeforeUnbufferedOperation)) return 1;
 		}
 		break;
@@ -516,7 +518,7 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 		ivalue = (int)floor(value+0.5); 
 		if (ivalue < (int)p->dParams[3]) ivalue = (int)p->dParams[3];
 		if (ivalue > (int)p->dParams[4]) ivalue = (int)p->dParams[4];
-		s.Format("DAC%d=%d",(int)p->dParams[0],ivalue);
+		sprintf(s, "DAC%d=%d",(int)p->dParams[0],ivalue);
 		if (CoordMotion->DoKMotionCmd(s,FlushBeforeUnbufferedOperation)) return 1;
 		break;
 
@@ -529,11 +531,12 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 			if (CoordMotion->WaitForSegmentsFinished(TRUE)) {CoordMotion->SetAbort(); return 1;}
 		}
 
-
-		s = p->String;
-		s = s.Right(4);
-		s.MakeLower();
-		if (s.Right(4) == ".ngc")
+		s[0] = '\0';
+		if(strlen(p->String) >= 4){
+			strcpy(s,p->String+ strlen(p->String) -4);
+			_strlwr(s);
+		}
+		if(s[0] != '\0' && strcmp(s,".ngc")==0)
 		{
 			if (_setup.file_pointer!= NULL)
 			{
@@ -571,7 +574,7 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 			{
 				if (i==6)  // tool change
 				{
-					s.Format("SetPersistHex %d %x",ipersist, p_setup->selected_tool_slot);
+					sprintf(s, "SetPersistHex %d %x",ipersist, p_setup->selected_tool_slot);
 					if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 				}
 				else if (i==10)  // set speed
@@ -587,7 +590,7 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 						else
 							fspeed *= 12.0f/60.0f;
 					}
-					s.Format("SetPersistHex %d %x",ipersist, *(int *)&fspeed);
+					sprintf(s, "SetPersistHex %d %x",ipersist, *(int *)&fspeed);
 					if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 				}
 				else
@@ -599,7 +602,7 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 					if (p_setup->block1.p_flag)
 					{
 						float p = (float)p_setup->block1.p_number;
-						s.Format("SetPersistHex %d %x",ipersist, *(int *)&p);
+						sprintf(s, "SetPersistHex %d %x",ipersist, *(int *)&p);
 						if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 						ipersist++;
 						count++;
@@ -608,7 +611,7 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 					if (p_setup->block1.q_flag)
 					{
 						float q = (float)p_setup->block1.q_number;
-						s.Format("SetPersistHex %d %x",ipersist, *(int *)&q);
+						sprintf(s, "SetPersistHex %d %x",ipersist, *(int *)&q);
 						if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 						ipersist++;
 						count++;
@@ -617,7 +620,7 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 					if (p_setup->block1.r_flag)
 					{
 						float r = (float)p_setup->block1.r_number;
-						s.Format("SetPersistHex %d %x",ipersist, *(int *)&r);
+						sprintf(s, "SetPersistHex %d %x",ipersist, *(int *)&r);
 						if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 						ipersist++;
 						count++;
@@ -625,7 +628,7 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 	
 					if (count==0)  // if no parameters just set the MCode number
 					{
-						s.Format("SetPersistHex %d %x",ipersist,i);
+						sprintf(s, "SetPersistHex %d %x",ipersist,i);
 						if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 					}
 				}
@@ -635,42 +638,42 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 	
 			if (p->String[0])
 			{
-				CString Err;
+				char Err[500];
 	
-				if (CoordMotion->KMotionDLL->CompileAndLoadCoff(p->String, (int)p->dParams[0], Err.GetBuffer(500), 499))
+				if (CoordMotion->KMotionDLL->CompileAndLoadCoff(p->String, (int)p->dParams[0], Err, 499))
 				{
-					Err.ReleaseBuffer();
-					CoordMotion->KMotionDLL->DoErrMsg("Error Compiling and Loading KMotion Program\r\r" + ((CString)p->String) + "\r\r" + Err);
+					char message[1024];
+					sprintf(message,"Error Compiling and Loading KMotion Program\r\r%s\r\r%s", p->String, Err );
+					CoordMotion->KMotionDLL->DoErrMsg(message);
 					return 1;
 				}
 			}
 	
 			// Now execute the thread!
 	
-			s.Format("Execute%d",(int)p->dParams[0]);
+			sprintf(s, "Execute%d",(int)p->dParams[0]);
 			if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 	
 			if (p->Action == M_Action_Program_wait || p->Action == M_Action_Program_wait_sync)
 			{
-				CString response;
+				char response[MAX_LINE];
 	
 				int count=0;
 	
-				s.Format("CheckThread%d",(int)p->dParams[0]);
+				sprintf(s, "CheckThread%d",(int)p->dParams[0]);
 				do
 				{
 					if (count++) Sleep(10);
 					
-					if (CoordMotion->KMotionDLL->WriteLineReadLine(s,response.GetBufferSetLength(MAX_LINE))) 
+					if (CoordMotion->KMotionDLL->WriteLineReadLine(s,response))
 					{
 						CoordMotion->SetAbort(); 
 						return 1;
 					}
-					response.ReleaseBuffer();
 	
 					if (CoordMotion->GetAbort()) return 1;
 				}
-				while (response!="0");
+				while (strcmp(response,"0")!=0);
 			}
 	
 			if (p->Action == M_Action_Program_wait_sync)
@@ -683,9 +686,9 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 					                                                               &_setup.AA_current,&_setup.BB_current,&_setup.CC_current))
 				{
 					if (CoordMotion->m_AxisDisabled)
-						ErrorOutput="Unable to read defined coordinate system axis positions - Axis Disabled ";
+						strcat(ErrorOutput,"Unable to read defined coordinate system axis positions - Axis Disabled ");
 					else
-						ErrorOutput="Unable to read defined coordinate system axis positions ";
+						strcat(ErrorOutput,"Unable to read defined coordinate system axis positions ");
 	
 					return 1;
 				}
@@ -722,16 +725,17 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 		}
 
 		// we will be executing a PC Program pass any related parameters
-		s="";
-		CString s0;
+		//s="";
+		s[0]='\0';
+		char s0[32];
 		if (i==6)  // tool change
 		{
-			s.Format(" %d",p_setup->selected_tool_slot);
+			sprintf(s, " %d",p_setup->selected_tool_slot);
 		}
 		else if (i==10)  // set speed
 		{
 			float fspeed = (float)(p_setup->speed * CoordMotion->GetSpindleRateOverride());
-			s.Format(" %f",fspeed);
+			sprintf(s, " %f",fspeed);
 		}
 		else
 		{
@@ -741,29 +745,30 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 
 			if (p_setup->block1.p_flag)
 			{
-				s0.Format(" %f", p_setup->block1.p_number);
-				s=s+s0;
+				sprintf(s0, " %f", p_setup->block1.p_number);
+				strcat(s,s0);
 			}
 
 			if (p_setup->block1.q_flag)
 			{
-				s0.Format(" %f", p_setup->block1.q_number);
-				s=s+s0;
+				sprintf(s0, " %f", p_setup->block1.q_number);
+				strcat(s,s0);
 			}
 
 			if (p_setup->block1.r_flag)
 			{
-				s0.Format(" %f", p_setup->block1.r_number);
-				s=s+s0;
+				sprintf(s0, " %f", p_setup->block1.r_number);
+				strcat(s,s0);
 			}
 		}
-
-		int result = ExecutePC(p->String+s);  // call the executable with parameters
+		char pcCmd[MAX_LINE];
+		sprintf(pcCmd,"%s%s",p->String,s);
+		int result = ExecutePC(pcCmd);  // call the executable with parameters
 		if (result)
 		{
-			CString Err;
+			char Err[350];
 
-			Err.Format("Error Executing PC Program:\r\r%s\r\r"
+			sprintf(Err,"Error Executing PC Program:\r\r%s\r\r"
 				"Return code = %d\r\rAbort?",p->String,result);
 
 			if (AfxMessageBox(Err,MB_YESNO)==IDYES) Abort();
@@ -855,12 +860,13 @@ int CGCodeInterpreter::ExecutePC(const char *Name)
     CloseHandle (pi.hThread);
 	CloseHandle (hPipeOutputRead);
 	CloseHandle (hPipeInputWrite);
-	
-	return exitcode;
 #else
-#pragma message("\n" __FILE__ " TODO implement int CGCodeInterpreter::ExecutePC(const char *Name)\n")
-	return 0;
+	int exitcode;
+	//TODO implement timeout
+	exitcode = system(Name);
+
 #endif
+	return exitcode;
 }
 
 
@@ -1174,7 +1180,7 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 	int GCodeReads,status;
 	char trash[INTERP_TEXT_SIZE];
 	char * read_ok;
-	CString s;
+	char s[MAX_LINE];
 
 	if (CurrentLine==0) return 0;  // should always be ok to set the first line
 
@@ -1210,9 +1216,9 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 		if (result == 1)
 		{
 			if (CoordMotion->m_AxisDisabled)
-				ErrorOutput="Unable to read defined coordinate system axis positions - Axis Disabled ";
+				strcpy(ErrorOutput,"Unable to read defined coordinate system axis positions - Axis Disabled ");
 			else
-				ErrorOutput="Unable to read defined coordinate system axis positions ";
+				strcpy(ErrorOutput,"Unable to read defined coordinate system axis positions ");
 		}
 
 		if (result != 0) return 1005;
@@ -1229,10 +1235,16 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 
 	// read the entire file into this array of lines
 	// up until the line we wish to start
+#ifdef _WINDOWS
 	CString *LineArray = new CString[CurrentLine+1];
-	
 	if (!LineArray) return 1;
-
+#define CLEAN_ARRAY do{ delete [] LineArray; } while( false )
+#else
+	//char *LineArray = new char[CurrentLine+1][INTERP_TEXT_SIZE+1];
+	//this works on linux due to a C++ extension
+	char LineArray[CurrentLine+1][INTERP_TEXT_SIZE+1];
+#define CLEAN_ARRAY do{ } while( false )
+#endif
 
 	for( ; GCodeReads<=CurrentLine ; GCodeReads++)
 	{
@@ -1240,11 +1252,15 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 		if (!read_ok) 
 		{
 			rs274ngc_close();
-			delete [] LineArray;
+			CLEAN_ARRAY;
 			AfxMessageBox("Error while reading GCode file ");
 			return 1;
 		}
-		LineArray[GCodeReads]=trash;
+#ifndef _WINDOWS
+		strcpy(LineArray[GCodeReads],trash);
+#else
+		LineArray[GCodeReads] = trash;
+#endif
 	}
 
 	rs274ngc_close();
@@ -1271,13 +1287,13 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 	block block0;
 	bool FirstLoop=true;
 
-	if (--GCodeReads<0) return 1;
+	if (--GCodeReads<0) {CLEAN_ARRAY; return 1;}
 
 	status = rs274ngc_read(LineArray[GCodeReads]);
 	if (status == RS274NGC_ENDFILE)
 	{
 		rs274ngc_close();
-		delete [] LineArray;
+		CLEAN_ARRAY;
 		return RS274NGC_ENDFILE;
 	}
 
@@ -1298,6 +1314,7 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 		if (status == RS274NGC_ENDFILE)
 		{
 			rs274ngc_close();
+			CLEAN_ARRAY;
 			return RS274NGC_ENDFILE;
 		}
 
@@ -1343,7 +1360,7 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 		}
 	}
 
-	delete [] LineArray;
+	CLEAN_ARRAY;
 
 	if ((block0.g_modes[6]!=G_20 || block0.g_modes[6]!=G_21) && FoundUnits)  // if units not specified on current line and different 
 	{
@@ -1369,15 +1386,15 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 
 	if (GCodeReads<0)
 	{
-		s="Unable to determine starting conditions for this line.\r\r";
-		if (!FoundX) s+="X? ";
-		if (!FoundY) s+="Y? ";
-		if (!FoundZ) s+="Z? ";
-		if (!FoundA) s+="A? ";
-		if (!FoundB) s+="B? ";
-		if (!FoundC) s+="C? ";
-		if (!FoundF && (G==-1 || G==G_1 || G==G_2 || G==G_3))s+="F? ";
-		if (!FoundUnits) s+="G20/21? ";
+		strcpy(s,"Unable to determine starting conditions for this line.\r\r");
+		if (!FoundX) strcat(s,"X? ");
+		if (!FoundY) strcat(s,"Y? ");
+		if (!FoundZ) strcat(s,"Z? ");
+		if (!FoundA) strcat(s,"A? ");
+		if (!FoundB) strcat(s,"B? ");
+		if (!FoundC) strcat(s,"C? ");
+		if (!FoundF && (G==-1 || G==G_1 || G==G_2 || G==G_3))strcat(s,"F? ");
+		if (!FoundUnits) strcat(s,"G20/21? ");
 		
 		AfxMessageBox(s);
 		return 1;
@@ -1385,7 +1402,7 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 
 	if (block0.motion_to_be==-1)
 	{
-		s.Format("New Line does not contain a G mode.  Backward scan found:\r\rG%d\r\rUse this mode?",G/10);
+		sprintf(s, "New Line does not contain a G mode.  Backward scan found:\r\rG%d\r\rUse this mode?",G/10);
 
 		if (AfxMessageBox(s,MB_YESNO)==IDNO)
 		{
@@ -1397,7 +1414,7 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 	{
 		if (FoundF)
 		{
-			s.Format("New Line does not contain a Feedrate F command.  Backward scan found:\r\rF%g\r\rUse this feedrate?",f);
+			sprintf(s, "New Line does not contain a Feedrate F command.  Backward scan found:\r\rF%g\r\rUse this feedrate?",f);
 			if (AfxMessageBox(s,MB_YESNO)==IDYES)
 			{
 				if (FoundF)
@@ -1418,15 +1435,15 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 
 	if (!FoundX0 || !FoundY0 ||!FoundZ0 ||!FoundA0 ||!FoundB0 ||!FoundC0)
 	{
-		CString v;
-		s = "Backward scan found previous position as:\r\r";
-		if (CoordMotion->x_axis >= 0){ v.Format(" X%g",x); s = s+v;}
-		if (CoordMotion->y_axis >= 0){ v.Format(" Y%g",y); s = s+v;}
-		if (CoordMotion->z_axis >= 0){ v.Format(" Z%g",z); s = s+v;}
-		if (CoordMotion->a_axis >= 0){ v.Format(" A%g",a); s = s+v;}
-		if (CoordMotion->b_axis >= 0){ v.Format(" B%g",b); s = s+v;}
-		if (CoordMotion->c_axis >= 0){ v.Format(" C%g",c); s = s+v;}
-		s=s+"\rShould a Safe Z move be made using these coordinates?";
+		char v[32];
+		strcpy(s,"Backward scan found previous position as:\r\r");
+		if (CoordMotion->x_axis >= 0){ sprintf(v," X%g",x); strcat(s,v);}
+		if (CoordMotion->y_axis >= 0){ sprintf(v," Y%g",y); strcat(s,v);}
+		if (CoordMotion->z_axis >= 0){ sprintf(v," Z%g",z); strcat(s,v);}
+		if (CoordMotion->a_axis >= 0){ sprintf(v," A%g",a); strcat(s,v);}
+		if (CoordMotion->b_axis >= 0){ sprintf(v," B%g",b); strcat(s,v);}
+		if (CoordMotion->c_axis >= 0){ sprintf(v," C%g",c); strcat(s,v);}
+		strcat(s,"\rShould a Safe Z move be made using these coordinates?");
 		if (AfxMessageBox(s,MB_YESNO)==IDNO)
 		{
 			return 1;
@@ -1468,7 +1485,7 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 
 int CGCodeInterpreter::SetCSS(int mode)  // set CSS mode
 {
-	CString s;
+	char s[64];
 
 
 	if (mode==CANON_SPINDLE_CSS)
@@ -1492,20 +1509,20 @@ int CGCodeInterpreter::SetCSS(int mode)  // set CSS mode
 		float max_rpm=1e9;
 		if (p_setup->block1.d_number!=-1) max_rpm = (float)p_setup->block1.d_number;
 
-		s.Format("SetPersistHex %d %x",PC_COMM_CSS_X_OFFSET, *(int *)&xoffset);
+		sprintf(s, "SetPersistHex %d %x",PC_COMM_CSS_X_OFFSET, *(int *)&xoffset);
 		if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 
-		s.Format("SetPersistHex %d %x",PC_COMM_CSS_X_FACTOR, *(int *)&x_factor);
+		sprintf(s, "SetPersistHex %d %x",PC_COMM_CSS_X_FACTOR, *(int *)&x_factor);
 		if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 
-		s.Format("SetPersistHex %d %x",PC_COMM_CSS_S, *(int *)&fspeed);
+		sprintf(s, "SetPersistHex %d %x",PC_COMM_CSS_S, *(int *)&fspeed);
 		if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 
-		s.Format("SetPersistHex %d %x",PC_COMM_CSS_MAX_RPM, *(int *)&max_rpm);
+		sprintf(s, "SetPersistHex %d %x",PC_COMM_CSS_MAX_RPM, *(int *)&max_rpm);
 		if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 	}
 
-	s.Format("SetPersistHex %d %x",PC_COMM_CSS_MODE, mode);
+	sprintf(s, "SetPersistHex %d %x",PC_COMM_CSS_MODE, mode);
 	if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 
 	return 0;

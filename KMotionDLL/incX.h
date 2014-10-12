@@ -9,34 +9,26 @@
 #define INCX_H_
 
 #define SOCK_PATH "kmotionsocket"
-#define MAX_PATH 256
-#define Sleep(X) usleep(1000*X)
 #define timeBeginPeriod(x)
 #define timeEndPeriod(x)
 
-#include <sys/time.h>
+//#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
-#include <time.h>
+//#include <time.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
 #include <fcntl.h>
-#include <ctype.h>
+//#include <ctype.h>
 
-#include <CString.h>
+//#include <CString.h>
 #include <WinTypes.h>
-#include <MessageBox.h>
 #include <CMutex.h>
-
-#ifndef ASSERT
-	#include <assert.h>
-	#define ASSERT(f) assert((f))
-#endif
 
 /*
 #ifndef __EXCEPTIONS
@@ -70,9 +62,6 @@
 #include "KMotionDLL_Direct.h"
 #include "KMotionLocal.h"
 #include "../DSP_KMotion/PC-DSP.h"
-
-extern char* _strupr(char* s);
-extern unsigned int timeGetTime();
 
 
 #endif /* INCX_H_ */

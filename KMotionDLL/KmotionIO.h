@@ -67,7 +67,7 @@ public:
 	bool BoardIDAssigned;
 	int USB_Loc_ID;
 	bool m_Connected;
-	CString ErrMsg;
+	char ErrMsg[MAX_LINE];
 
 protected:
 	int Token;

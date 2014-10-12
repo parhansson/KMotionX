@@ -19,8 +19,8 @@
 
 CKMotionDLL_Direct::CKMotionDLL_Direct()
 { 
-}
 
+}
 
 // Maps a specified Board Identifiers to a KMotionIO Index (or object)
 //
@@ -191,6 +191,95 @@ int CKMotionDLL_Direct::ListLocations(int *nlocations, int *list)
 		*nlocations=0;
 		return 1;
 	}
+#else
+	struct ftdi_context *ftdi;
+    if ((ftdi = ftdi_new()) == 0)
+    {
+    	debug("ftdi_new failed\n");
+    	return 1;
+    }
+
+
+	int ftStatus;
+	int i, numDevs;
+	struct ftdi_device_list *devlist, *curdev;
+	char Manufacturer[128];
+//	char SerialNumber[16];
+	char Description[64];
+	*nlocations=0;
+
+	// fill the list with -1 because driver
+	// leaves the entries for open drivers unchanged
+
+	for (i=0; i<MAX_BOARDS; i++) list[i]=-1;
+
+	numDevs = ftStatus = ftdi_usb_find_all(ftdi, &devlist, VENDOR, PRODUCT );
+	if (ftStatus < 0)
+	{
+		debug("ftdi_usb_find_all failed: %d (%s)\n",ftStatus, ftdi_get_error_string(ftdi));
+		return 1;
+	} else if (numDevs < 1 || numDevs >= MAX_BOARDS)
+	{
+		ftdi_list_free(&devlist);
+		debug("ftdi_list_free failed: %d (%s)\n",ftStatus, ftdi_get_error_string(ftdi));
+		//if (Reason) strcpy(Reason,"No KMotion devices available");
+		return 1;
+	}
+	// go through the list and remove any non-dynomotion boards
+	i = 0;
+	for (curdev = devlist; curdev != NULL; i++)
+	{
+		if ((ftStatus = ftdi_usb_get_strings(ftdi, curdev->dev, Manufacturer, 128, Description, 128, NULL, 0)) < 0)
+		{
+			debug("ftdi_usb_get_strings failed: %d (%s)\n",ftStatus, ftdi_get_error_string(ftdi));
+		   // FT_Open failed
+		   list[i] = -1;  // mark as unusable
+		}
+		else
+		{
+
+			if (strstr(Description,"KFLOP")!= NULL ||
+				strstr(Description,"KMotion")!= NULL ||
+				strstr(Description,"Dynomotion")!= NULL)
+			{
+				//KMotionBoard detected add to list
+				//save index
+				(*nlocations)++;
+				list[i] = i;
+			}
+		}
+		curdev = curdev->next;
+	}
+	ftdi_usb_close(ftdi);
+	ftdi_free(ftdi);
+
+	// note ListDevices fails if all devices are open,
+	// so if it changed the nlocations and it is reasonable
+	// assume it is valid
+
+	int k=0;
+
+	// go through and if there were any -1 that indicates
+	// that device is in use (connected) search and substitute
+	// with any assigned and connected boards
+
+	for (i=0; i<*nlocations; i++)
+	{
+		if (list[i] == -1)
+		{
+			for (;k<MAX_BOARDS;k++)
+			{
+				if (KMotionLocal.KMotionIO[k].BoardIDAssigned &&
+					KMotionLocal.KMotionIO[k].m_Connected &&
+					KMotionLocal.KMotionIO[k].USB_Loc_ID != -1)
+				{
+					list[i]=KMotionLocal.KMotionIO[k++].USB_Loc_ID;
+					break;
+				}
+			}
+		}
+	}
+
 #endif
 	return 0;
 }
@@ -281,5 +370,5 @@ const char * CKMotionDLL_Direct::GetErrMsg(int board)
 
 void CKMotionDLL_Direct::ClearErrMsg(int board)
 {
-	KMotionLocal.KMotionIO[board].ErrMsg="";
+	memset(KMotionLocal.KMotionIO[board].ErrMsg,'\0',MAX_LINE);
 }

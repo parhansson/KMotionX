@@ -4,8 +4,8 @@
 #include <stdio.h>		// FILE
 
 
-extern CString Output;
-extern CString ErrorOutput;
+extern char Output[2560];
+extern char ErrorOutput[2560];
 extern int ErrorFileLineNumber;
 extern int line_number;
 

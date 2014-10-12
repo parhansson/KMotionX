@@ -33,9 +33,9 @@
 	{											\
 		char s[256];							\
 		sprintf(s, message, item);		        \
-		ErrorOutput += s;						\
+		strcat(ErrorOutput,s);					\
 		sprintf(s, "\n");						\
-		ErrorOutput += s;						\
+		strcat(ErrorOutput,s);					\
 		return RS274NGC_ERROR;					\
 	}							                \
 	else
@@ -47,9 +47,9 @@
 		char s[256];							\
 		fclose(setup_file_port);				\
 		sprintf(s, message, item);		        \
-		ErrorOutput += s;						\
+		strcat(ErrorOutput,s);					\
 		sprintf(s, "\n");						\
-		ErrorOutput += s;						\
+		strcat(ErrorOutput,s);					\
 		return RS274NGC_ERROR;					\
 	}							                \
 	else
@@ -59,9 +59,9 @@
 		char s[256];							\
 		fclose(tool_file_port);					\
 		sprintf(s, message, item);		        \
-		ErrorOutput += s;						\
+		strcat(ErrorOutput,s);					\
 		sprintf(s, "\n");						\
-		ErrorOutput += s;						\
+		strcat(ErrorOutput,s);					\
 		return RS274NGC_ERROR;					\
 	}							                \
 	else

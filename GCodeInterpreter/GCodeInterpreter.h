@@ -183,7 +183,7 @@ public:
 	bool m_Halt;
 	int m_CurrentLine;
 	int m_GCodeReads;
-	CString m_InFile;
+	char m_InFile[MAX_PATH];
 	int m_exitcode;
 	int DoExecute();
 	int DoExecuteComplete();
