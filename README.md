@@ -4,6 +4,7 @@ KMotionX
 Linux/Unix (Mac OS X ) port of Dynomotions KMotion
 
 KMotionX is more of a patch than a port of KMotion (Except for KMotionServer). The goal has been to make as small modifications as possible to the orginal source. This will make it easier to keep up with every new release.
+    Builds with at least gcc-4.7 on linux and Visual Studio 2008 on windows.
 
 See it in action
 https://www.youtube.com/watch?v=oPTJwcre0hA
@@ -23,7 +24,7 @@ In the future I plan to make a working GUI application in Java. Wich will be pos
 - Added latest TCC compiler 0.9.26 patched with changes made in the original version TCC67 (0.9.16 or whatever version that was)
 
 #####Changes to be made
-- (DONE) Remove dependency of CString
+- (DONE) Remove dependency of CString (standard C functions)
 - Implement callback pattern for MessageBox and AfxMessageBox
 
 
@@ -188,11 +189,15 @@ make
 ```
 
 Build Tiny C Compiler
+
+(On Rasbian install texi2html and texinfo ```sudo apt-get install texi2html texinfo```)
+
+
 ```
-cd tcc-0.9.26
+cd KMotionX/tcc-0.9.26
 ./configure —enable-cross
 make
-cd ..
+cd ../..
 ```
 
 ######2. Install KFLOP device rules (Linux only)
