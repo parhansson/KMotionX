@@ -5,7 +5,9 @@
 #if !defined(AFX_KINEMATICS_H__F0E3BA96_734F_4D32_85DD_8B2FA813C991__INCLUDED_)
 #define AFX_KINEMATICS_H__F0E3BA96_734F_4D32_85DD_8B2FA813C991__INCLUDED_
 
-
+#ifndef _KMOTIONX
+#define GCODEINTERPRETER_DLL
+#endif
 // Generic helper definitions for shared library support http://gcc.gnu.org/wiki/Visibility
 #if defined _WIN32 || defined __CYGWIN__
   #define GCODEINTERPRETER_HELPER_API_IMPORT __declspec(dllimport)

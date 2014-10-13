@@ -3,16 +3,8 @@
 
 #include "dbg.h"
 
-#ifdef _WINDOWS
-//downloaded from http://msinttypes.googlecode.com/svn/trunk/stdint.h
-#include "win/stdint.h"
+#ifdef _KMOTIONX
 
-//#include <Shlwapi.h>
-//#define strcasestr StrStrI
-#define PATH_SEPARATOR '\\'
-#define LINE_BREAK "\r"
-
-#else // Not _WINDOWS
 #include <ctype.h>
 #include <MessageBox.h>
 #ifndef ASSERT
@@ -30,7 +22,6 @@
 #endif
 #define Sleep(X) usleep(1000*X)
 #define _hypot hypot
-#define __int64 int64_t
 
 #define MAX_PATH 256
 #define PATH_SEPARATOR '/'
@@ -41,6 +32,13 @@ extern char* _strlwr(char* s);
 extern long GetTickCount();
 extern unsigned int timeGetTime();
 
+#else // not _KMOTIONX Probably Windows
+
+//downloaded from http://msinttypes.googlecode.com/svn/trunk/stdint.h
+#include "win/stdint.h"
+
+#define PATH_SEPARATOR '\\'
+#define LINE_BREAK "\r"
 
 #endif
 

@@ -12,9 +12,10 @@
 
 #include <afxmt.h>
 #include "../DSP_KFLOP/PC-DSP.h"
-#ifndef _WINDOWS
+#ifdef _KMOTIONX
 #include <SocketWrapper.h>
-//#include <CMutex.h>
+#else
+#define KMOTIONDLL_DLL
 #endif
 // The following ifdef block is the standard way of creating macros which make exporting 
 // from a DLL simpler. All files within this DLL are compiled with the KMOTIONDLL_EXPORTS
@@ -45,7 +46,7 @@
 // KMOTIONDLL_LOCAL is used for non-api symbols.
 
 #ifdef KMOTIONDLL_DLL // defined if KMOTIONDLL is compiled as a DLL
-  #ifdef KMOTIONDLL_DLL_EXPORTS // defined if we are building the KMOTIONDLL DLL (instead of using it)
+  #ifdef KMOTIONDLL_EXPORTS // defined if we are building the KMOTIONDLL DLL (instead of using it)
     #define KMOTIONDLL_API KMOTIONDLL_HELPER_DLL_EXPORT
   #else
     #define KMOTIONDLL_API KMOTIONDLL_HELPER_DLL_IMPORT
@@ -62,10 +63,10 @@
 
 #define MAX_BOARDS 16
 
-#ifdef _WINDOWS
-#define COMPILER "\\TCC67.exe"
-#else
+#ifdef _KMOTIONX
 #define COMPILER "c67-tcc"
+#else
+#define COMPILER "\\TCC67.exe"
 #endif
 
 enum 
@@ -135,11 +136,11 @@ public:
 	int SetConsoleCallback(CONSOLE_HANDLER *ch);
 	int SetErrMsgCallback(ERRMSG_HANDLER *eh);
 	int CheckKMotionVersion(int *type=NULL, bool GetBoardTypeOnly=false);
-	int /*CKMotionDLL::*/ExtractCoffVersionString(const char *InFile, char *Version);
+	int ExtractCoffVersionString(const char *InFile, char *Version);
     int GetStatus(MAIN_STATUS& status, bool lock);
 	void DoErrMsg(const char *s);
-#ifndef _WINDOWS
-	char MainPathRoot[256];
+#ifdef _KMOTIONX
+	const char* getInstallRoot();
 #endif
 private:
 
@@ -157,11 +158,12 @@ private:
 
 
 	void ExtractPath(const char *InFile, char *path);
-#ifdef _WINDOWS
-	CFile PipeFile;
-#else
+#ifdef _KMOTIONX
 	SocketWrapper PipeFile;
 	char MainPath[256];
+	char MainPathRoot[256];
+#else
+	CFile PipeFile;
 #endif
 
 };

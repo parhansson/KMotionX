@@ -105,9 +105,19 @@ int AfxMessageBox(const char* value, int type){
 }
 
 int MessageBox(int whatisthis,const char* value,const char* title, int type){
+	char str[100];
 	std::cout  << "------------MessageBox: " << " OPTION: " << type << "---------\n"
 				<< value
 				<< "\n-----------------------------------------------\n"<< std::endl;
-
+	if((type & MB_OK) == MB_OK){
+		printf(">OK?");
+		fgets(str, 100, stdin);
+	}else if((type & MB_YESNO) == MB_YESNO){
+		printf(">(Yes/No)?");
+		fgets(str, 100, stdin);
+	}else if((type & MB_OKCANCEL) == MB_OKCANCEL){
+		printf(">(Ok/Cancel)?");
+		fgets(str, 100, stdin);
+	}
 	return 0;
 }

@@ -48,7 +48,7 @@ int UserMCodeCallback(int mcode);
 
 void CompleteCallback(int status, int line_no, int sequence_number, const char *err)
 {
-	printf("CALLBACK Complete -- status: %d line: %d  error: %s\n", status,line_no,err);
+	printf("Complete -- status: %d line: %d  error: %s\n", status,line_no,err);
 	ErrorLineNo=line_no;
 	strcpy(ErrorMsg,err);
 	exitcode=status;
@@ -57,22 +57,22 @@ void CompleteCallback(int status, int line_no, int sequence_number, const char *
 
 void StatusCallback(int line_no, const char *msg)
 {
-	printf("CALLBACK Status -- line: %d message:\n%s\n", line_no,msg);
+	printf("Status -- line: %d message:\n%s\n", line_no,msg);
 	CurrentLineNo=line_no;
 }
 
 int UserCallback(const char *msg)
 {
-//	MessageBox(NULL,msg,"SimpleGCode",MB_OK);
-    printf("CALLBACK User -- message: \n%s\n",msg);
+	MessageBox(0,msg,"User callback",MB_OK);
 	return 0;
 }
 
 int UserMCodeCallback(int mcode)
 {
+	char msg[100];
 	double Var1000 = Interpreter->p_setup->parameters[1000];
-	printf("CALLBACK User MCode -- %d Trigger GCode Var 1000 = %f\n",mcode,Var1000);
-    //MessageBox(NULL,s,"SimpleGCode",MB_OK);
+	sprintf(msg, "M%d Trigger GCode Var 1000 = %f\n",mcode,Var1000);
+	MessageBox(0,msg,"M code callback",MB_OK);
 
 	return 0;
 }
@@ -80,18 +80,36 @@ int UserMCodeCallback(int mcode)
 
 int main(int argc, char* argv[])
 {
-	printf("Main\n");
 	int DisplayedLineNo,BoardType;
 	BoardType = BOARD_TYPE_KFLOP;
-    //std::string InFile="/Users/parhansson/git/kflop/KMotionX/GCode Programs/SimpleCircle.ngc";
+	char InFile[256];
+	char m4_cfile[256];
+	char setup_cfile[256];
+	int setup_thread = 1;
+	int m4_thread = 3;
+	char command[MAX_LINE];
 
     char* rootDir;
 	rootDir = getenv("PWD");
-	char InFile[256];
-	//printf("%s:%d Environment KMOTION_ROOT not set, falling back to %s\n",__FILE__,__LINE__,rootDir);
+
+	sprintf(setup_cfile,"%s/../KMotionX/examples/ExecuteGCode/Stepper3Axis.c",rootDir);
+	sprintf(m4_cfile,"%s/../C Programs/BlinkKFLOP.c",rootDir);
+	//strcpy(setup_cfile,m4_cfile);
 	sprintf(InFile,"%s/../GCode Programs/SimpleCircle.ngc",rootDir);
-	printf("Interpreting file %s\n", InFile);
+
+
 	CKMotionDLL *KM = new CKMotionDLL(0);
+
+
+	printf("Loading file %s to thread %d\n", setup_cfile, setup_thread);
+	if(KM->CompileAndLoadCoff(setup_cfile,setup_thread)){
+		printf("Loading file %s to thread %d failed. Exiting.\n", setup_cfile, setup_thread);
+		exit(1);
+	} else {
+		sprintf(command,"Execute%d",setup_thread);
+		KM->WriteLine(command);
+	}
+	//exit(0);
 
 	CCoordMotion *CM = new CCoordMotion(KM);
 
@@ -127,10 +145,10 @@ int main(int argc, char* argv[])
 
 	Finished=false;
 
-	//if (Interpreter.CoordMotion.KMotionDLL.CheckKMotionVersion(board, &BoardType)) return 1;
-
-
 	Interpreter->SetUserCallback(UserCallback);  // Set this to handle (USR,Message) Callbacks
+
+	Interpreter->SetUserMCodeCallback(UserMCodeCallback);  // Set this to handle MCode Callbacks
+
 	// configure the Action for MCode 3 to do a Callback
 	Interpreter->McodeActions[3].Action = M_Action_Callback;
 	// configure the Action for MCode 105 to do a Callback
@@ -138,16 +156,12 @@ int main(int argc, char* argv[])
 
 	// configure the Action for MCode 4to execute a program in thread 3
 	Interpreter->McodeActions[4].Action = M_Action_Program_wait_sync;
-	Interpreter->McodeActions[4].dParams[0] = 3;
-	char cfile[256];
-	sprintf(cfile,"%s/../C Programs/BlinkKFLOP.c",rootDir);
-	strcpy(Interpreter->McodeActions[4].String,cfile);
+	Interpreter->McodeActions[4].dParams[0] = m4_thread;
+	strcpy(Interpreter->McodeActions[4].String,m4_cfile);
 
 	//CM->m_Simulate = true;
-	Interpreter->SetUserMCodeCallback(UserMCodeCallback);  // Set this to handle MCode Callbacks
 	// Execute the GCode!
-
-	printf("Interpret gcode file.\n");
+	printf("Interpreting file %s\n", InFile);
 	Interpreter->Interpret(BoardType,InFile,0,-1,true,StatusCallback,CompleteCallback);
 
 	// Display Current Line Number while executing
@@ -158,7 +172,7 @@ int main(int argc, char* argv[])
 		if (CurrentLineNo>DisplayedLineNo)
 		{
 			DisplayedLineNo=CurrentLineNo;
-			printf("Current Line = %d\n",CurrentLineNo);
+			//printf("Current Line = %d\n",CurrentLineNo);
 		}
 		sleep(1);
 	}

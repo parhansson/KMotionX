@@ -89,10 +89,10 @@ unsigned long time();
 /*--------------------------------------------------------------------------*/
 FILE *fopen();
 char *strrchr(), *malloc(), *realloc();
-#ifdef _WINDOWS
-unsigned char far *pageloc = (unsigned char far *)DEFPAGE;
-#else
+#ifdef _KMOTIONX
 unsigned char *pageloc = (unsigned char *)DEFPAGE;
+#else
+unsigned char far *pageloc = (unsigned char far *)DEFPAGE;
 #endif
 uint32_t      reloc = 0;                 /* RELOCATION AMOUNT               */
 int           quiet = 0;                 /* NO BANNER                       */

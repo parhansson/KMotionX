@@ -186,14 +186,14 @@ void testCheckForReady(){
 }
 void testCompile(){
 	char file[256];
-	strcpy(file,KM->MainPathRoot);
+	strcpy(file,KM->getInstallRoot());
 	strcat(file,"/C Programs/FanOFF.c");
 	KM->CompileAndLoadCoff(file, 1);
 
 }
 void testExtractCoffVersion(){
 	char file[256];
-		strcpy(file,KM->MainPathRoot);
+		strcpy(file,KM->getInstallRoot());
 		strcat(file,"/DSP_KFLOP/DSPKFLOP.out");
 	char Version[81];
 	if(KM->ExtractCoffVersionString(file, Version)){

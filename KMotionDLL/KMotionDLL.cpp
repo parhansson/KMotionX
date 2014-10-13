@@ -14,7 +14,7 @@
 #include "CLOAD.H"
 
 
-#ifdef _WINDOWS
+#ifndef _KMOTIONX
 extern CString MainPathDLL;
 extern CString MainPath;
 extern CString MainPathRoot;
@@ -26,7 +26,7 @@ CKMotionDLL::CKMotionDLL(int boardid)
 	PipeOpen=false;
 	ServerMessDisplayed=false;
 
-#ifndef _WINDOWS
+#ifdef _KMOTIONX
 
     char* kmotionRoot;
     char* kmotionBin;
@@ -370,10 +370,10 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 		return 1;
 
 
-#ifdef _WINDOWS
-	LPTSTR lpszPipename = "\\\\.\\pipe\\kmotionpipe"; 
-#else
+#ifdef _KMOTIONX
 	char lpszPipename[] = SOCK_PATH;
+#else
+	LPTSTR lpszPipename = "\\\\.\\pipe\\kmotionpipe"; 
 #endif
 	try
 	{
@@ -480,7 +480,7 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 int CKMotionDLL::LaunchServer()
 {
 
-#ifdef _WINDOWS
+#ifndef _KMOTIONX
 	SECURITY_ATTRIBUTES sa          = {0};
 	STARTUPINFO         si          = {0};
 	PROCESS_INFORMATION pi          = {0};
@@ -584,7 +584,7 @@ int CKMotionDLL::CompileAndLoadCoff(const char *Name, int Thread, char *Err, int
 	if (Thread<=0 || Thread>7) 
 	{
 		//TODO MaxErrLen should be honored to avoid segementation fault.
-		sprintf(Err,"Invalid Thread Number %d Valid Range (1-7)",Thread);
+		if(Err) sprintf(Err,"Invalid Thread Number %d Valid Range (1-7)",Thread);
 		return 1;
 	}
 	
@@ -608,7 +608,7 @@ int CKMotionDLL::CompileAndLoadCoff(const char *Name, int Thread, char *Err, int
 
 int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardType, int Thread, char *Err, int MaxErrLen)
 {
-#ifdef _WINDOWS
+#ifndef _KMOTIONX
 	SECURITY_ATTRIBUTES sa          = {0};
 	STARTUPINFO         si          = {0};
 	PROCESS_INFORMATION pi          = {0};
@@ -856,8 +856,13 @@ void CKMotionDLL::ConvertToOut(int thread, const char *InFile, char *OutFile, in
 
 	if (thread>0) {
 		psuf = strrchr(InFile,'.');
-		strcpy(suffix, psuf);
-		_strlwr(suffix);
+		if(psuf != NULL){
+			strcpy(suffix, psuf);
+			_strlwr(suffix);
+
+		} else {
+			suffix[0] = '\0';
+		}
 		if(strcmp(suffix,".c") == 0
 			|| strcmp(suffix,".txt") == 0
 			|| strcmp(suffix,".cpp") == 0){
@@ -1311,5 +1316,11 @@ int CKMotionDLL::GetStatus(MAIN_STATUS& status, bool lock)
 	} 
 	if(lock)ReleaseToken(); 
 	return 0;
+
 }
+#ifdef _KMOTIONX
+const char* CKMotionDLL::getInstallRoot(){
+	return MainPathRoot;
+}
+#endif
 

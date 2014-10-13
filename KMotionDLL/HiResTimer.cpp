@@ -35,7 +35,7 @@ double CHiResTimer::Diff_us(int t1, int t0)
 
 double CHiResTimer::DiffSecs(int t1, int t0)
 {
-	__int64 T0,T1,F;
+	int64_t T0,T1,F;
 	double result;
 
 	if (Freq.QuadPart==0)
@@ -80,7 +80,7 @@ double CHiResTimer::Elapsed_Seconds()
 	LARGE_INTEGER t1;
 	QueryPerformanceCounter(&t1);
 
-	__int64 T0,T1,F;
+	int64_t T0,T1,F;
 	double result;
 
 	if (Freq.QuadPart==0)

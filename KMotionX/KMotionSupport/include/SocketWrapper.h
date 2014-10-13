@@ -41,14 +41,9 @@ either expressed or implied, of the FreeBSD Project.
 #include <fcntl.h>
 #include <string.h>
 #include <exception>
-//#include <sys/time.h>
-//#include <sys/types.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
-//#include <time.h>
-//#include <pthread.h>
-//#include <ctype.h>
 
 
 

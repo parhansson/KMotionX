@@ -43,7 +43,7 @@
 #include <math.h>
 #include <mmsystem.h>
 #include "../KMotionX/include/KMotionX.h"
-#ifndef _WINDOWS
+#ifdef _KMOTIONX
 #include "incX.h"
 #endif
 #include <locale.h>

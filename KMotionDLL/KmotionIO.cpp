@@ -34,7 +34,7 @@ CKMotionIO::CKMotionIO()
 	USB_Loc_ID=-1;
     BoardIDAssigned=false;
 
-#ifndef _WINDOWS
+#ifdef _KMOTIONX
     //FT_SetVIDPID(VENDOR, PRODUCT);
     FT_SetVIDPID(1027, 62001);
 #endif

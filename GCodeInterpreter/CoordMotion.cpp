@@ -57,26 +57,10 @@ CCoordMotion::CCoordMotion(CKMotionDLL *KM)
 	m_NumLinearNotDrawn=0;
 
 	// Save for everybody what directory we are installed in
-#ifndef _WINDOWS
+#ifdef _KMOTIONX
 
-    /*
-	char* kmotionRoot;
-    char rootPath[MAX_PATH];
-    char resolved_root[MAX_PATH];
-    if(!(kmotionRoot = getenv("KMOTION_ROOT"))){
-    		//No KMOTION_ROOT environment variable set.
-    		//Assume user is in KMotion/bin directory
-        	sprintf(rootPath,"%s/..",getenv("PWD"));
-        	kmotionRoot = realpath(rootPath, resolved_root);
-        	//printf("%s:%d Environment KMOTION_ROOT resolved to %s\n",__FILE__,__LINE__,kmotionRoot);
-    }
-	sprintf(MainPath,"%s/KMotion",kmotionRoot);
-	sprintf(MainPathRoot,"%s",kmotionRoot);
-    */
-
-	sprintf(MainPath,"%s/KMotion",KM->MainPathRoot);
-	sprintf(MainPathRoot,"%s",KM->MainPathRoot);
-
+	sprintf(MainPath,"%s/KMotion",KM->getInstallRoot());
+	sprintf(MainPathRoot,"%s",KM->getInstallRoot());
 
 #else
 	CString Path;

@@ -82,10 +82,10 @@ MOTION_PARAMS *CGCodeInterpreter::GetMotionParams()
 }
 
 
-#ifdef _WINDOWS
-DWORD DoExecuteShell(LPDWORD lpdwParam)
-#else
+#ifdef _KMOTIONX
 void * DoExecuteShell(void *lpdwParam)
+#else
+DWORD DoExecuteShell(LPDWORD lpdwParam)
 #endif
 {
 	CGCodeInterpreter *p=(CGCodeInterpreter*)lpdwParam;
@@ -310,7 +310,7 @@ int CGCodeInterpreter::DoExecute()
 		SetupTracker.InsertState(&_setup);  // save the interpreter state
 		
 		// give output to caller
-#ifdef _WINDOWS
+#ifndef _KMOTIONX
 		//not needed on linux
 		CString tmpStr = Output;
 		tmpStr.Replace("\n","\r\n");
@@ -400,7 +400,15 @@ int CGCodeInterpreter::DoExecuteComplete()
 
 int CGCodeInterpreter::LaunchExecution()
 {
-#ifdef _WINDOWS
+#ifdef _KMOTIONX
+	//printf("%s:%d LaunchExecution\n",__FILE__,__LINE__);
+    pthread_t thr;
+    if(pthread_create(&thr, NULL, &::DoExecuteShell, this))
+    {
+        printf("Could not create thread\n");
+        return -1;
+    }
+#else
 	DWORD ID;
 	
 
@@ -413,14 +421,6 @@ int CGCodeInterpreter::LaunchExecution()
 		this,							 /* argument to thread function   */ 
 		0,                           /* use default creation flags    */ 
 		&ID);   
-#else
-	//printf("%s:%d LaunchExecution\n",__FILE__,__LINE__);
-    pthread_t thr;
-    if(pthread_create(&thr, NULL, &::DoExecuteShell, this))
-    {
-        printf("Could not create thread\n");
-        return -1;
-    }
 #endif
 
 	return 0;
@@ -782,7 +782,11 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 
 int CGCodeInterpreter::ExecutePC(const char *Name)
 {
-#ifdef _WINDOWS
+#ifdef _KMOTIONX
+	int exitcode;
+	//TODO implement timeout
+	exitcode = system(Name);
+#else
 	SECURITY_ATTRIBUTES sa          = {0};
 	STARTUPINFO         si          = {0};
 	PROCESS_INFORMATION pi          = {0};
@@ -860,11 +864,6 @@ int CGCodeInterpreter::ExecutePC(const char *Name)
     CloseHandle (pi.hThread);
 	CloseHandle (hPipeOutputRead);
 	CloseHandle (hPipeInputWrite);
-#else
-	int exitcode;
-	//TODO implement timeout
-	exitcode = system(Name);
-
 #endif
 	return exitcode;
 }
@@ -1235,15 +1234,15 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 
 	// read the entire file into this array of lines
 	// up until the line we wish to start
-#ifdef _WINDOWS
-	CString *LineArray = new CString[CurrentLine+1];
-	if (!LineArray) return 1;
-#define CLEAN_ARRAY do{ delete [] LineArray; } while( false )
-#else
+#ifdef _KMOTIONX
 	//char *LineArray = new char[CurrentLine+1][INTERP_TEXT_SIZE+1];
 	//this works on linux due to a C++ extension
 	char LineArray[CurrentLine+1][INTERP_TEXT_SIZE+1];
 #define CLEAN_ARRAY do{ } while( false )
+#else
+	CString *LineArray = new CString[CurrentLine+1];
+	if (!LineArray) return 1;
+#define CLEAN_ARRAY do{ delete [] LineArray; } while( false )
 #endif
 
 	for( ; GCodeReads<=CurrentLine ; GCodeReads++)
@@ -1256,7 +1255,7 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 			AfxMessageBox("Error while reading GCode file ");
 			return 1;
 		}
-#ifndef _WINDOWS
+#ifdef _KMOTIONX
 		strcpy(LineArray[GCodeReads],trash);
 #else
 		LineArray[GCodeReads] = trash;

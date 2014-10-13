@@ -36,8 +36,8 @@ int CSetupTracker::InsertState(setup *CurSetup)
 	{
 		int n;
 		int i,k = 0;
-		__int64 *s=(__int64 *)CurSetup;   // new state
-		__int64 *d=(__int64 *)&cur_state; // previous state
+		int64_t *s=(int64_t *)CurSetup;   // new state
+		int64_t *d=(int64_t *)&cur_state; // previous state
 
 		// only compare the first part of the structure that
 		// has all the misc stuff.  The interpreter keeps track
@@ -45,10 +45,10 @@ int CSetupTracker::InsertState(setup *CurSetup)
 		// the parameter table if it detected a change
 		
 //		if (CurSetup->parameter_occurrence > 0)
-//			n = offsetof(setup,line_length)/sizeof(__int64);
+//			n = offsetof(setup,line_length)/sizeof(int64_t);
 //		else
 		
-		n = offsetof(setup,parameters)/sizeof(__int64);
+		n = offsetof(setup,parameters)/sizeof(int64_t);
 		
 		C.first = true;
 		for (i=0; i<n; i++)
@@ -70,7 +70,7 @@ int CSetupTracker::InsertState(setup *CurSetup)
 
 	    for (int n = 0; n < CurSetup->parameter_occurrence; n++)
 		{	
-			i = (__int64 *)(&CurSetup->parameters[_setup.parameter_numbers[n]]) - s;
+			i = (int64_t *)(&CurSetup->parameters[_setup.parameter_numbers[n]]) - s;
 			if (s[i] != d[i])  // Changed?
 			{
 				C.data = d[i];  // save previous state
@@ -88,7 +88,7 @@ int CSetupTracker::InsertState(setup *CurSetup)
 
 	    for (int n = 0; n < CurSetup->n_ParamChanges; n++)
 		{	
-			i = (__int64 *)(&CurSetup->parameters[_setup.ParamChanges[n]]) - s;
+			i = (int64_t *)(&CurSetup->parameters[_setup.ParamChanges[n]]) - s;
 			if (s[i] != d[i])  // Changed?
 			{
 				C.data = d[i];  // save previous state
@@ -112,7 +112,7 @@ int CSetupTracker::InsertState(setup *CurSetup)
 int CSetupTracker::RestoreState(int sequence_number, setup *CurSetup)
 {
 	CHANGE C;
-	__int64 *d=(__int64 *)CurSetup;
+	int64_t *d=(int64_t *)CurSetup;
 
 	*CurSetup = cur_state;  // restore to last known state 
 
