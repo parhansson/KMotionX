@@ -5,6 +5,9 @@ Linux/Unix (Mac OS X ) port of Dynomotions KMotion
 
 KMotionX is more of a patch than a port of KMotion (Except for KMotionServer). The goal has been to make as small modifications as possible to the orginal source. This will make it easier to keep up with every new release.
 
+See it in action
+https://www.youtube.com/watch?v=oPTJwcre0hA
+
 KMotionX also includes a JNI binding to use expose the GCodeInterpreter and KMotionDLL API to the Java world.
 
 ####Who might be interested in this.
@@ -20,16 +23,16 @@ In the future I plan to make a working GUI application in Java. Wich will be pos
 - Added latest TCC compiler 0.9.26 patched with changes made in the original version TCC67 (0.9.16 or whatever version that was)
 
 #####Changes to be made
-- Remove dependency of CString
+- (DONE) Remove dependency of CString
 - Implement callback pattern for MessageBox and AfxMessageBox
 
 
 #####Features to be implemented
 - Add Compile and load coff program to init KFLOP
-- Execute on PC (No problem)
-- Concatenation of error message in CheckSoftLimitsArc
-- ListLocations KMotionDLL_Direct
-- LoadCoff (almost done needs testing)
+- (DONE) Execute on PC 
+- (DONE) Concatenation of error message in CheckSoftLimitsArc
+- ListLocations KMotionDLL_Direct (should work but needs more testing)
+- (DONE) LoadCoff 
 
 
 Dependencies
@@ -201,12 +204,8 @@ sudo cp KMotionX/usb/etc/udev/rules.d/10.kflop.rules /etc/udev/rules.d/
 
 ######3. Execute examples
 Plug in your KFlop to an available USB port.
-
-Start KMotionServer in background
-```
-cd bin
-./KMotionServer &
-```
+KMotionServer will start automatically in background. 
+When KMotionDLL is rebuild make sure to kill running server 'killall KMotionServer'
 
 Start executeGCode example
 ```
