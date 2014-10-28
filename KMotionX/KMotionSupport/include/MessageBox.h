@@ -126,5 +126,7 @@ extern int AfxMessageBox(const char* value, int type = 0/*NULL*/);
 #endif
 extern int MessageBox(int whatisthis,const char* value,const char* title, int type);
 
+typedef int MB_USER_CALLBACK(const char *title, const char *msg, int options);
+extern MB_USER_CALLBACK *mb_callback;
 
 #endif /* MESSAGEBOX_H_ */

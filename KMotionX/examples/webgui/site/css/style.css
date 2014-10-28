@@ -1,0 +1,115 @@
+table#machine_setup_table th {
+	text-align:left;
+}
+#svgviewer{
+  display: block;
+  left: 400px;
+  top: 300px;
+  position: relative;
+}
+
+#machine_setup{
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	100%;
+	left: 0px;
+	display: block;
+	border-left: 5px solid #bcd;
+	border-right: 5px solid #bcd;
+	background-color: rgba(250,250,250,0.95);
+	padding: 5px;
+	color: #030;
+	overflow: scroll;	
+}
+
+#code_area {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	width: 300px;
+	right: 0px;
+	display: block;
+	border-left: 5px solid #bcd;
+	border-right: 5px solid #bcd;
+	background-color: rgba(250,250,250,0.5);
+	padding: 5px;
+	color: #030;
+	overflow: scroll;
+}
+#log_area {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	width: 300px;
+	left: 0px;
+	display: block;
+	border-left: 5px solid #bcd;
+	border-right: 5px solid #bcd;
+	background-color: rgba(250,250,250,0.5);
+	padding: 5px;
+	color: #030;
+	overflow: scroll;
+}
+
+button:active {
+    padding-right:1px;
+    padding-bottom:1px;
+}
+
+.button {
+	width:100%;
+	border: 1px solid #9ac;
+	margin-bottom: 3px;
+	height: 30px;
+	background-color: #abd;
+	color: #fff;
+	border-radius: 2px;
+	cursor: pointer;
+	background-color: #9ac;
+}
+.button_pressed {
+	background-color: #cac;
+}
+
+.file_button {
+	height: 20px;
+}
+
+.status_message {
+	width:97%;
+	height: 100px;
+	padding: 3px;
+	margin-bottom: 3px;
+	border: 1px solid #9ac;
+	overflow: scroll;
+}
+.status_small{
+  font-size:8px;
+}
+#file_list {
+	height: 300px;
+	width: 97%;
+	padding: 3px;
+	margin-bottom: 3px;
+	border: 1px solid #79f;
+	font-size: 12px;
+	color: #753;
+	white-space: pre;
+	word-wrap: normal;
+	overflow-x: scroll;
+}
+
+#code_text {
+	height: 300px;
+	width: 97%;
+	padding: 3px;
+	margin-bottom: 3px;
+	border: 1px solid #79f;
+	font-size: 12px;
+	color: #753;
+	white-space: pre;
+	word-wrap: normal;
+	overflow-x: scroll;
+}
+

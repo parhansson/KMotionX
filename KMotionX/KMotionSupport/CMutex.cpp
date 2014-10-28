@@ -121,8 +121,3 @@ CMutex::CMutex(int initiallyOwn,const char *name ,int n){
 #endif
 		//printf("unlocked\n");
 	}
-
-	long int CMutex::getThreadId(){
-		return syscall(SYS_gettid/*224*/);
-	}
-

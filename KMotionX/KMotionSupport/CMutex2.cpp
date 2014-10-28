@@ -108,26 +108,3 @@ CMutex::CMutex(int initiallyOwn,const char *name ,int n){
 
 	}
 
-	long int getThreadId(){
-		long int tid;
-		tid = syscall(SYS_gettid/*224*/);
-#ifdef __APPLE__
-		if(tid == -1){
-			//perror("syscall");
-			pthread_t t;
-			t = pthread_self();
-			//unsigned int
-			mach_port_t mt;
-			mt = pthread_mach_thread_np(t);
-
-			//tid = t->__sig;
-			tid = mt;
-		}
-#else
-			//pthread_id_np_t   tid;
-//			tid = pthread_getthreadid_np();
-
-#endif
-		return tid;
-	}
-

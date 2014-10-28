@@ -31,7 +31,7 @@ extern char* _strupr(char* s);
 extern char* _strlwr(char* s);
 extern long GetTickCount();
 extern unsigned int timeGetTime();
-
+extern long int getThreadId();
 #else // not _KMOTIONX Probably Windows
 
 //downloaded from http://msinttypes.googlecode.com/svn/trunk/stdint.h

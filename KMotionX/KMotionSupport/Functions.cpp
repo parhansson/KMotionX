@@ -12,6 +12,8 @@
 #include <sys/time.h>
 #include <ctype.h>
 #include <iostream>
+#include <unistd.h>
+#include <sys/syscall.h>
 
 #define SECONDS_PER_MONTH 2629743
 
@@ -78,46 +80,57 @@ unsigned int timeGetTime()
 
 	return msThisMonth;
 }
-
-
-int AfxMessageBox(const char* value, int type){
-	char str[100];
-	std::cout << "---------AfxMessageBox: " << " OPTION: " << type << "---------\n"
-			<< value
-			<< "\n-----------------------------------------------\n"<< std::endl;
-	if((type & MB_OK) == MB_OK){
-		printf(">OK?");
-		fgets(str, 100, stdin);
-	}else if((type & MB_YESNO) == MB_YESNO){
-		printf(">(Yes/No)?");
-		fgets(str, 100, stdin);
-	}else if((type & MB_OKCANCEL) == MB_OKCANCEL){
-		printf(">(Ok/Cancel)?");
-		fgets(str, 100, stdin);
-	}
-
-
+//Default Console handler for messageboxes
+int MessageBoxConsoleHandler(const char *title, const char *msg, int options){
+		char str[100];
+		printf("---------%s:  OPTION:  %s---------\n%d\n-----------------------------------------------\n",title,options,msg);
+		if((options & MB_OK) == MB_OK){
+			printf(">OK?");
+			fgets(str, 100, stdin);
+		}else if((options & MB_YESNO) == MB_YESNO){
+			printf(">(Yes/No)?");
+			fgets(str, 100, stdin);
+		}else if((options & MB_OKCANCEL) == MB_OKCANCEL){
+			printf(">(Ok/Cancel)?");
+			fgets(str, 100, stdin);
+		}
 	// testing for multiple flags
 	// as above, OR the bitmasks
 	//if ((flags & (LOG_INCOMING | LOG_OUTGOING))
 	//         == (LOG_INCOMING | LOG_OUTGOING))
+
 	return 0;
+}
+MB_USER_CALLBACK *mb_callback = MessageBoxConsoleHandler;
+
+int AfxMessageBox(const char* value, int type){
+
+	return mb_callback("AfxMessageBox",value,type);
 }
 
 int MessageBox(int whatisthis,const char* value,const char* title, int type){
-	char str[100];
-	std::cout  << "------------MessageBox: " << " OPTION: " << type << "---------\n"
-				<< value
-				<< "\n-----------------------------------------------\n"<< std::endl;
-	if((type & MB_OK) == MB_OK){
-		printf(">OK?");
-		fgets(str, 100, stdin);
-	}else if((type & MB_YESNO) == MB_YESNO){
-		printf(">(Yes/No)?");
-		fgets(str, 100, stdin);
-	}else if((type & MB_OKCANCEL) == MB_OKCANCEL){
-		printf(">(Ok/Cancel)?");
-		fgets(str, 100, stdin);
+	return mb_callback("AfxMessageBox",value,type);
+}
+
+long int getThreadId(){
+	long int tid;
+	tid = syscall(SYS_gettid/*224*/);
+#ifdef __APPLE__
+	if(tid == -1){
+		//perror("syscall");
+		pthread_t t;
+		t = pthread_self();
+		//unsigned int
+		mach_port_t mt;
+		mt = pthread_mach_thread_np(t);
+
+		//tid = t->__sig;
+		tid = mt;
 	}
-	return 0;
+#else
+		//pthread_id_np_t   tid;
+//			tid = pthread_getthreadid_np();
+
+#endif
+	return tid;
 }

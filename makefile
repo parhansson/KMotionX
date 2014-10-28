@@ -8,6 +8,7 @@ SUBDIRS+=KMotionX/KMotionServer
 SUBDIRS+=KMotionX/examples/other
 SUBDIRS+=KMotionX/examples/KFlopConsole
 SUBDIRS+=KMotionX/examples/ExecuteGCode
+SUBDIRS+=KMotionX/examples/webgui
 
 ifeq ($(BUILD_JNI),true)
 SUBDIRS+=KMotionX/JNI

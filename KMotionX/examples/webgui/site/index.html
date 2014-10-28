@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>KMotionX CNC</title>  
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <link rel="stylesheet" type="text/css" href="vendor/jquery-svg/jquery.svg.css"> 
+  <link rel="stylesheet" type="text/css" href="vendor/jquery-ui/jquery-ui.css">  
+  <script type="text/javascript" src="vendor/jquery/jquery-1.11.1.js"></script>
+  <script type="text/javascript" src="vendor/jquery-ui/jquery-ui.js"></script>
+  <script type="text/javascript" src="vendor/jquery-svg/jquery.svg.js"></script>
+  <script type="text/javascript" src="js/func.js"></script>
+  <script type="text/javascript" src="js/callback.js"></script>
+  <script type="text/javascript" src="js/operation.js"></script>
+  <script type="text/javascript" src="js/machine.js"></script>
+  <script type="text/javascript" src="js/viewer.js"></script>
+  <script>
+  
+  $( document ).ready(function() {
+  
+  //http://www.dynomotion.com/Help/Cmd.htm
+
+      $("#list_files_btn").click(function() {
+          listFiles();
+      });
+      $("#test_err_btn").click(function() {
+          doCall(kmotion.doErrMsg);
+      });
+      $("#feed_hold_btn").click(function() {
+          doCall(kmotion.feedHold);
+      });
+      $("#simulate_btn").click(function() {
+          doCall(interpreter.simulate);
+      });
+
+      $("#file_list").hide();
+
+      $("#status_log_btn").click(function() {
+          $("#status").empty();
+      });
+      $("#error_log_btn").click(function() {
+          $("#error").empty();
+      });
+      $("#console_log_btn").click(function() {
+          $("#console").empty();
+      });
+      $("#raw_log_btn").click(function() {
+          $("#output").empty();
+      });
+
+
+      initMachine();
+      initSVG();
+      connectWS();
+    });
+  </script>
+</head>
+<body>
+
+<!--<center><h2>KMotionX CNC</h2></center>-->
+
+
+<!-- the result of the search will be rendered inside this div -->
+<div id="apiresult"></div>
+<div id="parent" class="positionable"></div>
+
+<div id="svgviewer"></div>
+<div id=log_area>
+		<div><button class="button" id="status_log_btn">Status log (Clear)</button></div>
+		<div id="status" class="status_message status_small" title="Interpreter status"></div>
+
+		<div><button class="button" id="error_log_btn">Error log (Clear)</button></div>
+		<div id="error" class="status_message" title="Error status"></div>
+
+		<div><button class="button" id="console_log_btn">Console (Clear)</button></div>
+		<div id="console" class="status_message" title="Console"></div>
+
+		<div><button class="button" id="raw_log_btn">Raw communication (Clear)</button></div>
+		<div id="output" class="status_message status_small" title="Raw communication"></div>
+
+</div>
+<div id=code_area>
+	<div>
+		<button class="button" id="code_apply" onclick="interpretFile()">Execute GCode</button>
+		<button class='button' id='simulate_btn'>Simulate</button></div>
+	<div>
+		<textarea id=code_text>G Code Text</textarea>
+		<div id="file_list" style="block"></div>
+	</div>
+	
+	<table width="100%">
+		<tr>
+			<td><div><button class='button' id='list_files_btn'>Load GCode</button></div></td>
+			<td><div><button class='button' id='_btn2'>-Available-</button></div></td>
+			<td><div><button class='button' id='test_err_btn'>Do Error message</button></div></td>
+		</tr>
+		<tr>
+			<td><div><button class='button' id='feed_hold_btn'>Feed Hold</button></div></td>
+			<td><div><button class='button' id='_btn'>-Available-</button></div></td>
+			<td><div><button class='button' id='edit_machine_btn'>Edit machines</button></div></td>
+		</tr>
+		<tr>
+			<td colspan=3></td>
+		</tr>
+	</table>
+</div>
+<div id='setup_area'>
+  
+</div>
+
+</body>
+</html>

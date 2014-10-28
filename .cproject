@@ -14,4 +14,5 @@
 		<pathentry excluding="test/" kind="src" path=""/>
 		<pathentry kind="out" path=""/>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>
