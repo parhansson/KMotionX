@@ -6,6 +6,7 @@ table#machine_setup_table th {
   left: 400px;
   top: 300px;
   position: relative;
+  border: 1px solid;
 }
 
 #machine_setup{

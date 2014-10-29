@@ -24,7 +24,9 @@ void push_message(const char *msg);
 void delete_callback(struct callback *node);
 void ErrMsgHandler(const char *msg);
 int ConsoleHandler(const char *msg);
-int MessageBoxHandler(const char *title, const char *msg, int options);
+int MessageBoxHandler(const char *, const char *, int );
+int MUserCallback(int);
+int UserCallback(const char *);
 void enqueueState();
 struct callback * alloc_callback();
 //struct callback * set_callback(struct callback *last, const char * message, enum cb_type type);
@@ -114,6 +116,11 @@ void initHandler() {
   cm = new CCoordMotion(km);
   gci = new CGCodeInterpreter(cm);
   //Enable messagebox callback by not setting this callback
+
+  gci->McodeActions[3].Action = M_Action_Callback;
+  //gci->McodeActions[4].Action = M_Action_Program_PC;
+  gci->SetUserMCodeCallback(MUserCallback);
+  gci->SetUserCallback(UserCallback);
   km->SetErrMsgCallback(ErrMsgHandler);
 
   km->SetConsoleCallback(ConsoleHandler);
@@ -124,6 +131,7 @@ void initHandler() {
   mb_callback = MessageBoxHandler;
   //Enqueue state as first callback. This first entry will never be removed
   callbacks = (struct callback *) malloc(sizeof(struct callback));
+  callbacks->next = NULL;
   enqueueState();
 }
 
@@ -187,6 +195,7 @@ void push_message(const char *msg) {
   struct mg_connection *c = NULL;
   int len = strlen(msg);
   int sockets = 0;
+  //debug("push_message %s", msg);
   // Iterate over all connections, and push current time message to websocket ones.
   for (c = mg_next(server, c); c != NULL; c = mg_next(server, c)) {
     if (c->is_websocket) {
@@ -253,23 +262,24 @@ void pollCallbacks(struct mg_connection *conn) {
 
   struct callback *last;
 
-  //if (callbacks != NULL) {
   last = callbacks;
-  while (last->next != NULL) {
+  do{
     pollCallback(last, id, ret);
     last = last->next;
-  }
-  pollCallback(last, id, ret);
-//  }
+  } while (last != NULL);
+
   pthread_mutex_unlock(&mut);
 }
 struct callback * alloc_callback() {
   struct callback *last;
   last = callbacks;
+  int size = 0;
   while (last->next != NULL) {
     last = last->next;
+    size++;
   }
   last->next = (struct callback *) malloc(sizeof(struct callback));
+  last->next->next = NULL;
   return last->next;
 }
 struct callback * init_callback(struct callback *last, const char * message,
@@ -285,12 +295,11 @@ struct callback * init_callback(struct callback *last, const char * message,
   //{ "id": 5, "type": 67, data: ""|6776|{}|[]|null|true|false}
   json_emit(last->msg, 512, "{ s: i, s: i, s: S}", "id", last->id, "type", type,
       "data", message);
-  last->next = NULL;
+
   //debug("Enqueued %s message: %s",CB_NAMES[type], last->msg);
   return last;
 }
 void delete_callback(struct callback *node) {
-
   // When node to be deleted is head node
   if (callbacks == node) {
     log_err("Not allowed to remove head of callback list");
@@ -393,6 +402,7 @@ int MessageBoxHandler(const char *title, const char *msg, int options) {
   if ((options & (MB_YESNO | MB_OKCANCEL)) == (MB_YESNO | MB_OKCANCEL)) {
     blocking = 1;
   }
+  //todo handle blocking messagebox
 
   char buf[256];
   json_emit(buf, 256, "{ s: i, s: s, s: s }", "options", options, "title",
@@ -405,7 +415,9 @@ int UserCallback(const char *msg) {
   //This is a blocking call. A bit trickier
   char buf[256];
   json_emit(buf, 256, "s", msg);
-  return enqueueCallback(buf, CB_USER);
+  int result = enqueueCallback(buf, CB_USER);
+  debug("UserCallback result: %d", result);
+  return result;
 }
 int MUserCallback(int mCode) {
   //This is a blocking call. A bit trickier
@@ -424,7 +436,9 @@ int MUserCallback(int mCode) {
   //instantiate a struct and wait for a signal/variable in that struct
   char buf[10];
   json_emit(buf, 10, "i", mCode);
-  return enqueueCallback(buf, CB_USER_M_CODE);
+  int result = enqueueCallback(buf, CB_USER_M_CODE);
+  debug("UserMCallback result: %d", result);
+  return result;
 
 }
 //(Afx)MessageBox should be implementet as callback.
