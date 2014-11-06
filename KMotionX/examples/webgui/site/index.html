@@ -1,0 +1,146 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>KMotionX CNC</title>
+  <link rel="stylesheet" type="text/css" href="vendor/jquery-svg/jquery.svg.css">
+  <link rel="stylesheet" type="text/css" href="vendor/jquery-ui/jquery-ui.css">
+  <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.css">
+  <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap-theme.css">
+  
+
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+
+  <!-- 3rd party libs -->
+  <script type="text/javascript" src="vendor/jquery/jquery-1.11.1.js"></script>
+  <script type="text/javascript" src="vendor/jquery-ui/jquery-ui.js"></script>
+  <script type="text/javascript" src="vendor/jquery-svg/jquery.svg.js"></script>
+  
+  <script type="text/javascript" src="vendor/modernizr/modernizr.custom.93389.js"></script>
+  <script type="text/javascript" src="vendor/bootstrap/js/bootstrap.js"></script>
+  <script type="text/javascript" src="vendor/sugarjs/sugar-1.2.4.min.js"></script>
+  <script type="text/javascript" src="vendor/three/three.js"></script>
+  <script type="text/javascript" src="vendor/three/three.TrackballControls.js"></script>
+  
+  <!-- Custom code -->
+  <script type="text/javascript" src="js/components.js"></script>
+  <script type="text/javascript" src="js/operation.js"></script>
+  <script type="text/javascript" src="js/machine.js"></script>
+  <script type="text/javascript" src="js/ui.js"></script>
+  <script type="text/javascript" src="js/gcode-parser.js"></script>
+  <script type="text/javascript" src="js/gcode-model.js"></script>
+
+</head>
+<body>
+
+<div class="_container">
+<div class="row  fill">
+  <div  id=log_area class="hidden-xs col-md-3">
+      <button class="button" id="status_log_btn">Status log (Clear)</button>
+      <div id="status" class="status_message status_small" title="Interpreter status log"></div>
+      
+      <button class="button" id="raw_log_btn">Raw communication (Clear)</button>
+      <div id="output" class="status_message status_small" title="Raw communication"></div>
+  </div>
+  <div class="col-xs-9 col-md-6">
+    <div id="svgviewer"></div>
+    <!-- WebGL rendering area -->
+    <div id="renderArea" class="fill"></div>
+  </div>
+  <div class="col-xs-3 col-md-3">
+
+    <div id=code_area>
+    	<div>
+    		<button class="button" id="interpret_btn">Execute GCode</button>
+    		<button class='button' id='simulate_btn'>Simulate</button></div>
+    	<div>
+    		<textarea id='code_text'>G Code Text</textarea>
+    		<pre id='pre_code_text'></pre>
+    	</div>
+    
+    	<table style="width:100%;">
+    		<tr>
+    			<td><div><button class='button' id='list_files_btn'>Load GCode</button></div></td>
+    			<td><div><button class='button' id='init_machine_btn'>Init Machine</button></div></td>
+    			<td><div><button class='button' id='toggle_renderer_btn'>Toggle renderer</button></div></td>
+    		</tr>
+    		<tr>
+    			<td><div><button class='button' id='feed_hold_btn'>Feed Hold</button></div></td>
+    			<td><div><button class='button' id='set_motion_params_btn'>SetMotionParams</button></div></td>
+    			<td><div><button class='button' id='edit_machine_btn'>Edit machines</button></div></td>
+    		</tr>
+    		<tr>
+    			<td colspan=3></td>
+    		</tr>
+    	</table>
+        <div><button class="button" id="error_log_btn">Error log (Clear)</button></div>
+        <div id="error" class="status_message" title="Error status"></div>
+    
+        <div><button class="button" id="console_log_btn">Console (Clear)</button></div>
+        <div id="console" class="status_message" title="Console"></div>
+    
+    </div>
+
+  </div>
+</div>
+</div>
+  <div class="modal" id="settingsModal" style="display: none">
+    <div class="_modal-dialog">
+      <div class="modal-content">   
+        <div class="modal-header">
+          <a class="close" data-dismiss="modal">&times;</a>
+          <h4>Settings</h4>
+        </div>
+        <div class="modal-body" id='settingsModalBody'>
+  
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class='btn btn-default' id='new_machine_btn'>New machine</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" id='save_machine_btn'>Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="openModal" style="display: none">
+    <div class="modal-dialog">
+      <div class="modal-content">       
+        <div class="modal-header">
+          <a class="close" data-dismiss="modal">&times;</a>
+          <h4>Open GCode</h4>
+        </div>
+        <div class="modal-body">
+          <ul id="file_list">
+          </ul>
+          <p>Open file by selecting or with drag and drop from desktop</p>
+        </div>
+        <div class="modal-footer">
+          <a class="btn" data-dismiss="modal">Cancel</a>      
+        </div>
+      </div>
+    </div>
+  </div>
+    <!-- 'About' dialog'-->
+  <div class="modal fade" id="aboutModal" style="display: none">
+    <div class="modal-dialog">
+      <div class="modal-content">    
+        <div class="modal-header">
+          <a class="close" data-dismiss="modal">&times;</a>
+          <h3>About GCode Viewer</h3>
+        </div>
+        <div class="modal-body">
+          <p>This is a web application to control <a href="http://www.dynomotion.com" target="_new">Dynomotions</a>
+           CNC controllers</p>
+  
+          <p>TODO </p>
+  
+        </div>
+        <div class="modal-footer">
+          <a class="btn btn-primary" data-dismiss="modal">OK</a>
+        </div>
+      </div>
+    </div>
+  </div>    
+</body>
+</html>
