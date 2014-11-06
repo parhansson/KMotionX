@@ -17,7 +17,8 @@
 
 int toks(const struct json_token *tk, void *value, const int size = 0);
 int toki(const struct json_token *tk, int * value);
-int tokb(const struct json_token *tk, bool * value);
+double tokd(const struct json_token *tk, double * value);
+bool tokb(const struct json_token *tk, bool * value);
 int handle_api(struct mg_connection *conn, enum mg_event ev, char *uri);
 int handleJson(struct mg_connection *conn);
 void push_message(const char *msg);
@@ -195,7 +196,6 @@ void push_message(const char *msg) {
   struct mg_connection *c = NULL;
   int len = strlen(msg);
   int sockets = 0;
-  //debug("push_message %s", msg);
   // Iterate over all connections, and push current time message to websocket ones.
   for (c = mg_next(server, c); c != NULL; c = mg_next(server, c)) {
     if (c->is_websocket) {
@@ -402,13 +402,13 @@ int MessageBoxHandler(const char *title, const char *msg, int options) {
   if ((options & (MB_YESNO | MB_OKCANCEL)) == (MB_YESNO | MB_OKCANCEL)) {
     blocking = 1;
   }
-  //todo handle blocking messagebox
+
 
   char buf[256];
   json_emit(buf, 256, "{ s: i, s: s, s: s }", "options", options, "title",
       title, "message", msg);
-  enqueueCallback(buf, CB_MESSAGEBOX);
-  return 0;
+  //todo handle blocking messagebox
+  return enqueueCallback(buf, CB_MESSAGEBOX);
 }
 
 int UserCallback(const char *msg) {
@@ -536,13 +536,30 @@ int toks(const struct json_token *tk, void *sptr, const int size) {
   return 0;
 }
 int toki(const struct json_token *tk, int * value) {
+  if (tk->type == JSON_TYPE_NULL) {
+    return *value;
+  }
   char *str = nullptr;
   toks(tk, &str);
   *value = atoi(str);
   free(str);
-  return 0;
+  return *value;
 }
-int tokb(const struct json_token *tk, bool * value) {
+
+double tokd(const struct json_token *tk, double * value) {
+  if (tk->type == JSON_TYPE_NULL) {
+    return *value;
+  }
+  char *str = nullptr;
+  toks(tk, &str);
+  sscanf(str, "%lf", value);
+  free(str);
+  return *value;
+}
+bool tokb(const struct json_token *tk, bool * value) {
+  if (tk->type == JSON_TYPE_NULL) {
+    return *value;
+  }
   char *str = nullptr;
   toks(tk, &str);
   if (strcmp(str, "true") == 0) {
@@ -551,8 +568,14 @@ int tokb(const struct json_token *tk, bool * value) {
     *value = false;
   }
   free(str);
-  return 0;
+  return *value;
 }
+
+#define SET_AXIS(counts,accel,vel,offset)  \
+  tokd(paramtoken + offset, &(counts));    \
+  tokd(paramtoken + offset+2, &(accel));   \
+  tokd(paramtoken + offset+4, &(vel))
+
 //TODO To ensure no blocking callbacks are made from poll thread this
 //function should be called from another thread.
 int handleJson(struct mg_connection *conn) {
@@ -618,9 +641,11 @@ int handleJson(struct mg_connection *conn) {
       params = 1;
     }
   }
+  //debug("params %d",params);
 
 //handles file loading. different headers
-  if (!strcmp("aux", object) && FUNC_SIGP("loadFile", 1)) {
+  /*
+  if (!strcmp("aux", object) && FUNC_SIGP("loadGCodeFile", 1)) {
     char * file = NULL;
     toks(paramtoken, &file);
     if (file != NULL) {
@@ -636,17 +661,32 @@ int handleJson(struct mg_connection *conn) {
     free(data);
     return MG_MORE; // It is important to return MG_MORE after mg_send_file!
   }
+  */
   //Reset global response string
   gp_response[0] = '\0';
   //gp_response = (char*) malloc(sizeof(char) * ( MAX_LINE));
   int ret = 0;
   if (!strcmp("aux", object)) {
-    if (FUNC_SIGP("saveMachine", 1)) {
+    if (FUNC_SIGP("loadGCodeFile", 1)) {
+      char * file = NULL;
+      toks(paramtoken, &file);
+      if (file != NULL) {
+        if (strlen(file) > 0 && strcmp(gstate.current_file, file) != 0) {
+          strcpy(gstate.current_file, file);
+          //when file changes all clients will e noticed.
+          enqueueState();
+        }
+        free(file);
+      }
+    } else if (FUNC_SIGP("saveMachine", 1)) {
+      char *machineFile = NULL;
       char *machineData = NULL;
-      toks(paramtoken, &machineData);
-      if (machineData) {
+      toks(paramtoken+1, &machineFile);
+      toks(paramtoken+2, &machineData);
+
+      if (machineData && machineFile) {
         FILE *fp;
-        fp = fopen("settings/machine.cnf", "w");
+        fp = fopen(machineFile, "w");
         if (fp != NULL) {
           fputs(machineData, fp);
           fclose(fp);
@@ -655,7 +695,8 @@ int handleJson(struct mg_connection *conn) {
         }
 
       }
-      printf("Maskinen: %s\n", machineData);
+
+      free(machineFile);
       free(machineData);
     }
   } else if (!strcmp("kmotion", object)) {
@@ -717,7 +758,15 @@ int handleJson(struct mg_connection *conn) {
       free(Err);
 
     } else if (FUNC_SIGP("CompileAndLoadCoff", 2)) {
-    } else if (FUNC_SIGP("CompileAndLoadCoff", 3)) {
+      char *Name = NULL;
+      int Thread;
+      toks(paramtoken + 1, &Name);
+      toki(paramtoken + 2, &Thread);
+      char err[512];
+      if(km->CompileAndLoadCoff(Name, Thread, err, 511)){
+        if(strlen(err)>0)ErrMsgHandler(err);
+      }
+      free(Name);
     } else if (FUNC_SIGP("ConvertToOut", 4)) {
 
       int p1;
@@ -778,7 +827,7 @@ int handleJson(struct mg_connection *conn) {
     } else if (FUNC_SIGP("WriteLineWithEcho", 1)) {
     }
   } else if (!strcmp("interpreter", object)) {
-    if (FUNC_SIGP("Interpret", 7)) {
+    if (FUNC_SIGP("Interpret", 5)) {
 
       // test message from poll thread
       //blocking message from pull thread should be implementet to work.
@@ -789,8 +838,7 @@ int handleJson(struct mg_connection *conn) {
       int start;      // = 0;
       int end;      //= -1;
       bool restart;      // = true;
-      //G_STATUS_CALLBACK *StatusFn,
-      // G_COMPLETE_CALLBACK *CompleteFn)
+
       toki(paramtoken + 1, &BoardType);
       toks(paramtoken + 2, &InFile);
       toki(paramtoken + 3, &start);
@@ -810,6 +858,41 @@ int handleJson(struct mg_connection *conn) {
 
 //    } else if (FUNC_SIGP("SetUserMCallback", 1)) {
 //    } else if (FUNC_SIGP("SetUserMCodeCallback", 1)) {
+
+
+    } else if (FUNC_SIGP("setMotionParams", 54)) {
+
+      MOTION_PARAMS *p=gci->GetMotionParams();
+
+      p->BreakAngle = 20;
+      p->CollinearTol = 0.01;
+      //p->CornerTol = m_CornerTol;
+      //p->FacetAngle = m_FacetAngle;
+      p->TPLookahead = 1;
+      //p->RadiusA = m_RadiusA;
+      //p->RadiusB = m_RadiusB;
+      //p->RadiusC = m_RadiusC;
+
+      SET_AXIS(p->CountsPerInchX, p->MaxAccelX, p->MaxVelX,5);
+      SET_AXIS(p->CountsPerInchY, p->MaxAccelY, p->MaxVelY,14);
+      SET_AXIS(p->CountsPerInchZ, p->MaxAccelZ, p->MaxVelZ,23);
+      SET_AXIS(p->CountsPerInchA, p->MaxAccelA, p->MaxVelA,32);
+      SET_AXIS(p->CountsPerInchB, p->MaxAccelB, p->MaxVelB,41);
+      SET_AXIS(p->CountsPerInchC, p->MaxAccelC, p->MaxVelC,50);
+
+      //strcpy(Interpreter->ToolFile,m_ToolFile);
+      //strcpy(Interpreter->SetupFile,m_SetupFile);
+      //strcpy(Interpreter->GeoFile,m_GeoFile);
+      //strcpy(Interpreter->VarsFile,m_VarsFile);
+      //p->DegreesA = m_DegreesA!=0;
+      //p->DegreesB = m_DegreesB!=0;
+      //p->DegreesC = m_DegreesC!=0;
+      p->ArcsToSegs = true;;
+
+      gci->CoordMotion->SetTPParams();
+
+
+
     } else if (FUNC_SIGP("simulate", 0)) {
       if (gstate.interpreting == 0) {
         gci->CoordMotion->m_Simulate = !gci->CoordMotion->m_Simulate;

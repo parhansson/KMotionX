@@ -595,12 +595,12 @@ int CKMotionDLL::CompileAndLoadCoff(const char *Name, int Thread, char *Err, int
 	// Compile the C File
 
 	result = Compile(Name,OutFile,BoardType,Thread,Err,MaxErrLen);
-	if (result) return result;
+	if (result) {if(Err) Err[0]='\0'; return result;} //Null terminate Err to avoid errors
 
 	// Download the .out File
 
 	result = LoadCoff(Thread, OutFile);
-	if (result) return result;
+	if (result) {if(Err) Err[0]='\0'; return result;} //Null terminate Err to avoid errors
 
 
 	return 0;
@@ -873,6 +873,7 @@ void CKMotionDLL::ConvertToOut(int thread, const char *InFile, char *OutFile, in
 		}
 		strcat(OFile, ThreadString);
 	}
+	//TODO null terminate when appropriate
 	strncpy(OutFile,OFile,MaxLength);
 	delete [] OFile;
 }

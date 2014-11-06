@@ -1,191 +1,129 @@
-<div>
-  <div id="settingstabs">
-    <ul>
-      <li>
-        <a href="#settingstabs-1">General</a>
-      </li>
-      <li>
-        <a href="#settingstabs-2">M Codes</a>
-      </li>
-      <li>
-        <a href="#settingstabs-3">User buttons</a>
-      </li>
-      <li>
-        <a href="#settingstabs-4">Motion Parameters</a>
-      </li>
+<div id="settingstabs">
+    <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+        <li class="active"><a href="#settings_general" data-toggle="tab">General</a></li>
+        <li><a href="#settings_mcodes" data-toggle="tab">M Codes</a></li>
+        <li><a href="#settings_userbuttons" data-toggle="tab">User buttons</a></li>
+        <li><a href="#settings_motionparameter" data-toggle="tab">Motion Parameters</a></li>
     </ul>
-    <div id="settingstabs-1">
-    <table id='machine_setup_table' width="100%">
-      <tr>
-        <th>Name</th>
-        <td><input name='machine_name' type="text" placeholder="Name your machine"></td>
-      </tr>
-      <tr>
-        <th>Description</th>
-        <td><input name='machine_description' type="text" placeholder="Describe machine"></td>
-      </tr>
-      <tr>
-        <th>Machine dimensions</th>
-        <td></td>
-      </tr>
-      <tr>
-        <th>X</th>
-        <td><input name='dimx' type="number" min=0 placeholder="mm"/></td>
-      </tr>
-      <tr>
-        <th>Y</th>
-        <td><input name='dimy' type="number" min=0 placeholder="mm"></td>
-      </tr>
-      <tr>
-        <th>Z</th>
-        <td><input name='dimz' type="number" min=0 placeholder="mm"></td>
-      </tr>  
-      <tr>
-        <th>Bootstrap program and thread</th>
-        <td>
-          <input name='bootstrap' type="text" placeholder="Path to c program">
-          <input name='bootstrap_thread' type="number" min=1 max=7 placeholder="Thread number 1-7">
-        </td>
-      </tr>
-      <tr>
-        <td><button class='button' id='new_machine_btn'>New machine</button></td>
-        <td><button class='button' id='save_machine_btn'>Save</button></td>
-      </tr>
-    </table>
-    </div>
-    <div id="settingstabs-2">
-      <div>
-        <select class="commandtype" id="commandtype3">
-        </select>
-        <div class="commandeditor" style="width:900px" id="editcommand3"
-          data-commandname="M3" data-showcommandindex="false"
-          data-editcommandname="false"></div>
-      </div>
-      <div>
-        <select class="commandtype" id="commandtype4">
-        </select>
-        <div class="commandeditor" style="width:900px" id="editcommand4"
-          data-commandname="M4" data-showcommandindex="false"
-          data-editcommandname="false"></div>
-      </div>
-      <div>
-        <select class="commandtype" id="commandtype5">
-        </select>
-        <div class="commandeditor" style="width:900px" id="editcommand5"
-          data-commandname="M5" data-showcommandindex="false"
-          data-editcommandname="false"></div>
-      </div>
-      <div>
-        <select class="commandtype" id="commandtype6">
-        </select>
-        <div class="commandeditor" style="width:900px" id="editcommand6"
-          data-commandname="M6" data-showcommandindex="false"
-          data-editcommandname="false"></div>
-      </div>
-      <div>
-        <select class="commandtype" id="commandtype7">
-        </select>
-        <div class="commandeditor" style="width:900px" id="editcommand7"
-          data-commandname="M7" data-showcommandindex="false"
-          data-editcommandname="false"></div>
-      </div>
-      <div>
-        <select class="commandtype" id="commandtype8">
-        </select>
-        <div class="commandeditor" style="width:900px" id="editcommand8"
-          data-commandname="M8" data-showcommandindex="false"
-          data-editcommandname="false"></div>
-      </div>
-      <div>
-        <select class="commandtype" id="commandtype9">
-        </select>
-        <div class="commandeditor" style="width:900px" id="editcommand9"
-          data-commandname="M9" data-showcommandindex="false"
-          data-editcommandname="false"></div>
-      </div>
-      <div>
-        <select class="commandtype" id="commandtype10">
-        </select>
-        <div class="commandeditor" style="width:900px" id="editcommand10"
-          data-commandname="S" data-showcommandindex="false"
-          data-editcommandname="false"></div>
-      </div>
-    </div>
-    <div id="settingstabs-3">
-      <div>
-        <select class="commandtype" id="commandtype11">
-        </select>
-        <div class="commandeditor" style="width:900px" id="editcommand11"
-          data-commandname="Command 1" data-showcommandindex="false"
-          data-editcommandname="true"></div>
-      </div>
-      <div>
-        <select class="commandtype" id="commandtype12">
-        </select>
-        <div class="commandeditor" style="width:900px" id="editcommand12"
-          data-commandname="Command 2" data-showcommandindex="false"
-          data-editcommandname="true"></div>
-      </div>
-      <div>
-        <select class="commandtype" id="commandtype13">
-        </select>
-        <div class="commandeditor" style="width:900px" id="editcommand13"
-          data-commandname="Command 3" data-showcommandindex="false"
-          data-editcommandname="true"></div>
-      </div>
-      <div>
-        <select class="commandtype" id="commandtype14">
-        </select>
-        <div class="commandeditor" style="width:900px" id="editcommand14"
-          data-commandname="Command 4" data-showcommandindex="false"
-          data-editcommandname="true"></div>
-      </div>
-      <div>
-        <select class="commandtype" id="commandtype15">
-        </select>
-        <div class="commandeditor" style="width:900px" id="editcommand15"
-          data-commandname="Command 5" data-showcommandindex="false"
-          data-editcommandname="true"></div>
-      </div>
-      <div>
-        <select class="commandtype" id="commandtype16">
-        </select>
-        <div class="commandeditor" style="width:900px" id="editcommand16"
-          data-commandname="Command 6" data-showcommandindex="false"
-          data-editcommandname="true"></div>
-      </div>
-      <div>
-        <select class="commandtype" id="commandtype17">
-        </select>
-        <div class="commandeditor" style="width:900px" id="editcommand17"
-          data-commandname="Command 7" data-showcommandindex="false"
-          data-editcommandname="true"></div>
-      </div>
-      <div>
-        <select class="commandtype" id="commandtype18">
-        </select>
-        <div class="commandeditor" style="width:900px" id="editcommand18"
-          data-commandname="Command 8" data-showcommandindex="false"
-          data-editcommandname="true"></div>
-      </div>
-      <div>
-        <select class="commandtype" id="commandtype19">
-        </select>
-        <div class="commandeditor" style="width:900px" id="editcommand19"
-          data-commandname="Command 9" data-showcommandindex="false"
-          data-editcommandname="true"></div>
-      </div>
-      <div>
-        <select class="commandtype" id="commandtype20">
-        </select>
-        <div class="commandeditor" style="width:900px" id="editcommand20
-     "
-          data-commandname="Command 10" data-showcommandindex="false"
-          data-editcommandname="true"></div>
-      </div>
-    </div>
-    <div id="settingstabs-4">
+    <div id="my-tab-content" class="tab-content">
+        <div class="tab-pane active" id="settings_general">
+          <table id='machine_setup_table' width="100%">
+            <tr>
+              <th>Name</th>
+              <td><input name='machine_name' type="text" placeholder="Name your machine"></td>
+            </tr>
+            <tr>
+              <th>Description</th>
+              <td><input name='machine_description' type="text" placeholder="Describe machine"></td>
+            </tr>
+            <tr>
+              <th>Machine dimensions</th>
+              <td></td>
+            </tr>
+            <tr>
+              <th>X</th>
+              <td><input name='dimx' type="number" min=0 placeholder="mm"/></td>
+            </tr>
+            <tr>
+              <th>Y</th>
+              <td><input name='dimy' type="number" min=0 placeholder="mm"></td>
+            </tr>
+            <tr>
+              <th>Z</th>
+              <td><input name='dimz' type="number" min=0 placeholder="mm"></td>
+            </tr>  
+            <tr>
+              <th>Bootstrap program and thread</th>
+              <td>
+                <input name='bootstrap' type="text" placeholder="Path to c program">
+                <input name='bootstrap_thread' type="number" min=1 max=7 placeholder="Thread number 1-7">
+              </td>
+            </tr>
 
+          </table>            
+        </div>
+        <div class="tab-pane" id="settings_mcodes">
+          <div>
+            <select class="commandtype" id="commandtype3">
+            </select>
+            <div class="commandeditor" style="width:900px" id="editcommand3"
+              data-commandname="M3" data-showcommandindex="false"
+              data-editcommandname="false"></div>
+          </div>
+          <div>
+            <select class="commandtype" id="commandtype4">
+            </select>
+            <div class="commandeditor" style="width:900px" id="editcommand4"
+              data-commandname="M4" data-showcommandindex="false"
+              data-editcommandname="false"></div>
+          </div>
+          <div>
+            <select class="commandtype" id="commandtype5">
+            </select>
+            <div class="commandeditor" style="width:900px" id="editcommand5"
+              data-commandname="M5" data-showcommandindex="false"
+              data-editcommandname="false"></div>
+          </div>
+          <div>
+            <select class="commandtype" id="commandtype6">
+            </select>
+            <div class="commandeditor" style="width:900px" id="editcommand6"
+              data-commandname="M6" data-showcommandindex="false"
+              data-editcommandname="false"></div>
+          </div>
+          <div>
+            <select class="commandtype" id="commandtype7">
+            </select>
+            <div class="commandeditor" style="width:900px" id="editcommand7"
+              data-commandname="M7" data-showcommandindex="false"
+              data-editcommandname="false"></div>
+          </div>
+          <div>
+            <select class="commandtype" id="commandtype8">
+            </select>
+            <div class="commandeditor" style="width:900px" id="editcommand8"
+              data-commandname="M8" data-showcommandindex="false"
+              data-editcommandname="false"></div>
+          </div>
+          <div>
+            <select class="commandtype" id="commandtype9">
+            </select>
+            <div class="commandeditor" style="width:900px" id="editcommand9"
+              data-commandname="M9" data-showcommandindex="false"
+              data-editcommandname="false"></div>
+          </div>
+          <div>
+            <select class="commandtype" id="commandtype10">
+            </select>
+            <div class="commandeditor" style="width:900px" id="editcommand10"
+              data-commandname="S" data-showcommandindex="false"
+              data-editcommandname="false"></div>
+          </div>
+        </div>
+        <div class="tab-pane" id="settings_userbuttons">
+          <div>
+            <select class="commandtype" id="commandtype11">
+            </select>
+            <div class="commandeditor" style="width:900px" id="editcommand11"
+              data-commandname="Command 1" data-showcommandindex="false"
+              data-editcommandname="true"></div>
+          </div>
+          <div>
+            <select class="commandtype" id="commandtype12">
+            </select>
+            <div class="commandeditor" style="width:900px" id="editcommand12"
+              data-commandname="Command 2" data-showcommandindex="false"
+              data-editcommandname="true"></div>
+          </div>
+          <div>
+            <select class="commandtype" id="commandtype13">
+            </select>
+            <div class="commandeditor" style="width:900px" id="editcommand13"
+              data-commandname="Command 3" data-showcommandindex="false"
+              data-editcommandname="true"></div>
+          </div>
+        </div>
+        <div class="tab-pane" id="settings_motionparameter">
       <div id="tplannercontainer">
         <h3
           style=" text-align:center; margin: 15px 5px 5px 5px; font-family:Trebuchet MS;">Trajectory Planner / Axis Settings</h3>
@@ -207,21 +145,19 @@
           </tr>
           <tr class="tplannerrow">
             <td>
-              <input class="tplannertext" id="tplannerbreakangle" type="text" />
+              <input class="tplannertext" id="tplannerbreakangle" min="0" type="number" step="any" />
             </td>
             <td>
-              <input class="tplannertext" id="tplannerlookahead" type="text" />
+              <input class="tplannertext" id="tplannerlookahead" min="0" type="number" step="any" />
             </td>
             <td>
-              <input class="tplannertext" id="tplannercollineartolerance"
-                type="text" />
+              <input class="tplannertext" id="tplannercollineartolerance" min="0" type="number" step="any" />
             </td>
             <td>
-              <input class="tplannertext" id="tplannercornertolerance"
-                type="text" />
+              <input class="tplannertext" id="tplannercornertolerance" min="0" type="number" step="any" />
             </td>
             <td>
-              <input class="tplannertext" id="tplannerfacetangle" type="text" />
+              <input class="tplannertext" id="tplannerfacetangle" min="0" type="number" step="any" />
             </td>
           </tr>
         </table>
@@ -231,7 +167,6 @@
         <table class="axisparamtable">
           <tr class="axisparamrow">
             <th class="axisparamheader">Axis</th>
-            <th class="axisparamheader">Index</th>
             <th class="axisparamheader">Counts Per Inch</th>
             <th class="axisparamheader">Max Accel</th>
             <th class="axisparamheader">Max Velocity</th>
@@ -243,19 +178,16 @@
               <p class="axisparamlabel" id="axisnamelabelX">X</p>
             </td>
             <td>
-              <input class="axisparamtext" id="axisindexX" type="text" />
+              <input class="axisparamtext" id="axiscountsX" min="0" type="number" step="any" />
             </td>
             <td>
-              <input class="axisparamtext" id="axiscountsX" type="text" />
+              <input class="axisparamtext" id="axisaccelX" min="0" type="number" step="any" />
             </td>
             <td>
-              <input class="axisparamtext" id="axisaccelX" type="text" />
+              <input class="axisparamtext" id="axisvelX" min="0" type="number" step="any" />
             </td>
             <td>
-              <input class="axisparamtext" id="axisvelX" type="text" />
-            </td>
-            <td>
-              <input class="axisparamtext" id="axisjogvelX" type="text" />
+              <input class="axisparamtext" id="axisjogvelX" min="0" type="number" step="any" />
             </td>
           </tr>
 
@@ -264,19 +196,16 @@
               <p class="axisparamlabel" id="axisnamelabelY">Y</p>
             </td>
             <td>
-              <input class="axisparamtext" id="axisindexY" type="text" />
+              <input class="axisparamtext" id="axiscountsY" min="0" type="number" step="any" />
             </td>
             <td>
-              <input class="axisparamtext" id="axiscountsY" type="text" />
+              <input class="axisparamtext" id="axisaccelY" min="0" type="number" step="any" />
             </td>
             <td>
-              <input class="axisparamtext" id="axisaccelY" type="text" />
+              <input class="axisparamtext" id="axisvelY" min="0" type="number" step="any" />
             </td>
             <td>
-              <input class="axisparamtext" id="axisvelY" type="text" />
-            </td>
-            <td>
-              <input class="axisparamtext" id="axisjogvelY" type="text" />
+              <input class="axisparamtext" id="axisjogvelY" min="0" type="number" step="any" />
             </td>
           </tr>
 
@@ -285,19 +214,16 @@
               <p class="axisparamlabel" id="axisnamelabelZ">Z</p>
             </td>
             <td>
-              <input class="axisparamtext" id="axisindexZ" type="text" />
+              <input class="axisparamtext" id="axiscountsZ" min="0" type="number" step="any" />
             </td>
             <td>
-              <input class="axisparamtext" id="axiscountsZ" type="text" />
+              <input class="axisparamtext" id="axisaccelZ" min="0" type="number" step="any" />
             </td>
             <td>
-              <input class="axisparamtext" id="axisaccelZ" type="text" />
+              <input class="axisparamtext" id="axisvelZ" min="0" type="number" step="any" />
             </td>
             <td>
-              <input class="axisparamtext" id="axisvelZ" type="text" />
-            </td>
-            <td>
-              <input class="axisparamtext" id="axisjogvelZ" type="text" />
+              <input class="axisparamtext" id="axisjogvelZ" min="0" type="number" step="any" />
             </td>
           </tr>
 
@@ -306,19 +232,16 @@
               <p class="axisparamlabel" id="axisnamelabelA">A</p>
             </td>
             <td>
-              <input class="axisparamtext" id="axisindexA" type="text" />
+              <input class="axisparamtext" id="axiscountsA" min="0" type="number" step="any" />
             </td>
             <td>
-              <input class="axisparamtext" id="axiscountsA" type="text" />
+              <input class="axisparamtext" id="axisaccelA" min="0" type="number" step="any" />
             </td>
             <td>
-              <input class="axisparamtext" id="axisaccelA" type="text" />
+              <input class="axisparamtext" id="axisvelA" min="0" type="number" step="any" />
             </td>
             <td>
-              <input class="axisparamtext" id="axisvelA" type="text" />
-            </td>
-            <td>
-              <input class="axisparamtext" id="axisjogvelA" type="text" />
+              <input class="axisparamtext" id="axisjogvelA" min="0" type="number" step="any" />
             </td>
           </tr>
 
@@ -327,19 +250,16 @@
               <p class="axisparamlabel" id="axisnamelabelB">B</p>
             </td>
             <td>
-              <input class="axisparamtext" id="axisindexB" type="text" />
+              <input class="axisparamtext" id="axiscountsB" min="0" type="number" step="any" />
             </td>
             <td>
-              <input class="axisparamtext" id="axiscountsB" type="text" />
+              <input class="axisparamtext" id="axisaccelB" min="0" type="number" step="any" />
             </td>
             <td>
-              <input class="axisparamtext" id="axisaccelB" type="text" />
+              <input class="axisparamtext" id="axisvelB" min="0" type="number" step="any" />
             </td>
             <td>
-              <input class="axisparamtext" id="axisvelB" type="text" />
-            </td>
-            <td>
-              <input class="axisparamtext" id="axisjogvelB" type="text" />
+              <input class="axisparamtext" id="axisjogvelB" min="0" type="number" step="any" />
             </td>
           </tr>
 
@@ -348,23 +268,20 @@
               <p class="axisparamlabel" id="axisnamelabelC">C</p>
             </td>
             <td>
-              <input class="axisparamtext" id="axisindexC" type="text" />
+              <input class="axisparamtext" id="axiscountsC" min="0" type="number" step="any" />
             </td>
             <td>
-              <input class="axisparamtext" id="axiscountsC" type="text" />
+              <input class="axisparamtext" id="axisaccelC" min="0" type="number" step="any" />
             </td>
             <td>
-              <input class="axisparamtext" id="axisaccelC" type="text" />
+              <input class="axisparamtext" id="axisvelC" min="0" type="number" step="any" />
             </td>
             <td>
-              <input class="axisparamtext" id="axisvelC" type="text" />
-            </td>
-            <td>
-              <input class="axisparamtext" id="axisjogvelC" type="text" />
+              <input class="axisparamtext" id="axisjogvelC" min="0" type="number" step="any" />
             </td>
           </tr>
         </table>
       </div>
+        </div>
     </div>
-  </div>
 </div>
