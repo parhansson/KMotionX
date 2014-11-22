@@ -12,8 +12,7 @@ https://www.youtube.com/watch?v=oPTJwcre0hA
 KMotionX also includes a JNI binding to use expose the GCodeInterpreter and KMotionDLL API to the Java world.
 
 ####Who might be interested in this.
-Not that many actually. I have only ported the KMotionServer, KMotionDLL and GCodeInterpreter. I have not ported any GUI applications such as KMotionCNC. Hence the only way to execute is to use one of the examples or make a program yourself.
-In the future I plan to make a working GUI application in Java. Wich will be possible to use on Linux.
+Anyone that would like to operate their KFlop controlled machine from their phone, tablets or anything with a web browser. I have ported the KMotionServer, KMotionDLL and GCodeInterpreter. I had plans to create a Java GUI but have now dropped that idea and created a HTML5 web application for that purpose. Drag an svg file into browser window and it will instantly be converted into executable GCode. Although I must admit it is still in alpha. There are lots of missing features to just use it out of the box. Some things might be hard wired for my current machine setup. Hence in this stage you might have to do some changes yourself. Or just wait until I have fixed it.
 
 
 #####Changes from original source
@@ -29,7 +28,7 @@ In the future I plan to make a working GUI application in Java. Wich will be pos
 
 
 #####Features to be implemented
-- Add Compile and load coff program to init KFLOP
+- (DONE) Add Compile and load coff program to init KFLOP
 - (DONE) Execute on PC 
 - (DONE) Concatenation of error message in CheckSoftLimitsArc
 - ListLocations KMotionDLL_Direct (should work but needs more testing)
@@ -209,14 +208,17 @@ sudo cp KMotionX/usb/etc/udev/rules.d/10.kflop.rules /etc/udev/rules.d/
 
 ######3. Execute examples
 Plug in your KFlop to an available USB port.
-KMotionServer will start automatically in background. 
-When KMotionDLL is rebuild make sure to kill running server 'killall KMotionServer'
+KMotionServer will start automatically in background when needed. 
+When KMotionDLL is rebuilt make sure to kill running server 'killall KMotionServer'
 
 Start executeGCode example
 ```
 ./executeGCode
 ```
-
+Or try the new web application. Start and surf to http://localhost:8080 in a modern web browser.
+```
+./kmxWeb -document_root ../KMotionX/examples/webgui/site
+```
 
 ####Troubleshooting
 executeGCode example says "Operation not permitted"
