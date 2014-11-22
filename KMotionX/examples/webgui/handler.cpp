@@ -902,14 +902,14 @@ int handleJson(struct mg_connection *conn) {
       }
     }
   }
-  free(object);
-  free(func);
   mg_send_header(conn, "Content-Type", "application/json");
 
   //Need to send some data or connection will not be closed
   if (gp_response[0] == '\0') {
     EMIT_RESPONSE("N");
   }
+  free(object);
+  free(func);
 
   mg_printf_data(conn, "%s", gp_response);
 
