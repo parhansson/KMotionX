@@ -10,11 +10,16 @@ function clone(obj) {
 }
 
 function logText(elementId, color, text) {
-    var logNode = document.getElementById(elementId);
+    var fragment=document.createDocumentFragment();
     var div = document.createElement('div');
-    div.innerHTML = '<span style="color: ' + color + ';">' + text + ' </span>';
-    logNode.appendChild(div);
-    logNode.scrollTop = div.offsetTop;
+    var sp = document.createElement('sp');
+    sp.style.color = color;
+    sp.appendChild(document.createTextNode(text));
+    div.appendChild(sp);
+    fragment.appendChild(div);
+    var logNode = document.getElementById(elementId);
+    logNode.appendChild(fragment);
+    logNode.scrollTop = logNode.scrollHeight;
 }
 
 var socketHandlers = {
@@ -59,10 +64,13 @@ var socketHandlers = {
 
         //only load if different from loaded
         //TODO or if file has been updated, need a force flag
-		var lastLoaded = localStorage.getItem('last-loaded');
+		/*
+	    var lastLoaded = localStorage.getItem('last-loaded');
         if (obj.data.file != "" && obj.data.file != lastLoaded) {
             loadGCodeFromPath(obj.data.file);
         }
+        */
+        loadGCodeFromPath(obj.data.file);
         //TODO listen for machine configuration changes
     },
     MESSAGEBOX: function(obj) {
@@ -97,6 +105,52 @@ function loadFile(path, callback /* function(contents) */) {
     .error(function() { error() });
 }
 
+function updateProgressBar(percent, active){
+  var fileprogress = document.getElementById("fileprogress");
+  fileprogress.setAttribute("aria-valuenow",percent); 
+  fileprogress.style.width = percent +"%";
+  $(fileprogress).parent().toggleClass("active",active);
+  
+}
+// with this requests are one file back in history
+function loadFile2(path, callback /* function(contents) */){
+  updateProgressBar(0,true);
+
+  var oReq = new XMLHttpRequest();
+  oReq.addEventListener("progress", this.updateProgress, false);
+  oReq.addEventListener("load", this.transferComplete, false);
+  oReq.addEventListener("error", this.transferFailed, false);
+  oReq.addEventListener("abort", this.transferCanceled, false);
+  oReq.responseType = 'text';
+  oReq.open("GET", path, true);
+  oReq.send();
+  // ...
+  // progress on transfers from the server to the client (downloads)
+  this.updateProgress = function (oEvent) {
+    if (oEvent.lengthComputable) {
+      var percentComplete = oEvent.loaded / oEvent.total;
+      updateProgressBar(percentComplete,true);
+      // ...
+    } else {
+      // Unable to compute progress information since the total size is unknown
+      updateProgressBar(50,true);
+    }
+  }
+
+  this.transferComplete = function (evt) {
+    updateProgressBar(100,false);
+    callback(oReq.response);
+  }
+
+  this.transferFailed = function (evt) {
+    alert("An error occurred while transferring the file.");
+  }
+
+  this.transferCanceled = function (evt) {
+    alert("The transfer has been canceled by the user.");
+  }  
+}
+
 function about() {
   $('#aboutModal').modal();
 }
@@ -107,12 +161,15 @@ function loadGCodeFromPath(path) {
     scene.remove(object);
   }
     //TODO failure to load file should be handled somehow
-	loadFile(path, function(gcode) {
-		gcodeText.init(gcode);
-    	object = createObjectFromGCode(gcode);
-    	scene.add(object);
-    	localStorage.setItem('last-loaded', path);
-    	localStorage.removeItem('last-imported');
+	loadFile(path, function(gcodeVal) {
+	  //setTimeout(function(){
+	    var gcode = new GCode(gcodeVal);
+	    gcodeText.init(gcode);
+	    object = createObjectFromGCode(gcode);
+	    scene.add(object);
+	    localStorage.setItem('last-loaded', path);
+	    localStorage.removeItem('last-imported');
+	  //}, 100);
     });
 }
 
@@ -124,7 +181,7 @@ function openGCodeFromText(gcode) {
   gcodeText.init(gcode);
   object = createObjectFromGCode(gcode);
   scene.add(object);
-  localStorage.setItem('last-imported', gcode);
+  localStorage.setItem('last-imported', gcode.text);
   localStorage.removeItem('last-loaded');
 }
 
@@ -304,8 +361,20 @@ $(function() {
     var files = event.originalEvent.dataTransfer.files;
     if (files.length > 0) {
       var reader = new FileReader();
+      var file = files[0];
       reader.onload = function() {
-        openGCodeFromText(reader.result);
+        if(file.type == "image/svg+xml"){
+          var gcode = new GCode(svg2gcode(reader.result, {
+            scale : 1,
+            cutZ : 108,
+            safeZ: 80,
+            unit: "mm",
+            dpi: 72
+          }));
+          openGCodeFromText(gcode);
+        } else {
+          openGCodeFromText(new GCode(reader.result));          
+        }
       };
       reader.readAsText(files[0]);
     }
@@ -316,7 +385,7 @@ $(function() {
   var lastImported = localStorage.getItem('last-imported');
   var lastLoaded = localStorage.getItem('last-loaded');
   if (lastImported) {
-    openGCodeFromText(lastImported);
+    openGCodeFromText(new GCode(lastImported));
   } else if(lastLoaded){
 	  loadGCodeFromPath(lastLoaded);
     //loadGCodeFromPath(lastLoaded || 'examples/hand_ok.gcode');

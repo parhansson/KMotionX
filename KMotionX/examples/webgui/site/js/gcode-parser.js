@@ -123,10 +123,9 @@ GCodeParser.prototype.parseLine = function(_text, line) {
   this.flush(line);
 };
 
-GCodeParser.prototype.parse = function(gcode) {
-  var lines = gcode.split('\n');
-  for (var i = 0; i < lines.length; i++) {
-    if (this.parseLine(lines[i], i) === false) {
+GCodeParser.prototype.parse = function(gcodeLines) {
+  for (var i = 0; i < gcodeLines.length; i++) {
+    if (this.parseLine(gcodeLines[i], i) === false) {
       break;
     }
   }

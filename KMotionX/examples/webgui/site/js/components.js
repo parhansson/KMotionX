@@ -1,5 +1,8 @@
 
-
+var Unit = {
+    inch: "inch",
+    mm: "mm"
+}
 
 function SocketHandler(url, handlers, logNodeId) {
     this.url = url;
@@ -86,21 +89,32 @@ SocketHandler.prototype.log = function(message, type) {
 	if(!this.loggingOn) return;
     if (this.logNode) {
         var style = '';
+        var fragment=document.createDocumentFragment();
+        var div = document.createElement('div');
+        fragment.appendChild(div);
         if (type == this.LOG_TYPE.NONE) {
 
-        } else if (type == this.LOG_TYPE.SEND) {
-            style = '<span style="color: green; ">SENT: </span> '
-        } else if (type == this.LOG_TYPE.RECEIVE) {
-            style = '<span style="color: blue; ">RECEIVED: </span> '
-        } else if (type == this.LOG_TYPE.ERROR) {
-            style = '<span style="color: red; ">ERROR: </span> '
-        } else if (type == this.LOG_TYPE.PING) {
-            style = '<span style="color: blue; ">PING...</span> '
-        }
-        var div = document.createElement('div');
-        div.innerHTML = style + message;
-        this.logNode.appendChild(div);
-    	this.logNode.scrollTop = div.offsetTop;
+        } else {
+          var sp = document.createElement('span');
+          if (type == this.LOG_TYPE.SEND) {
+            sp.style.color = 'green';
+            sp.appendChild(document.createTextNode("SENT: "));
+          } else if (type == this.LOG_TYPE.RECEIVE) {
+            sp.style.color = 'blue';
+            sp.appendChild(document.createTextNode("RECEIVED: "));
+          } else if (type == this.LOG_TYPE.ERROR) {
+            sp.style.color = 'red';
+            sp.appendChild(document.createTextNode("ERROR: "));
+          } else if (type == this.LOG_TYPE.PING) {
+            sp.style.color = 'blue';          
+            sp.appendChild(document.createTextNode("PING..."));          
+          }
+          div.appendChild(sp);
+        } 
+        div.appendChild(document.createTextNode(message));
+
+        this.logNode.appendChild(fragment);
+    	this.logNode.scrollTop = this.logNode.scrollHeight;
     } else {
         if (type == this.LOG_TYPE.NONE) {
 			console.info('---',message);
@@ -176,23 +190,30 @@ ViewerSVG.prototype.draw = function (message){
  	}
 }
 
-
+function GCode(gcode){
+  if(Array.isArray(gcode)){
+    this.lines = gcode;
+    this.text = gcode.join('\n');;
+  } else {
+    this.text = gcode;   
+    this.lines = gcode.split('\n');;
+  }
+}
 
 function LineSelectingTextArea(nodeId) {
     this.tarea = document.getElementById(nodeId);
 }
 
 LineSelectingTextArea.prototype.init = function(gcode) {
-	this.tarea.value = gcode;
-    this.lines = gcode.split("\n");
+	this.tarea.value = gcode.text;
     this.linePos = [];
 
     // calculate start/end
     var startPos = 0;
-    var endPos = this.tarea.value.length;
+    var endPos = 0;//gcode.length; //this.tarea.value.length;
     var lineLength;
-    for (var x = 0; x < this.lines.length; x++) {
-        lineLength = this.lines[x].length;
+    for (var x = 0; x < gcode.lines.length; x++) {
+        lineLength = gcode.lines[x].length;
         endPos = startPos + lineLength;
         this.linePos[x] = [startPos, endPos];
 
@@ -213,13 +234,13 @@ LineSelectingTextArea.prototype.select = function(lineNum) {
     // Chrome / Firefox
 
     if (typeof(this.tarea.selectionStart) != "undefined") {
-        this.tarea.focus();
+        //this.tarea.focus();
         this.tarea.selectionStart = startPos;
         this.tarea.selectionEnd = endPos;
 
         // we need to scroll to this row but scrolls are in pixels,
         // so we need to know a row's height, in pixels
-        var lineHeight = this.tarea.clientHeight / 21; //tarea.rows;
+        var lineHeight = this.tarea.clientHeight / 17;//tarea.rows;
 
         // scroll !!
         if(this.tarea.scrollTop != "undefined"){

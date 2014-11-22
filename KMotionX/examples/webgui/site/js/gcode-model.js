@@ -1,7 +1,7 @@
 // Copyright (c) 2012 Joe Walnes
 // Copyright (c) 2014 par.hansson@gmail.com
 function createObjectFromGCode(gcode) {
-
+  
   var object = new THREE.Object3D();
 
   var geometry = new THREE.Geometry();
@@ -89,7 +89,7 @@ function createObjectFromGCode(gcode) {
     console.info('Unknown command:', args.name, args, info);
   });
 
-  parser.parse(gcode);
+  parser.parse(gcode.lines);
   console.info("Nr of vertices", ext);
   var lineMaterial = new THREE.LineBasicMaterial({
     opacity: 0.6,
