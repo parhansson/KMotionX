@@ -19,6 +19,7 @@ RemoteCall.prototype.invoke = function(params, datafunc){
 
 var RPC = {
 	saveMachine: new RemoteCall('aux','saveMachine'),
+	listDir: new RemoteCall('aux','listDir'),
 	loadGCodeFile: new RemoteCall('aux','loadGCodeFile'),
 	
 	feedHold: new RemoteCall('kmotion','feedHold'),

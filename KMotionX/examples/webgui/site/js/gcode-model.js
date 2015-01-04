@@ -1,5 +1,6 @@
 // Copyright (c) 2012 Joe Walnes
 // Copyright (c) 2014 par.hansson@gmail.com
+var gworker;
 function createObjectFromGCode(gcode) {
   
   var object = new THREE.Object3D();
@@ -18,30 +19,32 @@ function createObjectFromGCode(gcode) {
   };
   var ext = 0;
   var lastCommand = null;
-  var parser = new GCodeParser({
-    M: function() {
-    },
-    F: function() {
-    },
-    G: function(cmd, line) {
-      lastCommand = cmd;
-    },
-    S: function() {
-    },
-    G0: function(cmd, line) {
-      lastCommand = cmd;
-    },
-    G1: function(cmd, line) {
-      lastCommand = cmd;
-    },
-    G2: function(cmd, line) {
-      lastCommand = cmd;
-    },
-    G3: function(cmd, line) {
-      lastCommand = cmd;
-    }
-  },
-  function(args, line) {
+  
+
+  var gcodeHandlers = {
+      M: function() {
+      },
+      F: function() {
+      },
+      G: function(cmd, line) {
+        lastCommand = cmd;
+      },
+      S: function() {
+      },
+      G0: function(cmd, line) {
+        lastCommand = cmd;
+      },
+      G1: function(cmd, line) {
+        lastCommand = cmd;
+      },
+      G2: function(cmd, line) {
+        lastCommand = cmd;
+      },
+      G3: function(cmd, line) {
+        lastCommand = cmd;
+      }
+    };
+  var parameterHandler = function(args, line) {
     //Only handle G codes
     if(lastCommand.code != 'G') return;
     
@@ -85,27 +88,59 @@ function createObjectFromGCode(gcode) {
     lastLine = newLine;
     
     
-  },function(args, info) {
+  };
+  var defaultHandler = function(args, info) {
     console.info('Unknown command:', args.name, args, info);
-  });
+  };
 
-  parser.parse(gcode.lines);
-  console.info("Nr of vertices", ext);
-  var lineMaterial = new THREE.LineBasicMaterial({
-    opacity: 0.6,
-    transparent: true,
-    linewidth: 1,
-    vertexColors: THREE.FaceColors
-  });
-  object.add(new THREE.Line(geometry, lineMaterial, THREE.LinePieces));
+  var addGeometry = function(){
+    console.info("Nr of vertices", ext);
+    var lineMaterial = new THREE.LineBasicMaterial({
+      opacity: 0.6,
+      transparent: true,
+      linewidth: 1,
+      vertexColors: THREE.FaceColors
+    });
+    object.add(new THREE.Line(geometry, lineMaterial, THREE.LinePieces));
+    
+    // Center
+    geometry.computeBoundingBox();
+    var center = new THREE.Vector3().addVectors(geometry.boundingBox.min,
+        geometry.boundingBox.max).divideScalar(2);
+    var scale = 3; // TODO: Auto size
+    object.position = center.multiplyScalar(-scale);
+    object.scale.multiplyScalar(scale);
+    
+  }
+  background = true;
+  if(background){
+    
+    if(!gworker){
+    //if(true){
+      gworker = new Worker("js/gcode-worker.js");
+      
+      gworker.onmessage = function(event) {
+        
+        var cmd = event.data.cmd;
+        var params = event.data.params;
+        if(cmd){
+          var handler = gcodeHandlers[cmd.name] || gcodeHandlers[cmd.code] || defaultHandler;
+          handler(cmd, event.data.line);
+        } else if(params){
+          parameterHandler(params, event.data.line)
+        } else if(event.data == 'done'){
+          addGeometry();
+        }
+        console.log(event.data);
+      };
+    }
+    gworker.postMessage({command:'parse',gcode:gcode.lines});
+  } else {
+    var parser = new GCodeParser(gcodeHandlers,parameterHandler,defaultHandler);
+    parser.parse(gcode.lines);
+    addGeometry();    
+  }
 
-  // Center
-  geometry.computeBoundingBox();
-  var center = new THREE.Vector3().addVectors(geometry.boundingBox.min,
-      geometry.boundingBox.max).divideScalar(2);
-  var scale = 3; // TODO: Auto size
-  object.position = center.multiplyScalar(-scale);
-  object.scale.multiplyScalar(scale);
 
   return object;
 }

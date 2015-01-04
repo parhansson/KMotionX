@@ -1,14 +1,75 @@
-table#machine_setup_table th {
-    text-align: left;
+  /*
+  #sidebar.affix-top {
+    position: static;
+    margin-top:30px;
+    width:350px;
+    background-color: #EEEEEE;
+    z-index: 5000;
+  }
+  */
+  #sidebar.affix {
+    position: fixed;
+    top:70px;
+    width:350px;
+    background-color: #EEEEEE;
+    z-index: 5000;
+  }
+  #sidebar.hidden {
+    display: none;
+  }
+  
+  #renderArea.full{
+    
+    position: fixed;
+    left 10px;
+    margin-top:30px;
+    width:100vw;
+    height:100vh;
+  
+  }
+  
+/*ace editor*/
+#ceditor {
+  height: 330px;      
+        
 }
 
-#svgviewer, #renderArea {
+#gcodeEditor {
+  height: 330px;      
+        
+}
+.threerenderer {
     background-color: #EEEEEE;
     height: 600px;
 }
+
 .fill { 
     min-height: 100%;
 }
+/* machine mcode styles*/
+.mcode-input label {
+    min-width: 30px;    
+}
+
+/*
+span[data-pname] {
+    float: left;
+    min-width: 20px;
+}
+input {
+  font: 12px Arial, sans-serif;
+}
+
+input[type='number'] {
+    width: 100px;
+}
+
+input[type='text'] {
+    width: 200px;
+    
+}
+*/
+/* machine mcode styles end*/
 
 #machine_setup {
     position: fixed;
@@ -25,24 +86,31 @@ table#machine_setup_table th {
     overflow: scroll;
 }
 
+.glyphButtonBar {
+    font-size: 1.5em;
+    color: #abd;
+}
 
+.btn 
+{
 
-.button {
-
-    width: 100%;
-    border: 1px solid #9ac;
-    margin-bottom: 3px;
-    height: 30px;
-    background-color: #abd;
     color: #fff;
-    border-radius: 2px;
-    cursor: pointer;
     background-color: #9ac;
 }
-.button_pressed {
-background-color: #dbd;
+
+.btn_down {
+  background-color: #dbd;
+}
+.btn_wide {
+  width: 100%;
 }
 
+
+.btn-grid {
+    width:32%;
+    margin-top:2px;
+    margin-bottom: 2px;
+}
 
 .status_message {
     width: 100%;
@@ -57,7 +125,7 @@ background-color: #dbd;
     font-size: 8px;
 }
 
-#file_list {
+.modal-file-list {
     height: 300px;
     width: 97%;
     padding: 3px;

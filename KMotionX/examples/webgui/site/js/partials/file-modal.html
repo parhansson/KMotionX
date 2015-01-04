@@ -1,0 +1,17 @@
+    <div class="modal-dialog">
+      <div class="modal-content">       
+        <div class="modal-header">
+          <a class="close" data-dismiss="modal">&times;</a>
+          <h4>Open GCode</h4>
+        </div>
+        <div class="modal-body">
+          <ul class="modal-file-list">
+            <li class="_animate-repeat button" ng-click="open(file)" ng-repeat="file in files">{{file.name}}</li>          
+          </ul>
+          <p>Open file by selecting or with drag and drop to edtitor from desktop</p>
+        </div>
+        <div class="modal-footer">
+          <a class="btn" data-dismiss="modal">Cancel</a>      
+        </div>
+      </div>
+    </div>

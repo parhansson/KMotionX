@@ -10,10 +10,16 @@
 #include <ctype.h>
 #include <time.h>
 #include <pthread.h>
+
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/mman.h>
+#include <dirent.h>
 //#include <unistd.h>
 #include "dbg.h"
 #include "handler.h"
 #include "frozen.h"
+
 
 int toks(const struct json_token *tk, void *value, const int size = 0);
 int toki(const struct json_token *tk, int * value);
@@ -108,8 +114,8 @@ char gp_response[MAX_LINE];
 const char STATUS_NAMES[][24] = { "CBS_ENQUEUED", "CBS_WAITING",
     "CBS_ACKNOWLEDGED", "CBS_STATE_IDLE" };
 
-const char CB_NAMES[][24] = { "CB_STATUS", "CB_COMPLETE", "CB_ERR_MSG",
-    "CB_CONSOLE", "CB_USER", "CB_USER_M_CODE", "CB_STATE", "CB_MESSAGEBOX" };
+const char CB_NAMES[][24] = { "STATUS", "COMPLETE", "ERR_MSG",
+    "CONSOLE", "USER", "USER_M_CODE", "STATE", "MESSAGEBOX" };
 
 
 void initHandler() {
@@ -183,8 +189,8 @@ void info_handler(int signum) {
 }
 
 //TODO Implement support for blocking callback in poll thread
-//#define isBlocking(cb) (cb->type == CB_USER || cb->type == CB_USER_M_CODE || cb->type ==  CB_MESSAGEBOX)
-#define isBlocking(cb) (cb->type == CB_USER || cb->type == CB_USER_M_CODE)
+//#define isBlocking(type) (type == CB_USER || type == CB_USER_M_CODE || type ==  CB_MESSAGEBOX)
+#define isBlocking(type) (type == CB_USER || type == CB_USER_M_CODE)
 
 //
 /**
@@ -220,7 +226,7 @@ void pollCallback(struct callback *cb, int id, int ret) {
         cb->status = CBS_STATE_IDLE;
       } else {
         //Only signal waiting thread if blocking callback
-        if (isBlocking(cb)) {
+        if (isBlocking(cb->type)) {
           pthread_cond_signal(&con); //wake up waiting thread with condition variable
         } else {
           //printf("Non blocking callback acked and deleted\n");
@@ -239,34 +245,47 @@ void pollCallback(struct callback *cb, int id, int ret) {
     }
   }
 }
+#define DUMP_CON if(conn->content_len > 0){ \
+    char *_msg; \
+    _msg = strndup(conn->content, conn->content_len); \
+    printf("Raw: %s\n",_msg); \
+    free(_msg); \
+}
+
 void pollCallbacks(struct mg_connection *conn) {
 
   int id = -1;
-  enum cb_type type;
+  char type[16];
+  memset(type,0,16);
+
   int ret = -1;
   if (conn != NULL) {
     //we have a connection.
     //incoming answer from client
     if (conn->content_len > 12 && memcmp(conn->content, "CB_ACK:", 7) == 0) {
-      sscanf(conn->content, "CB_ACK:%d:%d:%d:", &id, &type, &ret);
-      /*
+      sscanf(conn->content, "CB_ACK: %d  %s %d", &id, type, &ret);
+
+/*
        char *msg;
        msg = strndup(conn->content, conn->content_len);
-       debug("CB_ACK id: %d type: %s    raw: %s\n",id,CB_NAMES[type],msg);
+       debug("CB_ACK id: %s type: %s    raw: %s\n",id,type,msg);
        free(msg);
-       */
+*/
     }
   }
 
   pthread_mutex_lock(&mut);
 
-  struct callback *last;
+  struct callback *node, *current;
 
-  last = callbacks;
+  node = callbacks;
   do{
-    pollCallback(last, id, ret);
-    last = last->next;
-  } while (last != NULL);
+
+    current = node;
+    // pollCallback might free the current node in this case node->next is not valid.
+    node = node->next;
+    pollCallback(current, id, ret);
+  } while (node != NULL);
 
   pthread_mutex_unlock(&mut);
 }
@@ -293,8 +312,8 @@ struct callback * init_callback(struct callback *last, const char * message,
   last->ret = -1;
   last->type = type;
   //{ "id": 5, "type": 67, data: ""|6776|{}|[]|null|true|false}
-  json_emit(last->msg, 512, "{ s: i, s: i, s: S}", "id", last->id, "type", type,
-      "data", message);
+  json_emit(last->msg, 512, "{ s: i, s: s, s: S, s: S}", "id", last->id, "type", CB_NAMES[type],
+      "block",isBlocking(type)?"true":"false" ,"data", message);
 
   //debug("Enqueued %s message: %s",CB_NAMES[type], last->msg);
   return last;
@@ -339,7 +358,7 @@ int enqueueCallback(const char * msg, enum cb_type type) {
     //if this is a blocking call. then we are in trouble.
     //we can not stop and wait in poll/main thread
     cb = init_callback(NULL, msg, type);
-    if (isBlocking(cb)) {
+    if (isBlocking(cb->type)) {
       log_err("-------ERROR: Blocking callback in poll thread %ld", pollTID);
       result = cb->ret;
       delete_callback(cb);
@@ -347,7 +366,7 @@ int enqueueCallback(const char * msg, enum cb_type type) {
   } else {
     pthread_mutex_lock(&mut);
     cb = init_callback(NULL, msg, type);
-    if (isBlocking(cb)) {
+    if (isBlocking(cb->type)) {
       debug("wait called");
       pthread_cond_wait(&con, &mut); //wait for the signal with con as condition variable
       debug("wait done signal received");
@@ -454,49 +473,150 @@ void enqueueState() {
       gstate.simulate, "file", gstate.current_file);
   init_callback(callbacks, stateBuf, CB_STATE);
 }
-int ev_handler(struct mg_connection *conn, enum mg_event ev) {
 
-  if (ev == MG_POLL) {
-    pollCallbacks(NULL);
+int handle_poll(struct mg_connection *conn) {
+  pollCallbacks(NULL);
 
-    time_t current_time = time(NULL);
-    if (current_time - service_console_time > 5) {
-      /*
-       if (km->KMotionLock() == KMOTION_LOCKED)  // see if we can get access
-       {
-       km->ServiceConsole();
-       km->ReleaseToken();
-       printf("ServiceConsole\n");
-       } else {
-       printf("Failed to lock for console\n");
-       }
-       */
-      service_console_time = current_time;
-    }
-
-    //printf("event %d\n", ev);
-  } else if (ev == MG_WS_CONNECT) {
-    //if websocket /ws is param here
-    //printf("event %d param: %s\n", ev, conn->uri);
-    enqueueState();
-    return MG_FALSE;
-  } else if (ev == MG_REQUEST) {
-    if (conn->is_websocket) {
-      pollCallbacks(conn);
-      return MG_TRUE;
-    } else {
-      char uri[256];
-      strcpy(uri, conn->uri);
-      if (strstr(uri, "/api") == uri) {
-        //Starts with /api but can be anything
-        return handle_api(conn, ev, uri);
-      }
-    }
-  } else if (ev == MG_AUTH) {
-    return MG_TRUE;
+  time_t current_time = time(NULL);
+  if (current_time - service_console_time > 5) {
+    /*
+     if (km->KMotionLock() == KMOTION_LOCKED)  // see if we can get access
+     {
+     km->ServiceConsole();
+     km->ReleaseToken();
+     printf("ServiceConsole\n");
+     } else {
+     printf("Failed to lock for console\n");
+     }
+     */
+    service_console_time = current_time;
   }
-  //else
+
+  //printf("event %d\n", ev);
   return MG_FALSE;
+}
+int handle_ws_connect(struct mg_connection *conn) {
+  //if websocket /ws is param here
+  //printf("event %d param: %s\n", ev, conn->uri);
+  enqueueState();
+  return MG_FALSE;
+}
+int handle_request(struct mg_connection *conn,enum mg_event ev) {
+  if (conn->is_websocket) {
+    pollCallbacks(conn);
+    return MG_TRUE;
+  } else {
+    char uri[256];
+    strcpy(uri, conn->uri);
+
+    //if (strcmp(conn->uri, "/upload") == 0) {
+    if (strstr(uri, "/upload") == uri) {
+      FILE *fp = (FILE *) conn->connection_param;
+      if (fp != NULL) {
+        //This row was in the example. But should not be here
+        //fwrite(conn->content, 1, conn->content_len, fp); // Write last bits
+
+        mg_printf(conn, "HTTP/1.1 200 OK\r\n"
+                  "Content-Type: text/plain\r\n"
+                  "Connection: close\r\n\r\n"
+                  "Written %ld of POST data to a temp file:\n\n",
+                  (long) ftell(fp));
+
+        // Temp file will be destroyed after fclose(), do something with the
+        // data here -- for example, parse it and extract uploaded files.
+        // As an example, we just echo the whole POST buffer back to the client.
+
+        rewind(fp);
+
+        int pagesize, offset, fd;
+        size_t filesize, mapsize;
+        caddr_t addr;
+
+        offset = 0;
+        fd = fileno(fp);
+        filesize = ftell(fp);
+        pagesize = getpagesize();
+        mapsize = (filesize/pagesize)+pagesize; // align memory allocation with pagesize
+
+        //memory map tmp file and parse it.
+        addr = (char*)mmap((caddr_t)0, mapsize, PROT_READ, MAP_PRIVATE, fd,offset);
+
+        const char *data;
+        int data_len, ofs = 0;
+        char var_name[100], file_name[100];
+        while ((ofs = mg_parse_multipart(addr + ofs, mapsize - ofs,
+                                         var_name, sizeof(var_name),
+                                         file_name, sizeof(file_name),
+                                         &data, &data_len)) > 0) {
+          fprintf(stdout, "var: %s, file_name: %s, size: %d bytes\n",
+                         var_name, file_name, data_len);
+          FILE * pFile;
+          //Add one to skip first slash and make path relative
+          pFile = fopen (file_name+1, "wb");
+          if(pFile){
+            fwrite (data , sizeof(char), data_len, pFile);
+            fclose (pFile);
+          }
+
+        }
+        munmap(addr, mapsize);
+        /*
+        rewind(fp);
+        mg_send_file_data(conn, fileno(fp));
+        return MG_MORE;  // Tell Mongoose reply is not completed yet
+        */
+        return MG_TRUE;
+      } else {
+        mg_printf_data(conn, "%s", "Had no data to write...");
+        return MG_TRUE; // Tell Mongoose we're done with this request
+      }
+    } else if (strstr(uri, "/api") == uri) {
+      //Starts with /api but can be anything
+      return handle_api(conn, ev, uri);
+    }
+  }
+  return MG_FALSE;
+}
+
+// Mongoose sends MG_RECV for every received POST chunk.
+// When last POST chunk is received, Mongoose sends MG_REQUEST, then MG_CLOSE.
+int handle_recv(struct mg_connection *conn) {
+  if (conn->is_websocket) {
+    return MG_FALSE;
+  } else {
+    FILE *fp = (FILE *) conn->connection_param;
+
+    // Open temporary file where we going to write data
+    if (fp == NULL && ((conn->connection_param = fp = tmpfile())) == NULL) {
+      return -1;  // Close connection on error
+    }
+
+    // Return number of bytes written to a temporary file: that is how many
+    // bytes we want to discard from the receive buffer
+    return fwrite(conn->content, 1, conn->content_len, fp);
+  }
+}
+
+int handle_close(struct mg_connection *conn) {
+  // Make sure we free all allocated resources
+  if (conn->connection_param != NULL) {
+    fclose((FILE *) conn->connection_param);
+    conn->connection_param = NULL;
+  }
+  return MG_TRUE;
+}
+
+int ev_handler(struct mg_connection *conn, enum mg_event ev) {
+  switch (ev) {
+    case MG_AUTH:       return MG_TRUE;
+    case MG_POLL:       return handle_poll(conn);
+    case MG_REQUEST:    return handle_request(conn,ev);
+    case MG_WS_CONNECT: return handle_ws_connect(conn);
+    case MG_RECV:       return handle_recv(conn);
+    case MG_CLOSE:      return handle_close(conn);
+    default:            return MG_FALSE;
+  }
+
 }
 
 int handle_api(struct mg_connection *conn, enum mg_event ev, char *uri) {
@@ -507,14 +627,13 @@ int handle_api(struct mg_connection *conn, enum mg_event ev, char *uri) {
     return MG_FALSE;
   }
 
-  int mg_result = MG_TRUE;
   if (strstr(uri, "/api") == uri) {
-    mg_result = handleJson(conn);
+    return handleJson(conn);
   } else {
     mg_send_header(conn, "Content-Type", "text/plain");
     mg_printf_data(conn, "KMotionCNC API # %s", (char *) conn->query_string);
   }
-  return mg_result;
+  return MG_TRUE;
 }
 
 int toks(const struct json_token *tk, void *sptr, const int size) {
@@ -698,7 +817,34 @@ int handleJson(struct mg_connection *conn) {
 
       free(machineFile);
       free(machineData);
+    } else if(FUNC_SIGP("listDir", 1)){
+      char *dir = NULL;
+      toks(paramtoken, &dir);
+      if (dir) {
+        DIR *dp;
+        struct dirent *ep;
+        int w = 0,first=1;
+        dp = opendir (dir);
+        if (dp != NULL){
+            w += snprintf(gp_response+w, MAX_LINE-w, "[");
+            while ((ep = readdir(dp))){
+              //printf("%d %s\n", ep->d_type, ep->d_name);
+              if(first){
+                first = 0;
+                w += json_emit(gp_response+w, MAX_LINE-w, "{s: s, s: i}", "name", ep->d_name,"type",ep->d_type );
+              } else {
+                w += json_emit(gp_response+w, MAX_LINE-w, ",{s: s, s: i}", "name", ep->d_name,"type",ep->d_type );
+              }
+            }
+            w += snprintf(gp_response+w, MAX_LINE-w, "]");
+            (void) closedir (dp);
+        } else {
+          perror ("Couldn't open the directory");
+        }
+      }
+      free(dir);
     }
+
   } else if (!strcmp("kmotion", object)) {
     if (FUNC_SIGP("feedHold", 0)) {
 
@@ -891,6 +1037,16 @@ int handleJson(struct mg_connection *conn) {
 
       gci->CoordMotion->SetTPParams();
 
+/*
+#define PERSIST_MCODE(x)                                  \
+    INT(Interpreter->McodeActions[x].Action);         \
+    DOUBLE(Interpreter->McodeActions[x].dParams[0]);      \
+    DOUBLE(Interpreter->McodeActions[x].dParams[1]);      \
+    DOUBLE(Interpreter->McodeActions[x].dParams[2]);      \
+    DOUBLE(Interpreter->McodeActions[x].dParams[3]);      \
+    DOUBLE(Interpreter->McodeActions[x].dParams[4]);      \
+    CHARS(Interpreter->McodeActions[x].String);
+*/
 
 
     } else if (FUNC_SIGP("simulate", 0)) {

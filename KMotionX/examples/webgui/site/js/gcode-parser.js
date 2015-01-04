@@ -1,13 +1,20 @@
 // Copyright (c) 2014 par.hansson@gmail.com
 /**
- * Parses a string of gcode instructions, and invokes handlers for each type of
+ * Parses a string of gcode instructions, and invokes codeHandlers for each type of
  * command or values.
  */
-function GCodeParser(handlers, moveHandler, defaultHandler) {
-  this.handlers = handlers || {};
-  this.defaultHandler = defaultHandler || function() {
-  };
-  this.moveHandler = moveHandler || function() {
+
+function GCodeParser(codeHandlers, paramHandler, defaultHandler) {
+  
+  this.codeHandler = {
+    codeHandlers: codeHandlers || {},
+    handle: function(cmd,line) {
+      var handler = this.codeHandlers[cmd.name] || this.codeHandlers[cmd.code] || defaultHandler || function() {};
+      handler(cmd, line);
+    }
+  }
+  
+  this.paramHandler = paramHandler || function() {
   };
 
   // Search for codes without space between them
@@ -53,9 +60,8 @@ GCodeCmd.prototype.done = function() {
 GCodeParser.prototype.flush = function(line) {
   if (this.cmd !== undefined) {
     this.cmd.done();
-    var handler = this.handlers[this.cmd.name] || this.handlers[this.cmd.code]
-        || this.defaultHandler;
-    handler(this.cmd, line);
+    //this.handle();
+    this.codeHandler.handle(this.cmd,line);
     // console.info("handle", this.cmd.name);
     delete this.cmd;
   }
@@ -63,7 +69,9 @@ GCodeParser.prototype.flush = function(line) {
     for ( var key in this.values) {
       this.values[key] = parseFloat(this.values[key]);
     }
-    this.moveHandler(this.values, line);
+    var values = this.values;
+    
+    this.paramHandler(this.values, line);
     // console.info("params ", JSON.stringify(this.values));
     delete this.values;
   }
