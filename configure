@@ -9,7 +9,7 @@ cc="gcc"
 libsuf=""
 exesuf=""
 LD_LIB_PATH="/usr/local/lib"
-LD_LIBS="stdc++"
+LD_LIBS="stdc++ m"
 TMPN="./conftest-$$"
 TMPH=$TMPN.h
 
