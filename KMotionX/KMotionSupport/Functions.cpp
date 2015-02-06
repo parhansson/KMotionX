@@ -83,7 +83,8 @@ unsigned int timeGetTime()
 //Default Console handler for messageboxes
 int MessageBoxConsoleHandler(const char *title, const char *msg, int options){
 		char str[100];
-		printf("---------%s:  OPTION:  %s---------\n%d\n-----------------------------------------------\n",title,options,msg);
+		printf("---------%s:  OPTION:  %s---------\n%d\n-----------------------------------------------\n",
+		    title,msg,options);
 		if((options & MB_OK) == MB_OK){
 			printf(">OK?");
 			fgets(str, 100, stdin);

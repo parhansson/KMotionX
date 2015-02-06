@@ -96,7 +96,6 @@ typedef void ERRMSG_HANDLER(const char *ErrMsg);
 
 
 
-
 // This class is exported from the KMotionDLL.dll
 class KMOTIONDLL_API CKMotionDLL {
 public:
@@ -108,9 +107,9 @@ public:
 	int WriteLineReadLine(const char *s, char *response);
 	int WriteLine(const char *s);
 	int WriteLineWithEcho(const char *s);
-	int ReadLineTimeOut(char *buf, int TimeOutms=1000000);
+	int ReadLineTimeOut(char *buf, int TimeOut_ms=100);
 	int ListLocations(int *nlocations, int *list);
-	int WaitToken(bool display_msg=true, int TimeOut_ms=1000000);
+	int WaitToken(bool display_msg=true, int TimeOut_ms=100);
 	int KMotionLock();
 	int USBLocation();
 	int KMotionLockRecovery();
@@ -135,12 +134,19 @@ public:
 
 	int SetConsoleCallback(CONSOLE_HANDLER *ch);
 	int SetErrMsgCallback(ERRMSG_HANDLER *eh);
+	// Default implementation of following calls the C callbacks set above.  Having virtuals
+	// makes it nicer to use in a swig target language binding.
+    virtual void Console(const char *buf);
+    virtual void ErrMsg(const char *ErrMsg);
+    
 	int CheckKMotionVersion(int *type=NULL, bool GetBoardTypeOnly=false);
 	int ExtractCoffVersionString(const char *InFile, char *Version);
     int GetStatus(MAIN_STATUS& status, bool lock);
 	void DoErrMsg(const char *s);
 #ifdef _KMOTIONX
 	const char* getInstallRoot();
+	// Use to override default c67-tcc (i.e. to use wine with TCC67.exe)
+	void UseWine(int uw, const char * compiler = NULL); 
 #endif
 private:
 
@@ -162,6 +168,8 @@ private:
 	SocketWrapper PipeFile;
 	char MainPath[256];
 	char MainPathRoot[256];
+	char customCompiler[256];
+	int use_wine;
 #else
 	CFile PipeFile;
 #endif

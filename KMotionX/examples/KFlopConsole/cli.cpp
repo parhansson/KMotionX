@@ -62,12 +62,16 @@ int main(int argc, char* argv[])
 						printf(">Command failed\n");
 					}
 		        } else {
+		        #if 1
+		            KM->WriteLine(str);
+		        #else
 					if(KM->WriteLineReadLine(str,response)){
 						printf(">Command failed\n");
 					} else {
 						printf("< %s\n",response);
 
 					}
+				#endif
 		        }
 	    	}
 	    }

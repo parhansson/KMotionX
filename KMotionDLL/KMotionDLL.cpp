@@ -3,7 +3,7 @@
 /*         Copyright (c) 2003-2006  DynoMotion Incorporated          */
 /*********************************************************************/
 
-
+#include <vector>
 #include "StdAfx.h"
 
 #define KMotionBd 1
@@ -54,12 +54,16 @@ CKMotionDLL::CKMotionDLL(int boardid)
         	//setenv("KMOTION_ROOT", kmotionRoot,0);
     }
     sprintf(MainPathRoot, "%s", kmotionRoot);
+    
+    customCompiler[0] = 0;
+    use_wine = 0;
 
 #endif
 
-	PipeMutex = new CMutex(FALSE,"KMotionPipe",NULL);
+	PipeMutex = new CMutex(FALSE,"KMotionPipe",0);
 	ConsoleHandler=NULL;
 	ErrMsgHandler=NULL;
+	//_cbs = NULL;
 }
 
 CKMotionDLL::~CKMotionDLL()
@@ -282,6 +286,18 @@ int CKMotionDLL::SetErrMsgCallback(ERRMSG_HANDLER *ch)
 	return 0;
 }
 
+void CKMotionDLL::Console(const char *buf)
+{
+    if (ConsoleHandler)
+        ConsoleHandler(buf);
+}
+
+void CKMotionDLL::ErrMsg(const char *ErrMsg)
+{
+    if (ErrMsgHandler)
+        ErrMsgHandler(ErrMsg);
+}
+
 
 // Note: ALL User Thread Numbers start with 1
 
@@ -362,6 +378,8 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 	unsigned char Reply = 0xAA;
 	char ErrorMsg[MAX_LINE];
 	bool ReceivedErrMsg=false;
+	bool CFExcept=false;
+	std::vector<char *> cons;
 
 
 	static int EntryCount=0;
@@ -433,9 +451,15 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 				PipeFile.Write(&Reply, 1);     // Send an ACK back to server
 		
 				// send it to the console if someone registered a callback
-
-				if (ConsoleHandler)
-					ConsoleHandler(r+1);
+			    // Rather than doing the callback here, just queue up the messages so they can be
+			    // handled after the lock is released.  Helps prevent server hang if callback crashes.
+		        int len = strlen(r+1)+1;
+		        char * m = (char *)malloc(len);
+		        if (m) 
+		        {
+		            memcpy(m, r+1, len);
+		            cons.push_back(m);
+		        }
 			}
 			else if (*r == DEST_ERRMSG)
 			{
@@ -456,17 +480,38 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 		EntryCount--;
 
 		PipeMutex->Unlock();
+		
 	}
 	catch (CFileException)
 	{
 		EntryCount--;
+		CFExcept = true;
+	}
+
+	for (unsigned i = 0; i < cons.size(); ++i) 
+	{
+	    try
+	    {
+		    Console(cons[i]);
+		}
+		catch (...)
+		{
+		    // Ignore errors in callback
+		}
+		free(cons[i]);
+	}
+	
+	if (CFExcept)
+	{
+	    // Exception caught above
 		if (ServerMessDisplayed) return 1;
 		ServerMessDisplayed=TRUE;
+
 		DoErrMsg("Unable to Connect to KMotion Server");
 		PipeMutex->Unlock();
 		exit(1);
 	}
-
+	
 	if (ReceivedErrMsg)
 	{
 		DoErrMsg(ErrorMsg);
@@ -605,6 +650,17 @@ int CKMotionDLL::CompileAndLoadCoff(const char *Name, int Thread, char *Err, int
 
 	return 0;
 }
+
+#ifdef _KMOTIONX
+void CKMotionDLL::UseWine(int uw, const char * compiler)
+{
+    if (compiler)
+        strncpy(customCompiler, compiler, sizeof(customCompiler));
+    else
+        customCompiler[0] = 0;
+    use_wine = uw;
+}
+#endif
 
 int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardType, int Thread, char *Err, int MaxErrLen)
 {
@@ -773,30 +829,43 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	return exitcode;
 #else
 
+    if (Err)
+        *Err = 0;
+        
 	//normalize_slashes()
 
 	if (Thread==0) return 1;
 	char Compiler[MAX_PATH +1];
-	strcpy(Compiler, COMPILER);;
-	FILE *f=fopen(Compiler,"r");  // try if compiler is on path
-
-	if (f==NULL)
-	{
-		sprintf(Compiler, "%s/%s", MainPath, COMPILER);
-		f=fopen(Compiler,"r");  // try in the released directory next
-		if (f==NULL)
-		{
-			sprintf(Compiler, "%s/KMotionX/tcc-0.9.26/%s", MainPathRoot, COMPILER);
-			f=fopen(Compiler,"r");  // try in the released directory next
-			if (f==NULL)
-			{
-				DoErrMsg("Error Locating c67-tcc Compiler");
-				return 1;
-			}
-		}
+	if (customCompiler[0]) {
+	    strcpy(Compiler, customCompiler);
+	    FILE *f=fopen(Compiler,"r");  // try if compiler is on path
+	    if (f==NULL)
+	    {
+		    DoErrMsg("Error Locating custom compiler");
+		    return 1;
+	    }
 	}
-	fclose(f);
+	else {
+	    strcpy(Compiler, COMPILER);;
+	    FILE *f=fopen(Compiler,"r");  // try if compiler is on path
 
+	    if (f==NULL)
+	    {
+		    sprintf(Compiler, "%s/%s", MainPath, COMPILER);
+		    f=fopen(Compiler,"r");  // try in the released directory next
+		    if (f==NULL)
+		    {
+			    sprintf(Compiler, "%s/KMotionX/tcc-0.9.26/%s", MainPathRoot, COMPILER);
+			    f=fopen(Compiler,"r");  // try in the released directory next
+			    if (f==NULL)
+			    {
+				    DoErrMsg("Error Locating c67-tcc Compiler");
+				    return 1;
+			    }
+		    }
+	    }
+	    fclose(f);
+    }
 
 	char IncSrcPath1[MAX_PATH +1];
 	char IncSrcPath2[MAX_PATH +1];
@@ -816,6 +885,16 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 
 	char command[MAX_LINE +1];
 
+    if (use_wine)
+ 	sprintf(command,"wine %s -text %08X -g -nostdinc %s %s -o \"%s\" \"%s\" %s",
+			Compiler,
+			GetLoadAddress(Thread,BoardType),
+			IncSrcPath1,
+			IncSrcPath2,
+			OutFile,
+			Name,
+			BindTo);
+   else
 	sprintf(command,"%s -Wl,-Ttext,%08X -Wl,--oformat,coff -static -nostdinc -nostdlib %s %s -o \"%s\" \"%s\" %s",
 			Compiler,
 			GetLoadAddress(Thread,BoardType),
@@ -833,6 +912,7 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	//compile with debug flag is currently not supported -g
 	//c67-tcc -Wl,-Ttext,80050000 -Wl,--oformat,coff -static -nostdinc -nostdlib -I./ -o ~/Desktop/Gecko3AxisOSX.out Gecko3Axis.c DSPKFLOP.out
 	debug("%s\n",command);
+	//printf("Running:\n%s\n", command);
 	int exitCode = system(command);
 	return exitCode;
 #endif
@@ -989,94 +1069,125 @@ int CKMotionDLL::CheckCoffSize(const char *InFile, int *size_text, int *size_bss
 	char *Coff_str_table, *name;
 	int i,k;
 	syment csym;
+	FILHDR  file_hdr;
+	AOUTHDR o_filehdr;
+	int have_aout = 0;
 	char name2[9];
 	unsigned int start_text=0, end_text=0, start_bss=0, end_bss=0, start_data=0, end_data=0; 
 	unsigned int min,max;
 
+	*size_text = *size_bss = *size_data = *size_total = 0;
 	
 	f = fopen(InFile,"rb");
 
 	if (!f) return 1;
 
 	if (fread(&file_hdr, FILHSZ, 1, f) != 1) return 1;
+	
+	#if 0
+	printf("CheckCoffSize:\n"
+	        " f_nscns=%u\n"
+	        " f_nsyms=%d\n"
+	        " f_opthdr=%d\n"
+	        " f_flags=0x%04X\n"
+	        , file_hdr.f_nscns, file_hdr.f_nsyms, file_hdr.f_opthdr, file_hdr.f_flags);
+	#endif
 
-	if (fread(&o_filehdr, sizeof(o_filehdr), 1, f) != 1) return 1;
+    if (file_hdr.f_opthdr == AOUTSZ) {
+	    if (fread(&o_filehdr, AOUTSZ, 1, f) != 1) return 1;
+	    have_aout = 1;
+	}
 
 	// first read the string table
 
 	if (fseek(f,file_hdr.f_symptr + file_hdr.f_nsyms * SYMESZ,SEEK_SET)) return 1;
-	if (fread(&str_size, sizeof(int), 1, f) != 1) return 1;
+	if (fread(&str_size, sizeof(str_size), 1, f) != 1) {
+	    // No strings.  Since don't support -g compiler option on Linux, a lot of
+	    // things can be missing.  We won't find the start/stop symbols either.
+	    Coff_str_table = NULL;
+	}
+    else {
+	    Coff_str_table = (char *)malloc(str_size);
 
-	Coff_str_table = (char *)malloc(str_size);
-
-	if (fread(Coff_str_table, str_size-4, 1, f) != 1) {free(Coff_str_table); return 1;};
+	    if (fread(Coff_str_table, str_size-4, 1, f) != 1) {free(Coff_str_table); return 1;};
+	}
 
 	// read/process all the symbols
 
 	// seek back to symbols
+	if (file_hdr.f_nsyms) {
 
-	if (fseek(f,file_hdr.f_symptr,SEEK_SET)) {free(Coff_str_table); return 1;};
+    	if (fseek(f,file_hdr.f_symptr,SEEK_SET)) {free(Coff_str_table); return 1;};
 
-	for (i=0; i< file_hdr.f_nsyms; i++)
-	{
-		if (fread(&csym, SYMESZ, 1, f) != 1) {free(Coff_str_table); return 1;};
+	    for (i=0; i< file_hdr.f_nsyms; i++)
+	    {
+		    if (fread(&csym, SYMESZ, 1, f) != 1) {free(Coff_str_table); return 1;};
 
-		if (csym._n._n_n._n_zeroes == 0)
-		{
-			name = Coff_str_table + csym._n._n_n._n_offset - 4 ;
-		}
-		else
-		{
-			name = csym._n._n_name;
+		    if (csym._n._n_n._n_zeroes == 0)
+		    {
+			    name = Coff_str_table + csym._n._n_n._n_offset - 4 ;
+		    }
+		    else
+		    {
+			    name = csym._n._n_name;
 
-			if (name[7] != 0)
-			{
-				for (k=0; k<8; k++)
-					name2[k] = name[k];
+			    if (name[7] != 0)
+			    {
+				    for (k=0; k<8; k++)
+					    name2[k] = name[k];
 
-				name2[8]=0;
+				    name2[8]=0;
 
-				name = name2;
-			}
-		}
+				    name = name2;
+			    }
+		    }
 
-		// check for the names we are looking for
+		    // check for the names we are looking for
 
-		if (strcmp("__start_.text",name)==0)  start_text = csym.n_value;
-		if (strcmp("__stop_.text" ,name)==0)  end_text   = csym.n_value;
-		if (strcmp("__start_.bss" ,name)==0)  start_bss  = csym.n_value;
-		if (strcmp("__stop_.bss"  ,name)==0)  end_bss    = csym.n_value;
-		if (strcmp("__start_.data",name)==0)  start_data = csym.n_value;
-		if (strcmp("__stop_.data" ,name)==0)  end_data   = csym.n_value;
+		    if (strcmp("__start_.text",name)==0)  start_text = csym.n_value;
+		    if (strcmp("__stop_.text" ,name)==0)  end_text   = csym.n_value;
+		    if (strcmp("__start_.bss" ,name)==0)  start_bss  = csym.n_value;
+		    if (strcmp("__stop_.bss"  ,name)==0)  end_bss    = csym.n_value;
+		    if (strcmp("__start_.data",name)==0)  start_data = csym.n_value;
+		    if (strcmp("__stop_.data" ,name)==0)  end_data   = csym.n_value;
 
-		// skip any aux records
+		    // skip any aux records
 
-		if (csym.n_numaux == 1)
-		{
-			if (fread(&csym, SYMESZ, 1, f) != 1) {free(Coff_str_table); return 1;};
-			i++;
-		}
+		    if (csym.n_numaux == 1)
+		    {
+			    if (fread(&csym, SYMESZ, 1, f) != 1) {free(Coff_str_table); return 1;};
+			    i++;
+		    }
+	    }
 	}
 
 	fclose(f);
 	free(Coff_str_table); 
 
-	*size_text = end_text-start_text;
-	*size_bss  = end_bss -start_bss;
-	*size_data = end_data-start_data;
+	if (file_hdr.f_nsyms) {
+	    *size_text = end_text-start_text;
+	    *size_bss  = end_bss -start_bss;
+	    *size_data = end_data-start_data;
 	
+	    min = 0xffffffff;
+	    if (start_text != 0 && min > start_text) min = start_text;
+	    if (start_bss  != 0 && min > start_bss ) min = start_bss;
+	    if (start_data != 0 && min > start_data) min = start_data;
 	
-	min = 0xffffffff;
-	if (start_text != 0 && min > start_text) min = start_text;
-	if (start_bss  != 0 && min > start_bss ) min = start_bss;
-	if (start_data != 0 && min > start_data) min = start_data;
-	
-	max = 0x0;
-	if (end_text != 0 && max < end_text) max = end_text;
-	if (end_bss  != 0 && max < end_bss ) max = end_bss;
-	if (end_data != 0 && max < end_data) max = end_data;
+	    max = 0x0;
+	    if (end_text != 0 && max < end_text) max = end_text;
+	    if (end_bss  != 0 && max < end_bss ) max = end_bss;
+	    if (end_data != 0 && max < end_data) max = end_data;
 
-	*size_total = max-min;
+	    *size_total = max-min;
+	}
+	else if (have_aout) {
+	    *size_text = o_filehdr.tsize;
+	    *size_bss = o_filehdr.bsize;
+	    *size_data = o_filehdr.dsize;
+	    // Not strictly correct...
+	    *size_total = *size_text + *size_bss + *size_data;
+	}
 	
 	return 0;
 }
@@ -1218,7 +1329,7 @@ void CKMotionDLL::DoErrMsg(const char *s)
 		{
 			__try
 			{
-				ErrMsgHandler(s);
+			    ErrMsgHandler(s);
 			}
 			__finally
 			{
