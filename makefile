@@ -10,6 +10,10 @@ SUBDIRS+=KMotionX/examples/KFlopConsole
 SUBDIRS+=KMotionX/examples/ExecuteGCode
 SUBDIRS+=KMotionX/examples/webgui
 
+ifeq ($(BUILD_PYTHON),true)
+SUBDIRS+=python
+endif
+
 ifeq ($(BUILD_JNI),true)
 SUBDIRS+=KMotionX/JNI
 endif

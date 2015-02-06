@@ -4,6 +4,7 @@
 use_libftdi="yes"
 use_ftd2xx="no"
 build_java_binding="yes"
+build_python_binding="yes"
 simulate_load_coff="no"
 cc="gcc"
 libsuf=""
@@ -70,6 +71,8 @@ for opt do
   ;;
   --disable-java) build_java_binding="no"
   ;;
+  --disable-python) build_python_binding="no"
+  ;;
   --coffload) simulate_load_coff="no"
   ;;
   --help|-h) show_help="yes"
@@ -87,6 +90,7 @@ Options: [defaults in brackets after descriptions]
 Standard options:
   --help                   print this message
   --disable-java           Disable java binding
+  --disable-python         Disable python binding
 Advanced options (experts only):
   --coffload               Enables coff loading (disabled by default due to non tested functionality)
   --ftd2xx                 Use ftd2xx driver instead of libftdi
@@ -184,6 +188,7 @@ Use libftdi      	$use_libftdi
 Use ftd2xx       	$use_ftd2xx
 FTDI driver      	$ftdi_lib
 Java binding     	$build_java_binding
+Python binding     	$build_python_binding
 Simulate load coff	$simulate_load_coff
 Java Home        	$java_home
 C compiler       	$cc
@@ -246,6 +251,10 @@ echo "#define GCC_MINOR $gcc_minor" >> $TMPH
 if test "$build_java_binding" = "yes" ; then
   echo "BUILD_JNI=true" >> config.mak
   echo "JAVA_HOME=$java_home" >> config.mak
+fi
+
+if test "$build_python_binding" = "yes" ; then
+  echo "BUILD_PYTHON=true" >> config.mak
 fi
 
 if test "$cpu" = "x86" ; then
