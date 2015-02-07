@@ -380,6 +380,7 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 	bool ReceivedErrMsg=false;
 	bool CFExcept=false;
 	std::vector<char *> cons;
+	unsigned short msglen, len;
 
 
 	static int EntryCount=0;
@@ -437,12 +438,21 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 			}
 		}
 
+        msglen = n;
+		PipeFile.Write(&msglen, sizeof(msglen));   // Send the request length prefix
 		PipeFile.Write(s, n);           // Send the request
 		
 		for (;;)
 		{
-			*m = PipeFile.Read(r, MAX_LINE+1);     // Get the response
-
+		    len = 0;
+		    while (len < sizeof(msglen))
+		        len += PipeFile.Read((char *)(&msglen)+len, sizeof(msglen)-len);
+		    if (msglen > MAX_LINE+1)
+		        throw CFileException();
+		    len = 0;
+		    while (len < msglen)
+			    len += PipeFile.Read(r+len, msglen-len);     // Get the response
+            *m = len;
 			// the first byte of the response is the destination
 			// currently DEST_NORMAL, DEST_CONSOLE
 			

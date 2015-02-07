@@ -65,7 +65,7 @@ either expressed or implied, of the FreeBSD Project.
 
 CKMotionDLL_Direct KMotionDLL;
 void * InstanceThread(void *ptr);
-void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, unsigned int *cbReplyBytes, int hPipe);
+void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, unsigned short *cbReplyBytes, int hPipe);
 int ConsoleHandler(int board, const char *buf);
 
 int nClients = 0;
@@ -107,7 +107,7 @@ const char ENUM_NAMES[][35]={
 
 
 void MyErrExitThread(const char *s, int thread_socket){
-	syslog(LOG_ERR, s);
+	syslog(LOG_ERR, "%s", s);
 	shutdown(thread_socket,2);
 	close(thread_socket);
 	pthread_exit(0);
@@ -116,7 +116,7 @@ void MyErrExitThread(const char *s, int thread_socket){
 void MyErrExit(const char *s)
 {
 
-	syslog(LOG_ERR, s);
+	syslog(LOG_ERR, "%s", s);
 	closelog();
 	exit(1);
 }
@@ -264,7 +264,7 @@ int main(void) {
     }
 
     if (strlen(SOCK_PATH) >= sizeof(local.sun_path)) {
-    	perrorExit("path to long!");
+    	perrorExit("path too long!");
     }
 
     local.sun_family = AF_UNIX;
@@ -357,13 +357,28 @@ void * InstanceThread(void *ptr){
 
 	char chRequest[BUFSIZE];
 	char chReply[BUFSIZE];
-	unsigned int cbReplyBytes;
+	unsigned short cbReplyBytes;
 	int cbBytesRead, cbWritten;
+	
+	// SJH - messages to/from client must now be prefixed with 2-byte length word (except for ACK 0xAA from client
+	// in response to console or error messages).  This allows working over
+	// network with SOCK_STREAM sockets where message boundaries are likely to be broken.  Even with Unix 
+	// domain sockets, this is safer.
+	unsigned short   msglen;
+	unsigned short   len;
+	enum {
+	    RD_LEN,
+	    RD_MSG
+	} state;
 
+    state = RD_LEN;
+    len = 0;
+    msglen = sizeof(msglen);
+    bool cont = true;
 
-	while(true) {
+	while(cont) {
 
-		cbBytesRead = recv(thread_socket, chRequest, BUFSIZE, 0);
+		cbBytesRead = recv(thread_socket, chRequest + len, msglen - len, 0);
 		if (cbBytesRead <= 0) {
 			if (cbBytesRead < 0){
 				logError("Worker Thread. recv");
@@ -372,8 +387,36 @@ void * InstanceThread(void *ptr){
 			}
 			break;
 		}
+		len += cbBytesRead;
+		switch (state) 
+		{
+		case RD_LEN:
+		    if (len == msglen) {
+		        memcpy(&msglen, chRequest, sizeof(msglen));
+		        state = RD_MSG;
+		        len = 0;
+		        if (msglen > sizeof(chRequest)) {  
+		            // Too long to possibly fit in buffer.  This should not happen unless client bad.
+				    syslog(LOG_ERR,"Worker Thread. Message prefix %hu too long", msglen);
+				    cont = false;
+				    continue;
+		        }
+		    }
+		    continue;
+		case RD_MSG:
+		    if (len == msglen) {
+		        cbBytesRead = len;
+		        msglen = sizeof(msglen);
+		        state = RD_LEN;
+		        len = 0;
+		        break;  // from switch and process this msg
+		    }
+		    continue;
+		}
 
-		GetAnswerToRequest(chRequest, cbBytesRead, chReply, &cbReplyBytes, thread_socket);
+		GetAnswerToRequest(chRequest, cbBytesRead, chReply+sizeof(msglen), &cbReplyBytes, thread_socket);
+		memcpy(chReply, &cbReplyBytes, sizeof(msglen));
+		cbReplyBytes += sizeof(msglen);
 		cbWritten = send(thread_socket, chReply, cbReplyBytes, 0);
 
 		if (cbWritten < 0 || cbReplyBytes != cbWritten) {
@@ -384,6 +427,7 @@ void * InstanceThread(void *ptr){
 			}
 			break;
 		}
+		
 	}
 	syslog(LOG_ERR,"Worker Thread. Exiting thread %d", thread_socket);
 
@@ -412,10 +456,11 @@ void * InstanceThread(void *ptr){
 }
 
 
-void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, unsigned int *cbReplyBytes, int hPipe)
+void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, unsigned short *cbReplyBytes, int hPipe)
 {
 
 	int code, BoardID, board, TimeOutms, result=0, nLocations, List[256];
+	unsigned short msglen;
 
 	memcpy(&code, chRequest,4);
 
@@ -567,6 +612,18 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 			cbReplyBytes = strlen(s)+1;  // + Term Null, DEST code already accounted for in s
 
 			// Write the message to the pipe. 
+			msglen = cbReplyBytes;
+			cbWritten = send(hPipe, &msglen, sizeof(msglen), 0);
+			
+			if (cbWritten != sizeof(msglen)) {
+				if (cbWritten < 0){
+					logError("send");
+				} else{
+					syslog(LOG_ERR,"GetAnswerToRequest %d bytes written != %d bytes sent\n",cbWritten,cbReplyBytes);
+				}
+				break;
+			}
+			
 			cbWritten = send(hPipe, s, cbReplyBytes, 0);
 
 			if (cbWritten < 0 || cbReplyBytes != cbWritten) {
@@ -600,28 +657,38 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 	{
 		int cbReplyBytes, cbBytesRead, cbWritten;
 		unsigned char Reply;
+		unsigned short msglen;
 		char s[MAX_LINE+1];
 		s[0] = DEST_ERRMSG;
 		strcpy(s+1,KMotionDLL.GetErrMsg(board));
 
 		cbReplyBytes = strlen(s)+1;// + Term Null, DEST code already accounted for in s
 		// Write the message to the pipe. 
-		cbWritten = send(hPipe, s, cbReplyBytes, 0);
-
-		if (cbWritten < 0) {
+		msglen = cbReplyBytes;
+		cbWritten = send(hPipe, &msglen, sizeof(msglen), 0);
+		
+		if (cbWritten != sizeof(msglen)) {
 			syslog(LOG_ERR,"GetAnswerToRequest Send to DEST_ERRMSG(%d) failed: %s",s[0], s+1);
 			logError("send");
 		}
+		else {
+		    cbWritten = send(hPipe, s, cbReplyBytes, 0);
 
-		if (cbWritten >=0 && cbReplyBytes == cbWritten)
-		{
-		   // Read back 1 byte ack 0xAA from Console Handler
-			cbBytesRead = recv(hPipe, &Reply, 1, 0);
-			if (cbBytesRead < 0) {
-				syslog(LOG_ERR,"GetAnswerToRequest Failed to receive Ack(0xAA) on message: %s", s+1);
-				logError("recv");
-			}
+		    if (cbWritten < 0) {
+			    syslog(LOG_ERR,"GetAnswerToRequest Send to DEST_ERRMSG(%d) failed: %s",s[0], s+1);
+			    logError("send");
+		    }
 
+		    if (cbReplyBytes == cbWritten)
+		    {
+		       // Read back 1 byte ack 0xAA from Console Handler
+			    cbBytesRead = recv(hPipe, &Reply, 1, 0);
+			    if (cbBytesRead < 0) {
+				    syslog(LOG_ERR,"GetAnswerToRequest Failed to receive Ack(0xAA) on message: %s", s+1);
+				    logError("recv");
+			    }
+
+		    }
 		}
 
 		KMotionDLL.ClearErrMsg(board);
