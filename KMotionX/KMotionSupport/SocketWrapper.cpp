@@ -34,6 +34,9 @@ either expressed or implied, of the FreeBSD Project.
  */
 
 #include "SocketWrapper.h"
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netdb.h>
 
 //namespace CFile {
 //static int modeReadWrite = 0;
@@ -45,7 +48,8 @@ SocketWrapper::SocketWrapper() {
 }
 
 SocketWrapper::~SocketWrapper() {
-	// TODO Auto-generated destructor stub
+	if (socketDesc >= 0)
+	    Close();
 }
 
 bool SocketWrapper::Open(const char* name, int mode){
@@ -87,6 +91,41 @@ bool SocketWrapper::Open(const char* name, int mode){
 	}
 }
 
+
+bool SocketWrapper::Open(unsigned int port, const char* hostname){
+
+	if(socketDesc == -1){
+
+		if ((socketDesc = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+			perror("tcp socket");
+			exit(1);
+		}
+
+	}
+
+    char port_s[10];
+    sprintf(port_s, "%u", port);
+
+	struct addrinfo hints, *result;
+	
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family = AF_INET;  // IPv4 only for now
+	hints.ai_socktype = SOCK_STREAM;
+	
+	int rc = getaddrinfo(hostname, port_s, &hints, &result);
+	if (rc) {
+	    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rc));
+	    exit(1);
+	}
+	if (!result)
+	    return false;
+
+	rc = connect(socketDesc, result->ai_addr, result->ai_addrlen);
+	freeaddrinfo(result);
+	return rc >= 0;
+}
+
+#if 0
 int SocketWrapper::Write(void* buffer, int size){
 	int written = send(socketDesc, buffer, size, 0);
 	if(written == -1){
@@ -95,6 +134,8 @@ int SocketWrapper::Write(void* buffer, int size){
 		return written;
 	}
 }
+#endif
+
 int SocketWrapper::Write(const void* buffer, int size){
 	int written = send(socketDesc, buffer, size, 0);
 	if(written == -1){
@@ -114,7 +155,9 @@ int SocketWrapper::Read(char* buffer, int size){
 
 int SocketWrapper::Close(){
 	shutdown(socketDesc,SHUT_RDWR);
-	return close(socketDesc);
+	int rc = close(socketDesc);
+	socketDesc = -1;
+	return rc;
 }
 
 

@@ -20,8 +20,8 @@ extern CString MainPath;
 extern CString MainPathRoot;
 #endif
 
-CKMotionDLL::CKMotionDLL(int boardid)
-{ 
+void CKMotionDLL::_init(int boardid)
+{
 	BoardID = boardid;
 	PipeOpen=false;
 	ServerMessDisplayed=false;
@@ -56,15 +56,32 @@ CKMotionDLL::CKMotionDLL(int boardid)
     sprintf(MainPathRoot, "%s", kmotionRoot);
     
     customCompiler[0] = 0;
-    use_wine = 0;
+    use_wine = false;
 
 #endif
 
 	PipeMutex = new CMutex(FALSE,"KMotionPipe",0);
 	ConsoleHandler=NULL;
 	ErrMsgHandler=NULL;
-	//_cbs = NULL;
+    use_tcp = false;
+    remote_tcp = false;
 }
+
+CKMotionDLL::CKMotionDLL(int boardid)
+{ 
+	_init(boardid);
+}
+
+
+CKMotionDLL::CKMotionDLL(int boardid, unsigned int dfltport, const char * url)
+{
+	_init(boardid);
+	use_tcp = true;
+	tcp_port = dfltport;
+	strncpy(hostname, url, sizeof(hostname)-1);
+	hostname[sizeof(hostname)-1] = 0;
+}
+
 
 CKMotionDLL::~CKMotionDLL()
 {
@@ -373,6 +390,23 @@ int CKMotionDLL::PipeCmdStr(int code, const char *s)
 
 
 
+int CKMotionDLL::OpenPipe()
+{
+#ifdef _KMOTIONX
+	if (use_tcp) {
+        return PipeFile.Open(tcp_port, hostname);
+	}
+	else
+        return PipeFile.Open(SOCK_PATH, CFile::modeReadWrite);
+#else
+    // As yet, no TCP on Windows
+	LPTSTR lpszPipename = "\\\\.\\pipe\\kmotionpipe"; 
+    return PipeFile.Open(lpszPipename, CFile::modeReadWrite);
+#endif
+}
+
+
+
 int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 {
 	unsigned char Reply = 0xAA;
@@ -389,11 +423,6 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 		return 1;
 
 
-#ifdef _KMOTIONX
-	char lpszPipename[] = SOCK_PATH;
-#else
-	LPTSTR lpszPipename = "\\\\.\\pipe\\kmotionpipe"; 
-#endif
 	try
 	{
 		PipeMutex->Lock();
@@ -413,20 +442,25 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 			int i;
 			
 			PipeOpen=true;  // only try once
-			if (!PipeFile.Open(lpszPipename, CFile::modeReadWrite))
+			if (!OpenPipe())
 			{
-				// pipe won't open try to launch server
-				LaunchServer();
+			    #define OPEN_ATTEMPTS 100
+			    if (!remote_tcp) {
+				    // pipe won't open try to launch server
+				    LaunchServer();
 				
-				for (i=0; i<100; i++) // try for a few secs
-				{
-					if (PipeFile.Open(lpszPipename, CFile::modeReadWrite))
-						break;
+				    for (i=0; i<OPEN_ATTEMPTS; i++) // try for a few secs
+				    {
+					    if (OpenPipe())
+						    break;
 					
-					Sleep(100);
-				}
+					    Sleep(100);
+				    }
+			    }
+			    else
+			        i = OPEN_ATTEMPTS;
 
-				if (i==100)
+				if (i==OPEN_ATTEMPTS)
 				{
 					EntryCount--;
 					if (ServerMessDisplayed) return 1;

@@ -69,6 +69,8 @@
 #define COMPILER "\\TCC67.exe"
 #endif
 
+#define KMOTION_PORT    57777   // Default server socket port (for TCP connections)
+
 enum 
 {
     KMOTION_OK=0,
@@ -147,6 +149,10 @@ public:
 	const char* getInstallRoot();
 	// Use to override default c67-tcc (i.e. to use wine with TCC67.exe)
 	void UseWine(int uw, const char * compiler = NULL); 
+	
+	// Alternative ctor to connect via TCP.  If url is NULL, assumes localhost, else is a host name.
+	CKMotionDLL(int boardid, unsigned int dfltport, const char * url = NULL);
+	
 #endif
 private:
 
@@ -157,11 +163,13 @@ private:
 	CONSOLE_HANDLER *ConsoleHandler;  
 	ERRMSG_HANDLER *ErrMsgHandler;  
 
+	int OpenPipe();
 	int PipeCmd(int code);
 	int PipeCmdStr(int code, const char *s);
 	int Pipe(const char *s, int n, char *r, int *m);
 	int LaunchServer();
 
+    void _init(int boardid);
 
 	void ExtractPath(const char *InFile, char *path);
 #ifdef _KMOTIONX
@@ -169,11 +177,15 @@ private:
 	char MainPath[256];
 	char MainPathRoot[256];
 	char customCompiler[256];
-	int use_wine;
+	bool use_wine;
+    
 #else
 	CFile PipeFile;
 #endif
-
+    bool use_tcp;
+    bool remote_tcp;
+    unsigned int tcp_port;
+    char hostname[257];
 };
 
 #endif

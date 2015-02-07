@@ -19,7 +19,7 @@ SHARED=-shared
 
 include $(BUILD_ROOT)/include.mk
 
-kmotion_wrap.cpp:   kmotion.i
-	swig -c++ -builtin $(addprefix -I,$(IDIR)) -I/usr/include $(DEFS) -cppext cpp  -python $^
+kmotion_wrap.cpp:   kmotion.i ../KMotionDLL/KMotionDLL.cpp ../KMotionDLL/KMotionDLL.h
+	swig -c++ -builtin $(addprefix -I,$(IDIR)) -I/usr/include $(DEFS) -cppext cpp  -python kmotion.i
     
 

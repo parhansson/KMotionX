@@ -53,6 +53,9 @@ either expressed or implied, of the FreeBSD Project.
 #include <list>
 #include <signal.h>
 #include <sys/syscall.h>
+#include <sys/time.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
     //__NR_gettid
 
 #include <KMotionDLL.h>
@@ -74,10 +77,7 @@ int nClients = 0;
    this shows how multiple data items can be passed to a thread */
 typedef struct str_thdata
 {
-    int thread_no;
-    int client_no;
     int file_desc;
-    char message[100];
 } thdata;
 
 //Array of console socket file descriptor
@@ -238,7 +238,12 @@ static void daemonize(){
 }
 #endif
 
-int main(void) {
+int main(void) 
+{
+    /* SJH - modified to listen to a TCP socket in addition to the unix domain (local) socket.
+       Listens at port KMOTION_PORT (defined in KMotionDLL.h).
+       FIXME: need to make this an argc/argv parameter.
+    */
 #ifdef _DEAMON
 	//daemonize2();
 	daemonize();
@@ -254,13 +259,22 @@ int main(void) {
 	syslog(LOG_ERR, "KMotionServer started ");
 
 
+    int tcp_socket;
     int main_socket;
+    int client_socket;
     unsigned int t;
     struct sockaddr_un local, remote;
+    struct sockaddr_in tlocal, tremote;
+    fd_set rfds;
+    int retval;
+    socklen_t len;
 
 
     if ((main_socket = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
     	perrorExit("socket");
+    }
+    if ((tcp_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+    	perrorExit("tcp socket");
     }
 
     if (strlen(SOCK_PATH) >= sizeof(local.sun_path)) {
@@ -280,15 +294,27 @@ int main(void) {
     local.sun_len = sizeof(local);
     if (bind(main_socket, (struct sockaddr *)&local, SUN_LEN(&local)) == -1) {
 #else
-    int len;
     len = strlen(local.sun_path) + sizeof(local.sun_family);
     if (bind(main_socket, (struct sockaddr *)&local, len) == -1) {
 #endif
     	perrorExit("bind");
     }
+    
+    
+    tlocal.sin_family = AF_INET;
+    tlocal.sin_port = htons(KMOTION_PORT);
+    tlocal.sin_addr.s_addr = INADDR_ANY;
+    len = sizeof(tlocal);
+    if (bind(tcp_socket, (struct sockaddr *)&tlocal, len) == -1) {
+    	perrorExit("tcp bind");
+    }
+    
 
     if (listen(main_socket, 5) == -1) {
     	perrorExit("listen");
+    }
+    if (listen(tcp_socket, 5) == -1) {
+    	perrorExit("tcp listen");
     }
 
    for (int i=0; i<MAX_BOARDS; i++) ConsolePipeHandle[i]=0;
@@ -303,9 +329,27 @@ int main(void) {
    { 
 
        syslog(LOG_ERR,"Main Thread. Waiting for a connection...\n");
-       t = sizeof(remote);
-       int client_socket;
-       if ((client_socket = accept(main_socket, (struct sockaddr *)&remote, &t)) == -1) {
+       
+       FD_ZERO(&rfds);
+       FD_SET(main_socket, &rfds);
+       FD_SET(tcp_socket, &rfds);
+       
+       retval = select(tcp_socket+1, &rfds, NULL, NULL, NULL);
+       if (retval < 0)
+            perrorExit("select");
+       if (FD_ISSET(main_socket, &rfds)) {
+            t = sizeof(remote);
+            client_socket = accept(main_socket, (struct sockaddr *)&remote, &t);
+       }
+       else if (FD_ISSET(tcp_socket, &rfds)) {
+            t = sizeof(tremote);
+            client_socket = accept(tcp_socket, (struct sockaddr *)&tremote, &t);
+       }
+       else
+            // select() man page indicates possibility that there is nothing really there
+            continue;
+       
+       if (client_socket < 0) {
     	   perrorExit("Main Thread. accept");
        } else {
     	   //struct timeval tv;
@@ -314,16 +358,15 @@ int main(void) {
 
     	   //setsockopt(client_socket, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&tv,sizeof(struct timeval));
 
-    	   syslog(LOG_ERR,"Main Thread. Connected descriptor %d \n",client_socket);
+    	   syslog(LOG_ERR,"Main Thread. Connected descriptor %d %s\n",
+    	        client_socket, FD_ISSET(tcp_socket, &rfds) ? "(tcp)" : "(local)");
     	   nClients++;
 
     	   syslog(LOG_ERR,"Main Thread. Spawning worker\n");
 			pthread_t thr;
 			// initialize data to pass to thread
 			thdata data;
-			data.thread_no = nClients;
 			data.file_desc = client_socket;
-			strcpy(data.message, "Hi!");
 
  		    if(pthread_create(&thr, &attr, &InstanceThread, (void *) &data))
  		    {
@@ -344,8 +387,7 @@ int main(void) {
 } 
 //http://www.amparo.net/ce155/thread-ex.html
 void * InstanceThread(void *ptr){
-	thdata *data;
-	data = (thdata*) ptr;
+	thdata *data = (thdata*) ptr;
 	int thread_socket = data->file_desc;
 	//pthread_t ct = pthread_self();
 	//printf("Thread %.8x %.8x: Current thread\n", ct);

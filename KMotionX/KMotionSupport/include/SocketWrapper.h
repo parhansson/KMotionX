@@ -67,9 +67,10 @@ public:
 	SocketWrapper();
 	virtual ~SocketWrapper();
 
-	bool Open(const char* name, int mode);
+	bool Open(const char* name, int mode);              // For local pipe
+	bool Open(unsigned int port, const char* hostname); // For TCP socket
 
-	int Write(void* buffer, int size);
+	//int Write(void* buffer, int size);
 	int Write(const void* buffer, int size);
 
 	int Read(char* buffer, int size);
