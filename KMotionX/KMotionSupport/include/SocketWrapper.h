@@ -41,6 +41,7 @@ either expressed or implied, of the FreeBSD Project.
 #include <fcntl.h>
 #include <string.h>
 #include <exception>
+#include <system_error>
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -53,15 +54,8 @@ const int modeReadWrite = 0;
 
 } /* namespace CFile */
 
-struct CFileException: public std::exception
-{
-/*
-  virtual const char* what() const throw()
-  {
-    return "CFileException exception happened";
-  }
-*/
-};
+
+
 class SocketWrapper {
 public:
 	SocketWrapper();

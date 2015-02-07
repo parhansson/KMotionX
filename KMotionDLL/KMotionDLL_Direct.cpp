@@ -14,6 +14,9 @@
 #include "COFF.H"
 #include "CLOAD.H"
 
+//#undef debug
+//#define debug(M, ...) fprintf(stderr, "DEBUG %s.%s:%d: " M "\n", __FILE__, __func__, __LINE__, ##__VA_ARGS__)
+
 
 
 
@@ -205,7 +208,7 @@ int CKMotionDLL_Direct::ListLocations(int *nlocations, int *list)
 	struct ftdi_device_list *devlist, *curdev;
 	char Manufacturer[128];
 //	char SerialNumber[16];
-	char Description[64];
+	char Description[128];
 	*nlocations=0;
 
 	// fill the list with -1 because driver
@@ -214,6 +217,7 @@ int CKMotionDLL_Direct::ListLocations(int *nlocations, int *list)
 	for (i=0; i<MAX_BOARDS; i++) list[i]=-1;
 
 	numDevs = ftStatus = ftdi_usb_find_all(ftdi, &devlist, VENDOR, PRODUCT );
+    
 	if (ftStatus < 0)
 	{
 		debug("ftdi_usb_find_all failed: %d (%s)\n",ftStatus, ftdi_get_error_string(ftdi));
@@ -229,7 +233,8 @@ int CKMotionDLL_Direct::ListLocations(int *nlocations, int *list)
 	i = 0;
 	for (curdev = devlist; curdev != NULL; i++)
 	{
-		if ((ftStatus = ftdi_usb_get_strings(ftdi, curdev->dev, Manufacturer, 128, Description, 128, NULL, 0)) < 0)
+		if ((ftStatus = ftdi_usb_get_strings(ftdi, curdev->dev, Manufacturer, sizeof(Manufacturer), 
+		                                    Description, sizeof(Description), NULL, 0)) < 0)
 		{
 			debug("ftdi_usb_get_strings failed: %d (%s)\n",ftStatus, ftdi_get_error_string(ftdi));
 		   // FT_Open failed
@@ -237,6 +242,7 @@ int CKMotionDLL_Direct::ListLocations(int *nlocations, int *list)
 		}
 		else
 		{
+            debug("%d '%s' '%s'\n", ftStatus, Manufacturer, Description);
 
 			if (strstr(Description,"KFLOP")!= NULL ||
 				strstr(Description,"KMotion")!= NULL ||
@@ -250,7 +256,6 @@ int CKMotionDLL_Direct::ListLocations(int *nlocations, int *list)
 		}
 		curdev = curdev->next;
 	}
-	ftdi_usb_close(ftdi);
 	ftdi_free(ftdi);
 
 	// note ListDevices fails if all devices are open,

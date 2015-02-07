@@ -309,10 +309,13 @@ void CKMotionDLL::Console(const char *buf)
         ConsoleHandler(buf);
 }
 
-void CKMotionDLL::ErrMsg(const char *ErrMsg)
+void CKMotionDLL::ErrMsg(const char *buf)
 {
     if (ErrMsgHandler)
-        ErrMsgHandler(ErrMsg);
+        ErrMsgHandler(buf);
+    else
+		AfxMessageBox(buf, MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+
 }
 
 
@@ -415,6 +418,7 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 	bool CFExcept=false;
 	std::vector<char *> cons;
 	unsigned short msglen, len;
+	const char * serr_msg;
 
 
 	static int EntryCount=0;
@@ -482,7 +486,7 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 		    while (len < sizeof(msglen))
 		        len += PipeFile.Read((char *)(&msglen)+len, sizeof(msglen)-len);
 		    if (msglen > MAX_LINE+1)
-		        throw CFileException();
+		        throw std::system_error(E2BIG, std::system_category(), "Read");
 		    len = 0;
 		    while (len < msglen)
 			    len += PipeFile.Read(r+len, msglen-len);     // Get the response
@@ -526,10 +530,12 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 		PipeMutex->Unlock();
 		
 	}
-	catch (CFileException)
+	catch (std::system_error & serr)
 	{
 		EntryCount--;
 		CFExcept = true;
+		PipeMutex->Unlock();
+		serr_msg = serr.what();
 	}
 
 	for (unsigned i = 0; i < cons.size(); ++i) 
@@ -551,8 +557,8 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 		if (ServerMessDisplayed) return 1;
 		ServerMessDisplayed=TRUE;
 
-		DoErrMsg("Unable to Connect to KMotion Server");
-		PipeMutex->Unlock();
+		//DoErrMsg("Unable to Connect to KMotion Server");
+		DoErrMsg(serr_msg);
 		exit(1);
 	}
 	
@@ -1364,28 +1370,11 @@ int CKMotionDLL::ExtractCoffVersionString(const char *InFile, char *Version)
 
 void CKMotionDLL::DoErrMsg(const char *s)
 {
-	static int MessageDisplayed=false;
-
-	if (!MessageDisplayed)
+	try
 	{
-		MessageDisplayed=true;
-		if (ErrMsgHandler)
-		{
-			__try
-			{
-			    ErrMsgHandler(s);
-			}
-			__finally
-			{
-				MessageDisplayed=false;
-			}
-		}
-		else
-		{
-			AfxMessageBox(s,MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
-		}
-		MessageDisplayed=false;
+	    ErrMsg(s);
 	}
+	catch (...) {}
 }
 
 int CKMotionDLL::GetStatus(MAIN_STATUS& status, bool lock)

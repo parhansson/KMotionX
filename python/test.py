@@ -12,14 +12,14 @@ class KMotion(kmotion.KMotion):
             self.SetConsoleCallback()
     # Overrides of virtual methods in superclass...
     def Console(self, line):
-        print "Console:", line
+        print "Console:", line,
     def ErrMsg(self, line):
         print "Err:", line
     
     # Extra methods added for Python...
     
 
-k = KMotion(0, "pluto", with_console=True)
+k = KMotion(0, "localhost", with_console=True)
         
 
 if True:
@@ -27,7 +27,7 @@ if True:
 
     print k.WriteLineReadLine("version")
 
-    # print "Locations:", k.ListLocations() #FIXME: breaks pipe
+    print "Locations:", k.ListLocations()
 
     # Normally don't use the following (unless very careful to release)
     print "WaitToken:", k._WaitToken(True,100)

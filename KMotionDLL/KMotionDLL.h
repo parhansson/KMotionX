@@ -139,7 +139,7 @@ public:
 	// Default implementation of following calls the C callbacks set above.  Having virtuals
 	// makes it nicer to use in a swig target language binding.
     virtual void Console(const char *buf);
-    virtual void ErrMsg(const char *ErrMsg);
+    virtual void ErrMsg(const char *buf);
     
 	int CheckKMotionVersion(int *type=NULL, bool GetBoardTypeOnly=false);
 	int ExtractCoffVersionString(const char *InFile, char *Version);
