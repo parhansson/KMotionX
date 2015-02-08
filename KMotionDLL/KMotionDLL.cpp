@@ -65,6 +65,8 @@ void CKMotionDLL::_init(int boardid)
 	ErrMsgHandler=NULL;
     use_tcp = false;
     remote_tcp = false;
+    first_status = true;
+    poll_interest = 0;
 }
 
 CKMotionDLL::CKMotionDLL(int boardid)
@@ -1463,6 +1465,120 @@ int CKMotionDLL::GetStatus(MAIN_STATUS& status, bool lock)
 	return 0;
 
 }
+
+bool CKMotionDLL::GetLastStatus(MAIN_STATUS& status)
+{
+    if (first_status)
+        return false;   // Not yet available
+    status = last_status;
+    return true;
+}
+
+template<class T, class F = T>
+struct make_vec : public std::vector<T>
+{
+    make_vec(int n, F * values) : std::vector<T>(n)
+    { 
+        for (int i = 0; i < n; ++i)
+            (*this)[i] = values[i];
+    }
+    virtual ~make_vec() {}
+};
+
+
+void CKMotionDLL::Poll()
+{
+    // Poll (using GetStatus) and call virtual functions to handle any changes.  This is mainly
+    // intended for Python etc. bindings, since it is more efficient for the app to be notified
+    // when things change, rather than having the high-level code have to go through the entire
+    // status struct looking for changes.
+    MAIN_STATUS m; 
+    if (!GetStatus(m, false)) {
+        unsigned int changes = first_status ? 0xFFFFFFFF : 0;
+        if (!first_status) {
+            changes |= memcmp(m.ADC, last_status.ADC, sizeof(m.ADC)) ? POLL_ADC : 0;
+            changes |= memcmp(m.DAC, last_status.DAC, sizeof(m.DAC)) ? POLL_DAC : 0;
+            changes |= memcmp(m.PWM, last_status.PWM, sizeof(m.PWM)) ? POLL_PWM : 0;
+            changes |= memcmp(m.Position, last_status.Position, sizeof(m.Position)) ? POLL_POS : 0;
+            changes |= memcmp(m.Dest, last_status.Dest, sizeof(m.Dest)) ? POLL_DEST : 0;
+            changes |= memcmp(m.OutputChan0, last_status.OutputChan0, sizeof(m.OutputChan0)) ? POLL_OUTCHAN : 0;
+            changes |= memcmp(&m.InputModes, &last_status.InputModes, sizeof(m.InputModes)*4) ? POLL_MODES : 0;
+            changes |= m.Enables != last_status.Enables ? POLL_ENABLE : 0;
+            changes |= m.AxisDone != last_status.AxisDone ? POLL_DONE : 0;
+            changes |= memcmp(&m.BitsDirection[0], &last_status.BitsDirection[0], sizeof(m.BitsDirection[0])*10) ? POLL_IO : 0;
+            changes |= m.ThreadActive != last_status.ThreadActive ? POLL_THREAD : 0;
+            changes |= m.StopImmediateState != last_status.StopImmediateState ? POLL_STOP : 0;
+            changes |= m.PC_comm[0] != last_status.PC_comm[0] ? POLL_PCCOMM : 0;
+        }
+        changes &= poll_interest;
+        first_status = false;
+        if (changes & POLL_ADC)
+            ChangedADC(make_vec<int>(sizeof(m.ADC)/sizeof(m.ADC[0]), m.ADC));
+        if (changes & POLL_DAC)
+            ChangedDAC(make_vec<int>(sizeof(m.DAC)/sizeof(m.DAC[0]), m.DAC));
+        if (changes & POLL_PWM)
+            ChangedPWM(make_vec<int>(sizeof(m.PWM)/sizeof(m.PWM[0]), m.PWM));
+        if (changes & POLL_POS)
+            ChangedPos(make_vec<double>(sizeof(m.Position)/sizeof(m.Position[0]), m.Position));
+        if (changes & POLL_DEST)
+            ChangedDest(make_vec<double>(sizeof(m.Dest)/sizeof(m.Dest[0]), m.Dest));
+        if (changes & POLL_OUTCHAN)
+            ChangedOutChan(make_vec<int, unsigned char>(sizeof(m.OutputChan0)/sizeof(m.OutputChan0[0]), m.OutputChan0));
+        if (changes & POLL_MODES)
+            ChangedMode(m.InputModes, m.InputModes2, m.OutputModes, m.OutputModes2);
+        if (changes & POLL_ENABLE)
+            ChangedEnable(m.Enables);
+        if (changes & POLL_DONE)
+            ChangedDone(m.AxisDone);
+        if (changes & POLL_IO) {
+            // Populate bool vector so it is indexed by I/O bit number.
+            boolvec outdir(KSTEP_OPTO_IN_BITS, false);   // FIXME: not best choice of constant, but we do bits up to KAnalog. 
+            boolvec state(KSTEP_OPTO_IN_BITS, false);
+            for (unsigned int i = 0; i < KSTEP_OPTO_IN_BITS; ++i) {
+                unsigned int j = 1u << (i & 0x1F);
+                if (i < 32) {
+                    outdir[i] = (m.BitsDirection[0] & j) != 0;
+                    state[i] = (m.BitsState[0] & j) != 0;
+                }
+                else if (i < 64) {
+                    outdir[i] = (m.BitsDirection[1] & j) != 0;
+                    state[i] = (m.BitsState[1] & j) != 0;
+                }
+                else if (i < 96) {
+                    outdir[i] = (m.SnapBitsDirection0 & j) != 0;
+                    state[i] = (m.SnapBitsState0 & j) != 0;
+                }
+                else if (i < 128) {
+                    outdir[i] = (m.SnapBitsDirection1 & j) != 0;
+                    state[i] = (m.SnapBitsState1 & j) != 0;
+                }
+                else if (i < 128+16) {
+                    state[i] = (m.KanalogBitsStateInputs & j) != 0;
+                }
+                else if (i < KSTEP_OPTO_IN_BITS) {
+                    outdir[i] = true;
+                    state[i] = (m.KanalogBitsStateOutputs & j) != 0;
+                }
+            }
+            ChangedIO(outdir, state);
+        }
+        if (changes & POLL_THREAD)
+            ChangedThread(m.ThreadActive);
+        if (changes & POLL_STOP)
+            ChangedStop(m.StopImmediateState);
+        if (changes & POLL_PCCOMM)
+            ChangedPCComm(make_vec<int>(sizeof(m.PC_comm)/sizeof(m.PC_comm[0]), m.PC_comm));
+        last_status = m;
+    }
+}
+
+
+void CKMotionDLL::SetPollCallback(unsigned int interest)
+{
+    poll_interest = interest;
+}
+
+
 #ifdef _KMOTIONX
 const char* CKMotionDLL::getInstallRoot(){
 	return MainPathRoot;

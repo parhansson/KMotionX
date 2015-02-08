@@ -11,17 +11,16 @@
 
 
 %{
-#include <vector>
 #include "SocketWrapper.h"
 #include "CMutex.h"
 #include "CString.h"
 #include "KMotionDLL.h"
 
-typedef std::vector<int> intvec;
 %}
-typedef std::vector<int> intvec;
 
+%template(BoolVector) std::vector<bool>;
 %template(IntVector) std::vector<int>;
+%template(FloatVector) std::vector<double>;
 
 %cstring_bounded_output(char *response, MAX_LINE);
 %cstring_bounded_output(char *buf, MAX_LINE);
@@ -36,16 +35,21 @@ typedef std::vector<int> intvec;
 // Don't support C callbacks.  Derive from KMotionCallbacks class instead and use SetCallbacks() method.
 %ignore CKMotionDLL::SetConsoleCallback(CONSOLE_HANDLER *ch);
 %ignore CKMotionDLL::SetErrMsgCallback(ERRMSG_HANDLER *eh);
+// We handle status a bit differently.  Use virtual methods called on status change instead.
+%ignore CKMotionDLL::GetStatus(MAIN_STATUS& status, bool lock);
 
 // The following are dangerous to use directly.  Make them "hidden" to Python by renaming with underscore
 %rename(_WaitToken) CKMotionDLL::WaitToken;
 %rename(_ReleaseToken) CKMotionDLL::ReleaseToken;
 
-// Make the class name nicer (DLL?)
+// Make the class names nicer (DLL?)
 %rename(KMotion) CKMotionDLL;
+%rename(KStatus) MAIN_STATUS;
 
 // Allow extension to this in Python
 %feature("director") CKMotionDLL;
+
+//%include "PC-DSP.h"
 
 %import "SocketWrapper.h"
 
@@ -68,5 +72,7 @@ typedef std::vector<int> intvec;
         // This used just to notify server
         $self->SetConsoleCallback(NULL);
     }
+    
+
 }
 
