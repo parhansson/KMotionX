@@ -104,7 +104,6 @@ const char ENUM_NAMES[][35]={
 		"ENUM_SetConsole"};
 
 
-#define SOCK_PATH "kmotionsocket"
 
 
 void MyErrExitThread(const char *s, int thread_socket){

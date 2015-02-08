@@ -77,6 +77,9 @@ bool SocketWrapper::Open(const char* name, int mode)
 	int len;
 	len = strlen(remote.sun_path) + sizeof(remote.sun_family);
 	connectResult = connect(socketDesc, (struct sockaddr *)&remote, len);
+	//if (connectResult < 0)
+    //        throw std::system_error(errno, std::system_category(), remote.sun_path);
+
 #endif
 	return connectResult >= 0;
 }

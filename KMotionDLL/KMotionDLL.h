@@ -8,7 +8,6 @@
 #if !defined (KMOTIONDLL_H)
 #define KMOTIONDLL_H
 
-#include <vector>
 
 
 #include <afxmt.h>
@@ -18,6 +17,8 @@
 #else
 #define KMOTIONDLL_DLL
 #endif
+#include <vector>
+
 // The following ifdef block is the standard way of creating macros which make exporting 
 // from a DLL simpler. All files within this DLL are compiled with the KMOTIONDLL_EXPORTS
 // symbol defined on the command line. this symbol should not be defined on any project
@@ -60,14 +61,16 @@
 #pragma warning ( disable : 4251 )
 
 
+
 #define MAX_LINE 2560
 
 #define MAX_BOARDS 16
 
 #ifdef _KMOTIONX
-#define COMPILER "c67-tcc"
+    #define COMPILER "c67-tcc"
+    #define SOCK_PATH "/tmp/kmotionsocket"
 #else
-#define COMPILER "\\TCC67.exe"
+    #define COMPILER "\\TCC67.exe"
 #endif
 
 #define KMOTION_PORT    57777   // Default server socket port (for TCP connections)

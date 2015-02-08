@@ -43,7 +43,7 @@ class KMotion(kmotion.KMotion):
         return self.axis_done == 0x3F
     
 
-k = KMotion(0, "localhost", with_console=True)
+k = KMotion(0, with_console=True)
 
 k.axisinit()
 k.Poll()
