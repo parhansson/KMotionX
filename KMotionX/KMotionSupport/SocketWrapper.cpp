@@ -119,6 +119,10 @@ bool SocketWrapper::Open(unsigned int port, const char* hostname)
 	    return false;
 
 	rc = connect(socketDesc, result->ai_addr, result->ai_addrlen);
+	if (rc >= 0) {
+        int flag = 1;
+        setsockopt(socketDesc, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag));
+	}
 	freeaddrinfo(result);
 	return rc >= 0;
 }

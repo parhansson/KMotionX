@@ -56,6 +56,7 @@ either expressed or implied, of the FreeBSD Project.
 #include <sys/time.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
+#include <netinet/tcp.h>
     //__NR_gettid
 
 #include <KMotionDLL.h>
@@ -344,6 +345,10 @@ int main(void)
        else if (FD_ISSET(tcp_socket, &rfds)) {
             t = sizeof(tremote);
             client_socket = accept(tcp_socket, (struct sockaddr *)&tremote, &t);
+            if (client_socket >= 0) {
+                int flag = 1;
+                setsockopt(client_socket, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag));
+            }
        }
        else
             // select() man page indicates possibility that there is nothing really there
