@@ -9,6 +9,7 @@ SUBDIRS+=KMotionX/examples/other
 SUBDIRS+=KMotionX/examples/KFlopConsole
 SUBDIRS+=KMotionX/examples/ExecuteGCode
 SUBDIRS+=KMotionX/examples/webgui
+SUBDIRS+=TCC67
 
 ifeq ($(BUILD_PYTHON),true)
 SUBDIRS+=python
