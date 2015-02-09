@@ -23,7 +23,9 @@
 
 #define inline              // tktk
 #define CONFIG_TCC_STATIC   // tktk
+#ifdef WIN32
 #define open _open          // tktk
+#endif
 
 #ifndef WIN32
 #include <inttypes.h>

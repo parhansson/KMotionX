@@ -10,7 +10,9 @@
 
 #include <afxwin.h>
 
+#ifdef WIN32
 #define _GNU_SOURCE
+#endif
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -27,10 +29,10 @@
 #endif
 
 
-#include "coff.h"
+#include "COFF.H"
 #include "tcc.h"
 #include "libtcc.h"
-#include "writecoff.h"
+#include "WriteCoff.h"
 
 #define MAXNSCNS 255                    /* MAXIMUM NUMBER OF SECTIONS         */
 #define MAX_STR_TABLE 1000000
@@ -61,30 +63,30 @@ int nb_syms;
 
 typedef struct
 {
-	long tag;
-	long size;
-	long fileptr;
-	long nextsym;
+	int32_t tag;
+	int32_t size;
+	int32_t fileptr;
+	int32_t nextsym;
 	short int dummy;
 } AUXFUNC;
 
 typedef struct
 {
-	long regmask;
+	int32_t regmask;
 	unsigned short lineno;
 	unsigned short nentries;
-	int localframe;
-	int nextentry;
+	int32_t localframe;
+	int32_t nextentry;
 	short int dummy;
 } AUXBF;
 
 typedef struct
 {
-	long dummy;
+	int32_t dummy;
 	unsigned short lineno;
 	unsigned short dummy1;
-	int dummy2;
-	int dummy3;
+	int32_t dummy2;
+	int32_t dummy3;
 	unsigned short dummy4;
 } AUXEF;
 
@@ -282,7 +284,7 @@ int WriteCoff(TCCState *s1, const char *OutFile)
 						else 
 						{
 							len = p - str;
-							if (len > sizeof(func_name) - 1)
+							if ((size_t)len > sizeof(func_name) - 1)
 								len = sizeof(func_name) - 1;
 							memcpy(func_name, str, len);
 							memcpy(Func[nFuncs], str, len);
@@ -463,7 +465,7 @@ int WriteCoff(TCCState *s1, const char *OutFile)
 						else 
 						{
 							len = p - str;
-							if (len > sizeof(func_name) - 1)
+							if ((size_t)len > sizeof(func_name) - 1)
 								len = sizeof(func_name) - 1;
 							memcpy(func_name, str, len);
 							func_name[len] = '\0';
@@ -603,7 +605,7 @@ int WriteCoff(TCCState *s1, const char *OutFile)
 				csym.n_type   = 0;    
 				csym.n_sclass = C_FILE;  
 				csym.n_numaux = 0;
-				fwrite(&csym,18, 1, f);
+				fwrite(&csym,SYMESZ, 1, f);
 				n++;
 
 			}
@@ -633,7 +635,7 @@ int WriteCoff(TCCState *s1, const char *OutFile)
 				csym.n_type   = MKTYPE(T_INT,DT_FCN,0,0,0,0,0);    
 				csym.n_sclass = C_EXT;  
 				csym.n_numaux = 1;
-				fwrite(&csym,18, 1, f);
+				fwrite(&csym,SYMESZ, 1, f);
 
 				// now put aux info
 
@@ -642,7 +644,7 @@ int WriteCoff(TCCState *s1, const char *OutFile)
 				auxfunc.fileptr = LineNoFilePtr[k];
 				auxfunc.nextsym = n+6; 
 				auxfunc.dummy=0;
-				fwrite(&auxfunc,18, 1, f);
+				fwrite(&auxfunc,AUXESZ, 1, f);
 				
 				// put a .bf
 
@@ -652,7 +654,7 @@ int WriteCoff(TCCState *s1, const char *OutFile)
 				csym.n_type   = 0;    
 				csym.n_sclass = C_FCN;  
 				csym.n_numaux = 1;
-				fwrite(&csym,18, 1, f);
+				fwrite(&csym,SYMESZ, 1, f);
 
 				// now put aux info
 
@@ -662,7 +664,7 @@ int WriteCoff(TCCState *s1, const char *OutFile)
 				auxbf.localframe = 0;
 				auxbf.nextentry = n+6; 
 				auxbf.dummy = 0;
-				fwrite(&auxbf,18, 1, f);
+				fwrite(&auxbf,AUXESZ, 1, f);
 
 				// put a .ef
 
@@ -672,7 +674,7 @@ int WriteCoff(TCCState *s1, const char *OutFile)
 				csym.n_type   = 0;    
 				csym.n_sclass = C_FCN;  
 				csym.n_numaux = 1;
-				fwrite(&csym,18, 1, f);
+				fwrite(&csym,SYMESZ, 1, f);
 
 				// now put aux info
 
@@ -682,7 +684,7 @@ int WriteCoff(TCCState *s1, const char *OutFile)
 				auxef.dummy2 = 0;
 				auxef.dummy3 = 0;
 				auxef.dummy4 = 0;
-				fwrite(&auxef,18, 1, f);
+				fwrite(&auxef,AUXESZ, 1, f);
 
 				n+=6;
 
@@ -726,14 +728,14 @@ int WriteCoff(TCCState *s1, const char *OutFile)
 				csym.n_value  = p->st_value;
 				csym.n_scnum  = 2;
 				csym.n_numaux = 1;
-				fwrite(&csym,18, 1, f);
+				fwrite(&csym,SYMESZ, 1, f);
 
 				auxfunc.tag=0;	
 				auxfunc.size=0x20;
 				auxfunc.fileptr=0;
 				auxfunc.nextsym=0;
 				auxfunc.dummy=0;
-				fwrite(&auxfunc,18, 1, f);
+				fwrite(&auxfunc,AUXESZ, 1, f);
 				n++;
 				n++;
 				
@@ -973,7 +975,6 @@ int ReadCoff(TCCState *s1, const char *InFile)
 	syment csym;
 	char name2[9];
 
-	
 	f = fopen(InFile,"rb");
 
 	if (!f)	error("Unable to open .out file for input");

@@ -525,7 +525,7 @@ int C67_map_D12(char *s)
 
 
 
-void C67_asm(char *s,int a, int b, int c)
+void C67_asm(const char *s,int a, int b, int c)
 {
 	BOOL xpath;
 
@@ -2938,7 +2938,7 @@ void gfunc_epilog(void)
         int *bounds_ptr;
         Sym *sym, *sym_data;
         /* add end of table info */
-        bounds_ptr = section_ptr_add(lbounds_section, sizeof(int));
+        bounds_ptr = (int *)section_ptr_add(lbounds_section, sizeof(int));
         *bounds_ptr = 0;
         /* generate bound local allocation */
         saved_ind = ind;

@@ -24,7 +24,14 @@
 #define _WIN32_IE 0x0600 
 
 #include <afxwin.h>
+#ifdef WIN32
 #define _GNU_SOURCE
+#else
+#define _close close
+#define _read read
+#define _getcwd getcwd
+#define _lseek lseek
+#endif
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -49,15 +56,21 @@
 #include <dlfcn.h>
 #endif
 
+#ifdef WIN32
 #include <direct.h> 
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifdef WIN32
 #include <sys/locking.h>
 #include <share.h>
+#endif
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef WIN32
 #include <io.h>
+#endif
 
 
 #ifdef _DEBUG
@@ -66,7 +79,7 @@
 
 #include "tcc.h"
 #include "libtcc.h"
-#include "writecoff.h"
+#include "WriteCoff.h"
 
 /* parser debug */
 //#define PARSE_DEBUG
@@ -141,7 +154,7 @@ static int tok_ident;
 static TokenSym **table_ident;
 static TokenSym *hash_ident[TOK_HASH_SIZE];
 static char token_buf[STRING_MAX_SIZE + 1];
-static char *funcname;
+static const char *funcname;
 static Sym *global_stack, *local_stack;
 static Sym *define_stack;
 static Sym *global_label_stack, *local_label_stack;
@@ -171,7 +184,6 @@ static int tcc_ext = 1;
 
 /* max number of callers shown if error */
 static int num_callers = 6;
-static const char **rt_bound_error_msg;
 
 /* XXX: suppress that ASAP */
 static TCCState *tcc_state;
@@ -329,6 +341,32 @@ static const char tcc_keywords[] =
 #define vsnprintf _vsnprintf
 #endif
 
+#ifdef __LP64__
+/* SJH - there are many cases where pointers are assumed to be same size as int.
+That doesn't work for 64-bit hosts.  So we do a quick hack to fix that...
+A vector is maintained which maps int to ptr.  This makes pointers take up
+96 bits instead of 64, but we have no choice when the code assumes 32 bit pointers
+for both host and target.  Note: code should use macros INT2PTR() and PTR2INT().
+*/
+#include <vector>
+static std::vector<void *> _vptab(1, NULL);   // Init with 1st entry reserved for NULL.
+int _ptr2int(void * p)
+{
+    if (!p)
+        return 0;
+    int i = _vptab.size();
+    _vptab.push_back(p);
+    return i;
+}
+void * _int2ptr(int i)
+{
+    if (!i)
+        return NULL;
+    ALWAYS_ASSERT((unsigned)i < _vptab.size());
+    return _vptab[i];
+}
+#endif
+
 #if defined(WIN32) || defined(TCC_UCLIBC) || defined(__FreeBSD__)
 /* currently incorrect */
 long double strtold(const char *nptr, char **endptr)
@@ -480,6 +518,10 @@ unsigned int data_sect_addr=0xffffffff;
 unsigned int  bss_sect_addr=0xffffffff;
 #endif
 
+#if !DO_C67
+static const char **rt_bound_error_msg;
+#endif
+
 
 #ifdef CONFIG_TCC_STATIC
 
@@ -500,7 +542,7 @@ const char *dlerror(void)
 }
 
 typedef struct TCCSyms {
-    char *str;
+    const char *str;
     void *ptr;
 } TCCSyms;
 
@@ -508,10 +550,10 @@ typedef struct TCCSyms {
 
 /* add the symbol you want here if no dynamic linking is done */
 static TCCSyms tcc_syms[] = {
-    TCCSYM(printf)
-    TCCSYM(fprintf)
-    TCCSYM(fopen)
-    TCCSYM(fclose)
+    //TCCSYM(printf)
+    //TCCSYM(fprintf)
+    //TCCSYM(fopen)
+    //TCCSYM(fclose)
     { NULL, NULL },
 };
 
@@ -1143,7 +1185,7 @@ char *get_tok_str(int v, CValue *cv)
     case TOK_CLLONG:
     case TOK_CULLONG:
         /* XXX: not quite exact, but only useful for testing  */
-        sprintf(p, "%Lu", cv->ull);
+        sprintf(p, "%Lu", (unsigned long long)cv->ull);
         break;
     case TOK_CCHAR:
     case TOK_LCHAR:
@@ -1339,8 +1381,12 @@ BufferedFile *tcc_open(TCCState *s1, const char *filename)
 {
     int fd;
     BufferedFile *bf;
-	
-	errno_t err = _sopen_s(&fd,filename,_O_RDONLY,_SH_DENYWR,_S_IREAD);
+	#ifndef WIN32
+	fd = open(filename, O_RDONLY);
+	//int err = errno;
+	#else
+	int err = _sopen_s(&fd,filename,_O_RDONLY,_SH_DENYWR,_S_IREAD);
+	#endif
 
     if (fd < 0)
         return NULL;
@@ -1785,7 +1831,7 @@ static void tok_str_free(int *str)
         case TOK_STR:
         case TOK_LSTR:
             /* XXX: use a macro to be portable on 64 bit ? */
-            cstr = (CTString *)p[1];
+            cstr = (CTString *)INT2PTR(p[1]);
             cstr_free(cstr);
             tcc_free(cstr);
             p += 2;
@@ -1854,7 +1900,7 @@ static void tok_str_add2(TokenString *s, int t, CValue *cv)
     case TOK_PPNUM:
     case TOK_STR:
     case TOK_LSTR:
-        str[len++] = (int)cstr_dup(cv->cstr);
+        str[len++] = PTR2INT(cstr_dup(cv->cstr));
         break;
     case TOK_CDOUBLE:
     case TOK_CLLONG:
@@ -1911,10 +1957,12 @@ static void tok_str_add_tok(TokenString *s)
     case TOK_LCHAR:                             \
     case TOK_CFLOAT:                            \
     case TOK_LINENUM:                           \
+        cv.tab[0] = *p++;                       \
+        break;                                  \
     case TOK_STR:                               \
     case TOK_LSTR:                              \
     case TOK_PPNUM:                             \
-        cv.tab[0] = *p++;                       \
+        cv.cstr = (CTString *)INT2PTR(*p++);    \
         break;                                  \
     case TOK_CDOUBLE:                           \
     case TOK_CLLONG:                            \
@@ -1937,7 +1985,7 @@ static inline void define_push(int v, int macro_type, int *str, Sym *first_arg)
 {
     Sym *s;
 
-    s = sym_push2(&define_stack, v, macro_type, (int)str);
+    s = sym_push2(&define_stack, v, macro_type, PTR2INT(str));
     s->next = first_arg;
     table_ident[v - TOK_IDENT]->sym_define = s;
 }
@@ -1971,7 +2019,7 @@ static void free_defines(Sym *b)
         top1 = top->prev;
         /* do not free args or predefined defines */
         if (top->c)
-            tok_str_free((int *)top->c);
+            tok_str_free((int *)INT2PTR(top->c));
         v = top->v;
         if (v >= TOK_IDENT && v < tok_ident)
             table_ident[v - TOK_IDENT]->sym_define = NULL;
@@ -2289,7 +2337,7 @@ static void preprocess(int is_bof)
                 p = strrchr(file->filename, '/');
                 if (p) 
                     size = p + 1 - file->filename;
-                if (size > sizeof(buf1) - 1)
+                if ((size_t)size > sizeof(buf1) - 1)
                     size = sizeof(buf1) - 1;
                 memcpy(buf1, file->filename, size);
                 buf1[size] = '\0';
@@ -2801,7 +2849,7 @@ void parse_number(const char *p)
             }
         }
     } else {
-        unsigned __int64 n, n1;
+        __uint64 n, n1;
         int lcount, ucount;
 
         /* integer number */
@@ -2835,7 +2883,7 @@ void parse_number(const char *p)
         }
         
         /* XXX: not exactly ANSI compliant */
-        if ((n & 0xffffffff00000000i64) != 0) {
+        if ((n & 0xffffffff00000000LL) != 0) {
             if ((n >> 63) != 0)
                 tok = TOK_CULLONG;
             else
@@ -3345,7 +3393,7 @@ static int *macro_arg_subst(Sym **nested_list, int *macro_str, Sym *args)
             s = sym_find2(args, t);
             if (s) {
                 cstr_new(&cstr);
-                st = (int *)s->c;
+                st = (int *)INT2PTR(s->c);
                 notfirst = 0;
                 while (*st) {
                     if (notfirst)
@@ -3368,7 +3416,7 @@ static int *macro_arg_subst(Sym **nested_list, int *macro_str, Sym *args)
         } else if (t >= TOK_IDENT) {
             s = sym_find2(args, t);
             if (s) {
-                st = (int *)s->c;
+                st = (int *)INT2PTR(s->c);
                 /* if '##' is present before or after, no arg substitution */
                 if (*macro_str == TOK_TWOSHARPS || last_tok == TOK_TWOSHARPS) {
                     /* special case for var arg macros : ## eats the
@@ -3422,7 +3470,7 @@ static int macro_subst_tok(TokenString *tok_str,
     Sym *args, *sa, *sa1;
     int mstr_allocated, parlevel, *mstr, t;
     TokenString str;
-    char *cstrval;
+    const char *cstrval;
     CValue cval;
     CTString cstr;
             
@@ -3449,7 +3497,7 @@ static int macro_subst_tok(TokenString *tok_str,
         tok_str_add2(tok_str, TOK_STR, &cval);
         cstr_free(&cstr);
     } else {
-        mstr = (int *)s->c;
+        mstr = (int *)INT2PTR(s->c);
         mstr_allocated = 0;
         if (s->type.t == MACRO_FUNC) {
             /* NOTE: we do not use next_nomacro to avoid eating the
@@ -3494,7 +3542,7 @@ static int macro_subst_tok(TokenString *tok_str,
                     next_nomacro();
                 }
                 tok_str_add(&str, 0);
-                sym_push2(&args, sa->v & ~SYM_FIELD, sa->type.t, (int)str.str);
+                sym_push2(&args, sa->v & ~SYM_FIELD, sa->type.t, PTR2INT(str.str));
                 sa = sa->next;
                 if (tok == ')') {
                     /* special case for gcc var args: add an empty
@@ -3519,7 +3567,7 @@ static int macro_subst_tok(TokenString *tok_str,
             sa = args;
             while (sa) {
                 sa1 = sa->prev;
-                tok_str_free((int *)sa->c);
+                tok_str_free((int *)INT2PTR(sa->c));
                 tcc_free(sa);
                 sa = sa1;
             }
@@ -3891,7 +3939,7 @@ static Sym *external_sym(int v, CType *type, int r)
 }
 
 /* push a reference to global symbol v */
-static void vpush_global_sym(CType *type, int v)
+void vpush_global_sym(CType *type, int v)
 {
     Sym *sym;
     CValue cval;
@@ -4190,7 +4238,7 @@ void gbound(void)
 int gv(int rc)
 {
     int r, r2, rc2, bit_pos, bit_size, size, align, i;
-    unsigned _int64 ll;
+    __uint64 ll;
 
     /* NOTE: get_reg can modify vstack[] */
     if (vtop->type.t & VT_BITFIELD) {
@@ -5293,6 +5341,7 @@ static int type_size(CType *type, int *a)
         *a = 1;
         return 1;
     }
+    return 1;   // shouldn't get here.  quiet the compiler.
 }
 
 /* return the pointed type of t */
@@ -7327,9 +7376,9 @@ static void block(int *bsym, int *csym, int *case_sym, int *def_sym,
             }
             /* label already defined */
             if (s->r & LABEL_FORWARD) 
-                s->next = (Sym *)gjmp((long)s->next);
+                s->next = (Sym *)INT2PTR(gjmp(PTR2INT(s->next)));
             else
-                gjmp_addr((long)s->next);
+                gjmp_addr(PTR2INT(s->next));
             next();
         } else {
             expect("label identifier");
@@ -7350,7 +7399,7 @@ static void block(int *bsym, int *csym, int *case_sym, int *def_sym,
             } else {
                 s = label_push(&global_label_stack, b, LABEL_DEFINED);
             }
-            s->next = (Sym *)ind;
+            s->next = (Sym *)INT2PTR(ind);
             /* we accept this, but it is a mistake */
             if (tok == '}') {
                 warning("deprecated use of label at end of compound statement");
@@ -7505,7 +7554,7 @@ static void init_putv(CType *type, Section *sec, unsigned long c,
 {
     int saved_global_expr, bt, bit_pos, bit_size;
     void *ptr;
-    unsigned __int64 bit_mask;
+    __uint64 bit_mask;
 
     switch(expr_type) {
     case EXPR_VAL:
@@ -7536,11 +7585,11 @@ static void init_putv(CType *type, Section *sec, unsigned long c,
         if (!(type->t & VT_BITFIELD)) {
             bit_pos = 0;
             bit_size = 32;
-            bit_mask = -1i64;
+            bit_mask = -1LL;
         } else {
             bit_pos = (vtop->type.t >> VT_STRUCT_SHIFT) & 0x3f;
             bit_size = (vtop->type.t >> (VT_STRUCT_SHIFT + 6)) & 0x3f;
-            bit_mask = (1i64 << bit_size) - 1;
+            bit_mask = (1LL << bit_size) - 1;
         }
         if ((vtop->r & VT_SYM) &&
             (bt == VT_BYTE ||
@@ -8359,7 +8408,7 @@ static int tcc_compile(TCCState *s1)
         section_sym = put_elf_sym(symtab_section, 0, 0, 
                                   ELF32_ST_INFO(STB_LOCAL, STT_SECTION), 0, 
                                   text_section->sh_num, NULL);
-        _getcwd(buf, sizeof(buf));
+        (void)_getcwd(buf, sizeof(buf));
         pstrcat(buf, sizeof(buf), "/");
         put_stabs_r(buf, N_SO, 0, 0, 
                     text_section->data_offset, text_section, section_sym);
@@ -8383,7 +8432,7 @@ static int tcc_compile(TCCState *s1)
        symbols can be safely used */
     put_elf_sym(symtab_section, 0, 0, 
                 ELF32_ST_INFO(STB_LOCAL, STT_FILE), 0, 
-                SHN_ABS, fs1);
+                SHN_ABS, file->filename);
 #else
         put_stabs_r(file->filename, N_SO, 0, 0, 
                     text_section->data_offset, text_section, section_sym);
@@ -8536,6 +8585,8 @@ static void asm_instr(void)
 
 #include "tccelf.c"
 
+#if !DO_C67     // SJH - "run" code doesn't make sense for cross compiler...
+
 /* print the position in the source file of PC value 'pc' by reading
    the stabs debug information */
 static void rt_printline(unsigned long wanted_pc)
@@ -8575,7 +8626,7 @@ static void rt_printline(unsigned long wanted_pc)
                     pstrcpy(func_name, sizeof(func_name), str);
                 } else {
                     len = p - str;
-                    if (len > sizeof(func_name) - 1)
+                    if ((size_t)len > sizeof(func_name) - 1)
                         len = sizeof(func_name) - 1;
                     memcpy(func_name, str, len);
                     func_name[len] = '\0';
@@ -8658,6 +8709,7 @@ static void rt_printline(unsigned long wanted_pc)
     fprintf(stderr, "\n");
 }
 
+
 #ifndef WIN32
 
 #ifdef __i386__
@@ -8729,7 +8781,7 @@ void rt_error(ucontext_t *uc, const char *fmt, ...)
 /* signal handler for fatal errors */
 static void sig_error(int signum, siginfo_t *siginf, void *puc)
 {
-    ucontext_t *uc = puc;
+    ucontext_t *uc = (ucontext_t *)puc;
 
     switch(signum) {
     case SIGFPE:
@@ -8762,7 +8814,7 @@ static void sig_error(int signum, siginfo_t *siginf, void *puc)
     }
     exit(255);
 }
-#endif
+#endif  //!WIN32
 
 /* do all relocations (needed before using tcc_get_symbol()) */
 int tcc_relocate(TCCState *s1)
@@ -8842,12 +8894,13 @@ int tcc_run(TCCState *s1, int argc, char **argv)
     }
 #endif
 
-#if (DO_C67)
+#if (DO_C67)    // SJH  <- this test redundant since we're in a !DO_C67 block
 	return 0;  // don't run the program
 #else
     return (*prog_main)(argc, argv);
 #endif
 }
+#endif  // !DO_C67
 
 TCCState *tcc_new(void)
 {
@@ -9229,11 +9282,11 @@ static int64_t getclock_us(void)
 #ifdef WIN32
     struct _timeb tb;
     _ftime(&tb);
-    return (tb.time * 1000i64 + tb.millitm) * 1000i64;
+    return (tb.time * 1000LL + tb.millitm) * 1000LL;
 #else
     struct timeval tv;
     gettimeofday(&tv, NULL);
-    return tv.tv_sec * 1000000i64 + tv.tv_usec;
+    return tv.tv_sec * 1000000LL + tv.tv_usec;
 #endif
 }
 
@@ -9622,7 +9675,11 @@ int main(int argc, char **argv)
         tcc_output_file(s, outfile);
         ret = 0;
     } else {
+        #if !DO_C67
         ret = tcc_run(s, argc - optind, argv + optind);
+        #else
+        ret = 0;
+        #endif
     }
  the_end:
     /* XXX: cannot do it with bound checking because of the malloc hooks */

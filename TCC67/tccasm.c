@@ -257,7 +257,7 @@ static void asm_new_label(TCCState *s1, int label, int is_local)
         sym->type.t = VT_STATIC | VT_VOID;
     }
     sym->r = cur_text_section->sh_num;
-    sym->next = (Sym *)ind;
+    sym->next = (Sym *)INT2PTR(ind);
 }
 
 static void asm_free_labels(TCCState *st)
