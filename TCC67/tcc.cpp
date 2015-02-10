@@ -4058,13 +4058,14 @@ int get_reg(int rc)
 	// we must scan the stack for both the register candidate 
 	// and its associated pair (always the following reg)
 
+
     /* find a free register */
     for(r=0;r<NB_REGS;r++) {
         if (reg_classes[r] & rc) {
             for(p=vstack;p<=vtop;p++) {
                 if ((p->r  & VT_VALMASK) == r ||
                     (p->r2 & VT_VALMASK) == r ||
-					(rc == RC_FLOAT &&
+					((rc == RC_EAX || rc == RC_EDX) &&
 						((p->r  & VT_VALMASK) == r+1 ||
 						 (p->r2 & VT_VALMASK) == r+1)))
                    goto notfound;
@@ -4073,6 +4074,7 @@ int get_reg(int rc)
         }
     notfound: ;
     }
+
     /* no register left : free the first one on the stack (VERY
        IMPORTANT to start from the bottom to ensure that we don't
        spill registers used in gen_opi()) */
@@ -4087,7 +4089,7 @@ int get_reg(int rc)
 			   check if the other register needs to be 
 			   saved also */
 	        
-			if (rc == RC_FLOAT) {
+			if ((rc == RC_EAX || rc == RC_EDX)) {
 				save_reg(r+1);
 			}
 			return r;
@@ -4097,7 +4099,7 @@ int get_reg(int rc)
 		   check if the used register associated
 		   register is of class float */
         
-		if (rc == RC_FLOAT && r < VT_CONST && (reg_classes[r-1] & rc)) {
+		if ((rc == RC_EAX || rc == RC_EDX) && r < VT_CONST && (reg_classes[r-1] & rc)) {
 
 			save_reg(r);
 
@@ -4105,7 +4107,7 @@ int get_reg(int rc)
 			   check if the other register needs to be 
 			   saved also */
 	        
-			if (rc == RC_FLOAT) {
+			if ((rc == RC_EAX || rc == RC_EDX)) {
 				save_reg(r-1);
 			}
             return r-1;
@@ -4122,12 +4124,13 @@ int get_reg(int rc)
 		   check if the used register associated
 		   register is of class float */
         
-		if (rc == RC_FLOAT && r < VT_CONST && (reg_classes[r-1] & rc)) {
+		if ((rc == RC_EAX || rc == RC_EDX) && r < VT_CONST && (reg_classes[r-1] & rc)) {
             save_reg(r);
             return r-1;
         }
     }
     /* Should never comes here */
+	error("Unable to assign registers for operation");
     return -1;
 
 #else
