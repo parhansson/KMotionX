@@ -26,7 +26,7 @@ class KMotion(kmotion.KMotion):
     def compile(self, basename, thread=1, load_it=True):
         rc, err = self.Compile(basename+".c", basename+".out", kmotion.BOARD_TYPE_KFLOP, thread, 1000)
         if rc:
-            raise RuntimeError("Compile %s.c failed, err=%d/%s" % (basename, rc, err))
+            raise RuntimeError("Compile %s.c failed:\n  %s" % (basename, err))
         if load_it:
             if self.LoadCoff(thread, basename+".out"):
                 raise RuntimeError("LoadCoff %s.c failed, err=%d" % (basename, rc))
@@ -46,13 +46,21 @@ class KMotion(kmotion.KMotion):
     def run(self, basename):
         """Run basename.c on thread 1, and wait for the thread to terminate.
         """
-        self.compile(basename)
+        try:
+            self.compile(basename)
+        except RuntimeError as e:
+            print e
+            return
         self.execute()
         self.wait_thread_done()
     def run_string(self, code):
-        """Run basename.c on thread 1, and wait for the thread to terminate.
+        """Run C code string on thread 1, and wait for the thread to terminate.
         """
-        self.compile_string(code)
+        try:
+            self.compile_string(code)
+        except RuntimeError as e:
+            print e
+            return
         self.execute()
         self.wait_thread_done()
 
@@ -63,6 +71,7 @@ k.run("test")
 
 code = r"""
 #include "KMotionDef.h"
+
 int fac(int n)
 {
     return n ? n*fac(n-1) : 1;
@@ -75,7 +84,7 @@ void main()
     printf("Python string!\n");
 
 }
-""" % (9,)
+""" % (8,)
 
 
 print "Compile and run string..."

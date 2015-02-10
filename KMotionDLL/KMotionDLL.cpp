@@ -943,7 +943,7 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	char command[MAX_LINE +1];
 
     if (tcc_vers < 26)
- 	    sprintf(command,"%s -text %08X%s -nostdinc %s %s -o \"%s\" \"%s\" %s",
+ 	    sprintf(command,"%s -text %08X%s -nostdinc %s %s -o \"%s\" \"%s\" %s 2>&1",
 			Compiler,
 			GetLoadAddress(Thread,BoardType),
 			dash_g ? " -g" : "",
@@ -953,7 +953,7 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 			Name,
 			BindTo);
     else
-	    sprintf(command,"%s -Wl,-Ttext,%08X%s -Wl,--oformat,coff -static -nostdinc -nostdlib %s %s -o \"%s\" \"%s\" %s",
+	    sprintf(command,"%s -Wl,-Ttext,%08X%s -Wl,--oformat,coff -static -nostdinc -nostdlib %s %s -o \"%s\" \"%s\" %s 2>&1",
 			Compiler,
 			GetLoadAddress(Thread,BoardType),
 			dash_g ? " -g" : "",
@@ -971,7 +971,21 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	//compile with debug flag is currently not supported -g
 	//c67-tcc -Wl,-Ttext,80050000 -Wl,--oformat,coff -static -nostdinc -nostdlib -I./ -o ~/Desktop/Gecko3AxisOSX.out Gecko3Axis.c DSPKFLOP.out
 	debug("%s\n",command);
-	int exitCode = system(command);
+	//int exitCode = system(command);
+	int exitCode = 0;
+	FILE * out = popen(command, "r");
+	if (!out) {
+	    exitCode = errno;
+	    strcpy(Err, strerror(exitCode));
+	    return exitCode;
+	}
+	size_t len = fread(Err, 1, MaxErrLen-1, out);
+	Err[len] = 0;
+	exitCode = pclose(out);
+	if (exitCode < 0) {
+	    exitCode = errno;
+	    strcpy(Err, strerror(exitCode));
+    }
 	return exitCode;
 #endif
 }
