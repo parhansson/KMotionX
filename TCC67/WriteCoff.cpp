@@ -773,7 +773,7 @@ void SortSymbolTable(void)
 {
 	int i,j,k,n=0;
 	Elf32_Sym *p,*p2,*NewTable;
-	char *name,*name2;
+	char *name,*name2,*pathsep;
 
 	NewTable = (Elf32_Sym *)tcc_malloc(nb_syms*sizeof(Elf32_Sym));
 
@@ -790,9 +790,12 @@ void SortSymbolTable(void)
 		{
 		    name = (char *)symtab_section->link->data + p->st_name;
 		    
-		    // SJH - on Unix, we can get initial './'.  If so, skip it.
-		    if (!strncmp(name, "./", 2))
-		        name += 2;
+		    // SJH - on Unix, we can get initial path components.  If so, skip it,
+		    // since AssociatedFile[] only stores the file name.
+		    //FIXME: is this a problem setting up AssociatedFile[]?
+		    pathsep = strrchr(name, PATH_SEPARATOR);
+		    if (pathsep)
+		        name = pathsep+1;
 	
 			// this is a file symbol, copy it over
 

@@ -30,6 +30,11 @@ class KMotion(kmotion.KMotion):
         if load_it:
             if self.LoadCoff(thread, basename+".out"):
                 raise RuntimeError("LoadCoff %s.c failed, err=%d" % (basename, rc))
+    def compile_string(self, code, thread=1, load_it=True):
+        basename = "/tmp/testkmotion"
+        with open(basename+".c", "w") as f:
+            f.write(code)
+        self.compile(basename, thread, load_it)
     def execute(self, thread=1):
         k.WriteLine("execute%d" % thread)
         self.Poll()
@@ -44,10 +49,37 @@ class KMotion(kmotion.KMotion):
         self.compile(basename)
         self.execute()
         self.wait_thread_done()
+    def run_string(self, code):
+        """Run basename.c on thread 1, and wait for the thread to terminate.
+        """
+        self.compile_string(code)
+        self.execute()
+        self.wait_thread_done()
 
 k = KMotion(0, with_console=True)
-        
+
+print "Compile and run file..."
 k.run("test")
+
+code = r"""
+#include "KMotionDef.h"
+int fac(int n)
+{
+    return n ? n*fac(n-1) : 1;
+}
+void main()
+{
+    int i = %d;
+    
+    printf("This is a very roundabout way of computing that %%d! = %%d\n", i, fac(i));
+    printf("Python string!\n");
+
+}
+""" % (9,)
+
+
+print "Compile and run string..."
+k.run_string(code)
 
 
 

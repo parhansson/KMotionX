@@ -33,6 +33,9 @@
 #ifndef WIN32
 typedef int64_t __int64;
 typedef uint64_t __uint64;
+#define PATH_SEPARATOR '/'
+#else
+#define PATH_SEPARATOR '\\'
 #endif
 
 #ifdef __LP64__
