@@ -66,8 +66,14 @@
 
 #define MAX_BOARDS 16
 
+#define OLD_COMPILER 1              // Select default compiler: 1 to use 0.9.16 tcc, else 0 to use later version
+
 #ifdef _KMOTIONX
-    #define COMPILER "c67-tcc"
+    #if OLD_COMPILER
+    #define COMPILER "tcc67"        // For now, port of the old compiler (based on 0.9.16) works properly
+    #else
+    #define COMPILER "c67-tcc"    // Later version (0.9.26) but not yet fully working.
+    #endif
     #define SOCK_PATH "/tmp/kmotionsocket"
 #else
     #define COMPILER "\\TCC67.exe"
@@ -180,8 +186,13 @@ public:
 	void DoErrMsg(const char *s);
 #ifdef _KMOTIONX
 	const char* getInstallRoot();
-	// Use to override default c67-tcc (i.e. to use wine with TCC67.exe)
-	void UseWine(int uw, const char * compiler = NULL); 
+	// Use to override default compiler executable.  debug_symbols controls whether -g option supplied.
+	// tcc_minor_version should be set to e.g. 26 for tcc version 0.9.26 (controls options), or 0 to
+	// not change the version.
+	// If compiler is absolute path, then that exact compiler is used.  Otherwise, it should just be the
+	// name of the compiler without any path, and it will be searched for in standard locations.
+	// If NULL, compiler is set back to default.
+	void SetCustomCompiler(const char * compiler = NULL, bool debug_symbols = false, int tcc_minor_version = 0); 
 	
 	// Alternative ctor to connect via TCP.  If url is NULL, assumes localhost, else is a host name.
 	CKMotionDLL(int boardid, unsigned int dfltport, const char * url = NULL);
@@ -229,7 +240,8 @@ private:
 	char MainPath[256];
 	char MainPathRoot[256];
 	char customCompiler[256];
-	bool use_wine;
+	bool dash_g;
+	int tcc_vers;
     
 #else
 	CFile PipeFile;

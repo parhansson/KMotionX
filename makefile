@@ -29,3 +29,6 @@ clean:
 #rm -f *.o *~
 	rm -f ./bin/*
 	for n in $(SUBDIRS); do $(MAKE) -C $$n clean; done
+	
+testtcc:
+	make -C TCC67 testtcc

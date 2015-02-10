@@ -789,6 +789,10 @@ void SortSymbolTable(void)
 		if (p->st_info == 4)
 		{
 		    name = (char *)symtab_section->link->data + p->st_name;
+		    
+		    // SJH - on Unix, we can get initial './'.  If so, skip it.
+		    if (!strncmp(name, "./", 2))
+		        name += 2;
 	
 			// this is a file symbol, copy it over
 

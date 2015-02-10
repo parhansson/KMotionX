@@ -55,8 +55,9 @@ void CKMotionDLL::_init(int boardid)
     }
     sprintf(MainPathRoot, "%s", kmotionRoot);
     
-    customCompiler[0] = 0;
-    use_wine = false;
+    strcpy(customCompiler, COMPILER);
+    dash_g = OLD_COMPILER != 0;
+    tcc_vers = OLD_COMPILER ? 16 : 26;
 
 #endif
 
@@ -704,13 +705,15 @@ int CKMotionDLL::CompileAndLoadCoff(const char *Name, int Thread, char *Err, int
 }
 
 #ifdef _KMOTIONX
-void CKMotionDLL::UseWine(int uw, const char * compiler)
+void CKMotionDLL::SetCustomCompiler(const char * compiler, bool debug_symbols, int tcc_minor_version)
 {
     if (compiler)
         strncpy(customCompiler, compiler, sizeof(customCompiler));
     else
-        customCompiler[0] = 0;
-    use_wine = uw;
+        strcpy(customCompiler, COMPILER);
+    dash_g = debug_symbols;
+    if (tcc_minor_version)
+        tcc_vers = tcc_minor_version;
 }
 #endif
 
@@ -888,26 +891,28 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 
 	if (Thread==0) return 1;
 	char Compiler[MAX_PATH +1];
-	if (customCompiler[0]) {
-	    strcpy(Compiler, customCompiler);
+    strcpy(Compiler, customCompiler);
+	if (Compiler[0] == '/') {
 	    FILE *f=fopen(Compiler,"r");  // try if compiler is on path
 	    if (f==NULL)
 	    {
-		    DoErrMsg("Error Locating custom compiler");
+		    DoErrMsg("Error Locating custom compiler (given absolute path)");
 		    return 1;
 	    }
 	}
 	else {
-	    strcpy(Compiler, COMPILER);;
 	    FILE *f=fopen(Compiler,"r");  // try if compiler is on path
 
 	    if (f==NULL)
 	    {
-		    sprintf(Compiler, "%s/%s", MainPath, COMPILER);
+		    sprintf(Compiler, "%s/%s", MainPath, customCompiler);
 		    f=fopen(Compiler,"r");  // try in the released directory next
 		    if (f==NULL)
 		    {
-			    sprintf(Compiler, "%s/KMotionX/tcc-0.9.26/%s", MainPathRoot, COMPILER);
+		        if (tcc_vers < 26)
+			        sprintf(Compiler, "%s/TCC67/%s", MainPathRoot, customCompiler);
+			    else
+			        sprintf(Compiler, "%s/KMotionX/tcc-0.9.26/%s", MainPathRoot, customCompiler);
 			    f=fopen(Compiler,"r");  // try in the released directory next
 			    if (f==NULL)
 			    {
@@ -937,19 +942,21 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 
 	char command[MAX_LINE +1];
 
-    if (use_wine)
- 	sprintf(command,"wine %s -text %08X -g -nostdinc %s %s -o \"%s\" \"%s\" %s",
+    if (tcc_vers < 26)
+ 	    sprintf(command,"%s -text %08X%s -nostdinc %s %s -o \"%s\" \"%s\" %s",
 			Compiler,
 			GetLoadAddress(Thread,BoardType),
+			dash_g ? " -g" : "",
 			IncSrcPath1,
 			IncSrcPath2,
 			OutFile,
 			Name,
 			BindTo);
-   else
-	sprintf(command,"%s -Wl,-Ttext,%08X -Wl,--oformat,coff -static -nostdinc -nostdlib %s %s -o \"%s\" \"%s\" %s",
+    else
+	    sprintf(command,"%s -Wl,-Ttext,%08X%s -Wl,--oformat,coff -static -nostdinc -nostdlib %s %s -o \"%s\" \"%s\" %s",
 			Compiler,
 			GetLoadAddress(Thread,BoardType),
+			dash_g ? " -g" : "",
 			IncSrcPath1,
 			IncSrcPath2,
 			OutFile,
@@ -964,7 +971,6 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	//compile with debug flag is currently not supported -g
 	//c67-tcc -Wl,-Ttext,80050000 -Wl,--oformat,coff -static -nostdinc -nostdlib -I./ -o ~/Desktop/Gecko3AxisOSX.out Gecko3Axis.c DSPKFLOP.out
 	debug("%s\n",command);
-	//printf("Running:\n%s\n", command);
 	int exitCode = system(command);
 	return exitCode;
 #endif
@@ -1014,8 +1020,12 @@ void CKMotionDLL::ExtractPath(const char *InFile, char *path){
 	const char *pch;
 	pch=strrchr(InFile,PATH_SEPARATOR);
 	strcpy(path,InFile);
-	//null terminate string at last slash position
-	path[pch-InFile] ='\0';
+	//null terminate string at last slash position, unless no path,
+	// in which case make it a ".".
+	if (!pch)
+	    strcpy(path, ".");
+	else
+	    path[pch-InFile] ='\0';
 }
 
 unsigned int CKMotionDLL::GetLoadAddress(int thread, int BoardType) 
