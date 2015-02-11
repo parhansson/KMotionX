@@ -11,12 +11,25 @@
 
 
 %{
+typedef unsigned BOOL;
+#include "KMotionX.h"
 #include "SocketWrapper.h"
 #include "CMutex.h"
 #include "CString.h"
 #include "KMotionDLL.h"
-
+#include "rs274ngc_return.h"
+#include "rs274ngc.h"
+#include "canon.h"
+#include "TrajectoryPlanner.h"
+#include "Kinematics.h"	// Added by ClassView
+#include "CoordMotion.h"
+#include "SetupTracker.h"
+#include "GCodeInterpreter.h"
+#undef check
+#include "swig_extras.cpp"
 %}
+
+typedef unsigned BOOL;
 
 %template(BoolVector) std::vector<bool>;
 %template(IntVector) std::vector<int>;
@@ -42,14 +55,16 @@
 %rename(_WaitToken) CKMotionDLL::WaitToken;
 %rename(_ReleaseToken) CKMotionDLL::ReleaseToken;
 
-// Make the class names nicer (DLL?)
+// Make the class names a bit more Pythonic
 %rename(KMotion) CKMotionDLL;
+%rename(MotionParams) MOTION_PARAMS;
 %rename(KStatus) MAIN_STATUS;
+%rename(Kinematics) CKinematics;
+%rename(CoordMotion) CCoordMotion;
 
 // Allow extension to this in Python
 %feature("director") CKMotionDLL;
-
-//%include "PC-DSP.h"
+%feature("director") GCodeInterpreter;
 
 %import "SocketWrapper.h"
 
@@ -75,4 +90,31 @@
     
 
 }
+
+
+%rename($ignore, %$isfunction, %$not %$ismember) ""; // Ignore global functions
+%rename($ignore, %$isvariable, %$not %$ismember) ""; // Ignore global variables
+%ignore CGCodeInterpreter::SetUserMCodeCallback;
+%ignore CGCodeInterpreter::SetUserCallback;
+%ignore CGCodeInterpreter::m_UserFn;
+%ignore CGCodeInterpreter::m_UserFnMCode;
+%ignore CGCodeInterpreter::McodeActions; 
+%ignore CGCodeInterpreter::Interpret(int board_type,
+		          const char *fname,
+			      int start, int end,
+				  int restart,
+                  G_STATUS_CALLBACK *StatusFn,
+				  G_COMPLETE_CALLBACK *CompleteFn);
+
+%ignore TP_COEFF;
+%ignore SEGMENT;
+%ignore SPECIAL_CMD;
+
+
+%include "TrajectoryPlanner.h"
+%include "Kinematics.h"
+%include "CoordMotion.h"
+%include "GCodeInterpreter.h"
+%include "swig_extras.cpp"
+
 

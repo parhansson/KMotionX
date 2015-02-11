@@ -60,7 +60,12 @@ public:
 	int GetPosition(int axis, double *d);
 	int GetAxisDone(int axis, int *r);
 
+#ifdef SWIG
+    // SWIG chokes on the fancy default
+	CCoordMotion(CKMotionDLL *KMotionDLL);
+#else
 	CCoordMotion(CKMotionDLL *KMotionDLL = new CKMotionDLL(0));
+#endif
 	virtual ~CCoordMotion();
 
 	void SetAbort();
