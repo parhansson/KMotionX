@@ -181,6 +181,7 @@ public:
 	int ExtractCoffVersionString(const char *InFile, char *Version);
     int GetStatus(MAIN_STATUS& status, bool lock);
     bool GetLastStatus(MAIN_STATUS& status);
+    void SetHostStatus(int host_status, bool poll=true);  // See PC-DSP.h for Global Host Status bit settings.
     void Poll();
     void SetPollCallback(unsigned int interest);  // Set status change interest according to OR'd combo of POLL_* enum above.
 	void DoErrMsg(const char *s);
@@ -253,6 +254,7 @@ private:
     unsigned int poll_interest;
     bool first_status;
     MAIN_STATUS last_status;
+    int HostStatus;
 };
 
 #endif

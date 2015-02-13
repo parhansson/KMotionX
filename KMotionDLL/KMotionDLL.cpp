@@ -68,6 +68,7 @@ void CKMotionDLL::_init(int boardid)
     remote_tcp = false;
     first_status = true;
     poll_interest = 0;
+    HostStatus = 0;
 }
 
 CKMotionDLL::CKMotionDLL(int boardid)
@@ -1417,7 +1418,7 @@ int CKMotionDLL::GetStatus(MAIN_STATUS& status, bool lock)
 	}
 
 	// KMotion is available read the status
-	sprintf(s,"GetStatus");
+	sprintf(s,"GetStatus %x", HostStatus);
 	if (WriteLine(s))
 	{
 		if (lock) ReleaseToken();
@@ -1497,6 +1498,15 @@ bool CKMotionDLL::GetLastStatus(MAIN_STATUS& status)
     status = last_status;
     return true;
 }
+
+void CKMotionDLL::SetHostStatus(int host_status, bool poll)
+{
+    HostStatus = host_status;
+    if (poll)
+        Poll();
+}
+
+
 
 template<class T, class F = T>
 struct make_vec : public std::vector<T>
