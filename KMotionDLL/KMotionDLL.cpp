@@ -56,7 +56,10 @@ void CKMotionDLL::_init(int boardid)
     sprintf(MainPathRoot, "%s", kmotionRoot);
     
     strcpy(customCompiler, COMPILER);
-    dash_g = OLD_COMPILER != 0;
+    if (OLD_COMPILER != 0)
+        strcpy(customOptions, "-g");
+    else
+        customOptions[0] = 0;
     tcc_vers = OLD_COMPILER ? 16 : 26;
 
 #endif
@@ -241,12 +244,14 @@ int CKMotionDLL::WaitToken(bool display_msg, int TimeOut_ms)
 		
 		if (!PipeMutex->Lock(TimeOut_ms))
 		{
+		    //printf("-1- %ld\n", getThreadId());
 			return KMOTION_IN_USE;
 		}
 
 		if (Timer.Elapsed_Seconds() > 2.0 * TimeOut_ms * 0.001)
 		{
 			PipeMutex->Unlock();
+		    //printf("-2- %ld\n", getThreadId());
 			return KMOTION_IN_USE;
 		}
 
@@ -257,8 +262,10 @@ int CKMotionDLL::WaitToken(bool display_msg, int TimeOut_ms)
 
 		result = KMotionLock();
 
-		if (result == KMOTION_IN_USE)
+		if (result == KMOTION_IN_USE) {
+		    //printf("-3- %ld\n", getThreadId());
 			PipeMutex->Unlock();
+		}
 	}
 	while (result == KMOTION_IN_USE);
 
@@ -689,30 +696,36 @@ int CKMotionDLL::CompileAndLoadCoff(const char *Name, int Thread, char *Err, int
 	
 	ConvertToOut(Thread,Name,OutFile,MAX_PATH);
 
-	if (CheckKMotionVersion(&BoardType)) return 1;
+	if (CheckKMotionVersion(&BoardType)) 
+	{
+		if(Err) sprintf(Err,"Board type mismatch");
+	    return 1;
+	}
 
 	// Compile the C File
 
 	result = Compile(Name,OutFile,BoardType,Thread,Err,MaxErrLen);
-	if (result) {if(Err) Err[0]='\0'; return result;} //Null terminate Err to avoid errors
+    if (Err && MaxErrLen) 
+        Err[MaxErrLen-1]='\0'; 
+	if (result)
+	    return result;
 
 	// Download the .out File
 
-	result = LoadCoff(Thread, OutFile);
-	if (result) {if(Err) Err[0]='\0'; return result;} //Null terminate Err to avoid errors
-
-
-	return 0;
+	return LoadCoff(Thread, OutFile);
 }
 
 #ifdef _KMOTIONX
-void CKMotionDLL::SetCustomCompiler(const char * compiler, bool debug_symbols, int tcc_minor_version)
+void CKMotionDLL::SetCustomCompiler(const char * compiler, const char * options, int tcc_minor_version)
 {
     if (compiler)
         strncpy(customCompiler, compiler, sizeof(customCompiler));
     else
         strcpy(customCompiler, COMPILER);
-    dash_g = debug_symbols;
+    if (options)
+        strncpy(customOptions, options, sizeof(customOptions));
+    else
+        customOptions[0] = 0;
     if (tcc_minor_version)
         tcc_vers = tcc_minor_version;
 }
@@ -944,20 +957,20 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	char command[MAX_LINE +1];
 
     if (tcc_vers < 26)
- 	    sprintf(command,"%s -text %08X%s -nostdinc %s %s -o \"%s\" \"%s\" %s 2>&1",
+ 	    snprintf(command, sizeof(command), "%s -text %08X %s -nostdinc %s %s -o \"%s\" \"%s\" %s 2>&1",
 			Compiler,
 			GetLoadAddress(Thread,BoardType),
-			dash_g ? " -g" : "",
+			customOptions,
 			IncSrcPath1,
 			IncSrcPath2,
 			OutFile,
 			Name,
 			BindTo);
     else
-	    sprintf(command,"%s -Wl,-Ttext,%08X%s -Wl,--oformat,coff -static -nostdinc -nostdlib %s %s -o \"%s\" \"%s\" %s 2>&1",
+	    snprintf(command, sizeof(command), "%s -Wl,-Ttext,%08X %s -Wl,--oformat,coff -static -nostdinc -nostdlib %s %s -o \"%s\" \"%s\" %s 2>&1",
 			Compiler,
 			GetLoadAddress(Thread,BoardType),
-			dash_g ? " -g" : "",
+			customOptions,
 			IncSrcPath1,
 			IncSrcPath2,
 			OutFile,
@@ -1026,8 +1039,10 @@ void CKMotionDLL::ConvertToOut(int thread, const char *InFile, char *OutFile, in
 		}
 		strcat(OFile, ThreadString);
 	}
-	//TODO null terminate when appropriate
+
 	strncpy(OutFile,OFile,MaxLength);
+	if (MaxLength)
+	    OutFile[MaxLength-1] = 0;
 	delete [] OFile;
 }
 
@@ -1527,7 +1542,7 @@ void CKMotionDLL::Poll()
     // when things change, rather than having the high-level code have to go through the entire
     // status struct looking for changes.
     MAIN_STATUS m; 
-    if (!GetStatus(m, false)) {
+    if (!GetStatus(m, true)) {
         unsigned int changes = first_status ? 0xFFFFFFFF : 0;
         if (!first_status) {
             changes |= memcmp(m.ADC, last_status.ADC, sizeof(m.ADC)) ? POLL_ADC : 0;

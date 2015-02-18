@@ -60,6 +60,21 @@ public:
     // mp.BreakAngle = 0.02
     // my_gcode_interp.SetMotionParams(mp)
     void SetMotionParams(const MOTION_PARAMS & m) { CoordMotion->Kinematics->m_MotionParams = m; }
+    
+    // Some helper functions for coordinate transforms
+	int SetOrigin(int index, const floatvec & vec);
+	floatvec GetOrigin(int index);
+    floatvec ConvertAbsoluteToInterpreterCoord(const floatvec & vec);
+    floatvec ConvertAbsoluteToMachine(const floatvec & vec);
+    floatvec ReadAndSyncCurPositions();
+	floatvec TransformCADtoActuators(const floatvec & vec);
+	floatvec TransformActuatorstoCAD(const floatvec & vec);
+	
+	// Convert between g20/g21 units in effect, and "fixed" metric or imperial.
+	floatvec FixedToUser(const floatvec & vec, bool metric_in);
+	floatvec UserToFixed(const floatvec & vec, bool metric_out);
+	bool UserIsMetric() { return p_setup->length_units!=CANON_UNITS_INCHES; }
+
 protected:
     int setAction(int action_num, int type, double p1 = 0., double p2 = 0., double p3 = 0., double p4 = 0., double p5 = 0., const char * str = NULL);
 };
@@ -212,6 +227,118 @@ int GCodeInterpreter::Interpret(
 {
     return CGCodeInterpreter::Interpret(board_type, fname, start, end, restart, _gci_status, _gci_complete);
 }
+
+
+
+int GCodeInterpreter::SetOrigin(int index, const floatvec & vec)
+{
+    size_t s = vec.size();
+    return CGCodeInterpreter::SetOrigin(index, s>0?vec[0]:0., s>1?vec[1]:0., s>2?vec[2]:0., s>3?vec[3]:0., s>4?vec[4]:0., s>5?vec[5]:0.);
+}
+
+
+struct fv6: public floatvec
+{
+    fv6(const double * v): floatvec(6) { for (int i = 0; i < 6; ++i) (*this)[i] = v[i]; }  
+};
+
+floatvec GCodeInterpreter::GetOrigin(int index)
+{
+    double v[6];
+    int rc = CGCodeInterpreter::GetOrigin(index, v+0, v+1, v+2, v+3, v+4, v+5);
+    if (rc)
+        return floatvec(0); // empty vector if error
+    return fv6(v);
+}
+
+floatvec GCodeInterpreter::ConvertAbsoluteToInterpreterCoord(const floatvec & vec)
+{
+    double v[6];
+    size_t s = vec.size();
+    CGCodeInterpreter::ConvertAbsoluteToInterpreterCoord(s>0?vec[0]:0., s>1?vec[1]:0., s>2?vec[2]:0., s>3?vec[3]:0., s>4?vec[4]:0., s>5?vec[5]:0., v+0, v+1, v+2, v+3, v+4, v+5);
+    return fv6(v);
+}
+
+floatvec GCodeInterpreter::ConvertAbsoluteToMachine(const floatvec & vec)
+{
+    double v[6];
+    size_t s = vec.size();
+    CGCodeInterpreter::ConvertAbsoluteToMachine(s>0?vec[0]:0., s>1?vec[1]:0., s>2?vec[2]:0., s>3?vec[3]:0., s>4?vec[4]:0., s>5?vec[5]:0., v+0, v+1, v+2, v+3, v+4, v+5);
+    return fv6(v);
+}
+
+floatvec GCodeInterpreter::ReadAndSyncCurPositions()
+{
+    double v[6];
+    int rc = CGCodeInterpreter::ReadAndSyncCurPositions(v+0, v+1, v+2, v+3, v+4, v+5);
+    if (rc)
+        return floatvec(0); // empty vector if error
+    return fv6(v);
+}
+
+floatvec GCodeInterpreter::TransformActuatorstoCAD(const floatvec & vec)
+{
+    double v[6];
+    double a[6];
+    size_t s = vec.size();
+    for (size_t i = 0; i < 6; ++i)
+        a[i] = s>i?vec[i]:0.;
+    int rc = CoordMotion->Kinematics->TransformActuatorstoCAD(a ,v+0, v+1, v+2, v+3, v+4, v+5);
+    if (rc)
+        return floatvec(0); // empty vector if error
+    return fv6(v);
+}
+
+floatvec GCodeInterpreter::TransformCADtoActuators(const floatvec & vec)
+{
+    double a[6];
+    size_t s = vec.size();
+    int rc = CoordMotion->Kinematics->TransformCADtoActuators(s>0?vec[0]:0., s>1?vec[1]:0., s>2?vec[2]:0., s>3?vec[3]:0., s>4?vec[4]:0., s>5?vec[5]:0., a);
+    if (rc)
+        return floatvec(0); // empty vector if error
+    return fv6(a);
+}
+
+
+floatvec GCodeInterpreter::FixedToUser(const floatvec & vec, bool metric_in)
+{
+    double v[6];
+    size_t s = vec.size();
+    double fac = p_setup->length_units==CANON_UNITS_INCHES ? (metric_in ? 1./25.4 : 1.) : (metric_in ? 1. : 25.4);
+    for (size_t i = 0; i < 6; ++i) {
+        v[i] = s>i?vec[i]:0.;
+        if (i < 3)
+            v[i] *= fac;
+        else if (i==3)
+            v[i] *= CoordMotion->Kinematics->m_MotionParams.DegreesA ? 1. : fac;
+        else if (i==4)
+            v[i] *= CoordMotion->Kinematics->m_MotionParams.DegreesB ? 1. : fac;
+        else
+            v[i] *= CoordMotion->Kinematics->m_MotionParams.DegreesC ? 1. : fac;
+    }
+    return fv6(v);
+}
+
+floatvec GCodeInterpreter::UserToFixed(const floatvec & vec, bool metric_out)
+{
+    double v[6];
+    size_t s = vec.size();
+    double fac = p_setup->length_units==CANON_UNITS_INCHES ? (metric_out ? 25.4 : 1.) : (metric_out ? 1. : 1./25.4);
+    for (size_t i = 0; i < 6; ++i) {
+        v[i] = s>i?vec[i]:0.;
+        if (i < 3)
+            v[i] *= fac;
+        else if (i==3)
+            v[i] *= CoordMotion->Kinematics->m_MotionParams.DegreesA ? 1. : fac;
+        else if (i==4)
+            v[i] *= CoordMotion->Kinematics->m_MotionParams.DegreesB ? 1. : fac;
+        else
+            v[i] *= CoordMotion->Kinematics->m_MotionParams.DegreesC ? 1. : fac;
+    }
+    return fv6(v);
+}
+
+
 
 
 

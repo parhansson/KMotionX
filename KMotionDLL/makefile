@@ -2,7 +2,7 @@ include $(BUILD_ROOT)/config.mak
 IDIR+=$(BUILD_ROOT)/KMotionX/include
 IDIR+=$(BUILD_ROOT)/KMotionX/KMotionSupport/include
 
-LD_LIBS+=KMotionSupport
+LD_LIBS+=KMotionSupport rt
 LD_LIBS+=$(FTDILIB)
 
 

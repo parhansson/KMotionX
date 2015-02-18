@@ -38,6 +38,7 @@ typedef unsigned BOOL;
 %cstring_bounded_output(char *response, MAX_LINE);
 %cstring_bounded_output(char *buf, MAX_LINE);
 %cstring_output_maxsize(char *Err, int MaxErrLen);
+%cstring_output_maxsize(char *OutFile, int MaxLength);
 
 %apply int * OUTPUT { int *size_text, int *size_bss, int *size_data, int *size_total };
 
@@ -105,12 +106,20 @@ typedef unsigned BOOL;
 				  int restart,
                   G_STATUS_CALLBACK *StatusFn,
 				  G_COMPLETE_CALLBACK *CompleteFn);
+%ignore CGCodeInterpreter::SetOrigin(int index, double x, double y, double z, double a, double b, double c); 
+%ignore CGCodeInterpreter::GetOrigin(int index, double *x, double *y, double *z, double *a, double *b, double *c);
+%ignore CGCodeInterpreter::ConvertAbsoluteToInterpreterCoord(double x,double y,double z,double a,double b,double c, 
+										double *gx,double *gy,double *gz,double *ga,double *gb,double *gc);
+%ignore CGCodeInterpreter:: ConvertAbsoluteToMachine(double x,double y,double z,double a,double b,double c, 
+									double *gx,double *gy,double *gz,double *ga,double *gb,double *gc);
+	
+%ignore CGCodeInterpreter:: ReadAndSyncCurPositions(double *x, double *y, double *z, double *a, double *b, double *c);
 
 %ignore TP_COEFF;
 %ignore SEGMENT;
 %ignore SPECIAL_CMD;
 
-
+%include "PC-DSP.h"
 %include "TrajectoryPlanner.h"
 %include "Kinematics.h"
 %include "CoordMotion.h"

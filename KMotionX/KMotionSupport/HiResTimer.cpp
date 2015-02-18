@@ -29,7 +29,7 @@ either expressed or implied, of the FreeBSD Project.
 // HiResTimer.cpp: implementation of the CHiResTimer class.
 
 #include <HiResTimer.h>
-#include <sys/time.h>
+#include <time.h>
 #include <string.h>
 #include <stdio.h>
 #include "MessageBox.h"
@@ -127,6 +127,7 @@ double CHiResTimer::Elapsed_Seconds()
 
 void CHiResTimer::DisplayDiff(int t1, int t0)
 {
+    //SJH - function not used
 	char s[128];
 
 	sprintf(s, "From sample %d to %d was %f us",t1,t0,Diff_us(t1,t0));
@@ -141,6 +142,7 @@ void CHiResTimer::DisplayDiff(int t1, int t0)
 
 void CHiResTimer::DisplaySplit()
 {
+    //SJH - function not used
 	char s[MAX_TEXT + 96];
 
 	for (int i=0; i<nSplit-1; i++)
@@ -157,21 +159,15 @@ void CHiResTimer::DisplaySplit()
 
 int CHiResTimer::QueryPerformanceCounter(int64_t *lpPerformanceCount){
 	//printf("%s:%d\n", __FILE__, __LINE__);
-	struct timeval now;
-	//Note that gettimeofday returns time relative to an epoch while timeGetTime on Windows returns based on system startup time.
-	gettimeofday(&now, NULL);
-
-
-	unsigned int time = now.tv_usec;
-	int64_t value = time;//-30*365*24*60*60*1000;
-	*lpPerformanceCount = value;
+	struct timespec now;
+	clock_gettime(CLOCK_REALTIME, &now);
+	*lpPerformanceCount = (int64_t)now.tv_sec*1000000000 + now.tv_nsec;
 	//printf("QueryPerformanceCounter time=%u value=%lld\n", time, (long long)value);
 	return 1;
 }
 int CHiResTimer::QueryPerformanceFrequency(int64_t *lpPerformanceCount){
 	//printf("%s:%d\n", __FILE__, __LINE__);
-	int64_t value = 1000;
 	//printf("QueryPerformanceFrequency value=%lld\n", (long long)value);
-	*lpPerformanceCount = value;
+	*lpPerformanceCount = 1000000000;
 	return 1;
 }

@@ -187,13 +187,13 @@ public:
 	void DoErrMsg(const char *s);
 #ifdef _KMOTIONX
 	const char* getInstallRoot();
-	// Use to override default compiler executable.  debug_symbols controls whether -g option supplied.
+	// Use to override default compiler executable.  options controls whether -g (and other) option supplied.
 	// tcc_minor_version should be set to e.g. 26 for tcc version 0.9.26 (controls options), or 0 to
 	// not change the version.
 	// If compiler is absolute path, then that exact compiler is used.  Otherwise, it should just be the
 	// name of the compiler without any path, and it will be searched for in standard locations.
 	// If NULL, compiler is set back to default.
-	void SetCustomCompiler(const char * compiler = NULL, bool debug_symbols = false, int tcc_minor_version = 0); 
+	void SetCustomCompiler(const char * compiler = NULL, const char * options = NULL, int tcc_minor_version = 0); 
 	
 	// Alternative ctor to connect via TCP.  If url is NULL, assumes localhost, else is a host name.
 	CKMotionDLL(int boardid, unsigned int dfltport, const char * url = NULL);
@@ -241,7 +241,7 @@ private:
 	char MainPath[256];
 	char MainPathRoot[256];
 	char customCompiler[256];
-	bool dash_g;
+	char customOptions[256];
 	int tcc_vers;
     
 #else
