@@ -41,6 +41,7 @@ typedef unsigned BOOL;
 %cstring_output_maxsize(char *OutFile, int MaxLength);
 
 %apply int * OUTPUT { int *size_text, int *size_bss, int *size_data, int *size_total };
+%apply double * OUTPUT { double * actual, double * desired };
 
 // We provide alternative for this, using std:vector<int>
 %ignore CKMotionDLL::ListLocations(int *nlocations, int *list);

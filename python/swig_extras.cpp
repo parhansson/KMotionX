@@ -74,7 +74,12 @@ public:
 	floatvec FixedToUser(const floatvec & vec, bool metric_in);
 	floatvec UserToFixed(const floatvec & vec, bool metric_out);
 	bool UserIsMetric() { return p_setup->length_units!=CANON_UNITS_INCHES; }
-
+	
+	// Simplified interfaces to CoordinatedMotion object...
+	
+	// Returns true if actual spindle speed obtained.  Always returns desired speed.
+	bool GetSpindleRPM(double * actual, double * desired);
+	
 protected:
     int setAction(int action_num, int type, double p1 = 0., double p2 = 0., double p3 = 0., double p4 = 0., double p5 = 0., const char * str = NULL);
 };
@@ -338,6 +343,15 @@ floatvec GCodeInterpreter::UserToFixed(const floatvec & vec, bool metric_out)
     return fv6(v);
 }
 
+
+bool GCodeInterpreter::GetSpindleRPM(double * actual, double * desired)
+{ 
+    float rps = 0.; 
+    bool rc = 0 == CoordMotion->GetSpindleRPS(rps);
+    *actual = rps * 60.;
+    *desired = p_setup->speed;
+    return rc;
+}
 
 
 
