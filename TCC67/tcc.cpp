@@ -462,6 +462,7 @@ static int tcc_assemble(TCCState *s1, int do_preprocess);
 
 static void asm_instr(void);
 
+
 /* true if float/double/long double type */
 static inline int is_float(int t)
 {
@@ -473,6 +474,15 @@ static inline int is_float(int t)
 #ifdef TCC_TARGET_I386
 #include "i386-gen.c"
 #endif
+
+// true if register class may need register pair
+static inline int is_pair(int rc)
+{
+	return (rc == RC_EAX || rc == RC_EDX || rc == RC_FLOAT);
+}
+
+
+
 
 #if (DO_C67)
 unsigned int text_sect_addr=0x400;
@@ -4017,7 +4027,7 @@ int get_reg(int rc)
             for(p=vstack;p<=vtop;p++) {
                 if ((p->r  & VT_VALMASK) == r ||
                     (p->r2 & VT_VALMASK) == r ||
-					((rc == RC_EAX || rc == RC_EDX) &&
+					(is_pair(rc) &&
 						((p->r  & VT_VALMASK) == r+1 ||
 						 (p->r2 & VT_VALMASK) == r+1)))
                    goto notfound;
@@ -4041,7 +4051,7 @@ int get_reg(int rc)
 			   check if the other register needs to be 
 			   saved also */
 	        
-			if ((rc == RC_EAX || rc == RC_EDX)) {
+			if (is_pair(rc)) {
 				save_reg(r+1);
 			}
 			return r;
@@ -4051,7 +4061,7 @@ int get_reg(int rc)
 		   check if the used register associated
 		   register is of class float */
         
-		if ((rc == RC_EAX || rc == RC_EDX) && r < VT_CONST && (reg_classes[r-1] & rc)) {
+		if (is_pair(rc) && r < VT_CONST && (reg_classes[r-1] & rc)) {
 
 			save_reg(r);
 
@@ -4059,7 +4069,7 @@ int get_reg(int rc)
 			   check if the other register needs to be 
 			   saved also */
 	        
-			if ((rc == RC_EAX || rc == RC_EDX)) {
+			if (is_pair(rc)) {
 				save_reg(r-1);
 			}
             return r-1;
@@ -4076,7 +4086,7 @@ int get_reg(int rc)
 		   check if the used register associated
 		   register is of class float */
         
-		if ((rc == RC_EAX || rc == RC_EDX) && r < VT_CONST && (reg_classes[r-1] & rc)) {
+		if (is_pair(rc) && r < VT_CONST && (reg_classes[r-1] & rc)) {
             save_reg(r);
             return r-1;
         }
@@ -4247,7 +4257,7 @@ int gv(int rc)
             !(reg_classes[r] & rc) ||
             ((vtop->type.t & VT_BTYPE) == VT_LLONG && 
              !(reg_classes[vtop->r2] & rc)) || 
-			 (rc == RC_FLOAT && !check_r2_free(r+1))) {
+			 (is_pair(rc) && !check_r2_free(r+1))) {
             r = get_reg(rc);
             if ((vtop->type.t & VT_BTYPE) == VT_LLONG) {
                 /* two register type load : expand to two words
