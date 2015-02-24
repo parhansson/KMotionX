@@ -1,5 +1,5 @@
 import kmotion
-import time
+import time, sys
 
 
 class KMotion(kmotion.KMotion):
@@ -69,7 +69,10 @@ k = KMotion(0, with_console=True)
 #print "Compile and run file..."
 #k.run("test")
 
-k.SetCustomCompiler("tcc67wine")
+compilerbin = sys.argv[1] if len(sys.argv)>1 else "tcc67wine"
+codestring = sys.argv[2] if len(sys.argv)>2 else "code"
+
+k.SetCustomCompiler(compilerbin)
 
 code = r"""
 #include "KMotionDef.h"
@@ -326,7 +329,7 @@ main()
 """
 
 print "Compile and run string..."
-k.run_string(code3)
+k.run_string(globals()[codestring])
 
 
 
