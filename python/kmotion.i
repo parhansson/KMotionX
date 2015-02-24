@@ -115,16 +115,21 @@ typedef unsigned BOOL;
 									double *gx,double *gy,double *gz,double *ga,double *gb,double *gc);
 	
 %ignore CGCodeInterpreter:: ReadAndSyncCurPositions(double *x, double *y, double *z, double *a, double *b, double *c);
+%ignore CGCodeInterpreter::HandleEvt;
 
 %ignore TP_COEFF;
 %ignore SEGMENT;
 %ignore SPECIAL_CMD;
+%ignore CHD;
+%ignore CHT;
+%ignore CHTB;
 
 %include "PC-DSP.h"
 %include "TrajectoryPlanner.h"
 %include "Kinematics.h"
 %include "CoordMotion.h"
 %include "GCodeInterpreter.h"
+%include "swig_extras_events.cpp"
 %include "swig_extras.cpp"
 
 

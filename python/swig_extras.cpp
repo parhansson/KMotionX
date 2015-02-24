@@ -22,8 +22,35 @@ typedef int G_M_USER_CALLBACK(int mCode);
 
 class GCodeInterpreter;
 struct Action;
+struct CHD;
 
 GCodeInterpreter * _theInterpreter;
+
+#define GEV_GEN_ENUM
+#include "swig_extras_events.cpp"
+#undef GEV_GEN_ENUM
+
+// Additional event classes for GCodeInterpreter::EnableEventByClasses()
+enum {
+    POLL_G_M_CODES =        0x00010000, // G- and M- code activation
+    POLL_OFFSETS =          0x00020000, //
+    POLL_MISC_MODES =       0x00040000, //
+    POLL_TOOL =             0x00080000, //
+    POLL_CUTTER_COMP =      0x00100000, //
+    POLL_CANNED_CYCLE =     0x00200000, //
+    POLL_FEED =             0x00400000, //
+    POLL_SPINDLE =          0x00800000, //
+    POLL_UNITS =            0x01000000, //
+    POLL_COOLANT =          0x02000000, //
+    POLL_PLANE =            0x04000000, //
+    POLL_LINE =             0x08000000, //
+    POLL_x =          0x10000000, //
+    POLL_y =          0x20000000, //
+    POLL_z =          0x40000000, //
+    POLL_a =          0x80000000, //
+};
+
+
 
 class GCodeInterpreter: public CGCodeInterpreter
 {
@@ -31,7 +58,8 @@ public:
     GCodeInterpreter(CCoordMotion *CM);
 	virtual ~GCodeInterpreter(void) {_theInterpreter = NULL;}
 	
-	// Virtual functions for "callbacks"
+	// Virtual functions for "callbacks" from Interpret().  These are invoked from thread other than
+	// caller of Interpret().
 	virtual void HandleStatus(int line_no, const char *msg) {}
 	virtual void HandleComplete(int status, int lineno, int sequence_number, const char *err) {}
 	virtual int HandleUser(const char *msg) {return 0;}
@@ -41,6 +69,25 @@ public:
 		          const char *fname,
 			      int start, int end,
 				  int restart);
+				  
+	// Callbacks for event handling.  Invoked from Poll(), which looks for state changes and
+	// calls these virtuals.  
+	virtual void HandleBoolEvt(int evt_code, bool data) {}
+	virtual void HandleIntEvt(int evt_code, int data, int prevdata) {}
+	virtual void HandleFloatEvt(int evt_code, double data, double prevdata) {}
+	// Non-virtual overloads to direct to the above (this shouldn't be required for c++, but makes it easier to
+	// bind via swig while using templates here).
+	void HandleEvt(int evt_code, bool data) { HandleBoolEvt(evt_code, data); }
+	void HandleEvt(int evt_code, bool data, bool) { HandleBoolEvt(evt_code, data); }
+	void HandleEvt(int evt_code, int data, int prevdata) { HandleIntEvt(evt_code, data, prevdata); }
+	void HandleEvt(int evt_code, double data, double prevdata) { HandleFloatEvt(evt_code, data, prevdata); }
+	int Poll();
+	int PollKMotion();
+	int PollGCodeInterpreter();
+	// If known is false, then event will be generated immediately on next poll, otherwise only when value actually changes.
+	void EnableEvent(int evt_code, bool enable=true, bool known=false);
+	void EnableEventByClasses(unsigned clsbits, bool enable=true, bool known=false); // clsbits is OR of POLL_* enum value(s) (see KMotionDLL.h, plus the above)
+
 
     // Interface to action setting.  Return 0 if OK, 1 if bad action number.
     int SetActionNone(int action_num);
@@ -79,10 +126,143 @@ public:
 	
 	// Returns true if actual spindle speed obtained.  Always returns desired speed.
 	bool GetSpindleRPM(double * actual, double * desired);
+
+
 	
 protected:
     int setAction(int action_num, int type, double p1 = 0., double p2 = 0., double p3 = 0., double p4 = 0., double p5 = 0., const char * str = NULL);
+
+    MAIN_STATUS pm;  // Previous KMotion state
+    setup ps;        // Previous interpreter state
+    MAIN_STATUS nm;  // New KMotion state
+                     // New interpreter state is in *p_setup
+    int first_km_event;
+    int last_km_event;
+    int first_int_event;
+    int last_int_event;
+    std::vector<CHD *> t;   // Table of change detectors
+    
+    template <class T, class U> void setup_tm(T & val, U cbsel);   // set up t for a MAIN_STATUS field (val must be field of pm)
+    void setup_tmbit(int & val, int fldsize, int idx);
+    template <class T, class U> void setup_ts(T & val, U cbsel);   // set up t for an interpreter field (val must be field of ps)
+    void setup_t();
 };
+
+#ifndef SWIG    // SWIG doesn't need the implementation details...
+
+struct CHD
+{
+    int evt_code;
+    bool enabled;
+    bool known;
+    CHD(int ec): evt_code(ec), enabled(false), known(false) {}
+    virtual ~CHD() {}
+    virtual bool is_changed() const = 0;
+    virtual void handled() const = 0;
+    virtual void handle(GCodeInterpreter *)  = 0;
+};
+
+template <class T, class U>
+struct CHT: public CHD
+{
+    T * newval;
+    T * oldval;
+    CHT(int ec, T & nv, T & ov): CHD(ec), newval(&nv), oldval(&ov) {}
+    virtual bool is_changed() const { return !known || *newval != *oldval; }
+    virtual void handled() const { *oldval = *newval; }
+    virtual void handle(GCodeInterpreter * i)  {
+        if (enabled && is_changed()) {
+            i->HandleEvt(evt_code, (U)*newval, (U)*oldval);
+            known = true;
+            handled();
+        }
+    }
+};
+
+struct CHTB: public CHT<int, int>
+{
+    unsigned mask;
+    unsigned shift;
+    int fldsize;
+    CHTB(int ec, int & nv, int & ov, int _fldsize, int idx): CHT<int,int>(ec, nv, ov), fldsize(_fldsize) {
+        while ((size_t)(idx * fldsize) >= sizeof(int)*8) {
+            ++newval;
+            ++oldval;
+            idx -= sizeof(int)*8/fldsize;
+        }
+        shift = idx * fldsize;
+        mask = ((1u<<fldsize)-1) << shift;
+    }
+    int getfld_new() const { return (*newval&mask)>>shift; }
+    int getfld_old() const { return (*oldval&mask)>>shift; }
+    virtual bool is_changed() const { return !known || (*newval&mask) != (*oldval&mask); }
+    virtual void handled() const { *oldval &= ~mask; *oldval |= *newval&mask; }
+    virtual void handle(GCodeInterpreter * i)  {
+        if (enabled && is_changed()) {
+            if (fldsize == 1)
+                i->HandleEvt(evt_code, (bool)getfld_new());
+            else
+                i->HandleEvt(evt_code, getfld_new(), getfld_old());
+            known = true;
+            handled();
+        }
+    }
+};
+
+
+template <class T, class U>
+void GCodeInterpreter::setup_tm(T & val, U cbsel)
+{
+    int ec = t.size();
+    t.push_back(new CHT<T,U>(ec, ((T *)&nm)[&val - (T *)&pm], val));
+}
+
+// bitfields must currently have 'int' type (or int array, if more than 32 bits)
+//FIXME: some horrible assumptions here!
+void GCodeInterpreter::setup_tmbit(int & val, int fldsize, int bit)
+{
+    int ec = t.size();
+    t.push_back(new CHTB(ec, ((int *)&nm)[&val - (int *)&pm], val, fldsize, bit));
+}
+
+template <class T, class U>
+void GCodeInterpreter::setup_ts(T & val, U cbsel)
+{
+    int ec = t.size();
+    t.push_back(new CHT<T,U>(ec, ((T *)p_setup)[&val - (T *)&ps], val));
+}
+
+
+
+
+void GCodeInterpreter::setup_t()
+{
+    int i;
+    // These are basically used to select the appropriate setup member template parameter 'U'
+    bool cb_bool = false;
+    int cb_int = 0;
+    double cb_float = 0.;
+    
+    first_km_event = 0;
+
+#define GEV(tag,fld,cbsel) setup_tm(pm.fld,cbsel);
+#define GEVX(tag, n,fld,cbsel) for (i = 0; i < n; ++i) setup_tm(pm.fld[i],cbsel);
+#define GEVXB(tag, n, bits,fld) for (i = 0; i < n; ++i) setup_tmbit(pm.fld, bits, i);
+#define GEV_BLOCK_KMOTION
+#include "swig_extras_events.cpp"
+
+    last_km_event = first_int_event = t.size();
+    
+#define GEV(tag,fld,cbsel) setup_ts(ps.fld,cbsel);
+#define GEVX(tag, n,fld,cbsel) for (i = 0; i < n; ++i) setup_ts(ps.fld[i],cbsel);
+#define GEVXX(tag, n,fld,typ,cbsel) for (i = 0; i < n; ++i) setup_ts(((typ *)&ps.fld)[i],cbsel);
+#define GEV_BLOCK_INTERPETER
+#include "swig_extras_events.cpp"
+
+    last_int_event = t.size();
+}
+
+
 
 
 int GCodeInterpreter::setAction(int action_num, int type, double p1, double p2, double p3, double p4, double p5, const char * str)
@@ -221,6 +401,8 @@ GCodeInterpreter::GCodeInterpreter(CCoordMotion *CM): CGCodeInterpreter(CM)
     _theInterpreter = this;
     CGCodeInterpreter::SetUserCallback(_gci_user);
     CGCodeInterpreter::SetUserMCodeCallback(_gci_mcode);
+    setup_t();
+
     _INIT_THREADS;
 }
 
@@ -352,6 +534,52 @@ bool GCodeInterpreter::GetSpindleRPM(double * actual, double * desired)
     *desired = p_setup->speed;
     return rc;
 }
+
+
+int GCodeInterpreter::Poll()
+{
+    int rc = PollKMotion();
+    if (rc)
+        return rc;
+    return PollGCodeInterpreter();
+}
+
+int GCodeInterpreter::PollKMotion()
+{
+    // Similar to KMotionDLL::Poll(), except fine-grained events.
+    if (CoordMotion->KMotionDLL->GetStatus(nm, true))
+        return 1;
+    for (int i = first_km_event; i < last_km_event; ++i)
+        t[i]->handle(this);
+    return 0;
+}
+
+int GCodeInterpreter::PollGCodeInterpreter()
+{
+    for (int i = first_int_event; i < last_int_event; ++i)
+        t[i]->handle(this);
+    return 0;
+}
+
+void GCodeInterpreter::EnableEvent(int evt_code, bool enable, bool known)
+{
+    if (evt_code < 0 || evt_code >= LAST_GEVTCODE)
+        return;
+    t[evt_code]->enabled = enable;
+    t[evt_code]->known = known;
+    if (known) {
+        t[evt_code]->handled();
+    }
+}
+
+
+void GCodeInterpreter::EnableEventByClasses(unsigned clsbits, bool enable, bool known)
+{
+}
+
+
+#endif
+
 
 
 
