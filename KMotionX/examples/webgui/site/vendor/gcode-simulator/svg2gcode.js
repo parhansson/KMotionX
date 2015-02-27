@@ -75,8 +75,10 @@ function svg2gcode(svg, settings) {
     // sort by area
     return (a.bounds.area < b.bounds.area) ? -1 : 1;
   });
-  var LaserON ='(BUF,SetBitBuf2)';
-  var LaserOFF ='(BUF,ClearBitBuf2)';
+  //var LaserON = 'M3 (laser on)';
+  //var LaserOFF = 'M5 (laser off)';
+  var LaserON = '(BUF,SetBitBuf14)';
+  var LaserOFF = '(BUF,ClearBitBuf14)';
   //G20 Inch units
   //G21 mm units
   gcode = [
@@ -92,12 +94,13 @@ function svg2gcode(svg, settings) {
   for (var pathIdx = 0, pathLength = paths.length; pathIdx < pathLength; pathIdx++) {
     path = paths[pathIdx];
     gcode.push(LaserOFF);
+    gcode.push('F' + settings.seekRate);
     // seek to index 0
     gcode.push([
       'G0',
       'X' + scale(path[0].x),
-      'Y' + scale(path[0].y),
-      'F' + settings.seekRate
+      'Y' + scale(path[0].y)/*,
+      'F' + settings.seekRate*/
     ].join(' '));
 
     for (var p = settings.passWidth; p<=settings.materialWidth; p+=settings.passWidth) {
@@ -110,6 +113,7 @@ function svg2gcode(svg, settings) {
       ].join(' '));
       
       gcode.push(LaserON);
+      gcode.push('F' + settings.feedRate);
       // keep track of the current path being cut, as we may need to reverse it
       var localPath = [];
       for (var segmentIdx=0, segmentLength = path.length; segmentIdx<segmentLength; segmentIdx++) {
@@ -118,8 +122,8 @@ function svg2gcode(svg, settings) {
         var localSegment = [
           'G1',
           'X' + scale(segment.x),
-          'Y' + scale(segment.y),
-          'F' + settings.feedRate
+          'Y' + scale(segment.y)/*,
+          'F' + settings.feedRate*/
         ].join(' ');
 
         // feed through the material

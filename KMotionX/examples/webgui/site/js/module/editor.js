@@ -158,8 +158,8 @@
       if(mime == "image/svg+xml"){
         var gcode = new GCode(svg2gcode(data, {
           scale : 1,
-          cutZ : 108,
-          safeZ: 80,
+          cutZ : 10,
+          safeZ: 8,
           unit: "mm",
           dpi: 72
         }));

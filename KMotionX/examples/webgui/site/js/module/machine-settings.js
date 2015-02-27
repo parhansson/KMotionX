@@ -11,14 +11,16 @@
       }
       return axes;
     };
+    var mcodes = ['','','','M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'S'];
+    var mcodesExtended = ["M100", "M101", "M102", "M103", "M104", "M105", "M106", "M107", "M108", "M109", "M110", "M111", "M112", "M113", "M114", "M115", "M116", "M117", "M118", "M119"];
     
-    var actionsArr = function(){
+    var actionsArr = function(codes){
       var actions = [] 
-      var mcodeNames = ['','','M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'S',"M100", "M101", "M102", "M103", "M104", "M105", "M106", "M107", "M108", "M109", "M110", "M111", "M112", "M113", "M114", "M115", "M116", "M117", "M118", "M119"];
-      for(var i = 0; i < 30; i++) {
+      
+      for(var i = 0; i < codes.length; i++) {
         actions.push({
           action:0,
-          name:mcodeNames[i]
+          name:codes[i]
         });
         
       }   
@@ -45,7 +47,8 @@
         initThread: 1,
         axes: axesArr(),
         tplanner: {},
-        actions: actionsArr(),
+        actions: actionsArr(mcodes),
+        extendedActions: actionsArr(mcodesExtended),
         userActions: userActionsArr()
     };
              
@@ -63,7 +66,8 @@
           data.initThread = jsonData.initThread;
           data.axes = jsonData.axes || axesArr();
           data.tplanner = jsonData.tplanner || {};
-          data.actions = jsonData.actions || actionsArr();
+          data.actions = jsonData.actions || actionsArr(mcodes);
+          data.extendedActions = jsonData.extendedActions || actionsArr(mcodesExtended);
           data.userActions = jsonData.userActions || userActionsArr();
           
           callback();
@@ -73,8 +77,10 @@
       save: function() {
         var file = "settings/" +data.name + ".cnf";
         var param = {};
-        param[file] = angular.copy(data);
+        var copy = angular.copy(data);
+        param[file] = copy;
         RPC.saveMachine.invoke(param);
+        RPC.setMotionParams.invoke(copy);
       }    
     };
     
@@ -92,6 +98,7 @@
   app.controller('SettingsController', function($scope, SettingsFactory){
     
     $scope.actionOptions = [
+         //{action:-1,name:'Reserved', visible:[false,false,false,false,false,false],paramNames:['','','','','','']},
          {action:0,name:'None', visible:[false,false,false,false,false,false],paramNames:['','','','','','']},
          {action:1,name:'Set a bit high or low', visible:[true,true,false,false,false,false],paramNames:['Set bit','to','','','','']},
          {action:2,name:'Set two bits either high or low', visible:[true,true,true,true,false,false],paramNames:['Set bit','to',' and bit','to','','']},
@@ -114,17 +121,6 @@
       SettingsFactory.save();
     };    
     
-    $scope.isMCode = function(value) {
-      return inRange(value,2,9)
-    };
-    $scope.isMCode2 = function(value) {
-      return inRange(value,10,29);
-    };
-    
-    $scope.isUserButton = function(value) {
-      return inRange(value,30,39);
-    };
-
     $scope.showMachine = function(e) {
       console.log(angular.toJson(angular.element(e.srcElement).scope().machine,true));
     }
@@ -144,11 +140,6 @@
       templateUrl: "js/partials/mcode-value.html"
     };
   });
-  
-  var inRange = function(value, from, to) {
-    return value >= from && value <= to;
-  };
-  
   
 })();
 

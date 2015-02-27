@@ -9,12 +9,6 @@
             ng-model="action.action"
             ng-options="option.action as option.name for option in actionOptions"></select>
       </div>
-      <!-- 
-      <div class="form-group" ng-repeat="num in [0,1,2,3,4]" ng-show="selectedAction[actionIndex].visible[num]">
-        <label>{{selectedAction[actionIndex].paramNames[num]}}</label>
-        <input type="number" ng-model="machine.actions[actionIndex].dparam1">
-      </div>
-      -->
       
       <div class="form-group" ng-show="actionOptions[action.action].visible[0]">
         <span ng-bind="actionOptions[action.action].paramNames[0]"></span>

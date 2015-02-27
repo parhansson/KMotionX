@@ -48,15 +48,14 @@
         </div>
         <div class="tab-pane" id="_settings_mcodes">
           <mcode-value 
-            ng-repeat="action in machine.actions" 
-            ng-if="isMCode($index)"
+            ng-repeat="action in machine.actions"
+            ng-if="action.action != -1"
             ng-init="actionIndex = $index">
           </<mcode-value>
         </div>
         <div class="tab-pane" id="_settings_mcodes2">
           <mcode-value 
-            ng-repeat="action in machine.actions" 
-            ng-if="isMCode2($index)"
+            ng-repeat="action in machine.extendedActions" 
             ng-init="actionIndex = $index">
           </<mcode-value>
         </div>

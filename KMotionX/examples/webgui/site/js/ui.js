@@ -40,10 +40,6 @@ $(function() {
         $("#output").empty();
     });
 
-    $("#set_motion_params_btn").click(function() {
-        RPC.setMotionParams.invoke(machine.axes);
-    });
-
     $("#init_machine_btn").click(function() {
         RPC.compileAndLoadCoff.invoke([machine.initProgram, machine.initThread]);
     });

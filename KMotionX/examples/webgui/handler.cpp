@@ -19,12 +19,10 @@
 #include "dbg.h"
 #include "handler.h"
 #include "frozen.h"
+#include "json.h"
 
 
-int toks(const struct json_token *tk, void *value, const int size = 0);
-int toki(const struct json_token *tk, int * value);
-double tokd(const struct json_token *tk, double * value);
-bool tokb(const struct json_token *tk, bool * value);
+
 int handle_api(struct mg_connection *conn, enum mg_event ev, char *uri);
 int handleJson(struct mg_connection *conn);
 void push_message(const char *msg);
@@ -636,73 +634,72 @@ int handle_api(struct mg_connection *conn, enum mg_event ev, char *uri) {
   return MG_TRUE;
 }
 
-int toks(const struct json_token *tk, void *sptr, const int size) {
-  int len = size;
-  char ** ptr = (char **) sptr;
-  if (tk->type == JSON_TYPE_NULL) {
-    return 0;
-  }
-  if (*ptr == NULL && tk->type != JSON_TYPE_NULL) {
-    if (len <= 0) len = tk->len;
-    int mal = (sizeof(char) * (len)) + sizeof(char);
-    *ptr = (char*) malloc(mal);
-  }
+void setInterpreterParams(struct json_token *paramtoken, int indexOffset, int count, const char* pathTemplate) {
+  double dParam0, dParam1, dParam2, dParam3, dParam4;
+  int action;
+  char path[64];
+  char *file = NULL;
+  char *name = NULL;
+  json_token *token;
 
-  int min = fmin(len, tk->len);
-  memcpy(*ptr, tk->ptr, min);
-  memset(*ptr + min, 0, 1);
+  for(int i= 0;i<count;i++){
+    sprintf(path,pathTemplate,i);
+    token = find_json_token(paramtoken, path);
+    if(token){
+      action = dParam0 = dParam1 = dParam2 = dParam3 = dParam4 = 0;
+      json_int(token,"action",&action);
+      if(action > 0){
+        json_str(token,"name",&name,0);
+        json_str(token,"file",&file,0);
+        json_double(token,"dParam0",&dParam0);
+        json_double(token,"dParam1",&dParam1);
+        json_double(token,"dParam2",&dParam2);
+        json_double(token,"dParam3",&dParam3);
+        json_double(token,"dParam4",&dParam4);
 
-  return 0;
+      }
+      //M2-M9,S index 2-9
+      //userButtons index 11-20
+      //M100-M119 index 21 -39
+      int actionIndex = indexOffset + i;
+      gci->McodeActions[actionIndex].Action = action;
+      gci->McodeActions[actionIndex].dParams[0] = dParam0;
+      gci->McodeActions[actionIndex].dParams[1] = dParam1;
+      gci->McodeActions[actionIndex].dParams[2] = dParam2;
+      gci->McodeActions[actionIndex].dParams[3] = dParam3;
+      gci->McodeActions[actionIndex].dParams[4] = dParam4;
+
+
+      //file should be nulled if not set.
+      if(file == NULL || action == 0){
+        gci->McodeActions[actionIndex].String[0] = 0;
+      } else {
+        strcpy(gci->McodeActions[actionIndex].String, file);
+      }
+
+
+      //invoke user buttons with a call such as this,
+      //Interpreter->InvokeAction(10,FALSE);  // resend new Speed
+
+
+    } else {
+      printf("Failed %s\n", pathTemplate);
+    }
+
+  }
+  free(file);
+  free(name);
 }
-int toki(const struct json_token *tk, int * value) {
-  if (tk->type == JSON_TYPE_NULL) {
-    return *value;
-  }
-  char *str = nullptr;
-  toks(tk, &str);
-  *value = atoi(str);
-  free(str);
-  return *value;
-}
-
-double tokd(const struct json_token *tk, double * value) {
-  if (tk->type == JSON_TYPE_NULL) {
-    return *value;
-  }
-  char *str = nullptr;
-  toks(tk, &str);
-  sscanf(str, "%lf", value);
-  free(str);
-  return *value;
-}
-bool tokb(const struct json_token *tk, bool * value) {
-  if (tk->type == JSON_TYPE_NULL) {
-    return *value;
-  }
-  char *str = nullptr;
-  toks(tk, &str);
-  if (strcmp(str, "true") == 0) {
-    *value = true;
-  } else {
-    *value = false;
-  }
-  free(str);
-  return *value;
-}
-
-#define SET_AXIS(counts,accel,vel,offset)  \
-  tokd(paramtoken + offset, &(counts));    \
-  tokd(paramtoken + offset+2, &(accel));   \
-  tokd(paramtoken + offset+4, &(vel))
-
 //TODO To ensure no blocking callbacks are made from poll thread this
 //function should be called from another thread.
+
 int handleJson(struct mg_connection *conn) {
 
   json_token *data = NULL;
 
   char * content = strndup(conn->content, conn->content_len);
   debug("%s",content);
+  //fprintf(stderr, "%s\n",content);
   free(content);
 
   data = parse_json2(conn->content, conn->content_len);
@@ -1006,26 +1003,101 @@ int handleJson(struct mg_connection *conn) {
 //    } else if (FUNC_SIGP("SetUserMCodeCallback", 1)) {
 
 
-    } else if (FUNC_SIGP("setMotionParams", 54)) {
+    } else if (!strcmp("setMotionParams",func) /*FUNC_SIGP("setMotionParams", 54)*/) {
+
+      char * name = NULL;
+      json_token *token;
 
       MOTION_PARAMS *p=gci->GetMotionParams();
+      double maxAccel,maxVel,countsPerUnit;
+      double breakAngle,collinearTol,cornerTol,facetAngle,tpLookahead;
 
-      p->BreakAngle = 20;
-      p->CollinearTol = 0.01;
-      //p->CornerTol = m_CornerTol;
-      //p->FacetAngle = m_FacetAngle;
-      p->TPLookahead = 1;
+      breakAngle = collinearTol = cornerTol = facetAngle = tpLookahead = 0;
+      json_double(paramtoken,"tplanner.breakangle",&breakAngle);
+      json_double(paramtoken,"tplanner.cornertolerance",&cornerTol);
+      json_double(paramtoken,"tplanner.lookahead",&tpLookahead);
+      json_double(paramtoken,"tplanner.collineartolerance",&collinearTol);
+      json_double(paramtoken,"tplanner.facetangle",&facetAngle);
+
+      p->BreakAngle = breakAngle;
+      p->CollinearTol = collinearTol;
+      p->CornerTol = cornerTol;
+      p->FacetAngle = facetAngle;
+      p->TPLookahead = tpLookahead;
+
+      //TODO
       //p->RadiusA = m_RadiusA;
       //p->RadiusB = m_RadiusB;
       //p->RadiusC = m_RadiusC;
 
-      SET_AXIS(p->CountsPerInchX, p->MaxAccelX, p->MaxVelX,5);
-      SET_AXIS(p->CountsPerInchY, p->MaxAccelY, p->MaxVelY,14);
-      SET_AXIS(p->CountsPerInchZ, p->MaxAccelZ, p->MaxVelZ,23);
-      SET_AXIS(p->CountsPerInchA, p->MaxAccelA, p->MaxVelA,32);
-      SET_AXIS(p->CountsPerInchB, p->MaxAccelB, p->MaxVelB,41);
-      SET_AXIS(p->CountsPerInchC, p->MaxAccelC, p->MaxVelC,50);
+      char path[64];
+      for(int i= 0;i<6;i++){
+        sprintf(path,"axes[%i]",i);
+        token = find_json_token(paramtoken, path);
+        if(token){
+          maxAccel = maxVel = countsPerUnit = 0;
+          json_str(token,"name",&name,0);
+          json_double(token,"countsPerUnit",&countsPerUnit);
+          json_double(token,"maxAccel",&maxAccel);
+          json_double(token,"maxVel",&maxVel);
+          switch (name[0]) {
+            case 'X':
+              p->CountsPerInchX = countsPerUnit;
+              p->MaxAccelX = maxAccel;
+              p->MaxVelX = maxVel;
+              break;
+            case 'Y':
+              p->CountsPerInchY = countsPerUnit;
+              p->MaxAccelY = maxAccel;
+              p->MaxVelY = maxVel;
+              break;
+            case 'Z':
+              p->CountsPerInchZ = countsPerUnit;
+              p->MaxAccelZ = maxAccel;
+              p->MaxVelZ = maxVel;
+              break;
+            case 'A':
+              p->CountsPerInchA = countsPerUnit;
+              p->MaxAccelA = maxAccel;
+              p->MaxVelA = maxVel;
+              break;
+            case 'B':
+              p->CountsPerInchB = countsPerUnit;
+              p->MaxAccelB = maxAccel;
+              p->MaxVelB = maxVel;
+              break;
+            case 'C':
+              p->CountsPerInchC = countsPerUnit;
+              p->MaxAccelC = maxAccel;
+              p->MaxVelC = maxVel;
+              break;
+          }
 
+        } else {
+          printf("Failed %s\n",path);
+        }
+
+      }
+
+      //M2-M9,S index 2-9
+      //userButtons index 11-20
+      //M100-M119 index 21 -39
+      setInterpreterParams(paramtoken, 0,MAX_MCODE_ACTIONS_M1,"actions[%i]");
+      setInterpreterParams(paramtoken, MAX_MCODE_ACTIONS_M1,MAX_MCODE_ACTIONS_BUTTONS,"userActions[%i]");
+      setInterpreterParams(paramtoken, MCODE_ACTIONS_M100_OFFSET,MAX_MCODE_ACTIONS_M100,"extendedActions[%i]");
+
+      //invoke user buttons with a call such as this,
+      //Interpreter->InvokeAction(10,FALSE);  // resend new Speed
+
+
+      printf("X %lf, %lf, %lf \n",p->CountsPerInchX,p->MaxAccelX, p->MaxVelX );
+      printf("Y %lf, %lf, %lf \n",p->CountsPerInchY,p->MaxAccelY, p->MaxVelY );
+      printf("Z %lf, %lf, %lf \n",p->CountsPerInchZ,p->MaxAccelZ, p->MaxVelZ );
+      printf("A %lf, %lf, %lf \n",p->CountsPerInchA,p->MaxAccelA, p->MaxVelA );
+      printf("B %lf, %lf, %lf \n",p->CountsPerInchB,p->MaxAccelB, p->MaxVelB );
+      printf("C %lf, %lf, %lf \n",p->CountsPerInchC,p->MaxAccelC, p->MaxVelC );
+
+      //TODO
       //strcpy(Interpreter->ToolFile,m_ToolFile);
       //strcpy(Interpreter->SetupFile,m_SetupFile);
       //strcpy(Interpreter->GeoFile,m_GeoFile);
@@ -1035,18 +1107,11 @@ int handleJson(struct mg_connection *conn) {
       //p->DegreesC = m_DegreesC!=0;
       p->ArcsToSegs = true;;
 
+      free(name);
+
+
       gci->CoordMotion->SetTPParams();
 
-/*
-#define PERSIST_MCODE(x)                                  \
-    INT(Interpreter->McodeActions[x].Action);         \
-    DOUBLE(Interpreter->McodeActions[x].dParams[0]);      \
-    DOUBLE(Interpreter->McodeActions[x].dParams[1]);      \
-    DOUBLE(Interpreter->McodeActions[x].dParams[2]);      \
-    DOUBLE(Interpreter->McodeActions[x].dParams[3]);      \
-    DOUBLE(Interpreter->McodeActions[x].dParams[4]);      \
-    CHARS(Interpreter->McodeActions[x].String);
-*/
 
 
     } else if (FUNC_SIGP("simulate", 0)) {
