@@ -38,8 +38,8 @@
 #include <string.h>
 #include <errno.h>
 #include <math.h>
-#ifdef __APPLE__
-// PH needed on osx
+#ifndef WIN32
+// PH needed on osx and linux
 #include <unistd.h>
 #endif
 // tktk #include <unistd.h>
