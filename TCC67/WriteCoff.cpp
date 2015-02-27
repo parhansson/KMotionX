@@ -53,7 +53,7 @@ int LastLineNo[MAX_FUNCS];
 int FuncEntries[MAX_FUNCS];
 
 bool OutputTheSection(Section *sect);
-short int GetCoffFlags(CString s);
+short int GetCoffFlags(const char * s);
 void SortSymbolTable(void);
 
 int C67_main_entry_point;
@@ -926,27 +926,26 @@ int FindCoffSymbolIndex(const char *func_name)
 
 bool OutputTheSection(Section *sect)
 {
-	CString s=sect->name;
 
-	if (s==".text")
+	if (!strcmp(sect->name, ".text"))
 		return true;
-	else if (s==".data")
+	else if (!strcmp(sect->name, ".data"))
 		return true;
 	else
 		return 0;
 }
 
-short int GetCoffFlags(CString s)
+short int GetCoffFlags(const char * s)
 {
-	if (s==".text")
+  if (!strcmp(s, ".text"))
 		return STYP_TEXT | STYP_DATA | STYP_ALIGN | 0x400;
-	else if (s==".data")
+	else if (!strcmp(s, ".data"))
 		return STYP_DATA;
-	else if (s==".bss")
+	else if (!strcmp(s, ".bss"))
 		return STYP_BSS;
-	else if (s==".stack")
+	else if (!strcmp(s, ".stack"))
 		return STYP_BSS | STYP_ALIGN | 0x200;
-	else if (s==".cinit")
+	else if (!strcmp(s, ".cinit"))
 		return STYP_COPY | STYP_DATA | STYP_ALIGN | 0x200;
 	else
 		return 0;

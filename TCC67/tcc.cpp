@@ -38,6 +38,10 @@
 #include <string.h>
 #include <errno.h>
 #include <math.h>
+#ifdef __APPLE__
+// PH needed on osx
+#include <unistd.h>
+#endif
 // tktk #include <unistd.h>
 #include <signal.h>
 // tktk #include <unistd.h>
@@ -49,6 +53,10 @@
 #ifndef WIN32
 #include <sys/time.h>
 #include <sys/ucontext.h>
+#endif
+#if defined __LP64__ && defined __APPLE__
+// PH must be included before elf.h on OS X
+#include <vector>
 #endif
 #include "elf.h"
 #include "stab.h"
