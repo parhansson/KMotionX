@@ -1,3 +1,8 @@
 /bin
 config.h
 config.mak
+/**/*.prefs
+/**/*.project
+/**/*.cproject
+/**/.settings/
+

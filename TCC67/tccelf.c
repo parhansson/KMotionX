@@ -154,7 +154,7 @@ static int find_elf_sym(Section *s, const char *name)
 }
 
 /* return elf symbol value or error */
-void *tcc_get_symbol(TCCState *s, const char *name)
+Elf32_Addr tcc_get_symbol(TCCState *s, const char *name)
 {
     int sym_index;
     Elf32_Sym *sym;
@@ -163,7 +163,7 @@ void *tcc_get_symbol(TCCState *s, const char *name)
     if (!sym_index)
         error("%s not defined", name);
     sym = &((Elf32_Sym *)symtab_section->data)[sym_index];
-    return (void *)sym->st_value;
+    return sym->st_value;
 }
 
 /* add an elf symbol : check if it is already defined and patch
@@ -780,7 +780,7 @@ static void tcc_add_runtime(TCCState *s1)
         int sym_index;
 
         /* XXX: add an object file to do that */
-        ptr = section_ptr_add(bounds_section, sizeof(unsigned long));
+        ptr = (unsigned long *)section_ptr_add(bounds_section, sizeof(unsigned long));
         *ptr = 0;
         add_elf_sym(symtab_section, 0, 0, 
                     ELF32_ST_INFO(STB_GLOBAL, STT_NOTYPE),
@@ -792,7 +792,7 @@ static void tcc_add_runtime(TCCState *s1)
         if (s1->output_type != TCC_OUTPUT_MEMORY) {
             /* add 'call __bound_init()' in .init section */
             init_section = find_section(s1, ".init");
-            pinit = section_ptr_add(init_section, 5);
+            pinit = (unsigned char *)section_ptr_add(init_section, 5);
             pinit[0] = 0xe8;
             put32(pinit + 1, -4);
             sym_index = find_elf_sym(symtab_section, "__bound_init");
@@ -1417,7 +1417,7 @@ int tcc_output_file(TCCState *s1, const char *filename)
     }
 
 	// tktk
-    C67_main_entry_point = (int)tcc_get_symbol(s1, "main");
+    C67_main_entry_point = tcc_get_symbol(s1, "main");
     
 //	sort_syms(s1, symtab_section);
 
@@ -1537,7 +1537,7 @@ static void *load_data(int fd, unsigned long file_offset, unsigned long size)
 
     data = tcc_malloc(size);
     _lseek(fd, file_offset, SEEK_SET);
-    _read(fd, data, size);
+    (void)_read(fd, data, size);
     return data;
 }
 
@@ -1662,7 +1662,7 @@ static int tcc_load_object_file(TCCState *s1,
             unsigned char *ptr;
             _lseek(fd, file_offset + sh->sh_offset, SEEK_SET);
             ptr = (unsigned char *)section_ptr_add(s, size);
-            _read(fd, ptr, size);
+            (void)_read(fd, ptr, size);
         } else {
             s->data_offset += size;
         }
@@ -1781,7 +1781,7 @@ static int tcc_load_archive(TCCState *s1, int fd)
     unsigned long file_offset;
 
     /* skip magic which was already checked */
-    _read(fd, magic, sizeof(magic));
+    (void)_read(fd, magic, sizeof(magic));
     
     for(;;) {
         len = _read(fd, &hdr, sizeof(hdr));
@@ -1833,7 +1833,7 @@ static int tcc_load_dll(TCCState *s1, int fd, const char *filename, int level)
     const char *name, *soname, *p;
     DLLReference *dllref;
     
-    _read(fd, &ehdr, sizeof(ehdr));
+    (void)_read(fd, &ehdr, sizeof(ehdr));
 
     /* test CPU specific stuff */
     if (ehdr.e_ident[5] != ELFDATA2LSB ||

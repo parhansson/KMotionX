@@ -107,7 +107,7 @@ const char ENUM_NAMES[][35]={
 
 
 void MyErrExitThread(const char *s, int thread_socket){
-	syslog(LOG_ERR, s);
+	syslog(LOG_ERR, "%s", s);
 	shutdown(thread_socket,2);
 	close(thread_socket);
 	pthread_exit(0);
@@ -116,7 +116,7 @@ void MyErrExitThread(const char *s, int thread_socket){
 void MyErrExit(const char *s)
 {
 
-	syslog(LOG_ERR, s);
+	syslog(LOG_ERR, "%s", s);
 	closelog();
 	exit(1);
 }
@@ -264,7 +264,7 @@ int main(void) {
     }
 
     if (strlen(SOCK_PATH) >= sizeof(local.sun_path)) {
-    	perrorExit("path to long!");
+    	perrorExit("path too long!");
     }
 
     local.sun_family = AF_UNIX;
@@ -344,8 +344,7 @@ int main(void) {
 } 
 //http://www.amparo.net/ce155/thread-ex.html
 void * InstanceThread(void *ptr){
-	thdata *data;
-	data = (thdata*) ptr;
+	thdata *data = (thdata*) ptr;
 	int thread_socket = data->file_desc;
 	//pthread_t ct = pthread_self();
 	//printf("Thread %.8x %.8x: Current thread\n", ct);

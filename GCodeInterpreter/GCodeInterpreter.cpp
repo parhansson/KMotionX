@@ -403,11 +403,15 @@ int CGCodeInterpreter::LaunchExecution()
 #ifdef _KMOTIONX
 	//printf("%s:%d LaunchExecution\n",__FILE__,__LINE__);
     pthread_t thr;
+    
     if(pthread_create(&thr, NULL, &::DoExecuteShell, this))
     {
         printf("Could not create thread\n");
         return -1;
     }
+    
+    // We don't use pthread_join(), so allow system to clean up resources.
+    pthread_detach(thr);
 #else
 	DWORD ID;
 	
@@ -739,7 +743,6 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 		}
 		else
 		{
-			int count=0;
 			// for other M Codes check if P Q or R words are present on the same line
 			// if so, download them into successive persist vars as floats
 

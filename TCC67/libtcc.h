@@ -77,6 +77,6 @@ int tcc_run(TCCState *s, int argc, char **argv);
 int tcc_relocate(TCCState *s);
 
 /* return symbol value or error */
-void *tcc_get_symbol(TCCState *s, const char *name);
+Elf32_Addr tcc_get_symbol(TCCState *s, const char *name);
 
 #endif

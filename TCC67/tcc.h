@@ -30,6 +30,22 @@
 #define TOK_STR_ALLOC_INCR (1 << TOK_STR_ALLOC_INCR_BITS)
 #define TOK_MAX_SIZE        4 /* token max size in int unit when stored in string */
 
+#ifndef WIN32
+typedef int64_t __int64;
+typedef uint64_t __uint64;
+#define PATH_SEPARATOR '/'
+#else
+#define PATH_SEPARATOR '\\'
+#endif
+
+#ifdef __LP64__
+#define PTR2INT(p) _ptr2int(p)
+#define INT2PTR(i) _int2ptr(i)
+#else
+#define PTR2INT(p) ((int)(p))
+#define INT2PTR(i) ((void *)(i))
+#endif
+
 /* token symbol management */
 typedef struct TokenSym {
     struct TokenSym *hash_next;
@@ -64,9 +80,9 @@ typedef union CValue {
     unsigned int ui;
     unsigned int ul; /* address (should be unsigned long on 64 bit cpu) */
     __int64 ll;
-    unsigned __int64 ull;
+    __uint64 ull;
     struct CTString *cstr;
-    void *ptr;
+    void *ptr__;
     int tab[2];
 } CValue;
 
@@ -349,7 +365,7 @@ extern TokenSym *ts_remu;
 
 #ifdef _DEBUG				
 #define ALWAYS_ASSERT(x) ASSERT(x)
-#else						
+#elif defined(WIN32)				
 #define ALWAYS_ASSERT(x) \
 {							\
 	if (!(x))				\
@@ -358,4 +374,8 @@ extern TokenSym *ts_remu;
 		exit(1);			\
 	}						\
 }
+#else
+#define ALWAYS_ASSERT(x) ASSERT(x)
 #endif
+
+

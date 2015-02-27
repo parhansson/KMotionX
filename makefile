@@ -9,6 +9,7 @@ SUBDIRS+=KMotionX/examples/other
 SUBDIRS+=KMotionX/examples/KFlopConsole
 SUBDIRS+=KMotionX/examples/ExecuteGCode
 SUBDIRS+=KMotionX/examples/webgui
+#SUBDIRS+=TCC67
 
 ifeq ($(BUILD_JNI),true)
 SUBDIRS+=KMotionX/JNI
@@ -24,3 +25,6 @@ clean:
 #rm -f *.o *~
 	rm -f ./bin/*
 	for n in $(SUBDIRS); do $(MAKE) -C $$n clean; done
+	
+testtcc:
+	make -C TCC67 testtcc

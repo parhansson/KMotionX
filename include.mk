@@ -6,8 +6,8 @@ IFLAGS=-I$(BUILD_ROOT)/KMotionX/include/compatibility $(addprefix -I,$(IDIR))
 
 W_FLAGS=-Wall -Wno-unknown-pragmas
 
-CFLAGS+=-O0 -g3 -c -fmessage-length=0 -fPIC -MMD -MP
-CFLAGS+=-std=c++11
+CFLAGS+= -g -c -fmessage-length=0 -fPIC -MMD -MP
+CFLAGS+=-std=c++0x
 CFLAGS+=$(W_FLAGS)
 CFLAGS+=$(IFLAGS)
 CFLAGS+=$(DEFS)

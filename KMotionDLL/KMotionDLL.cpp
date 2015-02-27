@@ -216,12 +216,12 @@ int CKMotionDLL::WaitToken(bool display_msg, int TimeOut_ms)
 		
 		if (!PipeMutex->Lock(TimeOut_ms))
 		{
-			return KMOTION_IN_USE;
+		  return KMOTION_IN_USE;
 		}
 
 		if (Timer.Elapsed_Seconds() > 2.0 * TimeOut_ms * 0.001)
 		{
-			PipeMutex->Unlock();
+		  PipeMutex->Unlock();
 			return KMOTION_IN_USE;
 		}
 
@@ -590,20 +590,23 @@ int CKMotionDLL::CompileAndLoadCoff(const char *Name, int Thread, char *Err, int
 	
 	ConvertToOut(Thread,Name,OutFile,MAX_PATH);
 
-	if (CheckKMotionVersion(&BoardType)) return 1;
+	if (CheckKMotionVersion(&BoardType)) 
+	{
+		if(Err) sprintf(Err,"Board type mismatch");
+	    return 1;
+	}
 
 	// Compile the C File
 
 	result = Compile(Name,OutFile,BoardType,Thread,Err,MaxErrLen);
-	if (result) {if(Err) Err[0]='\0'; return result;} //Null terminate Err to avoid errors
+    if (Err && MaxErrLen) 
+        Err[MaxErrLen-1]='\0'; 
+	if (result)
+	    return result;
 
 	// Download the .out File
 
-	result = LoadCoff(Thread, OutFile);
-	if (result) {if(Err) Err[0]='\0'; return result;} //Null terminate Err to avoid errors
-
-
-	return 0;
+	return LoadCoff(Thread, OutFile);
 }
 
 int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardType, int Thread, char *Err, int MaxErrLen)
@@ -908,9 +911,11 @@ int CKMotionDLL::CheckKMotionVersion(int *type, bool GetBoardTypeOnly)
 
 	if (KMotionLock() == KMOTION_LOCKED)  // see if we can get access
 	{
-		// Get the firmware date from the KMotion Card which
+
+	  // Get the firmware date from the KMotion Card which
 		// will be in PT (Pacific Time)
 		ReleaseToken();
+
 		result = WriteLineReadLine("Version",BoardVersion);
 
 		if (result) return result;
