@@ -514,27 +514,27 @@ int handle_request(struct mg_connection *conn,enum mg_event ev) {
         //This row was in the example. But should not be here
         //fwrite(conn->content, 1, conn->content_len, fp); // Write last bits
 
+
         mg_printf(conn, "HTTP/1.1 200 OK\r\n"
                   "Content-Type: text/plain\r\n"
-                  "Connection: close\r\n\r\n"
-                  "Written %ld of POST data to a temp file:\n\n",
-                  (long) ftell(fp));
+                  "Connection: close\r\n");
 
         // Temp file will be destroyed after fclose(), do something with the
         // data here -- for example, parse it and extract uploaded files.
         // As an example, we just echo the whole POST buffer back to the client.
 
-        rewind(fp);
 
         int pagesize, offset, fd;
-        size_t filesize, mapsize;
+        size_t tmpfilesize, mapsize,filesize;
         caddr_t addr;
 
+        filesize=0;
+        tmpfilesize = ftell(fp);
+        rewind(fp);
         offset = 0;
         fd = fileno(fp);
-        filesize = ftell(fp);
         pagesize = getpagesize();
-        mapsize = (filesize/pagesize)+pagesize; // align memory allocation with pagesize
+        mapsize = (tmpfilesize/pagesize)+pagesize; // align memory allocation with pagesize
 
         //memory map tmp file and parse it.
         addr = (char*)mmap((caddr_t)0, mapsize, PROT_READ, MAP_PRIVATE, fd,offset);
@@ -546,24 +546,44 @@ int handle_request(struct mg_connection *conn,enum mg_event ev) {
                                          var_name, sizeof(var_name),
                                          file_name, sizeof(file_name),
                                          &data, &data_len)) > 0) {
-          fprintf(stdout, "var: %s, file_name: %s, size: %d bytes\n",
-                         var_name, file_name, data_len);
+
+          //fprintf(stdout, "var: %s, file_name: %s, size: %d bytes\n",var_name, file_name, data_len);
+
           FILE * pFile;
           //Add one to skip first slash and make path relative
-          pFile = fopen (file_name+1, "wb");
+          if(file_name[0] == '/'){
+            pFile = fopen (file_name+1, "w+");
+          } else {
+            pFile = fopen (file_name, "w+");
+          }
+          //ConsoleHandler("Writing to file");
+          //ConsoleHandler(file_name);
           if(pFile){
-            fwrite (data , sizeof(char), data_len, pFile);
-            fclose (pFile);
+            size_t written = fwrite (data , sizeof(char), data_len, pFile);
+            if(written != data_len){
+              ErrMsgHandler("Error writing to file");
+              //ErrMsgHandler(strerror(errno));
+            } else{
+              filesize += written;
+            }
+            if(fclose (pFile) == EOF){
+              ErrMsgHandler("Error closing file");
+            }
+          } else {
+            ErrMsgHandler("Error saving file");
+            ErrMsgHandler(strerror(errno));
           }
 
         }
+
         munmap(addr, mapsize);
-        /*
-        rewind(fp);
-        mg_send_file_data(conn, fileno(fp));
-        return MG_MORE;  // Tell Mongoose reply is not completed yet
-        */
-        return MG_TRUE;
+
+        //need to send response back to client to avoid wating connection
+        mg_printf_data(conn,
+            "Written %ld bytes to file: %s\n\n",
+            filesize,
+            file_name);
+          return MG_TRUE;
       } else {
         mg_printf_data(conn, "%s", "Had no data to write...");
         return MG_TRUE; // Tell Mongoose we're done with this request
@@ -807,7 +827,7 @@ int handleJson(struct mg_connection *conn) {
           fputs(machineData, fp);
           fclose(fp);
         } else {
-          perror("Va fan");
+          ErrMsgHandler(strerror(errno));
         }
 
       }
@@ -836,7 +856,7 @@ int handleJson(struct mg_connection *conn) {
             w += snprintf(gp_response+w, MAX_LINE-w, "]");
             (void) closedir (dp);
         } else {
-          perror ("Couldn't open the directory");
+          ErrMsgHandler(strerror(errno));
         }
       }
       free(dir);
