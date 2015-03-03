@@ -44,7 +44,7 @@
           //alert(response);
         })
         .error(function(){
-          alert("Error saveing file");
+          alert("Error saving file");
         });
       },      
       newEditorFile: function(){
