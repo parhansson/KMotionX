@@ -8,7 +8,6 @@
 #ifndef INCX_H_
 #define INCX_H_
 
-#define SOCK_PATH "kmotionsocket"
 #define timeBeginPeriod(x)
 #define timeEndPeriod(x)
 
@@ -43,11 +42,6 @@
 # define __throw_exception_again throw
 #endif
 */
-
-//#ifndef __try
-#define __try
-//#endif
-#define __finally
 
 #include <locale.h>
 #include <HiResTimer.h>

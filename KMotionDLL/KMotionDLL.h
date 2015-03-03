@@ -17,6 +17,8 @@
 #else
 #define KMOTIONDLL_DLL
 #endif
+#include <vector>
+
 // The following ifdef block is the standard way of creating macros which make exporting 
 // from a DLL simpler. All files within this DLL are compiled with the KMOTIONDLL_EXPORTS
 // symbol defined on the command line. this symbol should not be defined on any project
@@ -64,10 +66,13 @@
 #define MAX_BOARDS 16
 
 #ifdef _KMOTIONX
-#define COMPILER "c67-tcc"
+    #define COMPILER "c67-tcc"
+    #define SOCK_PATH "/tmp/kmotionsocket"
 #else
-#define COMPILER "\\TCC67.exe"
+    #define COMPILER "\\TCC67.exe"
 #endif
+
+#define KMOTION_PORT    57777   // Default server socket port (for TCP connections)
 
 enum 
 {
@@ -135,12 +140,21 @@ public:
 
 	int SetConsoleCallback(CONSOLE_HANDLER *ch);
 	int SetErrMsgCallback(ERRMSG_HANDLER *eh);
+	// Default implementation of following calls the C callbacks set above.  Having virtuals
+	// makes it nicer to use in a swig target language binding.
+    virtual void Console(const char *buf);
+    virtual void ErrMsg(const char *buf);
+    
 	int CheckKMotionVersion(int *type=NULL, bool GetBoardTypeOnly=false);
 	int ExtractCoffVersionString(const char *InFile, char *Version);
     int GetStatus(MAIN_STATUS& status, bool lock);
 	void DoErrMsg(const char *s);
 #ifdef _KMOTIONX
 	const char* getInstallRoot();
+
+	// Alternative ctor to connect via TCP.  If url is NULL, assumes localhost, else is a host name.
+	CKMotionDLL(int boardid, unsigned int dfltport, const char * url = NULL);
+	
 #endif
 private:
 
@@ -151,11 +165,13 @@ private:
 	CONSOLE_HANDLER *ConsoleHandler;  
 	ERRMSG_HANDLER *ErrMsgHandler;  
 
+	int OpenPipe();
 	int PipeCmd(int code);
 	int PipeCmdStr(int code, const char *s);
 	int Pipe(const char *s, int n, char *r, int *m);
 	int LaunchServer();
 
+    void _init(int boardid);
 
 	void ExtractPath(const char *InFile, char *path);
 #ifdef _KMOTIONX
@@ -165,7 +181,10 @@ private:
 #else
 	CFile PipeFile;
 #endif
-
+    bool use_tcp;
+    bool remote_tcp;
+    unsigned int tcp_port;
+    char hostname[257];
 };
 
 #endif

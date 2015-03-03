@@ -3,7 +3,7 @@
 /*         Copyright (c) 2003-2006  DynoMotion Incorporated          */
 /*********************************************************************/
 
-
+#include <vector>
 #include "StdAfx.h"
 
 #define KMotionBd 1
@@ -20,8 +20,8 @@ extern CString MainPath;
 extern CString MainPathRoot;
 #endif
 
-CKMotionDLL::CKMotionDLL(int boardid)
-{ 
+void CKMotionDLL::_init(int boardid)
+{
 	BoardID = boardid;
 	PipeOpen=false;
 	ServerMessDisplayed=false;
@@ -57,10 +57,29 @@ CKMotionDLL::CKMotionDLL(int boardid)
 
 #endif
 
-	PipeMutex = new CMutex(FALSE,"KMotionPipe",NULL);
+	PipeMutex = new CMutex(FALSE,"KMotionPipe",0);
 	ConsoleHandler=NULL;
 	ErrMsgHandler=NULL;
+    use_tcp = false;
+    remote_tcp = false;
+
 }
+
+CKMotionDLL::CKMotionDLL(int boardid)
+{ 
+	_init(boardid);
+}
+
+
+CKMotionDLL::CKMotionDLL(int boardid, unsigned int dfltport, const char * url)
+{
+	_init(boardid);
+	use_tcp = true;
+	tcp_port = dfltport;
+	strncpy(hostname, url, sizeof(hostname)-1);
+	hostname[sizeof(hostname)-1] = 0;
+}
+
 
 CKMotionDLL::~CKMotionDLL()
 {
@@ -282,6 +301,21 @@ int CKMotionDLL::SetErrMsgCallback(ERRMSG_HANDLER *ch)
 	return 0;
 }
 
+void CKMotionDLL::Console(const char *buf)
+{
+    if (ConsoleHandler)
+        ConsoleHandler(buf);
+}
+
+void CKMotionDLL::ErrMsg(const char *buf)
+{
+    if (ErrMsgHandler)
+        ErrMsgHandler(buf);
+    else
+		AfxMessageBox(buf, MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+
+}
+
 
 // Note: ALL User Thread Numbers start with 1
 
@@ -357,11 +391,32 @@ int CKMotionDLL::PipeCmdStr(int code, const char *s)
 
 
 
+int CKMotionDLL::OpenPipe()
+{
+#ifdef _KMOTIONX
+	if (use_tcp) {
+        return PipeFile.Open(tcp_port, hostname);
+	}
+	else
+        return PipeFile.Open(SOCK_PATH, CFile::modeReadWrite);
+#else
+    // As yet, no TCP on Windows
+	LPTSTR lpszPipename = "\\\\.\\pipe\\kmotionpipe"; 
+    return PipeFile.Open(lpszPipename, CFile::modeReadWrite);
+#endif
+}
+
+
+
 int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 {
 	unsigned char Reply = 0xAA;
 	char ErrorMsg[MAX_LINE];
 	bool ReceivedErrMsg=false;
+	bool CFExcept=false;
+	std::vector<char *> cons;
+	unsigned short msglen, len;
+	const char * serr_msg;
 
 
 	static int EntryCount=0;
@@ -370,11 +425,6 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 		return 1;
 
 
-#ifdef _KMOTIONX
-	char lpszPipename[] = SOCK_PATH;
-#else
-	LPTSTR lpszPipename = "\\\\.\\pipe\\kmotionpipe"; 
-#endif
 	try
 	{
 		PipeMutex->Lock();
@@ -394,20 +444,25 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 			int i;
 			
 			PipeOpen=true;  // only try once
-			if (!PipeFile.Open(lpszPipename, CFile::modeReadWrite))
+			if (!OpenPipe())
 			{
-				// pipe won't open try to launch server
-				LaunchServer();
+			    #define OPEN_ATTEMPTS 100
+			    if (!remote_tcp) {
+				    // pipe won't open try to launch server
+				    LaunchServer();
 				
-				for (i=0; i<100; i++) // try for a few secs
-				{
-					if (PipeFile.Open(lpszPipename, CFile::modeReadWrite))
-						break;
+				    for (i=0; i<OPEN_ATTEMPTS; i++) // try for a few secs
+				    {
+					    if (OpenPipe())
+						    break;
 					
-					Sleep(100);
-				}
+					    Sleep(100);
+				    }
+			    }
+			    else
+			        i = OPEN_ATTEMPTS;
 
-				if (i==100)
+				if (i==OPEN_ATTEMPTS)
 				{
 					EntryCount--;
 					if (ServerMessDisplayed) return 1;
@@ -419,12 +474,21 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 			}
 		}
 
+        msglen = n;
+		PipeFile.Write(&msglen, sizeof(msglen));   // Send the request length prefix
 		PipeFile.Write(s, n);           // Send the request
 		
 		for (;;)
 		{
-			*m = PipeFile.Read(r, MAX_LINE+1);     // Get the response
-
+		    len = 0;
+		    while (len < sizeof(msglen))
+		        len += PipeFile.Read((char *)(&msglen)+len, sizeof(msglen)-len);
+		    if (msglen > MAX_LINE+1)
+		        throw std::system_error(E2BIG, std::system_category(), "Read");
+		    len = 0;
+		    while (len < msglen)
+			    len += PipeFile.Read(r+len, msglen-len);     // Get the response
+            *m = len;
 			// the first byte of the response is the destination
 			// currently DEST_NORMAL, DEST_CONSOLE
 			
@@ -433,9 +497,15 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 				PipeFile.Write(&Reply, 1);     // Send an ACK back to server
 		
 				// send it to the console if someone registered a callback
-
-				if (ConsoleHandler)
-					ConsoleHandler(r+1);
+			    // Rather than doing the callback here, just queue up the messages so they can be
+			    // handled after the lock is released.  Helps prevent server hang if callback crashes.
+		        int len = strlen(r+1)+1;
+		        char * m = (char *)malloc(len);
+		        if (m) 
+		        {
+		            memcpy(m, r+1, len);
+		            cons.push_back(m);
+		        }
 			}
 			else if (*r == DEST_ERRMSG)
 			{
@@ -456,17 +526,40 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 		EntryCount--;
 
 		PipeMutex->Unlock();
+		
 	}
-	catch (CFileException)
+	catch (std::system_error & serr)
 	{
 		EntryCount--;
-		if (ServerMessDisplayed) return 1;
-		ServerMessDisplayed=TRUE;
-		DoErrMsg("Unable to Connect to KMotion Server");
+		CFExcept = true;
 		PipeMutex->Unlock();
-		exit(1);
+		serr_msg = serr.what();
 	}
 
+	for (unsigned i = 0; i < cons.size(); ++i) 
+	{
+	    try
+	    {
+		    Console(cons[i]);
+		}
+		catch (...)
+		{
+		    // Ignore errors in callback
+		}
+		free(cons[i]);
+	}
+	
+	if (CFExcept)
+	{
+	    // Exception caught above
+		if (ServerMessDisplayed) return 1;
+		ServerMessDisplayed=TRUE;
+
+		//DoErrMsg("Unable to Connect to KMotion Server");
+		DoErrMsg(serr_msg);
+		exit(1);
+	}
+	
 	if (ReceivedErrMsg)
 	{
 		DoErrMsg(ErrorMsg);
@@ -583,8 +676,7 @@ int CKMotionDLL::CompileAndLoadCoff(const char *Name, int Thread, char *Err, int
 
 	if (Thread<=0 || Thread>7) 
 	{
-		//TODO MaxErrLen should be honored to avoid segementation fault.
-		if(Err) sprintf(Err,"Invalid Thread Number %d Valid Range (1-7)",Thread);
+		if(Err) snprintf(Err, MaxErrLen, "Invalid Thread Number %d Valid Range (1-7)",Thread);
 		return 1;
 	}
 	
@@ -592,7 +684,7 @@ int CKMotionDLL::CompileAndLoadCoff(const char *Name, int Thread, char *Err, int
 
 	if (CheckKMotionVersion(&BoardType)) 
 	{
-		if(Err) sprintf(Err,"Board type mismatch");
+		if(Err) snprintf(Err, MaxErrLen, "Board type mismatch");
 	    return 1;
 	}
 
@@ -776,6 +868,9 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	return exitcode;
 #else
 
+    if (Err)
+        *Err = 0;
+        
 	//normalize_slashes()
 
 	if (Thread==0) return 1;
@@ -836,7 +931,32 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	//compile with debug flag is currently not supported -g
 	//c67-tcc -Wl,-Ttext,80050000 -Wl,--oformat,coff -static -nostdinc -nostdlib -I./ -o ~/Desktop/Gecko3AxisOSX.out Gecko3Axis.c DSPKFLOP.out
 	debug("%s\n",command);
-	int exitCode = system(command);
+	int exitCode = 0;
+
+	FILE * out = popen(command, "r");
+	if (!out) {
+	    exitCode = errno;
+	    debug("popen failed: %s\n",strerror(exitCode));
+	    if (Err)
+	      strncpy(Err,strerror(exitCode),MaxErrLen);
+	    return exitCode;
+	}
+	if (Err)
+	{
+	  size_t len = fread(Err, 1, MaxErrLen-1, out);
+	  Err[len] = 0;
+	  if(len > 0){
+	    debug("fread: %s\n",Err);
+	  }
+	}
+	exitCode = pclose(out);
+	if (exitCode < 0) {
+	    exitCode = errno;
+	    debug("pclose failed: %s\n",strerror(exitCode));
+      if (Err)
+        strncpy(Err,strerror(exitCode),MaxErrLen);
+  }
+
 	return exitCode;
 #endif
 }
@@ -850,10 +970,10 @@ void CKMotionDLL::ConvertToOut(int thread, const char *InFile, char *OutFile, in
 	char suffix[5];
 	const char *psuf;
 
-	OFileMaxLength = strlen(InFile)+10;
+	OFileMaxLength = strlen(InFile)+sizeof(ThreadString);
 	OFile = new char[OFileMaxLength];
 
-	sprintf(ThreadString, "(%d).out",thread);
+	snprintf(ThreadString,sizeof(ThreadString), "(%d).out",thread);
 
 	memset (OFile,'\0',OFileMaxLength); //ensure empty string as well as null terminated when using strncpy
 
@@ -876,8 +996,10 @@ void CKMotionDLL::ConvertToOut(int thread, const char *InFile, char *OutFile, in
 		}
 		strcat(OFile, ThreadString);
 	}
-	//TODO null terminate when appropriate
+
 	strncpy(OutFile,OFile,MaxLength);
+	if (MaxLength)
+	    OutFile[MaxLength-1] = 0;
 	delete [] OFile;
 }
 
@@ -885,8 +1007,12 @@ void CKMotionDLL::ExtractPath(const char *InFile, char *path){
 	const char *pch;
 	pch=strrchr(InFile,PATH_SEPARATOR);
 	strcpy(path,InFile);
-	//null terminate string at last slash position
-	path[pch-InFile] ='\0';
+	//null terminate string at last slash position, unless no path,
+	// in which case make it a ".".
+	if (!pch)
+	    strcpy(path, ".");
+	else
+	    path[pch-InFile] ='\0';
 }
 
 unsigned int CKMotionDLL::GetLoadAddress(int thread, int BoardType) 
@@ -911,11 +1037,9 @@ int CKMotionDLL::CheckKMotionVersion(int *type, bool GetBoardTypeOnly)
 
 	if (KMotionLock() == KMOTION_LOCKED)  // see if we can get access
 	{
-
-	  // Get the firmware date from the KMotion Card which
+		// Get the firmware date from the KMotion Card which
 		// will be in PT (Pacific Time)
 		ReleaseToken();
-
 		result = WriteLineReadLine("Version",BoardVersion);
 
 		if (result) return result;
@@ -1214,28 +1338,11 @@ int CKMotionDLL::ExtractCoffVersionString(const char *InFile, char *Version)
 
 void CKMotionDLL::DoErrMsg(const char *s)
 {
-	static int MessageDisplayed=false;
-
-	if (!MessageDisplayed)
+	try
 	{
-		MessageDisplayed=true;
-		if (ErrMsgHandler)
-		{
-			__try
-			{
-				ErrMsgHandler(s);
-			}
-			__finally
-			{
-				MessageDisplayed=false;
-			}
-		}
-		else
-		{
-			AfxMessageBox(s,MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
-		}
-		MessageDisplayed=false;
+	    ErrMsg(s);
 	}
+	catch (...) {}
 }
 
 int CKMotionDLL::GetStatus(MAIN_STATUS& status, bool lock)

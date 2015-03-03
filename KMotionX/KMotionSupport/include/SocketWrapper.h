@@ -39,11 +39,13 @@ either expressed or implied, of the FreeBSD Project.
 #include <sys/un.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <string.h>
+#include <string>
 #include <exception>
+#include <system_error>
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <netinet/tcp.h>
 
 
 
@@ -53,23 +55,17 @@ const int modeReadWrite = 0;
 
 } /* namespace CFile */
 
-struct CFileException: public std::exception
-{
-/*
-  virtual const char* what() const throw()
-  {
-    return "CFileException exception happened";
-  }
-*/
-};
+
+
 class SocketWrapper {
 public:
 	SocketWrapper();
 	virtual ~SocketWrapper();
 
-	bool Open(const char* name, int mode);
+	bool Open(const char* name, int mode);              // For local pipe
+	bool Open(unsigned int port, const char* hostname); // For TCP socket
 
-	int Write(void* buffer, int size);
+	//int Write(void* buffer, int size);
 	int Write(const void* buffer, int size);
 
 	int Read(char* buffer, int size);

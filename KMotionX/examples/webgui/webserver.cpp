@@ -89,6 +89,8 @@ static void __cdecl signal_handler(int sig_num) {
   // Do not do the trick with ignoring SIGCHLD, cause not all OSes (e.g. QNX)
   // reap zombies if SIGCHLD is ignored. On QNX, for example, waitpid()
   // fails if SIGCHLD is ignored, making system() non-functional.
+
+  // PH waitpid -1 breaks pclose when compiling with tcc in KMotionDLL.cpp
   if (sig_num == SIGCHLD) {
     do {
     } while (waitpid(-1, &sig_num, WNOHANG) > 0);
@@ -477,7 +479,8 @@ static void set_options(char *argv[]) {
   signal(SIGTERM, signal_handler);
   signal(SIGINT, signal_handler);
 #ifndef _WIN32
-  signal(SIGCHLD, signal_handler);
+  //PH Had to remove this. Currently not using CGI extensions anyway.(No child processes, fingers crossed)
+  //signal(SIGCHLD, signal_handler);
 #endif
 }
 

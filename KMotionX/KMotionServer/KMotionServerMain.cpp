@@ -53,6 +53,10 @@ either expressed or implied, of the FreeBSD Project.
 #include <list>
 #include <signal.h>
 #include <sys/syscall.h>
+#include <sys/time.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/tcp.h>
     //__NR_gettid
 
 #include <KMotionDLL.h>
@@ -65,7 +69,7 @@ either expressed or implied, of the FreeBSD Project.
 
 CKMotionDLL_Direct KMotionDLL;
 void * InstanceThread(void *ptr);
-void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, unsigned int *cbReplyBytes, int hPipe);
+void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, unsigned short *cbReplyBytes, int hPipe);
 int ConsoleHandler(int board, const char *buf);
 
 int nClients = 0;
@@ -74,10 +78,7 @@ int nClients = 0;
    this shows how multiple data items can be passed to a thread */
 typedef struct str_thdata
 {
-    int thread_no;
-    int client_no;
     int file_desc;
-    char message[100];
 } thdata;
 
 //Array of console socket file descriptor
@@ -103,7 +104,6 @@ const char ENUM_NAMES[][35]={
 		"ENUM_SetConsole"};
 
 
-#define SOCK_PATH "kmotionsocket"
 
 
 void MyErrExitThread(const char *s, int thread_socket){
@@ -238,7 +238,12 @@ static void daemonize(){
 }
 #endif
 
-int main(void) {
+int main(void) 
+{
+    /* SJH - modified to listen to a TCP socket in addition to the unix domain (local) socket.
+       Listens at port KMOTION_PORT (defined in KMotionDLL.h).
+       FIXME: need to make this an argc/argv parameter.
+    */
 #ifdef _DEAMON
 	//daemonize2();
 	daemonize();
@@ -254,13 +259,22 @@ int main(void) {
 	syslog(LOG_ERR, "KMotionServer started ");
 
 
+    int tcp_socket;
     int main_socket;
+    int client_socket;
     unsigned int t;
     struct sockaddr_un local, remote;
+    struct sockaddr_in tlocal, tremote;
+    fd_set rfds;
+    int retval;
+    socklen_t len;
 
 
     if ((main_socket = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
     	perrorExit("socket");
+    }
+    if ((tcp_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+    	perrorExit("tcp socket");
     }
 
     if (strlen(SOCK_PATH) >= sizeof(local.sun_path)) {
@@ -280,15 +294,27 @@ int main(void) {
     local.sun_len = sizeof(local);
     if (bind(main_socket, (struct sockaddr *)&local, SUN_LEN(&local)) == -1) {
 #else
-    int len;
     len = strlen(local.sun_path) + sizeof(local.sun_family);
     if (bind(main_socket, (struct sockaddr *)&local, len) == -1) {
 #endif
     	perrorExit("bind");
     }
+    
+    
+    tlocal.sin_family = AF_INET;
+    tlocal.sin_port = htons(KMOTION_PORT);
+    tlocal.sin_addr.s_addr = INADDR_ANY;
+    len = sizeof(tlocal);
+    if (bind(tcp_socket, (struct sockaddr *)&tlocal, len) == -1) {
+    	perrorExit("tcp bind");
+    }
+    
 
     if (listen(main_socket, 5) == -1) {
     	perrorExit("listen");
+    }
+    if (listen(tcp_socket, 5) == -1) {
+    	perrorExit("tcp listen");
     }
 
    for (int i=0; i<MAX_BOARDS; i++) ConsolePipeHandle[i]=0;
@@ -303,9 +329,31 @@ int main(void) {
    { 
 
        syslog(LOG_ERR,"Main Thread. Waiting for a connection...\n");
-       t = sizeof(remote);
-       int client_socket;
-       if ((client_socket = accept(main_socket, (struct sockaddr *)&remote, &t)) == -1) {
+       
+       FD_ZERO(&rfds);
+       FD_SET(main_socket, &rfds);
+       FD_SET(tcp_socket, &rfds);
+       
+       retval = select(tcp_socket+1, &rfds, NULL, NULL, NULL);
+       if (retval < 0)
+            perrorExit("select");
+       if (FD_ISSET(main_socket, &rfds)) {
+            t = sizeof(remote);
+            client_socket = accept(main_socket, (struct sockaddr *)&remote, &t);
+       }
+       else if (FD_ISSET(tcp_socket, &rfds)) {
+            t = sizeof(tremote);
+            client_socket = accept(tcp_socket, (struct sockaddr *)&tremote, &t);
+            if (client_socket >= 0) {
+                int flag = 1;
+                setsockopt(client_socket, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag));
+            }
+       }
+       else
+            // select() man page indicates possibility that there is nothing really there
+            continue;
+       
+       if (client_socket < 0) {
     	   perrorExit("Main Thread. accept");
        } else {
     	   //struct timeval tv;
@@ -314,16 +362,15 @@ int main(void) {
 
     	   //setsockopt(client_socket, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&tv,sizeof(struct timeval));
 
-    	   syslog(LOG_ERR,"Main Thread. Connected descriptor %d \n",client_socket);
+    	   syslog(LOG_ERR,"Main Thread. Connected descriptor %d %s\n",
+    	        client_socket, FD_ISSET(tcp_socket, &rfds) ? "(tcp)" : "(local)");
     	   nClients++;
 
     	   syslog(LOG_ERR,"Main Thread. Spawning worker\n");
 			pthread_t thr;
 			// initialize data to pass to thread
 			thdata data;
-			data.thread_no = nClients;
 			data.file_desc = client_socket;
-			strcpy(data.message, "Hi!");
 
  		    if(pthread_create(&thr, &attr, &InstanceThread, (void *) &data))
  		    {
@@ -356,13 +403,28 @@ void * InstanceThread(void *ptr){
 
 	char chRequest[BUFSIZE];
 	char chReply[BUFSIZE];
-	unsigned int cbReplyBytes;
+	unsigned short cbReplyBytes;
 	int cbBytesRead, cbWritten;
+	
+	// SJH - messages to/from client must now be prefixed with 2-byte length word (except for ACK 0xAA from client
+	// in response to console or error messages).  This allows working over
+	// network with SOCK_STREAM sockets where message boundaries are likely to be broken.  Even with Unix 
+	// domain sockets, this is safer.
+	unsigned short   msglen;
+	unsigned short   len;
+	enum {
+	    RD_LEN,
+	    RD_MSG
+	} state;
 
+    state = RD_LEN;
+    len = 0;
+    msglen = sizeof(msglen);
+    bool cont = true;
 
-	while(true) {
+	while(cont) {
 
-		cbBytesRead = recv(thread_socket, chRequest, BUFSIZE, 0);
+		cbBytesRead = recv(thread_socket, chRequest + len, msglen - len, 0);
 		if (cbBytesRead <= 0) {
 			if (cbBytesRead < 0){
 				logError("Worker Thread. recv");
@@ -371,8 +433,36 @@ void * InstanceThread(void *ptr){
 			}
 			break;
 		}
+		len += cbBytesRead;
+		switch (state) 
+		{
+		case RD_LEN:
+		    if (len == msglen) {
+		        memcpy(&msglen, chRequest, sizeof(msglen));
+		        state = RD_MSG;
+		        len = 0;
+		        if (msglen > sizeof(chRequest)) {  
+		            // Too long to possibly fit in buffer.  This should not happen unless client bad.
+				    syslog(LOG_ERR,"Worker Thread. Message prefix %hu too long", msglen);
+				    cont = false;
+				    continue;
+		        }
+		    }
+		    continue;
+		case RD_MSG:
+		    if (len == msglen) {
+		        cbBytesRead = len;
+		        msglen = sizeof(msglen);
+		        state = RD_LEN;
+		        len = 0;
+		        break;  // from switch and process this msg
+		    }
+		    continue;
+		}
 
-		GetAnswerToRequest(chRequest, cbBytesRead, chReply, &cbReplyBytes, thread_socket);
+		GetAnswerToRequest(chRequest, cbBytesRead, chReply+sizeof(msglen), &cbReplyBytes, thread_socket);
+		memcpy(chReply, &cbReplyBytes, sizeof(msglen));
+		cbReplyBytes += sizeof(msglen);
 		cbWritten = send(thread_socket, chReply, cbReplyBytes, 0);
 
 		if (cbWritten < 0 || cbReplyBytes != cbWritten) {
@@ -383,6 +473,7 @@ void * InstanceThread(void *ptr){
 			}
 			break;
 		}
+		
 	}
 	syslog(LOG_ERR,"Worker Thread. Exiting thread %d", thread_socket);
 
@@ -411,10 +502,11 @@ void * InstanceThread(void *ptr){
 }
 
 
-void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, unsigned int *cbReplyBytes, int hPipe)
+void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, unsigned short *cbReplyBytes, int hPipe)
 {
 
 	int code, BoardID, board, TimeOutms, result=0, nLocations, List[256];
+	unsigned short msglen;
 
 	memcpy(&code, chRequest,4);
 
@@ -566,6 +658,18 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 			cbReplyBytes = strlen(s)+1;  // + Term Null, DEST code already accounted for in s
 
 			// Write the message to the pipe. 
+			msglen = cbReplyBytes;
+			cbWritten = send(hPipe, &msglen, sizeof(msglen), 0);
+			
+			if (cbWritten != sizeof(msglen)) {
+				if (cbWritten < 0){
+					logError("send");
+				} else{
+					syslog(LOG_ERR,"GetAnswerToRequest %d bytes written != %d bytes sent\n",cbWritten,cbReplyBytes);
+				}
+				break;
+			}
+			
 			cbWritten = send(hPipe, s, cbReplyBytes, 0);
 
 			if (cbWritten < 0 || cbReplyBytes != cbWritten) {
@@ -599,28 +703,38 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 	{
 		int cbReplyBytes, cbBytesRead, cbWritten;
 		unsigned char Reply;
+		unsigned short msglen;
 		char s[MAX_LINE+1];
 		s[0] = DEST_ERRMSG;
 		strcpy(s+1,KMotionDLL.GetErrMsg(board));
 
 		cbReplyBytes = strlen(s)+1;// + Term Null, DEST code already accounted for in s
 		// Write the message to the pipe. 
-		cbWritten = send(hPipe, s, cbReplyBytes, 0);
-
-		if (cbWritten < 0) {
+		msglen = cbReplyBytes;
+		cbWritten = send(hPipe, &msglen, sizeof(msglen), 0);
+		
+		if (cbWritten != sizeof(msglen)) {
 			syslog(LOG_ERR,"GetAnswerToRequest Send to DEST_ERRMSG(%d) failed: %s",s[0], s+1);
 			logError("send");
 		}
+		else {
+		    cbWritten = send(hPipe, s, cbReplyBytes, 0);
 
-		if (cbWritten >=0 && cbReplyBytes == cbWritten)
-		{
-		   // Read back 1 byte ack 0xAA from Console Handler
-			cbBytesRead = recv(hPipe, &Reply, 1, 0);
-			if (cbBytesRead < 0) {
-				syslog(LOG_ERR,"GetAnswerToRequest Failed to receive Ack(0xAA) on message: %s", s+1);
-				logError("recv");
-			}
+		    if (cbWritten < 0) {
+			    syslog(LOG_ERR,"GetAnswerToRequest Send to DEST_ERRMSG(%d) failed: %s",s[0], s+1);
+			    logError("send");
+		    }
 
+		    if (cbReplyBytes == cbWritten)
+		    {
+		       // Read back 1 byte ack 0xAA from Console Handler
+			    cbBytesRead = recv(hPipe, &Reply, 1, 0);
+			    if (cbBytesRead < 0) {
+				    syslog(LOG_ERR,"GetAnswerToRequest Failed to receive Ack(0xAA) on message: %s", s+1);
+				    logError("recv");
+			    }
+
+		    }
 		}
 
 		KMotionDLL.ClearErrMsg(board);
