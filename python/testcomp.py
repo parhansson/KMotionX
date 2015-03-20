@@ -43,38 +43,86 @@ class KMotion(kmotion.KMotion):
         while self.threads_active & threadbit:
             self.Poll()
             
-    def run(self, basename):
+    def run(self, basename, thread=1):
         """Run basename.c on thread 1, and wait for the thread to terminate.
         """
         try:
-            self.compile(basename)
+            self.compile(basename, thread)
         except RuntimeError as e:
             print e
             return
-        self.execute()
-        self.wait_thread_done()
-    def run_string(self, code):
+        self.execute(thread)
+        self.wait_thread_done(thread)
+    def run_string(self, code, wait, thread=1):
         """Run C code string on thread 1, and wait for the thread to terminate.
         """
         try:
-            self.compile_string(code)
+            self.compile_string(code, thread)
         except RuntimeError as e:
             print e
             return
-        self.execute()
-        self.wait_thread_done()
+        self.execute(thread)
+        if wait:
+            self.wait_thread_done(thread)
 
 k = KMotion(0, with_console=True)
 
 #print "Compile and run file..."
 #k.run("test")
 
-compilerbin = sys.argv[1] if len(sys.argv)>1 else "tcc67wine"
-codestring = sys.argv[2] if len(sys.argv)>2 else "code"
+usage = """
+Usage: python testcomp.py [-g] [-c] [-n] [-D...] [-I...] <code> [<compiler>]
+   -g  Debug info
+   -tn Thread n (default 1)
+   -c  Compile only (else compile and run)
+   -n  Don't wait for thread to finish execution
+   -D...  Passed to compiler options (defines)
+   -I...  Passed to compiler options (include path)
+   -l...  Passed to compiler options without the -l (extra .out files for linking)
+   <code> is file to compile or index of code string in testcomp.py
+   <compiler> is TCC compiler to use (default tcc67).
+"""
+if len(sys.argv) < 2:
+    print usage
+    sys.exit(1)
+comp_only = False
+nowait = False
+codestring = None
+compilerbin = None
+opts = ""
+thread = 1
+for a in sys.argv[1:]:
+    if a == "-c":
+        comp_only = True
+    elif a == "-g":
+        opts += "-g "
+    elif a == "-n":
+        nowait = True
+    elif a.startswith("-D") or a.startswith("-I"):
+        opts += a + " "
+    elif a.startswith("-l"):
+        opts += a[2:] + " "
+    elif a.startswith("-t"):
+        thread = int(a[2:])
+    elif codestring is None:
+        codestring = a
+    elif compilerbin is None:
+        compilerbin = a
+    else:
+        print "Arg", a, "not recognized."
+        print usage
+        sys.exit(1)
 
-k.SetCustomCompiler(compilerbin)
+if codestring is None:
+    print "Missing code to run."
+    print usage
+    sys.exit(1)
+if compilerbin is None:
+    compilerbin = "tcc67"        
 
-code = r"""
+k.SetCustomCompiler(compilerbin, opts)
+
+code1 = r"""
 #include "KMotionDef.h"
 
 int fac(int n)
@@ -327,9 +375,24 @@ main()
 
 
 """
+cs = "code"+codestring
+    
+if cs in globals():
+    cs = globals()[cs]
+    if comp_only:
+        print "Compile string..."
+        k.compile_string(cs, thread)
+    else:
+        print "Compile and run string..."
+        k.run_string(cs, not nowait, thread)
+else:
+    if comp_only:
+        print "Compile file..."
+        k.compile(codestring, thread)
+    else:
+        print "Compile and run file..."
+        k.run(codestring, not nowait, thread)
 
-print "Compile and run string..."
-k.run_string(globals()[codestring])
-
+        
 
 

@@ -693,7 +693,7 @@ void AddKonnect_Aux0(int BoardAddress, int *OutputAddress, int *InputAddress); /
 #define MAX_NSTRINGS 256  // must be binary    
 
 // Note: standard C language printf 
-
+#ifndef TEST
 int printf(const char *format, ...);     		// Print formatted string to console
 int sprintf(char *s, const char *format, ...); 	// Print formatted string to string
 
@@ -701,6 +701,7 @@ typedef int FILE;
 FILE *fopen(const char*, const char*);		   // Open a text file for writing on the PC (2nd param is ignored) 
 int fprintf(FILE *f, const char * format, ...);		   // Print formatted string to the PC's Disk File
 int fclose(FILE *f);                           // Close the disk file on the PC
+#endif
 
 int Print(char *s);                      		// Print a string to the console window
 int PrintFloat(char *Format, double v);  		// Print a double using printf format, ex "%8.3f\n"
