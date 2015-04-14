@@ -7,12 +7,13 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
 
   <link rel="stylesheet" type="text/css" href="css/style.css">
+  <link rel="stylesheet" type="text/css" href="css/switch.css">
 
   <!-- 3rd party libs -->
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>        
   <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.js"></script>
   
   <script type="text/javascript" src="vendor/three/TrackballControls.js"></script>
 
@@ -24,17 +25,43 @@
   <script type="text/javascript" src="vendor/ace/src-min-noconflict/ace.js" charset="utf-8"></script>
   
   <!-- Custom code -->
-  <script type="text/javascript" src="js/module/editor.js"></script>
-  <script type="text/javascript" src="js/module/gcode.js"></script>
-  <script type="text/javascript" src="js/module/machine-settings.js"></script>
-  <script type="text/javascript" src="js/module/websocket.js"></script>
-  <script type="text/javascript" src="js/module/viewer.js"></script>
-  <script type="text/javascript" src="js/module/other.js"></script>
   <script type="text/javascript" src="js/KmotionXApp.js"></script>
-  <script type="text/javascript" src="js/box.js"></script>
-  <script type="text/javascript" src="js/components.js"></script>
-  <script type="text/javascript" src="js/operation.js"></script>
-  <script type="text/javascript" src="js/ui.js"></script>
+  <script type="text/javascript" src="js/editor/app.editor.js"></script>
+  <script type="text/javascript" src="js/editor/ace.directive.js"></script>
+  <script type="text/javascript" src="js/editor/editor.controller.js"></script>
+  <script type="text/javascript" src="js/editor/file-dropzone.directive.js"></script>  
+  <script type="text/javascript" src="js/module/editor.js"></script>
+  
+  <script type="text/javascript" src="js/settings/mcode-value.directive.js"></script>
+  <script type="text/javascript" src="js/settings/settings.controller.js"></script>
+  <script type="text/javascript" src="js/settings/settings.directive.js"></script>
+  <script type="text/javascript" src="js/settings/settings.service.js"></script>
+  <script type="text/javascript" src="js/settings/userButton.controller.js"></script>
+  
+  <script type="text/javascript" src="js/log/log.directive.js"></script>
+  <script type="text/javascript" src="js/log/log.service.js"></script>
+  
+  
+  <script type="text/javascript" src="js/renderer/app.renderer.js"></script>
+  <script type="text/javascript" src="js/renderer/gcode-parser.js"></script>
+  <script type="text/javascript" src="js/renderer/gcodeRenderer.service.js"></script>
+  <script type="text/javascript" src="js/renderer/view.directive.js"></script>
+  <script type="text/javascript" src="js/renderer/view.service.js"></script>
+  
+  <script type="text/javascript" src="js/backend/app.backend.js"></script>
+  <script type="text/javascript" src="js/backend/socket.service.js"></script>
+  <script type="text/javascript" src="js/backend/socket-handler.js"></script>
+  <script type="text/javascript" src="js/backend/kmxBackend.service.js"></script>  
+  
+  
+  <script type="text/javascript" src="js/laser/laser-calc.js"></script>
+  <script type="text/javascript" src="js/laser/box.js"></script>
+
+  <script type="text/javascript" src="js/gcode/gcode.js"></script>
+  <script type="text/javascript" src="js/gcode/gcode-editor.controller.js"></script>
+    
+  <script type="text/javascript" src="js/module/other.js"></script>
+
 
 </head>
 <body ng-controller="KMotionXController as kmx">
@@ -69,6 +96,10 @@
         <li><a href="#NavC" data-toggle="tab">C-programs</a></li>
         <li><a href="#NavSettings" data-toggle="tab">Settings</a></li>
         <li><a href="#NavDebug" data-toggle="tab">Debug</a></li>
+        <li><a href="#NavCalc" data-toggle="tab">Calc</a></li>
+        <li><a href="javascript:$('#aboutModal').modal();">About</a></li>
+        
+        <li><a href="#"><label title="Simulation Mode" class="switch red"><input type="checkbox" ng-model="simulating"><i></i></label></a></li>
         <!-- 
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
@@ -107,49 +138,47 @@
   <div class="tab-pane active" id="NavGCode">
     <div class="row  fill">
       <div class="hidden-xs col-md-3">
-         
-        <div><button class="btn btn_wide" id="error_log_btn">Error log (Clear)</button></div>
-        <div id="error" class="status_message" title="Error status"></div>
-    
-        <div><button class="btn btn_wide" id="console_log_btn">Console (Clear)</button></div>
-        <div id="console" class="status_message" title="Console"></div>
-             
+        <kmx-log title="Error log" consoleId="error" color="red"></kmx-log>        
+        <kmx-log title="Console" consoleId="console" color="blue"></kmx-log>
       </div>
       <div class="col-xs-9 col-md-6">
         <!-- WebGL rendering area -->
-        <div id="renderArea" ng-class="sidebar ? 'bulle' : 'bulle'" three-viewer="viewer3d.view" class="threerenderer fill"></div>
+        <div id="renderArea" ng-class="sidebar ? 'bulle' : 'bulle'" three-viewer="kmxThreeViewData" class="threerenderer fill"></div>
         
       </div>
       <div class="col-xs-3 col-md-3">
-        <div id="gcc" ng-controller="GCodeEditorController as gcode" ng-init="currentDir = './gcode/'">
+        <div id="gcc" ng-controller="GCodeEditorController as gcodeEditCtrl" ng-init="currentDir = './gcode/'">
+          <div modal-show="showFileModal" class="modal fade">
+            <file-modal></file-modal>
+          </div>
+          <div>
+            <!--
+            <label class="switch"><input type="checkbox" ng-model="interpreting"><i></i></label>Interpret
+            -->
+            <button class="btn" ng-click="gcodeEditCtrl.interpret()" ng-class="interpreting ? 'btn_down' : ''">Execute GCode</button>
+          </div>
+          <div file-dropzone="" transform-fn="transform(mime,data)" file-content="editorContent" file-name="editorContentName" >      
             <div>
-              <button class="btn" ng-click="interpret()" ng-class="interpreting ? 'btn_down' : ''">Execute GCode</button>
-              <button class='btn' ng-click="simulate()" ng-class="simulating ? 'btn_down' : ''">Simulate</button>
+              <input ng-model="currentDir"/>
+              <input ng-model="editorContentName"/>
+              <span  class="glyphButtonBar">
+                <span class="btn glyphicon glyphicon-folder-open" title="Open" ng-click="listFiles(currentDir)"></span>
+                <span class="btn glyphicon glyphicon-floppy-save" title="Save" ng-click="save()"></span>
+              </span>
             </div>
-            <div modal-show="showFileModal" class="modal fade">
-              <file-modal></file-modal>
-            </div>
-            <div file-dropzone="" transform-fn="transform(mime,data)" file-content="codeEditor.content" file-name="codeEditor.contentName" >      
-              <div>
-                <input ng-model="currentDir"/>
-                <input ng-model="codeEditor.contentName"/>
-                <span  class="glyphButtonBar">
-                  <span class="btn glyphicon glyphicon-folder-open" title="Open" ng-click="listFiles(currentDir)"></span>
-                  <span class="btn glyphicon glyphicon-floppy-save" title="Save" ng-click="save()"></span>
-                </span>
-              </div>
-              <ace id="gcodeEditor" editor="codeEditor.editor" ng-model="codeEditor.content" mode="gcode" ></ace>
-            </div>
+            <kmx-ace id="gcodeEditor" ng-model="editorContent" mode="gcode" ></kmx-ace>
+          </div>
+          <div>
+              <button class='btn btn-grid' ng-click="gcodeEditCtrl.feedHold()" >Feed Hold</button>
+              <!--<label class="switch"><input type="checkbox" ng-model="feedHold"><i></i></label><label style="text-anchor:top"></label>-->
+              <button class='btn btn-grid'>Available</button>
+              <button class='btn btn-grid'>Available</button>
+              <button class='btn btn-grid' ng-click="gcodeEditCtrl.initMachine()">Init Machine</button>
+              <button class='btn btn-grid'>Available</button>
+              <button class='btn btn-grid'>Available</button>
+          </div>
         </div>
-    
-        <div>
-            <button class='btn btn-grid' id='about-btn'>About</button>
-            <button class='btn btn-grid' id='init_machine_btn'>Init Machine</button>
-            <button class='btn btn-grid' ng-click="$parent.sidebar = !$parent.sidebar">Log</button>
-            <button class='btn btn-grid' id='feed_hold_btn'>Feed Hold</button>
-            <button class='btn btn-grid' id=''>Available</button>
-            <button class='btn btn-grid' id='edit_machine_btn'>Settings</button>
-        </div>
+        
     
         <div ng-controller="UserButtonController as buttons">
           <div ng-repeat="action in machine.userActions" ng-if="action.action > 0">
@@ -161,19 +190,20 @@
   </div><!-- /NavGCode -->
   <div class="tab-pane" id="NavC">
   
-      <div id="ccc" ng-controller="CCodeEditorController as ccode" ng-init="currentDir = './c-programs/'">
-          <div modal-show="showFileModal" class="modal fade">
-            <file-modal></file-modal>
-          </div>
-        <div file-dropzone="" file-content="codeEditor.content" file-name="codeEditor.contentName" >      
+      <div ng-controller="EditorController as ceditCtrl" ng-init="currentDir = './c-programs/'">
+        <div modal-show="showFileModal" class="modal fade">
+          <file-modal></file-modal>
+        </div>
+        <div file-dropzone="" file-content="editorContent" file-name="editorContentName" >      
           <div>
-            <input ng-model="codeEditor.contentName"/>
+            <input ng-model="currentDir"/>
+            <input ng-model="editorContentName"/>
             <span  class="glyphButtonBar">
               <span class="btn glyphicon glyphicon-folder-open" title="Open" ng-click="listFiles(currentDir)"></span>
               <span class="btn glyphicon glyphicon-floppy-save" title="Save" ng-click="save()"></span>
             </span>
           </div>
-          <ace id="ceditor" editor="codeEditor.editor" ng-model="codeEditor.content" mode="c_cpp" ></ace>
+          <kmx-ace id="ceditor" ng-model="editorContent" mode="c_cpp" ></kmx-ace>
         </div>      
      </div>  
   
@@ -182,35 +212,20 @@
     <!-- 
     <div id="sidebar" ng-class="sidebar ? 'affix' : 'hidden'">
      -->
-      <button class="btn btn_wide" id="status_log_btn">Status log (Clear)</button>
-      <div id="status" class="status_message status_small" title="Interpreter status log"></div>
+      <kmx-log title="Status log" consoleId="status" color="green"></kmx-log>
+      <kmx-log title="Raw communication" consoleId="output"></kmx-log>
       
-      <button class="btn btn_wide" id="raw_log_btn">Raw communication (Clear)</button>
-      <div id="output" class="status_message status_small" title="Raw communication"></div>
     <!-- 
     </div>  
      -->
   </div><!-- /NavDebug -->
-  <div class="tab-pane" id="NavSettings">
+
+  <div class="tab-pane" id="NavCalc">
+      <laser-plugin></laser-plugin>
+  </div><!-- /NavDebug -->
   
-    <div class="_modal" id="settingsModal" ng-controller="SettingsController as settings">
-      <div class="_modal-dialog">
-        <div class="modal-content">   
-          <div class="modal-header">
-            <a class="close" data-dismiss="modal">&times;</a>
-            <h4>Settings</h4>
-          </div>
-          <div class="modal-body" >
-            <settings></settings>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="button" class='btn btn-default' id='new_machine_btn'>New machine</button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveMachine($event)">Save</button>
-          </div>
-        </div>
-      </div>
-    </div>
+  <div class="tab-pane" id="NavSettings">
+    <kmx-settings></kmx-settings>
   </div><!-- /NavSettings -->
 </div>
 

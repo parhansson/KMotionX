@@ -18,11 +18,12 @@ function onMessage(event){
   if(event.data.command == 'connect'){   
     var url = event.data.url; 
     socket = new SocketHandler(url, messageHandler, logHandler);
-    socket.connect();
+    socket.connect();    
   } else if(event.data.command == 'acknowledge'){
       socket.acknowledge(event.data.obj, event.data.ret);
   } else if(event.data.command == 'disconnect'){
     //no need to acually disconnect at the moment
+    socket.destroy();
     postMessage('done');
   }
   

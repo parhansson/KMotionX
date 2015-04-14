@@ -49,6 +49,10 @@ SocketHandler.prototype.connect = function() {
     }
 
 }
+SocketHandler.prototype.destroy = function() {
+  this.websocket.onclose = function () {}; // disable onclose handler first
+  this.websocket.close();  
+}
 
 SocketHandler.prototype.sendMessage = function(message) {
     this.logHandler(message, LOG_TYPE.SEND);

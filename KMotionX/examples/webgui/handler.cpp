@@ -24,7 +24,7 @@
 
 
 int handle_api(struct mg_connection *conn, enum mg_event ev, char *uri);
-int handleJson(struct mg_connection *conn);
+int handleJson(struct mg_connection *conn,const char *object, const char *func);
 void push_message(const char *msg);
 void delete_callback(struct callback *node);
 void ErrMsgHandler(const char *msg);
@@ -58,11 +58,12 @@ enum cb_status {
 
 //state of gui.
 struct state {
-  int simulate;
+  bool simulate;
   int feedHold;
   int interpreting = 0;
   int last_line = 0;
   char current_file[256];
+  char current_machine[256];
 };
 
 //Check function signature
@@ -115,6 +116,9 @@ const char STATUS_NAMES[][24] = { "CBS_ENQUEUED", "CBS_WAITING",
 const char CB_NAMES[][24] = { "STATUS", "COMPLETE", "ERR_MSG",
     "CONSOLE", "USER", "USER_M_CODE", "STATE", "MESSAGEBOX" };
 
+const char ACTION_NAMES[][32] = { "M_Action_None", "M_Action_Setbit", "M_Action_SetTwoBits",
+    "M_Action_DAC", "M_Action_Program", "M_Action_Program_wait", "M_Action_Program_wait_sync",
+    "M_Action_Program_PC", "M_Action_Callback", "M_Action_Waitbit", "UNAVAILABLE" };
 
 void initHandler() {
   km = new CKMotionDLL(0);
@@ -122,7 +126,7 @@ void initHandler() {
   gci = new CGCodeInterpreter(cm);
   //Enable messagebox callback by not setting this callback
 
-  gci->McodeActions[3].Action = M_Action_Callback;
+  //gci->McodeActions[3].Action = M_Action_Callback;
   //gci->McodeActions[4].Action = M_Action_Program_PC;
   gci->SetUserMCodeCallback(MUserCallback);
   gci->SetUserCallback(UserCallback);
@@ -179,6 +183,7 @@ void info_handler(int signum) {
 
   fprintf(stdout, "State        :%s\n",
       gstate.interpreting ? "Interpreting" : "Stopped");
+  fprintf(stdout, "Config       :%s\n", gstate.current_machine);
   fprintf(stdout, "File         :%s\n", gstate.current_file);
   fprintf(stdout, "Line         :%d\n", gstate.last_line);
   fprintf(stdout, "FeedHold     :%d\n", gstate.feedHold);
@@ -466,9 +471,11 @@ void enqueueState() {
   char stateBuf[512];
   //debug("enquing current file: %s", gstate.current_file);
   //this could be implementedas callback to one client (connection) only
-  json_emit(stateBuf, 512, "{ s: i, s: i, s: i, s: s }", "feedHold",
-      gstate.feedHold, "interpreting", gstate.interpreting, "simulate",
-      gstate.simulate, "file", gstate.current_file);
+  json_emit(stateBuf, 512, "{ s: S, s: S, s: S, s: s, s: s }",
+      "feedHold", gstate.feedHold?"true":"false",
+      "interpreting", gstate.interpreting?"true":"false",
+      "simulate", gstate.simulate?"true":"false",
+      "file", gstate.current_file, "machine", gstate.current_machine);
   init_callback(callbacks, stateBuf, CB_STATE);
 }
 
@@ -644,14 +651,28 @@ int handle_api(struct mg_connection *conn, enum mg_event ev, char *uri) {
     debug("GET is not supported.");
     return MG_FALSE;
   }
+  int result;
 
-  if (strstr(uri, "/api") == uri) {
-    return handleJson(conn);
+  char **ap, *argv[3], *input, *tofree;
+  tofree = input = strdup(uri);
+
+  for (ap = argv; (*ap = strsep(&input, "/")) != NULL;)
+          if (**ap != '\0')
+                  if (++ap >= &argv[3])
+                          break;
+  printf("%s\n", argv[0]);
+  printf("%s\n", argv[1]);
+  printf("%s\n", argv[2]);
+  if (!strcmp("api", argv[0])) {
+    result = handleJson(conn,argv[1],argv[2]);
   } else {
     mg_send_header(conn, "Content-Type", "text/plain");
-    mg_printf_data(conn, "KMotionCNC API # %s", (char *) conn->query_string);
+    mg_printf_data(conn, "KMotionCNC API # query_string %s\n", (char *) conn->query_string);
+    mg_printf_data(conn, "KMotionCNC API # uri %s\n", (char *) tofree);
+    result = MG_TRUE;
   }
-  return MG_TRUE;
+  free(tofree);
+  return result;
 }
 
 void setInterpreterParams(struct json_token *paramtoken, int indexOffset, int count, const char* pathTemplate) {
@@ -682,6 +703,8 @@ void setInterpreterParams(struct json_token *paramtoken, int indexOffset, int co
       //userButtons index 11-20
       //M100-M119 index 21 -39
       int actionIndex = indexOffset + i;
+      int actionNameIndex = action > 0 && action < 10?action:10;
+      printf("Set action index %d to %s\n",actionIndex, ACTION_NAMES[actionNameIndex]);
       gci->McodeActions[actionIndex].Action = action;
       gci->McodeActions[actionIndex].dParams[0] = dParam0;
       gci->McodeActions[actionIndex].dParams[1] = dParam1;
@@ -713,7 +736,7 @@ void setInterpreterParams(struct json_token *paramtoken, int indexOffset, int co
 //TODO To ensure no blocking callbacks are made from poll thread this
 //function should be called from another thread.
 
-int handleJson(struct mg_connection *conn) {
+int handleJson(struct mg_connection *conn, const char *object, const char *func) {
 
   json_token *data = NULL;
 
@@ -728,23 +751,10 @@ int handleJson(struct mg_connection *conn) {
     return MG_FALSE;
   }
   //char * gp_response = NULL;
-  const json_token *token;
   json_token *paramtoken;
 
   int params = 0;
 
-  char *object = NULL;
-  char *func = NULL;
-
-  token = find_json_token(data, "clazz");
-  if (token != NULL) {
-    toks(token, (char**) &object);
-  }
-
-  token = find_json_token(data, "func");
-  if (token != NULL) {
-    toks(token, (char**) &func);
-  }
   //debug("object: %s method: %s",object, func);
 
   paramtoken = find_json_token(data, "params");
@@ -780,41 +790,37 @@ int handleJson(struct mg_connection *conn) {
   //debug("params %d",params);
 
 //handles file loading. different headers
-  /*
-  if (!strcmp("aux", object) && FUNC_SIGP("loadGCodeFile", 1)) {
-    char * file = NULL;
-    toks(paramtoken, &file);
-    if (file != NULL) {
-      //TODO this may cause never ending loop if client has an error
-      if (strlen(file) > 0 && strcmp(gstate.current_file, file) != 0) {
-        strcpy(gstate.current_file, file);
-        //when file changes all clients will e noticed.
-        enqueueState();
-      }
-      mg_send_file(conn, file, NULL);  // Also could be a dir, or CGI
-      free(file);
-    }
-    free(data);
-    return MG_MORE; // It is important to return MG_MORE after mg_send_file!
-  }
-  */
+
   //Reset global response string
   gp_response[0] = '\0';
   //gp_response = (char*) malloc(sizeof(char) * ( MAX_LINE));
   int ret = 0;
   if (!strcmp("aux", object)) {
-    if (FUNC_SIGP("loadGCodeFile", 1)) {
+    if (FUNC_SIGP("loadGlobalFile", 2)) {
+      int fileType = -1;
       char * file = NULL;
-      toks(paramtoken, &file);
+      char * globalFile = NULL;
+      toki(paramtoken + 1, &fileType);
+      toks(paramtoken + 2, &file);
       if (file != NULL) {
-        if (strlen(file) > 0 && strcmp(gstate.current_file, file) != 0) {
-          strcpy(gstate.current_file, file);
-          //when file changes all clients will e noticed.
-          enqueueState();
+        if(strlen(file) > 0){
+          if(fileType == 1){
+            globalFile = gstate.current_file;
+          } else if(fileType == 2){
+            globalFile = gstate.current_machine;
+          }
+          if(globalFile != NULL){
+            if (strcmp(globalFile, file) != 0) {
+                strcpy(globalFile, file);
+                //when file changes all clients will e noticed.
+                enqueueState();
+            }
+          }
         }
         free(file);
       }
-    } else if (FUNC_SIGP("saveMachine", 1)) {
+    /*
+     } else if (FUNC_SIGP("saveMachine", 1)) {
       char *machineFile = NULL;
       char *machineData = NULL;
       toks(paramtoken+1, &machineFile);
@@ -834,6 +840,7 @@ int handleJson(struct mg_connection *conn) {
 
       free(machineFile);
       free(machineData);
+     */
     } else if(FUNC_SIGP("listDir", 1)){
       char *dir = NULL;
       toks(paramtoken, &dir);
@@ -895,7 +902,7 @@ int handleJson(struct mg_connection *conn) {
       bool GetBoardTypeOnly;
       toki(paramtoken + 1, &type);
       tokb(paramtoken + 2, &GetBoardTypeOnly);
-      ret = km->CheckKMotionVersion(&type);
+      ret = km->CheckKMotionVersion(&type, GetBoardTypeOnly);
       EMIT_RESPONSE("[i]", type);
 
     } else if (FUNC_SIGP("Compile", 6)) {
@@ -952,7 +959,7 @@ int handleJson(struct mg_connection *conn) {
       EMIT_RESPONSE("[]");
     } else if (FUNC_SIGP("DoErrMsg", 1)) {
       char *p1 = NULL;
-      toks(paramtoken + 1, &p1);
+      toks(paramtoken, &p1);
       ret = 0;
       km->DoErrMsg(p1);
       EMIT_RESPONSE("[S]", p1);
@@ -1134,12 +1141,16 @@ int handleJson(struct mg_connection *conn) {
 
 
 
-    } else if (FUNC_SIGP("simulate", 0)) {
+    } else if (FUNC_SIGP("simulate", 1)) {
       if (gstate.interpreting == 0) {
-        gci->CoordMotion->m_Simulate = !gci->CoordMotion->m_Simulate;
-        gstate.simulate = gci->CoordMotion->m_Simulate;
-        enqueueState();
-        EMIT_RESPONSE("[i]", gstate.simulate);
+        bool enable;
+        tokb(paramtoken, &enable);
+        if(enable != gstate.simulate){
+          gci->CoordMotion->m_Simulate = !gci->CoordMotion->m_Simulate;
+          gstate.simulate = gci->CoordMotion->m_Simulate;
+          enqueueState();
+        }
+        EMIT_RESPONSE("[S]", gstate.simulate?"true":"false");
       }
     }
   }
@@ -1149,8 +1160,8 @@ int handleJson(struct mg_connection *conn) {
   if (gp_response[0] == '\0') {
     EMIT_RESPONSE("N");
   }
-  free(object);
-  free(func);
+//  free(object);
+//  free(func);
 
   mg_printf_data(conn, "%s", gp_response);
 

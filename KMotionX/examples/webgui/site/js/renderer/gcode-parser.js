@@ -3,7 +3,12 @@
  * Parses a string of gcode instructions, and invokes codeHandlers for each type of
  * command or values.
  */
-
+var GCodeParserState = {    
+  NONE: 0,
+  CONTROL_VAL: 1,
+  PARAM_VAL: 2,
+  SKIP_VAL: 3
+};
 function GCodeParser(codeHandlers, paramHandler, defaultHandler) {
   
   this.codeHandler = {
@@ -78,13 +83,8 @@ GCodeParser.prototype.flush = function(line) {
 }
 
 GCodeParser.prototype.parseLine = function(_text, line) {
-  var State = {
-    NONE: 0,
-    CONTROL_VAL: 1,
-    PARAM_VAL: 2,
-    SKIP_VAL: 3
-  }
-  var state = State.NONE;
+
+  var state = GCodeParserState.NONE;
   var currentControlCode = '';
 
   _text = _text.replace(/;.*$/, ''); // Remove comments
@@ -104,7 +104,7 @@ GCodeParser.prototype.parseLine = function(_text, line) {
       this.flush(line);
       this.cmd = new GCodeCmd(c, '');
       // Set state to parse control values
-      state = State.CONTROL_VAL;
+      state = GCodeParserState.CONTROL_VAL;
     } else if (this.paramCodes[c]) { // If parameter codes X Y Z etc
       currentControlCode = c;
       if (this.values === undefined) {
@@ -113,28 +113,30 @@ GCodeParser.prototype.parseLine = function(_text, line) {
       this.values[currentControlCode] = ''; // store code even if not values are
                                             // found later on.
       // Set state to parse parameter values
-      state = State.PARAM_VAL;
+      state = GCodeParserState.PARAM_VAL;
     } else if (this.valueChars.indexOf(c) >= 0) {
-      if (state == State.CONTROL_VAL) {
+      if (state == GCodeParserState.CONTROL_VAL) {
         this.cmd.val += c;
-      } else if (state == State.PARAM_VAL) {
+      } else if (state == GCodeParserState.PARAM_VAL) {
         this.values[currentControlCode] += c;
-      } else if (state == State.SKIP_VAL) {
+      } else if (state == GCodeParserState.SKIP_VAL) {
         // do nothing.
       }
 
     } else if (this.skipCodes[c]) {
       // If skip code like N(line number) set state to skip values
-      state = State.SKIP_VAL;
+      state = GCodeParserState.SKIP_VAL;
     }
   }
   this.flush(line);
 };
 
 GCodeParser.prototype.parse = function(gcodeLines) {
+  console.time("parsing");
   for (var i = 0; i < gcodeLines.length; i++) {
     if (this.parseLine(gcodeLines[i], i) === false) {
       break;
     }
   }
+  console.timeEnd("parsing");
 };
