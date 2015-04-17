@@ -1,11 +1,13 @@
-(function() {
+(function () {
+  'use strict';
   angular.module('CodeEditor')
     .directive('fileDropzone', fileDropZone);
 
 //http://buildinternet.com/2013/08/drag-and-drop-file-upload-with-angularjs/
   //http://jsfiddle.net/lsiv568/fsfPe/10/
+  fileDropZone.$inject = ['transcoder'];
   
-  function fileDropZone() {
+  function fileDropZone(transcoder) {
    
     return {
       restrict: 'A',
@@ -42,28 +44,37 @@
         reader.onload = function(evt) {
           if (checkSize(size) && isTypeValid(type)) {
             
-            var datat;
-            if(attrs.transformFn !== undefined){
-              datat = scope.transformFn({
-                mime: type,
-                data: evt.target.result
-              });                
-            } else {
-              datat = evt.target.result;
-            }
-            
-            return scope.$apply(function() {
-              scope.fileContent = datat;
-              //scope.$root.$broadcast('drop-gcode-file');
-              //scope.$emit('drop-gcode-file');
+            var p = transcoder.transcode(type, evt.target.result); 
+            p.then(function (text){
+              scope.fileContent = text;
               if (angular.isString(scope.fileName)) {
-                return scope.fileName = name;
-              }
+                scope.fileName = name;
+              }              
             });
+            
+//            var datat;
+//            if(attrs.transformFn !== undefined){
+//              datat = scope.transformFn({
+//                mime: type,
+//                data: evt.target.result
+//              });
+//            } else {
+//              var buf = evt.target.result;
+//              datat = String.fromCharCode.apply(null, new Uint16Array(buf));
+//            }
+//            scope.$apply(function() {
+//              scope.fileContent = text;
+//              //scope.$root.$broadcast('drop-gcode-file');
+//              //scope.$emit('drop-gcode-file');
+//              if (angular.isString(scope.fileName)) {
+//                return scope.fileName = name;
+//              }
+//            });
+            
           }
         };
-
-        reader.readAsBinaryString(file);
+        reader.readAsArrayBuffer(file)
+        //reader.readAsBinaryString(file);
         return false;
       }
       

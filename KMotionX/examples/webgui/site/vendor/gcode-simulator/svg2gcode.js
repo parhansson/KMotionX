@@ -1,6 +1,4 @@
 function svg2gcode(svg, settings) {
-  // clean off any preceding whitespace
-  svg = svg.replace(/^[\n\r \t]/gm, '');
   settings = settings || {};
   settings.passes = settings.passes || 1;
   settings.materialWidth = settings.materialWidth || 6;

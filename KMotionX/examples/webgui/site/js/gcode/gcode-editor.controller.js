@@ -61,26 +61,15 @@
       GCodeRenderer.renderGCode(new GCode.Source($scope.editorContent));
     });
 
-    $scope.transform = function(mime, data){
-      if(mime == "image/svg+xml"){
-        var gcode = new GCode.Source(svg2gcode(data, {
-          scale : 1,
-          cutZ : 10,
-          safeZ: 8,
-          unit: "mm",
-          dpi: 72
-        }));
-        
-        return gcode.text;
-      }
-      return data;
-    }
+
     
     $scope.selectLine = function (line) {
       $scope.aceEditor.moveCursorTo(line, 0);
     }
     
   }
+
+  
 
   
 })();

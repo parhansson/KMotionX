@@ -46,22 +46,30 @@ SVGReader = {
     // max tollerance when tesselating curvy shapes
 
 
-  parse : function(svgstring, config) {
+  parse : function(source, config) {
     this.tolerance_squared = Math.pow(this.tolerance, 2);
 
     // parse xml
     var svgRootElement;
-    if (window.DOMParser) {
-      var parser = new DOMParser();
-      svgRootElement = parser.parseFromString(svgstring, 'text/xml').documentElement;
+    
+    if (typeof source === 'object' && source.ownerSVGElement !== undefined){
+      svgRootElement = source;
+    } else {
+      // clean off any preceding whitespace
+      var svgstring = source.replace(/^[\n\r \t]/gm, '');
+      if (window.DOMParser) {
+        var parser = new DOMParser();
+        svgRootElement = parser.parseFromString(svgstring, 'text/xml').documentElement;
+      }
+      else {
+        xml = xml.replace(/<!DOCTYPE svg[^>]*>/, '');
+        var xmlDoc = new ActiveXObject('Microsoft.XMLDOM');
+        xmlDoc.async = 'false';
+        xmlDoc.loadXML(svgstring);
+        svgRootElement = xmlDoc.documentElement;
+      }      
     }
-    else {
-      xml = xml.replace(/<!DOCTYPE svg[^>]*>/, '');
-      var xmlDoc = new ActiveXObject('Microsoft.XMLDOM');
-      xmlDoc.async = 'false';
-      xmlDoc.loadXML(svgstring);
-      svgRootElement = xmlDoc.documentElement;
-    }
+    
 
     // let the fun begin
     var node = {}
@@ -79,7 +87,7 @@ SVGReader = {
     for (var i=0; i<domNode.childNodes.length; i++) {
       var tag = domNode.childNodes[i]
       if (tag.childNodes) {
-        if (tag.tagName) {
+        if (tag.localName) { // changed from tagName to localName to handle svg files with namespace prefix svg:svg, svg:path etc;
           // we are looping here through
           // all nodes with child nodes
           // others are irrelevant
@@ -113,9 +121,9 @@ SVGReader = {
 
           // 4.) parse tag
           // with current attributes and transformation
-          if (this.SVGTagMapping[tag.tagName]) {
+          if (this.SVGTagMapping[tag.localName]) {
             //if (node.stroke[0] == 255 && node.stroke[1] == 0 && node.stroke[2] == 0) {
-              this.SVGTagMapping[tag.tagName](this, tag, node)
+              this.SVGTagMapping[tag.localName](this, tag, node)
             //}
           }
 
