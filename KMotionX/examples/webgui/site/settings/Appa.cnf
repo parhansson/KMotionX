@@ -56,7 +56,7 @@
       "name": ""
     },
     {
-      "action": 1,
+      "action": 8,
       "name": "M3",
       "dParam1": 0,
       "dParam0": 26
@@ -102,7 +102,7 @@
       "dParam2": 5,
       "dParam3": 5,
       "dParam1": 0,
-      "file": "/Users/parhansson/git/KMotionX/KMotionX/examples/webgui/site/c-programs/LaserInit.c"
+      "file": "/Users/parhansson/git/KMotionX/KMotionX/examples/webgui/site/c-programs/LaserPPI.c"
     },
     {
       "action": 0,
@@ -192,10 +192,15 @@
     },
     {
       "action": 0,
-      "name": "hej"
+      "name": "",
+      "dParam0": null,
+      "file": ""
     },
     {
-      "action": 0
+      "action": 4,
+      "dParam0": 2,
+      "file": "/Users/parhansson/git/KMotionX/C Programs/BlinkKFLOP.c",
+      "name": "Blinka3"
     },
     {
       "action": 0
