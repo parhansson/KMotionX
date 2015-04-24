@@ -21,9 +21,14 @@
 #include "frozen.h"
 #include "json.h"
 
+void setInterpreterParams(struct json_token *paramtoken, int indexOffset, int count, const char* pathTemplate);
+void setMotionParams(struct json_token *paramtoken);
+void interpret(struct json_token *paramtoken);
+void loadGlobalFile(struct json_token *paramtoken);
+void listDir(struct json_token *paramtoken);
+int invokeAction(struct json_token *paramtoken);
 
-
-int handle_api(struct mg_connection *conn, enum mg_event ev, char *uri);
+int handle_api(struct mg_connection *conn, enum mg_event ev);
 int handleJson(struct mg_connection *conn,const char *object, const char *func);
 void push_message(const char *msg);
 void delete_callback(struct callback *node);
@@ -91,7 +96,6 @@ struct callback {
   char msg[512]; //TODO malloc correct size
   struct callback *next;
 };
-
 
 pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t con = PTHREAD_COND_INITIALIZER;
@@ -255,18 +259,18 @@ void pollCallback(struct callback *cb, int id, int ret) {
     free(_msg); \
 }
 
-void pollCallbacks(struct mg_connection *conn) {
+void pollCallbacks(char * content) {
 
   int id = -1;
   char type[16];
   memset(type,0,16);
 
   int ret = -1;
-  if (conn != NULL) {
+  if (content != NULL) {
     //we have a connection.
     //incoming answer from client
-    if (conn->content_len > 12 && memcmp(conn->content, "CB_ACK:", 7) == 0) {
-      sscanf(conn->content, "CB_ACK: %d  %s %d", &id, type, &ret);
+    if (strlen(content) > 12 && memcmp(content, "CB_ACK:", 7) == 0) {
+      sscanf(content, "CB_ACK: %d  %s %d", &id, type, &ret);
 
 /*
        char *msg;
@@ -315,8 +319,11 @@ struct callback * init_callback(struct callback *last, const char * message,
   last->ret = -1;
   last->type = type;
   //{ "id": 5, "type": 67, data: ""|6776|{}|[]|null|true|false}
-  json_emit(last->msg, 512, "{ s: i, s: s, s: S, s: S}", "id", last->id, "type", CB_NAMES[type],
-      "block",isBlocking(type)?"true":"false" ,"data", message);
+  json_emit(last->msg, 512, "{ s: i, s: s, s: S, s: S}",
+      "id", last->id,
+      "type", CB_NAMES[type],
+      "block",isBlocking(type)?"true":"false",
+      "data", message);
 
   //debug("Enqueued %s message: %s",CB_NAMES[type], last->msg);
   return last;
@@ -386,8 +393,11 @@ void CompleteCallback(int status, int line_no, int sequence_number,
     const char *err) {
   //This is a non blocking call from other thread to be enqueued in poll thread
   char buf[256];
-  json_emit(buf, 256, "{ s: i, s: i, s: i, s: s }", "line", line_no, "status",
-      status, "sequence", sequence_number, "message", err);
+  json_emit(buf, 256, "{ s: i, s: i, s: i, s: s }",
+      "line", line_no,
+      "status", status,
+      "sequence", sequence_number,
+      "message", err);
   gstate.interpreting = 0;
   gstate.last_line = line_no;
   enqueueState();
@@ -398,7 +408,9 @@ void StatusCallback(int line_no, const char *msg) {
   //This is a non blocking call from other thread to be enqueued in poll thread
   char buf[256];
   gstate.last_line = line_no;
-  json_emit(buf, 256, "{ s: i, s: s }", "line", line_no, "message", msg);
+  json_emit(buf, 256, "{ s: i, s: s }",
+      "line", line_no,
+      "message", msg);
   enqueueCallback(buf, CB_STATUS);
 }
 
@@ -425,10 +437,12 @@ int MessageBoxHandler(const char *title, const char *msg, int options) {
     blocking = 1;
   }
 
-
-  char buf[256];
-  json_emit(buf, 256, "{ s: i, s: s, s: s }", "options", options, "title",
-      title, "message", msg);
+  //TODO Messages might be pretty long check this and alloc
+  char buf[512];
+  json_emit(buf, 512, "{ s: i, s: s, s: s }",
+      "options", options,
+      "title", title,
+      "message", msg);
   //todo handle blocking messagebox
   return enqueueCallback(buf, CB_MESSAGEBOX);
 }
@@ -475,7 +489,8 @@ void enqueueState() {
       "feedHold", gstate.feedHold?"true":"false",
       "interpreting", gstate.interpreting?"true":"false",
       "simulate", gstate.simulate?"true":"false",
-      "file", gstate.current_file, "machine", gstate.current_machine);
+      "file", gstate.current_file,
+      "machine", gstate.current_machine);
   init_callback(callbacks, stateBuf, CB_STATE);
 }
 
@@ -498,7 +513,7 @@ int handle_poll(struct mg_connection *conn) {
   }
 
   //printf("event %d\n", ev);
-  return MG_FALSE;
+  return MG_FALSE; //Return value is ignored on MG_POLL
 }
 int handle_ws_connect(struct mg_connection *conn) {
   //if websocket /ws is param here
@@ -506,99 +521,125 @@ int handle_ws_connect(struct mg_connection *conn) {
   enqueueState();
   return MG_FALSE;
 }
+
+bool isUploadRequest(struct mg_connection *conn){
+  //strcmp(conn->uri, "/upload") == 0;
+  bool result = strstr(conn->uri, "/upload") == conn->uri;
+  //debug("isUpload %d", result);
+  return result;
+}
+
+bool isApiRequest(struct mg_connection *conn){
+  bool result = strstr(conn->uri, "/api") == conn->uri;
+  //debug("isApi %d", result);
+  return result;
+}
+
+int handleUploadReceive(struct mg_connection *conn){
+  FILE *fp = (FILE *) conn->connection_param;
+
+  // Open temporary file where we going to write data
+  if (fp == NULL && ((conn->connection_param = fp = tmpfile())) == NULL) {
+    return -1;  // Close connection on error
+  }
+  // Return number of bytes written to a temporary file: that is how many
+  // bytes we want to discard from the receive buffer
+  return fwrite(conn->content, 1, conn->content_len, fp);
+}
+void handleUploadRequest(struct mg_connection *conn){
+  FILE *fp = (FILE *) conn->connection_param;
+  if (fp != NULL) {
+    //This row was in the example. But should not be here
+    //fwrite(conn->content, 1, conn->content_len, fp); // Write last bits
+
+
+    mg_printf(conn, "HTTP/1.1 200 OK\r\n"
+              "Content-Type: text/plain\r\n"
+              "Connection: close\r\n");
+
+    // Temp file will be destroyed after fclose(), do something with the
+    // data here -- for example, parse it and extract uploaded files.
+    // As an example, we just echo the whole POST buffer back to the client.
+
+
+    int pagesize, offset, fd;
+    size_t tmpfilesize, mapsize,filesize;
+    caddr_t addr;
+
+    filesize=0;
+    tmpfilesize = ftell(fp);
+    rewind(fp);
+    offset = 0;
+    fd = fileno(fp);
+    pagesize = getpagesize();
+    mapsize = (tmpfilesize/pagesize)+pagesize; // align memory allocation with pagesize
+
+    //memory map tmp file and parse it.
+    addr = (char*)mmap((caddr_t)0, mapsize, PROT_READ, MAP_PRIVATE, fd,offset);
+
+    const char *data;
+    int data_len, ofs = 0;
+    char var_name[100], file_name[100];
+    while ((ofs = mg_parse_multipart(addr + ofs, mapsize - ofs,
+                                     var_name, sizeof(var_name),
+                                     file_name, sizeof(file_name),
+                                     &data, &data_len)) > 0) {
+
+      //fprintf(stdout, "var: %s, file_name: %s, size: %d bytes\n",var_name, file_name, data_len);
+
+      FILE * pFile;
+      //Add one to skip first slash and make path relative
+      if(file_name[0] == '/'){
+        pFile = fopen (file_name+1, "w+");
+      } else {
+        pFile = fopen (file_name, "w+");
+      }
+      //ConsoleHandler("Writing to file");
+      //ConsoleHandler(file_name);
+      if(pFile){
+        size_t written = fwrite (data , sizeof(char), data_len, pFile);
+        if(written != data_len){
+          ErrMsgHandler("Error writing to file");
+          //ErrMsgHandler(strerror(errno));
+        } else{
+          filesize += written;
+        }
+        if(fclose (pFile) == EOF){
+          ErrMsgHandler("Error closing file");
+        }
+      } else {
+        ErrMsgHandler("Error saving file");
+        ErrMsgHandler(strerror(errno));
+      }
+
+    }
+
+    munmap(addr, mapsize);
+
+    //need to send response back to client to avoid wating connection
+    mg_printf_data(conn,
+        "Written %ld bytes to file: %s\n\n",
+        filesize,
+        file_name);
+  } else {
+    mg_printf_data(conn, "%s", "Had no data to write...");
+  }
+}
+
+
 int handle_request(struct mg_connection *conn,enum mg_event ev) {
   if (conn->is_websocket) {
-    pollCallbacks(conn);
+    char * content = strndup(conn->content, conn->content_len);
+    //debug("MG_REQUEST websocket. content:\"%s\"",content);
+    pollCallbacks(content);
+    free(content);
     return MG_TRUE;
-  } else {
-    char uri[256];
-    strcpy(uri, conn->uri);
-
-    //if (strcmp(conn->uri, "/upload") == 0) {
-    if (strstr(uri, "/upload") == uri) {
-      FILE *fp = (FILE *) conn->connection_param;
-      if (fp != NULL) {
-        //This row was in the example. But should not be here
-        //fwrite(conn->content, 1, conn->content_len, fp); // Write last bits
-
-
-        mg_printf(conn, "HTTP/1.1 200 OK\r\n"
-                  "Content-Type: text/plain\r\n"
-                  "Connection: close\r\n");
-
-        // Temp file will be destroyed after fclose(), do something with the
-        // data here -- for example, parse it and extract uploaded files.
-        // As an example, we just echo the whole POST buffer back to the client.
-
-
-        int pagesize, offset, fd;
-        size_t tmpfilesize, mapsize,filesize;
-        caddr_t addr;
-
-        filesize=0;
-        tmpfilesize = ftell(fp);
-        rewind(fp);
-        offset = 0;
-        fd = fileno(fp);
-        pagesize = getpagesize();
-        mapsize = (tmpfilesize/pagesize)+pagesize; // align memory allocation with pagesize
-
-        //memory map tmp file and parse it.
-        addr = (char*)mmap((caddr_t)0, mapsize, PROT_READ, MAP_PRIVATE, fd,offset);
-
-        const char *data;
-        int data_len, ofs = 0;
-        char var_name[100], file_name[100];
-        while ((ofs = mg_parse_multipart(addr + ofs, mapsize - ofs,
-                                         var_name, sizeof(var_name),
-                                         file_name, sizeof(file_name),
-                                         &data, &data_len)) > 0) {
-
-          //fprintf(stdout, "var: %s, file_name: %s, size: %d bytes\n",var_name, file_name, data_len);
-
-          FILE * pFile;
-          //Add one to skip first slash and make path relative
-          if(file_name[0] == '/'){
-            pFile = fopen (file_name+1, "w+");
-          } else {
-            pFile = fopen (file_name, "w+");
-          }
-          //ConsoleHandler("Writing to file");
-          //ConsoleHandler(file_name);
-          if(pFile){
-            size_t written = fwrite (data , sizeof(char), data_len, pFile);
-            if(written != data_len){
-              ErrMsgHandler("Error writing to file");
-              //ErrMsgHandler(strerror(errno));
-            } else{
-              filesize += written;
-            }
-            if(fclose (pFile) == EOF){
-              ErrMsgHandler("Error closing file");
-            }
-          } else {
-            ErrMsgHandler("Error saving file");
-            ErrMsgHandler(strerror(errno));
-          }
-
-        }
-
-        munmap(addr, mapsize);
-
-        //need to send response back to client to avoid wating connection
-        mg_printf_data(conn,
-            "Written %ld bytes to file: %s\n\n",
-            filesize,
-            file_name);
-          return MG_TRUE;
-      } else {
-        mg_printf_data(conn, "%s", "Had no data to write...");
-        return MG_TRUE; // Tell Mongoose we're done with this request
-      }
-    } else if (strstr(uri, "/api") == uri) {
-      //Starts with /api but can be anything
-      return handle_api(conn, ev, uri);
-    }
+  } else if (isUploadRequest(conn)) {
+    handleUploadRequest(conn);
+    return MG_TRUE; // Tell Mongoose we're done with this request
+  } else if (isApiRequest(conn)) {
+    //Starts with /api but can be anything
+    return handle_api(conn, ev);
   }
   return MG_FALSE;
 }
@@ -607,18 +648,17 @@ int handle_request(struct mg_connection *conn,enum mg_event ev) {
 // When last POST chunk is received, Mongoose sends MG_REQUEST, then MG_CLOSE.
 int handle_recv(struct mg_connection *conn) {
   if (conn->is_websocket) {
-    return MG_FALSE;
+    //char * content = strndup(conn->content, conn->content_len);
+    //debug("MG_RECV websocket. content:\"%s\"",content);
+    //free(content);
+    return 0; //MG_FALSE Do not discard anything from receive buffer;
   } else {
-    FILE *fp = (FILE *) conn->connection_param;
 
-    // Open temporary file where we going to write data
-    if (fp == NULL && ((conn->connection_param = fp = tmpfile())) == NULL) {
-      return -1;  // Close connection on error
+    if (isUploadRequest(conn)) {
+      //returns written bytes to discard from receive buffer
+      return handleUploadReceive(conn);
     }
-
-    // Return number of bytes written to a temporary file: that is how many
-    // bytes we want to discard from the receive buffer
-    return fwrite(conn->content, 1, conn->content_len, fp);
+    return 0; //MG_FALSE Do not discard anything from receive buffer;
   }
 }
 
@@ -632,6 +672,9 @@ int handle_close(struct mg_connection *conn) {
 }
 
 int ev_handler(struct mg_connection *conn, enum mg_event ev) {
+  //if(ev != MG_POLL){
+  //  debug("Event %d %s", ev,conn->uri);
+  //}
   switch (ev) {
     case MG_AUTH:       return MG_TRUE;
     case MG_POLL:       return handle_poll(conn);
@@ -644,7 +687,7 @@ int ev_handler(struct mg_connection *conn, enum mg_event ev) {
 
 }
 
-int handle_api(struct mg_connection *conn, enum mg_event ev, char *uri) {
+int handle_api(struct mg_connection *conn, enum mg_event ev) {
 
   if (conn->content == NULL) {
     //Content is NULL if request method is GET
@@ -654,7 +697,7 @@ int handle_api(struct mg_connection *conn, enum mg_event ev, char *uri) {
   int result;
 
   char **ap, *argv[3], *input, *tofree;
-  tofree = input = strdup(uri);
+  tofree = input = strdup(conn->uri); // should check for NULL
 
   for (ap = argv; (*ap = strsep(&input, "/")) != NULL;)
           if (**ap != '\0')
@@ -675,64 +718,7 @@ int handle_api(struct mg_connection *conn, enum mg_event ev, char *uri) {
   return result;
 }
 
-void setInterpreterParams(struct json_token *paramtoken, int indexOffset, int count, const char* pathTemplate) {
-  double dParam0, dParam1, dParam2, dParam3, dParam4;
-  int action;
-  char path[64];
-  char *file = NULL;
-  char *name = NULL;
-  json_token *token;
 
-  for(int i= 0;i<count;i++){
-    sprintf(path,pathTemplate,i);
-    token = find_json_token(paramtoken, path);
-    if(token){
-      action = dParam0 = dParam1 = dParam2 = dParam3 = dParam4 = 0;
-      json_int(token,"action",&action);
-      if(action > 0){
-        json_str(token,"name",&name,0);
-        json_str(token,"file",&file,0);
-        json_double(token,"dParam0",&dParam0);
-        json_double(token,"dParam1",&dParam1);
-        json_double(token,"dParam2",&dParam2);
-        json_double(token,"dParam3",&dParam3);
-        json_double(token,"dParam4",&dParam4);
-
-      }
-      //M2-M9,S index 2-9
-      //userButtons index 11-20
-      //M100-M119 index 21 -39
-      int actionIndex = indexOffset + i;
-      int actionNameIndex = action > 0 && action < 10?action:10;
-      printf("Set action index %d to %s\n",actionIndex, ACTION_NAMES[actionNameIndex]);
-      gci->McodeActions[actionIndex].Action = action;
-      gci->McodeActions[actionIndex].dParams[0] = dParam0;
-      gci->McodeActions[actionIndex].dParams[1] = dParam1;
-      gci->McodeActions[actionIndex].dParams[2] = dParam2;
-      gci->McodeActions[actionIndex].dParams[3] = dParam3;
-      gci->McodeActions[actionIndex].dParams[4] = dParam4;
-
-
-      //file should be nulled if not set.
-      if(file == NULL || action == 0){
-        gci->McodeActions[actionIndex].String[0] = 0;
-      } else {
-        strcpy(gci->McodeActions[actionIndex].String, file);
-      }
-
-
-      //invoke user buttons with a call such as this,
-      //Interpreter->InvokeAction(10,FALSE);  // resend new Speed
-
-
-    } else {
-      printf("Failed %s\n", pathTemplate);
-    }
-
-  }
-  free(file);
-  free(name);
-}
 //TODO To ensure no blocking callbacks are made from poll thread this
 //function should be called from another thread.
 
@@ -789,36 +775,13 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
   }
   //debug("params %d",params);
 
-//handles file loading. different headers
-
   //Reset global response string
   gp_response[0] = '\0';
   //gp_response = (char*) malloc(sizeof(char) * ( MAX_LINE));
   int ret = 0;
   if (!strcmp("aux", object)) {
     if (FUNC_SIGP("loadGlobalFile", 2)) {
-      int fileType = -1;
-      char * file = NULL;
-      char * globalFile = NULL;
-      toki(paramtoken + 1, &fileType);
-      toks(paramtoken + 2, &file);
-      if (file != NULL) {
-        if(strlen(file) > 0){
-          if(fileType == 1){
-            globalFile = gstate.current_file;
-          } else if(fileType == 2){
-            globalFile = gstate.current_machine;
-          }
-          if(globalFile != NULL){
-            if (strcmp(globalFile, file) != 0) {
-                strcpy(globalFile, file);
-                //when file changes all clients will e noticed.
-                enqueueState();
-            }
-          }
-        }
-        free(file);
-      }
+      loadGlobalFile(paramtoken);
     /*
      } else if (FUNC_SIGP("saveMachine", 1)) {
       char *machineFile = NULL;
@@ -842,31 +805,7 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
       free(machineData);
      */
     } else if(FUNC_SIGP("listDir", 1)){
-      char *dir = NULL;
-      toks(paramtoken, &dir);
-      if (dir) {
-        DIR *dp;
-        struct dirent *ep;
-        int w = 0,first=1;
-        dp = opendir (dir);
-        if (dp != NULL){
-            w += snprintf(gp_response+w, MAX_LINE-w, "[");
-            while ((ep = readdir(dp))){
-              //printf("%d %s\n", ep->d_type, ep->d_name);
-              if(first){
-                first = 0;
-                w += json_emit(gp_response+w, MAX_LINE-w, "{s: s, s: i}", "name", ep->d_name,"type",ep->d_type );
-              } else {
-                w += json_emit(gp_response+w, MAX_LINE-w, ",{s: s, s: i}", "name", ep->d_name,"type",ep->d_type );
-              }
-            }
-            w += snprintf(gp_response+w, MAX_LINE-w, "]");
-            (void) closedir (dp);
-        } else {
-          ErrMsgHandler(strerror(errno));
-        }
-      }
-      free(dir);
+      listDir(paramtoken);
     }
 
   } else if (!strcmp("kmotion", object)) {
@@ -996,35 +935,17 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
       EMIT_RESPONSE("[S, S]", p1, p2);
     } else if (FUNC_SIGP("WriteLineWithEcho", 1)) {
     }
-  } else if (!strcmp("interpreter", object)) {
-    if (FUNC_SIGP("Interpret", 5)) {
 
+  } else if (!strcmp("interpreter", object)) {
+    if (FUNC_SIGP("InvokeAction", 1)) {
+      ret = invokeAction(paramtoken);
+    } else if (FUNC_SIGP("Interpret", 5)) {
+
+      interpret(paramtoken);
       // test message from poll thread
       //blocking message from pull thread should be implementet to work.
       //km->DoErrMsg("Error message from poll thread");
 
-      int BoardType;      // = BOARD_TYPE_KFLOP;
-      char *InFile = NULL;
-      int start;      // = 0;
-      int end;      //= -1;
-      bool restart;      // = true;
-
-      toki(paramtoken + 1, &BoardType);
-      toks(paramtoken + 2, &InFile);
-      toki(paramtoken + 3, &start);
-      toki(paramtoken + 4, &end);
-      tokb(paramtoken + 5, &restart);
-      if (InFile) {
-        if (gstate.interpreting == 0) {
-          if (!gci->Interpret(BoardType, InFile, start, end, restart,
-              StatusCallback, CompleteCallback)) {
-            gstate.interpreting = 1;
-            enqueueState();
-          }
-        }
-      }
-
-      free(InFile);
 
 //    } else if (FUNC_SIGP("SetUserMCallback", 1)) {
 //    } else if (FUNC_SIGP("SetUserMCodeCallback", 1)) {
@@ -1032,114 +953,7 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
 
     } else if (!strcmp("setMotionParams",func) /*FUNC_SIGP("setMotionParams", 54)*/) {
 
-      char * name = NULL;
-      json_token *token;
-
-      MOTION_PARAMS *p=gci->GetMotionParams();
-      double maxAccel,maxVel,countsPerUnit;
-      double breakAngle,collinearTol,cornerTol,facetAngle,tpLookahead;
-
-      breakAngle = collinearTol = cornerTol = facetAngle = tpLookahead = 0;
-      json_double(paramtoken,"tplanner.breakangle",&breakAngle);
-      json_double(paramtoken,"tplanner.cornertolerance",&cornerTol);
-      json_double(paramtoken,"tplanner.lookahead",&tpLookahead);
-      json_double(paramtoken,"tplanner.collineartolerance",&collinearTol);
-      json_double(paramtoken,"tplanner.facetangle",&facetAngle);
-
-      p->BreakAngle = breakAngle;
-      p->CollinearTol = collinearTol;
-      p->CornerTol = cornerTol;
-      p->FacetAngle = facetAngle;
-      p->TPLookahead = tpLookahead;
-
-      //TODO
-      //p->RadiusA = m_RadiusA;
-      //p->RadiusB = m_RadiusB;
-      //p->RadiusC = m_RadiusC;
-
-      char path[64];
-      for(int i= 0;i<6;i++){
-        sprintf(path,"axes[%i]",i);
-        token = find_json_token(paramtoken, path);
-        if(token){
-          maxAccel = maxVel = countsPerUnit = 0;
-          json_str(token,"name",&name,0);
-          json_double(token,"countsPerUnit",&countsPerUnit);
-          json_double(token,"maxAccel",&maxAccel);
-          json_double(token,"maxVel",&maxVel);
-          switch (name[0]) {
-            case 'X':
-              p->CountsPerInchX = countsPerUnit;
-              p->MaxAccelX = maxAccel;
-              p->MaxVelX = maxVel;
-              break;
-            case 'Y':
-              p->CountsPerInchY = countsPerUnit;
-              p->MaxAccelY = maxAccel;
-              p->MaxVelY = maxVel;
-              break;
-            case 'Z':
-              p->CountsPerInchZ = countsPerUnit;
-              p->MaxAccelZ = maxAccel;
-              p->MaxVelZ = maxVel;
-              break;
-            case 'A':
-              p->CountsPerInchA = countsPerUnit;
-              p->MaxAccelA = maxAccel;
-              p->MaxVelA = maxVel;
-              break;
-            case 'B':
-              p->CountsPerInchB = countsPerUnit;
-              p->MaxAccelB = maxAccel;
-              p->MaxVelB = maxVel;
-              break;
-            case 'C':
-              p->CountsPerInchC = countsPerUnit;
-              p->MaxAccelC = maxAccel;
-              p->MaxVelC = maxVel;
-              break;
-          }
-
-        } else {
-          printf("Failed %s\n",path);
-        }
-
-      }
-
-      //M2-M9,S index 2-9
-      //userButtons index 11-20
-      //M100-M119 index 21 -39
-      setInterpreterParams(paramtoken, 0,MAX_MCODE_ACTIONS_M1,"actions[%i]");
-      setInterpreterParams(paramtoken, MAX_MCODE_ACTIONS_M1,MAX_MCODE_ACTIONS_BUTTONS,"userActions[%i]");
-      setInterpreterParams(paramtoken, MCODE_ACTIONS_M100_OFFSET,MAX_MCODE_ACTIONS_M100,"extendedActions[%i]");
-
-      //invoke user buttons with a call such as this,
-      //Interpreter->InvokeAction(10,FALSE);  // resend new Speed
-
-
-      printf("X %lf, %lf, %lf \n",p->CountsPerInchX,p->MaxAccelX, p->MaxVelX );
-      printf("Y %lf, %lf, %lf \n",p->CountsPerInchY,p->MaxAccelY, p->MaxVelY );
-      printf("Z %lf, %lf, %lf \n",p->CountsPerInchZ,p->MaxAccelZ, p->MaxVelZ );
-      printf("A %lf, %lf, %lf \n",p->CountsPerInchA,p->MaxAccelA, p->MaxVelA );
-      printf("B %lf, %lf, %lf \n",p->CountsPerInchB,p->MaxAccelB, p->MaxVelB );
-      printf("C %lf, %lf, %lf \n",p->CountsPerInchC,p->MaxAccelC, p->MaxVelC );
-
-      //TODO
-      //strcpy(Interpreter->ToolFile,m_ToolFile);
-      //strcpy(Interpreter->SetupFile,m_SetupFile);
-      //strcpy(Interpreter->GeoFile,m_GeoFile);
-      //strcpy(Interpreter->VarsFile,m_VarsFile);
-      //p->DegreesA = m_DegreesA!=0;
-      //p->DegreesB = m_DegreesB!=0;
-      //p->DegreesC = m_DegreesC!=0;
-      p->ArcsToSegs = true;;
-
-      free(name);
-
-
-      gci->CoordMotion->SetTPParams();
-
-
+      setMotionParams(paramtoken);
 
     } else if (FUNC_SIGP("simulate", 1)) {
       if (gstate.interpreting == 0) {
@@ -1171,3 +985,263 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
   return MG_TRUE;
 }
 
+int invokeAction(struct json_token *paramtoken){
+    BOOL FlushBeforeUnbufferedOperation = FALSE;
+    int action;
+    toki(paramtoken + 1, &action);
+    //Interpreter->InvokeAction(10,FlushBeforeUnbufferedOperation);  // resend new Speed
+    return gci->InvokeAction(action,FlushBeforeUnbufferedOperation);  // invoke action number
+}
+
+void loadGlobalFile(struct json_token *paramtoken){
+
+
+    int fileType = -1;
+    char * file = NULL;
+    char * globalFile = NULL;
+    toki(paramtoken + 1, &fileType);
+    toks(paramtoken + 2, &file);
+    if (file != NULL) {
+      if(strlen(file) > 0){
+        if(fileType == 1){
+          globalFile = gstate.current_file;
+        } else if(fileType == 2){
+          globalFile = gstate.current_machine;
+        }
+        if(globalFile != NULL){
+          if (strcmp(globalFile, file) != 0) {
+              strcpy(globalFile, file);
+              //when file changes all clients will e noticed.
+              enqueueState();
+          }
+        }
+      }
+      free(file);
+    }
+}
+
+
+void listDir(struct json_token *paramtoken){
+
+    char *dir = NULL;
+    toks(paramtoken, &dir);
+    if (dir) {
+      DIR *dp;
+      struct dirent *ep;
+      int w = 0,first=1;
+      dp = opendir (dir);
+      if (dp != NULL){
+          w += snprintf(gp_response+w, MAX_LINE-w, "[");
+          while ((ep = readdir(dp))){
+            //printf("%d %s\n", ep->d_type, ep->d_name);
+            if(first){
+              first = 0;
+              w += json_emit(gp_response+w, MAX_LINE-w, "{s: s, s: i}", "name", ep->d_name,"type",ep->d_type );
+            } else {
+              w += json_emit(gp_response+w, MAX_LINE-w, ",{s: s, s: i}", "name", ep->d_name,"type",ep->d_type );
+            }
+          }
+          w += snprintf(gp_response+w, MAX_LINE-w, "]");
+          (void) closedir (dp);
+      } else {
+        ErrMsgHandler(strerror(errno));
+      }
+    }
+    free(dir);
+}
+
+void interpret(struct json_token *paramtoken) {
+  int BoardType;      // = BOARD_TYPE_KFLOP;
+  char *InFile = NULL;
+  int start;      // = 0;
+  int end;      //= -1;
+  bool restart;      // = true;
+
+  toki(paramtoken + 1, &BoardType);
+  toks(paramtoken + 2, &InFile);
+  toki(paramtoken + 3, &start);
+  toki(paramtoken + 4, &end);
+  tokb(paramtoken + 5, &restart);
+  if (InFile) {
+    if (gstate.interpreting == 0) {
+      if (!gci->Interpret(BoardType, InFile, start, end, restart,
+          StatusCallback, CompleteCallback)) {
+        gstate.interpreting = 1;
+        enqueueState();
+      }
+    }
+  }
+
+  free(InFile);
+}
+
+void setMotionParams(struct json_token *paramtoken) {
+
+    char * name = NULL;
+    json_token *token;
+
+    MOTION_PARAMS *p=gci->GetMotionParams();
+    double maxAccel,maxVel,countsPerUnit;
+    double breakAngle,collinearTol,cornerTol,facetAngle,tpLookahead;
+
+    breakAngle = collinearTol = cornerTol = facetAngle = tpLookahead = 0;
+    json_double(paramtoken,"tplanner.breakangle",&breakAngle);
+    json_double(paramtoken,"tplanner.cornertolerance",&cornerTol);
+    json_double(paramtoken,"tplanner.lookahead",&tpLookahead);
+    json_double(paramtoken,"tplanner.collineartolerance",&collinearTol);
+    json_double(paramtoken,"tplanner.facetangle",&facetAngle);
+
+    p->BreakAngle = breakAngle;
+    p->CollinearTol = collinearTol;
+    p->CornerTol = cornerTol;
+    p->FacetAngle = facetAngle;
+    p->TPLookahead = tpLookahead;
+
+    //TODO
+    //p->RadiusA = m_RadiusA;
+    //p->RadiusB = m_RadiusB;
+    //p->RadiusC = m_RadiusC;
+
+    char path[64];
+    for(int i= 0;i<6;i++){
+      sprintf(path,"axes[%i]",i);
+      token = find_json_token(paramtoken, path);
+      if(token){
+        maxAccel = maxVel = countsPerUnit = 0.0;
+        json_str(token,"name",&name,0);
+        json_double(token,"countsPerUnit",&countsPerUnit);
+        json_double(token,"maxAccel",&maxAccel);
+        json_double(token,"maxVel",&maxVel);
+
+        // default values form KMotionCNCDlg.c
+        maxAccel = maxAccel == 0.0?0.01:maxAccel;
+        maxVel = maxVel == 0.0?0.1:maxVel;
+        //Zero on countPerUnit will abort GCode
+        countsPerUnit = countsPerUnit == 0.0?100.0:countsPerUnit;
+        switch (name[0]) {
+          case 'X':
+            p->CountsPerInchX = countsPerUnit;
+            p->MaxAccelX = maxAccel;
+            p->MaxVelX = maxVel;
+            break;
+          case 'Y':
+            p->CountsPerInchY = countsPerUnit;
+            p->MaxAccelY = maxAccel;
+            p->MaxVelY = maxVel;
+            break;
+          case 'Z':
+            p->CountsPerInchZ = countsPerUnit;
+            p->MaxAccelZ = maxAccel;
+            p->MaxVelZ = maxVel;
+            break;
+          case 'A':
+            p->CountsPerInchA = countsPerUnit;
+            p->MaxAccelA = maxAccel;
+            p->MaxVelA = maxVel;
+            break;
+          case 'B':
+            p->CountsPerInchB = countsPerUnit;
+            p->MaxAccelB = maxAccel;
+            p->MaxVelB = maxVel;
+            break;
+          case 'C':
+            p->CountsPerInchC = countsPerUnit;
+            p->MaxAccelC = maxAccel;
+            p->MaxVelC = maxVel;
+            break;
+        }
+
+      } else {
+        printf("Failed %s\n",path);
+      }
+
+    }
+
+    //M2-M9,S index 2-9
+    //userButtons index 11-20
+    //M100-M119 index 21 -39
+    setInterpreterParams(paramtoken, 0,MAX_MCODE_ACTIONS_M1,"actions[%i]");
+    setInterpreterParams(paramtoken, MAX_MCODE_ACTIONS_M1,MAX_MCODE_ACTIONS_BUTTONS,"userActions[%i]");
+    setInterpreterParams(paramtoken, MCODE_ACTIONS_M100_OFFSET,MAX_MCODE_ACTIONS_M100,"extendedActions[%i]");
+
+    printf("X %lf, %lf, %lf \n",p->CountsPerInchX,p->MaxAccelX, p->MaxVelX );
+    printf("Y %lf, %lf, %lf \n",p->CountsPerInchY,p->MaxAccelY, p->MaxVelY );
+    printf("Z %lf, %lf, %lf \n",p->CountsPerInchZ,p->MaxAccelZ, p->MaxVelZ );
+    printf("A %lf, %lf, %lf \n",p->CountsPerInchA,p->MaxAccelA, p->MaxVelA );
+    printf("B %lf, %lf, %lf \n",p->CountsPerInchB,p->MaxAccelB, p->MaxVelB );
+    printf("C %lf, %lf, %lf \n",p->CountsPerInchC,p->MaxAccelC, p->MaxVelC );
+
+    //TODO
+    //strcpy(Interpreter->ToolFile,m_ToolFile);
+    //strcpy(Interpreter->SetupFile,m_SetupFile);
+    //strcpy(Interpreter->GeoFile,m_GeoFile);
+    //strcpy(Interpreter->VarsFile,m_VarsFile);
+    //p->DegreesA = m_DegreesA!=0;
+    //p->DegreesB = m_DegreesB!=0;
+    //p->DegreesC = m_DegreesC!=0;
+    p->ArcsToSegs = true;;
+
+    free(name);
+
+
+    gci->CoordMotion->SetTPParams();
+
+}
+void setInterpreterParams(struct json_token *paramtoken, int indexOffset, int count, const char* pathTemplate) {
+  double dParam0, dParam1, dParam2, dParam3, dParam4;
+  int action;
+  char path[64];
+  char *file = NULL;
+  char *name = NULL;
+  json_token *token;
+
+  for(int i= 0;i<count;i++){
+    sprintf(path,pathTemplate,i);
+    token = find_json_token(paramtoken, path);
+    if(token){
+      action = dParam0 = dParam1 = dParam2 = dParam3 = dParam4 = 0;
+      json_int(token,"action",&action);
+      if(action > 0){
+        json_str(token,"name",&name,0);
+        json_str(token,"file",&file,0);
+        json_double(token,"dParam0",&dParam0);
+        json_double(token,"dParam1",&dParam1);
+        json_double(token,"dParam2",&dParam2);
+        json_double(token,"dParam3",&dParam3);
+        json_double(token,"dParam4",&dParam4);
+
+      }
+      //M2-M9,S index 2-9
+      //userButtons index 11-20
+      //M100-M119 index 21 -39
+      int actionIndex = indexOffset + i;
+      int actionNameIndex = action > 0 && action < 10?action:10;
+      printf("Set action index %d to %s\n",actionIndex, ACTION_NAMES[actionNameIndex]);
+      gci->McodeActions[actionIndex].Action = action;
+      gci->McodeActions[actionIndex].dParams[0] = dParam0;
+      gci->McodeActions[actionIndex].dParams[1] = dParam1;
+      gci->McodeActions[actionIndex].dParams[2] = dParam2;
+      gci->McodeActions[actionIndex].dParams[3] = dParam3;
+      gci->McodeActions[actionIndex].dParams[4] = dParam4;
+
+
+      //file should be nulled if not set.
+      if(file == NULL || action == 0){
+        gci->McodeActions[actionIndex].String[0] = 0;
+      } else {
+        strcpy(gci->McodeActions[actionIndex].String, file);
+      }
+
+
+      //invoke user buttons with a call such as this,
+      //Interpreter->InvokeAction(10,FALSE);  // resend new Speed
+
+
+    } else {
+      printf("Failed %s\n", pathTemplate);
+    }
+
+  }
+  free(file);
+  free(name);
+}

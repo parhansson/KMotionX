@@ -12,6 +12,7 @@
         saveMachine: saveMachine,
         feedHold: feedHold,
         compileAndLoadCoff: compileAndLoadCoff,
+        invokeAction: invokeAction,
         setMotionParams: setMotionParams,
         simulate: simulate,
         interpret: interpret,
@@ -118,6 +119,18 @@
         });
     }
     
+    function invokeAction(action) {
+      var url = "/api/interpreter/InvokeAction";
+      var msg = {"params": [action]};
+      return $http.post(url, msg)
+        .error(function(data, status, headers, config) {
+          // called asynchronously if an error occurs
+          // or server returns response with an error status.
+          console.log(data);
+        });
+    }
+
+    
     function simulate(enable) {
       var url = "/api/interpreter/simulate";
       var msg = {"params": enable};
@@ -129,9 +142,9 @@
         });
     }
     
-    function interpret(params) {
+    function interpret(BoardType, InFile, start, end, restart) {
       var url = "/api/interpreter/Interpret";
-      var msg = {"params":params,"ret":null};
+      var msg = {"params":[BoardType, InFile, start, end, restart],"ret":null};
       return $http.post(url, msg)
         .error(function(data, status, headers, config) {
           // called asynchronously if an error occurs

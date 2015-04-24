@@ -23,7 +23,7 @@
       $scope.interpreting = state.interpreting == 1;
       $scope.feedHold = state.feedHold == 1;
       $scope.$apply();
-      if (state.file != "") {
+      if (state.file != "" && state.file != $scope.editorContentName ) {
         vm.openFile(state.file)
       }
     });
@@ -33,13 +33,16 @@
     }
     vm.initMachine = function(){
       kmxBackend.compileAndLoadCoff([settings.machine.initProgram, settings.machine.initThread]);
+      //TODO needs  to Execute program as well
+      //Execute<thread>
     }
     
     
     vm.interpret = function(){
       //set motion params should done on backend
       kmxBackend.setMotionParams(settings.machine);
-      kmxBackend.interpret([2, $scope.editorContentName, 0, -1, 1]);
+      var BoardType = 2; //KLFOP
+      kmxBackend.interpret(BoardType, $scope.editorContentName, 0, -1, true);
       
       /*
       var lastImported = localStorage.getItem('last-imported');
