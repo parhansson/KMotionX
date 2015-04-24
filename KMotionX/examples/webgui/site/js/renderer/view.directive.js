@@ -88,7 +88,28 @@
       $(window).on('resize', onResize);
       $(elem).on( 'mousemove', onElementMouseMove );
       //$(document).on( 'mousemove', onElementMouseMove );
+      createOrigin();
       
+      function createOrigin(){
+        var lgeometry = new THREE.Geometry();
+        var x = 100;
+        var y = 100;
+        var z= 100;
+        lgeometry.vertices.push(new THREE.Vector3(0, 0, 0));
+        lgeometry.vertices.push(new THREE.Vector3(x, 0, 0));
+        lgeometry.vertices.push(new THREE.Vector3(0, 0, 0));
+        
+        lgeometry.vertices.push(new THREE.Vector3(0, 0, 0));
+        lgeometry.vertices.push(new THREE.Vector3(0, y, 0));
+        lgeometry.vertices.push(new THREE.Vector3(0, 0, 0));
+        
+        lgeometry.vertices.push(new THREE.Vector3(0, 0, 0));
+        lgeometry.vertices.push(new THREE.Vector3(0, 0, 0));
+        lgeometry.vertices.push(new THREE.Vector3(0, 0, z));
+        
+        line = new THREE.Line(lgeometry, lineMaterial);
+        scene.add(line);   
+      }
       
       function updateLine(){
         return;
