@@ -59,7 +59,10 @@
          e: 0,
          extruding: false
        };
-       var lastCommand = null;
+       var lastCommand = {
+           code:'NONE',
+           val: -1
+       };
        
        var scale = 1.0;
        var absolute = true;
