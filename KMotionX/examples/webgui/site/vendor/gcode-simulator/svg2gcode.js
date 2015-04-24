@@ -41,33 +41,58 @@ function svg2gcode(svg, settings) {
   var path;
 
   var idx = paths.length;
+  var maxBounds = { x : Infinity , y : Infinity, x2 : -Infinity, y2: -Infinity, area : 0};
   while(idx--) {
     var subidx = paths[idx].length;
     var bounds = { x : Infinity , y : Infinity, x2 : -Infinity, y2: -Infinity, area : 0};
 
     // find lower and upper bounds
     while(subidx--) {
-      if (paths[idx][subidx][0] < bounds.x) {
-        bounds.x = paths[idx][subidx][0];
-      }
-
-      if (paths[idx][subidx][1] < bounds.y) {
-        bounds.y = paths[idx][subidx][0];
-      }
-
-      if (paths[idx][subidx][0] > bounds.x2) {
-        bounds.x2 = paths[idx][subidx][0];
-      }
-      if (paths[idx][subidx][1] > bounds.y2) {
-        bounds.y2 = paths[idx][subidx][0];
-      }
+      //swap coordinates
+      var vec = paths[idx][subidx];
+      //swap(vec);
+      calculateBounds(vec, bounds);
+      calculateBounds(vec, maxBounds);
+      
     }
 
     // calculate area
     bounds.area = (1 + bounds.x2 - bounds.x) * (1 + bounds.y2-bounds.y);
     paths[idx].bounds = bounds;
   }
+  function calculateBounds(vec, bounds){
+    var x = vec.x;
+    var y = vec.y;
+    
+    if (x < bounds.x) {
+      bounds.x = x;
+    }
 
+    if (y < bounds.y) {
+      bounds.y = y;
+    }
+
+    if (x > bounds.x2) {
+      bounds.x2 = x;
+    }
+    if (y > bounds.y2) {
+      bounds.y2 = y;
+    }
+
+  }
+  
+  function swap(vec){
+    var tx = vec.x;
+    var ty = vec.y;
+    vec.x = ty;
+    vec.y = tx;
+  }
+  
+  function getBounds(bounds){
+    var height = scale(bounds.y2-bounds.y);
+    var width = scale(bounds.x2-bounds.x);
+    return '(Width: ' + width + ' Height: ' + height +' Area: '+ bounds.area +')';
+  }
   // cut the inside parts first
   paths.sort(function(a, b) {
     // sort by area
@@ -79,9 +104,9 @@ function svg2gcode(svg, settings) {
   //var LaserOFF = '(BUF,ClearBitBuf14)';
   //G20 Inch units
   //G21 mm units
-  gcode = [
-    'G90', //Absolute Coordinates
-  ];
+  gcode = [];
+  gcode.push(getBounds(maxBounds));
+  gcode.push('G90'); //Absolute Coordinates
   if(settings.unit == "mm"){
     gcode.push('G21');
   } else if(settings.unit == "in"){
@@ -92,6 +117,7 @@ function svg2gcode(svg, settings) {
   gcode.push('F' + settings.seekRate);
   for (var pathIdx = 0, pathLength = paths.length; pathIdx < pathLength; pathIdx++) {
     path = paths[pathIdx];
+    
     gcode.push(LaserOFF);
     //gcode.push('F' + settings.seekRate);
     // seek to index 0
@@ -109,6 +135,8 @@ function svg2gcode(svg, settings) {
         'G0',
         'Z' + scaleNoDPI(settings.cutZ + p)
       ].join(' '));
+      
+      gcode.push(getBounds(path.bounds));
       
       gcode.push(LaserON);
       //gcode.push('F' + settings.feedRate);

@@ -11,7 +11,7 @@ function Vec2(x, y) {
     this.y = y;
   }
 };
-
+/*
 Vec2.prototype = {
   x : 0,
   y : 0,
@@ -287,3 +287,4 @@ Vec2.prototype = {
     return new Vec2(-this.y, this.x)
   }
 };
+*/
