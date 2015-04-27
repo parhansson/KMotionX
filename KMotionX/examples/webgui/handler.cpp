@@ -497,19 +497,15 @@ void enqueueState() {
 int handle_poll(struct mg_connection *conn) {
   pollCallbacks(NULL);
 
-  time_t current_time = time(NULL);
-  if (current_time - service_console_time > 5) {
-    /*
-     if (km->KMotionLock() == KMOTION_LOCKED)  // see if we can get access
-     {
-     km->ServiceConsole();
-     km->ReleaseToken();
-     printf("ServiceConsole\n");
-     } else {
-     printf("Failed to lock for console\n");
-     }
-     */
-    service_console_time = current_time;
+  if(!gstate.simulate){
+    time_t current_time = time(NULL);
+    if (current_time - service_console_time > 1) {
+      if(km->ServiceConsole()){
+        //TODO not verified that this works.
+        ErrMsgHandler(">ServiceConsole Failed\n");
+      }
+      service_console_time = current_time;
+    }
   }
 
   //printf("event %d\n", ev);
