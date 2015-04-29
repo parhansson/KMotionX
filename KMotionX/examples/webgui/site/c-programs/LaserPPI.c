@@ -6,7 +6,19 @@
 #define PULSE_LENGTH 2 // was and should be 2ish
 #define PPI_IO_BIT 14
 
+double LastPrintT;
+
 //http://www.buildlog.net/blog/2011/12/getting-more-power-and-cutting-accuracy-out-of-your-home-built-laser-system/
+int printTime(){
+  double T=Time_sec();
+  if(T-LastPrintT > 1.0){
+
+    //printf("Speed=%f steps/sec, %fmm/s pps=%f\n",speed, mmps,pps);
+    LastPrintT = T;
+    return 1;
+  }
+  return 0;
+}
 main() {
   //M100 P500 Q50
   double ppi = *(float *) &persist.UserData[0]; //1500;//8000; //mm per min P Parameter
@@ -15,7 +27,7 @@ main() {
   
   double dutycycle = 255 * ((100 - percent) / 100);
   printf("LaserPPI.c adjusted PPI = %f DutyCycle = %f\n", ppi, dutycycle);
-
+  printf("Uptime %f\n", Time_sec());
 
   SetBitDirection(26, 1);    // Set bit 26 (PWM 0 as an output)
   FPGA(IO_PWMS_PRESCALE) = 2;   // set pwm frequency 21.7KHz KHz
@@ -65,8 +77,16 @@ main() {
   double vx, vy;
   double mmps; //mm per second
   //double feedRate FS= F/60 mm i sekunden
-  double T;
-  double LastPrintT = Time_sec();
+
+  double bulle = ppmm/stepsPerMM;
+  pps = bulle * speed;
+
+//  mmps = speed / stepsPerMM;
+//  pps = ppmm * mmps;
+
+
+  //double T;
+  LastPrintT = Time_sec();
   int laserState = OFF;
   SetStateBit(PPI_IO_BIT, laserState);
   int periods = 0, lastPeriod = 0, onPeriods = 0;
@@ -78,6 +98,8 @@ main() {
       onPeriods++;
     }
     periods++;
+    //Timebase should not be used. The actual time between each execution should be used
+    //If many threads are running on KFlop result may differ.
     vx = (ch0->Dest - ch0->last_dest) * (1.0f / TIMEBASE);
     vy = (ch1->Dest - ch1->last_dest) * (1.0f / TIMEBASE);
     speed = sqrtf(vx * vx + vy * vy);
@@ -87,6 +109,8 @@ main() {
     if (speed < 0.9) {
       //head is not moving turn laser off
       if(laserState == ON){
+        //This almost never happens because laser is turned of by pulse length setting.
+        //We just need this to be sure
         laserState = OFF;
         SetStateBit(PPI_IO_BIT, laserState);
         printf("Movement Stopped %d\n", laserState);
@@ -106,27 +130,27 @@ main() {
     } else {
       // head is moving an laser is off
       // check if it is time to turn laser on
-      mmps = speed / stepsPerMM;
-      pps = ppmm * mmps;
 
+      //mmps = speed / stepsPerMM;
+      //pps = ppmm * mmps;
+      pps = bulle * speed;
       double t = (1.0f / TIMEBASE / pps);
+      if(printTime()){printf("Debug %f - %f\n", pps, t);}
+      //if(printTime()){printf("Debug %d - %d > %f\n", periods, lastPeriod, t);}
       if (periods - lastPeriod > t) {
 
         laserState = ON;
         onPeriods = 0;
         SetStateBit(PPI_IO_BIT, laserState);
-        //printf("LaserState %d\n", laserState);
+
         if (periods > 2000000000) periods = 0;
         lastPeriod = periods;
       }
     }
-
-
-     T=Time_sec();
-     if(T-LastPrintT > 0.5){
+    /*
+    if(printTime()){
        printf("Speed=%f steps/sec, %fmm/s pps=%f\n",speed, mmps,pps);
-       LastPrintT = T;
-     }
-
+    }
+    */
   }
 }
