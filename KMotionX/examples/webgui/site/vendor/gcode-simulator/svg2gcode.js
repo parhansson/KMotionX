@@ -22,12 +22,13 @@ function svg2gcode(svg, settings) {
         dpiScale = 1/(settings.dpi);  
     }
   }
+  var transformVec = new Vec2(0,0);
+  
   var scaleNoDPI=function(val){
     return format(val * settings.scale);
   }
-  var scale=function(val) {
-    return format(val * settings.scale * dpiScale);
-  }
+  var ratio=settings.scale * dpiScale;
+  
   var format=function(numb){
     //fix fractional digits
     numb = +numb.toFixed(settings.fractionalDigits); 
@@ -39,65 +40,122 @@ function svg2gcode(svg, settings) {
   var paths = SVGReader.parse(svg, {}).allcolors;
   var gcode;
   var path;
+  
+  function Rect(){
+    this.x = Infinity;
+    this.y = Infinity;
+    this.x2 = -Infinity;
+    this.y2 = -Infinity
+    
+    this.area = area;
+    this.height = height;
+    this.width = width;
+    this.include = include;
+    this.describe = describe;
+    this.scale = scale;
+    
+    function scale(ratio){
+      this.x = this.x*ratio;
+      this.y = this.y*ratio;
+      this.x2 = this.x2*ratio;
+      this.y2 = this.y2*ratio;
+      return this;      
+    }
+    
+    function include(vec){
+      var x = vec.x;
+      var y = vec.y;
+      
+      if (x < this.x) {
+        this.x = x;
+      }
 
+      if (y < this.y) {
+        this.y = y;
+      }
+
+      if (x > this.x2) {
+        this.x2 = x;
+      }
+      if (y > this.y2) {
+        this.y2 = y;
+      }
+    }
+    
+    function area(){
+      return this.height() * this.width();
+    }
+    
+    function height(){
+      var height = this.y2-this.y;
+      return height;
+    }
+    
+    function width(){
+      var width = this.x2-this.x;      
+      return width;
+    }
+        
+  }
+  
   var idx = paths.length;
-  var maxBounds = { x : Infinity , y : Infinity, x2 : -Infinity, y2: -Infinity, area : 0};
+  var maxBounds = new Rect();
   while(idx--) {
     var subidx = paths[idx].length;
-    var bounds = { x : Infinity , y : Infinity, x2 : -Infinity, y2: -Infinity, area : 0};
+    var bounds = new Rect();
 
     // find lower and upper bounds
     while(subidx--) {
-      //swap coordinates
+      //transpose coordinates
       var vec = paths[idx][subidx];
-      //swap(vec);
-      calculateBounds(vec, bounds);
-      calculateBounds(vec, maxBounds);
-      
-    }
+      //transpose(vec);
 
-    // calculate area
-    bounds.area = (1 + bounds.x2 - bounds.x) * (1 + bounds.y2-bounds.y);
+      bounds.include(vec);
+      maxBounds.include(vec);
+    }
+    bounds.scale(ratio);
+
     paths[idx].bounds = bounds;
   }
-  function calculateBounds(vec, bounds){
-    var x = vec.x;
-    var y = vec.y;
-    
-    if (x < bounds.x) {
-      bounds.x = x;
-    }
-
-    if (y < bounds.y) {
-      bounds.y = y;
-    }
-
-    if (x > bounds.x2) {
-      bounds.x2 = x;
-    }
-    if (y > bounds.y2) {
-      bounds.y2 = y;
-    }
-
-  }
+  maxBounds.scale(ratio);
   
-  function swap(vec){
+  transformVec.x = -maxBounds.x;
+  transformVec.y = -maxBounds.y;
+  
+  function transpose(vec){
     var tx = vec.x;
     var ty = vec.y;
     vec.x = ty;
     vec.y = tx;
   }
   
-  function getBounds(bounds){
-    var height = scale(bounds.y2-bounds.y);
-    var width = scale(bounds.x2-bounds.x);
-    return '(Width: ' + width + ' Height: ' + height +' Area: '+ bounds.area +')';
+  function describe(rect){
+    return 'Width: ' + format(rect.width()) + ' Height: ' + format(rect.height()) +' Area: '+ format(rect.area());
   }
-  // cut the inside parts first
-  paths.sort(function(a, b) {
-    // sort by area
-    return (a.bounds.area < b.bounds.area) ? -1 : 1;
-  });
+
+  if(true){
+    // cut the inside parts first
+    paths.sort(function(a, b) {
+      // sort by area    
+      return (a.bounds.area() < b.bounds.area()) ? -1 : 1;
+    });
+  }
+  if(true){
+    paths.sort(function(a, b) {      
+      return (a.bounds.y < b.bounds.y) ? -1 : 1;
+    });    
+  }
+  
+  if(true){
+    paths.sort(function(a, b) {
+      var aDist = a[0].lengthSquared();
+      var bDist = b[0].lengthSquared();
+      
+      return aDist - bDist;
+    });
+    
+  }
+  
   var LaserON = 'M3 (laser on)';
   var LaserOFF = 'M5 (laser off)';
   //var LaserON = '(BUF,SetBitBuf14)';
@@ -105,26 +163,30 @@ function svg2gcode(svg, settings) {
   //G20 Inch units
   //G21 mm units
   gcode = [];
-  gcode.push(getBounds(maxBounds));
+  gcode.push('('+describe(maxBounds)+')');
+  
   gcode.push('G90'); //Absolute Coordinates
   if(settings.unit == "mm"){
     gcode.push('G21');
   } else if(settings.unit == "in"){
     gcode.push('G22');
-  } 
+  }
+  gcode.push('M100 P400 Q100'); 
   //gcode.push('G1 Z' + scaleNoDPI(settings.safeZ), 'M4');
   gcode.push('G0 Z' + scaleNoDPI(settings.safeZ));
   gcode.push('F' + settings.seekRate);
   for (var pathIdx = 0, pathLength = paths.length; pathIdx < pathLength; pathIdx++) {
     path = paths[pathIdx];
+    //add scale and transform
+    var startVec = path[0].scale(ratio,true).add(transformVec,true);
     
     gcode.push(LaserOFF);
     //gcode.push('F' + settings.seekRate);
     // seek to index 0
     gcode.push([
       'G0',
-      'X' + scale(path[0].x),
-      'Y' + scale(path[0].y)/*,
+      'X' + format(startVec.x),
+      'Y' + format(startVec.y)/*,
       'F' + settings.seekRate*/
     ].join(' '));
 
@@ -136,19 +198,20 @@ function svg2gcode(svg, settings) {
         'Z' + scaleNoDPI(settings.cutZ + p)
       ].join(' '));
       
-      gcode.push(getBounds(path.bounds));
+      gcode.push('('+describe(path.bounds)+')');
       
       gcode.push(LaserON);
       //gcode.push('F' + settings.feedRate);
       // keep track of the current path being cut, as we may need to reverse it
       var localPath = [];
       for (var segmentIdx=0, segmentLength = path.length; segmentIdx<segmentLength; segmentIdx++) {
-        var segment = path[segmentIdx];
-
+        //add transform
+        var segment = path[segmentIdx].scale(ratio,true).add(transformVec,true);
+        
         var localSegment = [
           'G1',
-          'X' + scale(segment.x),
-          'Y' + scale(segment.y)/*,
+          'X' + format(segment.x),
+          'Y' + format(segment.y)/*,
           'F' + settings.feedRate*/
         ].join(' ');
 
@@ -159,7 +222,7 @@ function svg2gcode(svg, settings) {
         // if the path is not closed, reverse it, drop to the next cut depth and cut
         // this handles lines
         if (segmentIdx === segmentLength - 1 &&
-            (segment.x !== path[0].x || segment.y !== path[0].y))
+            (segment.x !== startVec.x || segment.y !== startVec.y))
         {
 
           p+=settings.passWidth;

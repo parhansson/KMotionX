@@ -11,7 +11,7 @@ function Vec2(x, y) {
     this.y = y;
   }
 };
-/*
+
 Vec2.prototype = {
   x : 0,
   y : 0,
@@ -284,7 +284,19 @@ Vec2.prototype = {
   // Get the skew vector such that dot(skew_vec, other) == cross(vec, other)
   skew : function() {
     // Returns a new vector.
-    return new Vec2(-this.y, this.x)
+    return new Vec2(-this.y, this.x);
+  },
+  
+  scale : function(scale, returnNew){
+    if (returnNew) {
+      return new Vec2(this.x*scale, this.y*scale);
+    } else {
+      this.x = this.x*scale;
+      this.y = this.y*scale;
+      return this;
+    }
+    
   }
+  
 };
-*/
+
