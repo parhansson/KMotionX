@@ -6,16 +6,16 @@
   "axes": [
     {
       "name": "X",
-      "countsPerUnit": 10,
-      "maxAccel": 20,
-      "maxVel": 20,
+      "countsPerUnit": 2540,
+      "maxAccel": 40,
+      "maxVel": 40,
       "jogVel": 20
     },
     {
       "name": "Y",
-      "countsPerUnit": 10,
-      "maxAccel": 20,
-      "maxVel": 20,
+      "countsPerUnit": 2540,
+      "maxAccel": 40,
+      "maxVel": 40,
       "jogVel": 20
     },
     {
