@@ -117,7 +117,7 @@ Vec2.prototype = {
 
     inverse = (inverse) ? -1 : 1;
 
-    if (r.s !== undef) {
+    if (r.s !== undefined) {
       sin = r.s;
       cos = r.c;
     } else {
@@ -162,7 +162,7 @@ Vec2.prototype = {
 
   distanceSquared : function(vec2) {
     var c = this.subtract(vec2, true);
-    return dot22(c, c);
+    return c.lengthSquared();
   },
 
   // Convert this vector into a unit vector.
@@ -296,6 +296,18 @@ Vec2.prototype = {
       return this;
     }
     
+  },
+  
+  transpose : function (returnNew){
+    if (returnNew) {
+      return new Vec2(this.y, this.x);
+    } else {
+      var tx = this.x;
+      var ty = this.y;
+      this.x = ty;
+      this.y = tx;
+      return this;
+    }    
   }
   
 };
