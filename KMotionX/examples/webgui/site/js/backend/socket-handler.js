@@ -1,11 +1,4 @@
 
-var LOG_TYPE = {
-  'NONE':0,
-  'SEND':1,
-  'RECEIVE':2,
-  'ERROR':3,
-  'PING':4
-}
 function SocketHandler(url, messageHandler, logHandler) {
     this.url = url;
     var defaultHandler = function(data) {
@@ -22,7 +15,7 @@ SocketHandler.prototype.connect = function() {
     _this.logHandler('CONNECTING...', LOG_TYPE.NONE);
 
     this.websocket = new WebSocket(this.url);
-
+    this.websocket.binaryType = "arraybuffer";
     this.websocket.onopen = function(ev) {
         _this.logHandler('CONNECTED', LOG_TYPE.NONE);
         _this.sendMessage('KMotionX');
@@ -42,7 +35,15 @@ SocketHandler.prototype.connect = function() {
         if (!ev.data) {
             _this.logHandler('', LOG_TYPE.PING);
         } else {
-            _this.logHandler(ev.data, LOG_TYPE.RECEIVE);
+            //Data might be binary Blob or ArrayBuffer
+            if(ev.data instanceof Blob){
+            
+            } else if(ev.data instanceof ArrayBuffer){
+            
+            } else {
+              _this.logHandler(ev.data, LOG_TYPE.RECEIVE);              
+            }            
+            
             _this.messageHandler(ev.data);
         }
 

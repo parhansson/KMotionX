@@ -46,7 +46,7 @@
       function createLogPost(text, color) {
         var fragment=document.createDocumentFragment();
         var div = document.createElement('div');
-        var sp = document.createElement('sp');
+        var sp = document.createElement('span');
         sp.style.color = color;
         sp.appendChild(document.createTextNode(text));
         div.appendChild(sp);

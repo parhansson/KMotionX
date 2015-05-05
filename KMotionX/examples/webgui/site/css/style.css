@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'Digital';
+  src: url('DS-DIGI.ttf');
+}
+.dro {
+ /*font-family: 'Digital';*/
+ font-size: 32px;
+}
   /*
   #sidebar.affix-top {
     position: static;

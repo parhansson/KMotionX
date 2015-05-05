@@ -15,19 +15,49 @@
       //will trigger a state-update event
       kmxBackend.loadGlobalFile(1, path);
     }
-
+    var scrollInterval = null;
+    var interpretLine = 0;
     //… Additional extensions to create a mixin.
     $scope.$on('state-update', function(event, args){
       var state = args.state;
+      interpretLine = state.line;
       
-      $scope.interpreting = state.interpreting == 1;
-      $scope.feedHold = state.feedHold == 1;
-      $scope.$apply();
+      //Move cursor to line.
+      
+      if(state.interpreting){
+        if(scrollInterval === null){
+          scrollInterval = setInterval(updateEditor, 100);
+        }
+      } else {
+        if(scrollInterval !== null){
+          clearInterval(scrollInterval);
+          scrollInterval = null;
+          updateEditor();
+        }
+      }
+      
+      
+      $scope.interpreting = state.interpreting;
+      $scope.feedHold = state.feedHold;
+      //$scope.$apply(); // blev lite färre fel när jag tog bort den här tror jag
       if (state.file != "" && state.file != $scope.editorContentName ) {
         vm.openFile(state.file)
       }
+      
+      //only load if different from loaded
+      //TODO or if file has been updated, need a force flag or date
+      /*
+      var lastLoaded = localStorage.getItem('last-loaded');
+      if (obj.data.file != "" && obj.data.file != lastLoaded) {
+          loadGCodeFromPath(obj.data.file);
+      }
+      */
     });
-    
+    function updateEditor(){
+      $scope.aceEditor.moveCursorTo(interpretLine, 0);
+      //$scope.aceEditor.scrollToLine(state.line, true, true, function () {});
+
+    }
     vm.feedHold = function(){
       kmxBackend.feedHold();     
     }
@@ -63,12 +93,6 @@
       //view3d is inheritet from app controller
       GCodeRenderer.renderGCode(new GCode.Source($scope.editorContent));
     });
-
-
-    
-    $scope.selectLine = function (line) {
-      $scope.aceEditor.moveCursorTo(line, 0);
-    }
     
   }
 

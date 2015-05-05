@@ -10,9 +10,10 @@
   <link rel="stylesheet" type="text/css" href="css/switch.css">
 
   <!-- 3rd party libs -->
-  
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.js"></script>
   <!--
+  <script type="text/javascript" src="vendor/angularjs/1.3.15/angular.min.js"></script>  
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.0/angular.min.js"></script>
   -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>        
@@ -58,7 +59,7 @@
   
   <script type="text/javascript" src="js/backend/app.backend.js"></script>
   <script type="text/javascript" src="js/backend/socket.service.js"></script>
-  <script type="text/javascript" src="js/backend/socket-handler.js"></script>
+  <script type="text/javascript" src="js/backend/shared-types.js"></script>
   <script type="text/javascript" src="js/backend/kmxBackend.service.js"></script>  
   
   
@@ -68,6 +69,7 @@
   <script type="text/javascript" src="js/gcode/gcode.js"></script>
   <script type="text/javascript" src="js/gcode/gcode-editor.controller.js"></script>
   <script type="text/javascript" src="js/gcode/import.service.js"></script>
+  <script type="text/javascript" src="js/gcode/dro-directive.js"></script>
   
     
   <script type="text/javascript" src="js/module/other.js"></script>
@@ -150,6 +152,7 @@
   <div class="tab-pane active" id="NavGCode">
     <div class="row  fill">
       <div class="hidden-xs col-md-3">
+        <kmx-dro></kmx-dro>
         <kmx-log title="Error log" consoleId="error" color="red"></kmx-log>        
         <kmx-log title="Console" consoleId="console" color="blue"></kmx-log>
       </div>
@@ -181,7 +184,7 @@
             <kmx-ace id="gcodeEditor" ng-model="editorContent" mode="gcode" ></kmx-ace>
           </div>
           <div>
-              <button class='btn btn-grid' ng-click="gcodeEditCtrl.feedHold()" >Feed Hold</button>
+              <button class='btn btn-grid' ng-class="feedHold ? 'btn_down' : ''"  ng-click="gcodeEditCtrl.feedHold()" >Feed Hold</button>
               <!--<label class="switch"><input type="checkbox" ng-model="feedHold"><i></i></label><label style="text-anchor:top"></label>-->
               <button class='btn btn-grid'>Available</button>
               <button class='btn btn-grid'>Available</button>

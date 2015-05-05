@@ -20,14 +20,6 @@
         MESSAGEBOX: messageHandler// 7: Blocking callback. However there is no need to block OK only boxes.
     }    
     
-    var LOG_TYPE = {
-        'NONE':0,
-        'SEND':1,
-        'RECEIVE':2,
-        'ERROR':3,
-        'PING':4
-      }  
-    
     return {
         acknowledge: acknowledge,
         init: init
@@ -37,52 +29,7 @@
       if(socketWorker){
         return;
       }
-    /*
-      function testWs() {
-        logHandler('_CONNECTING...', LOG_TYPE.NONE);
 
-        var websocket = new WebSocket('ws://' + window.location.host + '/ws');
-        
-        websocket.onopen = function(ev) {
-            logHandler('_CONNECTED', LOG_TYPE.NONE);
-            websocket.send('KMotionX');
-        };
-        websocket.onclose = function(ev) {
-            logHandler('_DISCONNECTED', LOG_TYPE.NONE);
-            setTimeout(function() {
-              testWs();
-            }, 5000);
-        };
-        websocket.onerror = function(ev) {
-            logHandler(ev.data, LOG_TYPE.ERROR);
-        };
-
-        websocket.onmessage = function(ev) {
-
-            if (!ev.data) {
-                logHandler('', LOG_TYPE.PING);
-            } else {
-                var obj = JSON.parse(ev.data);
-                
-                var handler = socketHandlers[CB_Type[obj.type]];// || _this.defaultHandler;
-                var ret = handler(obj);
-                //TODO only ack messages that require users answer here
-                //acknowledge(obj, ret);  
-                
-                var ack = "CB_ACK:" + obj.id + ":" + obj.type + ":" + ret + ":";
-                console.log(ack);
-                websocket.send(ack);
-                
-                logHandler(ev.data, LOG_TYPE.RECEIVE);
-                //_this.messageHandler(ev.data);
-            }
-
-        }
-
-      }
-      
-      testWs();
-      */
       var socketWorker = new Worker("js/backend/socket-worker.js");
       var url = 'ws://' + window.location.host + '/ws';
       socketWorker.postMessage({command:'connect',url:url}) 
@@ -95,14 +42,18 @@
       socketWorker.onmessage = function(event) {
         var data = event.data; 
         if(data.data){
-          var obj = JSON.parse(data.message);
+          var obj = data.message;
           var handler = socketHandlers[obj.type];// || _this.defaultHandler;
           var ret = handler(obj);
           if(obj.block){
             //only ack messages that require users answer here
             acknowledge(obj, ret);              
           }
-          
+        } else if(data.status){
+          var json = angular.toJson(data.message,true);
+          //logHandler(json, LOG_TYPE.NONE);
+          //console.log(json);
+          $rootScope.$broadcast('status-update', { status: data.message });
         } else if(data.log){
           logHandler(data.message, data.type);
         }
@@ -116,19 +67,10 @@
     
     
     function statusHandler(obj) {
-      //select gcode row
-      var line = obj.data.line;
-      angular.element(document.getElementById("gcc")).scope().selectLine(line);
-      //gcodeText.select(line);
-      //viewer.draw(obj.data.message);
-      kmxLogger.log('status', line + ": " + obj.data.message)
+      kmxLogger.log('status', 'Line: '+ obj.data.line + " - " + obj.data.message)
     }
     function completeHandler(obj) {
-      //select gcode row
-      var line = obj.data.line;
-      angular.element(document.getElementById("gcc")).scope().selectLine(line);
-      //gcodeText.select(line);
-      kmxLogger.log('status', "Done: " + line + ": " + obj.data.message)
+      kmxLogger.log('status', 'Done Line: '+ obj.data.line + " - " + obj.data.message)
     }
     function errorMessageHandler(obj) {
       kmxLogger.log('error', obj.data);
@@ -153,19 +95,8 @@
     }
     
     function stateHandler(obj) {
-      $( "#feed_hold_btn" ).toggleClass( "button_pressed", obj.data.feedHold == 1 );
-
-      //only load if different from loaded
-      //TODO or if file has been updated, need a force flag
-      /*
-      var lastLoaded = localStorage.getItem('last-loaded');
-      if (obj.data.file != "" && obj.data.file != lastLoaded) {
-          loadGCodeFromPath(obj.data.file);
-      }
-      */
       $rootScope.$broadcast('state-update', { state: obj.data });
-      
-      //TODO listen for machine configuration changes
+      //TODO listen for machine configuration changes?
     }
     
     function messageHandler(obj) {
