@@ -73,8 +73,8 @@ struct state {
   bool connected;
   bool simulate;
   int feedHold;
-  int interpreting = 0;
-  int currentLine = 0;
+  bool interpreting;
+  int currentLine;
   char current_file[256];
   char current_machine[256];
 };
@@ -136,6 +136,11 @@ void initHandler() {
   km = new CKMotionDLL(0);
   cm = new CCoordMotion(km);
   gci = new CGCodeInterpreter(cm);
+  gstate.interpreting = false;
+  gstate.currentLine = 0;
+  gstate.connected = false;
+  gstate.simulate = false;
+  gstate.feedHold = 0; // todo read from kflop
   //Enable messagebox callback by not setting this callback
 
   //gci->McodeActions[3].Action = M_Action_Callback;
@@ -454,7 +459,7 @@ void CompleteCallback(int status, int line_no, int sequence_number,
       "status", status,
       "sequence", sequence_number,
       "message", err);
-  gstate.interpreting = 0;
+  gstate.interpreting = false;
   gstate.currentLine = line_no;
   enqueueState();
   enqueueCallback(buf, CB_COMPLETE);
@@ -1023,7 +1028,7 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
       setMotionParams(paramtoken);
 
     } else if (FUNC_SIGP("simulate", 1)) {
-      if (gstate.interpreting == 0) {
+      if (!gstate.interpreting) {
         bool enable;
         tokb(paramtoken, &enable);
         setSimulationMode(enable);
@@ -1132,10 +1137,10 @@ void interpret(struct json_token *paramtoken) {
   toki(paramtoken + 4, &end);
   tokb(paramtoken + 5, &restart);
   if (InFile) {
-    if (gstate.interpreting == 0) {
+    if (!gstate.interpreting) {
       if (!gci->Interpret(BoardType, InFile, start, end, restart,
           StatusCallback, CompleteCallback)) {
-        gstate.interpreting = 1;
+        gstate.interpreting = true;
         enqueueState();
       }
     }
