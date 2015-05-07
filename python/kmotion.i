@@ -11,6 +11,23 @@
 
 
 %{
+
+/*
+    Since the GCode interpreter runs as a separate thread, the callbacks
+    may be invoked from a thread created outside the binding language.
+    E.g. for Python, the GIL must be handled correctly.
+    
+    The following macros should be defined as appropriate for each binding language
+*/
+#ifdef SWIGPYTHON
+    #define _ENTER_BINDING  PyGILState_STATE gstate = PyGILState_Ensure()
+    #define _EXIT_BINDING  PyGILState_Release(gstate)
+    #define _INIT_THREADS PyEval_InitThreads()
+#else
+    #error "You'll need to define _ENTER_BINDING / _EXIT_BINDING / _INIT_THREADS appropriately for this language."
+#endif
+
+
 typedef unsigned BOOL;
 #include "KMotionX.h"
 #include "SocketWrapper.h"
@@ -50,6 +67,12 @@ typedef unsigned BOOL;
 // Don't support C callbacks.  Derive from KMotionCallbacks class instead and use SetCallbacks() method.
 %ignore CKMotionDLL::SetConsoleCallback(CONSOLE_HANDLER *ch);
 %ignore CKMotionDLL::SetErrMsgCallback(ERRMSG_HANDLER *eh);
+// Ignore these, have special requirements for re-entering binding for callbacks.
+// Instead, define a HandleConsole() and/or HandleErrMsg() method in derived class.
+%ignore CKMotionDLL::Console(const char *s);
+%ignore CKMotionDLL::DoErrMsg(const char *s);
+%ignore CKMotionDLL::ErrMsg(const char *buf);
+%ignore CKMotionDLL::MsgBox(const char *buf);
 // We handle status a bit differently.  Use virtual methods called on status change instead.
 %ignore CKMotionDLL::GetStatus(MAIN_STATUS& status, bool lock);
 
@@ -58,14 +81,15 @@ typedef unsigned BOOL;
 %rename(_ReleaseToken) CKMotionDLL::ReleaseToken;
 
 // Make the class names a bit more Pythonic
-%rename(KMotion) CKMotionDLL;
+//%rename(KMotion) CKMotionDLL;
 %rename(MotionParams) MOTION_PARAMS;
 %rename(KStatus) MAIN_STATUS;
 %rename(Kinematics) CKinematics;
 %rename(CoordMotion) CCoordMotion;
 
 // Allow extension to this in Python
-%feature("director") CKMotionDLL;
+//%feature("director") CKMotionDLL;
+%feature("director") KMotion;
 %feature("director") GCodeInterpreter;
 
 %import "SocketWrapper.h"
@@ -90,6 +114,23 @@ typedef unsigned BOOL;
         $self->SetConsoleCallback(NULL);
     }
     
+    int SetPersistInt(int pvar, int ival) {
+        char s[80];
+		sprintf(s, "SetPersistHex %d %x",pvar, ival);
+		return $self->WriteLine(s);
+    }
+    int SetPersistFloat(int pvar, float fval) {
+        char s[80];
+		sprintf(s, "SetPersistHex %d %x",pvar, *(int *)&fval);
+		return $self->WriteLine(s);
+    }
+    int SetPersistDouble(int pvar, double dval) {
+        char s[80];
+		sprintf(s, "SetPersistHex %d %x",pvar, ((int *)&dval)[0]);
+		if ($self->WriteLine(s)) return -1;
+		sprintf(s, "SetPersistHex %d %x",pvar+1, ((int *)&dval)[1]);
+		return $self->WriteLine(s);
+    }
 
 }
 

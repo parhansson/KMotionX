@@ -224,9 +224,10 @@ private:
 	bool PipeOpen;
 	bool ServerMessDisplayed;
 
+protected:
 	CONSOLE_HANDLER *ConsoleHandler;  
 	ERRMSG_HANDLER *ErrMsgHandler;  
-
+private:
 	int OpenPipe();
 	int PipeCmd(int code);
 	int PipeCmdStr(int code, const char *s);
