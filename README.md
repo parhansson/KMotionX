@@ -17,7 +17,7 @@ KMotionX also includes a JNI binding to use expose the GCodeInterpreter and KMot
 Anyone that would like to operate their KFlop controlled machine from their phone, tablets or anything with a web browser. I have ported the KMotionServer, KMotionDLL and GCodeInterpreter. I had plans to create a Java GUI but have now dropped that idea and created a HTML5 web application for that purpose. Drag an svg file into browser window and it will instantly be converted into executable GCode. Although I must admit it is still in alpha. There are lots of missing features to just use it out of the box. Some things might be hard wired for my current machine setup. Hence in this stage you might have to do some changes yourself. Or just wait until I have fixed it.
 
 
-![Image of KMXWeb](KMotionX/docs/images/main.png)
+![Image of KMXWeb](KMotionX/doc/images/main.png)
 
 
 #####Changes from original source
@@ -161,7 +161,7 @@ Or try the new web application. Start and surf to http://localhost:8080 in a mod
 
 ##Extra
 
-[It still doesn't work. Troubleshoot](KMotionX/docs/Troubleshooting.md)
+[It still doesn't work. Troubleshoot](KMotionX/doc/Troubleshooting.md)
 
 
-[Advanced stuff](KMotionX/docs/Advanced.md)
+[Advanced stuff](KMotionX/doc/Advanced.md)
