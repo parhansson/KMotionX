@@ -6,13 +6,18 @@ Linux/Unix (Mac OS X ) port of Dynomotions KMotion
 KMotionX is more of a patch than a port of KMotion (Except for KMotionServer). The goal has been to make as small modifications as possible to the orginal source. This will make it easier to keep up with every new release.
     Builds with at least gcc-4.7 on linux and Visual Studio 2008 on windows.
 
-See it in action
+
+See it in action on youtube
 https://www.youtube.com/watch?v=oPTJwcre0hA
 
-KMotionX also includes a JNI binding to use expose the GCodeInterpreter and KMotionDLL API to the Java world.
+
+KMotionX also includes a JNI binding to use expose the GCodeInterpreter and KMotionDLL API to the Java world. See advanced.
 
 ####Who might be interested in this.
 Anyone that would like to operate their KFlop controlled machine from their phone, tablets or anything with a web browser. I have ported the KMotionServer, KMotionDLL and GCodeInterpreter. I had plans to create a Java GUI but have now dropped that idea and created a HTML5 web application for that purpose. Drag an svg file into browser window and it will instantly be converted into executable GCode. Although I must admit it is still in alpha. There are lots of missing features to just use it out of the box. Some things might be hard wired for my current machine setup. Hence in this stage you might have to do some changes yourself. Or just wait until I have fixed it.
+
+
+![Image of KMXWeb](KMotionX/docs/images/main.png)
 
 
 #####Changes from original source
@@ -29,10 +34,10 @@ Anyone that would like to operate their KFlop controlled machine from their phon
 
 #####Features to be implemented
 - (DONE) Add Compile and load coff program to init KFLOP
-- (DONE) Execute on PC 
+- (DONE) Execute on PC
 - (DONE) Concatenation of error message in CheckSoftLimitsArc
 - ListLocations KMotionDLL_Direct (should work but needs more testing)
-- (DONE) LoadCoff 
+- (DONE) LoadCoff
 
 
 Dependencies
@@ -63,6 +68,8 @@ Jump to section "Install KMotionX" or "Install Java" if you will use the Java bi
 
 ###Ubuntu
 
+This is only tested on 14.04.
+
 ######1. Install g++
 ```
 sudo apt-get install g++
@@ -72,7 +79,6 @@ Skip this step if you will be using ftd2xx driver. However libftdi works a lot b
 ```
 sudo apt-get install libftdi-dev
 ```
-Jump to section "Install KMotionX" or "Install Java" if you will use the Java binding.
 
 ###Raspberry Pi
 
@@ -86,10 +92,12 @@ Update your installation executing following commands. Second and third command 
 ```
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-get dist-upgrade 
+sudo apt-get dist-upgrade
 ```
 
-######2. Install gcc
+######2. Install gcc 4.8
+It might work with gcc 4.6 but it will not tested by me. On Raspberry Pi it seems to have more options for different ARM processors.
+And why not just use the newer stuff?
 Skip this step if ”gcc --version” is 4.7 or later. The current latest version available is 4.8
 Install gcc and g++ 4.8. This command installs gcc and g++ 4.8 but does not change to 4.8 as default. If you would like to do that here is a guide. (switching-gccg-versions.html) If you do you need to adjust make file to use default installed version.
 ```
@@ -101,63 +109,6 @@ Skip this step if you will be using ftd2xx driver. However libftdi works a lot b
 sudo apt-get install libftdi-dev
 ```
 Jump to section "Install KMotionX" or "Install Java" if you will use the Java binding.
-
-###Install drivers from source (Optional)
-Installing packages with apt-get might not always result in the latest version depening on your system.
-Here is how you install USB drivers from source. Most people would be satisfied with the version supplied by the package manager on your system.
-
-######1. Install libusb
-
-Install dependencies
-```
-sudo apt-get install libudev-dev
-```
-
-```
-wget http://sourceforge.net/projects/libusb/files/libusb-1.0/libusb-1.0.18/libusb-1.0.18.tar.bz2
-tar -xvf libusb-1.0.18.tar.bz2
-cd libusb-1.0.18
-./configure --prefix=/usr --disable-static
-make
-sudo make install
-```
-
-######2. Install libftdi
-
-Skip this step if you will be using ftd2xx driver. However libftdi works a lot better on linux libftdi is an open source ftdi driver that might be used as replacement when running on Linux or MacOSX
-
-Install dependencies
-```
-sudo apt-get install cmake
-```
-```
-wget http://www.intra2net.com/en/developer/libftdi/download/libftdi1-1.1.tar.bz2
-tar -xvf libftdi1-1.1.tar.bz2
-cd libftdi1-1.1
-mkdir build
-cd build
-cmake  -DCMAKE_INSTALL_PREFIX="/usr" ../
-make
-sudo make install
-```
-
-######3. Update linker cache
-Im not sure if this is actually needed. But it can’t hurt.
-sudo ldconfig
-
-##Install Java (Optional)
-If you would like to build the java binding you need to install a JDK
-
-######Mac OS X
-If you are going to use the java binding you will sort this out yourself. I Would recommend version 1.7
-
-######Ubuntu 
-```
-sudo apt-get install openjdk-7-jdk
-```
-
-######Rasbian
-Preinstalled
 
 
 ##Install KMotionX
@@ -187,18 +138,6 @@ Build project
 make
 ```
 
-Build Tiny C Compiler
-
-(On Rasbian install texi2html and texinfo ```sudo apt-get install texi2html texinfo```)
-
-
-```
-cd KMotionX/tcc-0.9.26
-./configure —enable-cross
-make
-cd ../..
-```
-
 ######2. Install KFLOP device rules (Linux only)
 This will install a rule that tell your system to grant read and write access to the kflop device for users in group "plugdev"
 If your user is not in that group fix users groups or change the rule before pluging the device in.
@@ -208,7 +147,7 @@ sudo cp KMotionX/usb/etc/udev/rules.d/10.kflop.rules /etc/udev/rules.d/
 
 ######3. Execute examples
 Plug in your KFlop to an available USB port.
-KMotionServer will start automatically in background when needed. 
+KMotionServer will start automatically in background when needed.
 When KMotionDLL is rebuilt make sure to kill running server 'killall KMotionServer'
 
 Start executeGCode example
@@ -220,32 +159,9 @@ Or try the new web application. Start and surf to http://localhost:8080 in a mod
 ./kmxWeb -document_root ../KMotionX/examples/webgui/site
 ```
 
-####Troubleshooting
-executeGCode example says "Operation not permitted"
-  Check device permissions
-```
-ls -la /dev/kflop
-```
-should reveal something like this where 001/005 might be other values
-```  
-lrwxrwxrwx 1 root root 15 Sep 22 18:28 /dev/kflop -> bus/usb/001/005
-```
-then check permissions on target (replace 001/005 with values from previous output)
-```
-ls -la /dev/bus/usb/001/005
-```
-should reveal
-```
-crw-rw-r-T 1 root plugdev 189, 4 Sep 22 18:28 005
-```
-This means users in plugdev group have read and write access to the device
+##Extra
 
-If this is correct go on and check your users groups
-Check that your user is in group plugdev
-```
-groups
-```
-Check that plugdev is present
-```
-pi adm dialout cdrom sudo audio video plugdev games users netdev input spi gpio
-```
+[It still doesn't work. Troubleshoot](KMotionX/docs/Troubleshooting.md)
+
+
+[Advanced stuff](KMotionX/docs/Advanced.md)
