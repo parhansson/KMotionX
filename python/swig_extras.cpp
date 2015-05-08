@@ -150,11 +150,14 @@ enum {
 static void _gci_complete(int status, int lineno, int sequence_number, const char *err);
 
 
-class GCodeInterpreter: public CGCodeInterpreter
+class GCODEINTERPRETER_API GCodeInterpreter: public CGCodeInterpreter
 {
 public:
     GCodeInterpreter(CCoordMotion *CM);
 	virtual ~GCodeInterpreter(void) {_theInterpreter = NULL;}
+	virtual void ThreadStarted();     // First function called when interpreter thread started (from Interpret())
+	virtual void ThreadFinished();    // Final function called before terminating thread.
+
 	
 	// Virtual functions for "callbacks" from Interpret().  These are invoked from thread other than
 	// caller of Interpret().
@@ -559,8 +562,19 @@ GCodeInterpreter::GCodeInterpreter(CCoordMotion *CM): CGCodeInterpreter(CM)
     CGCodeInterpreter::SetUserMCodeCallback(_gci_mcode);
     setup_t();
 
+    printf("GCodeInterpreter::GCodeInterpreter\n");
+}
+
+void GCodeInterpreter::ThreadStarted()
+{
+    printf("GCodeInterpreter::ThreadStarted\n");
     _INIT_THREADS;
 }
+void GCodeInterpreter::ThreadFinished()
+{
+    printf("GCodeInterpreter::ThreadFinished\n");
+}
+
 
 int GCodeInterpreter::Interpret(
 				  int board_type,

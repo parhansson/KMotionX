@@ -90,9 +90,10 @@ DWORD DoExecuteShell(LPDWORD lpdwParam)
 {
 	CGCodeInterpreter *p=(CGCodeInterpreter*)lpdwParam;
 
+    p->ThreadStarted();
 	p->m_exitcode = p->DoExecute();
-
 	p->DoExecuteComplete();
+	p->ThreadFinished();
 
 	return 0;
 }

@@ -157,6 +157,8 @@ typedef unsigned BOOL;
 	
 %ignore CGCodeInterpreter:: ReadAndSyncCurPositions(double *x, double *y, double *z, double *a, double *b, double *c);
 %ignore CGCodeInterpreter::HandleEvt;
+%ignore CGCodeInterpreter::ThreadStarted;
+%ignore CGCodeInterpreter::ThreadFinished;
 
 %ignore TP_COEFF;
 %ignore SEGMENT;

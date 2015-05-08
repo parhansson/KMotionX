@@ -185,6 +185,12 @@ public:
 	int m_GCodeReads;
 	char m_InFile[MAX_PATH];
 	int m_exitcode;
+	
+	// SJH - added these virtuals as a hook for derived classes to implement any special measures
+	// required when the interpreter thread is started and finished.
+	virtual void ThreadStarted() {}     // First function called when interpreter thread started (from Interpret())
+	virtual void ThreadFinished() {}    // Final function called before terminating thread.
+	
 	int DoExecute();
 	int DoExecuteComplete();
 
