@@ -1,3 +1,6 @@
+"""Test compilation and execution of C programs on Kflop
+"""
+
 import time
 try:
     import kmotion
@@ -18,7 +21,10 @@ def poll(k):
         if m.is_fatal():
             # Kflop comms error
             print "Kflop disconnected!"
-        
+
+def idle_func(kthread):
+    global k
+    poll(k)
 
 # Select TCP or unix domain socket...
 k = KMotionX(0, "192.168.7.2", with_console=True)
@@ -26,21 +32,14 @@ k = KMotionX(0, "192.168.7.2", with_console=True)
         
 poll(k)
 
-if True:
-    print "FirmwareVersion:", k.FirmwareVersion()
-    print k.WriteLineReadLine("version")
-    print "Locations:", k.ListLocations()
-    print "USBLocation:", k.USBLocation()
-    print "CheckForReady:", k.CheckForReady()
+print k.WriteLineReadLine("version")
 
-def flash(k):
-    for i in range(3):
-        k.WriteLine("setbit47")
-        time.sleep(0.05)
-        k.WriteLine("clearbit47")
-        time.sleep(0.05)
-
-flash(k)
+cfile = "./test.c"
+kthread = 3   # Run in kflop thread 3
+k.run_c(cfile, kthread)
+k.wait_c(kthread, idle_func)
 
 poll(k)
+
+print "done!"
 
