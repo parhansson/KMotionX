@@ -249,3 +249,96 @@ Check that plugdev is present
 ```
 pi adm dialout cdrom sudo audio video plugdev games users netdev input spi gpio
 ```
+
+##SWIG branch
+This branch provides several enhancements for the Linux port, plus bug fixes:
+
+- fixes to the original TCC67 compiler from the official DynoMotion code base.
+
+    This is not completely working on 64-bit systems because the code was not
+    64-bit clean.
+    
+- changed client/server protocol so that it is possible to use TCP/IP as well
+ as unix domain sockets.  This required each message to be prefixed with a
+ 2-byte length, so it is not compatible with the official Windows version.
+ 
+ Basically, the KmotionServer program requires a direct USB connection to the
+ Kflop, but clients can connect to the server using either TCP/IP or Unix
+ (local pipe) sockets.
+
+- added Python binding.  By default, the Python binding is enabled when running
+ `configure`.  To disable, provide the --disable-python option.
+ 
+ When enabled, `swig` will be used to generate the binding, so you will first
+ need to install swig (Simple Wrapper Interface Generator).  Note that the
+ git repository tracks the swig-generated file, so if you are just building
+ straight from the repository, then the makefile will not trigger the swig
+ step, so you can get away without installing swig.
+
+##Python Binding
+The `python` directory in the distribution contains some simple Python test code.
+This is currently not documented much at all, so for details you will need to
+read the source.  I hope to provide better documentation once everything is a
+bit more stable.
+
+To include the kmotion module, the first few lines of your Python script should
+be something like:
+
+```
+import kmotion
+from kmotion_extras import *
+```
+
+then you create an instance of class `KMotionX`.
+
+For now, since there is no installer, you will need to issue the following
+shell commands before you will be able to run any Python code:
+
+```
+export PYTHONPATH=path-to-KMmotionX-install/bin:path-to-KMmotionX-install/python
+export KMOTION_BIN=path-to-KMmotionX-install/bin
+```
+
+Then, when the Kflop is connected to a USB port (and you have been able to 
+run `bin/kflopConsole` successfully) you can try:
+
+```
+cd path-to-KMmotionX-install/python
+python test_basic.py
+```
+
+although you will probably first need to edit those .py files and select the appropriate
+Kflop location.  Find and edit the following lines:
+
+```
+\# Select TCP or unix domain socket...
+k = KMotionX(0, "192.168.7.2", with_console=True)
+\#k = KMotionX(0, with_console=True)
+
+```
+
+I'm assuming here that you know at least a modicum of Python.  One of these days I'll
+define some command line parameters, but until then just edit the code.
+
+####Python binding for KMotionDLL
+This is the most basic level of control.  Documentation required.
+
+####Python binding for GCodeInterpreter
+The GCode interpreter class is also available, so that a complete CNC GUI may be constructed using Python and
+a suitable GUI toolkit such as GTK.
+
+In order to be as efficient as possible with (slow) interpreted languages like Python, there is some extra
+functionality in swig_extras.cpp.  This module provides some derived classes for both the basic KMotionDLL and
+the GCodeInterpreter.  In the latter case, there is an efficient polling method which automatically calls
+back to Python code whenever any event of interest occurs.
+
+All Python callbacks from the kmotion module 
+
+Multi-thread handling for Python is supported, which is important since the kmotion module will often be
+running in a separate thread, which will call back to Python code.  Although this works fine at the
+Python level, you must be careful about calling non thread-aware code, such as some GUI toolkits.  For
+example, if you are using GTK, then make sure that you properly use GTK threading calls if you ever
+modify GTK objects from a kmotion module callback.
+
+
+
