@@ -311,9 +311,9 @@ although you will probably first need to edit those .py files and select the app
 Kflop location.  Find and edit the following lines:
 
 ```
-\# Select TCP or unix domain socket...
+# Select TCP or unix domain socket...
 k = KMotionX(0, "192.168.7.2", with_console=True)
-\#k = KMotionX(0, with_console=True)
+#k = KMotionX(0, with_console=True)
 
 ```
 
