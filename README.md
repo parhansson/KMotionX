@@ -325,20 +325,37 @@ This is the most basic level of control.  Documentation required.
 
 ####Python binding for GCodeInterpreter
 The GCode interpreter class is also available, so that a complete CNC GUI may be constructed using Python and
-a suitable GUI toolkit such as GTK.
+a suitable GUI toolkit such as pyGTK.
 
 In order to be as efficient as possible with (slow) interpreted languages like Python, there is some extra
 functionality in swig_extras.cpp.  This module provides some derived classes for both the basic KMotionDLL and
 the GCodeInterpreter.  In the latter case, there is an efficient polling method which automatically calls
 back to Python code whenever any event of interest occurs.
 
-All Python callbacks from the kmotion module 
+All Python callbacks from the kmotion module are implemented via virtual methods in the relevant c++
+class.  This is the most natural technique when using swig bindings.  It allows callbacks into the binding
+language to be constructed by deriving a new subclass (in Python) of the c++ class.  Note that some of
+the callbacks are not the same name as used in the original c++ class, since it was necessary to provide
+some wrapper code to implement thread safety around the callbacks.  In this case, the Python GIL must
+be acquired and released correctly.
 
 Multi-thread handling for Python is supported, which is important since the kmotion module will often be
 running in a separate thread, which will call back to Python code.  Although this works fine at the
 Python level, you must be careful about calling non thread-aware code, such as some GUI toolkits.  For
-example, if you are using GTK, then make sure that you properly use GTK threading calls if you ever
+example, if you are using GTK, then make sure that you properly use GTK thread-aware protocol if you ever
 modify GTK objects from a kmotion module callback.
 
+####kmotion_extras.py
+
+This is a pure python module which provides some wrappers around the raw KMotion c++
+classes.  Take a look at `kmotion_extras.py` for examples of how to define callbacks.
+
+It is recommended to use the `KMotionX` and `Interpreter` classes in kmotion_extras rather than directly
+using `kmotion.KMotion` or `kmotion.GCodeInterpreter`, which are the most low-level interfaces.
+
+`KMotionX` makes a nicer interface to compiling and executing C programs on the Kflop, via the `ThreadManager`
+class.  Use of this class improves efficiency, since it tracks C code file dependencies (like make)
+to avoid unnecessary re-compilation (and even downloading).  It also supports alternative compilers
+such as the Texas instruments compiler (cl6x), however that support is still experimental.
 
 
