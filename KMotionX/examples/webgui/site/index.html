@@ -35,6 +35,7 @@
   
   <!-- Custom code -->
   <script type="text/javascript" src="js/KmotionXApp.js"></script>
+  
   <script type="text/javascript" src="js/editor/app.editor.js"></script>
   <script type="text/javascript" src="js/editor/ace.directive.js"></script>
   <script type="text/javascript" src="js/editor/editor.controller.js"></script>
@@ -197,7 +198,7 @@
         <!--
         -->      
         <div ng-controller="UserButtonController as buttons">
-          <div ng-repeat="action in machine.userActions">
+          <div ng-repeat="action in machine.userActions track by $index">
             <button ng-show="action.action > 0" class='btn btn-grid' ng-click="onUserButton($index, action)" ng-bind="action.name || '[Unnamed]'"></button>
           </div>
         </div>

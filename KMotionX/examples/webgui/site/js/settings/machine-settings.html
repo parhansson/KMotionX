@@ -50,22 +50,20 @@
           </div>
           <div class="tab-pane" id="_settings_mcodes">
             <kmx-mcode-value 
-              ng-repeat="action in machine.actions"
-              ng-if="action.action != -1"
-              ng-init="actionIndex = $index">
-            </<kmx-mcode-value>
+              ng-repeat="action in machine.actions track by $index" 
+              ng-if="action.action != -1">
+              </<kmx-mcode-value>
           </div>
           <div class="tab-pane" id="_settings_mcodes2">
             <kmx-mcode-value 
-              ng-repeat="action in machine.extendedActions" 
-              ng-init="actionIndex = $index">
+              ng-repeat="action in machine.extendedActions track by $index">
             </<kmx-mcode-value>
           </div>
           
           <div class="tab-pane" id="_settings_userbuttons">
             <div>
               <kmx-mcode-value 
-                ng-repeat="action in machine.userActions" 
+                ng-repeat="action in machine.userActions track by $index" 
                 ng-init="userButton = true">
               </kmx-mcode-value> 
             </div>
