@@ -62,7 +62,8 @@
       kmxBackend.feedHold();     
     }
     vm.initMachine = function(){
-      kmxBackend.compileAndLoadCoff([settings.machine.initProgram, settings.machine.initThread]);
+      kmxBackend.setMotionParams(settings.machine);
+      //kmxBackend.compileAndLoadCoff([settings.machine.initProgram, settings.machine.initThread]);
       //TODO needs  to Execute program as well
       //Execute<thread>
     }
