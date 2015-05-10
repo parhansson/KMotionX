@@ -775,10 +775,8 @@ int handle_api(struct mg_connection *conn, enum mg_event ev) {
           if (**ap != '\0')
                   if (++ap >= &argv[3])
                           break;
-  printf("%s\n", argv[0]);
-  printf("%s\n", argv[1]);
-  printf("%s\n", argv[2]);
   if (!strcmp("api", argv[0])) {
+    debug("%s/%s/%s\n", argv[0],argv[1],argv[2]);
     result = handleJson(conn,argv[1],argv[2]);
   } else {
     mg_send_header(conn, "Content-Type", "text/plain");
