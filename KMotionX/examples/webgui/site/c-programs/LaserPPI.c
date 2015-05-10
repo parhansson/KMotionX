@@ -3,10 +3,17 @@
 #define CLOCK 16.6666e6
 #define ON 1
 #define OFF 0
-#define PULSE_LENGTH 2 // was and should be 2ish
+#define PULSE_LENGTH 2 // 2ms
+#define LASER_PWM_BIT 26
 #define PPI_IO_BIT 14
+#define LASER_ARMED_BIT 46
+#define SET_LASER_STATE(STATE) laserState = STATE;SetStateBit(PPI_IO_BIT, laserState);
+#define stepsPerMM 100 // 4000 / 40; //40mm per rev 4000 steps per rev
 
 double LastPrintT;
+int laserState = OFF;
+double ppi;
+int periods = 0, lastPeriod = 0, onPeriods = 0;
 
 //http://www.buildlog.net/blog/2011/12/getting-more-power-and-cutting-accuracy-out-of-your-home-built-laser-system/
 int printTime(){
@@ -19,9 +26,97 @@ int printTime(){
   }
   return 0;
 }
+
+void servicePPI() {
+  double speed; //steps per second
+  double vx, vy;
+
+  int pulseLengthPeriods = (int) (PULSE_LENGTH / 1000 / TIMEBASE) / 2; // divide by two for some strange reason
+  //printf("Pulse length=%fms, Periods=%d\n",pulseLentgh, pulseLengthPeriods);
+  //ppi = 500;
+  double ppmm = ppi / 25.4; //pulser per mm
+  double pps = 0; //pulses per second
+  //P= PPMM * FS pulser i sekunden
+
+  //double feedRate FS= F/60 mm i sekunden
+
+  double bulle = ppmm/stepsPerMM;
+  pps = bulle * speed;
+
+//  double mmps; //mm per second
+//  mmps = speed / stepsPerMM;
+//  pps = ppmm * mmps;
+
+  if (laserState == ON) {
+        onPeriods++;
+      }
+      periods++;
+      //Timebase should not be used. The actual time between each execution should be used
+      //If many threads are running on KFlop result may differ.
+      vx = (ch0->Dest - ch0->last_dest) * (1.0f / TIMEBASE);
+      vy = (ch1->Dest - ch1->last_dest) * (1.0f / TIMEBASE);
+      speed = sqrtf(vx * vx + vy * vy);
+      //speed is steps per second
+      //speed=step/sec
+      //step
+      if (speed < 0.9) {
+        //head is not moving turn laser off
+        if(laserState == ON){
+          //This almost never happens because laser is turned of by pulse length setting.
+          //We just need this to be sure
+          SET_LASER_STATE(OFF);
+          //printf("Movement Stopped %d\n", laserState);
+        }
+        onPeriods = 0;
+        lastPeriod = periods = 0;
+
+      } else if (laserState == ON) {
+        // head is moving an laser is on
+        // turn off if on period is exceeded
+        if (onPeriods > pulseLengthPeriods) {
+          onPeriods = 0;
+          SET_LASER_STATE(OFF);
+          //printf("LaserState %d\n", laserState);
+        }
+      } else {
+        // head is moving an laser is off
+        // check if it is time to turn laser on
+
+        //mmps = speed / stepsPerMM;
+        //pps = ppmm * mmps;
+        pps = bulle * speed;
+        double t = (1.0f / TIMEBASE / pps);
+        //if(printTime()){printf("Debug %f - %f\n", pps, t);}
+        //if(printTime()){printf("Debug %d - %d > %f\n", periods, lastPeriod, t);}
+        if (periods - lastPeriod > t) {
+
+          SET_LASER_STATE(ON);
+          onPeriods = 0;
+
+          if (periods > 2000000000) periods = 0;
+          lastPeriod = periods;
+        }
+      }
+      /*
+      if(printTime()){
+         printf("Speed=%f steps/sec, %fmm/s pps=%f\n",speed, mmps,pps);
+      }
+      */
+      //if(printTime()){printf("Channel 0 dest %lf\n", ch0->Dest);}
+
+}
+/*
+int checkArmed(){
+  if(ReadBit(LASER_ARMED_BIT)){
+    return 1;
+  } else {
+    return 0;
+  }
+}
+*/
 main() {
   //M100 P500 Q50
-  double ppi = *(float *) &persist.UserData[0]; //1500;//8000; //mm per min P Parameter
+  ppi = *(float *) &persist.UserData[0]; //1500;//8000; //mm per min P Parameter
   double percent = *(float *) &persist.UserData[1]; //50%; //Q parameter
   printf("LaserPPI.c M100 P = %f Q = %f\n", ppi, percent);
   
@@ -29,7 +124,7 @@ main() {
   printf("LaserPPI.c adjusted PPI = %f DutyCycle = %f\n", ppi, dutycycle);
   printf("Uptime %f\n", Time_sec());
 
-  SetBitDirection(26, 1);    // Set bit 26 (PWM 0 as an output)
+  SetBitDirection(LASER_PWM_BIT, 1);    // Set bit 26 (PWM 0 as an output)
   FPGA(IO_PWMS_PRESCALE) = 2;   // set pwm frequency 21.7KHz KHz
   FPGA(IO_PWMS+1) = 1;   // enable the PWM0
   FPGA(IO_PWMS+0) = dutycycle;   //12;//4.7%  // Set duty cycle to 25%
@@ -39,6 +134,11 @@ main() {
 
   SetBitDirection(PPI_IO_BIT, 1);
   ClearBit(PPI_IO_BIT);
+  SetBitDirection(LASER_ARMED_BIT, 1);
+  ClearBit(LASER_ARMED_BIT);
+
+
+
   //SetBitDirection(4, 1);
   /*
    https://groups.yahoo.com/neo/groups/DynoMotion/conversations/messages/8717
@@ -47,10 +147,6 @@ main() {
    That would generate an accurate square wave anywhere from 0 to 500KHz.
    Command an axis to Jog at 4X the desired frequency.
    */
-  double speed; //steps per second
-  double stepsPerMM = 4000 / 40; //40mm per rev 4000 steps per rev
-
-  //printf("Frequency=%d, DutyCycle=%f, Pulse=%d clocks, Period=%f clocks\n",Frequency,DutyCycle,Pulse,Period);
   /*
    TIME_BASE = 0,00009
    1/TIME_BASE times per second program is executed
@@ -67,90 +163,27 @@ main() {
    Hur manga timebase ar det
    (1/TIME_BASE/cf)
    */
-  double pulseLength = PULSE_LENGTH; //ms
-  int pulseLengthPeriods = (int) (pulseLength / 1000 / TIMEBASE) / 2; // divide by two for some strange reason
-  //printf("Pulse length=%fms, Periods=%d\n",pulseLentgh, pulseLengthPeriods);
-  //ppi = 500;
-  double ppmm = ppi / 25.4; //pulser per mm
-  double pps = 0; //pulses per second
-  //P= PPMM * FS pulser i sekunden
-  double vx, vy;
-  double mmps; //mm per second
-  //double feedRate FS= F/60 mm i sekunden
 
-  double bulle = ppmm/stepsPerMM;
-  pps = bulle * speed;
+  //printf("Frequency=%d, DutyCycle=%f, Pulse=%d clocks, Period=%f clocks\n",Frequency,DutyCycle,Pulse,Period);
 
-//  mmps = speed / stepsPerMM;
-//  pps = ppmm * mmps;
+
 
 
   //double T;
   LastPrintT = Time_sec();
-  int laserState = OFF;
-  SetStateBit(PPI_IO_BIT, laserState);
-  int periods = 0, lastPeriod = 0, onPeriods = 0;
+
+  SET_LASER_STATE(OFF);
+
+
   for (;;) {
 
     //Delay_sec(0.1);
     WaitNextTimeSlice();  // ensure we don't get interrupted
-    if (laserState == ON) {
-      onPeriods++;
-    }
-    periods++;
-    //Timebase should not be used. The actual time between each execution should be used
-    //If many threads are running on KFlop result may differ.
-    vx = (ch0->Dest - ch0->last_dest) * (1.0f / TIMEBASE);
-    vy = (ch1->Dest - ch1->last_dest) * (1.0f / TIMEBASE);
-    speed = sqrtf(vx * vx + vy * vy);
-    //speed is steps per second
-    //speed=step/sec
-    //step
-    if (speed < 0.9) {
-      //head is not moving turn laser off
-      if(laserState == ON){
-        //This almost never happens because laser is turned of by pulse length setting.
-        //We just need this to be sure
-        laserState = OFF;
-        SetStateBit(PPI_IO_BIT, laserState);
-        printf("Movement Stopped %d\n", laserState);
-      }
-      onPeriods = 0;
-      lastPeriod = periods = 0;
-
-    } else if (laserState == ON) {
-      // head is moving an laser is on
-      // turn off if on period is exceeded
-      if (onPeriods > pulseLengthPeriods) {
-        onPeriods = 0;
-        laserState = OFF;
-        SetStateBit(PPI_IO_BIT, laserState);
-        //printf("LaserState %d\n", laserState);
-      }
+    if(ReadBit(LASER_ARMED_BIT)){
+      servicePPI();
     } else {
-      // head is moving an laser is off
-      // check if it is time to turn laser on
-
-      //mmps = speed / stepsPerMM;
-      //pps = ppmm * mmps;
-      pps = bulle * speed;
-      double t = (1.0f / TIMEBASE / pps);
-      if(printTime()){printf("Debug %f - %f\n", pps, t);}
-      //if(printTime()){printf("Debug %d - %d > %f\n", periods, lastPeriod, t);}
-      if (periods - lastPeriod > t) {
-
-        laserState = ON;
-        onPeriods = 0;
-        SetStateBit(PPI_IO_BIT, laserState);
-
-        if (periods > 2000000000) periods = 0;
-        lastPeriod = periods;
-      }
+      SET_LASER_STATE(OFF);
     }
-    /*
-    if(printTime()){
-       printf("Speed=%f steps/sec, %fmm/s pps=%f\n",speed, mmps,pps);
-    }
-    */
+
   }
 }
