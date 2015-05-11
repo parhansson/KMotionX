@@ -194,6 +194,12 @@ void info_handler(int signum) {
       websockets++;
     } else {
       connections++;
+      /*
+      fprintf(stdout, "Connection URI :%s\n", c->uri);
+      char * content = strndup(c->content, c->content_len);
+      fprintf(stdout, "Connection Content :%s\n", content);
+      free(content);
+      */
     }
   }
   //debug("Pushed to %d sockets", sockets);
@@ -644,7 +650,8 @@ void handleUploadRequest(struct mg_connection *conn){
     offset = 0;
     fd = fileno(fp);
     pagesize = getpagesize();
-    mapsize = (tmpfilesize/pagesize)+pagesize; // align memory allocation with pagesize
+    mapsize = (tmpfilesize/pagesize)*pagesize+pagesize; // align memory allocation with pagesize
+    //debug("FileSize: %ld\nPageSize: %ld\nMapSize:  %ld\n",tmpfilesize, pagesize, mapsize);
 
     //memory map tmp file and parse it.
     addr = (char*)mmap((caddr_t)0, mapsize, PROT_READ, MAP_PRIVATE, fd,offset);
@@ -656,7 +663,7 @@ void handleUploadRequest(struct mg_connection *conn){
                                      var_name, sizeof(var_name),
                                      file_name, sizeof(file_name),
                                      &data, &data_len)) > 0) {
-
+      //ErrMsgHandler("Parse multipart");
       //fprintf(stdout, "var: %s, file_name: %s, size: %d bytes\n",var_name, file_name, data_len);
 
       FILE * pFile;
@@ -687,7 +694,11 @@ void handleUploadRequest(struct mg_connection *conn){
     }
 
     munmap(addr, mapsize);
-
+    if(filesize == 0 /*filesize != tmpfilesize*/){
+      char msg[256];
+      snprintf(msg,256, "Bytes written %d of %d",filesize, tmpfilesize);
+      ErrMsgHandler(msg);
+    }
     //need to send response back to client to avoid wating connection
     mg_printf_data(conn,
         "Written %ld bytes to file: %s\n\n",
@@ -1040,8 +1051,6 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
   if (gp_response[0] == '\0') {
     EMIT_RESPONSE("N");
   }
-//  free(object);
-//  free(func);
 
   mg_printf_data(conn, "%s", gp_response);
 
