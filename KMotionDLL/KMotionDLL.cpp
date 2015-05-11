@@ -905,6 +905,7 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 
 	if (Thread==0) return 1;
 	char Compiler[MAX_PATH +1];
+	int add_dot = 0;
     strcpy(Compiler, customCompiler);
 	if (Compiler[0] == '/') {
 	    FILE *f=fopen(Compiler,"r");  // try if compiler is on path
@@ -915,7 +916,7 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	    }
 	}
 	else {
-	    FILE *f=fopen(Compiler,"r");  // try if compiler is on path
+	    FILE *f=fopen(Compiler,"r");  // try if compiler is in pwd
 
 	    if (f==NULL)
 	    {
@@ -935,6 +936,9 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 			    }
 		    }
 	    }
+	    else
+	        // In in pwd, then add './' so that shell command can find it here.
+	        add_dot = 1;
 	    fclose(f);
     }
 
@@ -957,7 +961,8 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	char command[MAX_LINE +1];
 
     if (tcc_vers < 26)
- 	    snprintf(command, sizeof(command), "%s -text %08X %s -nostdinc %s %s -o \"%s\" \"%s\" %s 2>&1",
+ 	    snprintf(command, sizeof(command), "%s%s -text %08X %s -nostdinc %s %s -o \"%s\" \"%s\" %s 2>&1",
+ 	        add_dot ? "./" : "",
 			Compiler,
 			GetLoadAddress(Thread,BoardType),
 			customOptions,
@@ -967,7 +972,8 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 			Name,
 			BindTo);
     else
-	    snprintf(command, sizeof(command), "%s -Wl,-Ttext,%08X %s -Wl,--oformat,coff -static -nostdinc -nostdlib %s %s -o \"%s\" \"%s\" %s 2>&1",
+	    snprintf(command, sizeof(command), "%s%s -Wl,-Ttext,%08X %s -Wl,--oformat,coff -static -nostdinc -nostdlib %s %s -o \"%s\" \"%s\" %s 2>&1",
+ 	        add_dot ? "./" : "",
 			Compiler,
 			GetLoadAddress(Thread,BoardType),
 			customOptions,

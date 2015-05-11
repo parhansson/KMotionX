@@ -130,24 +130,51 @@ class ThreadManager(object):
     SKIP = 2        # Skip this operation
     FORCE = 3       # Always do this operation (unless previous op was 'ONLY')
     
-    def __init__(self, k):
-        self.k = k; # KMotionX object (see below) or derivative.  Requires special
-                    # compilation methods: ccompile(), gen_depend().  These can
-                    # punt back to same-named methods in this class to use the 
-                    # TI compiler.
+    def __init__(self, k, srcdir=None, cc="tcc67wine", ccbindir=None, kflopdir=None, kflopname="DSPKFLOP.out"):
+        self.k = k; # KMotionX object (see below) or derivative.  May contain special
+                    # compilation methods: ccompile_xxx(), gen_depend_xxx().  
+                    # where xxx is the compiler name (cl6x or tcc67 etc.)  The method in
+                    # k is used if it exists, otherwise the method in this
+                    # class is used.
         self.thd2obj = {}  # Map thread number to (object code path, source code path)
-        self.srcdir = "/home/steve/DM6/DM6-SCL-Rev01"
-        self.c6xloc = "/home/steve/c6000_7.4.14/bin"
-        self.cl6x = os.path.join(self.c6xloc, "cl6x")
-        self.nm6x = os.path.join(self.c6xloc, "nm6x")
-        self.kflopname = "DSPKFLOP.out"
-        self.kflopdir = "/home/steve/KMotionX/DSP_KFLOP"
-        #self.kflopdir = "/home/steve/KMotion433k/DSP_KFLOP"
-        self.kflopout = os.path.join(self.kflopdir, self.kflopname)
-        self.kflopexportsyms = os.path.join(self.kflopdir, self.kflopname + ".nm")
+        self.kflopname = kflopname
+        self.kflopdir = os.path.expanduser(kflopdir or "~/KMotionX/DSP_KFLOP")
+        self.kflopoutfile = os.path.join(self.kflopdir, self.kflopname)
+        self.set_ccbindir(ccbindir, cc)
+        self.set_cc(cc)
+        self.set_srcdir(os.path.expanduser(srcdir or "~"))
+        
+    def set_ccbindir(self, ccbindir, cc):
+        if not ccbindir:
+            homedir = os.path.expanduser("~")
+            if cc == "cl6x":
+                self.ccbindir = os.path.join(homedir, "c6000_7.4.14/bin")
+            else:
+                self.ccbindir = os.path.join(homedir, "KMotionX/bin")
+        else:
+            self.ccbindir = ccbindir
+    def set_cc(self, cc):
+        """Set the C compiler (and, implicitly, linker and other related tools).
+        We support one of 'cl6x' (TI compiler), 'tcc67' (native TCC67) or 'tcc67wine'
+        (original Dynomotion compiler run under wine).
+        """
+        self.cc = cc
+        ccmethname = 'ccompile_' + cc
+        gdmethname = 'gen_depend_' + cc
+        if cc == 'cl6x':
+            self.cl6x = os.path.join(self.ccbindir, "cl6x")
+            self.nm6x = os.path.join(self.ccbindir, "nm6x") # Needed for special linking
+            self.kflopexportsyms = os.path.join(self.kflopdir, self.kflopname + ".nm")
+            self.get_kflopsyms(self.kflopoutfile, self.kflopexportsyms)
+        elif cc == 'tcc67' or cc == 'tcc67wine':
+            self.tcc67 = os.path.join(self.ccbindir, cc)
+        self.ccompile = getattr(self.k, ccmethname, None) or getattr(self, ccmethname)
+        self.gen_depend = getattr(self.k, gdmethname, None) or getattr(self, gdmethname)
+        
+            
+    def set_srcdir(self, srcdir):
+        self.srcdir = srcdir
         self.incldirs = [self.kflopdir, self.srcdir]
-        self.inclopts = ' '.join(['-i"'+x+'"' for x in self.incldirs])
-        self.get_kflopsyms(self.kflopout, self.kflopexportsyms)
         
     def run(self, filename, thread, compile_opts=AUTO, load_opts=AUTO, run_opts=AUTO):
         """Compile, load and run a C program in specified thread.
@@ -162,9 +189,10 @@ class ThreadManager(object):
             except:
                 do_compile = True
             if do_compile:
-                rc, err = self.k.gen_depend(filename)
+                rc, err = self.gen_depend(filename)
                 if not rc:
-                    rc, err = self.k.ccompile(outfile, filename, thread)
+                    rc, err = self.ccompile(outfile, filename, thread)
+                self.write_ccfile(filename)
             else:
                 rc = 0
             if compile_opts == self.ONLY or rc:
@@ -205,16 +233,24 @@ class ThreadManager(object):
             # Also, if either does not exist, will raise exception.
             #print "...yes"
             return True
-        for dfile in self.get_deplist(filename):
+        cccmd, deplist = self.get_deplist(filename)
+        if cccmd != self.cc:
+            return True         # Using a different compiler
+        for dfile in deplist:
             if mtold <= os.path.getmtime(dfile):
                 #print "...yes,", dfile, "is more recent"
                 return True     # some dependency is more recent
         #print "...no"
         return False
+    def get_ccfile_name(self, sourcefile_name):
+        return sourcefile_name + ".dc"
     def get_depfile_name(self, sourcefile_name):
         return sourcefile_name + ".d"
     def get_deplist(self, filename):
-        """Return list of file names which 'filename' (source file) depends on.
+        """Return tuple (cc, list of file names which 'filename' (source file) depends on).
+        
+        If there is a file of same name as filename, with a .dc extension then it
+        is assumed to contain the compiler command line used last time.
         
         If there is a file of same name as filename, with a .d extension, then it 
         is assumed to contain a list of dependency filenames, so that file is
@@ -223,9 +259,12 @@ class ThreadManager(object):
         Otherwise, raise an exception, which should make the caller recompile
         the file (and generate its depfile).
         """
+        ccfile = self.get_dcfile_name(filename)
         depfile = self.get_depfile_name(filename)
+        with open(ccfile, "r") as f:
+            cccmd = f.read()
         with open(depfile, "r") as f:
-            return [s.strip() for s in f.readlines()]
+            return (cccmd, [s.strip() for s in f.readlines()])
     def need_load(self, outfile, filename, thread):
         """Return true if need to load outfile to run as thread.
         False only returned if file name is same and it has the same mtime as the currently loaded obj file.
@@ -241,16 +280,44 @@ class ThreadManager(object):
         except:
             return (1, "cmd abend")
             
-    def gen_depend(self, filename):
+    def write_ccfile(self, filename):
+        with open(self.get_ccfile_name(filename), "w") as f:
+            f.write(self.cc)
+            
+    def gen_depend_cl6x(self, filename):
         depfilename = self.get_depfile_name(filename)
-        cmd = r'''%s "%s" %s --preproc_includes --output_file="%s"''' % (self.cl6x, filename, self.inclopts, depfilename)
+        inclopts = ' '.join(['-i"'+x+'"' for x in self.incldirs])
+        cmd = r'''%s "%s" %s --preproc_includes --output_file="%s"''' % (self.cl6x, filename, inclopts, depfilename)
         rc, err = self.runcmd(cmd)
         if rc:
             return (rc, err)
         return (0, '')
 
+    def gen_depend_tcc67(self, filename):
+        # TCC67 itself does not have options to generate dependencies, so just use gcc (it should be there!)
+        depfilename = self.get_depfile_name(filename)
+        inclopts = ' '.join(['-I"'+x+'"' for x in self.incldirs])
+        cmd = r'''gcc -nostdinc -M %s -o "%s" "%s"''' % (inclopts, depfilename, filename)
+        rc, err = self.runcmd(cmd)
+        if rc:
+            return (rc, err)
+        # Unfortunately, gcc generates makefile dependency rules, but we just want a simple file list.
+        # So munge output file and rewite appropriately.  Split file by whitespace, then discard first
+        # entry (the rule target), and any backslashes (which are added to split up the long dependency
+        # line).  FIXME: this will probably break if filenames include spaces, but you get what you
+        # deserve if you do that.
+        with open(depfilename, "r") as f:
+            s = f.read()
+        s = '\n'.join([x for x in s.split()[1:] if x != '\\'])
+        with open(depfilename, "w") as f:
+            f.write(s) 
+        return (0, '')
+        
+    def gen_depend_tcc67wine(self, filename):
+        return self.gen_depend_tcc67(filename)
+
     def get_kflopsyms(self, objfile, symfile):
-        """Run at init time to preload the dict of kflop.out exported symbols
+        """Run from set_cc() to preload the dict of kflop.out exported symbols if using cl6x compiler.
         """
         cmd = '%s "%s" > "%s"' % (self.nm6x, objfile, symfile)
         try:
@@ -261,13 +328,14 @@ class ThreadManager(object):
         with open(symfile,"r") as f:
             self.kflopsyms = {s.split(' ')[2].strip() : s[:8] for s in f.readlines()}
 
-    def ccompile(self, outfile, filename, thread):
+    def ccompile_cl6x(self, outfile, filename, thread):
         """Invoke the TI compiler (cl6x) and link
         """
         objfilename = "/tmp/%s.o" % (os.path.basename(filename),)
         #opts = "-mv6700+ -mu -ml3 -O0 --symdebug:dwarf -g"
         opts = "-mv6700+ -ml3 -O2"
-        cmd = r'''%s "%s" %s --output_file="%s" %s''' % (self.cl6x, filename, self.inclopts, objfilename, opts)
+        inclopts = ' '.join(['-i"'+x+'"' for x in self.incldirs])
+        cmd = r'''%s "%s" %s --output_file="%s" %s''' % (self.cl6x, filename, inclopts, objfilename, opts)
         rc, err = self.runcmd(cmd)
         if rc:
             return (rc, err)
@@ -310,6 +378,20 @@ SECTIONS {
         if rc:
             return (rc, err)
         return (0, '')
+        
+    def ccompile_tcc67(self, outfile, filename, thread):
+        """Invoke the native TCC67 compiler (via the DLL).  This is a bit less
+        flexible than providing our own command line, but it works.
+        """
+        self.k.SetCustomCompiler(None)
+        return self.k.Compile(filename, outfile, kmotion.BOARD_TYPE_KFLOP, thread, 1000)
+        
+    def ccompile_tcc67wine(self, outfile, filename, thread):
+        """Invoke the Windows version TCC67 compiler under wine (via the DLL).
+        """
+        self.k.SetCustomCompiler("tcc67wine")
+        return self.k.Compile(filename, outfile, kmotion.BOARD_TYPE_KFLOP, thread, 1000)
+        
 
 class KMotionX(kmotion.KMotion):
     """
@@ -341,7 +423,7 @@ class KMotionX(kmotion.KMotion):
         self.clear_messages()
         if with_console:
             self.SetConsoleCallback()
-        self.tmgr = ThreadManager(self)
+        self.tmgr = ThreadManager(self, cc="tcc67wine", srcdir="~/DM6/DM6-SCL-Rev01")
         self.set_comm_result(-2)
     # Overrides of virtual methods in superclass.  These may be called from
     # different thread (e.g. g-code interpreter).
@@ -374,17 +456,7 @@ class KMotionX(kmotion.KMotion):
         self.add_message(DebugMessage("kflop sent estop"))
     def handle_msgbox(self, cmdvec):
         self.add_message(DebugMessage("kflop sent msgbox"+str(cmdvec)))
-    
-    # Thread manager assists.  Can punt back to tmgr to use TI compiler
-    def gen_depend(self, filename):
-        return self.tmgr.gen_depend(filename)
-    def ccompile(self, outfile, filename, thread):
-        if True:
-            self.SetCustomCompiler("tcc67wine")
-            return self.CompileAndLoadCoff(filename, thread, 1000)
-        else:
-            return self.tmgr.ccompile(outfile, filename, thread)
-        
+            
     # App functionality
     def clear_messages(self):
         self.msgqueue = []  # List of Message objects from DLL or interpreter
