@@ -140,11 +140,10 @@ class ThreadManager(object):
         self.kflopname = kflopname
         self.kflopdir = os.path.expanduser(kflopdir or "~/KMotionX/DSP_KFLOP")
         self.kflopoutfile = os.path.join(self.kflopdir, self.kflopname)
-        self.set_ccbindir(ccbindir, cc)
-        self.set_cc(cc)
+        self.set_cc(cc, ccbindir)
         self.set_srcdir(os.path.expanduser(srcdir or "~"))
         
-    def set_ccbindir(self, ccbindir, cc):
+    def _set_ccbindir(self, ccbindir, cc):
         if not ccbindir:
             homedir = os.path.expanduser("~")
             if cc == "cl6x":
@@ -153,11 +152,12 @@ class ThreadManager(object):
                 self.ccbindir = os.path.join(homedir, "KMotionX/bin")
         else:
             self.ccbindir = ccbindir
-    def set_cc(self, cc):
+    def set_cc(self, cc, ccbindir=None):
         """Set the C compiler (and, implicitly, linker and other related tools).
         We support one of 'cl6x' (TI compiler), 'tcc67' (native TCC67) or 'tcc67wine'
         (original Dynomotion compiler run under wine).
         """
+        self._set_ccbindir(ccbindir, cc)
         self.cc = cc
         ccmethname = 'ccompile_' + cc
         gdmethname = 'gen_depend_' + cc
@@ -186,7 +186,8 @@ class ThreadManager(object):
         if compile_opts != self.SKIP:
             try:
                 do_compile = compile_opts == self.FORCE or self.need_compile(outfile, filename, thread)
-            except:
+            except Exception as e:
+                print e
                 do_compile = True
             if do_compile:
                 rc, err = self.gen_depend(filename)
@@ -199,6 +200,7 @@ class ThreadManager(object):
                 if rc:
                     self.k.add_message(CompilerErrorMessage(err, rc, filename))
                 return not rc
+        do_load = False
         if load_opts != self.SKIP:
             try:
                 do_load = load_opts == self.FORCE or self.need_load(outfile, filename, thread)
@@ -220,27 +222,30 @@ class ThreadManager(object):
                 return True
         if run_opts != self.SKIP:
             print "Executing thread", thread
+            if not do_load:
+                self.k.kill(thread)
             self.k.execute(thread);
         return True
         
     def need_compile(self, outfile, filename, thread):
         """Return True or raise exception if need to compile filename to run as thread.
         """
-        #print "Need compile?...", filename, "->", outfile
+        print "Need compile?...", filename, "->", outfile
         mtold = os.path.getmtime(outfile)
         if mtold <= os.path.getmtime(filename):
             # outfile is older, definitely need recompile
             # Also, if either does not exist, will raise exception.
-            #print "...yes"
+            print "...yes"
             return True
         cccmd, deplist = self.get_deplist(filename)
         if cccmd != self.cc:
+            print "...yes, compiler changed", self.cc, "->", cccmd
             return True         # Using a different compiler
         for dfile in deplist:
             if mtold <= os.path.getmtime(dfile):
-                #print "...yes,", dfile, "is more recent"
+                print "...yes,", dfile, "is more recent"
                 return True     # some dependency is more recent
-        #print "...no"
+        print "...no"
         return False
     def get_ccfile_name(self, sourcefile_name):
         return sourcefile_name + ".dc"
@@ -259,7 +264,7 @@ class ThreadManager(object):
         Otherwise, raise an exception, which should make the caller recompile
         the file (and generate its depfile).
         """
-        ccfile = self.get_dcfile_name(filename)
+        ccfile = self.get_ccfile_name(filename)
         depfile = self.get_depfile_name(filename)
         with open(ccfile, "r") as f:
             cccmd = f.read()
@@ -332,8 +337,10 @@ class ThreadManager(object):
         """Invoke the TI compiler (cl6x) and link
         """
         objfilename = "/tmp/%s.o" % (os.path.basename(filename),)
-        #opts = "-mv6700+ -mu -ml3 -O0 --symdebug:dwarf -g"
-        opts = "-mv6700+ -ml3 -O2"
+        #opts = "-mv6700+ -mu -ml3 -O0 --symdebug:dwarf"
+        #opts = "-mv6710 -ml3 -mu -O2 --opt_for_space --entry_hook --exit_hook --entry_parm=name --exit_parm=name"
+        opts = "-mv6710 -ml3 -mu -O2 --opt_for_space"
+        #opts = "-mv6700+ -ml3 -O2"
         inclopts = ' '.join(['-i"'+x+'"' for x in self.incldirs])
         cmd = r'''%s "%s" %s --output_file="%s" %s''' % (self.cl6x, filename, inclopts, objfilename, opts)
         rc, err = self.runcmd(cmd)
@@ -353,27 +360,31 @@ class ThreadManager(object):
         xsyms = '\n'.join([sym+' = 0x'+loc+';' for sym,loc in usyms.items()])
         mtype = 'THREAD_MEM'    # Or IRAM for small programs
         linkcmds = r'''
--c
--heap 15700000
--stack 0x800
+--entry_point _main
+--output_file=%s
+--map_file=%s.map
+--ram_model
+%s
 %s
 MEMORY {
 IRAM: o = 0x1001c000, l = 0x00004000
-THREAD_MEM: o = 0x%08X, l = 0x00010000
+THREAD_MEM: o = 0x%08X, l = 0x%08X
 SDRAM: o = 0x80100000, l = 0x00f00000
 }
 SECTIONS {
 .placeholder: palign(8), fill = 0xaaaaaaaa {. += 4;} > THREAD_MEM
-.text > %s
-.far > %s
-.const > %s
+.text: > %s
+.far: > %s
+.const: > %s
+.cinit: > SDRAM
+.switch: > THREAD_MEM
 }
-''' % (xsyms, 0x80040000 + thread*0x10000, mtype, mtype, mtype)
+''' % (outfile, outfile, objfilename, xsyms, 0x80040000 + thread*0x10000, 0x50000 if thread==7 else 0x10000, mtype, mtype, mtype)
         linkcmdsfile = "/tmp/%s.cmd" % (os.path.basename(outfile))
         with open(linkcmdsfile, "w") as f:
             f.write(linkcmds)
 
-        cmd = '%s -z -c -o "%s" -x -e _main "%s" "%s"' % (self.cl6x, outfile, objfilename, linkcmdsfile)
+        cmd = '%s --run_linker "%s"' % (self.cl6x, linkcmdsfile)
         rc, err = self.runcmd(cmd)
         if rc:
             return (rc, err)
@@ -476,6 +487,8 @@ class KMotionX(kmotion.KMotion):
                 return 1
         return rc
     
+    def kill(self, thread):
+        self.WriteLine("Kill%d" % thread);
     def execute(self, thread):
         self.WriteLine("Execute%d" % thread);
     def run_c(self, filename, thread):
