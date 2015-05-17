@@ -38,9 +38,10 @@
 #include <string.h>
 #include <errno.h>
 #include <math.h>
-// tktk #include <unistd.h>
+#ifndef WIN32
+#include <unistd.h>
+#endif
 #include <signal.h>
-// tktk #include <unistd.h>
 #include <fcntl.h>
 #include <setjmp.h>
 #ifdef WIN32
