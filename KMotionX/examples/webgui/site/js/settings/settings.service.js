@@ -2,9 +2,9 @@
   angular.module('KmotionXApp')
    .factory('settings', settings);
   
-  settings.$inject = ['$http','kmxBackend'];
+  settings.$inject = ['$rootScope','$http','kmxBackend'];
   
-  function settings($http,kmxBackend){
+  function settings($rootScope,$http,kmxBackend){
     var mcodes = ['','','','M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'S'];
     var mcodesExtended = ["M100", "M101", "M102", "M103", "M104", "M105", "M106", "M107", "M108", "M109", "M110", "M111", "M112", "M113", "M114", "M115", "M116", "M117", "M118", "M119"];
     
@@ -38,6 +38,7 @@
     function load(file) {
       return $http.get(file +"?nocache=1").success(function(jsonData) {
         updateSettings(jsonData);
+        $rootScope.$broadcast('settings-update');
       });
     }
       
@@ -65,6 +66,7 @@
     function save() {
       var file = fileName(); 
       kmxBackend.save(file, angular.toJson(service.machine,true));
+      $rootScope.$broadcast('settings-update');
     }    
     function axesArr(){
       var axes = [] 
