@@ -66,6 +66,7 @@
     function createEditor(elem){
 
       var editor = ace.edit(elem[0]);
+      editor.$blockScrolling = Infinity;
       editor.resize();
       editor.setValue(elem.html());
       editor.clearSelection();
