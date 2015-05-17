@@ -649,7 +649,7 @@ void handleUploadRequest(struct mg_connection *conn){
     rewind(fp);
     offset = 0;
     fd = fileno(fp);
-    pagesize = getpagesize();
+    pagesize = getpagesize(); // should use sysconf(_SC_PAGE_SIZE) instead.
     mapsize = (tmpfilesize/pagesize)*pagesize+pagesize; // align memory allocation with pagesize
     //debug("FileSize: %ld\nPageSize: %ld\nMapSize:  %ld\n",tmpfilesize, pagesize, mapsize);
 
