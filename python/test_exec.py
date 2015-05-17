@@ -27,8 +27,16 @@ def idle_func(kthread):
     poll(k)
 
 # Select TCP or unix domain socket...
-k = KMotionX(0, "192.168.7.2", with_console=True)
-#k = KMotionX(0, with_console=True)
+#k = KMotionX(0, "192.168.7.2", with_console=True)
+k = KMotionX(0, with_console=True)
+
+# Set the compiler: "tcc67", or "cl6x" (only if TI compiler tools installed).
+# Can also specify "tcc67wine" but you will need to set up a script of that
+# name in the bin directory which invokes TCC67 under wine.  Such a script
+# might look like
+#   #!/bin/bash
+#   wine ~/.wine/drive_c/KMotion432/KMotion/Release/TCC67.exe $*
+k.tmgr.set_cc("tcc67")
         
 poll(k)
 

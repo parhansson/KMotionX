@@ -21,8 +21,8 @@ def poll(k):
         
 
 # Select TCP or unix domain socket...
-k = KMotionX(0, "192.168.7.2", with_console=True)
-#k = KMotionX(0, with_console=True)
+#k = KMotionX(0, "192.168.7.2", with_console=True)
+k = KMotionX(0, with_console=True)
         
 poll(k)
 
@@ -34,7 +34,7 @@ if True:
     print "CheckForReady:", k.CheckForReady()
 
 def flash(k):
-    for i in range(3):
+    for i in range(10):
         k.WriteLine("setbit47")
         time.sleep(0.05)
         k.WriteLine("clearbit47")
