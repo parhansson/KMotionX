@@ -337,10 +337,10 @@ class ThreadManager(object):
         """Invoke the TI compiler (cl6x) and link
         """
         objfilename = "/tmp/%s.o" % (os.path.basename(filename),)
-        #opts = "-mv6700+ -mu -ml3 -O0 --symdebug:dwarf"
+        #opts = "-mv6710 -mu -ml3 -O0 --symdebug:dwarf"
         #opts = "-mv6710 -ml3 -mu -O2 --opt_for_space --entry_hook --exit_hook --entry_parm=name --exit_parm=name"
         opts = "-mv6710 -ml3 -mu -O2 --opt_for_space"
-        #opts = "-mv6700+ -ml3 -O2"
+        #opts = "-mv6710 -ml3 -O2"
         inclopts = ' '.join(['-i"'+x+'"' for x in self.incldirs])
         cmd = r'''%s "%s" %s --output_file="%s" %s''' % (self.cl6x, filename, inclopts, objfilename, opts)
         rc, err = self.runcmd(cmd)

@@ -1,15 +1,21 @@
 KMotionX
 ========
 
+These notes pertain to the swig branch.  The master branch is basically the same as Par Hansson's repository.  The swig branch includes some bug fixes, plus a Python binding.
+
 Linux/Unix (Mac OS X ) port of Dynomotions KMotion
 
 KMotionX is more of a patch than a port of KMotion (Except for KMotionServer). The goal has been to make as small modifications as possible to the orginal source. This will make it easier to keep up with every new release.
-    Builds with at least gcc-4.7 on linux and Visual Studio 2008 on windows.
+    Builds with at least gcc-4.6 on linux and Visual Studio 2008 on windows.
+
+The master branch requires gcc-4.7, but this requirement has been relaxed by removing some code constructs that necessitated 4.7.  gcc-4.6 is more typically installed on embedded systems like the Raspberry Pi, so it is nice not to have to upgrade the compiler.
 
 See it in action
 https://www.youtube.com/watch?v=oPTJwcre0hA
 
 KMotionX also includes a JNI binding to use expose the GCodeInterpreter and KMotionDLL API to the Java world.
+
+The swig branch introduces a Python binding based on "swig".
 
 ####Who might be interested in this.
 Anyone that would like to operate their KFlop controlled machine from their phone, tablets or anything with a web browser. I have ported the KMotionServer, KMotionDLL and GCodeInterpreter. I had plans to create a Java GUI but have now dropped that idea and created a HTML5 web application for that purpose. Drag an svg file into browser window and it will instantly be converted into executable GCode. Although I must admit it is still in alpha. There are lots of missing features to just use it out of the box. Some things might be hard wired for my current machine setup. Hence in this stage you might have to do some changes yourself. Or just wait until I have fixed it.
@@ -21,6 +27,9 @@ Anyone that would like to operate their KFlop controlled machine from their phon
 - Implemented thread handling to make use of Posix instead of Windows thread API
 - Option to use libftdi instead of ftd2xx driver (libftdi works alot better on Linux)
 - Added latest TCC compiler 0.9.26 patched with changes made in the original version TCC67 (0.9.16 or whatever version that was)
+
+Note: the swig branch does not use TCC 0.9.26.  The TCC67 which is standard on the Windows versions of Dynomotion has been patched to work on 32-bit CPUs.  64-bit support is still broken.
+TCC 0.9.26 does not yet completely work.  It is OK for simple code, but there are some known problems with more complex code.
 
 #####Changes to be made
 - (DONE) Remove dependency of CString (standard C functions)
@@ -36,7 +45,7 @@ Anyone that would like to operate their KFlop controlled machine from their phon
 
 
 Dependencies
-Linux at least GCC 4.7 toolchain
+Linux at least GCC 4.6 toolchain
 libudev-dev
 cmake
 boost
@@ -64,6 +73,7 @@ Jump to section "Install KMotionX" or "Install Java" if you will use the Java bi
 ###Ubuntu
 
 ######1. Install g++
+Most platforms will have this already.  Try entering `gcc --version` which, if it exists, will show the version, which should be at least 4.6.  If it does not exist, or is back-level:
 ```
 sudo apt-get install g++
 ```
@@ -73,6 +83,12 @@ Skip this step if you will be using ftd2xx driver. However libftdi works a lot b
 sudo apt-get install libftdi-dev
 ```
 Jump to section "Install KMotionX" or "Install Java" if you will use the Java binding.
+
+######3. Install python2.7-dev
+Skip this step if you will not be using the Python binding
+```
+sudo apt-get install python2.7-dev
+```
 
 ###Raspberry Pi
 
@@ -89,8 +105,10 @@ sudo apt-get upgrade
 sudo apt-get dist-upgrade 
 ```
 
+For a later model Raspberry Pi (R.Pi 2 model B etc.) only `sudo apt-get update` should be necessary.
+
 ######2. Install gcc
-Skip this step if ”gcc --version” is 4.7 or later. The current latest version available is 4.8
+Skip this step if ”gcc --version” is 4.6 or later. The current latest version available is 4.8
 Install gcc and g++ 4.8. This command installs gcc and g++ 4.8 but does not change to 4.8 as default. If you would like to do that here is a guide. (switching-gccg-versions.html) If you do you need to adjust make file to use default installed version.
 ```
 sudo apt-get install gcc-4.8 g++-4.8
@@ -101,6 +119,12 @@ Skip this step if you will be using ftd2xx driver. However libftdi works a lot b
 sudo apt-get install libftdi-dev
 ```
 Jump to section "Install KMotionX" or "Install Java" if you will use the Java binding.
+
+######3. Install python2.7-dev
+Skip this step if you will not be using the Python binding
+```
+sudo apt-get install python2.7-dev
+```
 
 ###Install drivers from source (Optional)
 Installing packages with apt-get might not always result in the latest version depening on your system.
@@ -172,22 +196,36 @@ Clone repository
 ```
 mkdir git
 cd git
-git clone https://github.com/parhansson/KMotionX.git
+git clone https://github.com/meantaipan/KMotionX.git
 ```
 
 ```
 cd KMotionX
 ```
+
+Create a swig branch, check it out, and pull that branch
+```
+git branch swig
+git checkout swig
+git pull origin swig
+```
+
 Configure build for your platform and flavours
 ```
 ./configure
 ```
+You can disable Java and/or Python using flags as follows:
+```
+./configure --disable-java --diable-python
+```
+
+
 Build project
 ```
 make
 ```
 
-Build Tiny C Compiler
+Build Tiny C Compiler - but only if you want to do some development on it.  Otherwise, TCC67 will be built and used automatically.
 
 (On Rasbian install texi2html and texinfo ```sudo apt-get install texi2html texinfo```)
 
@@ -205,11 +243,22 @@ If your user is not in that group fix users groups or change the rule before plu
 ```
 sudo cp KMotionX/usb/etc/udev/rules.d/10.kflop.rules /etc/udev/rules.d/
 ```
+If you already had the Kflop plugged in, unplug it and replug, otherwise the rule will not take effect.
 
 ######3. Execute examples
 Plug in your KFlop to an available USB port.
 KMotionServer will start automatically in background when needed. 
 When KMotionDLL is rebuilt make sure to kill running server 'killall KMotionServer'
+
+First, try using the console:
+```
+cd bin
+./kflopConsole
+```
+You should be able to enter commands like `version`.  If it fails to work, you can get some hints as to what is wrong by looking in syslog:
+```
+tail -40 /var/log/syslog
+```
 
 Start executeGCode example
 ```
