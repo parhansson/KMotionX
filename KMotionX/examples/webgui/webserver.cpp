@@ -485,9 +485,9 @@ static void set_options(char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-  initHandler();
   init_server_name();
   start_mongoose(argc, argv);
+  initHandler();
   printf("%s serving [%s] on port %s\n", server_name,
       mg_get_option(server, "document_root"),
       mg_get_option(server, "listening_port"));

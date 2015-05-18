@@ -1,6 +1,8 @@
 {
   "name": "Appa",
-  "dimX": 609,
+  "dimX": 300,
+  "dimY": 200,
+  "dimZ": 60,
   "initProgram": "d",
   "initThread": 1,
   "axes": [
@@ -20,7 +22,7 @@
     },
     {
       "name": "Z",
-      "countsPerUnit": 10,
+      "countsPerUnit": 2540,
       "maxAccel": 20,
       "maxVel": 20,
       "jogVel": 20
@@ -38,7 +40,7 @@
   "tplanner": {
     "breakangle": 2,
     "cornertolerance": 8,
-    "lookahead": 0.2,
+    "lookahead": 1,
     "collineartolerance": 8,
     "facetangle": 8
   },
@@ -56,22 +58,22 @@
       "name": ""
     },
     {
-      "action": 8,
+      "action": 1,
       "name": "M3",
-      "dParam1": 0,
-      "dParam0": 26
+      "dParam1": 1,
+      "dParam0": 46
     },
     {
-      "action": 1,
+      "action": 0,
       "name": "M4",
-      "dParam0": 26,
-      "dParam1": 0
+      "dParam0": 46,
+      "dParam1": 1
     },
     {
       "action": 1,
       "name": "M5",
-      "dParam0": 26,
-      "dParam1": 1
+      "dParam0": 46,
+      "dParam1": 0
     },
     {
       "action": 0,

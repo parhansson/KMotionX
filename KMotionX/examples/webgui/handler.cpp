@@ -34,7 +34,7 @@ enum cb_type {
 enum cb_status {
   CBS_ENQUEUED, CBS_WAITING, CBS_ACKNOWLEDGED, CBS_STATE_IDLE
 };
-
+void readSetup();
 void setInterpreterParams(struct json_token *paramtoken, int indexOffset, int count, const char* pathTemplate);
 void setMotionParams(struct json_token *paramtoken);
 void interpret(struct json_token *paramtoken);
@@ -136,11 +136,8 @@ void initHandler() {
   km = new CKMotionDLL(0);
   cm = new CCoordMotion(km);
   gci = new CGCodeInterpreter(cm);
-  gstate.interpreting = false;
-  gstate.currentLine = 0;
-  gstate.connected = false;
-  gstate.simulate = false;
-  gstate.feedHold = 0; // todo read from kflop
+  readSetup();
+
   //Enable messagebox callback by not setting this callback
 
   //gci->McodeActions[3].Action = M_Action_Callback;
@@ -164,7 +161,54 @@ void initHandler() {
   km->SetConsoleCallback(ConsoleHandler);
   readStatus();
 }
+void readSetup(){
 
+  char fileName[256];
+  const char * rootDir = mg_get_option(server, "document_root");
+  sprintf(fileName, "%s%s",rootDir,"/settings/setup.cnf");
+  FILE *fp = (FILE *) fopen (fileName, "r+");
+
+  if (fp == NULL) {
+    debug("Failed to open file");
+    return;
+  }
+
+  struct stat st;
+  size_t mapsize,filesize;
+  int pagesize, offset, fd;
+  caddr_t addr;
+
+  fd = fileno(fp);
+  fstat(fd, &st);
+  filesize = st.st_size;
+
+
+  offset = 0;
+  pagesize = getpagesize(); // should use sysconf(_SC_PAGE_SIZE) instead.
+  mapsize = (filesize/pagesize)*pagesize+pagesize; // align memory allocation with pagesize
+  //memory map tmp file and parse it.
+  addr = (char*)mmap((caddr_t)0, mapsize, PROT_READ, MAP_PRIVATE, fd, offset);
+
+  json_token *setup = NULL;
+  setup = parse_json2(addr, filesize);
+
+  json_token *value;
+
+  value = find_json_token(setup, "machine");
+  strncpy(gstate.current_machine, value->ptr,value->len);
+  value = find_json_token(setup, "gcodefile");
+  strncpy(gstate.current_file, value->ptr,value->len);
+
+  gstate.interpreting = false;
+  gstate.currentLine = 0;
+  gstate.connected = false;
+  gstate.simulate = false;
+  gstate.feedHold = 0; // todo read from kflop
+
+  free(setup);
+  munmap(addr, mapsize);
+
+}
 void info_handler(int signum) {
   struct callback *last;
   int cb_count = 0;

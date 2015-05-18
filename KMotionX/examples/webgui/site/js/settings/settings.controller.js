@@ -1,3 +1,4 @@
+'use strict';
 (function() {
   
   angular.module('KmotionXApp')
@@ -22,7 +23,6 @@
        ];
     
     $scope.machine = settings.machine;
-    kmxBackend.loadGlobalFile(2, 'settings/Appa.cnf');
     
     $scope.saveMachine = function() {
       settings.save();
