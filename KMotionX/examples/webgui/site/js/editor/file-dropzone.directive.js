@@ -27,15 +27,16 @@
       element.bind('dragenter', processDragOverOrEnter);
       
       return element.bind('drop', processDrop);
-      
-      
+
       
       function processDrop(event) {
         var file, name, reader, size, type;
         if (event != null) {
           event.preventDefault();
         }
-        file = event.dataTransfer.files[0];
+
+        var ev = event.originalEvent || event; //if jquery is loaded before angular event is wrapped
+        file = ev.dataTransfer.files[0];
         name = file.name;
         type = file.type;
         size = file.size;
@@ -52,25 +53,6 @@
               }              
             });
             
-//            var datat;
-//            if(attrs.transformFn !== undefined){
-//              datat = scope.transformFn({
-//                mime: type,
-//                data: evt.target.result
-//              });
-//            } else {
-//              var buf = evt.target.result;
-//              datat = String.fromCharCode.apply(null, new Uint16Array(buf));
-//            }
-//            scope.$apply(function() {
-//              scope.fileContent = text;
-//              //scope.$root.$broadcast('drop-gcode-file');
-//              //scope.$emit('drop-gcode-file');
-//              if (angular.isString(scope.fileName)) {
-//                return scope.fileName = name;
-//              }
-//            });
-            
           }
         };
         reader.readAsArrayBuffer(file)
@@ -82,7 +64,8 @@
         if (event != null) {
           event.preventDefault();
         }
-        event.dataTransfer.effectAllowed = 'copy';
+        var ev = event.originalEvent || event; //if jquery is loaded before angular event is wrapped
+        ev.dataTransfer.effectAllowed = 'copy';
         return false;
       }
       function checkSize(size) {
