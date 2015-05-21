@@ -38,16 +38,14 @@ function parseStatus(arraybuffer){
   
   var r = new BufStreamReader(arraybuffer);
   //var /*int*/ VersionAndSize = r.int();  //bits 16-23 = version, bits 0-15 = size in words
-  var /*int*/ Size = r.short();      //bits 0-15 = size in words
-  var /*int*/ Version = r.short();   //bits 16-23 = version
+  var /*short*/ Size = r.short();      //bits 0-15 = size in words
+  var /*short*/ Version = r.short();   //bits 16-23 = version
   //int ADC[N_ADCS+2*N_ADCS_SNAP]; //[24]*4
   r.skip(96);
   //int DAC[N_DACS];               //[8]*4
   r.skip(32);
   //int PWM[N_PWMS+2*N_PWMS_SNAP]; //[16]*4
   r.skip(64);
-
-  r.skip(4); //struct padding 4?
   
   //double Position[N_CHANNELS];   //[8]*8
   var positions = [];
@@ -92,11 +90,10 @@ function parseStatus(arraybuffer){
   var /*int*/ ThreadActive = r.int();           // one bit for each thread, 1=active, bit 0 - primary
   var /*int*/ StopImmediateState = r.int();     // Status of Stop Coordinated Motion Immediately
   
-  r.skip(4); //struct padding 4? May not be the same on other platforms
   var /*double*/ TimeStamp = r.double();        // Time in seconds (since KFlop boot) this status was aquired
   
   //int PC_comm[N_PC_COMM_PERSIST];// 8 persist Variables constantly uploaded to send misc commands/data to PC
-  r.skip(8);
+  r.skip(32);
   
   var /*int*/ VirtualBits  = r.int();           // Virtual I/O bits simulated in memory
   var /*int*/ VirtualBitsEx0 = r.int();         // only upload 32 1024 Expanded Virtual Bits 
@@ -104,8 +101,13 @@ function parseStatus(arraybuffer){
   //size = 464
   var ThreadActiveArr = toBitArr(ThreadActive, 8);
   
+  var dros = [];
+  for (var i=0; i<6; i++) {
+    dros[i] = r.double();
+  }
+  
+  
   var status = {
-      //versionAndSize: VersionAndSize,
       version: Version,
       size:Size,
       position: positions,
@@ -119,7 +121,8 @@ function parseStatus(arraybuffer){
       runOnStartUp: toBitArr(RunOnStartUp, 8),
       threadActive: toBitArr(ThreadActive, 8),
       stopImmediateState: StopImmediateState,
-      timeStamp: TimeStamp
+      timeStamp: TimeStamp,
+      dro:dros
       
   };
   

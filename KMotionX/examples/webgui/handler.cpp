@@ -107,9 +107,9 @@ struct callback {
 pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t con = PTHREAD_COND_INITIALIZER;
 
-CGCodeInterpreter *gci;
+CGCodeInterpreter *Interpreter;
 CKMotionDLL *km;
-CCoordMotion *cm;
+CCoordMotion *CM;
 long int pollTID; //Poll thread id
 time_t service_console_time;
 state gstate;
@@ -134,14 +134,9 @@ const char ACTION_NAMES[][32] = { "M_Action_None", "M_Action_Setbit", "M_Action_
 
 void initHandler() {
   km = new CKMotionDLL(0);
-  cm = new CCoordMotion(km);
-  gci = new CGCodeInterpreter(cm);
+  CM = new CCoordMotion(km);
+  Interpreter = new CGCodeInterpreter(CM);
   readSetup();
-
-  //Enable messagebox callback by not setting this callback
-
-  //gci->McodeActions[3].Action = M_Action_Callback;
-  //gci->McodeActions[4].Action = M_Action_Program_PC;
 
   pollTID = getThreadId();
   //debug("Poll thread id %ld", pollTID);
@@ -155,8 +150,8 @@ void initHandler() {
   setSimulationMode(false); //enques state
 
   //Set callbacks after initialising.
-  gci->SetUserMCodeCallback(MUserCallback);
-  gci->SetUserCallback(UserCallback);
+  Interpreter->SetUserMCodeCallback(MUserCallback);
+  Interpreter->SetUserCallback(UserCallback);
   km->SetErrMsgCallback(ErrMsgHandler);
   km->SetConsoleCallback(ConsoleHandler);
   readStatus();
@@ -203,7 +198,7 @@ void readSetup(){
   gstate.currentLine = 0;
   gstate.connected = false;
   gstate.simulate = false;
-  gstate.feedHold = 0; // todo read from kflop
+  gstate.feedHold = 0; // todo read from kflop?
 
   free(setup);
   munmap(addr, mapsize);
@@ -290,7 +285,7 @@ int readStatus(){
   if(result){
       gstate.connected = false;
       setSimulationMode(true);
-      gci->Abort();
+      Interpreter->Abort();
       // error reading status
       km->Failed();
       debug("GetStatus failed\n");
@@ -299,32 +294,104 @@ int readStatus(){
    }
   return result;
 }
+#define MEMCPY(to, from, size) memcpy(to, from, size); to += size;
+
 void push_status() {
 
-  if(!gstate.simulate){
-
-    //printf("MAIN_STATUS size %d\n", sizeof(status)); // 464?
-
-    if(readStatus()){
-      return;
-    }
-    //TODO handle struct padding wich may differ on platforms
-    int len = 464;
-    char msg[464];
-    memcpy(msg, &main_status, 464);
-    struct mg_connection *c = NULL;
-    int sockets = 0;
-    // Iterate over all connections, and push current time message to websocket ones.
-    for (c = mg_next(server, c); c != NULL; c = mg_next(server, c)) {
-      if (c->is_websocket) {
-        sockets++;
-        mg_websocket_write(c, WEBSOCKET_OPCODE_BINARY, msg, len);
-      }
-    }
-
+  if(readStatus()){
+    return;
   }
 
-  //debug("Pushed to %d sockets", sockets);
+  //copy struct and avoid padding wich may differ on platforms
+  size_t size = 456 + 6*8;//sizeof(main_status);
+  char * msg = (char*)malloc(size);
+  char * msgPtr = msg;
+  //client does not expect sizeof(int) but exaclyt 4 bytes for an int
+  MEMCPY(msgPtr, &main_status.VersionAndSize, 4);
+  MEMCPY(msgPtr, &main_status.ADC, 96);
+  MEMCPY(msgPtr, &main_status.DAC, 32);
+  MEMCPY(msgPtr, &main_status.PWM, 64);
+  //struct padding 4 avoided here
+  MEMCPY(msgPtr, &main_status.Position, 64);
+  MEMCPY(msgPtr, &main_status.Dest, 64);
+  MEMCPY(msgPtr, &main_status.OutputChan0, 8);
+  MEMCPY(msgPtr, &main_status.InputModes, 4);
+  MEMCPY(msgPtr, &main_status.InputModes2, 4);
+  MEMCPY(msgPtr, &main_status.OutputModes, 4);
+  MEMCPY(msgPtr, &main_status.OutputModes2, 4);
+  MEMCPY(msgPtr, &main_status.Enables, 4);
+  MEMCPY(msgPtr, &main_status.AxisDone, 4);
+  MEMCPY(msgPtr, &main_status.BitsDirection, 8);
+  MEMCPY(msgPtr, &main_status.BitsState, 8);
+  MEMCPY(msgPtr, &main_status.SnapBitsDirection0, 4);
+  MEMCPY(msgPtr, &main_status.SnapBitsDirection1, 4);
+  MEMCPY(msgPtr, &main_status.SnapBitsState0, 4);
+  MEMCPY(msgPtr, &main_status.SnapBitsState1, 4);
+  MEMCPY(msgPtr, &main_status.KanalogBitsStateInputs, 4);
+  MEMCPY(msgPtr, &main_status.KanalogBitsStateOutputs, 4);
+  MEMCPY(msgPtr, &main_status.RunOnStartUp, 4);
+  MEMCPY(msgPtr, &main_status.ThreadActive, 4);
+  MEMCPY(msgPtr, &main_status.StopImmediateState, 4);
+  //struct padding 4 avoided here
+  MEMCPY(msgPtr, &main_status.TimeStamp, 8);
+  MEMCPY(msgPtr, &main_status.PC_comm, 32);
+  MEMCPY(msgPtr, &main_status.VirtualBits, 4);
+  MEMCPY(msgPtr, &main_status.VirtualBitsEx0, 4);
+  //total size 456 instead of 464 with padding
+
+
+  double ActsDest[MAX_ACTUATORS],x,y,z,a,b,c;
+
+  for (int i=0; i<MAX_ACTUATORS; i++) ActsDest[i]=0.0;
+
+  if (CM->x_axis >=0) ActsDest[CM->x_axis] = main_status.Dest[CM->x_axis];
+  if (CM->y_axis >=0) ActsDest[CM->y_axis] = main_status.Dest[CM->y_axis];
+  if (CM->z_axis >=0) ActsDest[CM->z_axis] = main_status.Dest[CM->z_axis];
+  if (CM->a_axis >=0) ActsDest[CM->a_axis] = main_status.Dest[CM->a_axis];
+  if (CM->b_axis >=0) ActsDest[CM->b_axis] = main_status.Dest[CM->b_axis];
+  if (CM->c_axis >=0) ActsDest[CM->c_axis] = main_status.Dest[CM->c_axis];
+
+  CM->Kinematics->TransformActuatorstoCAD(ActsDest,&x,&y,&z,&a,&b,&c);
+
+  bool MachineCoords = true;
+  if (MachineCoords){
+    Interpreter->ConvertAbsoluteToMachine(x,y,z,a,b,c,&x,&y,&z,&a,&b,&c);
+  } else {
+    Interpreter->ConvertAbsoluteToInterpreterCoord(x,y,z,a,b,c,&x,&y,&z,&a,&b,&c);
+  }
+
+  //note we are never here when state is simulate
+  if(gstate.simulate){
+    x = CM->current_x;
+    y = CM->current_y;
+    z = CM->current_z;
+    a = CM->current_a;
+    b = CM->current_b;
+    c = CM->current_c;
+  }
+
+  MEMCPY(msgPtr, &x, 8);
+  MEMCPY(msgPtr, &y, 8);
+  MEMCPY(msgPtr, &z, 8);
+  MEMCPY(msgPtr, &a, 8);
+  MEMCPY(msgPtr, &b, 8);
+  MEMCPY(msgPtr, &c, 8);
+
+
+
+
+
+
+  struct mg_connection *conn = NULL;
+  int sockets = 0;
+  // Iterate over all connections, and push current time message to websocket ones.
+  for (conn = mg_next(server, conn); conn != NULL; conn = mg_next(server, conn)) {
+    if (conn->is_websocket) {
+      sockets++;
+      mg_websocket_write(conn, WEBSOCKET_OPCODE_BINARY, msg, size);
+    }
+  }
+  free(msg);
 }
 
 void pollCallback(struct callback *cb, int id, int ret) {
@@ -624,6 +691,7 @@ int handle_poll(struct mg_connection *conn) {
 
     if (current_time - service_console_time > 1) {
       if(!gstate.connected){
+        //If not connected try once in while(every second) to connect by reading status
         push_status();
       }
       if(km->ServiceConsole()){
@@ -740,7 +808,7 @@ void handleUploadRequest(struct mg_connection *conn){
     munmap(addr, mapsize);
     if(filesize == 0 /*filesize != tmpfilesize*/){
       char msg[256];
-      snprintf(msg,256, "Bytes written %d of %d",filesize, tmpfilesize);
+      snprintf(msg,256, "Bytes written %ld of %ld",filesize, tmpfilesize);
       ErrMsgHandler(msg);
     }
     //need to send response back to client to avoid wating connection
@@ -1105,7 +1173,7 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
 }
 
 void setSimulationMode(bool enable){
-  gstate.simulate = gci->CoordMotion->m_Simulate = enable;
+  gstate.simulate = Interpreter->CoordMotion->m_Simulate = enable;
   if(enable != gstate.simulate){
     enqueueState();
   }
@@ -1115,7 +1183,7 @@ int invokeAction(struct json_token *paramtoken){
     int action;
     toki(paramtoken + 1, &action);
     //Interpreter->InvokeAction(10,FlushBeforeUnbufferedOperation);  // resend new Speed
-    return gci->InvokeAction(action,FlushBeforeUnbufferedOperation);  // invoke action number
+    return Interpreter->InvokeAction(action,FlushBeforeUnbufferedOperation);  // invoke action number
 }
 
 void loadGlobalFile(struct json_token *paramtoken){
@@ -1189,7 +1257,7 @@ void interpret(struct json_token *paramtoken) {
   tokb(paramtoken + 5, &restart);
   if (InFile) {
     if (!gstate.interpreting) {
-      if (!gci->Interpret(BoardType, InFile, start, end, restart,
+      if (!Interpreter->Interpret(BoardType, InFile, start, end, restart,
           StatusCallback, CompleteCallback)) {
         gstate.interpreting = true;
         enqueueState();
@@ -1205,7 +1273,7 @@ void setMotionParams(struct json_token *paramtoken) {
     char * name = NULL;
     json_token *token;
 
-    MOTION_PARAMS *p=gci->GetMotionParams();
+    MOTION_PARAMS *p=Interpreter->GetMotionParams();
     double maxAccel,maxVel,countsPerUnit;
     double breakAngle,collinearTol,cornerTol,facetAngle,tpLookahead;
 
@@ -1309,7 +1377,7 @@ void setMotionParams(struct json_token *paramtoken) {
     free(name);
 
 
-    gci->CoordMotion->SetTPParams();
+    Interpreter->CoordMotion->SetTPParams();
 
 }
 void setInterpreterParams(struct json_token *paramtoken, int indexOffset, int count, const char* pathTemplate) {
@@ -1342,19 +1410,19 @@ void setInterpreterParams(struct json_token *paramtoken, int indexOffset, int co
       int actionIndex = indexOffset + i;
       int actionNameIndex = action > 0 && action < 10?action:10;
       printf("Set action index %d to %s\n",actionIndex, ACTION_NAMES[actionNameIndex]);
-      gci->McodeActions[actionIndex].Action = action;
-      gci->McodeActions[actionIndex].dParams[0] = dParam0;
-      gci->McodeActions[actionIndex].dParams[1] = dParam1;
-      gci->McodeActions[actionIndex].dParams[2] = dParam2;
-      gci->McodeActions[actionIndex].dParams[3] = dParam3;
-      gci->McodeActions[actionIndex].dParams[4] = dParam4;
+      Interpreter->McodeActions[actionIndex].Action = action;
+      Interpreter->McodeActions[actionIndex].dParams[0] = dParam0;
+      Interpreter->McodeActions[actionIndex].dParams[1] = dParam1;
+      Interpreter->McodeActions[actionIndex].dParams[2] = dParam2;
+      Interpreter->McodeActions[actionIndex].dParams[3] = dParam3;
+      Interpreter->McodeActions[actionIndex].dParams[4] = dParam4;
 
 
       //file should be nulled if not set.
       if(file == NULL || action == 0){
-        gci->McodeActions[actionIndex].String[0] = 0;
+        Interpreter->McodeActions[actionIndex].String[0] = 0;
       } else {
-        strcpy(gci->McodeActions[actionIndex].String, file);
+        strcpy(Interpreter->McodeActions[actionIndex].String, file);
       }
 
 

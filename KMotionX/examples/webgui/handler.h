@@ -5,9 +5,9 @@
 #include "frozen.h"
 #include "../../../GCodeInterpreter/StdAfx.h"
 
-extern CGCodeInterpreter *gci;
+extern CGCodeInterpreter *Interpreter;
 extern CKMotionDLL *km;
-extern CCoordMotion *cm;
+extern CCoordMotion *CM;
 extern struct mg_server * server;
 
 #ifdef __cplusplus
