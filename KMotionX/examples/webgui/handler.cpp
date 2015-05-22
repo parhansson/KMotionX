@@ -10,16 +10,12 @@
 #include <ctype.h>
 #include <time.h>
 #include <pthread.h>
-
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/mman.h>
 #include <dirent.h>
-//#include <unistd.h>
 #include "dbg.h"
 #include "handler.h"
 #include "frozen.h"
 #include "json.h"
+#include "utils.h"
 
 enum cb_type {
   CB_STATUS, //Non blocking callback. Called from the interpreter in different thread
@@ -35,8 +31,9 @@ enum cb_status {
   CBS_ENQUEUED, CBS_WAITING, CBS_ACKNOWLEDGED, CBS_STATE_IDLE
 };
 void readSetup();
-void setInterpreterParams(struct json_token *paramtoken, int indexOffset, int count, const char* pathTemplate);
-void setMotionParams(struct json_token *paramtoken);
+void updateMotionParams();
+void setInterpreterParams(struct json_token *jsontoken, int indexOffset, int count, const char* pathTemplate);
+void setMotionParams(struct json_token *jsontoken);
 void interpret(struct json_token *paramtoken);
 void loadGlobalFile(struct json_token *paramtoken);
 void listDir(struct json_token *paramtoken);
@@ -45,6 +42,7 @@ void setSimulationMode(bool enable);
 
 int handle_api(struct mg_connection *conn, enum mg_event ev);
 int handleJson(struct mg_connection *conn,const char *object, const char *func);
+int handle_close(struct mg_connection *conn);
 void push_message(const char *msg);
 void push_status();
 void delete_callback(struct callback *node);
@@ -56,6 +54,7 @@ int UserCallback(const char *);
 void enqueueState();
 int enqueueCallback(const char * msg, enum cb_type type);
 int readStatus();
+
 
 struct callback * alloc_callback();
 //struct callback * set_callback(struct callback *last, const char * message, enum cb_type type);
@@ -82,19 +81,6 @@ struct state {
 //Check function signature
 #define FUNC_SIGP(name, nr_of_params) !strcmp(name,func) && params == nr_of_params
 
-#define PARAM_OFFSET 7
-struct operation_param {
-  int type;  //DoErrMSG //in out, pointer int char array
-  char name[24]; //kmotion
-  char params[10]; // *i i *s *dDv (Ljava/lang/String;)V
-};
-struct operation {
-  char object[24]; //kmotion
-  char name[24];  //DoErrMSG
-  int nr_params;
-  int returnType;
-  operation_param params[10]; // *i i *s *dDv (Ljava/lang/String;)V
-};
 struct callback {
   int id;
   enum cb_type type;
@@ -137,6 +123,7 @@ void initHandler() {
   CM = new CCoordMotion(km);
   Interpreter = new CGCodeInterpreter(CM);
   readSetup();
+  updateMotionParams();
 
   pollTID = getThreadId();
   //debug("Poll thread id %ld", pollTID);
@@ -156,43 +143,22 @@ void initHandler() {
   km->SetConsoleCallback(ConsoleHandler);
   readStatus();
 }
+
 void readSetup(){
 
   char fileName[256];
-  const char * rootDir = mg_get_option(server, "document_root");
-  sprintf(fileName, "%s%s",rootDir,"/settings/setup.cnf");
-  FILE *fp = (FILE *) fopen (fileName, "r+");
-
-  if (fp == NULL) {
-    debug("Failed to open file");
+  absolutePath("settings/setup.cnf", fileName);
+  MappedFile mmFile;
+  if(mmapNamedFile(mmFile, fileName)){
+    debug("Failed to read setup file");
     return;
   }
 
-  struct stat st;
-  size_t mapsize,filesize;
-  int pagesize, offset, fd;
-  caddr_t addr;
-
-  fd = fileno(fp);
-  fstat(fd, &st);
-  filesize = st.st_size;
-
-
-  offset = 0;
-  pagesize = getpagesize(); // should use sysconf(_SC_PAGE_SIZE) instead.
-  mapsize = (filesize/pagesize)*pagesize+pagesize; // align memory allocation with pagesize
-  //memory map tmp file and parse it.
-  addr = (char*)mmap((caddr_t)0, mapsize, PROT_READ, MAP_PRIVATE, fd, offset);
-
   json_token *setup = NULL;
-  setup = parse_json2(addr, filesize);
+  setup = parse_json2(mmFile.addr, mmFile.filesize);
 
-  json_token *value;
-
-  value = find_json_token(setup, "machine");
-  strncpy(gstate.current_machine, value->ptr,value->len);
-  value = find_json_token(setup, "gcodefile");
-  strncpy(gstate.current_file, value->ptr,value->len);
+  json_str(setup,"machine",gstate.current_machine);
+  json_str(setup,"gcodefile",gstate.current_file);
 
   gstate.interpreting = false;
   gstate.currentLine = 0;
@@ -201,8 +167,7 @@ void readSetup(){
   gstate.feedHold = 0; // todo read from kflop?
 
   free(setup);
-  munmap(addr, mapsize);
-
+  unmapFile(mmFile);
 }
 void info_handler(int signum) {
   struct callback *last;
@@ -376,11 +341,6 @@ void push_status() {
   MEMCPY(msgPtr, &a, 8);
   MEMCPY(msgPtr, &b, 8);
   MEMCPY(msgPtr, &c, 8);
-
-
-
-
-
 
   struct mg_connection *conn = NULL;
   int sockets = 0;
@@ -739,9 +699,6 @@ int handleUploadReceive(struct mg_connection *conn){
 void handleUploadRequest(struct mg_connection *conn){
   FILE *fp = (FILE *) conn->connection_param;
   if (fp != NULL) {
-    //This row was in the example. But should not be here
-    //fwrite(conn->content, 1, conn->content_len, fp); // Write last bits
-
 
     mg_printf(conn, "HTTP/1.1 200 OK\r\n"
               "Content-Type: text/plain\r\n"
@@ -750,13 +707,18 @@ void handleUploadRequest(struct mg_connection *conn){
     // Temp file will be destroyed after fclose(), do something with the
     // data here -- for example, parse it and extract uploaded files.
     // As an example, we just echo the whole POST buffer back to the client.
-
-
+    rewind(fp);
+    MappedFile mmFile;
+    if(mmapFile(mmFile, fp)){
+      debug("Failed to read setup file");
+      return;
+    }
+    size_t filesize=0;
+    /*
     int pagesize, offset, fd;
     size_t tmpfilesize, mapsize,filesize;
     caddr_t addr;
 
-    filesize=0;
     tmpfilesize = ftell(fp);
     rewind(fp);
     offset = 0;
@@ -767,11 +729,11 @@ void handleUploadRequest(struct mg_connection *conn){
 
     //memory map tmp file and parse it.
     addr = (char*)mmap((caddr_t)0, mapsize, PROT_READ, MAP_PRIVATE, fd,offset);
-
+    */
     const char *data;
     int data_len, ofs = 0;
     char var_name[100], file_name[100];
-    while ((ofs = mg_parse_multipart(addr + ofs, mapsize - ofs,
+    while ((ofs = mg_parse_multipart(mmFile.addr + ofs, mmFile.mapsize - ofs,
                                      var_name, sizeof(var_name),
                                      file_name, sizeof(file_name),
                                      &data, &data_len)) > 0) {
@@ -805,10 +767,11 @@ void handleUploadRequest(struct mg_connection *conn){
 
     }
 
-    munmap(addr, mapsize);
+    //munmap(addr, mapsize);
+    unmapFile(mmFile);
     if(filesize == 0 /*filesize != tmpfilesize*/){
       char msg[256];
-      snprintf(msg,256, "Bytes written %ld of %ld",filesize, tmpfilesize);
+      snprintf(msg,256, "Bytes written %ld of %ld",filesize, mmFile.filesize);
       ErrMsgHandler(msg);
     }
     //need to send response back to client to avoid wating connection
@@ -819,6 +782,8 @@ void handleUploadRequest(struct mg_connection *conn){
   } else {
     mg_printf_data(conn, "%s", "Had no data to write...");
   }
+  //MG_CLOSE event is not raised by mongoose as expected. Need to close file
+  handle_close(conn);
 }
 
 
@@ -862,6 +827,7 @@ int handle_close(struct mg_connection *conn) {
   if (conn->connection_param != NULL) {
     fclose((FILE *) conn->connection_param);
     conn->connection_param = NULL;
+    debug("handle close upload");
   }
   return MG_TRUE;
 }
@@ -876,7 +842,7 @@ int ev_handler(struct mg_connection *conn, enum mg_event ev) {
     case MG_REQUEST:    return handle_request(conn,ev);
     case MG_WS_CONNECT: return handle_ws_connect(conn);
     case MG_RECV:       return handle_recv(conn);
-    case MG_CLOSE:      return handle_close(conn);
+    case MG_CLOSE:      return handle_close(conn); // MG_CLOSE event is not raised for upload post, Called manually
     default:            return MG_FALSE;
   }
 
@@ -1044,9 +1010,8 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
       int Thread;
       char *Err = NULL;
       int MaxErrLen;
-      //toks(&data[PARAM_OFFSET],&Name);
-      toks(paramtoken + 1, &Name);
-      toks(paramtoken + 2, &OutFile);
+      toks(paramtoken + 1, &Name, 0);
+      toks(paramtoken + 2, &OutFile, 0);
       toki(paramtoken + 3, &BoardType);
       toki(paramtoken + 4, &Thread);
       toki(paramtoken + 6, &MaxErrLen);
@@ -1062,7 +1027,7 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
     } else if (FUNC_SIGP("CompileAndLoadCoff", 2)) {
       char *Name = NULL;
       int Thread;
-      toks(paramtoken + 1, &Name);
+      toks(paramtoken + 1, &Name, 0);
       toki(paramtoken + 2, &Thread);
       char err[512];
       if(km->CompileAndLoadCoff(Name, Thread, err, 511)){
@@ -1076,7 +1041,7 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
       char *p3 = NULL;
       int p4;
       toki(paramtoken + 1, &p1);
-      toks(paramtoken + 2, &p2);
+      toks(paramtoken + 2, &p2, 0);
       toki(paramtoken + 4, &p4);
       toks(paramtoken + 3, &p3, p4);
 
@@ -1091,7 +1056,7 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
       EMIT_RESPONSE("[]");
     } else if (FUNC_SIGP("DoErrMsg", 1)) {
       char *p1 = NULL;
-      toks(paramtoken, &p1);
+      toks(paramtoken, &p1, 0);
       ret = 0;
       km->DoErrMsg(p1);
       EMIT_RESPONSE("[S]", p1);
@@ -1144,9 +1109,9 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
 //    } else if (FUNC_SIGP("SetUserMCodeCallback", 1)) {
 
 
-    } else if (!strcmp("setMotionParams",func) /*FUNC_SIGP("setMotionParams", 54)*/) {
+    } else if(FUNC_SIGP("updateMotionParams", 0)) {
 
-      setMotionParams(paramtoken);
+      updateMotionParams();
 
     } else if (FUNC_SIGP("simulate", 1)) {
       if (!gstate.interpreting) {
@@ -1193,7 +1158,7 @@ void loadGlobalFile(struct json_token *paramtoken){
     char * file = NULL;
     char * globalFile = NULL;
     toki(paramtoken + 1, &fileType);
-    toks(paramtoken + 2, &file);
+    toks(paramtoken + 2, &file, 0);
     if (file != NULL) {
       if(strlen(file) > 0){
         if(fileType == 1){
@@ -1217,7 +1182,7 @@ void loadGlobalFile(struct json_token *paramtoken){
 void listDir(struct json_token *paramtoken){
 
     char *dir = NULL;
-    toks(paramtoken, &dir);
+    toks(paramtoken, &dir, 0);
     if (dir) {
       DIR *dp;
       struct dirent *ep;
@@ -1251,7 +1216,7 @@ void interpret(struct json_token *paramtoken) {
   bool restart;      // = true;
 
   toki(paramtoken + 1, &BoardType);
-  toks(paramtoken + 2, &InFile);
+  toks(paramtoken + 2, &InFile, 0);
   toki(paramtoken + 3, &start);
   toki(paramtoken + 4, &end);
   tokb(paramtoken + 5, &restart);
@@ -1268,7 +1233,22 @@ void interpret(struct json_token *paramtoken) {
   free(InFile);
 }
 
-void setMotionParams(struct json_token *paramtoken) {
+void updateMotionParams(){
+  char fileName[256];
+  absolutePath(gstate.current_machine, fileName);
+
+  MappedFile mmFile;
+  if(mmapNamedFile(mmFile, fileName)){
+    return;
+  }
+
+  json_token *json = NULL;
+  json = parse_json2(mmFile.addr, mmFile.filesize);
+  setMotionParams(json);
+  free(json);
+  unmapFile(mmFile);
+}
+void setMotionParams(struct json_token *jsontoken) {
 
     char * name = NULL;
     json_token *token;
@@ -1278,11 +1258,11 @@ void setMotionParams(struct json_token *paramtoken) {
     double breakAngle,collinearTol,cornerTol,facetAngle,tpLookahead;
 
     breakAngle = collinearTol = cornerTol = facetAngle = tpLookahead = 0;
-    json_double(paramtoken,"tplanner.breakangle",&breakAngle);
-    json_double(paramtoken,"tplanner.cornertolerance",&cornerTol);
-    json_double(paramtoken,"tplanner.lookahead",&tpLookahead);
-    json_double(paramtoken,"tplanner.collineartolerance",&collinearTol);
-    json_double(paramtoken,"tplanner.facetangle",&facetAngle);
+    json_double(jsontoken,"tplanner.breakangle",&breakAngle);
+    json_double(jsontoken,"tplanner.cornertolerance",&cornerTol);
+    json_double(jsontoken,"tplanner.lookahead",&tpLookahead);
+    json_double(jsontoken,"tplanner.collineartolerance",&collinearTol);
+    json_double(jsontoken,"tplanner.facetangle",&facetAngle);
 
     p->BreakAngle = breakAngle;
     p->CollinearTol = collinearTol;
@@ -1297,11 +1277,12 @@ void setMotionParams(struct json_token *paramtoken) {
 
     char path[64];
     for(int i= 0;i<6;i++){
+
       sprintf(path,"axes[%i]",i);
-      token = find_json_token(paramtoken, path);
+      token = find_json_token(jsontoken, path);
       if(token){
         maxAccel = maxVel = countsPerUnit = 0.0;
-        json_str(token,"name",&name,0);
+        json_str(token,"name",&name,1);
         json_double(token,"countsPerUnit",&countsPerUnit);
         json_double(token,"maxAccel",&maxAccel);
         json_double(token,"maxVel",&maxVel);
@@ -1349,13 +1330,13 @@ void setMotionParams(struct json_token *paramtoken) {
       }
 
     }
-
+    free(name);
     //M2-M9,S index 2-9
     //userButtons index 11-20
     //M100-M119 index 21 -39
-    setInterpreterParams(paramtoken, 0,MAX_MCODE_ACTIONS_M1,"actions[%i]");
-    setInterpreterParams(paramtoken, MAX_MCODE_ACTIONS_M1,MAX_MCODE_ACTIONS_BUTTONS,"userActions[%i]");
-    setInterpreterParams(paramtoken, MCODE_ACTIONS_M100_OFFSET,MAX_MCODE_ACTIONS_M100,"extendedActions[%i]");
+    setInterpreterParams(jsontoken, 0,MAX_MCODE_ACTIONS_M1,"actions[%i]");
+    setInterpreterParams(jsontoken, MAX_MCODE_ACTIONS_M1,MAX_MCODE_ACTIONS_BUTTONS,"userActions[%i]");
+    setInterpreterParams(jsontoken, MCODE_ACTIONS_M100_OFFSET,MAX_MCODE_ACTIONS_M100,"extendedActions[%i]");
 
     printf("X %lf, %lf, %lf \n",p->CountsPerInchX,p->MaxAccelX, p->MaxVelX );
     printf("Y %lf, %lf, %lf \n",p->CountsPerInchY,p->MaxAccelY, p->MaxVelY );
@@ -1374,13 +1355,10 @@ void setMotionParams(struct json_token *paramtoken) {
     //p->DegreesC = m_DegreesC!=0;
     p->ArcsToSegs = true;;
 
-    free(name);
-
-
     Interpreter->CoordMotion->SetTPParams();
 
 }
-void setInterpreterParams(struct json_token *paramtoken, int indexOffset, int count, const char* pathTemplate) {
+void setInterpreterParams(struct json_token *jsontoken, int indexOffset, int count, const char* pathTemplate) {
   double dParam0, dParam1, dParam2, dParam3, dParam4;
   int action;
   char path[64];
@@ -1389,14 +1367,15 @@ void setInterpreterParams(struct json_token *paramtoken, int indexOffset, int co
   json_token *token;
 
   for(int i= 0;i<count;i++){
+
     sprintf(path,pathTemplate,i);
-    token = find_json_token(paramtoken, path);
+    token = find_json_token(jsontoken, path);
     if(token){
       action = dParam0 = dParam1 = dParam2 = dParam3 = dParam4 = 0;
       json_int(token,"action",&action);
       if(action > 0){
-        json_str(token,"name",&name,0);
-        json_str(token,"file",&file,0);
+        json_str(token,"name",&name,64);
+        json_str(token,"file",&file,256);
         json_double(token,"dParam0",&dParam0);
         json_double(token,"dParam1",&dParam1);
         json_double(token,"dParam2",&dParam2);
@@ -1409,7 +1388,10 @@ void setInterpreterParams(struct json_token *paramtoken, int indexOffset, int co
       //M100-M119 index 21 -39
       int actionIndex = indexOffset + i;
       int actionNameIndex = action > 0 && action < 10?action:10;
-      printf("Set action index %d to %s\n",actionIndex, ACTION_NAMES[actionNameIndex]);
+      if(actionNameIndex != 10){
+        printf("Set action index %d to %s\n",actionIndex, ACTION_NAMES[actionNameIndex]);
+
+      }
       Interpreter->McodeActions[actionIndex].Action = action;
       Interpreter->McodeActions[actionIndex].dParams[0] = dParam0;
       Interpreter->McodeActions[actionIndex].dParams[1] = dParam1;
@@ -1433,7 +1415,6 @@ void setInterpreterParams(struct json_token *paramtoken, int indexOffset, int co
     } else {
       printf("Failed %s\n", pathTemplate);
     }
-
   }
   free(file);
   free(name);

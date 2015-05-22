@@ -66,6 +66,8 @@
     function save() {
       var file = fileName(); 
       kmxBackend.save(file, angular.toJson(service.machine,true));
+      //TODO only update params if save succeeds
+      kmxBackend.updateMotionParams();
       $rootScope.$broadcast('settings-update');
     }    
     function axesArr(){

@@ -6,3 +6,5 @@ config.mak
 /**/*.cproject
 /**/.settings/
 
+
+*.out

@@ -4,24 +4,36 @@
 #include "json.h"
 #include "frozen.h"
 #include "math.h"
+#include "dbg.h"
 
-int toks(const struct json_token *tk, void *sptr, const int size) {
-  int len = size;
-  char ** ptr = (char **) sptr;
+int toks(const struct json_token *tk, char **ptr, const int maxsize) {
+  int len = maxsize;
+
   if (tk->type == JSON_TYPE_NULL) {
+    if (*ptr != NULL) {
+      memset(*ptr, 0, 1);
+    }
     return 0;
-  }
-  if (*ptr == NULL && tk->type != JSON_TYPE_NULL) {
+  } else {
+
     if (len <= 0) len = tk->len;
     int mal = (sizeof(char) * (len)) + sizeof(char);
-    *ptr = (char*) malloc(mal);
+    if (*ptr == NULL) {
+      //debug("allocate %d", mal);
+      *ptr = (char*) malloc(mal);
+      if(*ptr == NULL){
+          debug("allocate %d failed", mal);
+          return -1;
+      }
+    }
+
+    int min = fmin(len, tk->len);
+    memcpy(*ptr, tk->ptr, min);
+    memset(*ptr + min, 0, 1);
+
+    return min;
   }
 
-  int min = fmin(len, tk->len);
-  memcpy(*ptr, tk->ptr, min);
-  memset(*ptr + min, 0, 1);
-
-  return 0;
 }
 
 int toki(const struct json_token *tk, int * value) {
@@ -29,7 +41,7 @@ int toki(const struct json_token *tk, int * value) {
     return *value;
   }
   char *str = nullptr;
-  toks(tk, &str);
+  toks(tk, &str, 0);
   *value = atoi(str);
   free(str);
   return *value;
@@ -40,7 +52,7 @@ double tokd(const struct json_token *tk, double * value) {
     return *value;
   }
   char *str = nullptr;
-  toks(tk, &str);
+  toks(tk, &str, 0);
   sscanf(str, "%lf", value);
   free(str);
   return *value;
@@ -50,7 +62,7 @@ bool tokb(const struct json_token *tk, bool * value) {
     return *value;
   }
   char *str = nullptr;
-  toks(tk, &str);
+  toks(tk, &str, 0);
   if (strcmp(str, "true") == 0) {
     *value = true;
   } else {
@@ -59,23 +71,27 @@ bool tokb(const struct json_token *tk, bool * value) {
   free(str);
   return *value;
 }
-
-
-
-int json_str(struct json_token *tks, const char *path, void *sptr, const int size) {
+/**
+ *reads a json string value with path copying result into sptr
+ */
+int json_str(struct json_token *tks, const char *path, char *sptr) {
+    char * val = NULL;
+    int r = json_str(tks, path, &val, 0);
+    strcpy(sptr, val);
+    free(val);
+    return r;
+}
+/**
+ * reads a json string value with path returning result in sptr with max size
+ *
+ */
+int json_str(struct json_token *tks, const char *path, char **sptr, const int size) {
   json_token *token;
   token = find_json_token(tks, path);
   if (token != NULL) {
-
-    //TODO this should not be needed. fix in toks() somehow
-    char ** ptr = (char **) sptr;
-    if(*ptr != NULL){
-      free(*ptr);*ptr = NULL;
-    }
-
     return toks(token, sptr, size);
   }
-  return 1;
+  return -1;
 }
 
 int json_int(struct json_token *tks, const char *path, int * value) {

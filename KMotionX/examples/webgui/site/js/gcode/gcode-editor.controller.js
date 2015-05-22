@@ -39,7 +39,7 @@
       
       $scope.interpreting = state.interpreting;
       $scope.feedHold = state.feedHold;
-      //$scope.$apply(); // blev lite färre fel när jag tog bort den här tror jag
+
       if (state.file != "" && state.file != $scope.editorContentName ) {
         vm.openFile(state.file)
       }
@@ -60,18 +60,10 @@
     }
     vm.feedHold = function(){
       kmxBackend.feedHold();     
-    }
-    vm.initMachine = function(){
-      kmxBackend.setMotionParams(settings.machine);
-      //kmxBackend.compileAndLoadCoff([settings.machine.initProgram, settings.machine.initThread]);
-      //TODO needs  to Execute program as well
-      //Execute<thread>
-    }
-    
+    }  
     
     vm.interpret = function(){
       //set motion params should done on backend
-      kmxBackend.setMotionParams(settings.machine);
       var BoardType = 2; //KLFOP
       kmxBackend.interpret(BoardType, $scope.editorContentName, 0, -1, true);
       

@@ -9,11 +9,10 @@
     var service = {
         listDir: listDir,
         loadGlobalFile: loadGlobalFile,
-        saveMachine: saveMachine,
         feedHold: feedHold,
         compileAndLoadCoff: compileAndLoadCoff,
         invokeAction: invokeAction,
-        setMotionParams: setMotionParams,
+        updateMotionParams: updateMotionParams,
         simulate: simulate,
         interpret: interpret,
         load: load,
@@ -74,18 +73,7 @@
         });
       
     }
-  //TODO use upload service instead
-    function saveMachine(data) { 
-      var url = "/api/aux/saveMachine";
-      var msg = {"params":file,"ret":null};
-      return $http.post(url, msg)
-        .error(function(data, status, headers, config) {
-          // called asynchronously if an error occurs
-          // or server returns response with an error status.
-          console.log(data);
-        });
-    }
-    
+
     function feedHold() {
       var url = "/api/kmotion/feedHold";
       var msg = {"ret":null};
@@ -108,9 +96,9 @@
         });
     }
     
-    function setMotionParams(file) {
-      var url = "/api/interpreter/setMotionParams";
-      var msg = {"params":file,"ret":null};
+    function updateMotionParams() {
+      var url = "/api/interpreter/updateMotionParams";
+      var msg = {"ret":null};
       return $http.post(url, msg)
         .error(function(data, status, headers, config) {
           // called asynchronously if an error occurs

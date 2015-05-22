@@ -39,7 +39,7 @@ function svg2gcode(svg, settings) {
   }
   var paths = SVGReader.parse(svg, {}).allcolors;
   
-  
+  console.info("Nr of Shapes: ", paths.length);
   
   var idx = paths.length;
   var maxBounds = new BoundRect();
@@ -54,7 +54,7 @@ function svg2gcode(svg, settings) {
       //scale
       vec.scale(ratio);
       //transpose coordinates
-      vec.rotate(Math.PI/4);
+      //vec.rotate(Math.PI/4);
 
       bounds.include(vec);
       maxBounds.include(vec);
@@ -80,6 +80,7 @@ function svg2gcode(svg, settings) {
   }
 
   orderNearestNeighbour(paths);
+  console.info("Nr of Shapes after: ", paths.length);
   var LaserON = 'M3 (laser on)';
   var LaserOFF = 'M5 (laser off)';
   //var LaserON = '(BUF,SetBitBuf14)';
