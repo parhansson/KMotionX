@@ -6,14 +6,18 @@
 extern PARAMETRIC_COEFF *CoordSystem0;
 extern int ParametricIndex;
 
+//Step and Dir on JP7 pin 15-20, IO bits 8-13
+// JP7 pin 7-14, IO bits 0-7 available for end limit switches 5v tolerant
+#define STEPS_INCH 2540
+#define STEPS_MM 100
 
 #define CLOCK 16.6666e6
 main()
 {
   ch0->InputMode=NO_INPUT_MODE;
   ch0->OutputMode=STEP_DIR_MODE;
-  ch0->Vel=100000;// 100000;
-  ch0->Accel=400000;
+  ch0->Vel=STEPS_MM*400; // 900 mm/s;
+  ch0->Accel=200000;
   ch0->Jerk=4e+006;
   ch0->P=0;
   ch0->I=0.01;
@@ -71,8 +75,8 @@ main()
 
   ch1->InputMode=NO_INPUT_MODE;
   ch1->OutputMode=STEP_DIR_MODE;
-  ch1->Vel=100000;//100000;
-  ch1->Accel=400000;
+  ch1->Vel=STEPS_MM*400; // 900 mm/s;
+  ch1->Accel=200000;
   ch1->Jerk=4e+006;
   ch1->P=0;
   ch1->I=0.01;
@@ -130,7 +134,7 @@ main()
 
   ch2->InputMode=NO_INPUT_MODE;
   ch2->OutputMode=STEP_DIR_MODE;
-  ch2->Vel=6000;
+  ch2->Vel=STEPS_MM*9; // 9 mm/s;
   ch2->Accel=80000;
   ch2->Jerk=4e+006;
   ch2->P=0;
