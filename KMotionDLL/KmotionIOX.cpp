@@ -767,7 +767,7 @@ int CKMotionIO::FlushInputBuffer()
 			// KMotion seems to be present but not responding
 			// after two attemps flag as non responsive and
 			// stop trying
-			log_err("Abort not responding attempt %d\n", NonRespondingCount);
+			log_info("Abort not responding attempt %d\n", NonRespondingCount);
 
 			NonRespondingCount++;
 
@@ -781,11 +781,11 @@ int CKMotionIO::FlushInputBuffer()
 
 		NonRespondingCount=0;
 
-		if (BytesReceived != 3){log_err("Expected bytes is 3. Received bytes %d\n", BytesReceived); return 1;}
+		if (BytesReceived != 3){log_info("Expected bytes is 3. Received bytes %d\n", BytesReceived); return 1;}
 
-		if (RxBuffer[0] != '\x1b'){log_err("Received byte[0] 1b != %x\n", RxBuffer[0]); return 1;}
-		if (RxBuffer[1] != 'C'){log_err("Received byte[1] C != %c\n", RxBuffer[1]); return 1;}
-		if (RxBuffer[2] != '\r'){log_err("Received byte[2] \\r != %c\n", RxBuffer[2]); return 1;}
+		if (RxBuffer[0] != '\x1b'){log_info("Received byte[0] 1b != %x\n", RxBuffer[0]); return 1;}
+		if (RxBuffer[1] != 'C'){log_info("Received byte[1] C != %c\n", RxBuffer[1]); return 1;}
+		if (RxBuffer[2] != '\r'){log_info("Received byte[2] \\r != %c\n", RxBuffer[2]); return 1;}
 	}
 
 	// verify there are no transmit or receive characters
@@ -807,7 +807,7 @@ int CKMotionIO::Failed()
 	
     if (_ftdi_usb_close(ftdi) < 0)
     {
-    	log_err("unable to close ftdi device: (%s)\n", ftdi_get_error_string(ftdi));
+      log_err("unable to close ftdi device: (%s)\n", ftdi_get_error_string(ftdi));
     }
 	
 	if (!FailMessageAlreadyShown)
@@ -828,7 +828,7 @@ int CKMotionIO::Disconnect()
 	
     if (_ftdi_usb_close(ftdi) < 0)
     {
-    	log_err("unable to close ftdi device: (%s)\n", ftdi_get_error_string(ftdi));
+      log_err("unable to close ftdi device: (%s)\n", ftdi_get_error_string(ftdi));
     }
 	
 	Mutex->Unlock();
