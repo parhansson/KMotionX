@@ -1,7 +1,7 @@
 
 (function() {
 
-  angular.module('KmotionXApp', ['KMXLog','KMX-LaserPlugin','CodeEditor','KMXRenderer','KMXBackend', 'OtherStuff']);
+  angular.module('KmotionXApp', ['KMXImport','KMXLog','KMX-LaserPlugin','CodeEditor','KMXRenderer','KMXBackend', 'OtherStuff']);
   
   angular.module('KmotionXApp')
     .run(initApp);
@@ -49,20 +49,28 @@
     });
     var status = {}
     $scope.status = status;
+    
+    var droEl ={
+        "xDRO":null,
+        "yDRO":null,
+        "zDRO":null,
+        set:function(name, value){
+          var DROElement = this[name];
+          if(DROElement == null){
+            DROElement = $("#"+name);
+            this[name] = DROElement; 
+          }
+          if(DROElement){
+            DROElement.text(value.toFixed(3));       
+          }
+        }
+    };
+    
     $scope.$on('status-update', function(event, args){
       angular.copy(args.status, status);
-      var xDROElement = $("#xDRO");
-      var yDROElement = $("#yDRO");
-      var zDROElement = $("#zDRO");
- 
-      xDROElement.text(status.dro[0].toFixed(3));
-      yDROElement.text(status.dro[1].toFixed(3));
-      zDROElement.text(status.dro[2].toFixed(3));
-      //$scope.interpreting = state.interpreting == 1;
-      //$scope.feedHold = state.feedHold == 1;
-      
-      //(1000/2540)*25,4 dro;
-      
+      droEl.set("xDRO", status.dro[0]);
+      droEl.set("yDRO", status.dro[1]);
+      droEl.set("zDRO", status.dro[2]);
       //console.info(status.threadActive);
     });
     

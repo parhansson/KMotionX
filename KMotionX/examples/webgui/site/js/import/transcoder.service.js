@@ -1,10 +1,10 @@
 (function() {
-  angular.module('CodeEditor')
+  angular.module('KMXImport')
     .factory('transcoder', transcoder); 
   
-  transcoder.$inject = ['$q'];
+  transcoder.$inject = ['$q','transcoderSettings'];
   
-  function transcoder($q) {
+  function transcoder($q,transcoderSettings) {
       
       var service = {
           transcode: transcode
@@ -50,14 +50,7 @@
           transformedDefer.reject("Unsupported source: " + (typeof src));
         }
         
-        
-        var gcode = new GCode.Source(svg2gcode(source, {
-          scale : 1,
-          cutZ : 10,
-          safeZ: 8,
-          unit: "mm",
-          dpi: 72
-        }));
+        var gcode = new GCode.Source(svg2gcode(source, transcoderSettings.svg));
         
         transformedDefer.resolve(gcode.text);
         return transformedDefer.promise; 
@@ -77,14 +70,14 @@
           // For testing only.
           var MAX_NUM_PAGES = 50;
           var ii = Math.min(MAX_NUM_PAGES, numPages);
-          
+          var svgPages = [];
           var promise = Promise.resolve();
           for (var i = 1; i <= ii; i++) {
 //            var anchor = document.createElement('a');
 //            anchor.setAttribute('name', 'page=' + i);
 //            anchor.setAttribute('title', 'Page ' + i);
 //            document.body.appendChild(anchor);
-            
+            if(transcoderSettings.pdf.page!=i) continue;
             // Using promise to fetch and render the next page
             promise = promise.then(function (pageNum, anchor) {
               return pdf.getPage(pageNum).then(function (page) {
@@ -100,13 +93,13 @@
                 return page.getOperatorList().then(function (opList) {
                   var svgGfx = new PDFJS.SVGGraphics(page.commonObjs, page.objs);
                   return svgGfx.getSVG(opList, viewport).then(function (svg) {
-                    //container.appendChild(svg);
+//                    container.appendChild(svg);
+//                    console.info(container.innerHTML);
                     if(resultAsText){
                       transformedDefer.resolve(svg.outerHTML);
                     } else {
                       transformedDefer.resolve(svg);
                     }
-                    //console.info(container.innerHTML);
                   });
                 });
               });

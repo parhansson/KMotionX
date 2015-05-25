@@ -10,6 +10,7 @@
           <li><a href="#_settings_mcodes2" data-toggle="tab">M100-M119</a></li>
           <li><a href="#_settings_userbuttons" data-toggle="tab">User buttons</a></li>
           <li><a href="#_settings_motionparameter" data-toggle="tab">Motion Parameters</a></li>
+          <li><a href="#_settings_import" data-toggle="tab">Import settings</a></li>
       </ul>
       <div id="_my-tab-content" class="tab-content">
           <div class="tab-pane active" id="_settings_general">
@@ -117,6 +118,29 @@
               </table>
             </div>
           </div>
+          
+          <div class="tab-pane" id="_settings_import">
+            <div>
+              <h3 style=" text-align:center; margin: 15px 5px 5px 5px; font-family:Trebuchet MS;">Import settings</h3>
+            <div>
+              <table>
+                <tr>
+                  <th>Pdf import page number</th>
+                  <th>SVG scale</th>
+                  <th>SVG DPI</th>
+                </tr>
+                <tbody>
+                  <tr>
+                    <td><input ng-model="transcoderSettings.pdf.page" min="1" type="number" step="any" /></td>
+                    <td><input ng-model="transcoderSettings.svg.scale" min="0" type="number" step="any" /></td>
+                    <td><input ng-model="transcoderSettings.svg.dpi" min="1" type="number" step="any" /></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          
       </div>
     </div>
   </div>

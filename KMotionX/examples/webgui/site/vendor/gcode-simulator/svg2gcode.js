@@ -4,8 +4,8 @@ function svg2gcode(svg, settings) {
   settings.materialWidth = settings.materialWidth || 6;
   settings.passWidth = settings.materialWidth/settings.passes;
   settings.scale = settings.scale || 1;
-  settings.cutZ = settings.cutZ || -108; // cut z
-  settings.safeZ = settings.safeZ || -106;   // safe z
+  settings.cutZ = settings.cutZ || 0; // cut z
+  settings.safeZ = settings.safeZ || 0;   // safe z
   settings.feedRate = settings.feedRate || 1400;
   settings.seekRate = settings.seekRate || 1100;
   settings.bitWidth = settings.bitWidth || 1; // in mm
