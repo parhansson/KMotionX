@@ -16,7 +16,7 @@ main()
 {
   ch0->InputMode=NO_INPUT_MODE;
   ch0->OutputMode=STEP_DIR_MODE;
-  ch0->Vel=STEPS_MM*400; // 900 mm/s;
+  ch0->Vel=STEPS_MM*400; // 400 mm/s;
   ch0->Accel=200000;
   ch0->Jerk=4e+006;
   ch0->P=0;
@@ -75,7 +75,7 @@ main()
 
   ch1->InputMode=NO_INPUT_MODE;
   ch1->OutputMode=STEP_DIR_MODE;
-  ch1->Vel=STEPS_MM*400; // 900 mm/s;
+  ch1->Vel=STEPS_MM*400; // 400 mm/s;
   ch1->Accel=200000;
   ch1->Jerk=4e+006;
   ch1->P=0;
