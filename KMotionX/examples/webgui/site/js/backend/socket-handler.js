@@ -8,48 +8,58 @@ function SocketHandler(url, messageHandler, logHandler) {
     
     this.messageHandler = messageHandler || defaultHandler;
     this.logHandler = logHandler;
+    this.connectTimeout = null;
 }
 
 SocketHandler.prototype.connect = function() {
-    var _this = this;
-    _this.logHandler('CONNECTING...', LOG_TYPE.NONE);
-
+    this.logHandler('CONNECTING...', LOG_TYPE.NONE);
     this.websocket = new WebSocket(this.url);
     this.websocket.binaryType = "arraybuffer";
-    this.websocket.onopen = function(ev) {
-        _this.logHandler('CONNECTED', LOG_TYPE.NONE);
-        _this.sendMessage('KMotionX');
-    };
-    this.websocket.onclose = function(ev) {
-        _this.logHandler('DISCONNECTED', LOG_TYPE.NONE);
-        setTimeout(function() {
-            _this.connect();
-        }, 5000);
-    };
-    this.websocket.onerror = function(ev) {
-        _this.logHandler(ev.data, LOG_TYPE.ERROR);
-    };
-
-    this.websocket.onmessage = function(ev) {
-
-        if (!ev.data) {
-            _this.logHandler('', LOG_TYPE.PING);
-        } else {
-            //Data might be binary Blob or ArrayBuffer
-            if(ev.data instanceof Blob){
-            
-            } else if(ev.data instanceof ArrayBuffer){
-            
-            } else {
-              _this.logHandler(ev.data, LOG_TYPE.RECEIVE);              
-            }            
-            
-            _this.messageHandler(ev.data);
-        }
-
-    }
+    this.websocket.onopen = this.onopen.bind(this);
+    this.websocket.onclose = this.onclose.bind(this);
+    this.websocket.onerror = this.onerror.bind(this);
+    this.websocket.onmessage = this.onmessage.bind(this);
 
 }
+
+SocketHandler.prototype.onclose = function(ev) {
+  this.logHandler('DISCONNECTED', LOG_TYPE.NONE);
+  if(this.connectTimeout == null){
+    //TODO Investigate. connect with timeout only works on first try.
+    this.connectTimeout = setTimeout(this.connect.bind(this), 5000);
+  }
+  
+}
+SocketHandler.prototype.onerror = function(ev) {
+  this.logHandler(ev.data, LOG_TYPE.ERROR);
+}
+SocketHandler.prototype.onopen = function(ev) {
+  if(this.connectTimeout != null){
+    clearTimeout(this.connectTimeout);
+    this.connectTimeout = null;
+  }
+  this.logHandler('CONNECTED', LOG_TYPE.NONE);
+  this.sendMessage('KMotionX');
+}
+SocketHandler.prototype.onmessage = function(ev) {
+
+  if (!ev.data) {
+      this.logHandler('', LOG_TYPE.PING);
+  } else {
+      //Data might be binary Blob or ArrayBuffer
+      if(ev.data instanceof Blob){
+      
+      } else if(ev.data instanceof ArrayBuffer){
+      
+      } else {
+        this.logHandler(ev.data, LOG_TYPE.RECEIVE);              
+      }            
+      
+      this.messageHandler(ev.data);
+  }
+
+}
+
 SocketHandler.prototype.destroy = function() {
   this.websocket.onclose = function () {}; // disable onclose handler first
   this.websocket.close();  

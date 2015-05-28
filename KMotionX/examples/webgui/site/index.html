@@ -83,7 +83,7 @@
 
 
 </head>
-<body ng-controller="KMotionXController as kmx">
+<body ng-controller="KMotionXController">
 
 
 
@@ -176,6 +176,7 @@
             <label class="switch"><input type="checkbox" ng-model="interpreting"><i></i></label>Interpret
             -->
             <button class="btn" ng-click="gcodeEditCtrl.interpret()" ng-class="interpreting ? 'btn_down' : ''">Execute GCode</button>
+            <button class='btn' ng-class="feedHold ? 'btn_down' : ''"  ng-click="gcodeEditCtrl.feedHold()" >Feed Hold</button>
           </div>
           <div file-dropzone="" transform-fn="transform(mime,data)" file-content="editorContent" file-name="editorContentName" >      
             <div>
@@ -188,19 +189,11 @@
             </div>
             <kmx-ace id="gcodeEditor" ng-model="editorContent" mode="gcode" ></kmx-ace>
           </div>
-          <div>
-              <button class='btn btn-grid' ng-class="feedHold ? 'btn_down' : ''"  ng-click="gcodeEditCtrl.feedHold()" >Feed Hold</button>
-              <!--<label class="switch"><input type="checkbox" ng-model="feedHold"><i></i></label><label style="text-anchor:top"></label>-->
-              <button class='btn btn-grid'>Available</button>
-              <button class='btn btn-grid'>Available</button>
-              <button class='btn btn-grid'>Available</button>
-              <button class='btn btn-grid'>Available</button>
-              <button class='btn btn-grid'>Available</button>
-          </div>
         </div>
         
         <!--
-        -->      
+        -->
+        <hr>      
         <div ng-controller="UserButtonController as buttons">
             <button 
               ng-repeat="action in machine.userActions track by $index"

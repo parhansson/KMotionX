@@ -53,6 +53,13 @@
       }
       */
     });
+    
+    $scope.$on('status-update', function statusUpdate(event, args){
+      $scope.$apply(function(){
+        $scope.feedHold = args.status.stopImmediateState > 0;//pause
+      });
+    });
+    
     function updateEditor(){
       $scope.aceEditor.moveCursorTo(interpretLine, 0);
       //$scope.aceEditor.scrollToLine(state.line, true, true, function () {});

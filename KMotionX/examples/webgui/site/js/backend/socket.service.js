@@ -6,8 +6,7 @@
   
   function socketHandler($rootScope,kmxLogger) {
     var socketWorker;
-    var acknowledge;
-    
+    //var messageCount = 0;
     var socketHandlers = {
         
         STATUS: statusHandler,// 0: Non blocking callback. Called from the interpreter in different thread
@@ -30,7 +29,9 @@
         return;
       }
 
-      var socketWorker = new Worker("js/backend/socket-worker.js");
+      socketWorker = new Worker("js/backend/socket-worker.js");
+      socketWorker.onmessage = workerMessage;
+      
       var url = 'ws://' + window.location.host + '/ws';
       socketWorker.postMessage({command:'connect',url:url}) 
       
@@ -38,31 +39,35 @@
 //      window.onbeforeunload = function(){
 //        socketWorker.postMessage({command:'disconnect'})
 //      }
-
-      socketWorker.onmessage = function(event) {
-        var data = event.data; 
-        if(data.data){
-          var obj = data.message;
-          var handler = socketHandlers[obj.type];// || _this.defaultHandler;
-          var ret = handler(obj);
-          if(obj.block){
-            //only ack messages that require users answer here
-            acknowledge(obj, ret);              
-          }
-        } else if(data.status){
-          var json = angular.toJson(data.message,true);
-          //logHandler(json, LOG_TYPE.NONE);
-          //console.log(json);
-          $rootScope.$broadcast('status-update', { status: data.message });
-        } else if(data.log){
-          logHandler(data.message, data.type);
-        }
-      }
-      acknowledge = function(obj, ret){
-        socketWorker.postMessage({command:'acknowledge',obj:obj,ret:ret});
-      } 
       
     }
+    function workerMessage(event) {
+      //messageCount++;
+      //if(messageCount%5 == 0){
+        //console.info("Messages received", messageCount);
+      //}
+      var data = event.data; 
+      if(data.data){
+        var obj = data.message;
+        var handler = socketHandlers[obj.type];// || _this.defaultHandler;
+        var ret = handler(obj);
+        if(obj.block){
+          //only ack messages that require users answer here
+          acknowledge(obj, ret);              
+        }
+      } else if(data.status){
+        //var json = angular.toJson(data.message,true);
+        //logHandler(json, LOG_TYPE.NONE);
+        //console.log(json);
+        $rootScope.$broadcast('status-update', { status: data.message });
+      } else if(data.log){
+        logHandler(data.message, data.type);
+      }
+    }
+    
+    function acknowledge(obj, ret){
+      socketWorker.postMessage({command:'acknowledge',obj:obj,ret:ret});
+    } 
 
     
     

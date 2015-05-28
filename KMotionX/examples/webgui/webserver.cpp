@@ -272,7 +272,7 @@ static char *get_option(char **options, const char *option_name) {
 static void *serving_thread_func(void *param) {
   struct mg_server *srv = (struct mg_server *) param;
   while (exit_flag == 0) {
-    mg_poll_server(srv, 200);
+    mg_poll_server(srv, 100);
   }
   return NULL;
 }

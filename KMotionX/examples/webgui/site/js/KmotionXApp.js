@@ -38,50 +38,18 @@
   
   function KMotionXController($scope, kmxThreeView, kmxBackend){
     $scope.kmxThreeViewData = kmxThreeView;
-    var globalState = {};
-    $scope.globalState = globalState;
+
     $scope.$on('state-update', function(event, args){
-      //globalState =args.state;
-      angular.copy(args.state, globalState);
-      $scope.simulating = globalState.simulate;
-      //$scope.interpreting = state.interpreting == 1;
-      //$scope.feedHold = state.feedHold == 1;
-    });
-    var status = {}
-    $scope.status = status;
-    
-    var droEl ={
-        "xDRO":null,
-        "yDRO":null,
-        "zDRO":null,
-        set:function(name, value){
-          var DROElement = this[name];
-          if(DROElement == null){
-            DROElement = $("#"+name);
-            this[name] = DROElement; 
-          }
-          if(DROElement){
-            DROElement.text(value.toFixed(3));       
-          }
-        }
-    };
-    
-    $scope.$on('status-update', function(event, args){
-      angular.copy(args.status, status);
-      droEl.set("xDRO", status.dro[0]);
-      droEl.set("yDRO", status.dro[1]);
-      droEl.set("zDRO", status.dro[2]);
-      //console.info(status.threadActive);
+      $scope.$apply(function(){
+        $scope.simulating = args.state.simulate;      
+      }); 
     });
     
-    
-    $scope.$watch('simulating', function(newValue, oldValue){
+    $scope.$watch('simulating', function simulating(newValue, oldValue){
       if(newValue != oldValue){
         kmxBackend.simulate(newValue);        
       }
     });
-    
-    
     
   }
 

@@ -3,11 +3,11 @@ importScripts('shared-types.js');
 importScripts('socket-handler.js');
 
 var socket;
+
 function messageHandler(data){
   if(data instanceof ArrayBuffer){
-    var status = parseStatus(data);      
+    var status = parseStatus(data);
     postMessage({status:true,message:status});
-
   } else if(data instanceof Blob){
     var reader = new FileReader();
     reader.addEventListener("loadend", function() {
@@ -17,7 +17,7 @@ function messageHandler(data){
     });
     reader.readAsArrayBuffer(data);
   } else {
-    try{
+    //try{ //try catch disables optimization in chrome
       var obj = JSON.parse(data);
       postMessage({data:true,message:obj});
       //ack messages that don't require users answer here
@@ -25,11 +25,11 @@ function messageHandler(data){
         socket.acknowledge(obj, -1);
       }
       
-    } catch(e){
-      console.log(data);
-      logHandler("Error handling message: " + data, LOG_TYPE.ERROR);
-      throw e;
-    }
+    //} catch(e){
+    //  console.log(data);
+    //  logHandler("Error handling message: " + data, LOG_TYPE.ERROR);
+    //  throw e;
+    //}
   }
   
 }
@@ -103,11 +103,12 @@ function parseStatus(arraybuffer){
   
   var dros = [];
   for (var i=0; i<6; i++) {
-    dros[i] = r.double();
+    dros[i] = r.double().toFixed(3);
   }
   
   
   var status = {
+      timeStamp: TimeStamp,
       version: Version,
       size:Size,
       position: positions,
@@ -121,7 +122,6 @@ function parseStatus(arraybuffer){
       runOnStartUp: toBitArr(RunOnStartUp, 8),
       threadActive: toBitArr(ThreadActive, 8),
       stopImmediateState: StopImmediateState,
-      timeStamp: TimeStamp,
       dro:dros
       
   };

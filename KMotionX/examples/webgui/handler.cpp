@@ -97,7 +97,6 @@ CGCodeInterpreter *Interpreter;
 CKMotionDLL *km;
 CCoordMotion *CM;
 long int pollTID; //Poll thread id
-time_t service_console_time;
 state gstate;
 MAIN_STATUS main_status;
 
@@ -127,7 +126,6 @@ void initHandler() {
 
   pollTID = getThreadId();
   //debug("Poll thread id %ld", pollTID);
-  service_console_time = time(NULL);
   mb_callback = MessageBoxHandler;
   //Enqueue state as first callback. This first entry will never be removed
   callbacks = (struct callback *) malloc(sizeof(struct callback));
@@ -263,8 +261,10 @@ int readStatus(){
 
 void push_status() {
 
-  if(readStatus()){
-    return;
+  if(!gstate.simulate){
+    if(readStatus()){
+      //return;
+    }
   }
 
   //copy struct and avoid padding wich may differ on platforms
@@ -298,41 +298,49 @@ void push_status() {
   MEMCPY(msgPtr, &main_status.ThreadActive, 4);
   MEMCPY(msgPtr, &main_status.StopImmediateState, 4);
   //struct padding 4 avoided here
-  MEMCPY(msgPtr, &main_status.TimeStamp, 8);
+  if(gstate.connected && !gstate.simulate){
+    MEMCPY(msgPtr, &main_status.TimeStamp, 8);
+  } else {
+    time_t service_console_time = time(NULL);
+    double timeStamp = service_console_time;
+    MEMCPY(msgPtr, &timeStamp, 8);
+  }
   MEMCPY(msgPtr, &main_status.PC_comm, 32);
   MEMCPY(msgPtr, &main_status.VirtualBits, 4);
   MEMCPY(msgPtr, &main_status.VirtualBitsEx0, 4);
   //total size 456 instead of 464 with padding
 
+  double x,y,z,a,b,c;
+  if(gstate.connected && !gstate.simulate){
 
-  double ActsDest[MAX_ACTUATORS],x,y,z,a,b,c;
+    double ActsDest[MAX_ACTUATORS];
 
-  for (int i=0; i<MAX_ACTUATORS; i++) ActsDest[i]=0.0;
+    for (int i=0; i<MAX_ACTUATORS; i++) ActsDest[i]=0.0;
 
-  if (CM->x_axis >=0) ActsDest[CM->x_axis] = main_status.Dest[CM->x_axis];
-  if (CM->y_axis >=0) ActsDest[CM->y_axis] = main_status.Dest[CM->y_axis];
-  if (CM->z_axis >=0) ActsDest[CM->z_axis] = main_status.Dest[CM->z_axis];
-  if (CM->a_axis >=0) ActsDest[CM->a_axis] = main_status.Dest[CM->a_axis];
-  if (CM->b_axis >=0) ActsDest[CM->b_axis] = main_status.Dest[CM->b_axis];
-  if (CM->c_axis >=0) ActsDest[CM->c_axis] = main_status.Dest[CM->c_axis];
+    if (CM->x_axis >=0) ActsDest[CM->x_axis] = main_status.Dest[CM->x_axis];
+    if (CM->y_axis >=0) ActsDest[CM->y_axis] = main_status.Dest[CM->y_axis];
+    if (CM->z_axis >=0) ActsDest[CM->z_axis] = main_status.Dest[CM->z_axis];
+    if (CM->a_axis >=0) ActsDest[CM->a_axis] = main_status.Dest[CM->a_axis];
+    if (CM->b_axis >=0) ActsDest[CM->b_axis] = main_status.Dest[CM->b_axis];
+    if (CM->c_axis >=0) ActsDest[CM->c_axis] = main_status.Dest[CM->c_axis];
 
-  CM->Kinematics->TransformActuatorstoCAD(ActsDest,&x,&y,&z,&a,&b,&c);
+    CM->Kinematics->TransformActuatorstoCAD(ActsDest,&x,&y,&z,&a,&b,&c);
 
-  bool MachineCoords = true;
-  if (MachineCoords){
-    Interpreter->ConvertAbsoluteToMachine(x,y,z,a,b,c,&x,&y,&z,&a,&b,&c);
+    bool MachineCoords = true;
+    if (MachineCoords){
+      Interpreter->ConvertAbsoluteToMachine(x,y,z,a,b,c,&x,&y,&z,&a,&b,&c);
+    } else {
+      Interpreter->ConvertAbsoluteToInterpreterCoord(x,y,z,a,b,c,&x,&y,&z,&a,&b,&c);
+    }
+
   } else {
-    Interpreter->ConvertAbsoluteToInterpreterCoord(x,y,z,a,b,c,&x,&y,&z,&a,&b,&c);
-  }
-
-  //note we are never here when state is simulate
-  if(gstate.simulate){
     x = CM->current_x;
     y = CM->current_y;
     z = CM->current_z;
     a = CM->current_a;
     b = CM->current_b;
     c = CM->current_c;
+    Interpreter->ConvertAbsoluteToMachine(x,y,z,a,b,c,&x,&y,&z,&a,&b,&c);
   }
 
   MEMCPY(msgPtr, &x, 8);
@@ -341,16 +349,26 @@ void push_status() {
   MEMCPY(msgPtr, &a, 8);
   MEMCPY(msgPtr, &b, 8);
   MEMCPY(msgPtr, &c, 8);
+/*
+  if (Interpreter->p_setup->distance_mode==MODE_ABSOLUTE)
+    CheckRadioButton(IDC_Rel,IDC_Abs,IDC_Abs);
+  else
+    CheckRadioButton(IDC_Rel,IDC_Abs,IDC_Rel);
+
+  if (Interpreter->p_setup->length_units==CANON_UNITS_INCHES)
+    CheckRadioButton(IDC_mm,IDC_inch,IDC_inch);
+  else if (Interpreter->p_setup->length_units==CANON_UNITS_MM)
+    CheckRadioButton(IDC_mm,IDC_inch,IDC_mm);
+*/
 
   struct mg_connection *conn = NULL;
-  int sockets = 0;
-  // Iterate over all connections, and push current time message to websocket ones.
+  // Iterate over all connections, and push message to websocket ones.
   for (conn = mg_next(server, conn); conn != NULL; conn = mg_next(server, conn)) {
     if (conn->is_websocket) {
-      sockets++;
       mg_websocket_write(conn, WEBSOCKET_OPCODE_BINARY, msg, size);
     }
   }
+
   free(msg);
 }
 
@@ -639,31 +657,47 @@ void enqueueState() {
   pthread_mutex_unlock(&mut);
 }
 
+bool msPast(struct timeval *tval_last, int ms){
+  struct timeval tval_current, tval_result;
+  if(tval_last == NULL){
+    gettimeofday(tval_last, NULL);
+    return true;
+  }
+  gettimeofday(&tval_current, NULL);
+  timersub(&tval_current, tval_last, &tval_result);
+
+  if(tval_result.tv_sec*1000000+tval_result.tv_usec > ms*1000){
+    gettimeofday(tval_last, NULL);
+    return true;
+  }
+  return false;
+}
+
+struct timeval tval_status, tval_service_console, tval_poll_callbacks;
 int handle_poll(struct mg_connection *conn) {
-  //poll is called every 200 ms
-  pollCallbacks(NULL);
+  //poll is called every at least every 100 ms but can be alot more often
+  if(msPast(&tval_poll_callbacks,200)){
+    //debug("polling callbacks");
+    pollCallbacks(NULL);
+  }
+
+  if(msPast(&tval_status,200)){
+    //debug("pushar status");
+    push_status();
+  }
 
   if(!gstate.simulate){
-    if(gstate.connected){
-      push_status();
-    }
-    time_t current_time = time(NULL);
-
-    if (current_time - service_console_time > 1) {
-      if(!gstate.connected){
-        //If not connected try once in while(every second) to connect by reading status
-        push_status();
-      }
+    if(msPast(&tval_service_console,1000)){
+      //debug("serving console");
       if(km->ServiceConsole()){
         //TODO not verified that this works.
         ErrMsgHandler(">ServiceConsole Failed\n");
       }
-      service_console_time = current_time;
     }
   }
 
   //printf("event %d\n", ev);
-  return MG_FALSE; //Return value is ignored on MG_POLL
+  return MG_FALSE; //Return value is said to be ignored on MG_POLL but does'nt seem to be
 }
 int handle_ws_connect(struct mg_connection *conn) {
   //if websocket /ws is param here
@@ -969,13 +1003,16 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
 
   } else if (!strcmp("kmotion", object)) {
     if (FUNC_SIGP("feedHold", 0)) {
-
       char res[MAX_LINE];
-      if (!km->WriteLineReadLine("GetStopState", res)) {
+      if(km->WriteLineReadLine("GetStopState", res)){
+        debug("Read stop state failed");
+      } else  {
         if (res[0] == '0') {
+          //Not stopping
           gstate.feedHold = 1;
           km->WriteLine("StopImmediate0");
         } else {
+          //Stopping or stopped
           gstate.feedHold = 0;
           km->WriteLine("StopImmediate1");
         }
@@ -1138,8 +1175,9 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
 }
 
 void setSimulationMode(bool enable){
+  bool changed = enable != gstate.simulate;
   gstate.simulate = Interpreter->CoordMotion->m_Simulate = enable;
-  if(enable != gstate.simulate){
+  if(changed){
     enqueueState();
   }
 }
@@ -1222,6 +1260,10 @@ void interpret(struct json_token *paramtoken) {
   tokb(paramtoken + 5, &restart);
   if (InFile) {
     if (!gstate.interpreting) {
+      Interpreter->CoordMotion->ClearAbort();
+      Interpreter->CoordMotion->m_AxisDisabled=false;
+      Interpreter->CoordMotion->ClearHalt();
+      //TODO CheckForResume
       if (!Interpreter->Interpret(BoardType, InFile, start, end, restart,
           StatusCallback, CompleteCallback)) {
         gstate.interpreting = true;
