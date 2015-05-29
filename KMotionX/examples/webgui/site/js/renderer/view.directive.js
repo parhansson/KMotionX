@@ -65,8 +65,6 @@
       scene.add( sphereInter );
       
       var lineMaterial = new THREE.LineBasicMaterial({color: 0xff0000});
-      var line;
-      
       
       // Lights...
       [[0,0,1,  0xFFFFCC],
@@ -87,19 +85,7 @@
       // Fix coordinates up if window is resized.
       $(window).on('resize', onResize);
       $(elem).on( 'mousemove', onElementMouseMove );
-      //$(document).on( 'mousemove', onElementMouseMove );
 
-      
-      function updateLine(){
-        return;
-        scene.remove(line);
-        var lgeometry = new THREE.Geometry();
-        lgeometry.vertices.push(new THREE.Vector3(0, 0, 0));
-        lgeometry.vertices.push(mouse3d);
-        line = new THREE.Line(lgeometry, lineMaterial);
-        scene.add(line);    
-        
-      }
       
       function animate() {
 
@@ -164,15 +150,14 @@
 
         // calculate mouse position in normalized device coordinates
         // (-1 to +1) for both components
-        mouse3d.x = mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-        mouse3d.y = mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-        
+        var elementXPosition = (event.offsetX != null) ? event.offsetX : event.originalEvent.layerX;
+        var elementYPosition = (event.offsetY != null) ? event.offsetY : event.originalEvent.layerY;
+        mouse3d.x = mouse.x = ( elementXPosition / width ) * 2 - 1;
+        mouse3d.y = mouse.y = - ( elementYPosition / height ) * 2 + 1;
+        //console.info("mouse.x mouse.y",mouse.x ,mouse.y);
         
         mouse3d.z = 0.5; 
         mouse3d.unproject(camera);
-        updateLine();
-        //console.info("Mx",mouse.x,"width",width,"clientx",event.clientX);
-        //console.info("My",mouse.y,"width",height,"clienty",event.clientY);
       }
       
     }
