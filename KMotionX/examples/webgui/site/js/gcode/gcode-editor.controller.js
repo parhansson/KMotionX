@@ -36,9 +36,7 @@
         }
       }
       
-      
-      $scope.interpreting = state.interpreting;
-      $scope.feedHold = state.feedHold;
+      $scope.interpreting = state.interpreting;        
 
       if (state.file != "" && state.file != $scope.editorContentName ) {
         vm.openFile(state.file)
@@ -55,9 +53,7 @@
     });
     
     $scope.$on('status-update', function statusUpdate(event, args){
-      $scope.$apply(function(){
-        $scope.feedHold = args.status.stopImmediateState > 0;//pause
-      });
+      $scope.feedHold = args.status.stopImmediateState > 0;//pause
     });
     
     function updateEditor(){

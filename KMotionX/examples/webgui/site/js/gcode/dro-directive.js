@@ -19,10 +19,8 @@
       
       function droController($scope){
         $scope.$on('status-update', function statusUpdate(event, args){
-          $scope.$apply(function(){
-            $scope.dro = args.status.dro;
-            $scope.timeStamp = args.status.timeStamp;
-          }); 
+          $scope.dro = args.status.dro;
+          $scope.timeStamp = args.status.timeStamp;
           
           /*
           if (MainStatus.StopImmediateState>0 && up!=IDB_FeedHoldPause)

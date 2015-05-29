@@ -40,9 +40,7 @@
     $scope.kmxThreeViewData = kmxThreeView;
 
     $scope.$on('state-update', function(event, args){
-      $scope.$apply(function(){
-        $scope.simulating = args.state.simulate;      
-      }); 
+      $scope.simulating = args.state.simulate;      
     });
     
     $scope.$watch('simulating', function simulating(newValue, oldValue){

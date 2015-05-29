@@ -59,7 +59,12 @@
         //var json = angular.toJson(data.message,true);
         //logHandler(json, LOG_TYPE.NONE);
         //console.log(json);
-        $rootScope.$broadcast('status-update', { status: data.message });
+        
+        //Event is coming outside of angular.
+        //enter digest cycle with scope.apply
+        $rootScope.$apply(function(){
+          $rootScope.$broadcast('status-update', { status: data.message });
+        });        
       } else if(data.log){
         logHandler(data.message, data.type);
       }
@@ -100,7 +105,11 @@
     }
     
     function stateHandler(obj) {
-      $rootScope.$broadcast('state-update', { state: obj.data });
+      //Event is coming outside of angular.
+      //enter digest cycle with scope.apply
+      $rootScope.$apply(function(){
+        $rootScope.$broadcast('state-update', { state: obj.data });
+      }); 
       //TODO listen for machine configuration changes?
     }
     
