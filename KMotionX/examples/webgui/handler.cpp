@@ -71,7 +71,6 @@ struct callback * alloc_callback();
 struct state {
   bool connected;
   bool simulate;
-  int feedHold;
   bool interpreting;
   int currentLine;
   char current_file[256];
@@ -162,7 +161,6 @@ void readSetup(){
   gstate.currentLine = 0;
   gstate.connected = false;
   gstate.simulate = false;
-  gstate.feedHold = 0; // todo read from kflop?
 
   free(setup);
   unmapFile(mmFile);
@@ -215,7 +213,7 @@ void info_handler(int signum) {
   fprintf(stdout, "Config       :%s\n", gstate.current_machine);
   fprintf(stdout, "File         :%s\n", gstate.current_file);
   fprintf(stdout, "Line         :%d\n", gstate.currentLine);
-  fprintf(stdout, "FeedHold     :%d\n", gstate.feedHold);
+  fprintf(stdout, "FeedHold     :%d\n", main_status.StopImmediateState);
   fprintf(stdout, "Simulating   :%d\n", gstate.simulate);
 
 }
@@ -646,8 +644,7 @@ void enqueueState() {
   char stateBuf[512];
   //debug("enquing current file: %s", gstate.current_file);
   //this could be implemented as callback to one client (connection) only
-  json_emit(stateBuf, 512, "{ s: S, s: S, s: S, s: i, s: s, s: s }",
-      "feedHold", gstate.feedHold?"true":"false",
+  json_emit(stateBuf, 512, "{ s: S, s: S, s: i, s: s, s: s }",
       "interpreting", gstate.interpreting?"true":"false",
       "simulate", gstate.simulate?"true":"false",
       "line", gstate.currentLine,
@@ -1007,17 +1004,17 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
       if(km->WriteLineReadLine("GetStopState", res)){
         debug("Read stop state failed");
       } else  {
+        int feedHold;
         if (res[0] == '0') {
           //Not stopping
-          gstate.feedHold = 1;
+          feedHold = 1;
           km->WriteLine("StopImmediate0");
         } else {
           //Stopping or stopped
-          gstate.feedHold = 0;
+          feedHold = 0;
           km->WriteLine("StopImmediate1");
         }
-        enqueueState();
-        EMIT_RESPONSE("[i]", gstate.feedHold);
+        EMIT_RESPONSE("[i]", feedHold);
       }
     } else if (FUNC_SIGP("CheckCoffSize", 0)) {
 
@@ -1260,6 +1257,7 @@ void interpret(struct json_token *paramtoken) {
   tokb(paramtoken + 5, &restart);
   if (InFile) {
     if (!gstate.interpreting) {
+      //These are not needed if not CheckForResume is implemented
       Interpreter->CoordMotion->ClearAbort();
       Interpreter->CoordMotion->m_AxisDisabled=false;
       Interpreter->CoordMotion->ClearHalt();
