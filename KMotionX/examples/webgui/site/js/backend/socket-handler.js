@@ -12,7 +12,7 @@ function SocketHandler(url, messageHandler, logHandler) {
 }
 
 SocketHandler.prototype.connect = function() {
-    this.logHandler('CONNECTING...', LOG_TYPE.NONE);
+    this.logHandler('Websocket connecting...', LOG_TYPE.NONE);
     this.websocket = new WebSocket(this.url);
     this.websocket.binaryType = "arraybuffer";
     this.websocket.onopen = this.onopen.bind(this);
@@ -22,23 +22,26 @@ SocketHandler.prototype.connect = function() {
 
 }
 
-SocketHandler.prototype.onclose = function(ev) {
-  this.logHandler('DISCONNECTED', LOG_TYPE.NONE);
+SocketHandler.prototype.reconnect = function() {
   if(this.connectTimeout == null){
-    //TODO Investigate. connect with timeout only works on first try.
-    this.connectTimeout = setTimeout(this.connect.bind(this), 5000);
-  }
-  
+    this.connectTimeout = setInterval(this.connect.bind(this), 5000);
+  }  
+}
+
+SocketHandler.prototype.onclose = function(ev) {
+  this.logHandler('Websocket closed. (' + ev.code +")" +ev.reason, LOG_TYPE.NONE);
+  this.reconnect();
 }
 SocketHandler.prototype.onerror = function(ev) {
-  this.logHandler(ev.data, LOG_TYPE.ERROR);
+  this.logHandler("Websocket error.", LOG_TYPE.ERROR);
+  this.reconnect();
 }
 SocketHandler.prototype.onopen = function(ev) {
   if(this.connectTimeout != null){
-    clearTimeout(this.connectTimeout);
+    clearInterval(this.connectTimeout);
     this.connectTimeout = null;
   }
-  this.logHandler('CONNECTED', LOG_TYPE.NONE);
+  this.logHandler('Websocket connected.', LOG_TYPE.NONE);
   this.sendMessage('KMotionX');
 }
 SocketHandler.prototype.onmessage = function(ev) {
