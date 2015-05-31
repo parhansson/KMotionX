@@ -8,12 +8,12 @@
 #define PPI_IO_BIT 14
 #define LASER_ARMED_BIT 46
 #define SET_LASER_STATE(STATE) laserState = STATE;SetStateBit(PPI_IO_BIT, laserState);
-#define stepsPerMM 100 // 4000 / 40; //40mm per rev 4000 steps per rev
+#define STEPS_PER_MM 100 // 4000 / 40; //40mm per rev 4000 steps per rev
 
 double LastPrintT;
 int laserState = OFF;
-double ppi;
 int periods = 0, lastPeriod = 0, onPeriods = 0;
+
 
 //http://www.buildlog.net/blog/2011/12/getting-more-power-and-cutting-accuracy-out-of-your-home-built-laser-system/
 int printTime(){
@@ -27,25 +27,15 @@ int printTime(){
   return 0;
 }
 
+double pulsesPerStep;
+int pulseLengthPeriods = (int) (PULSE_LENGTH / (1000*TIMEBASE)) / 2; // divide by two for some strange reason
+
 void servicePPI() {
   double speed; //steps per second
   double vx, vy;
-
-  int pulseLengthPeriods = (int) (PULSE_LENGTH / 1000 / TIMEBASE) / 2; // divide by two for some strange reason
-  //printf("Pulse length=%fms, Periods=%d\n",pulseLentgh, pulseLengthPeriods);
-  //ppi = 500;
-  double ppmm = ppi / 25.4; //pulser per mm
   double pps = 0; //pulses per second
-  //P= PPMM * FS pulser i sekunden
-
   //double feedRate FS= F/60 mm i sekunden
 
-  double bulle = ppmm/stepsPerMM;
-  pps = bulle * speed;
-
-//  double mmps; //mm per second
-//  mmps = speed / stepsPerMM;
-//  pps = ppmm * mmps;
 
   if (laserState == ON) {
         onPeriods++;
@@ -81,10 +71,7 @@ void servicePPI() {
       } else {
         // head is moving an laser is off
         // check if it is time to turn laser on
-
-        //mmps = speed / stepsPerMM;
-        //pps = ppmm * mmps;
-        pps = bulle * speed;
+        pps = pulsesPerStep * speed;
         double t = (1.0f / TIMEBASE / pps);
         //if(printTime()){printf("Debug %f - %f\n", pps, t);}
         //if(printTime()){printf("Debug %d - %d > %f\n", periods, lastPeriod, t);}
@@ -116,13 +103,12 @@ int checkArmed(){
 */
 main() {
   //M100 P500 Q50
+  double ppi;
   ppi = *(float *) &persist.UserData[0]; //1500;//8000; //mm per min P Parameter
   double percent = *(float *) &persist.UserData[1]; //50%; //Q parameter
-  printf("LaserPPI.c M100 P = %f Q = %f\n", ppi, percent);
   
   double dutycycle = 255 * ((100 - percent) / 100);
-  printf("LaserPPI.c adjusted PPI = %f DutyCycle = %f\n", ppi, dutycycle);
-  printf("Uptime %f\n", Time_sec());
+
 
   SetBitDirection(LASER_PWM_BIT, 1);    // Set bit 26 (PWM 0 as an output)
   FPGA(IO_PWMS_PRESCALE) = 2;   // set pwm frequency 21.7KHz KHz
@@ -167,23 +153,41 @@ main() {
   //printf("Frequency=%d, DutyCycle=%f, Pulse=%d clocks, Period=%f clocks\n",Frequency,DutyCycle,Pulse,Period);
 
 
-
+  int pulseLengthPeriods = (int) ((PULSE_LENGTH) / (1000*TIMEBASE)) / 2; // divide by two for some strange reason
+  printf("Pulse length=%dms, Periods=%d\n",PULSE_LENGTH, pulseLengthPeriods);
 
   //double T;
   LastPrintT = Time_sec();
 
   SET_LASER_STATE(OFF);
 
-
-  for (;;) {
-
-    //Delay_sec(0.1);
-    WaitNextTimeSlice();  // ensure we don't get interrupted
-    if(ReadBit(LASER_ARMED_BIT)){
-      servicePPI();
-    } else {
-      SET_LASER_STATE(OFF);
-    }
-
+  if(ppi == 0){
+      printf("Mode Constant\n");
+      for (;;) {
+        WaitNextTimeSlice(); // No need to update more often
+        if(ReadBit(LASER_ARMED_BIT)){
+          SET_LASER_STATE(ON);
+        } else {
+          SET_LASER_STATE(OFF);
+        }  
+      }
+  } else {
+      printf("Mode PPI\n");
+      printf("LaserPPI.c M100 P = %f Q = %f\n", ppi, percent);
+      printf("LaserPPI.c adjusted PPI = %f DutyCycle = %f\n", ppi, dutycycle);
+      double ppmm; //pulses per mm
+      ppmm = ppi / 25.4; //Pulses per mm
+      pulsesPerStep = ppmm/STEPS_PER_MM;
+      for (;;) {
+    
+        //Delay_sec(0.1);
+        WaitNextTimeSlice();  // ensure we don't get interrupted
+        if(ReadBit(LASER_ARMED_BIT)){
+          servicePPI();
+        } else {
+          SET_LASER_STATE(OFF);
+        }
+    
+      }
   }
 }
