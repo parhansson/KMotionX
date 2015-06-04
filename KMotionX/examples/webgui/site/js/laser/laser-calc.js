@@ -6,9 +6,9 @@
     
     
     $scope.calc = {
-        pulseWidth:3,
+        pulseWidth:2,
         ppi:1200,
-        feedRate:50,
+        feedRate:250,
         powerSetting:100,
         power:40
     }
@@ -29,7 +29,7 @@
       result.ppmm = newValue.ppi/25.4;
       result.pps = result.ppmm*newValue.feedRate / 60;
       result.pulsePeriod=1/result.pps*1000;
-      result.dutyCycle=newValue.pulseWidth/result.pulsePeriod*newValue.powerSetting;
+      result.dutyCycle=newValue.pulseWidth/result.pulsePeriod*100;
       result.energyPerPulse=newValue.power*newValue.pulseWidth/1000*newValue.powerSetting/100;
       result.energyDensity=result.ppmm*result.energyPerPulse;
       result.powerToMaterial=result.pps*result.energyPerPulse;

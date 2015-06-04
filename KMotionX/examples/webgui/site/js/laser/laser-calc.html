@@ -7,11 +7,11 @@
             </tr>
             <tr>
               <th>PPI:</th>
-              <td><input ng-model="calc.ppi" type="number" min=0 max=1000 placeholder="PPI">pulses/inch</td>
+              <td><input ng-model="calc.ppi" type="number" min=0 max=5000 placeholder="PPI">pulses/inch</td>
             </tr>
             <tr>
               <th>Feed Rate:</th>
-              <td><input ng-model="calc.feedRate" type="number" min=0 max=1000 placeholder="Feed rate mm/min">mm/min</td>
+              <td><input ng-model="calc.feedRate" type="number" min=0 max=10000 placeholder="Feed rate mm/min">mm/min</td>
             </tr>
             <tr>
               <th>Power Setting:</th>
@@ -32,19 +32,19 @@
             </tr>
             <tr>
               <th>Pulse Period:</th>
-              <td><span ng-bind="result.pulsePeriod | number : 4"></span> ms/pulse</td>
+              <td><span ng-class="result.pulsePeriod <= calc.pulseWidth?'alert-danger':''" ng-bind="result.pulsePeriod | number : 4"></span> ms/pulse</td>
             </tr>
             <tr>
               <th>Duty Cycle</th>
-              <td><span ng-bind="result.dutyCycle | number : 4"></span> %</td>
+              <td><span ng-class="result.dutyCycle > 100?'alert-danger':''" ng-bind="result.dutyCycle | number : 4"></span> %</td>
             </tr>
             <tr>
               <th>~Energy/pulse</th>
-              <td><span ng-bind="result.energyPerPulse | number : 4"></span> Jouls/pulse</td>
+              <td><span ng-bind="result.energyPerPulse | number : 4"></span> Joules/pulse</td>
             </tr>
             <tr>
               <th>Cut Energy Density</th>
-              <td><span ng-bind="result.energyDensity | number : 4"></span> Jouls/mm cut</td>
+              <td><span ng-bind="result.energyDensity | number : 4"></span> Joules/mm cut</td>
             </tr>
             <tr>
               <th>Power to Material</th>
