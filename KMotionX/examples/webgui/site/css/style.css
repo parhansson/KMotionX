@@ -1,10 +1,16 @@
-@font-face {
-  font-family: 'Digital';
-  src: url('DS-DIGI.ttf');
+
+.dro-display {
+    margin: 2px;
+    background-color: #949782;
+    font-size: 32px;
+    display: flex;
 }
-.dro {
- /*font-family: 'Digital';*/
- font-size: 32px;
+.dro-axis {
+    flex-grow: 1;
+}
+.dro-value {
+    flex-grow: 3;
+    text-align:right;
 }
   /*
   #sidebar.affix-top {
