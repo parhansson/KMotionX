@@ -77,10 +77,10 @@
     
     
     function statusHandler(obj) {
-      kmxLogger.log('status', 'Line: '+ obj.data.line + " - " + obj.data.message)
+      kmxLogger.log('status', 'Line: '+ obj.data.line + " - " + obj.data.message);
     }
     function completeHandler(obj) {
-      kmxLogger.log('status', 'Done Line: '+ obj.data.line + " - " + obj.data.message)
+      kmxLogger.log('status', 'Done Line: '+ obj.data.line + " Status: " + obj.data.status + " Sequence " + obj.data.sequence + " - " + obj.data.message);
     }
     function errorMessageHandler(obj) {
       kmxLogger.log('error', obj.data);
