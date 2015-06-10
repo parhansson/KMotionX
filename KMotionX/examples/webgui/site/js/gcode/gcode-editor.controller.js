@@ -17,13 +17,15 @@
     }
     var scrollInterval = null;
     var interpretLine = 0;
+    vm.currentLine = -1;
+    vm.editorLine = -1;
     //… Additional extensions to create a mixin.
     $scope.$on('state-update', function(event, args){
       var state = args.state;
-      interpretLine = state.line;
-      
+      //interpretLine = state.line;
+      //vm.currentLine = interpretLine;
       //Move cursor to line.
-      
+      /*
       if(state.interpreting){
         if(scrollInterval === null){
           scrollInterval = setInterval(updateEditor, 100);
@@ -35,8 +37,8 @@
           updateEditor();
         }
       }
-      
-      $scope.interpreting = state.interpreting;        
+      */
+      //$scope.interpreting = state.interpreting;        
 
       if (state.file != "" && state.file != $scope.editorContentName ) {
         vm.openFile(state.file)
@@ -54,22 +56,41 @@
     
     $scope.$on('status-update', function statusUpdate(event, args){
       $scope.feedHold = args.status.stopImmediateState > 0;//pause
+      $scope.interpreting = args.status.interpreting;    
+      if(interpretLine != args.status.currentLine){
+        vm.currentLine = interpretLine = args.status.currentLine;
+        vm.editorLine = interpretLine + 1;
+        updateEditor();
+      }        
     });
     
     function updateEditor(){
-      $scope.aceEditor.moveCursorTo(interpretLine, 0);
-      //$scope.aceEditor.scrollToLine(state.line, true, true, function () {});
+      //$scope.aceEditor.moveCursorTo(interpretLine, 0);
+      //$scope.aceEditor.gotoLine(interpretLine);
+      $scope.aceEditor.selection.moveCursorToPosition({row: interpretLine, column: 0});
+      $scope.aceEditor.scrollToLine(interpretLine, true, true, function () {});
+      //$scope.aceEditor.selection.selectLine();
 
     }
-    vm.feedHold = function(){
-      kmxBackend.feedHold();     
+    vm.onFeedhold = function(){
+      kmxBackend.onFeedhold();     
     }  
-    
-    vm.interpret = function(){
+    vm.onAbort = function(){
+      kmxBackend.onAbort();     
+    }    
+    vm.onStep = function(){
+      kmxBackend.onStep();     
+    }
+    vm.onReset = function(){
+      kmxBackend.onReset();     
+    }
+    vm.onCycleStart = function(){
       //set motion params should done on backend
-      var BoardType = 2; //KLFOP
-      kmxBackend.interpret(BoardType, $scope.editorContentName, 0, -1, true);
-      
+      //var BoardType = 2; //KLFOP
+      //kmxBackend.interpret(BoardType, $scope.editorContentName, 0, -1, true);
+      //TODO call either onHalt or onCycle start there to force WYSIWYG if browser has faulty state
+      //kmxBackend.onHalt();
+      kmxBackend.onCycleStart();
       /*
       var lastImported = localStorage.getItem('last-imported');
       var lastLoaded = localStorage.getItem('last-loaded');

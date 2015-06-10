@@ -13,6 +13,11 @@ function BufStreamReader(buf){
   this.skip = function(bytesToSkip){
     off = off + bytesToSkip;
   }
+  this.byte = function(){
+    var val = dv.getUint8(off,littleEndian);
+    off = off+1;
+    return val; 
+  }
   this.short = function(){
     var val = dv.getUint16(off,littleEndian);
     off = off+2;

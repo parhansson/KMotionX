@@ -39,16 +39,12 @@
   function KMotionXController($scope, kmxThreeView, kmxBackend){
     $scope.kmxThreeViewData = kmxThreeView;
 
-    $scope.$on('state-update', function(event, args){
-      $scope.simulating = args.state.simulate;      
+    $scope.$on('status-update', function(event, args){
+      $scope.simulating = args.status.simulate;
     });
-    
-    $scope.$watch('simulating', function simulating(newValue, oldValue){
-      if(newValue != oldValue){
-        kmxBackend.simulate(newValue);        
-      }
-    });
-    
+    $scope.onSimulate = function(){
+      kmxBackend.onSimulate();
+    }
   }
 
 

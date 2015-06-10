@@ -30,9 +30,17 @@ enum cb_type {
 enum cb_status {
   CBS_ENQUEUED, CBS_WAITING, CBS_ACKNOWLEDGED, CBS_STATE_IDLE
 };
+void onSimulate();
+void onCycleStart();
+void onHalt();
+void onAbort();
+void onFeedhold();
+void onStep();
+void onReset();
 void readSetup();
 void updateMotionParams();
-void setInterpreterParams(struct json_token *jsontoken, int indexOffset, int count, const char* pathTemplate);
+void interpret(int BoardType,char *InFile,int start,int end,bool restart);
+void setInterpreterActionParams(struct json_token *jsontoken, int indexOffset, int count, const char* pathTemplate);
 void setMotionParams(struct json_token *jsontoken);
 void interpret(struct json_token *paramtoken);
 void loadGlobalFile(struct json_token *paramtoken);
@@ -266,7 +274,7 @@ void push_status() {
   }
 
   //copy struct and avoid padding wich may differ on platforms
-  size_t size = 456 + 6*8;//sizeof(main_status);
+  size_t size = 456 + 6*8 + 4*4;//sizeof(main_status);
   char * msg = (char*)malloc(size);
   char * msgPtr = msg;
   //client does not expect sizeof(int) but exaclyt 4 bytes for an int
@@ -347,6 +355,10 @@ void push_status() {
   MEMCPY(msgPtr, &a, 8);
   MEMCPY(msgPtr, &b, 8);
   MEMCPY(msgPtr, &c, 8);
+  MEMCPY(msgPtr, &gstate.connected, 1);
+  MEMCPY(msgPtr, &gstate.simulate, 1);
+  MEMCPY(msgPtr, &gstate.interpreting, 1);
+  MEMCPY(msgPtr, &gstate.currentLine, 4);
 /*
   if (Interpreter->p_setup->distance_mode==MODE_ABSOLUTE)
     CheckRadioButton(IDC_Rel,IDC_Abs,IDC_Abs);
@@ -554,17 +566,17 @@ void CompleteCallback(int status, int line_no, int sequence_number,
       "message", err);
   gstate.interpreting = false;
   gstate.currentLine = line_no;
-  enqueueState();
+  //enqueueState();
   enqueueCallback(buf, CB_COMPLETE);
 }
 
 void StatusCallback(int line_no, const char *msg) {
   //This is a non blocking call from other thread to be enqueued in poll thread
   char buf[256];
-  if(gstate.currentLine != line_no){
+  //if(gstate.currentLine != line_no){
     gstate.currentLine = line_no;
-    enqueueState();
-  }
+    //enqueueState();
+  //}
   json_emit(buf, 256, "{ s: i, s: s }",
       "line", line_no,
       "message", msg);
@@ -644,10 +656,7 @@ void enqueueState() {
   char stateBuf[512];
   //debug("enquing current file: %s", gstate.current_file);
   //this could be implemented as callback to one client (connection) only
-  json_emit(stateBuf, 512, "{ s: S, s: S, s: i, s: s, s: s }",
-      "interpreting", gstate.interpreting?"true":"false",
-      "simulate", gstate.simulate?"true":"false",
-      "line", gstate.currentLine,
+  json_emit(stateBuf, 512, "{s: s, s: s }",
       "file", gstate.current_file,
       "machine", gstate.current_machine);
   init_callback(callbacks, stateBuf, CB_STATE);
@@ -996,27 +1005,23 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
      */
     } else if(FUNC_SIGP("listDir", 1)){
       listDir(paramtoken);
+    } else if (FUNC_SIGP("onFeedhold", 0)) {
+      onFeedhold();
+    } else if (FUNC_SIGP("onSimulate", 0)) {
+      onSimulate();
+    } else if (FUNC_SIGP("onAbort", 0)) {
+      onAbort();
+    } else if (FUNC_SIGP("onHalt", 0)) {
+      onHalt();
+    } else if (FUNC_SIGP("onStep", 0)) {
+      onStep();
+    } else if (FUNC_SIGP("onReset", 0)) {
+      onReset();
+    } else if (FUNC_SIGP("onCycleStart", 0)) {
+      onCycleStart();
     }
-
   } else if (!strcmp("kmotion", object)) {
-    if (FUNC_SIGP("feedHold", 0)) {
-      char res[MAX_LINE];
-      if(km->WriteLineReadLine("GetStopState", res)){
-        debug("Read stop state failed");
-      } else  {
-        int feedHold;
-        if (res[0] == '0') {
-          //Not stopping
-          feedHold = 1;
-          km->WriteLine("StopImmediate0");
-        } else {
-          //Stopping or stopped
-          feedHold = 0;
-          km->WriteLine("StopImmediate1");
-        }
-        EMIT_RESPONSE("[i]", feedHold);
-      }
-    } else if (FUNC_SIGP("CheckCoffSize", 0)) {
+    if (FUNC_SIGP("CheckCoffSize", 0)) {
 
     } else if (FUNC_SIGP("CheckForReady", 0)) {
       ret = km->CheckForReady();
@@ -1095,31 +1100,9 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
       km->DoErrMsg(p1);
       EMIT_RESPONSE("[S]", p1);
       free(p1);
-    } else if (FUNC_SIGP("ExtractCoffVersionString", 2)) {
-    } else if (FUNC_SIGP("Failed", 0)) {
-
     } else if (FUNC_SIGP("FirmwareVersion", 0)) {
       ret = km->FirmwareVersion();
       EMIT_RESPONSE("[]");
-    } else if (FUNC_SIGP("GetLoadAddress", 2)) {
-    } else if (FUNC_SIGP("GetStatus", 2)) {
-    } else if (FUNC_SIGP("KMotionLock", 0)) {
-    } else if (FUNC_SIGP("KMotionLockRecovery", 0)) {
-    } else if (FUNC_SIGP("ListLocations", 2)) {
-    } else if (FUNC_SIGP("LoadCoff", 2)) {
-    } else if (FUNC_SIGP("LoadCoff", 3)) {
-    } else if (FUNC_SIGP("ReadLineTimeOut", 1)) {
-    } else if (FUNC_SIGP("ReadLineTimeOut", 2)) {
-    } else if (FUNC_SIGP("ReleaseToken", 0)) {
-    } else if (FUNC_SIGP("ServiceConsole", 0)) {
-    } else if (FUNC_SIGP("SetConsoleCallback", 1)) {
-      km->SetConsoleCallback(ConsoleHandler);
-    } else if (FUNC_SIGP("SetErrMsgCallback", 1)) {
-    } else if (FUNC_SIGP("USBLocation", 0)) {
-    } else if (FUNC_SIGP("WaitToken", 0)) {
-    } else if (FUNC_SIGP("WaitToken", 1)) {
-    } else if (FUNC_SIGP("WaitToken", 2)) {
-    } else if (FUNC_SIGP("WriteLine", 1)) {
     } else if (FUNC_SIGP("WriteLineReadLine", 2)) {
       char p1[200];
       char p2[200];
@@ -1131,6 +1114,7 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
   } else if (!strcmp("interpreter", object)) {
     if (FUNC_SIGP("InvokeAction", 1)) {
       ret = invokeAction(paramtoken);
+
     } else if (FUNC_SIGP("Interpret", 5)) {
 
       interpret(paramtoken);
@@ -1141,19 +1125,8 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
 
 //    } else if (FUNC_SIGP("SetUserMCallback", 1)) {
 //    } else if (FUNC_SIGP("SetUserMCodeCallback", 1)) {
-
-
     } else if(FUNC_SIGP("updateMotionParams", 0)) {
-
       updateMotionParams();
-
-    } else if (FUNC_SIGP("simulate", 1)) {
-      if (!gstate.interpreting) {
-        bool enable;
-        tokb(paramtoken, &enable);
-        setSimulationMode(enable);
-      }
-      EMIT_RESPONSE("[S]", gstate.simulate?"true":"false");
     }
   }
   mg_send_header(conn, "Content-Type", "application/json");
@@ -1175,7 +1148,7 @@ void setSimulationMode(bool enable){
   bool changed = enable != gstate.simulate;
   gstate.simulate = Interpreter->CoordMotion->m_Simulate = enable;
   if(changed){
-    enqueueState();
+    //enqueueState();
   }
 }
 int invokeAction(struct json_token *paramtoken){
@@ -1197,7 +1170,10 @@ void loadGlobalFile(struct json_token *paramtoken){
     if (file != NULL) {
       if(strlen(file) > 0){
         if(fileType == 1){
-          globalFile = gstate.current_file;
+          if(!gstate.interpreting){
+            globalFile = gstate.current_file;
+            gstate.currentLine = 0;
+          }
         } else if(fileType == 2){
           globalFile = gstate.current_machine;
         }
@@ -1242,6 +1218,60 @@ void listDir(struct json_token *paramtoken){
     }
     free(dir);
 }
+void onSimulate() {
+  if (!gstate.interpreting) {
+    setSimulationMode(!gstate.simulate);
+  }
+  //EMIT_RESPONSE("[S]", gstate.simulate?"true":"false");
+}
+void onStep(){
+  if (!gstate.interpreting/* && Interpreter->GetHalt()*/) {
+    interpret(2, gstate.current_file , gstate.currentLine, gstate.currentLine, false);
+  }
+}
+void onReset(){
+  gstate.currentLine = 0;
+  //Interpreter->CoordMotion->m_PreviouslyStopped = STOPPED_NONE;
+}
+
+void onCycleStart() {
+  if (gstate.interpreting) {
+    onHalt();
+  } else {
+    interpret(2, gstate.current_file , gstate.currentLine, -1, true);
+  }
+
+}
+void onHalt() {
+  if (gstate.interpreting) {
+    Interpreter->Halt();
+  }
+}
+
+void onAbort() {
+  if (gstate.interpreting) {
+    Interpreter->Abort();
+  }
+}
+
+void onFeedhold(){
+  char res[MAX_LINE];
+  if(km->WriteLineReadLine("GetStopState", res)){
+    debug("Read stop state failed");
+  } else  {
+    //int feedHold;
+    if (res[0] == '0') {
+      //Not stopping
+      //feedHold = 1;
+      km->WriteLine("StopImmediate0");
+    } else {
+      //Stopping or stopped
+      //feedHold = 0;
+      km->WriteLine("StopImmediate1");
+    }
+    //EMIT_RESPONSE("[i]", feedHold);
+  }
+}
 
 void interpret(struct json_token *paramtoken) {
   int BoardType;      // = BOARD_TYPE_KFLOP;
@@ -1256,21 +1286,24 @@ void interpret(struct json_token *paramtoken) {
   toki(paramtoken + 4, &end);
   tokb(paramtoken + 5, &restart);
   if (InFile) {
-    if (!gstate.interpreting) {
-      //These are not needed if not CheckForResume is implemented
-      Interpreter->CoordMotion->ClearAbort();
-      Interpreter->CoordMotion->m_AxisDisabled=false;
-      Interpreter->CoordMotion->ClearHalt();
-      //TODO CheckForResume
-      if (!Interpreter->Interpret(BoardType, InFile, start, end, restart,
-          StatusCallback, CompleteCallback)) {
-        gstate.interpreting = true;
-        enqueueState();
-      }
+    interpret(BoardType, InFile, start, end, restart);
+  }
+  free(InFile);
+}
+
+void interpret(int BoardType,char *InFile,int start,int end,bool restart) {
+  if (!gstate.interpreting) {
+    //These are not needed if not CheckForResume is implemented
+    //Interpreter->CoordMotion->ClearAbort();
+    //Interpreter->CoordMotion->m_AxisDisabled=false;
+    //Interpreter->CoordMotion->ClearHalt();
+    //TODO CheckForResume
+    if (!Interpreter->Interpret(BoardType, InFile, start, end, restart,
+        StatusCallback, CompleteCallback)) {
+      gstate.interpreting = true;
+      //enqueueState();
     }
   }
-
-  free(InFile);
 }
 
 void updateMotionParams(){
@@ -1374,9 +1407,9 @@ void setMotionParams(struct json_token *jsontoken) {
     //M2-M9,S index 2-9
     //userButtons index 11-20
     //M100-M119 index 21 -39
-    setInterpreterParams(jsontoken, 0,MAX_MCODE_ACTIONS_M1,"actions[%i]");
-    setInterpreterParams(jsontoken, MAX_MCODE_ACTIONS_M1,MAX_MCODE_ACTIONS_BUTTONS,"userActions[%i]");
-    setInterpreterParams(jsontoken, MCODE_ACTIONS_M100_OFFSET,MAX_MCODE_ACTIONS_M100,"extendedActions[%i]");
+    setInterpreterActionParams(jsontoken, 0,MAX_MCODE_ACTIONS_M1,"actions[%i]");
+    setInterpreterActionParams(jsontoken, MAX_MCODE_ACTIONS_M1,MAX_MCODE_ACTIONS_BUTTONS,"userActions[%i]");
+    setInterpreterActionParams(jsontoken, MCODE_ACTIONS_M100_OFFSET,MAX_MCODE_ACTIONS_M100,"extendedActions[%i]");
 
     printf("X %lf, %lf, %lf \n",p->CountsPerInchX,p->MaxAccelX, p->MaxVelX );
     printf("Y %lf, %lf, %lf \n",p->CountsPerInchY,p->MaxAccelY, p->MaxVelY );
@@ -1398,7 +1431,7 @@ void setMotionParams(struct json_token *jsontoken) {
     Interpreter->CoordMotion->SetTPParams();
 
 }
-void setInterpreterParams(struct json_token *jsontoken, int indexOffset, int count, const char* pathTemplate) {
+void setInterpreterActionParams(struct json_token *jsontoken, int indexOffset, int count, const char* pathTemplate) {
   double dParam0, dParam1, dParam2, dParam3, dParam4;
   int action;
   char path[64];

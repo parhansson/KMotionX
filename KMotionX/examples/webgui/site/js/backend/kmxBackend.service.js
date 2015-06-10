@@ -9,12 +9,18 @@
     var service = {
         listDir: listDir,
         loadGlobalFile: loadGlobalFile,
-        feedHold: feedHold,
         compileAndLoadCoff: compileAndLoadCoff,
         invokeAction: invokeAction,
         updateMotionParams: updateMotionParams,
-        simulate: simulate,
-        interpret: interpret,
+        //interpret: interpret,        
+        onSimulate: onSimulate,
+        onFeedhold: onFeedhold,
+        onAbort: onAbort,
+        onHalt: onHalt,
+        onCycleStart: onCycleStart,
+        onStep: onStep,
+        onReset: onReset,
+        
         load: load,
         save: save
         
@@ -73,16 +79,37 @@
         });
       
     }
-
-    function feedHold() {
-      var url = "/api/kmotion/feedHold";
+    function onFeedhold() {
+      onEvent('onFeedhold');
+    }
+    function onSimulate() {
+      onEvent('onSimulate');
+    }
+    function onHalt() {
+      onEvent('onHalt');
+    }
+    function onAbort() {
+      onEvent('onAbort');
+    }
+    function onCycleStart() {
+      onEvent('onCycleStart');
+    }
+    function onStep() {
+      onEvent('onStep');
+    }
+    function onReset() {
+      onEvent('onReset');
+    }
+    function onEvent(eventName){
+      
+      var url = "/api/aux/"+eventName;
       var msg = {"ret":null};
       return $http.post(url, msg)
-        .error(function(data, status, headers, config) {
-          // called asynchronously if an error occurs
-          // or server returns response with an error status.
-          console.log(data);
-        });
+      .error(function(data, status, headers, config) {
+        // called asynchronously if an error occurs
+        // or server returns response with an error status.
+        console.log(data);
+      });
     }
     
     function compileAndLoadCoff(params) {
@@ -117,18 +144,6 @@
           console.log(data);
         });
     }
-
-    
-    function simulate(enable) {
-      var url = "/api/interpreter/simulate";
-      var msg = {"params": enable};
-      return $http.post(url, msg)
-        .error(function(data, status, headers, config) {
-          // called asynchronously if an error occurs
-          // or server returns response with an error status.
-          console.log(data);
-        });
-    }
     
     function interpret(BoardType, InFile, start, end, restart) {
       var url = "/api/interpreter/Interpret";
@@ -149,9 +164,7 @@
           // or server returns response with an error status.
           console.log(data);
         });
-    } 
-
-    
+    }    
   }
   
     

@@ -105,6 +105,11 @@ function parseStatus(arraybuffer){
   for (var i=0; i<6; i++) {
     dros[i] = r.double().toFixed(3);
   }
+  var connected = r.byte() > 0;
+  var simulate = r.byte() > 0;
+  var interpreting = r.byte() > 0;
+  var currentLine = r.int();
+  
   
   
   var status = {
@@ -122,7 +127,11 @@ function parseStatus(arraybuffer){
       runOnStartUp: toBitArr(RunOnStartUp, 8),
       threadActive: toBitArr(ThreadActive, 8),
       stopImmediateState: StopImmediateState,
-      dro:dros
+      dro:dros,
+      connected:connected,
+      simulate:simulate,
+      interpreting:interpreting,
+      currentLine:currentLine
       
   };
   
