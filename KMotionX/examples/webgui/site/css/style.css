@@ -1,15 +1,23 @@
 
+.ace_gutter-active-line::before {
+  font-family: 'Glyphicons Halflings';
+  content:"\e072";
+}
+
 .dro-display {
     margin: 2px;
     background-color: #949782;
     font-size: 32px;
     display: flex;
+    display: -webkit-flex;
 }
 .dro-axis {
     flex-grow: 1;
+    -webkit-flex-grow: 1;
 }
 .dro-value {
     flex-grow: 3;
+    -webkit-flex-grow: 3;
     text-align:right;
 }
   /*
