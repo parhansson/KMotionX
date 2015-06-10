@@ -87,7 +87,30 @@ function svg2gcode(svg, settings) {
   //var LaserOFF = '(BUF,ClearBitBuf14)';
   //G20 Inch units
   //G21 mm units
-  var gcode = [];
+  var gcode = new GCodeOutput(true);
+  
+  function GCodeOutput(filter){
+      this.code = [];
+      this.filter = filter;
+      this.push = push;
+      
+      function push(gc){
+        var line
+        //TODO handle other types as well
+        if(Array.isArray(gc)){
+          line = gc.join(' ');
+        } else {
+          line = gc;
+        }
+        if(this.filter){
+          if(this.code[this.code.length-1] !== line){
+            this.code.push(line);
+          }
+        } else {
+          this.code.push(line);
+        }
+      }
+  } 
   gcode.push('('+describe(maxBounds)+')');
   
   gcode.push('G90'); //Absolute Coordinates
@@ -113,7 +136,7 @@ function svg2gcode(svg, settings) {
       'X' + format(startVec.x),
       'Y' + format(startVec.y)/*,
       'F' + settings.seekRate*/
-    ].join(' '));
+    ]);
 
     for (var p = settings.passWidth; p<=settings.materialWidth; p+=settings.passWidth) {
       gcode.push('(Forward pass '+p+')');
@@ -121,7 +144,7 @@ function svg2gcode(svg, settings) {
       gcode.push([
         'G0',
         'Z' + scaleNoDPI(settings.cutZ + p)
-      ].join(' '));
+      ]);
       
       gcode.push('('+describe(path.bounds)+')');
       
@@ -157,9 +180,11 @@ function svg2gcode(svg, settings) {
               // begin the cut by dropping the tool to the work
               gcode.push(['G0',
                           'Z' + scaleNoDPI(settings.cutZ + p)
-                          ].join(' '));
-              
-              Array.prototype.push.apply(gcode, localPath.reverse());
+                          ]);
+              //this fails now
+              //Array.prototype.push.apply(gcode, localPath.reverse());
+              //TODO  Must use something like this. or even better use push function on  
+              Array.prototype.push.apply(gcode.code, localPath.reverse());
             }
           }
           
@@ -169,8 +194,8 @@ function svg2gcode(svg, settings) {
     gcode.push(LaserOFF);
     // go safe
     gcode.push(['G0',
-      'Z' + scaleNoDPI(settings.safeZ)
-    ].join(' '));
+                'Z' + scaleNoDPI(settings.safeZ)
+                ]);
   }
 
   // just wait there for a second
@@ -183,7 +208,7 @@ function svg2gcode(svg, settings) {
   gcode.push('G0 Z0 F300');
   gcode.push('G0 X0 Y0 F800');
   gcode.push('M2');
-  return gcode;
+  return gcode.code;
 }
 
 function BoundRect(){
