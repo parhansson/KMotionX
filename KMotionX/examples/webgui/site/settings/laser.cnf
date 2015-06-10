@@ -3,7 +3,7 @@
   "dimX": 300,
   "dimY": 200,
   "dimZ": 60,
-  "initProgram": "d",
+  "initProgram": "KMX",
   "initThread": 1,
   "axes": [
     {
@@ -38,11 +38,11 @@
     }
   ],
   "tplanner": {
-    "breakangle": 2,
-    "cornertolerance": 8,
-    "lookahead": 1,
-    "collineartolerance": 8,
-    "facetangle": 8
+    "breakangle": 5,
+    "cornertolerance": 0.003,
+    "lookahead": 3,
+    "collineartolerance": 0.0001,
+    "facetangle": 0.5
   },
   "actions": [
     {
@@ -84,7 +84,7 @@
       "name": "M7"
     },
     {
-      "action": 0,
+      "action": 8,
       "name": "M8"
     },
     {
