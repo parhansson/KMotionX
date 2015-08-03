@@ -142,6 +142,7 @@ class ThreadManager(object):
         self.kflopoutfile = os.path.join(self.kflopdir, self.kflopname)
         self.set_cc(cc, ccbindir)
         self.set_srcdir(os.path.expanduser(srcdir or "~"))
+        self.defines = []
         
     def _set_ccbindir(self, ccbindir, cc):
         if not ccbindir:
@@ -152,6 +153,8 @@ class ThreadManager(object):
                 self.ccbindir = os.path.join(homedir, "KMotionX/bin")
         else:
             self.ccbindir = ccbindir
+    def add_define(self, name, value):
+        self.defines.append((name, value))
     def set_cc(self, cc, ccbindir=None):
         """Set the C compiler (and, implicitly, linker and other related tools).
         We support one of 'cl6x' (TI compiler), 'tcc67' (native TCC67) or 'tcc67wine'
@@ -342,7 +345,8 @@ class ThreadManager(object):
         opts = "-mv6710 -ml3 -mu -O2 --opt_for_space"
         #opts = "-mv6710 -ml3 -O2"
         inclopts = ' '.join(['-i"'+x+'"' for x in self.incldirs])
-        cmd = r'''%s "%s" %s --output_file="%s" %s''' % (self.cl6x, filename, inclopts, objfilename, opts)
+        defopts = ' '.join(['-D'+name+"="+value for name, value in self.defines])
+        cmd = r'''%s "%s" %s %s --output_file="%s" %s''' % (self.cl6x, filename, inclopts, defopts, objfilename, opts)
         rc, err = self.runcmd(cmd)
         if rc:
             return (rc, err)
@@ -364,7 +368,7 @@ class ThreadManager(object):
 --output_file=%s
 --map_file=%s.map
 --ram_model
-%s
+"%s"
 %s
 MEMORY {
 IRAM: o = 0x1001c000, l = 0x00004000
