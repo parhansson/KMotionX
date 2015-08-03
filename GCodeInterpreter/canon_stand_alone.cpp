@@ -32,7 +32,7 @@ stdout to a file.
 #define OR               ||
 #define SET_TO           =
 
-
+int CheckIfThreadingInProgress(void);
 
 CString Output;
 CString ErrorOutput;
@@ -168,14 +168,17 @@ void STRAIGHT_TRAVERSE (double x, double y, double z,
 {
 	PRINT4("STRAIGHT_TRAVERSE(%.4f, %.4f, %.4f, %.4f)\n", x, y, z, a);
 
-	GC->CoordMotion->StraightTraverse(GC->UserUnitsToInches(x+_setup.axis_offset_x+_setup.origin_offset_x),
-						 GC->UserUnitsToInches(y+_setup.axis_offset_y+_setup.origin_offset_y),
+	if (CheckIfThreadingInProgress()) return;
+
+	GC->SaveStateOnceOnly();  // save the state here before creating any motion segments
+
+	GC->CoordMotion->StraightTraverse(GC->UserUnitsToInchesX(x+_setup.axis_offset_x+_setup.origin_offset_x+_setup.tool_xoffset),
+						 GC->UserUnitsToInches(y+_setup.axis_offset_y+_setup.origin_offset_y+_setup.tool_yoffset),
 						 GC->UserUnitsToInches(z+_setup.axis_offset_z+_setup.origin_offset_z+_setup.tool_length_offset),
 						 GC->UserUnitsToInchesOrDegA(a+_setup.AA_axis_offset+_setup.AA_origin_offset),
 						 GC->UserUnitsToInchesOrDegB(b+_setup.BB_axis_offset+_setup.BB_origin_offset),
 						 GC->UserUnitsToInchesOrDegC(c+_setup.CC_axis_offset+_setup.CC_origin_offset),
 						 false,_setup.sequence_number,0);
-
 }
 
 /* Machining Attributes */
@@ -250,13 +253,17 @@ void ARC_FEED(double first_end, double second_end,
         first_end, second_end, first_axis, second_axis, rotation,
         axis_end_point);
 
+	if (CheckIfThreadingInProgress()) return;
+
+	GC->SaveStateOnceOnly();  // save the state here before creating any motion segments
+
 	if (_setup.plane == CANON_PLANE_XY)
 	{
 		GC->CoordMotion->ArcFeed(GC->UserUnitsToInches(_setup.feed_rate)/60.0, _setup.plane,
-					GC->UserUnitsToInches(first_end+_setup.axis_offset_x+_setup.origin_offset_x), 
-					GC->UserUnitsToInches(second_end+_setup.axis_offset_y+_setup.origin_offset_y), 
-					GC->UserUnitsToInches(first_axis+_setup.axis_offset_x+_setup.origin_offset_x), 
-					GC->UserUnitsToInches(second_axis+_setup.axis_offset_y+_setup.origin_offset_y), 
+					GC->UserUnitsToInchesX(first_end+_setup.axis_offset_x+_setup.origin_offset_x+_setup.tool_xoffset), 
+					GC->UserUnitsToInches(second_end+_setup.axis_offset_y+_setup.origin_offset_y+_setup.tool_yoffset), 
+					GC->UserUnitsToInchesX(first_axis+_setup.axis_offset_x+_setup.origin_offset_x+_setup.tool_xoffset), 
+					GC->UserUnitsToInches(second_axis+_setup.axis_offset_y+_setup.origin_offset_y+_setup.tool_yoffset), 
 					(rotation==1 ? 1 : 0),
 					GC->UserUnitsToInches(axis_end_point+_setup.axis_offset_z+_setup.origin_offset_z+_setup.tool_length_offset),
 					GC->UserUnitsToInchesOrDegA(a + _setup.AA_axis_offset + _setup.AA_origin_offset),
@@ -269,11 +276,11 @@ void ARC_FEED(double first_end, double second_end,
 		// Actually more like ZX plane
 		GC->CoordMotion->ArcFeed(GC->UserUnitsToInches(_setup.feed_rate)/60.0, _setup.plane,
 					GC->UserUnitsToInches(first_end+_setup.axis_offset_z+_setup.origin_offset_z+_setup.tool_length_offset), 
-					GC->UserUnitsToInches(second_end+_setup.axis_offset_x+_setup.origin_offset_x), 
+					GC->UserUnitsToInchesX(second_end+_setup.axis_offset_x+_setup.origin_offset_x+_setup.tool_xoffset), 
 					GC->UserUnitsToInches(first_axis+_setup.axis_offset_z+_setup.origin_offset_z+_setup.tool_length_offset), 
-					GC->UserUnitsToInches(second_axis+_setup.axis_offset_x+_setup.origin_offset_x), 
+					GC->UserUnitsToInchesX(second_axis+_setup.axis_offset_x+_setup.origin_offset_x+_setup.tool_xoffset), 
 					(rotation==1 ? 1 : 0),
-					GC->UserUnitsToInches(axis_end_point+_setup.axis_offset_y+_setup.origin_offset_y),
+					GC->UserUnitsToInches(axis_end_point+_setup.axis_offset_y+_setup.origin_offset_y+_setup.tool_yoffset),
 					GC->UserUnitsToInchesOrDegA(a + _setup.AA_axis_offset + _setup.AA_origin_offset),
 					GC->UserUnitsToInchesOrDegB(b + _setup.BB_axis_offset + _setup.BB_origin_offset),
 					GC->UserUnitsToInchesOrDegC(c + _setup.CC_axis_offset + _setup.CC_origin_offset),
@@ -282,12 +289,12 @@ void ARC_FEED(double first_end, double second_end,
 	else
 	{
 		GC->CoordMotion->ArcFeed(GC->UserUnitsToInches(_setup.feed_rate)/60.0, _setup.plane,
-					GC->UserUnitsToInches(first_end+_setup.axis_offset_y+_setup.origin_offset_y), 
+					GC->UserUnitsToInches(first_end+_setup.axis_offset_y+_setup.origin_offset_y+_setup.tool_yoffset), 
 					GC->UserUnitsToInches(second_end+_setup.axis_offset_z+_setup.origin_offset_z+_setup.tool_length_offset), 
-					GC->UserUnitsToInches(first_axis+_setup.axis_offset_y+_setup.origin_offset_y), 
+					GC->UserUnitsToInches(first_axis+_setup.axis_offset_y+_setup.origin_offset_y+_setup.tool_yoffset), 
 					GC->UserUnitsToInches(second_axis+_setup.axis_offset_z+_setup.origin_offset_z+_setup.tool_length_offset), 
 					(rotation==1 ? 1 : 0),
-					GC->UserUnitsToInches(axis_end_point+_setup.axis_offset_x+_setup.origin_offset_x),
+					GC->UserUnitsToInchesX(axis_end_point+_setup.axis_offset_x+_setup.origin_offset_x+_setup.tool_xoffset),
 					GC->UserUnitsToInchesOrDegA(a + _setup.AA_axis_offset + _setup.AA_origin_offset),
 					GC->UserUnitsToInchesOrDegB(b + _setup.BB_axis_offset + _setup.BB_origin_offset),
 					GC->UserUnitsToInchesOrDegC(c + _setup.CC_axis_offset + _setup.CC_origin_offset),
@@ -300,15 +307,82 @@ void STRAIGHT_FEED (double x, double y, double z,
 {
 	PRINT4("STRAIGHT_FEED(%.4f, %.4f, %.4f, %.4f)\n", x, y, z, a);
 
-	GC->CoordMotion->StraightFeed(GC->UserUnitsToInches(_setup.feed_rate)/60.0,
-					 GC->UserUnitsToInches(x+_setup.axis_offset_x+_setup.origin_offset_x),
-					 GC->UserUnitsToInches(y+_setup.axis_offset_y+_setup.origin_offset_y),
+	double FeedRate;
+
+	if (_setup.motion_mode == G_32)  // Threading?
+	{
+		double InchesPerRev = GC->UserUnitsToInches(_setup.feed_rate);
+		double RevsPerSec = _setup.speed/60.0;
+
+		FeedRate = InchesPerRev * RevsPerSec;
+
+		CCoordMotion *CM=GC->CoordMotion;
+
+		// if not already in threading mode, then wait for anything that
+		// may already be in progress to complete so when we re-launch motion
+		// we will be in sychronized mode
+		if (!CM->m_ThreadingMode)  
+		{
+			if (CM->FlushSegments()) {CM->SetAbort(); return;}  
+			if (CM->WaitForSegmentsFinished(TRUE)) {CM->SetAbort(); return;}
+		}
+
+		GC->CoordMotion->m_ThreadingBaseSpeedRPS=RevsPerSec;
+		GC->CoordMotion->m_ThreadingMode=true;
+	}
+	else
+	{
+		if (CheckIfThreadingInProgress()) return;
+
+		// must do this to determine if feed is a pure angle
+		// if so feedrate is in degrees/min so don't convert from mm to inches
+		double dx = x - _setup.current_x;
+		double dy = y - _setup.current_y;
+		double dz = z - _setup.current_z;
+		double da = a - _setup.AA_current;
+		double db = b - _setup.BB_current;
+		double dc = c - _setup.CC_current;
+		
+		BOOL pure_angle;
+
+		GC->CoordMotion->FeedRateDistance(dx, dy, dz, da, db, dc, &pure_angle);
+
+		if (pure_angle)
+			FeedRate = _setup.feed_rate/60.0;  // convert to degrees/sec
+		else
+			FeedRate = GC->UserUnitsToInches(_setup.feed_rate)/60.0; // convert to inches/sec
+	}
+
+	GC->SaveStateOnceOnly();  // save the state here before creating any motion segments
+
+	GC->CoordMotion->StraightFeed(FeedRate,
+					 GC->UserUnitsToInchesX(x+_setup.axis_offset_x+_setup.origin_offset_x+_setup.tool_xoffset),
+					 GC->UserUnitsToInches(y+_setup.axis_offset_y+_setup.origin_offset_y+_setup.tool_yoffset),
 					 GC->UserUnitsToInches(z+_setup.axis_offset_z+_setup.origin_offset_z+_setup.tool_length_offset),
 					 GC->UserUnitsToInchesOrDegA(a+_setup.AA_axis_offset+_setup.AA_origin_offset),
 					 GC->UserUnitsToInchesOrDegB(b+_setup.BB_axis_offset+_setup.CC_origin_offset),
 					 GC->UserUnitsToInchesOrDegC(c+_setup.CC_axis_offset+_setup.CC_origin_offset),
 					 _setup.sequence_number,ID);
 }
+
+// whenever a new motion is to be initiated that is not spindle synchronized
+// and spindle synchronized mode had been in progress then make sure it finishes
+// so a new launch of coordinated motion (without spindle sync) will be generated
+
+int CheckIfThreadingInProgress(void)
+{
+	CCoordMotion *CM=GC->CoordMotion;
+
+	if (CM->m_ThreadingMode)  
+	{
+		if (CM->FlushSegments()) {CM->SetAbort(); return 1;}  
+		if (CM->WaitForSegmentsFinished(TRUE)) {CM->SetAbort(); return 1;}
+	}
+	return 0;
+}
+
+
+
 
 void STRAIGHT_PROBE (double x, double y, double z,
 		     double a, double b, double c)
@@ -328,6 +402,10 @@ void PARAMETRIC_3D_CURVE_FEED(FunctionPtr xfcn, FunctionPtr yfcn,
 void DWELL(double seconds)
 {
 	PRINT1("DWELL(%.4f)\n", seconds);
+
+	if (CheckIfThreadingInProgress()) return;
+
+	GC->SaveStateOnceOnly();  // save the state here before creating any motion segments
 
 	GC->CoordMotion->Dwell(seconds,_setup.sequence_number);
 }
@@ -441,7 +519,7 @@ int CheckForBufferedCommand(char *comment)
     if (item != ',') return 0;
 	
 	PRINT1("BUFFER(\"%s\")\n", comment + m + 1);
-	GC->CoordMotion->DoKMotionBufCmd(comment + m + 1);
+	GC->CoordMotion->DoKMotionBufCmd(comment + m + 1,GC->p_setup->sequence_number);
     return 1; 
 }
 
@@ -556,17 +634,25 @@ void PROGRAM_STOP()
 {
 	PRINT0("PROGRAM_STOP()\n");
 //	GC->m_Halt=true;
+	GC->InvokeAction(0,TRUE);
 	GC->m_end=0;  // force line number to be passed
 }
 
 void OPTIONAL_PROGRAM_STOP()
-{PRINT0("OPTIONAL_PROGRAM_STOP()\n");}
+{
+	GC->InvokeAction(1,TRUE);
+	PRINT0("OPTIONAL_PROGRAM_STOP()\n");
+}
 
-void PROGRAM_END()
+void PROGRAM_END(int MCode)
 {
 	PRINT0("PROGRAM_END()\n");
 
 	GC->CoordMotion->FlushSegments();
+	if (MCode==30)
+		GC->InvokeAction(24,TRUE);  // M30 Special Operation
+	else if (MCode==2)
+		GC->InvokeAction(2,TRUE);  // M2 Special Operation
 }
 
 

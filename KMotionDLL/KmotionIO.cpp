@@ -173,6 +173,7 @@ bool CKMotionIO::RequestedDeviceAvail(CString *Reason)
 
 
  
+#define CONNECT_TRIES 5
 
 
 int CKMotionIO::Connect()
@@ -181,7 +182,7 @@ int CKMotionIO::Connect()
 
 	FT_STATUS ftStatus;
 
-	if (NonRespondingCount==2) return 1;
+	if (NonRespondingCount==CONNECT_TRIES) return 1;
 
 	m_SaveChars[0]=0;  // start anew
 
@@ -758,12 +759,12 @@ int CKMotionIO::FlushInputBuffer()
 		if (RxBytes == 0)
 		{
 			// KMotion seems to be present but not responding
-			// after two attemps flag as non responsive and
+			// after several attemps flag as non responsive and
 			// stop trying
 
 			NonRespondingCount++;
 
-			if (NonRespondingCount == 2)
+			if (NonRespondingCount == CONNECT_TRIES)
 			{
 				ErrorMessageBox("KMotion present but not responding\r\r"
 								"Correct problem and restart application");

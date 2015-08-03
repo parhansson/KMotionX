@@ -148,9 +148,14 @@ struct CANON_POSITION {
 #define CANON_TOOL_ENTRY_LEN 256	// how long each file line can be
 
 struct CANON_TOOL_TABLE {
+    int slot;
     int id;
     double length;
     double diameter;
+    double xoffset;
+    double yoffset;
+	CString Comment;
+	CString ToolImage;
 };
 
 /* Initialization */
@@ -554,7 +559,7 @@ switch, or commands are being executed with a stop after each one
 already (such as when the interpreter is being used with keyboard
 input), this command has no effect. */
 
-extern void PROGRAM_END();
+extern void PROGRAM_END(int MCode);
 /* If a program is being read, stop executing the program and be prepared
 to accept a new program or to be shut down. */
 

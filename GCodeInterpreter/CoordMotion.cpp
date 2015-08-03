@@ -50,6 +50,8 @@ CCoordMotion::CCoordMotion(CKMotionDLL *KM)
 	current_x=current_y=current_z=current_a=current_b=current_c=0;
 
 	m_FeedRateOverride=1.0;
+	m_FeedRateRapidOverride=1.0;
+	m_HardwareFRORange=0.0;
 	m_SpindleRateOverride=1.0;
 	m_DisableSoftLimits=m_Simulate=false;
 	m_DefineCS_valid=false;
@@ -333,6 +335,8 @@ int CCoordMotion::StraightTraverse(double x, double y, double z, double a, doubl
 
 	if (!m_Simulate) // skip if we are simulating
 	{
+		if (DoKMotionBufCmd("BegRapidBuf",sequence_number)) return 1;
+
 		// add in the segment to the planner
 		int result = tp_insert_linear_seg_3rdOrder(current_x, 
 							 current_y, 
@@ -342,6 +346,8 @@ int CCoordMotion::StraightTraverse(double x, double y, double z, double a, doubl
 							 current_c, 
 							 x, y, z, a, b, c,
 							 sequence_number, ID);
+
+		if (DoKMotionBufCmd("EndRapidBuf",sequence_number)) return 1;
 
 		if (result==1) {SetAbort(); return 1;}
 
@@ -391,10 +397,13 @@ int CCoordMotion::ArcFeedAccel(double DesiredFeedRate_in_per_sec, double Desired
 		        double first_axis, double second_axis, int rotation,
 				double axis_end_point, double a, double b, double c, int sequence_number, int ID)
 {
-	double radius,theta0,dtheta,MaxLength, cur_first,cur_second,cur_third,dcircle;
-	double FeedRateToUse = DesiredFeedRate_in_per_sec * m_FeedRateOverride;
-	MOTION_PARAMS *MP=&Kinematics->m_MotionParams;
+	double HW,SW,radius,theta0,dtheta,MaxLength, cur_first,cur_second,cur_third,dcircle;
 
+	DetermineSoftwareHardwareFRO(HW,SW);
+
+	double FeedRateToUse = DesiredFeedRate_in_per_sec * SW;
+
+	MOTION_PARAMS *MP=&Kinematics->m_MotionParams;
 
 	if (FeedRateToUse <= 0.0)
 	{
@@ -696,7 +705,10 @@ int CCoordMotion::StraightFeed(double DesiredFeedRate_in_per_sec,
 int CCoordMotion::StraightFeedAccel(double DesiredFeedRate_in_per_sec, double DesiredAccel,
 							   double x, double y, double z, double a, double b, double c, int sequence_number, int ID)
 {
-	double FeedRateToUse = DesiredFeedRate_in_per_sec * m_FeedRateOverride;
+	double HW,SW;
+	DetermineSoftwareHardwareFRO(HW,SW);
+
+	double FeedRateToUse = DesiredFeedRate_in_per_sec * SW;
 	double MaxLength;
 	MOTION_PARAMS *MP=&Kinematics->m_MotionParams;
 
@@ -1020,7 +1032,6 @@ int CCoordMotion::DoRateAdjustmentsArc(int i, double radius, double theta0, doub
 }
 
 
-
 int CCoordMotion::Dwell(double seconds, int sequence_number)
 {
 	if (m_Abort) return 1;
@@ -1074,7 +1085,7 @@ int CCoordMotion::DoKMotionCmd(const char *s, BOOL FlushBeforeUnbufferedOperatio
 // pending in the motion buffer before they are downloaded any number in a path can
 // exist.
 
-int CCoordMotion::DoKMotionBufCmd(const char *s)
+int CCoordMotion::DoKMotionBufCmd(const char *s,int sequence_number)
 {
 	strncpy(special_cmds[nspecial_cmds % MAX_SPECIAL_CMDS].cmd,s,MAX_LINE);
 
@@ -1082,8 +1093,10 @@ int CCoordMotion::DoKMotionBufCmd(const char *s)
 	{
 		// no, put in the special list to be set at the beginning
 		if (special_cmds_initial_first == -1) // none yet, put as first and last
+		{
 			special_cmds_initial_first = nspecial_cmds;
-
+			special_cmds_initial_sequence_no[SegBufToggle] = sequence_number;    // save sequence number that generated these
+		}
 		special_cmds_initial_last = nspecial_cmds++;
 	}
 	else
@@ -1113,21 +1126,33 @@ int CCoordMotion::DoKMotionBufCmd(const char *s)
 
 int CCoordMotion::WaitForSegmentsFinished(BOOL NoErrorOnDisable)
 {
-	CString response;
+	CString response,response2;
 
-	if (m_Simulate) return 0;
+	if (m_Simulate || !m_SegmentsStartedExecuting) return 0;
 
 	int count=0;
 
 	do
 	{
-		if (count++) Sleep(10);
+		if (count++)
+		{
+			if (KMotionDLL->WriteLineReadLine("ExecTime",response.GetBufferSetLength(MAX_LINE))){SetAbort(); return 1;}
+			response.ReleaseBuffer();
+			if (sscanf(response, "%lf",&m_TimeAlreadyExecuted)!= 1){SetAbort(); return 1;}
+			UpdateRealTimeState(m_TimeAlreadyExecuted);
+			Sleep(10);
+		}
 		
 		if (KMotionDLL->WriteLineReadLine("CheckDoneBuf",response.GetBufferSetLength(MAX_LINE))) {SetAbort(); return 1;}
 		response.ReleaseBuffer();
 
 		if (response == "-1")
 		{
+			if (KMotionDLL->WriteLineReadLine("ExecTime",response2.GetBufferSetLength(MAX_LINE))){SetAbort(); return 1;}
+			response2.ReleaseBuffer();
+			if (sscanf(response2, "%lf",&m_TimeAlreadyExecuted)!= 1){SetAbort(); return 1;}
+			UpdateRealTimeState(m_TimeAlreadyExecuted);
+
 			if (NoErrorOnDisable)
 			{
 				return 0;
@@ -1143,6 +1168,11 @@ int CCoordMotion::WaitForSegmentsFinished(BOOL NoErrorOnDisable)
 		if (m_Abort) return 1;
 	}
 	while (response!="1");
+
+	if (KMotionDLL->WriteLineReadLine("ExecTime",response2.GetBufferSetLength(MAX_LINE))){SetAbort(); return 1;}
+	response2.ReleaseBuffer();
+	if (sscanf(response2, "%lf",&m_TimeAlreadyExecuted)!= 1){SetAbort(); return 1;}
+	UpdateRealTimeState(m_TimeAlreadyExecuted);
 
 	m_SegmentsStartedExecuting = false;
 
@@ -1183,7 +1213,7 @@ int CCoordMotion::CheckMotionHalt(bool Coord)
 	bool Finished=false, NotStarted=false;
 	SEGMENT *segs_to_check;
 
-	if (m_Halt && !m_Simulate)
+	if (!m_Abort && m_Halt && !m_Simulate)
 	{
 		// stop immediately
 		if (KMotionDLL->WriteLine("StopImmediate0"))  {SetAbort(); return 1;}
@@ -1218,6 +1248,9 @@ int CCoordMotion::CheckMotionHalt(bool Coord)
 		while (!Finished && (response == '1' || response == '2'));
 
 		if (response == '0') NotStarted=true;
+
+		// default to current line in case somthing bad happens
+		m_PreviouslyStoppedSeqNo = _setup.sequence_number;
 
 		if (Coord)
 		{
@@ -1346,6 +1379,22 @@ int CCoordMotion::CheckMotionHalt(bool Coord)
 
 				BufTime=SegsDoneTime[index];
 
+				// if nothing done or downloaded yet don't search or worry if we
+				// can't find current segment in the motion buffer
+				if (SegsDone[index] == -1)
+				{
+					// if initial buffered commands are present with a valid
+					// sequence number than return that
+					if (special_cmds_initial_sequence_no[index] >= 0)
+					{
+						m_PreviouslyStoppedSeqNo = special_cmds_initial_sequence_no[index];
+					}
+					m_PreviouslyStoppedType = SEG_UNDEFINED;
+					m_PreviouslyStoppedID = -1;
+					SetAbort();
+					return 2;
+				}
+
 				for (i=SegsDone[index]; i>=0; i--)
 				{
 					for (k=segs_to_check[TPMOD(i)].nTrips-1; k>=0; k--)
@@ -1390,7 +1439,7 @@ void CCoordMotion::SetPreviouslyStoppedAtSeg(SEGMENT *segs_to_check,int i)
 {
 	m_PreviouslyStoppedType = segs_to_check[TPMOD(i)].type;
 	m_PreviouslyStoppedID = segs_to_check[TPMOD(i)].ID;
-	_setup.sequence_number = segs_to_check[TPMOD(i)].sequence_number;
+	m_PreviouslyStoppedSeqNo = segs_to_check[TPMOD(i)].sequence_number;
 
 	// check if we were in the middle of the second "double arc"
 	// if so, find and save the beginning of the arc
@@ -1466,6 +1515,7 @@ int CCoordMotion::FlushSegments()
 			if (WaitForSegmentsFinished()) {SetAbort(); return 1;}
 
 			if(KMotionDLL->WriteLine("OpenBuf")) {SetAbort(); return 1;}
+			m_TimeAlreadyExecuted=0;
 			ClearWriteLineBuffer();
 			
 			// see if there are any special commands that need to be inserted before path starts
@@ -1495,16 +1545,54 @@ int CCoordMotion::FlushSegments()
 
 			if (CheckMotionHalt(true)) return 2;
 
-			if(KMotionDLL->WriteLine("ExecBuf")){SetAbort(); return 1;}
+			if(LaunchCoordMotion()) return 1;
 			m_SegmentsStartedExecuting = true;
 			segments_executing=segments;
 		}
+		
+		// Tell KFLOP that the buffer is complete sp that it doesn't worry about starvation
+		if(KMotionDLL->WriteLine("FlushBuf")) {SetAbort(); return 1;}
 
 		tp_init();
 		DownloadInit();
 	}
 	return 0;
 }
+
+
+int CCoordMotion::LaunchCoordMotion()
+{
+	CString s;
+
+	if (KMotionDLL->WriteLineReadLine("CheckDoneBuf",s.GetBufferSetLength(MAX_LINE))) {SetAbort(); return 1;}
+	s.ReleaseBuffer();
+
+	if (s == "-1")
+	{
+		m_AxisDisabled=true;
+		SetAbort();
+		return 1;
+	}
+
+	if (m_ThreadingMode)  // Launch coordinated motion in spindle sync mode ?
+	{
+		if (m_ThreadingBaseSpeedRPS < 1e-9)
+		{
+			AfxMessageBox("Error Threading with Zero Speed");
+			SetAbort();
+			return 1;
+		}
+
+		s.Format("TrigThread %.6f",m_ThreadingBaseSpeedRPS);
+		if(KMotionDLL->WriteLine(s)){SetAbort(); return 1;}
+	}
+	else  // no normal coordinated motion
+	{
+		if(KMotionDLL->WriteLine("ExecBuf")){SetAbort(); return 1;}
+	}
+	return 0;
+}
+
 
 
 // intitalize everything related to downloading and look ahead times
@@ -1514,6 +1602,7 @@ void CCoordMotion::DownloadInit()
 {
 	m_nsegs_downloaded=0;
 	m_TotalDownloadedTime = m_TimeAlreadyExecuted = 0.0;
+	m_ThreadingMode=false;
 }
 
 
@@ -1881,7 +1970,7 @@ int CCoordMotion::OutputSegment(int iseg)
 	{
 		if (FlushWriteLineBuffer()) return 1;  // flush any segments before starting
 		if (CheckMotionHalt(true)) return 2;
-		if (KMotionDLL->WriteLine("ExecBuf")) return 1;
+		if(LaunchCoordMotion()) return 1;
 		m_SegmentsStartedExecuting = true;
 		segments_executing=segments;
 	}
@@ -1924,7 +2013,7 @@ int CCoordMotion::OutputSegment(int iseg)
 				else
 				{
 					result = AfxMessageBox("Unexpected Coordinated Motion Buffer Underflow!\r"
-						"(Consider increasing the Trajectory Planner Lookahead time in the Tools Setup Configuration Screen)\r\r"
+						"(Consider increasing the Trajectory Planner Lookahead time in the Configuration Screen)\r\r"
 						"Press OK to attempt to continue motion\r"
 						"Press CANCEL to abort",
 						MB_ICONEXCLAMATION|MB_OKCANCEL);   
@@ -1943,9 +2032,9 @@ int CCoordMotion::OutputSegment(int iseg)
 			else
 			{
 				if (CheckMotionHalt(true)) return 2;
+				UpdateRealTimeState(m_TimeAlreadyExecuted);
 				
 				wait = (m_TotalDownloadedTime - m_TimeAlreadyExecuted) > MP->TPLookahead;
-
 				if (wait) 
 				{
 					Sleep(30);
@@ -1956,6 +2045,79 @@ int CCoordMotion::OutputSegment(int iseg)
 
 	}
 
+	return 0;
+}
+
+// Using the time of motion reported by KFLOP figure out
+// what state the Interpreter was in at that previous state
+int CCoordMotion::UpdateRealTimeState(double T)
+{
+	double BufTime=0;
+	bool Finished=false, NotStarted=false;
+	SEGMENT *segs_to_check;
+	int n,i,k;
+
+	if (!m_Simulate)
+	{
+		if (T < 0.0)  // Motion finish?
+		{
+			m_realtime_Sequence_number_valid = false;
+			return 0;
+		}
+
+		segs_to_check = segments_executing;
+
+		if (segments_executing==segments)
+			n=nsegs;
+		else
+			n=prev_nsegs;
+
+		// search backwards for where we were in the path based on time
+		int index;
+
+		if (segs_to_check==segments0)
+			index=0;
+		else
+			index=1;
+
+		BufTime=SegsDoneTime[index];
+
+		// if nothing done or downloaded yet don't search or worry if we
+		// can't find current segment in the motion buffer
+		if (SegsDone[index] == -1)
+		{
+			// if initial buffered commands are present with a valid
+			// sequence number than return that
+			if (special_cmds_initial_sequence_no[index] >= 0)
+			{
+				m_realtime_Sequence_number = special_cmds_initial_sequence_no[index];
+				m_realtime_Sequence_number_valid = true;
+			}
+			return 0;
+		}
+
+		// Search backwards starting at last done segment until we find
+		// the one that encompasses the executed time
+		for (i=SegsDone[index]; i>=0; i--)
+		{
+			for (k=segs_to_check[TPMOD(i)].nTrips-1; k>=0; k--)
+			{
+				if (BufTime <= T) break;
+				BufTime -= segs_to_check[TPMOD(i)].C[k].t;  
+			}
+			if (BufTime <= T || (T==0.0 && BufTime<1e-6)) break;
+		}
+
+		if (i==-1)
+		{
+			SetAbort();
+			KMotionDLL->DoErrMsg("Invalid buffer times in Trajectry Planner");
+			return 1;
+		}
+
+		m_realtime_Sequence_number = segs_to_check[TPMOD(i)].sequence_number;
+		m_realtime_Sequence_number_valid = true;
+	}
 	return 0;
 }
 
@@ -1987,6 +2149,7 @@ int CCoordMotion::DownloadDoneSegments()
 				if (WaitForSegmentsFinished()) {SetAbort(); return 1;}
 
 				if(KMotionDLL->WriteLine("OpenBuf")) {SetAbort(); return 1;}
+				m_TimeAlreadyExecuted=0;
 				ClearWriteLineBuffer();
 				m_SegmentsStartedExecuting = false;
 
@@ -2010,6 +2173,19 @@ int CCoordMotion::DownloadDoneSegments()
 #define FLOAT_TOL 1e-6 
 
 
+int CCoordMotion::SetAxisDefinitions(int x, int y, int z, int a, int b, int c)
+{
+	if (KMotionDLL->WriteLine("DefineCS %d %d %d %d %d %d")) return 1;
+	x_axis=x;
+	y_axis=y;
+	z_axis=z;
+	a_axis=a;
+	b_axis=b;
+	c_axis=c;
+
+	m_DefineCS_valid=true;
+	return 0;
+}
 
 int CCoordMotion::GetAxisDefinitions(int *x, int *y, int *z, int *a, int *b, int *c)
 {
@@ -2300,9 +2476,114 @@ int CCoordMotion::GetAxisDone(int axis, int *r)
 	return 0;
 }
 
+// Use a combination of Hardware and Software factors to 
+// achieve the desired FRO.  
+//
+// Start at a SW=1.0 and HW=1.0 and gradually change one or the other
+// to move the current FRO toward our goal.  Whenever the total FRO
+// is above the HW Limit adjust the SW factor.  Whenever below the FRO
+// then adjust the HW Limit. 
+
+void CCoordMotion::DetermineSoftwareHardwareFRO(double &HW, double &SW)
+{
+	HW=1.0,SW=1.0;
+
+	// check if current FRO is above the HW limit
+	if (1.0 > m_HardwareFRORange)
+	{
+		// yes it is above, SW should be used
+		
+		if (1.0 <= m_FeedRateOverride)  // need to increase?
+		{
+			// yes, go all the way with SW
+			SW = m_FeedRateOverride;
+		}
+		else
+		{
+			// need to decrease
+
+			// check if decreasing all the way to desired FRO
+			// will put us below the HW Limit 
+
+			if (m_FeedRateOverride < m_HardwareFRORange)
+			{
+				// yes it will, decrease SW to limit
+				SW = m_HardwareFRORange;
+				// then remainder with HW
+				HW = m_FeedRateOverride/SW;
+			}
+			else
+			{
+				// no, do all with SW
+				SW = m_FeedRateOverride;
+			}
+		}
+	}
+	else
+	{
+		// Starting FRO=1.0 is below HW limit, HW should be used
+		if (1.0 <= m_FeedRateOverride)  // need to increase (above 1.0)?
+		{
+			// yes, check if increasing all the way to desired FRO
+			// will put us above the HW Limit? 
+			if (m_FeedRateOverride > m_HardwareFRORange)
+			{
+				// yes it will, increase HW to limit
+				HW = m_HardwareFRORange;
+				// then remainder with SW
+				SW = m_FeedRateOverride/HW;
+			}
+			else
+			{
+				// no we will still be below HW limit.  Use HW entirely
+				HW = m_FeedRateOverride;
+			}
+		}
+		else
+		{
+			// need to decrease, do all with HW
+			HW = m_FeedRateOverride;
+		}
+	}
+}
+
+
 void CCoordMotion::SetFeedRateOverride(double v)
 {
-	m_FeedRateOverride=v;
+	CString s;
+	double HW,SW;
+
+	m_FeedRateOverride=v;	
+	
+	if (!m_Simulate)
+	{
+		DetermineSoftwareHardwareFRO(HW,SW);
+		s.Format("SetFRO %.4f",HW);
+		KMotionDLL->WriteLine(s);
+	}
+}
+
+void CCoordMotion::SetFeedRateRapidOverride(double v)
+{
+	CString s;
+
+	m_FeedRateRapidOverride=v;	
+
+	if (!m_Simulate)
+	{
+		s.Format("SetRapidFRO %.4f",v);
+		KMotionDLL->WriteLine(s);
+	}
+}
+
+void CCoordMotion::SetHardwareFRORange(double v)
+{
+	m_HardwareFRORange=v;
+}
+
+double CCoordMotion::GetHardwareFRORange()
+{
+	return m_HardwareFRORange;
 }
 
 void CCoordMotion::SetSpindleRateOverride(double v)
@@ -2313,6 +2594,11 @@ void CCoordMotion::SetSpindleRateOverride(double v)
 double CCoordMotion::GetFeedRateOverride()
 {
 	return m_FeedRateOverride;
+}
+
+double CCoordMotion::GetFeedRateRapidOverride()
+{
+	return m_FeedRateRapidOverride;
 }
 
 double CCoordMotion::GetSpindleRateOverride()

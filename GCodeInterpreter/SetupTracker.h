@@ -37,11 +37,17 @@ public:
 	int InsertState(setup * CurSetup);
 	// Restore the state to what it was at the beg of this line
 	int RestoreState(int sequence_number, setup * CurSetup);
+	// Advance real-time state to beg of this line (sequence number)
+	// This basically tracks the delayed real-time state of the machine
+	int CSetupTracker::AdvanceState(int sequence_number);
 
 	setup cur_state;
+	setup realtime_state;
 	bool m_FirstCall;
 
 	CHANGE Buffer[MAX_TRACKER];
 	int nChanges;
+	int nApplied;
 	int index;  // circular index
+	int realtime_index; // circular index
 };
