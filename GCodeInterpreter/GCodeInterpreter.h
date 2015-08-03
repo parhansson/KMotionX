@@ -99,12 +99,14 @@ enum {
 	M_Action_Waitbit = 9,			// Wait/Hold until a bit is high or low
 };
 
-#define MAX_MCODE_ACTIONS_M1 11        // actually only 2-10 are used
+#define MAX_MCODE_ACTIONS_M1 11        // actually only 2-10  are used
 #define MAX_MCODE_ACTIONS_BUTTONS 10
 #define MAX_MCODE_ACTIONS_M100 20
-#define MAX_MCODE_ACTIONS (MAX_MCODE_ACTIONS_M1+MAX_MCODE_ACTIONS_M100+MAX_MCODE_ACTIONS_BUTTONS)
+#define MAX_MCODE_ACTIONS_SPECIAL 8
+#define MAX_MCODE_ACTIONS (MAX_MCODE_ACTIONS_M1+MAX_MCODE_ACTIONS_M100+MAX_MCODE_ACTIONS_BUTTONS+MAX_MCODE_ACTIONS_SPECIAL)
 #define MAX_MCODE_DOUBLE_PARAMS 5
 #define MCODE_ACTIONS_M100_OFFSET (MAX_MCODE_ACTIONS_M1+MAX_MCODE_ACTIONS_BUTTONS)
+#define MCODE_ACTIONS_SPECIAL_OFFSET (MAX_MCODE_ACTIONS_M1+MAX_MCODE_ACTIONS_BUTTONS+MAX_MCODE_ACTIONS_M100)
 
 // This structure defines the action and 
 // parameters for a particular MCode Action
@@ -128,10 +130,12 @@ public:
 	int GetOrigin(int index, double *x, double *y, double *z, double *a, double *b, double *c);
  
 	double InchesToUserUnits(double inches);
+	double InchesToUserUnitsX(double inches);
 	double InchesOrDegToUserUnitsA(double inches);
 	double InchesOrDegToUserUnitsB(double inches);
 	double InchesOrDegToUserUnitsC(double inches);
 	double UserUnitsToInches(double inches);
+	double UserUnitsToInchesX(double inches);
 	double UserUnitsToInchesOrDegA(double inches);
 	double UserUnitsToInchesOrDegB(double inches);
 	double UserUnitsToInchesOrDegC(double inches);
@@ -142,7 +146,7 @@ public:
 	double ConvertAbsToUserUnitsB(double b);
 	double ConvertAbsToUserUnitsC(double c);
 	void ConvertAbsoluteToInterpreterCoord(double x,double y,double z,double a,double b,double c, 
-										double *gx,double *gy,double *gz,double *ga,double *gb,double *gc);
+										double *gx,double *gy,double *gz,double *ga,double *gb,double *gc, setup_pointer psetup=NULL);
 	void ConvertAbsoluteToMachine(double x,double y,double z,double a,double b,double c, 
 									double *gx,double *gy,double *gz,double *ga,double *gb,double *gc);
 	
@@ -181,6 +185,7 @@ public:
 
 	CCoordMotion *CoordMotion;
 	bool m_Halt;
+	bool m_HaltNextLine;
 	int m_CurrentLine;
 	int m_GCodeReads;
 	char m_InFile[MAX_PATH];
@@ -198,10 +203,13 @@ public:
 
 	void Halt();
 	bool GetHalt();
+	void HaltNextLine();
+	bool GetHaltNextLine();
 	void Abort();
 	bool GetAbort();
 
 	setup_pointer p_setup;
+
 	bool m_InitializeOnExecute;
 	bool m_ReadToolFile;
 	int m_start, m_end;
@@ -234,13 +242,23 @@ private:
 	int LaunchExecution();
 	// tracks changes to the interpreter so we can roll back on halts
 	CSetupTracker SetupTracker;
+	bool ExecutionInProgress;
+
+
 public:
-    G_USER_CALLBACK *m_UserFn;
+	setup_pointer GetRealTimeState();
+
+	bool StateSaved;
+	void SaveStateOnceOnly();
+		
+	G_USER_CALLBACK *m_UserFn;
     G_M_USER_CALLBACK *m_UserFnMCode;
 	setup m_StoppedInterpState;
 	int InitializeInterp(void);
 	void SetUserCallback(G_USER_CALLBACK *UserFn);
 	void SetUserMCodeCallback(G_M_USER_CALLBACK *UserFn);
+
+	int ReadToolFile();
 };
 
 extern CCoordMotion *CM;

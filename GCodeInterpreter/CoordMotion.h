@@ -53,8 +53,12 @@ public:
 	int CheckMotionHalt(bool Coord);
 	int ExecutionStop();
 	double GetFeedRateOverride();
+	double GetFeedRateRapidOverride();
 	double GetSpindleRateOverride();
 	void SetFeedRateOverride(double v);
+	void SetFeedRateRapidOverride(double v);
+	void SetHardwareFRORange(double v);
+	double GetHardwareFRORange();
 	void SetSpindleRateOverride(double v);
 	int GetDestination(int axis, double *d);
 	int GetPosition(int axis, double *d);
@@ -75,7 +79,7 @@ public:
 	int WaitForSegmentsFinished(BOOL NoErrorOnDisable = FALSE);
 	int WaitForMoveXYZABCFinished();
 	int DoKMotionCmd(const char *s, BOOL FlushBeforeUnbufferedOperation);
-	int DoKMotionBufCmd(const char *s);
+	int DoKMotionBufCmd(const char *s,int sequence_number=-1);
 	MOTION_PARAMS *GetMotionParams();
 
 	int MeasurePointAppendToFile(const char *name);
@@ -130,6 +134,9 @@ public:
 	int m_nsegs_downloaded;
 	double m_TimeAlreadyExecuted;
 
+	int m_realtime_Sequence_number;  // latest sequence number where KFLOP is currently executing
+	bool m_realtime_Sequence_number_valid;  // latest sequence number where KFLOP is currently executing is valid
+
 
 	char MainPath[MAX_PATH],MainPathRoot[MAX_PATH];
 
@@ -137,17 +144,21 @@ public:
 
 	bool m_Simulate;
 
+	bool m_ThreadingMode;            // Launches coordinated motion in spindle sync mode
+	double m_ThreadingBaseSpeedRPS;  // Base Rev/sec speed where trajectory should run an real-time
+
 	bool m_DisableSoftLimits;
 
 	bool m_AxisDisabled;
 
 	int m_Stopping;
-	int m_PreviouslyStopped,m_PreviouslyStoppedType,m_PreviouslyStoppedID;
+	int m_PreviouslyStopped,m_PreviouslyStoppedType,m_PreviouslyStoppedID,m_PreviouslyStoppedSeqNo;
 
 	double m_Stoppedx, m_Stoppedy, m_Stoppedz, m_Stoppeda, m_Stoppedb, m_Stoppedc;
 	double m_StoppedMidx, m_StoppedMidy, m_StoppedMidz, m_StoppedMida, m_StoppedMidb, m_StoppedMidc;
 	double m_StoppedMachinex, m_StoppedMachiney, m_StoppedMachinez, m_StoppedMachinea, m_StoppedMachineb, m_StoppedMachinec;
 
+	int SetAxisDefinitions(int x, int y, int z, int a, int b, int c);
 	int GetAxisDefinitions(int *x, int *y, int *z, int *a, int *b, int *c);
 	bool m_DefineCS_valid;
 	int x_axis,y_axis,z_axis,a_axis,b_axis,c_axis;  // map board channel number to interperter axis 
@@ -176,6 +187,8 @@ private:
 	bool m_Abort;
 	bool m_Halt;
 	double m_FeedRateOverride;
+	double m_FeedRateRapidOverride;
+	double m_HardwareFRORange;
 	double m_SpindleRateOverride;
 	ARC_FEED_CALLBACK *m_ArcFeedCallback;
 	ARC_FEED_SIX_AXIS_CALLBACK *m_ArcFeedSixAxisCallback;
@@ -187,6 +200,9 @@ private:
 	int FlushWriteLineBuffer();
 	int ClearWriteLineBuffer();
 	int CommitPendingSegments();
+	int LaunchCoordMotion();
+	int UpdateRealTimeState(double T);
+	void DetermineSoftwareHardwareFRO(double &HW, double &SW);
 };
 
 #endif // !defined(AFX_COORDMOTION_H__36110031_9633_4D82_9C05_E1FDEC3AC8EA__INCLUDED_)
