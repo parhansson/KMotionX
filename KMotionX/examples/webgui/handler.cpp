@@ -62,9 +62,10 @@ enum cb_status {
 struct state {
   int simulate;
   int feedHold;
-  int interpreting = 0;
-  int last_line = 0;
+  int interpreting;
+  int last_line;
   char current_file[256];
+  state(): interpreting(0), last_line(0) {}
 };
 
 //Check function signature

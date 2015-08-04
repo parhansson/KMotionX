@@ -680,6 +680,8 @@ CANON_PLANE GET_PLANE()
 The purpose of these GET_XXX (and other) functions is to provide for
 local emulation of the world modeling done by the EMC system.
 
+*/
+
 /*********************************************************************/
 
 /* GET_EXTERNAL_FEED_RATE
@@ -906,7 +908,7 @@ void GET_EXTERNAL_PARAMETER_FILE_NAME(char *filename, int max_size)
 	if (GC->VarsFile[0] == 0)
 		sprintf(filename, "%s%cGCode Programs%cemc.var",GC->CoordMotion->MainPathRoot,PATH_SEPARATOR,PATH_SEPARATOR);
 	else
-		sprintf(filename, GC->VarsFile);
+		strcpy(filename, GC->VarsFile);
 }
 
 // returns the currently active plane
@@ -966,7 +968,7 @@ int GET_EXTERNAL_TOOL_SLOT() { return 0; };
 
 void SET_CANON_DEVICE(int *device)
 {
-	CGCodeInterpreter *GC=(CGCodeInterpreter *)device; 
+	//CGCodeInterpreter *GC=(CGCodeInterpreter *)device; 
 }
 int CHECK_INIT_ON_EXE()
 {

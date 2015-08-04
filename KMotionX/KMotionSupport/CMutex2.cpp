@@ -73,8 +73,8 @@ CMutex::CMutex(int initiallyOwn,const char *name ,int n){
 
 		long int tid = getThreadId();
 		//printf("%s:%d Mutex: %s waiting max timout %d thread %ld lockCount %d", __FILE__, __LINE__, name,TimeOut_ms,tid,lockCount);
-		using Ms = std::chrono::milliseconds;
-		bool success = mutex.try_lock_for(Ms(TimeOut_ms));
+		//using Ms = std::chrono::milliseconds;
+		bool success = mutex.try_lock_for(std::chrono::milliseconds(TimeOut_ms));
 		if(success){
 			owner = tid;
 			lockCount++;

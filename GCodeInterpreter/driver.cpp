@@ -535,7 +535,7 @@ int read_tool_file(      /* ARGUMENT VALUES             */
 	double xoffset=0;
 	double yoffset=0;
 	char buffer[1000];
-	CString Comment,Image;
+	char *Comment, *Image, *p;
 
 	tool_file_port SET_TO fopen(tool_file, "r");
 	if (tool_file_port IS NULL)
@@ -569,11 +569,36 @@ int read_tool_file(      /* ARGUMENT VALUES             */
 				&tool_id, &offset, &diameter, &xoffset, &yoffset, &n) IS 0)
 				DRIVER_ERROR_CF2("Bad input line \"%s\" in tool file", buffer);
 
-			CString s = buffer;
-			s.Delete(0,n);
+			char s[1000];
+			strcpy(s, buffer + n);
 
-			Comment = s;
-
+			Image = s;
+			BOOL bImageSuccess = FALSE;
+			BOOL bCommentSuccess = FALSE;
+			while (isspace(*Image)) ++Image;
+			if (*Image == '"') {
+			    while (isspace(*++Image));
+			    p = Image;
+			    while (*p && *p != '"') ++p;
+			    if (*p == '"') {
+			        Comment = p+1;
+			        while (isspace(*--p));
+			        *++p = 0;
+			        bImageSuccess = TRUE;
+			        while (isspace(*Comment)) ++Comment;
+			        if (*Comment == '"') {
+			            while (isspace(*++Comment));
+			            p = Comment;
+			            while (*p && *p != '"') ++p;
+			            if (*p == '"') {
+			                while (isspace(*--p));
+			                *++p = 0;
+			                bCommentSuccess = TRUE;
+			            }
+			        }
+			    }
+			}
+#if 0
 			//remove beginning and ending whitespace
 			Comment.Trim();
 			BOOL bImageSuccess = TRUE;
@@ -608,6 +633,8 @@ int read_tool_file(      /* ARGUMENT VALUES             */
 					bCommentSuccess = FALSE;
 				}
 			}
+#endif
+
 			if(!bImageSuccess)
 			{
 				DRIVER_ERROR_CF2("Bad input line \"%s\" in tool file, no quotation marks for comment", buffer);
@@ -625,8 +652,8 @@ int read_tool_file(      /* ARGUMENT VALUES             */
 		settings->tool_table[index].diameter SET_TO diameter;
 		settings->tool_table[index].xoffset SET_TO xoffset;
 		settings->tool_table[index].yoffset SET_TO yoffset;
-		settings->tool_table[index].Comment=Comment;
-		settings->tool_table[index].ToolImage=Image;
+		strncpy(settings->tool_table[index].Comment, Comment, 256);
+		strncpy(settings->tool_table[index].ToolImage, Image, 256);
 		index++;
 	}
 	fclose(tool_file_port);

@@ -39,7 +39,7 @@ public:
 	int RestoreState(int sequence_number, setup * CurSetup);
 	// Advance real-time state to beg of this line (sequence number)
 	// This basically tracks the delayed real-time state of the machine
-	int CSetupTracker::AdvanceState(int sequence_number);
+	int AdvanceState(int sequence_number);
 
 	setup cur_state;
 	setup realtime_state;

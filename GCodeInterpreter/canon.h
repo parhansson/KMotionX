@@ -154,8 +154,8 @@ struct CANON_TOOL_TABLE {
     double diameter;
     double xoffset;
     double yoffset;
-	CString Comment;
-	CString ToolImage;
+	char Comment[256];
+	char ToolImage[256];
 };
 
 /* Initialization */
