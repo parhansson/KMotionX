@@ -22890,6 +22890,27 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_CoordMotion_GetFeedRateRapidOverride(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CCoordMotion *arg1 = (CCoordMotion *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CCoordMotion, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CoordMotion_GetFeedRateRapidOverride" "', argument " "1"" of type '" "CCoordMotion *""'"); 
+  }
+  arg1 = reinterpret_cast< CCoordMotion * >(argp1);
+  result = (double)(arg1)->GetFeedRateRapidOverride();
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_CoordMotion_GetSpindleRateOverride(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CCoordMotion *arg1 = (CCoordMotion *) 0 ;
@@ -22934,6 +22955,85 @@ SWIGINTERN PyObject *_wrap_CoordMotion_SetFeedRateOverride(PyObject *self, PyObj
   arg2 = static_cast< double >(val2);
   (arg1)->SetFeedRateOverride(arg2);
   resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CoordMotion_SetFeedRateRapidOverride(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CCoordMotion *arg1 = (CCoordMotion *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:CoordMotion_SetFeedRateRapidOverride",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CCoordMotion, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CoordMotion_SetFeedRateRapidOverride" "', argument " "1"" of type '" "CCoordMotion *""'"); 
+  }
+  arg1 = reinterpret_cast< CCoordMotion * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CoordMotion_SetFeedRateRapidOverride" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  (arg1)->SetFeedRateRapidOverride(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CoordMotion_SetHardwareFRORange(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CCoordMotion *arg1 = (CCoordMotion *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:CoordMotion_SetHardwareFRORange",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CCoordMotion, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CoordMotion_SetHardwareFRORange" "', argument " "1"" of type '" "CCoordMotion *""'"); 
+  }
+  arg1 = reinterpret_cast< CCoordMotion * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CoordMotion_SetHardwareFRORange" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  (arg1)->SetHardwareFRORange(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CoordMotion_GetHardwareFRORange(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CCoordMotion *arg1 = (CCoordMotion *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CCoordMotion, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CoordMotion_GetHardwareFRORange" "', argument " "1"" of type '" "CCoordMotion *""'"); 
+  }
+  arg1 = reinterpret_cast< CCoordMotion * >(argp1);
+  result = (double)(arg1)->GetHardwareFRORange();
+  resultobj = SWIG_From_double(static_cast< double >(result));
   return resultobj;
 fail:
   return NULL;
@@ -23431,7 +23531,49 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CoordMotion_DoKMotionBufCmd(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CoordMotion_DoKMotionBufCmd__SWIG_0(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CCoordMotion *arg1 = (CCoordMotion *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:CoordMotion_DoKMotionBufCmd",&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CCoordMotion, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CoordMotion_DoKMotionBufCmd" "', argument " "1"" of type '" "CCoordMotion *""'"); 
+  }
+  arg1 = reinterpret_cast< CCoordMotion * >(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CoordMotion_DoKMotionBufCmd" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "CoordMotion_DoKMotionBufCmd" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
+  result = (int)(arg1)->DoKMotionBufCmd((char const *)arg2,arg3);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CoordMotion_DoKMotionBufCmd__SWIG_1(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CCoordMotion *arg1 = (CCoordMotion *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -23461,6 +23603,60 @@ SWIGINTERN PyObject *_wrap_CoordMotion_DoKMotionBufCmd(PyObject *self, PyObject 
 fail:
   if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
   return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CoordMotion_DoKMotionBufCmd(PyObject *self, PyObject *args) {
+  int argc;
+  PyObject *argv[4];
+  int ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? (int)PyObject_Length(args) : 0;
+  argv[0] = self;
+  for (ii = 0; (ii < 2) && (ii < argc); ii++) {
+    argv[ii + 1] = PyTuple_GET_ITEM(args,ii);
+  }
+  argc++;
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_CCoordMotion, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      int res = SWIG_AsCharPtrAndSize(argv[1], 0, NULL, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_CoordMotion_DoKMotionBufCmd__SWIG_1(self, args);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_CCoordMotion, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      int res = SWIG_AsCharPtrAndSize(argv[1], 0, NULL, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        {
+          int res = SWIG_AsVal_int(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_CoordMotion_DoKMotionBufCmd__SWIG_0(self, args);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'CoordMotion_DoKMotionBufCmd'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    CCoordMotion::DoKMotionBufCmd(char const *,int)\n"
+    "    CCoordMotion::DoKMotionBufCmd(char const *)\n");
+  return 0;
 }
 
 
@@ -26099,6 +26295,106 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_CoordMotion_m_realtime_Sequence_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CCoordMotion *arg1 = (CCoordMotion *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:CoordMotion_m_realtime_Sequence_number_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CCoordMotion, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CoordMotion_m_realtime_Sequence_number_set" "', argument " "1"" of type '" "CCoordMotion *""'"); 
+  }
+  arg1 = reinterpret_cast< CCoordMotion * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CoordMotion_m_realtime_Sequence_number_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->m_realtime_Sequence_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CoordMotion_m_realtime_Sequence_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CCoordMotion *arg1 = (CCoordMotion *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CCoordMotion, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CoordMotion_m_realtime_Sequence_number_get" "', argument " "1"" of type '" "CCoordMotion *""'"); 
+  }
+  arg1 = reinterpret_cast< CCoordMotion * >(argp1);
+  result = (int) ((arg1)->m_realtime_Sequence_number);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CoordMotion_m_realtime_Sequence_number_valid_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CCoordMotion *arg1 = (CCoordMotion *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:CoordMotion_m_realtime_Sequence_number_valid_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CCoordMotion, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CoordMotion_m_realtime_Sequence_number_valid_set" "', argument " "1"" of type '" "CCoordMotion *""'"); 
+  }
+  arg1 = reinterpret_cast< CCoordMotion * >(argp1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CoordMotion_m_realtime_Sequence_number_valid_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->m_realtime_Sequence_number_valid = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CoordMotion_m_realtime_Sequence_number_valid_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CCoordMotion *arg1 = (CCoordMotion *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CCoordMotion, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CoordMotion_m_realtime_Sequence_number_valid_get" "', argument " "1"" of type '" "CCoordMotion *""'"); 
+  }
+  arg1 = reinterpret_cast< CCoordMotion * >(argp1);
+  result = (bool) ((arg1)->m_realtime_Sequence_number_valid);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_CoordMotion_MainPath_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CCoordMotion *arg1 = (CCoordMotion *) 0 ;
@@ -26307,6 +26603,106 @@ SWIGINTERN PyObject *_wrap_CoordMotion_m_Simulate_get(PyObject *self, PyObject *
   arg1 = reinterpret_cast< CCoordMotion * >(argp1);
   result = (bool) ((arg1)->m_Simulate);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CoordMotion_m_ThreadingMode_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CCoordMotion *arg1 = (CCoordMotion *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:CoordMotion_m_ThreadingMode_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CCoordMotion, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CoordMotion_m_ThreadingMode_set" "', argument " "1"" of type '" "CCoordMotion *""'"); 
+  }
+  arg1 = reinterpret_cast< CCoordMotion * >(argp1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CoordMotion_m_ThreadingMode_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->m_ThreadingMode = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CoordMotion_m_ThreadingMode_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CCoordMotion *arg1 = (CCoordMotion *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CCoordMotion, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CoordMotion_m_ThreadingMode_get" "', argument " "1"" of type '" "CCoordMotion *""'"); 
+  }
+  arg1 = reinterpret_cast< CCoordMotion * >(argp1);
+  result = (bool) ((arg1)->m_ThreadingMode);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CoordMotion_m_ThreadingBaseSpeedRPS_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CCoordMotion *arg1 = (CCoordMotion *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:CoordMotion_m_ThreadingBaseSpeedRPS_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CCoordMotion, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CoordMotion_m_ThreadingBaseSpeedRPS_set" "', argument " "1"" of type '" "CCoordMotion *""'"); 
+  }
+  arg1 = reinterpret_cast< CCoordMotion * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CoordMotion_m_ThreadingBaseSpeedRPS_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->m_ThreadingBaseSpeedRPS = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CoordMotion_m_ThreadingBaseSpeedRPS_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CCoordMotion *arg1 = (CCoordMotion *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CCoordMotion, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CoordMotion_m_ThreadingBaseSpeedRPS_get" "', argument " "1"" of type '" "CCoordMotion *""'"); 
+  }
+  arg1 = reinterpret_cast< CCoordMotion * >(argp1);
+  result = (double) ((arg1)->m_ThreadingBaseSpeedRPS);
+  resultobj = SWIG_From_double(static_cast< double >(result));
   return resultobj;
 fail:
   return NULL;
@@ -26606,6 +27002,56 @@ SWIGINTERN PyObject *_wrap_CoordMotion_m_PreviouslyStoppedID_get(PyObject *self,
   }
   arg1 = reinterpret_cast< CCoordMotion * >(argp1);
   result = (int) ((arg1)->m_PreviouslyStoppedID);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CoordMotion_m_PreviouslyStoppedSeqNo_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CCoordMotion *arg1 = (CCoordMotion *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:CoordMotion_m_PreviouslyStoppedSeqNo_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CCoordMotion, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CoordMotion_m_PreviouslyStoppedSeqNo_set" "', argument " "1"" of type '" "CCoordMotion *""'"); 
+  }
+  arg1 = reinterpret_cast< CCoordMotion * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CoordMotion_m_PreviouslyStoppedSeqNo_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->m_PreviouslyStoppedSeqNo = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CoordMotion_m_PreviouslyStoppedSeqNo_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CCoordMotion *arg1 = (CCoordMotion *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CCoordMotion, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CoordMotion_m_PreviouslyStoppedSeqNo_get" "', argument " "1"" of type '" "CCoordMotion *""'"); 
+  }
+  arg1 = reinterpret_cast< CCoordMotion * >(argp1);
+  result = (int) ((arg1)->m_PreviouslyStoppedSeqNo);
   resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
@@ -27507,6 +27953,81 @@ SWIGINTERN PyObject *_wrap_CoordMotion_m_StoppedMachinec_get(PyObject *self, PyO
   arg1 = reinterpret_cast< CCoordMotion * >(argp1);
   result = (double) ((arg1)->m_StoppedMachinec);
   resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CoordMotion_SetAxisDefinitions(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CCoordMotion *arg1 = (CCoordMotion *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  int arg6 ;
+  int arg7 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  int val4 ;
+  int ecode4 = 0 ;
+  int val5 ;
+  int ecode5 = 0 ;
+  int val6 ;
+  int ecode6 = 0 ;
+  int val7 ;
+  int ecode7 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOO:CoordMotion_SetAxisDefinitions",&obj1,&obj2,&obj3,&obj4,&obj5,&obj6)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CCoordMotion, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CoordMotion_SetAxisDefinitions" "', argument " "1"" of type '" "CCoordMotion *""'"); 
+  }
+  arg1 = reinterpret_cast< CCoordMotion * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CoordMotion_SetAxisDefinitions" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "CoordMotion_SetAxisDefinitions" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
+  ecode4 = SWIG_AsVal_int(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "CoordMotion_SetAxisDefinitions" "', argument " "4"" of type '" "int""'");
+  } 
+  arg4 = static_cast< int >(val4);
+  ecode5 = SWIG_AsVal_int(obj4, &val5);
+  if (!SWIG_IsOK(ecode5)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "CoordMotion_SetAxisDefinitions" "', argument " "5"" of type '" "int""'");
+  } 
+  arg5 = static_cast< int >(val5);
+  ecode6 = SWIG_AsVal_int(obj5, &val6);
+  if (!SWIG_IsOK(ecode6)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "CoordMotion_SetAxisDefinitions" "', argument " "6"" of type '" "int""'");
+  } 
+  arg6 = static_cast< int >(val6);
+  ecode7 = SWIG_AsVal_int(obj6, &val7);
+  if (!SWIG_IsOK(ecode7)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "CoordMotion_SetAxisDefinitions" "', argument " "7"" of type '" "int""'");
+  } 
+  arg7 = static_cast< int >(val7);
+  result = (int)(arg1)->SetAxisDefinitions(arg2,arg3,arg4,arg5,arg6,arg7);
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -29087,6 +29608,36 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_CGCodeInterpreter_InchesToUserUnitsX(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CGCodeInterpreter *arg1 = (CGCodeInterpreter *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:CGCodeInterpreter_InchesToUserUnitsX",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CGCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_InchesToUserUnitsX" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CGCodeInterpreter_InchesToUserUnitsX" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  result = (double)(arg1)->InchesToUserUnitsX(arg2);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_CGCodeInterpreter_InchesOrDegToUserUnitsA(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CGCodeInterpreter *arg1 = (CGCodeInterpreter *) 0 ;
@@ -29200,6 +29751,36 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_UserUnitsToInches(PyObject *self, P
   } 
   arg2 = static_cast< double >(val2);
   result = (double)(arg1)->UserUnitsToInches(arg2);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CGCodeInterpreter_UserUnitsToInchesX(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CGCodeInterpreter *arg1 = (CGCodeInterpreter *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:CGCodeInterpreter_UserUnitsToInchesX",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CGCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_UserUnitsToInchesX" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CGCodeInterpreter_UserUnitsToInchesX" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  result = (double)(arg1)->UserUnitsToInchesX(arg2);
   resultobj = SWIG_From_double(static_cast< double >(result));
   return resultobj;
 fail:
@@ -29471,6 +30052,151 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_ConvertAbsToUserUnitsC(PyObject *se
   arg2 = static_cast< double >(val2);
   result = (double)(arg1)->ConvertAbsToUserUnitsC(arg2);
   resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CGCodeInterpreter *arg1 = (CGCodeInterpreter *) 0 ;
+  double arg2 ;
+  double arg3 ;
+  double arg4 ;
+  double arg5 ;
+  double arg6 ;
+  double arg7 ;
+  double *arg8 = (double *) 0 ;
+  double *arg9 = (double *) 0 ;
+  double *arg10 = (double *) 0 ;
+  double *arg11 = (double *) 0 ;
+  double *arg12 = (double *) 0 ;
+  double *arg13 = (double *) 0 ;
+  setup_pointer arg14 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  double val3 ;
+  int ecode3 = 0 ;
+  double val4 ;
+  int ecode4 = 0 ;
+  double val5 ;
+  int ecode5 = 0 ;
+  double val6 ;
+  int ecode6 = 0 ;
+  double val7 ;
+  int ecode7 = 0 ;
+  void *argp8 = 0 ;
+  int res8 = 0 ;
+  void *argp9 = 0 ;
+  int res9 = 0 ;
+  void *argp10 = 0 ;
+  int res10 = 0 ;
+  void *argp11 = 0 ;
+  int res11 = 0 ;
+  void *argp12 = 0 ;
+  int res12 = 0 ;
+  void *argp13 = 0 ;
+  int res13 = 0 ;
+  void *argp14 ;
+  int res14 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
+  PyObject * obj7 = 0 ;
+  PyObject * obj8 = 0 ;
+  PyObject * obj9 = 0 ;
+  PyObject * obj10 = 0 ;
+  PyObject * obj11 = 0 ;
+  PyObject * obj12 = 0 ;
+  PyObject * obj13 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOOOO:CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord",&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10,&obj11,&obj12,&obj13)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CGCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  ecode3 = SWIG_AsVal_double(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord" "', argument " "3"" of type '" "double""'");
+  } 
+  arg3 = static_cast< double >(val3);
+  ecode4 = SWIG_AsVal_double(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord" "', argument " "4"" of type '" "double""'");
+  } 
+  arg4 = static_cast< double >(val4);
+  ecode5 = SWIG_AsVal_double(obj4, &val5);
+  if (!SWIG_IsOK(ecode5)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord" "', argument " "5"" of type '" "double""'");
+  } 
+  arg5 = static_cast< double >(val5);
+  ecode6 = SWIG_AsVal_double(obj5, &val6);
+  if (!SWIG_IsOK(ecode6)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord" "', argument " "6"" of type '" "double""'");
+  } 
+  arg6 = static_cast< double >(val6);
+  ecode7 = SWIG_AsVal_double(obj6, &val7);
+  if (!SWIG_IsOK(ecode7)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord" "', argument " "7"" of type '" "double""'");
+  } 
+  arg7 = static_cast< double >(val7);
+  res8 = SWIG_ConvertPtr(obj7, &argp8,SWIGTYPE_p_double, 0 |  0 );
+  if (!SWIG_IsOK(res8)) {
+    SWIG_exception_fail(SWIG_ArgError(res8), "in method '" "CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord" "', argument " "8"" of type '" "double *""'"); 
+  }
+  arg8 = reinterpret_cast< double * >(argp8);
+  res9 = SWIG_ConvertPtr(obj8, &argp9,SWIGTYPE_p_double, 0 |  0 );
+  if (!SWIG_IsOK(res9)) {
+    SWIG_exception_fail(SWIG_ArgError(res9), "in method '" "CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord" "', argument " "9"" of type '" "double *""'"); 
+  }
+  arg9 = reinterpret_cast< double * >(argp9);
+  res10 = SWIG_ConvertPtr(obj9, &argp10,SWIGTYPE_p_double, 0 |  0 );
+  if (!SWIG_IsOK(res10)) {
+    SWIG_exception_fail(SWIG_ArgError(res10), "in method '" "CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord" "', argument " "10"" of type '" "double *""'"); 
+  }
+  arg10 = reinterpret_cast< double * >(argp10);
+  res11 = SWIG_ConvertPtr(obj10, &argp11,SWIGTYPE_p_double, 0 |  0 );
+  if (!SWIG_IsOK(res11)) {
+    SWIG_exception_fail(SWIG_ArgError(res11), "in method '" "CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord" "', argument " "11"" of type '" "double *""'"); 
+  }
+  arg11 = reinterpret_cast< double * >(argp11);
+  res12 = SWIG_ConvertPtr(obj11, &argp12,SWIGTYPE_p_double, 0 |  0 );
+  if (!SWIG_IsOK(res12)) {
+    SWIG_exception_fail(SWIG_ArgError(res12), "in method '" "CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord" "', argument " "12"" of type '" "double *""'"); 
+  }
+  arg12 = reinterpret_cast< double * >(argp12);
+  res13 = SWIG_ConvertPtr(obj12, &argp13,SWIGTYPE_p_double, 0 |  0 );
+  if (!SWIG_IsOK(res13)) {
+    SWIG_exception_fail(SWIG_ArgError(res13), "in method '" "CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord" "', argument " "13"" of type '" "double *""'"); 
+  }
+  arg13 = reinterpret_cast< double * >(argp13);
+  {
+    res14 = SWIG_ConvertPtr(obj13, &argp14, SWIGTYPE_p_setup_pointer,  0  | 0);
+    if (!SWIG_IsOK(res14)) {
+      SWIG_exception_fail(SWIG_ArgError(res14), "in method '" "CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord" "', argument " "14"" of type '" "setup_pointer""'"); 
+    }  
+    if (!argp14) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord" "', argument " "14"" of type '" "setup_pointer""'");
+    } else {
+      setup_pointer * temp = reinterpret_cast< setup_pointer * >(argp14);
+      arg14 = *temp;
+      if (SWIG_IsNewObj(res14)) delete temp;
+    }
+  }
+  (arg1)->ConvertAbsoluteToInterpreterCoord(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14);
+  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -30120,6 +30846,56 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_HaltNextLine_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CGCodeInterpreter *arg1 = (CGCodeInterpreter *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:CGCodeInterpreter_m_HaltNextLine_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CGCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_m_HaltNextLine_set" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CGCodeInterpreter_m_HaltNextLine_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->m_HaltNextLine = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_HaltNextLine_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CGCodeInterpreter *arg1 = (CGCodeInterpreter *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CGCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_m_HaltNextLine_get" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
+  result = (bool) ((arg1)->m_HaltNextLine);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_CurrentLine_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CGCodeInterpreter *arg1 = (CGCodeInterpreter *) 0 ;
@@ -30550,6 +31326,47 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_GetHalt(PyObject *self, PyObject *a
   }
   arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
   result = (bool)(arg1)->GetHalt();
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CGCodeInterpreter_HaltNextLine(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CGCodeInterpreter *arg1 = (CGCodeInterpreter *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CGCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_HaltNextLine" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
+  (arg1)->HaltNextLine();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CGCodeInterpreter_GetHaltNextLine(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CGCodeInterpreter *arg1 = (CGCodeInterpreter *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CGCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_GetHaltNextLine" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
+  result = (bool)(arg1)->GetHaltNextLine();
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
 fail:
@@ -31556,6 +32373,97 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_CGCodeInterpreter_GetRealTimeState(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CGCodeInterpreter *arg1 = (CGCodeInterpreter *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  setup_pointer result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CGCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_GetRealTimeState" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
+  result = (arg1)->GetRealTimeState();
+  resultobj = SWIG_NewPointerObj((new setup_pointer(static_cast< const setup_pointer& >(result))), SWIGTYPE_p_setup_pointer, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CGCodeInterpreter_StateSaved_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CGCodeInterpreter *arg1 = (CGCodeInterpreter *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:CGCodeInterpreter_StateSaved_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CGCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_StateSaved_set" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CGCodeInterpreter_StateSaved_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->StateSaved = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CGCodeInterpreter_StateSaved_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CGCodeInterpreter *arg1 = (CGCodeInterpreter *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CGCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_StateSaved_get" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
+  result = (bool) ((arg1)->StateSaved);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CGCodeInterpreter_SaveStateOnceOnly(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CGCodeInterpreter *arg1 = (CGCodeInterpreter *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CGCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_SaveStateOnceOnly" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
+  (arg1)->SaveStateOnceOnly();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_StoppedInterpState_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CGCodeInterpreter *arg1 = (CGCodeInterpreter *) 0 ;
@@ -31628,6 +32536,27 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_InitializeInterp(PyObject *self, Py
   }
   arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
   result = (int)(arg1)->InitializeInterp();
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CGCodeInterpreter_ReadToolFile(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CGCodeInterpreter *arg1 = (CGCodeInterpreter *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CGCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_ReadToolFile" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
+  result = (int)(arg1)->ReadToolFile();
   resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
@@ -37377,6 +38306,7 @@ SWIGINTERN SwigPyClientData SwigPyBuiltin__CKinematics_clientdata = {0, 0, 0, 0,
 
 SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_CoordMotion)
 static SwigPyGetSet CoordMotion_m_StoppedMachinec_getset = { _wrap_CoordMotion_m_StoppedMachinec_get, _wrap_CoordMotion_m_StoppedMachinec_set };
+static SwigPyGetSet CoordMotion_m_ThreadingBaseSpeedRPS_getset = { _wrap_CoordMotion_m_ThreadingBaseSpeedRPS_get, _wrap_CoordMotion_m_ThreadingBaseSpeedRPS_set };
 static SwigPyGetSet CoordMotion_m_Simulate_getset = { _wrap_CoordMotion_m_Simulate_get, _wrap_CoordMotion_m_Simulate_set };
 static SwigPyGetSet CoordMotion_m_StoppedMida_getset = { _wrap_CoordMotion_m_StoppedMida_get, _wrap_CoordMotion_m_StoppedMida_set };
 static SwigPyGetSet CoordMotion_m_StoppedMidb_getset = { _wrap_CoordMotion_m_StoppedMidb_get, _wrap_CoordMotion_m_StoppedMidb_set };
@@ -37390,6 +38320,7 @@ static SwigPyGetSet CoordMotion_m_Stoppedb_getset = { _wrap_CoordMotion_m_Stoppe
 static SwigPyGetSet CoordMotion_x_axis_getset = { _wrap_CoordMotion_x_axis_get, _wrap_CoordMotion_x_axis_set };
 static SwigPyGetSet CoordMotion_current_y_getset = { _wrap_CoordMotion_current_y_get, _wrap_CoordMotion_current_y_set };
 static SwigPyGetSet CoordMotion_Kinematics_getset = { _wrap_CoordMotion_Kinematics_get, _wrap_CoordMotion_Kinematics_set };
+static SwigPyGetSet CoordMotion_m_realtime_Sequence_number_getset = { _wrap_CoordMotion_m_realtime_Sequence_number_get, _wrap_CoordMotion_m_realtime_Sequence_number_set };
 static SwigPyGetSet CoordMotion_m_Stoppedc_getset = { _wrap_CoordMotion_m_Stoppedc_get, _wrap_CoordMotion_m_Stoppedc_set };
 static SwigPyGetSet CoordMotion_current_z_getset = { _wrap_CoordMotion_current_z_get, _wrap_CoordMotion_current_z_set };
 static SwigPyGetSet CoordMotion_m_TotalDownloadedTime_getset = { _wrap_CoordMotion_m_TotalDownloadedTime_get, _wrap_CoordMotion_m_TotalDownloadedTime_set };
@@ -37398,6 +38329,7 @@ static SwigPyGetSet CoordMotion_z_axis_getset = { _wrap_CoordMotion_z_axis_get, 
 static SwigPyGetSet CoordMotion_b_axis_getset = { _wrap_CoordMotion_b_axis_get, _wrap_CoordMotion_b_axis_set };
 static SwigPyGetSet CoordMotion_m_TimeAlreadyExecuted_getset = { _wrap_CoordMotion_m_TimeAlreadyExecuted_get, _wrap_CoordMotion_m_TimeAlreadyExecuted_set };
 static SwigPyGetSet CoordMotion_m_DefineCS_valid_getset = { _wrap_CoordMotion_m_DefineCS_valid_get, _wrap_CoordMotion_m_DefineCS_valid_set };
+static SwigPyGetSet CoordMotion_m_ThreadingMode_getset = { _wrap_CoordMotion_m_ThreadingMode_get, _wrap_CoordMotion_m_ThreadingMode_set };
 static SwigPyGetSet CoordMotion_m_StoppedMachinex_getset = { _wrap_CoordMotion_m_StoppedMachinex_get, _wrap_CoordMotion_m_StoppedMachinex_set };
 static SwigPyGetSet CoordMotion_m_StoppedMachiney_getset = { _wrap_CoordMotion_m_StoppedMachiney_get, _wrap_CoordMotion_m_StoppedMachiney_set };
 static SwigPyGetSet CoordMotion_m_StoppedMachinez_getset = { _wrap_CoordMotion_m_StoppedMachinez_get, _wrap_CoordMotion_m_StoppedMachinez_set };
@@ -37411,7 +38343,9 @@ static SwigPyGetSet CoordMotion_m_AxisDisabled_getset = { _wrap_CoordMotion_m_Ax
 static SwigPyGetSet CoordMotion_m_StoppedMidx_getset = { _wrap_CoordMotion_m_StoppedMidx_get, _wrap_CoordMotion_m_StoppedMidx_set };
 static SwigPyGetSet CoordMotion_m_PreviouslyStoppedType_getset = { _wrap_CoordMotion_m_PreviouslyStoppedType_get, _wrap_CoordMotion_m_PreviouslyStoppedType_set };
 static SwigPyGetSet CoordMotion_m_StoppedMidy_getset = { _wrap_CoordMotion_m_StoppedMidy_get, _wrap_CoordMotion_m_StoppedMidy_set };
+static SwigPyGetSet CoordMotion_m_realtime_Sequence_number_valid_getset = { _wrap_CoordMotion_m_realtime_Sequence_number_valid_get, _wrap_CoordMotion_m_realtime_Sequence_number_valid_set };
 static SwigPyGetSet CoordMotion_m_Stopping_getset = { _wrap_CoordMotion_m_Stopping_get, _wrap_CoordMotion_m_Stopping_set };
+static SwigPyGetSet CoordMotion_m_PreviouslyStoppedSeqNo_getset = { _wrap_CoordMotion_m_PreviouslyStoppedSeqNo_get, _wrap_CoordMotion_m_PreviouslyStoppedSeqNo_set };
 static SwigPyGetSet CoordMotion_m_StoppedMidz_getset = { _wrap_CoordMotion_m_StoppedMidz_get, _wrap_CoordMotion_m_StoppedMidz_set };
 static SwigPyGetSet CoordMotion_m_StraightTraverseCallback_getset = { _wrap_CoordMotion_m_StraightTraverseCallback_get, _wrap_CoordMotion_m_StraightTraverseCallback_set };
 static SwigPyGetSet CoordMotion_m_StraightTraverseSixAxisCallback_getset = { _wrap_CoordMotion_m_StraightTraverseSixAxisCallback_get, _wrap_CoordMotion_m_StraightTraverseSixAxisCallback_set };
@@ -37429,6 +38363,8 @@ static SwigPyGetSet CoordMotion_c_axis_getset = { _wrap_CoordMotion_c_axis_get, 
 static SwigPyGetSet CoordMotion_m_StoppedMachineb_getset = { _wrap_CoordMotion_m_StoppedMachineb_get, _wrap_CoordMotion_m_StoppedMachineb_set };
 SWIGINTERN PyGetSetDef SwigPyBuiltin__CCoordMotion_getset[] = {
     { (char*) "m_StoppedMachinec", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMachinec", (void*) &CoordMotion_m_StoppedMachinec_getset }
+,
+    { (char*) "m_ThreadingBaseSpeedRPS", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_ThreadingBaseSpeedRPS", (void*) &CoordMotion_m_ThreadingBaseSpeedRPS_getset }
 ,
     { (char*) "m_Simulate", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_Simulate", (void*) &CoordMotion_m_Simulate_getset }
 ,
@@ -37456,6 +38392,8 @@ SWIGINTERN PyGetSetDef SwigPyBuiltin__CCoordMotion_getset[] = {
 ,
     { (char*) "Kinematics", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.Kinematics", (void*) &CoordMotion_Kinematics_getset }
 ,
+    { (char*) "m_realtime_Sequence_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_realtime_Sequence_number", (void*) &CoordMotion_m_realtime_Sequence_number_getset }
+,
     { (char*) "m_Stoppedc", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_Stoppedc", (void*) &CoordMotion_m_Stoppedc_getset }
 ,
     { (char*) "current_z", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.current_z", (void*) &CoordMotion_current_z_getset }
@@ -37471,6 +38409,8 @@ SWIGINTERN PyGetSetDef SwigPyBuiltin__CCoordMotion_getset[] = {
     { (char*) "m_TimeAlreadyExecuted", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_TimeAlreadyExecuted", (void*) &CoordMotion_m_TimeAlreadyExecuted_getset }
 ,
     { (char*) "m_DefineCS_valid", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_DefineCS_valid", (void*) &CoordMotion_m_DefineCS_valid_getset }
+,
+    { (char*) "m_ThreadingMode", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_ThreadingMode", (void*) &CoordMotion_m_ThreadingMode_getset }
 ,
     { (char*) "m_StoppedMachinex", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMachinex", (void*) &CoordMotion_m_StoppedMachinex_getset }
 ,
@@ -37498,7 +38438,11 @@ SWIGINTERN PyGetSetDef SwigPyBuiltin__CCoordMotion_getset[] = {
 ,
     { (char*) "m_StoppedMidy", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMidy", (void*) &CoordMotion_m_StoppedMidy_getset }
 ,
+    { (char*) "m_realtime_Sequence_number_valid", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_realtime_Sequence_number_valid", (void*) &CoordMotion_m_realtime_Sequence_number_valid_getset }
+,
     { (char*) "m_Stopping", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_Stopping", (void*) &CoordMotion_m_Stopping_getset }
+,
+    { (char*) "m_PreviouslyStoppedSeqNo", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_PreviouslyStoppedSeqNo", (void*) &CoordMotion_m_PreviouslyStoppedSeqNo_getset }
 ,
     { (char*) "m_StoppedMidz", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMidz", (void*) &CoordMotion_m_StoppedMidz_getset }
 ,
@@ -37557,8 +38501,12 @@ SWIGINTERN PyMethodDef SwigPyBuiltin__CCoordMotion_methods[] = {
   { "CheckMotionHalt", (PyCFunction) _wrap_CoordMotion_CheckMotionHalt, METH_VARARGS, (char*) "" },
   { "ExecutionStop", (PyCFunction) _wrap_CoordMotion_ExecutionStop, METH_VARARGS, (char*) "" },
   { "GetFeedRateOverride", (PyCFunction) _wrap_CoordMotion_GetFeedRateOverride, METH_VARARGS, (char*) "" },
+  { "GetFeedRateRapidOverride", (PyCFunction) _wrap_CoordMotion_GetFeedRateRapidOverride, METH_VARARGS, (char*) "" },
   { "GetSpindleRateOverride", (PyCFunction) _wrap_CoordMotion_GetSpindleRateOverride, METH_VARARGS, (char*) "" },
   { "SetFeedRateOverride", (PyCFunction) _wrap_CoordMotion_SetFeedRateOverride, METH_VARARGS, (char*) "" },
+  { "SetFeedRateRapidOverride", (PyCFunction) _wrap_CoordMotion_SetFeedRateRapidOverride, METH_VARARGS, (char*) "" },
+  { "SetHardwareFRORange", (PyCFunction) _wrap_CoordMotion_SetHardwareFRORange, METH_VARARGS, (char*) "" },
+  { "GetHardwareFRORange", (PyCFunction) _wrap_CoordMotion_GetHardwareFRORange, METH_VARARGS, (char*) "" },
   { "SetSpindleRateOverride", (PyCFunction) _wrap_CoordMotion_SetSpindleRateOverride, METH_VARARGS, (char*) "" },
   { "GetDestination", (PyCFunction) _wrap_CoordMotion_GetDestination, METH_VARARGS, (char*) "" },
   { "GetPosition", (PyCFunction) _wrap_CoordMotion_GetPosition, METH_VARARGS, (char*) "" },
@@ -37595,6 +38543,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin__CCoordMotion_methods[] = {
   { "DoRateAdjustmentsArc", (PyCFunction) _wrap_CoordMotion_DoRateAdjustmentsArc, METH_VARARGS, (char*) "" },
   { "CheckSoftLimits", (PyCFunction) _wrap_CoordMotion_CheckSoftLimits, METH_VARARGS, (char*) "" },
   { "CheckSoftLimitsArc", (PyCFunction) _wrap_CoordMotion_CheckSoftLimitsArc, METH_VARARGS, (char*) "" },
+  { "SetAxisDefinitions", (PyCFunction) _wrap_CoordMotion_SetAxisDefinitions, METH_VARARGS, (char*) "" },
   { "GetAxisDefinitions", (PyCFunction) _wrap_CoordMotion_GetAxisDefinitions, METH_VARARGS, (char*) "" },
   { "SetTPParams", (PyCFunction) _wrap_CoordMotion_SetTPParams, METH_VARARGS, (char*) "" },
   { "GetRapidSettings", (PyCFunction) _wrap_CoordMotion_GetRapidSettings, METH_VARARGS, (char*) "" },
@@ -37976,6 +38925,7 @@ static SwigPyGetSet CGCodeInterpreter_m_ResumeSafeRelAbs_getset = { _wrap_CGCode
 static SwigPyGetSet CGCodeInterpreter_CoordMotion_getset = { _wrap_CGCodeInterpreter_CoordMotion_get, _wrap_CGCodeInterpreter_CoordMotion_set };
 static SwigPyGetSet CGCodeInterpreter_m_GCodeReads_getset = { _wrap_CGCodeInterpreter_m_GCodeReads_get, _wrap_CGCodeInterpreter_m_GCodeReads_set };
 static SwigPyGetSet CGCodeInterpreter_m_CurrentLine_getset = { _wrap_CGCodeInterpreter_m_CurrentLine_get, _wrap_CGCodeInterpreter_m_CurrentLine_set };
+static SwigPyGetSet CGCodeInterpreter_StateSaved_getset = { _wrap_CGCodeInterpreter_StateSaved_get, _wrap_CGCodeInterpreter_StateSaved_set };
 static SwigPyGetSet CGCodeInterpreter_SetupFile_getset = { _wrap_CGCodeInterpreter_SetupFile_get, _wrap_CGCodeInterpreter_SetupFile_set };
 static SwigPyGetSet CGCodeInterpreter_m_ResumeFeedSafeZ_getset = { _wrap_CGCodeInterpreter_m_ResumeFeedSafeZ_get, _wrap_CGCodeInterpreter_m_ResumeFeedSafeZ_set };
 static SwigPyGetSet CGCodeInterpreter_GeoFile_getset = { _wrap_CGCodeInterpreter_GeoFile_get, _wrap_CGCodeInterpreter_GeoFile_set };
@@ -37989,6 +38939,7 @@ static SwigPyGetSet CGCodeInterpreter_m_ResumeMoveToSafeZ_getset = { _wrap_CGCod
 static SwigPyGetSet CGCodeInterpreter_m_ResumeResumeFeedRate_getset = { _wrap_CGCodeInterpreter_m_ResumeResumeFeedRate_get, _wrap_CGCodeInterpreter_m_ResumeResumeFeedRate_set };
 static SwigPyGetSet CGCodeInterpreter_m_ResumeZFeedRate_getset = { _wrap_CGCodeInterpreter_m_ResumeZFeedRate_get, _wrap_CGCodeInterpreter_m_ResumeZFeedRate_set };
 static SwigPyGetSet CGCodeInterpreter_m_ResumeRestoreFeedRate_getset = { _wrap_CGCodeInterpreter_m_ResumeRestoreFeedRate_get, _wrap_CGCodeInterpreter_m_ResumeRestoreFeedRate_set };
+static SwigPyGetSet CGCodeInterpreter_m_HaltNextLine_getset = { _wrap_CGCodeInterpreter_m_HaltNextLine_get, _wrap_CGCodeInterpreter_m_HaltNextLine_set };
 static SwigPyGetSet CGCodeInterpreter_m_Resume_getset = { _wrap_CGCodeInterpreter_m_Resume_get, _wrap_CGCodeInterpreter_m_Resume_set };
 static SwigPyGetSet CGCodeInterpreter_m_ResumeTraverseSafeX_getset = { _wrap_CGCodeInterpreter_m_ResumeTraverseSafeX_get, _wrap_CGCodeInterpreter_m_ResumeTraverseSafeX_set };
 static SwigPyGetSet CGCodeInterpreter_m_StoppedInterpState_getset = { _wrap_CGCodeInterpreter_m_StoppedInterpState_get, _wrap_CGCodeInterpreter_m_StoppedInterpState_set };
@@ -38012,6 +38963,8 @@ SWIGINTERN PyGetSetDef SwigPyBuiltin__CGCodeInterpreter_getset[] = {
     { (char*) "m_GCodeReads", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_GCodeReads", (void*) &CGCodeInterpreter_m_GCodeReads_getset }
 ,
     { (char*) "m_CurrentLine", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_CurrentLine", (void*) &CGCodeInterpreter_m_CurrentLine_getset }
+,
+    { (char*) "StateSaved", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.StateSaved", (void*) &CGCodeInterpreter_StateSaved_getset }
 ,
     { (char*) "SetupFile", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.SetupFile", (void*) &CGCodeInterpreter_SetupFile_getset }
 ,
@@ -38038,6 +38991,8 @@ SWIGINTERN PyGetSetDef SwigPyBuiltin__CGCodeInterpreter_getset[] = {
     { (char*) "m_ResumeZFeedRate", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_ResumeZFeedRate", (void*) &CGCodeInterpreter_m_ResumeZFeedRate_getset }
 ,
     { (char*) "m_ResumeRestoreFeedRate", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_ResumeRestoreFeedRate", (void*) &CGCodeInterpreter_m_ResumeRestoreFeedRate_getset }
+,
+    { (char*) "m_HaltNextLine", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_HaltNextLine", (void*) &CGCodeInterpreter_m_HaltNextLine_getset }
 ,
     { (char*) "m_Resume", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_Resume", (void*) &CGCodeInterpreter_m_Resume_getset }
 ,
@@ -38086,10 +39041,12 @@ SwigPyBuiltin__CGCodeInterpreter_richcompare(PyObject *self, PyObject *other, in
 SWIGINTERN PyMethodDef SwigPyBuiltin__CGCodeInterpreter_methods[] = {
   { "ChangeFixtureNumber", (PyCFunction) _wrap_CGCodeInterpreter_ChangeFixtureNumber, METH_VARARGS, (char*) "" },
   { "InchesToUserUnits", (PyCFunction) _wrap_CGCodeInterpreter_InchesToUserUnits, METH_VARARGS, (char*) "" },
+  { "InchesToUserUnitsX", (PyCFunction) _wrap_CGCodeInterpreter_InchesToUserUnitsX, METH_VARARGS, (char*) "" },
   { "InchesOrDegToUserUnitsA", (PyCFunction) _wrap_CGCodeInterpreter_InchesOrDegToUserUnitsA, METH_VARARGS, (char*) "" },
   { "InchesOrDegToUserUnitsB", (PyCFunction) _wrap_CGCodeInterpreter_InchesOrDegToUserUnitsB, METH_VARARGS, (char*) "" },
   { "InchesOrDegToUserUnitsC", (PyCFunction) _wrap_CGCodeInterpreter_InchesOrDegToUserUnitsC, METH_VARARGS, (char*) "" },
   { "UserUnitsToInches", (PyCFunction) _wrap_CGCodeInterpreter_UserUnitsToInches, METH_VARARGS, (char*) "" },
+  { "UserUnitsToInchesX", (PyCFunction) _wrap_CGCodeInterpreter_UserUnitsToInchesX, METH_VARARGS, (char*) "" },
   { "UserUnitsToInchesOrDegA", (PyCFunction) _wrap_CGCodeInterpreter_UserUnitsToInchesOrDegA, METH_VARARGS, (char*) "" },
   { "UserUnitsToInchesOrDegB", (PyCFunction) _wrap_CGCodeInterpreter_UserUnitsToInchesOrDegB, METH_VARARGS, (char*) "" },
   { "UserUnitsToInchesOrDegC", (PyCFunction) _wrap_CGCodeInterpreter_UserUnitsToInchesOrDegC, METH_VARARGS, (char*) "" },
@@ -38099,6 +39056,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin__CGCodeInterpreter_methods[] = {
   { "ConvertAbsToUserUnitsA", (PyCFunction) _wrap_CGCodeInterpreter_ConvertAbsToUserUnitsA, METH_VARARGS, (char*) "" },
   { "ConvertAbsToUserUnitsB", (PyCFunction) _wrap_CGCodeInterpreter_ConvertAbsToUserUnitsB, METH_VARARGS, (char*) "" },
   { "ConvertAbsToUserUnitsC", (PyCFunction) _wrap_CGCodeInterpreter_ConvertAbsToUserUnitsC, METH_VARARGS, (char*) "" },
+  { "ConvertAbsoluteToInterpreterCoord", (PyCFunction) _wrap_CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord, METH_VARARGS, (char*) "" },
   { "SetFeedRate", (PyCFunction) _wrap_CGCodeInterpreter_SetFeedRate, METH_VARARGS, (char*) "" },
   { "InvokeAction", (PyCFunction) _wrap_CGCodeInterpreter_InvokeAction, METH_VARARGS, (char*) "" },
   { "rs274ngc_save_parameters", (PyCFunction) _wrap_CGCodeInterpreter_rs274ngc_save_parameters, METH_VARARGS, (char*) "" },
@@ -38114,9 +39072,14 @@ SWIGINTERN PyMethodDef SwigPyBuiltin__CGCodeInterpreter_methods[] = {
   { "ReadSetupFile", (PyCFunction) _wrap_CGCodeInterpreter_ReadSetupFile, METH_VARARGS, (char*) "" },
   { "Halt", (PyCFunction) _wrap_CGCodeInterpreter_Halt, METH_VARARGS, (char*) "" },
   { "GetHalt", (PyCFunction) _wrap_CGCodeInterpreter_GetHalt, METH_VARARGS, (char*) "" },
+  { "HaltNextLine", (PyCFunction) _wrap_CGCodeInterpreter_HaltNextLine, METH_VARARGS, (char*) "" },
+  { "GetHaltNextLine", (PyCFunction) _wrap_CGCodeInterpreter_GetHaltNextLine, METH_VARARGS, (char*) "" },
   { "Abort", (PyCFunction) _wrap_CGCodeInterpreter_Abort, METH_VARARGS, (char*) "" },
   { "GetAbort", (PyCFunction) _wrap_CGCodeInterpreter_GetAbort, METH_VARARGS, (char*) "" },
+  { "GetRealTimeState", (PyCFunction) _wrap_CGCodeInterpreter_GetRealTimeState, METH_VARARGS, (char*) "" },
+  { "SaveStateOnceOnly", (PyCFunction) _wrap_CGCodeInterpreter_SaveStateOnceOnly, METH_VARARGS, (char*) "" },
   { "InitializeInterp", (PyCFunction) _wrap_CGCodeInterpreter_InitializeInterp, METH_VARARGS, (char*) "" },
+  { "ReadToolFile", (PyCFunction) _wrap_CGCodeInterpreter_ReadToolFile, METH_VARARGS, (char*) "" },
   { NULL, NULL, 0, NULL } /* Sentinel */
 };
 
@@ -39765,7 +40728,7 @@ SWIG_init(void) {
   PyModule_AddObject(m, "CKMotionDLL", (PyObject*) builtin_pytype);
   SwigPyBuiltin_AddPublicSymbol(public_interface, "CKMotionDLL");
   d = md;
-  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "KMOTION_VER",SWIG_FromCharPtr("4.32"));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "KMOTION_VER",SWIG_FromCharPtr("4.33l"));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "ABORT_CHAR",SWIG_From_int(static_cast< int >(0x03)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "TIMEBASE",SWIG_From_double(static_cast< double >(0.00009)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "USER_PROG_ADDRESS_KMOTION",SWIG_From_int(static_cast< int >(0x80038000)));
@@ -39833,6 +40796,16 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_GET_MACHINE_COORDS",SWIG_From_int(static_cast< int >(26)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_GET_DROS",SWIG_From_int(static_cast< int >(27)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_UPDATE_FIXTURE",SWIG_From_int(static_cast< int >(28)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_INPUT",SWIG_From_int(static_cast< int >(29)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_GET_TOOLTABLE_DIAMETER",SWIG_From_int(static_cast< int >(30)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_SET_TOOLTABLE_DIAMETER",SWIG_From_int(static_cast< int >(31)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_GET_TOOLTABLE_OFFSETX",SWIG_From_int(static_cast< int >(32)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_SET_TOOLTABLE_OFFSETX",SWIG_From_int(static_cast< int >(33)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_GET_TOOLTABLE_OFFSETY",SWIG_From_int(static_cast< int >(34)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_SET_TOOLTABLE_OFFSETY",SWIG_From_int(static_cast< int >(35)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_HALT_NEXT_LINE",SWIG_From_int(static_cast< int >(36)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_ENABLE_JOG_KEYS",SWIG_From_int(static_cast< int >(37)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_DISABLE_JOG_KEYS",SWIG_From_int(static_cast< int >(38)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_PERSIST",SWIG_From_int(static_cast< int >(100)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "N_PC_COMM_PERSIST",SWIG_From_int(static_cast< int >(8)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_CSS_MODE",SWIG_From_int(static_cast< int >(110)));
@@ -39983,9 +40956,11 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "MAX_MCODE_ACTIONS_M1",SWIG_From_int(static_cast< int >(11)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "MAX_MCODE_ACTIONS_BUTTONS",SWIG_From_int(static_cast< int >(10)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "MAX_MCODE_ACTIONS_M100",SWIG_From_int(static_cast< int >(20)));
-  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "MAX_MCODE_ACTIONS",SWIG_From_int(static_cast< int >((11+20+10))));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "MAX_MCODE_ACTIONS_SPECIAL",SWIG_From_int(static_cast< int >(8)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "MAX_MCODE_ACTIONS",SWIG_From_int(static_cast< int >((11+20+10+8))));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "MAX_MCODE_DOUBLE_PARAMS",SWIG_From_int(static_cast< int >(5)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "MCODE_ACTIONS_M100_OFFSET",SWIG_From_int(static_cast< int >((11+10))));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "MCODE_ACTIONS_SPECIAL_OFFSET",SWIG_From_int(static_cast< int >((11+10+20))));
   
   /* type '::MCODE_ACTION' */
   builtin_pytype = (PyTypeObject *)&SwigPyBuiltin__MCODE_ACTION_type;
