@@ -151,6 +151,7 @@
 #define G_21   210
 #define G_28   280
 #define G_30   300
+#define G_32   320
 #define G_33   330
 #define G_38_2 382
 #define G_40   400
@@ -328,12 +329,15 @@ typedef struct setup_struct {
     ON_OFF speed_override;	// whether speed override is enabled
     CANON_DIRECTION spindle_turning;	// direction spindle is turning
     double tool_length_offset;	// current tool length offset
+    double tool_xoffset;	// current tool x offset
+    double tool_yoffset;	// current tool y offset
     int tool_max;		// highest number tool slot in carousel
     // number
     int tool_table_index;	// tool index used with cutter comp
     double traverse_rate;	// rate for traverse motions
 	
 	ON_OFF block_delete;
+	ON_OFF DiameterMode;  // Radius vs Diameter Mode for Lathe
 	int cutter_radius_compensation;
 	double cycle_z;
 	int current_line;
