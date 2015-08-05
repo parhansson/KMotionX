@@ -326,7 +326,7 @@ int CGCodeInterpreter::DoExecute()
 
 		StateSaved=false;  // remember we should save the state at some point
 		
-		// give output to caller
+		// give output to caller			
 #ifndef _KMOTIONX
 		//not needed on linux
 		CString tmpStr = Output;
@@ -612,7 +612,7 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 			{
 				if (i==6)  // tool change
 				{
-					sprintf(s, "SetPersistHex %d %x",ipersist, p_setup->selected_tool_slot);
+					sprintf(s,"SetPersistHex %d %x",ipersist, p_setup->selected_tool_slot);
 					if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 					sprintf(s,"SetPersistHex %d %x",ipersist+1, p_setup->tool_table[p_setup->selected_tool_slot].id);
 					if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
@@ -1322,7 +1322,7 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 #ifdef _KMOTIONX
 		strcpy(LineArray[GCodeReads],trash);
 #else
-		LineArray[GCodeReads] = trash;
+		LineArray[GCodeReads]=trash;
 #endif
 	}
 
@@ -1592,3 +1592,28 @@ int CGCodeInterpreter::SetCSS(int mode)  // set CSS mode
 
 	return 0;
 }
+
+// based on the real-time Coord Motion Sequence number 
+// return a pointer to the delayed Interpreter state corresponding
+// to that time
+
+setup_pointer CGCodeInterpreter::GetRealTimeState()
+{
+	if (ExecutionInProgress && CoordMotion->m_realtime_Sequence_number_valid && !CoordMotion->m_Simulate)
+	{
+		SetupTracker.AdvanceState(CoordMotion->m_realtime_Sequence_number);
+		return &SetupTracker.realtime_state;
+	}
+	else
+	{
+		return p_setup;
+	}
+}
+
+// Read and update the Interpreter Tool File Now
+
+int CGCodeInterpreter::ReadToolFile()
+{
+	return read_tool_file(ToolFile, &_setup);
+}
+
