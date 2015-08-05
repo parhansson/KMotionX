@@ -1588,3 +1588,28 @@ int CGCodeInterpreter::SetCSS(int mode)  // set CSS mode
 
 	return 0;
 }
+
+// based on the real-time Coord Motion Sequence number 
+// return a pointer to the delayed Interpreter state corresponding
+// to that time
+
+setup_pointer CGCodeInterpreter::GetRealTimeState()
+{
+	if (ExecutionInProgress && CoordMotion->m_realtime_Sequence_number_valid && !CoordMotion->m_Simulate)
+	{
+		SetupTracker.AdvanceState(CoordMotion->m_realtime_Sequence_number);
+		return &SetupTracker.realtime_state;
+	}
+	else
+	{
+		return p_setup;
+	}
+}
+
+// Read and update the Interpreter Tool File Now
+
+int CGCodeInterpreter::ReadToolFile()
+{
+	return read_tool_file(ToolFile, &_setup);
+}
+
