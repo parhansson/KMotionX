@@ -1,74 +1,18 @@
-import kmotion
 import time, sys
+try:
+    import kmotion
+    from kmotion_extras import *
+except:
+    print "Failed to import kmotion module"
+    print "Did you forget to..."
+    print "export PYTHONPATH=<KMmotionX install path>/bin"
+    print "export KMOTION_BIN=<KMmotionX install path>/bin"
+    raise
 
 
-class KMotion(kmotion.KMotion):
-    def __init__(self, dev, hostname = None, port = kmotion.KMOTION_PORT, with_console=False):
-        if hostname is None:
-            super(KMotion, self).__init__(dev)
-        else:
-            super(KMotion, self).__init__(dev, port, hostname)
-        if with_console:
-            self.SetConsoleCallback()
-        self.SetPollCallback(kmotion.POLL_THREAD)
-        self.threads_active = 0
-        self.Poll()
-    # Overrides of virtual methods in superclass...
-    def Console(self, line):
-        print "Console:", line,
-    def ErrMsg(self, line):
-        print "Err:", line
-    def ChangedThread(self, threads_active):
-        #print "Threads active now 0x%02X" % threads_active
-        self.threads_active = threads_active
-    
-    # Extra methods added for Python...
-    def compile(self, basename, thread=1, load_it=True):
-        rc, err = self.Compile(basename+".c", basename+".out", kmotion.BOARD_TYPE_KFLOP, thread, 1000)
-        if rc:
-            raise RuntimeError("Compile %s.c failed:\n  %s" % (basename, err))
-        if load_it:
-            if self.LoadCoff(thread, basename+".out"):
-                raise RuntimeError("LoadCoff %s.c failed, err=%d" % (basename, rc))
-    def compile_string(self, code, thread=1, load_it=True):
-        basename = "/tmp/testkmotion"
-        with open(basename+".c", "w") as f:
-            f.write(code)
-        self.compile(basename, thread, load_it)
-    def execute(self, thread=1):
-        k.WriteLine("execute%d" % thread)
-        self.Poll()
-    def wait_thread_done(self, thread=1):
-        threadbit = 1<<thread
-        while self.threads_active & threadbit:
-            self.Poll()
-            
-    def run(self, basename, thread=1):
-        """Run basename.c on thread 1, and wait for the thread to terminate.
-        """
-        try:
-            self.compile(basename, thread)
-        except RuntimeError as e:
-            print e
-            return
-        self.execute(thread)
-        self.wait_thread_done(thread)
-    def run_string(self, code, wait, thread=1):
-        """Run C code string on thread 1, and wait for the thread to terminate.
-        """
-        try:
-            self.compile_string(code, thread)
-        except RuntimeError as e:
-            print e
-            return
-        self.execute(thread)
-        if wait:
-            self.wait_thread_done(thread)
 
-k = KMotion(0, with_console=True)
+k = KMotionX(0, with_console=True)
 
-#print "Compile and run file..."
-#k.run("test")
 
 usage = """
 Usage: python testcomp.py [-g] [-c] [-n] [-D...] [-I...] <code> [<compiler>]
@@ -98,8 +42,10 @@ for a in sys.argv[1:]:
         opts += "-g "
     elif a == "-n":
         nowait = True
-    elif a.startswith("-D") or a.startswith("-I"):
-        opts += a + " "
+    elif a.startswith("-D"):
+        k.tmgr.add_define(a[2:])
+    elif a.startswith("-I"):
+        k.tmgr.add_incldir(a[2:])
     elif a.startswith("-l"):
         opts += a[2:] + " "
     elif a.startswith("-t"):
@@ -120,7 +66,30 @@ if codestring is None:
 if compilerbin is None:
     compilerbin = "tcc67"        
 
-k.SetCustomCompiler(compilerbin, opts)
+# Set the compiler: "tcc67", or "cl6x" (only if TI compiler tools installed).
+# Can also specify "tcc67wine" but you will need to set up a script of that
+# name in the bin directory which invokes TCC67 under wine.  Such a script
+# might look like
+#   #!/bin/bash
+#   wine ~/.wine/drive_c/KMotion432/KMotion/Release/TCC67.exe $*
+k.tmgr.set_cc(compilerbin)
+k.tmgr.set_opts(opts)
+
+def poll(k):
+    k.Poll()
+    while True:
+        m = k.get_message()
+        if not m: break
+        print m
+        if m.is_fatal():
+            # Kflop comms error
+            print "Kflop disconnected!"
+
+def idle_func(kthread):
+    global k
+    poll(k)
+
+
 
 code1 = r"""
 #include "KMotionDef.h"
@@ -379,19 +348,23 @@ cs = "code"+codestring
     
 if cs in globals():
     cs = globals()[cs]
-    if comp_only:
-        print "Compile string..."
-        k.compile_string(cs, thread)
-    else:
-        print "Compile and run string..."
-        k.run_string(cs, not nowait, thread)
+    tmpname = "/tmp/testkmotion.c"
+    with open(tmpname, "w") as f:
+        f.write(cs)
+    codestring = tmpname
+    
+if comp_only:
+    print "Compile file..."
+    k.tmgr.run(codestring, thread, compile_opts=ThreadManager.ONLY)
 else:
-    if comp_only:
-        print "Compile file..."
-        k.compile(codestring, thread)
-    else:
-        print "Compile and run file..."
-        k.run(codestring, not nowait, thread)
+    print "Compile and run file..."
+    k.run_c(codestring, thread)
+    if not nowait:
+        k.wait_c(thread, idle_func)
+        
+poll(k)
+
+print "done!"
 
         
 

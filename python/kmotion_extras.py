@@ -143,6 +143,7 @@ class ThreadManager(object):
         self.set_cc(cc, ccbindir)
         self.set_srcdir(os.path.expanduser(srcdir or "~"))
         self.defines = []
+        self.opts = None
         
     def _set_ccbindir(self, ccbindir, cc):
         if not ccbindir:
@@ -155,6 +156,10 @@ class ThreadManager(object):
             self.ccbindir = ccbindir
     def add_define(self, name, value):
         self.defines.append((name, value))
+    def add_incldir(self, name, value):
+        self.incldirs.append((name, value))
+    def set_opts(self, opts):
+        self.opts = opts
     def set_cc(self, cc, ccbindir=None):
         """Set the C compiler (and, implicitly, linker and other related tools).
         We support one of 'cl6x' (TI compiler), 'tcc67' (native TCC67) or 'tcc67wine'
@@ -398,13 +403,13 @@ SECTIONS {
         """Invoke the native TCC67 compiler (via the DLL).  This is a bit less
         flexible than providing our own command line, but it works.
         """
-        self.k.SetCustomCompiler(None)
+        self.k.SetCustomCompiler(None, self.opts)
         return self.k.Compile(filename, outfile, kmotion.BOARD_TYPE_KFLOP, thread, 1000)
         
     def ccompile_tcc67wine(self, outfile, filename, thread):
         """Invoke the Windows version TCC67 compiler under wine (via the DLL).
         """
-        self.k.SetCustomCompiler("tcc67wine")
+        self.k.SetCustomCompiler("tcc67wine", self.opts)
         return self.k.Compile(filename, outfile, kmotion.BOARD_TYPE_KFLOP, thread, 1000)
         
 

@@ -1,6 +1,10 @@
 import kmotion
 import time
 
+"""
+Low-level test for polling callbacks, from KMotionDLL.
+"""
+
 # Derive a class which handles ChangedPos events.
 class KMotion(kmotion.KMotion):
     def __init__(self, dev, hostname = None, port = kmotion.KMOTION_PORT, with_console=False):
