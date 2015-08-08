@@ -156,8 +156,15 @@ class ThreadManager(object):
             self.ccbindir = ccbindir
     def add_define(self, name, value):
         self.defines.append((name, value))
-    def add_incldir(self, name, value):
-        self.incldirs.append((name, value))
+    def set_defines(self, name_value_dict):
+        self.defines = [(n, v) for n, v in name_value_dict.items()]
+    def add_incldir(self, dirname):
+        self.incldirs.append(dirname)
+    def add_incldirs(self, dirnames):
+        self.incldirs.extend(dirnames)
+    def set_incldirs(self, dirnames):
+        self.incldirs = [self.kflopdir, self.srcdir]
+        self.incldirs.extend(dirnames)
     def set_opts(self, opts):
         self.opts = opts
     def set_cc(self, cc, ccbindir=None):
@@ -192,16 +199,15 @@ class ThreadManager(object):
         """
         outfile = self.k.ConvertToOut(thread, filename, 1000)
         if compile_opts != self.SKIP:
-            try:
-                do_compile = compile_opts == self.FORCE or self.need_compile(outfile, filename, thread)
-            except Exception as e:
-                print e
-                do_compile = True
+            do_compile = compile_opts == self.FORCE or self.need_compile(outfile, filename, thread)
             if do_compile:
                 rc, err = self.gen_depend(filename)
                 if not rc:
                     rc, err = self.ccompile(outfile, filename, thread)
-                self.write_ccfile(filename)
+                    self.write_ccfile(filename)
+                else:
+                    print "gen_depend failure, rc=",rc,":"
+                    print err
             else:
                 rc = 0
             if compile_opts == self.ONLY or rc:
@@ -210,10 +216,7 @@ class ThreadManager(object):
                 return not rc
         do_load = False
         if load_opts != self.SKIP:
-            try:
-                do_load = load_opts == self.FORCE or self.need_load(outfile, filename, thread)
-            except:
-                do_load = True
+            do_load = load_opts == self.FORCE or self.need_load(outfile, filename, thread)
             if do_load:
                 #print "Loading", outfile
                 rc = self.k.LoadCoff(thread, outfile)
@@ -236,14 +239,18 @@ class ThreadManager(object):
         return True
         
     def need_compile(self, outfile, filename, thread):
-        """Return True or raise exception if need to compile filename to run as thread.
+        """Return True if need to compile filename to run as thread.
         """
         print "Need compile?...", filename, "->", outfile
-        mtold = os.path.getmtime(outfile)
-        if mtold <= os.path.getmtime(filename):
-            # outfile is older, definitely need recompile
-            # Also, if either does not exist, will raise exception.
-            print "...yes"
+        try:
+            mtold = os.path.getmtime(outfile)
+            if mtold <= os.path.getmtime(filename):
+                # outfile is older, definitely need recompile
+                # Also, if either does not exist, will raise exception.
+                print "...yes"
+                return True
+        except:
+            print "...yes, out file non-existent"
             return True
         cccmd, deplist = self.get_deplist(filename)
         if cccmd != self.cc:
@@ -282,8 +289,19 @@ class ThreadManager(object):
         """Return true if need to load outfile to run as thread.
         False only returned if file name is same and it has the same mtime as the currently loaded obj file.
         """
-        print "Need load?...", thread, ":", self.thd2obj[thread]
-        return self.thd2obj[thread][0] != outfile or self.thd2obj[thread][2] != os.path.getmtime(outfile)
+        print "Need load?...", thread, ":"
+        try:
+            if self.thd2obj[thread][0] != outfile:
+                print "...yes, new code for thread"
+                return True
+            if self.thd2obj[thread][2] != os.path.getmtime(outfile):
+                print "...yes, recompiled"
+                return True
+        except KeyError:
+            print "...yes, current unknown"
+            return True
+        print "...no"
+        return False
         
     def runcmd(self, cmd):
         print "Running command", cmd
@@ -324,6 +342,7 @@ class ThreadManager(object):
         s = '\n'.join([x for x in s.split()[1:] if x != '\\'])
         with open(depfilename, "w") as f:
             f.write(s) 
+            f.write('\n')
         return (0, '')
         
     def gen_depend_tcc67wine(self, filename):
