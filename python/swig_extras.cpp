@@ -14,6 +14,63 @@
 */
 
 
+// First, some standard use of persist vars on the kflop.  These are taken from the DM6 common header
+#define VAR(n) n
+#define FVAR(n) n   // Indicates should be cast to float
+
+
+// Persist variables (100-107):
+// These are always sent to PC in bulk status block.  We use some for status display.
+#define VAR_STATUS              VAR(107)        // General status, as follows:
+    #define VS_SPINDLE_ON       0x00000001          // Spindle ON
+    #define VS_SPINDLE_INHIBIT  0x00000002          // Spindle inhibited
+    #define VS_PROBE            0x00000004          // Probe mounted in spindle
+    #define VS_INDEP_PROBE      0x08000000          // Independent probe active
+    #define VS_PROBING          0x00000008          // Probe in progress (may or may not be spindle probe)
+    #define VS_TC               0x00000010          // Tool change in progress
+    #define VS_ESTOP            0x00000020          // Estop state
+    #define VS_MANUAL           0x00000040          // Manual spindle control (front panel switch)
+    #define VS_REFFING          0x00000080          // Axis reffing in progress
+    #define VS_CURR_TOOL_MASK   0x0000FF00          // Current tool slot mask.  Value is 0 (none),
+                                                    // 1-8 (normal slot), 90-99 (manual), 255 (unknown).
+    #define VS_CURR_TOOL_SHIFT  8
+    #define VS_NEXT_TOOL_MASK   0x00FF0000          // Next or current tool (host T number).
+    #define VS_NEXT_TOOL_SHIFT  16
+
+#define VAR_IO_STATUS           VAR(106)        // I2C I/O states
+#define VAR_SPINDLE             VAR(105)        // Spindle feedback:
+    #define VSP_SPEED_MASK      0x0001FFFF          // Speed in RPM (0-130000)
+    #define VSP_SPEED_SHIFT     0
+    #define VSP_LOAD_MASK       0x00FE0000          // Load percent (0-127)
+    #define VSP_LOAD_SHIFT      17
+    #define VSP_ACCEL           0x01000000          // Spindle currently accelerating/decelerating i.e.
+                                                        // not currently at target speed +/- tolerance.
+    #define VSP_SPEED_VALID     0x02000000          // Speed feedback is a measurement, else is an estimate.
+    #define VSP_LOAD_VALID      0x04000000          // Load feedback is a measurement.
+
+// Persist variables (0-99):
+
+#define VAR_SPINDLE_SPEED	    FVAR(99)        // Host set spindle speed (+ve or 0)
+#define VAR_SPINDLE_EFFORT	    FVAR(98)        // Host set spindle effort
+#define VAR_TOOL_NUMBER		    VAR(97)         // Host set tool slot number (to change to, T number for M6)
+#define VAR_JOG_FLAGS   	    VAR(96)         // Host set allowable axes to jog via MPG (bit 0=X, 1=Y etc.) and any restrictions (see below).
+#define VAR_JOG_LINEAR_BASE     FVAR(95)        // Host set jog base step distance for linear axes X,Y,Z.  This is the x1 steps (1.0 is best value).
+#define VAR_JOG_ROTARY_BASE     FVAR(94)        // Host set jog base step distance for rotary axes A,B,C.  This is the x1 steps.
+
+//#define VAR_SPINDLE_MON		FVAR(89)        // Host read spindle speed feedback
+//#define VAR_LOAD_MON		    FVAR(88)        // Host read spindle load feedback
+#define VAR_ESTOP_STATE_MON	    VAR(86)         // Host read estop state 
+#define VAR_SERVO_STATUS_MON	VAR(85)         // Host read servo presence/ok state 
+#define VAR_SP_SAMP_MON		    VAR(84)         // Host read spindle speed feedback sample count
+#define VAR_CURRENT_TOOL	    VAR(83)         // Host read current tool slot in use (-1 if unknown/manual, 0 if known to be none, 1-8 for slot)
+#define VAR_MANUAL_TOOL 	    VAR(82)         // Host read current manual tool number (0 if not manual, else 96/97/98/99)
+#define VAR_PROBE        	    VAR(81)         // Spindle probe in use. -1 if not in use, 0 if primary, 1 if secondary.
+#define VAR_INDEP_PROBE        	VAR(80)         // Independent probe in use. -1 if not in use, 0 if primary, 1 if secondary.
+                                                // NOTE: if both spindle and indep probes are active, then the indep probe generally takes priority.
+                                                // This is because M119 "pushes" the spindle tool offsets while in effect.
+
+
+
 // Wrapper class for main DLL, mainly to add interpreter lock for DoErrMsg() and Console().
 class KMotion;
 static KMotion * _theKMotion;   // an unfortunate hack to get message box callback to work
@@ -149,6 +206,8 @@ enum {
 
 static void _gci_complete(int status, int lineno, int sequence_number, const char *err);
 
+#define MAX_GATHER_DATA     65536
+
 
 class GCODEINTERPRETER_API GCodeInterpreter: public CGCodeInterpreter
 {
@@ -235,6 +294,9 @@ public:
     int GetPendingPC() const { return pc_pending; }
     const char * GetLastGatherString() const { return pc_string; }
     int GetPCOptions() const { return pc_options; }
+    int GetKFlopThread() const { return pc_kflop_thread; }      // New protocol: specify originating thread of command
+    int GetInputBoxPersist() const { return pc_result_var; }
+    int GetResultPersist() const { return pc_result_persist; }  // New protocol: specify a persist var for final result
     void SetPCResult(int r) { pc_result = r; }
 	
 	// Virtual methods to handle PC comms from the kflop.  All take no args, and return 0 if OK, -1 if error, 1 to
@@ -254,6 +316,18 @@ public:
     virtual int PC_UpdateFixture();
     virtual int PC_UserButton();
     virtual int PC_MCode();
+    virtual int PC_GetToolDiam();
+    virtual int PC_SetToolDiam();
+    virtual int PC_GetToolOffsetX();
+    virtual int PC_SetToolOffsetX();
+    virtual int PC_GetToolOffsetY();
+    virtual int PC_SetToolOffsetY();
+    virtual int PC_HaltNextLine();
+    virtual int PC_EnableJogKeys();
+    virtual int PC_DisableJogKeys();
+    virtual int PC_StatusMsg();
+    virtual int PC_SlotToIndex();
+    virtual int PC_StatusClear();
     virtual int PC_Other();     // Catch-all for unknown PC commands
     // This group is long-running, so there are extra virtuals for cancellation and checking for continuation,
     // for each PC command code.  Long-running commands save the current command code in pc_pending field.
@@ -261,17 +335,66 @@ public:
     // PC_Running_xxx is called whenever the above command is pending (i.e. kflop waiting for response), and
     // should return 1 to keep going, or 0/-1 if finished/error.
     // PC_Cancel_xxx is called if the kflop issued a new command without waiting for the current one to finish.
+    // NOTE: long-running commands are for backwards compatibility.  New kflop code should use the "non-blocking"
+    // command style, since this allows outstanding commands for each thread.
     virtual int PC_MsgBox();
     virtual void PC_Cancel_MsgBox();
     virtual int PC_Running_MsgBox();
     virtual int PC_MDI();
     virtual void PC_Cancel_MDI();
     virtual int PC_Running_MDI();
+    virtual int PC_InputBox();
+    virtual void PC_Cancel_InputBox();
+    virtual int PC_Running_InputBox();
+
+    // Non-blocking command handlers.  The pc command has additional fields to contain the originating thread,
+    // plus a unique persist variable to set for command completion of the long-running part.
+    virtual int PC_NBMsgBox();
+    virtual int PC_NBMDI();
+    virtual int PC_NBInputBox();
 
     // Helper functions for sending data to the kflop.
     int SendPQR(int persist, int mcode);// Send g-code P,Q,R parameters in the standard manner (used with most M-code handlers)
     int SendToolSlot(int persist);      // Send tool slot number (used with M6)
     int SyncPosition();                 // Sync interpreter pos from kflop
+    
+    intvec GetPCComm() const;           // Get the 8 persist vars from the latest MAIN_STATUS (useful in PC_Other() virtual)
+    floatvec GetPCCommFloat() const;    // Get the 8 persist vars from the latest MAIN_STATUS, as floating point
+    int GetOnePersistInt(int index);
+    float GetOnePersistFloat(int index);
+    double GetOnePersistDouble(int index);
+    void SetOnePersistInt(int index, int value);
+    void SetOnePersistFloat(int index, float value);
+    void SetOnePersistDouble(int index, double value);
+    intvec GetPersistInt(int index, int n_ints);                    // Get n_ints integeres from kflop persist variables, starting at persist[index].
+    floatvec GetPersistFloat(int index, int n_floats);              // Get n_floats floats from kflop persist variables, starting at persist[index].
+    floatvec GetPersistDouble(int index, int n_doubles);            // Get n_doubles doubles from kflop persist variables, starting at persist[index].
+                                                                    // Note that the protocol usually specifies a 'double' index, so the given
+                                                                    // value must be multiplied by 2 to get the index here.
+    // Following GetGather* methods limited to MAX_GATHER_DATA bytes.
+    // Warning: byte_offset should be appropriate for data alignment i.e. multiple of 4.
+    intvec GetGatherInt(int byte_offset, int n_ints);               // Get 32-bit int data from gather buffer
+    floatvec GetGatherFloat(int byte_offset, int n_floats);         // Get single-prec float data from gather buffer
+    floatvec GetGatherDouble(int byte_offset, int n_doubles);       // Get double-prec float data from gather buffer
+    const char * GetGatherString(int char_offset, int max_chars);   // Get string data from gather buffer - terminates when null found, but not more than max_chars.
+                                                                    // Currently, char_offset must be a multiple of 4 to avoid premature string termination.
+
+    // Helper functions for manipulating interpreter "setup" struct.
+    // Use idiom (in e.g. Python) like:
+    // s = my_gcode_interp.GetInterpreterParams()
+    // s.tool_x_offset = 125
+    // my_gcode_interp.SetInterpreterParams(s)
+    setup GetInterpreterParams() const { return *p_setup; }         // Bulk get
+    void SetInterpreterParams(const setup & s) { *p_setup = s; }    // Bulk put
+    // Get/set 6-vector of specified fixture offset.  fixture_num is 1..9 (G54..59.3) or 0 for global (g92)
+    floatvec GetOffsets(int fixture_num) const;
+    void SetOffsets(int fixture_num, floatvec offs);
+    // Get current interpreter position (including offsets, in interpreter current units) - useful for manipulating offsets.
+    // from_cm is true if get from CoordMotion, else is interpreter position.  The latter is not necessarily the current
+    // machine position except at the end of a programmed move.
+    floatvec GetCurrent(bool from_cm);
+    
+    
 
 protected:
     int setAction(int action_num, int type, double p1 = 0., double p2 = 0., double p3 = 0., double p4 = 0., double p5 = 0., const char * str = NULL);
@@ -296,14 +419,17 @@ protected:
     
     int pc_pending; // PC command which is pending completion (or 0 if none)
     int pc_options;         // MsgBox options from kflop
+    int pc_kflop_thread;    // Originating thread number from kflop (0 if old protocol where thread is not specified)
     int pc_result;          // Result to send to kflop (for MsgBox)
-    char pc_string[1024];   // String pulled out of gather buffer for MsgBox or MDI
+    int pc_result_var;      // Persist var to send InputBox result to.
+    int pc_result_persist;  // Final result for new style protocol
+    char pc_string[MAX_GATHER_DATA+7];   // String pulled out of gather buffer for MsgBox or MDI, or GetGather* methods
     
     int ReadInterpPos(double *pos);
     int SendCoordinates(int n, bool MachineCoords);
     int SendOneDouble(int i, double d);
     int GetVar(int Var, int *value);
-    int GetStringFromGather(int WordOffset, char *msg, int nWords);
+    int GetStringFromGather(int WordOffset, char *msg, int nWords, int look_for_null = 1);
     int SetKFLOPCommandResult(int r);
 
 };
@@ -406,7 +532,7 @@ void GCodeInterpreter::setup_t()
     first_km_event = 0;
 
 #define GEV(tag,fld,cbsel) setup_tm(pm.fld,cbsel);
-#define GEVX(tag, n,fld,cbsel) for (i = 0; i < n; ++i) setup_tm(pm.fld[i],cbsel);
+#define GEVX(tag, ff,n,fld,cbsel) for (i = ff; i < n; ++i) setup_tm(pm.fld[i],cbsel);
 #define GEVXB(tag, n, bits,fld) for (i = 0; i < n; ++i) setup_tmbit(pm.fld, bits, i);
 #define GEV_BLOCK_KMOTION
 #include "swig_extras_events.cpp"
@@ -414,7 +540,7 @@ void GCodeInterpreter::setup_t()
     last_km_event = first_int_event = t.size();
     
 #define GEV(tag,fld,cbsel) setup_ts(ps.fld,cbsel);
-#define GEVX(tag, n,fld,cbsel) for (i = 0; i < n; ++i) setup_ts(ps.fld[i],cbsel);
+#define GEVX(tag, ff,n,fld,cbsel) for (i = ff; i < n; ++i) setup_ts(ps.fld[i],cbsel);
 #define GEVXX(tag, n,fld,typ,cbsel) for (i = 0; i < n; ++i) setup_ts(((typ *)&ps.fld)[i],cbsel);
 #define GEV_BLOCK_INTERPETER
 #include "swig_extras_events.cpp"
@@ -558,6 +684,7 @@ GCodeInterpreter::GCodeInterpreter(CCoordMotion *CM): CGCodeInterpreter(CM)
     pc_string[0] = 0;
     pc_result = -1;
     pc_options = 0;
+    pc_kflop_thread = 0;
     CGCodeInterpreter::SetUserCallback(_gci_user);
     CGCodeInterpreter::SetUserMCodeCallback(_gci_mcode);
     setup_t();
@@ -968,6 +1095,10 @@ int GCodeInterpreter::PC_Running_MsgBox()
 {
     return 0;
 }
+int GCodeInterpreter::PC_NBMsgBox()
+{
+    return -1;  // No default implementation
+}
 
 int GCodeInterpreter::PC_MDI()
 {
@@ -980,6 +1111,78 @@ void GCodeInterpreter::PC_Cancel_MDI()
 int GCodeInterpreter::PC_Running_MDI()
 {
     return 0;
+}
+int GCodeInterpreter::PC_NBMDI()
+{
+    return -1;  // No default implementation
+}
+
+
+int GCodeInterpreter::PC_InputBox()
+{
+    return -1;  // No default implementation
+}
+
+void GCodeInterpreter::PC_Cancel_InputBox()
+{
+}
+int GCodeInterpreter::PC_Running_InputBox()
+{
+    return 0;
+}
+int GCodeInterpreter::PC_NBInputBox()
+{
+    return -1;  // No default implementation
+}
+
+
+int GCodeInterpreter::PC_GetToolDiam()
+{
+    return -1;  // No default implementation
+}
+int GCodeInterpreter::PC_SetToolDiam()
+{
+    return -1;  // No default implementation
+}
+int GCodeInterpreter::PC_GetToolOffsetX()
+{
+    return -1;  // No default implementation
+}
+int GCodeInterpreter::PC_SetToolOffsetX()
+{
+    return -1;  // No default implementation
+}
+int GCodeInterpreter::PC_GetToolOffsetY()
+{
+    return -1;  // No default implementation
+}
+int GCodeInterpreter::PC_SetToolOffsetY()
+{
+    return -1;  // No default implementation
+}
+int GCodeInterpreter::PC_HaltNextLine()
+{
+    return -1;  // No default implementation
+}
+int GCodeInterpreter::PC_EnableJogKeys()
+{
+    return -1;  // No default implementation
+}
+int GCodeInterpreter::PC_DisableJogKeys()
+{
+    return -1;  // No default implementation
+}
+int GCodeInterpreter::PC_StatusMsg()
+{
+    return -1;  // No default implementation
+}
+int GCodeInterpreter::PC_SlotToIndex()
+{
+    return -1;  // No default implementation
+}
+int GCodeInterpreter::PC_StatusClear()
+{
+    return -1;  // No default implementation
 }
 
 
@@ -1012,6 +1215,9 @@ void GCodeInterpreter::ServiceKFLOPCommands()
         case PC_COMM_MDI:
             PC_Cancel_MDI();
             break;
+        case PC_COMM_INPUT:
+            PC_Cancel_InputBox();
+            break;
         }
         _EXIT_BINDING;
         pc_pending = 0;
@@ -1020,7 +1226,15 @@ void GCodeInterpreter::ServiceKFLOPCommands()
 	if (nm.PC_comm[0] <= 0)  // don't do anything if error or zero
 	    return;
 	    
-	switch (nm.PC_comm[0])
+	pc_kflop_thread = (nm.PC_comm[0] & PC_COMM_FIELD_THREAD) >> PC_COMM_SHIFT_THREAD;     // Extract thread number (will be 0 for old protocol)
+	pc_result_persist = (nm.PC_comm[0] & PC_COMM_FIELD_RESULT) >> PC_COMM_SHIFT_RESULT;
+	if ((pc_result_persist >= 100 && pc_result_persist < 104) || pc_result_persist > 199) {
+	    SetKFLOPCommandResult(-1);
+	    return;
+	}
+	    
+	    
+	switch (nm.PC_comm[0] & PC_COMM_FIELD_COMMAND)
 	{
 	case PC_COMM_ESTOP:
 	    CALL_BINDING(PC_Estop);
@@ -1061,7 +1275,7 @@ void GCodeInterpreter::ServiceKFLOPCommands()
 	case PC_COMM_SET_B:
 	case PC_COMM_SET_C:
 		NewValue = *(float *)&nm.PC_comm[1];
-		i = nm.PC_comm[0] - PC_COMM_SET_X;
+		i = (nm.PC_comm[0]&PC_COMM_FIELD_COMMAND) - PC_COMM_SET_X;
 		dp = &p_setup->axis_offset_x;
 		if (!Running() && !ReadInterpPos(pos))
 		{
@@ -1095,19 +1309,15 @@ void GCodeInterpreter::ServiceKFLOPCommands()
 	        pc_options = nm.PC_comm[2];
 	        CALL_LONG_BINDING(PC_MsgBox);
 	    }
-	    /* Message box protocol...
-		if (!MsgDisplayed)
-		{
-			if (GetStringFromGather(nm.PC_comm[1],&s,50)) break;
-			MsgDisplayed=true;
-			nm.PC_comm[0]=0;  // clear the command now that it has been executed
-			result = AfxMessageBox(s,nm.PC_comm[2]);
-			MsgDisplayed=false;
-			s.Format("SetPersistDec%d %d",PC_COMM_PERSIST+3,result);
-			if (CM->KMotionDLL->WriteLine(s)) break;
-			SetKFLOPCommandResult(0);
-		}
-		*/
+		break;
+
+	case PC_COMM_NB_MSG:
+        if (GetStringFromGather(nm.PC_comm[1],pc_string,sizeof(pc_string)/4)) {
+            SetKFLOPCommandResult(-1);
+            break;
+        }
+        pc_options = nm.PC_comm[2];
+	    CALL_BINDING(PC_NBMsgBox);
 		break;
 
 	case PC_COMM_GET_VARS:  // no callback
@@ -1172,6 +1382,14 @@ void GCodeInterpreter::ServiceKFLOPCommands()
 			}
 		}
 		*/
+		break;
+
+	case PC_COMM_NB_MDI:
+        if (GetStringFromGather(nm.PC_comm[1],pc_string,sizeof(pc_string)/4)) {
+            SetKFLOPCommandResult(-1);
+            break;
+        }
+	    CALL_BINDING(PC_NBMDI);
 		break;
 
 	case PC_COMM_GETAXISRES:    // no callback
@@ -1294,6 +1512,72 @@ void GCodeInterpreter::ServiceKFLOPCommands()
 	case PC_COMM_UPDATE_FIXTURE:
 	    CALL_BINDING(PC_UpdateFixture);
 		break;
+		
+    case PC_COMM_INPUT:
+	    if (pc_pending)
+	        CALL_BINDING_RUNNING(PC_Running_InputBox, 3);
+	    else {
+	        if (GetStringFromGather(nm.PC_comm[1],pc_string,sizeof(pc_string)/4)) {
+	            SetKFLOPCommandResult(-1);
+                break;
+            }
+	        pc_options = nm.PC_comm[2];
+	        pc_result_var = nm.PC_comm[3];
+	        CALL_LONG_BINDING(PC_InputBox);
+	    }
+        break;
+
+    case PC_COMM_NB_INPUT:
+	    CALL_BINDING(PC_NBInputBox);
+        break;
+
+    case PC_COMM_GET_TOOLTABLE_DIAMETER:
+	    CALL_BINDING(PC_GetToolDiam);
+        break;
+
+    case PC_COMM_SET_TOOLTABLE_DIAMETER:
+	    CALL_BINDING(PC_SetToolDiam);
+        break;
+
+    case PC_COMM_GET_TOOLTABLE_OFFSETX:
+	    CALL_BINDING(PC_GetToolOffsetX);
+        break;
+
+    case PC_COMM_SET_TOOLTABLE_OFFSETX:
+	    CALL_BINDING(PC_SetToolOffsetX);
+        break;
+
+    case PC_COMM_GET_TOOLTABLE_OFFSETY:
+	    CALL_BINDING(PC_GetToolOffsetY);
+        break;
+
+    case PC_COMM_SET_TOOLTABLE_OFFSETY:
+	    CALL_BINDING(PC_SetToolOffsetY);
+        break;
+
+    case PC_COMM_HALT_NEXT_LINE:
+	    CALL_BINDING(PC_HaltNextLine);
+        break;
+
+    case PC_COMM_ENABLE_JOG_KEYS:
+	    CALL_BINDING(PC_EnableJogKeys);
+        break;
+
+    case PC_COMM_DISABLE_JOG_KEYS:
+	    CALL_BINDING(PC_DisableJogKeys);
+        break;
+
+    case PC_COMM_STATUS_MSG:
+	    CALL_BINDING(PC_StatusMsg);
+        break;
+
+    case PC_COMM_SLOT_TO_INDEX:
+	    CALL_BINDING(PC_SlotToIndex);
+        break;
+
+    case PC_COMM_STATUS_CLEAR:
+	    CALL_BINDING(PC_StatusClear);
+        break;
 
 	default:
 	    CALL_BINDING(PC_Other);
@@ -1370,7 +1654,7 @@ int GCodeInterpreter::GetVar(int Var, int *value)
 
 // msg must point to at least max(4,nWords*4) bytes.
 // Reads in chunks of 32 words (128 bytes), until a null terminator is found (or nWords exceeded).
-int GCodeInterpreter::GetStringFromGather(int WordOffset, char *msg, int nWords)
+int GCodeInterpreter::GetStringFromGather(int WordOffset, char *msg, int nWords, int look_for_null)
 {
 	char s[MAX_LINE+1];
 	int j, w, w2r;
@@ -1405,17 +1689,158 @@ int GCodeInterpreter::GetStringFromGather(int WordOffset, char *msg, int nWords)
 		    }
 
 	    }
-	    for (j = 0; j < w2r*4; ++j)
-	        if (!((char *)out)[j])
-	            goto _done;  // Found null in this chunk, so done.
+	    if (look_for_null)
+	        for (j = 0; j < w2r*4; ++j)
+	            if (!((char *)out)[j])
+	                goto _done;  // Found null in this chunk, so done.
 	}
 _done:
 	CoordMotion->KMotionDLL->ReleaseToken();
 
-	msg[nWords*4-1] = 0;  // make sure it is terminated
+    if (look_for_null)
+    	msg[nWords*4-1] = 0;  // make sure it is terminated
 	//printf("GSFG: %p %s\n", msg, msg);
 	return 0;
 }
+
+int GCodeInterpreter::GetOnePersistInt(int index)
+{
+    char s[80];
+    char r[100];
+    int v;
+    if ((unsigned)index >= 200)
+        return 0;
+    sprintf(s, "GetPersistHex %d", index);
+    if (CoordMotion->KMotionDLL->WriteLineReadLine(s, r)) return 0;
+    sscanf(r, "%x", &v);
+    return v;
+}
+
+float GCodeInterpreter::GetOnePersistFloat(int index)
+{
+    int v = GetOnePersistInt(index);
+    return *(float *)&v;
+}
+
+double GCodeInterpreter::GetOnePersistDouble(int index)
+{
+    double r;
+    ((int *)&r)[0] = GetOnePersistInt(index);
+    ((int *)&r)[1] = GetOnePersistInt(index+1);
+    return r;
+}
+
+void GCodeInterpreter::SetOnePersistInt(int index, int value)
+{
+    char s[80];
+    if ((unsigned)index >= 200)
+        return;
+    sprintf(s, "SetPersistHex %d %x", index, value);
+    CoordMotion->KMotionDLL->WriteLine(s);
+}
+
+void GCodeInterpreter::SetOnePersistFloat(int index, float value)
+{
+    SetOnePersistInt(index, *(int *)&value);
+}
+
+void GCodeInterpreter::SetOnePersistDouble(int index, double value)
+{
+    SetOnePersistInt(index, ((int *)&value)[0]);
+    SetOnePersistInt(index+1, ((int *)&value)[1]);
+}
+
+
+
+intvec GCodeInterpreter::GetPersistInt(int index, int n_ints)
+{
+    if ((unsigned)n_ints > 200)
+        n_ints = 200;
+    if (index > 200)
+        index = 200;
+    intvec iv = intvec(n_ints);
+    for (int i = index; i < index+n_ints; ++i)
+        iv[i-index] = GetOnePersistInt(i);
+    return iv;
+}
+
+floatvec GCodeInterpreter::GetPersistFloat(int index, int n_floats)
+{
+    if ((unsigned)n_floats > 200)
+        n_floats = 200;
+    if (index > 200)
+        index = 200;
+    floatvec iv = floatvec(n_floats);
+    for (int i = index; i < index+n_floats; ++i)
+        iv[i-index] = GetOnePersistFloat(i);
+    return iv;
+}
+
+floatvec GCodeInterpreter::GetPersistDouble(int index, int n_doubles)
+{
+    if ((unsigned)n_doubles > 100)
+        n_doubles = 100;
+    if (index > 200)
+        index = 200;
+    floatvec iv = floatvec(n_doubles);
+    for (int i = index; i < index+n_doubles*2; i+=2)
+        iv[(i-index)>>1] = GetOnePersistDouble(i);
+    return iv;
+}
+
+
+intvec GCodeInterpreter::GetGatherInt(int byte_offset, int n_ints)
+{
+    if ((unsigned)n_ints > MAX_GATHER_DATA/sizeof(int))
+        n_ints = MAX_GATHER_DATA/sizeof(int);
+    int rc = GetStringFromGather(byte_offset/sizeof(int), pc_string, n_ints, 0);
+    if (rc)
+        return intvec(0);
+    intvec iv = intvec(n_ints);
+    for (int i = 0; i < n_ints; ++i)
+        iv[i] = ((int *)pc_string)[i];
+    return iv;
+}
+
+floatvec GCodeInterpreter::GetGatherFloat(int byte_offset, int n_floats)
+{
+    if ((unsigned)n_floats > MAX_GATHER_DATA/sizeof(float))
+        n_floats = MAX_GATHER_DATA/sizeof(float);
+    int rc = GetStringFromGather(byte_offset/sizeof(int), pc_string, n_floats*sizeof(float)/sizeof(int), 0);
+    if (rc)
+        return floatvec(0);
+    floatvec fv = floatvec(n_floats);
+    for (int i = 0; i < n_floats; ++i)
+        fv[i] = ((float *)pc_string)[i];
+    return fv;
+}
+
+
+floatvec GCodeInterpreter::GetGatherDouble(int byte_offset, int n_doubles)
+{
+    if ((unsigned)n_doubles > MAX_GATHER_DATA/sizeof(double))
+        n_doubles = MAX_GATHER_DATA/sizeof(double);
+    int rc = GetStringFromGather(byte_offset/sizeof(int), pc_string, n_doubles*sizeof(double)/sizeof(int), 0);
+    if (rc)
+        return floatvec(0);
+    floatvec fv = floatvec(n_doubles);
+    for (int i = 0; i < n_doubles; ++i)
+        fv[i] = ((double *)pc_string)[i];
+    return fv;
+}
+
+
+const char * GCodeInterpreter::GetGatherString(int char_offset, int max_chars)
+{
+    if ((unsigned)max_chars > MAX_GATHER_DATA)
+        max_chars = MAX_GATHER_DATA;
+    int rc = GetStringFromGather(char_offset/sizeof(int), pc_string, max_chars/sizeof(int), 1);
+    if (rc)
+        return "";
+    return pc_string;
+}
+
+
 
 
 
@@ -1478,8 +1903,12 @@ int GCodeInterpreter::SendPQR(int persist, int mcode)
 int GCodeInterpreter::SendToolSlot(int persist)
 {
     // Send tool slot number (used with M6)
+    // Note that 'p_setup->selected_tool_slot' field is mis-named: it is really the tool table index,
+    // not the T word (which may originally be a slot or an id number!)
     char s[80];
-	sprintf(s, "SetPersistHex %d %x", persist, p_setup->selected_tool_slot);
+    int slot = p_setup->tool_table[p_setup->selected_tool_slot].slot;
+	//sprintf(s, "SetPersistHex %d %x", persist, p_setup->selected_tool_slot);
+	sprintf(s, "SetPersistHex %d %x", persist, slot);
 	if (CoordMotion->KMotionDLL->WriteLine(s)) {
 	    CoordMotion->SetAbort(); 
 	    return 1;
@@ -1504,6 +1933,78 @@ int GCodeInterpreter::SyncPosition()
 	}
 	return 0;
 }
+
+intvec GCodeInterpreter::GetPCComm() const
+{
+    intvec iv = intvec(8);
+    for (int i = 0; i < 8; ++i)
+        iv[i] = nm.PC_comm[i];
+    return iv;
+}
+
+floatvec GCodeInterpreter::GetPCCommFloat() const
+{
+    floatvec iv = floatvec(8);
+    for (int i = 0; i < 8; ++i)
+        iv[i] = *(float *)(nm.PC_comm+i);
+    return iv;
+}
+
+
+floatvec GCodeInterpreter::GetOffsets(int fixture_num) const
+{
+    floatvec offs = floatvec(6);
+    if (!fixture_num) {
+        for (int i = 0; i < 6; ++i)
+            offs[i] = ((double *)&p_setup->axis_offset_x)[i];
+    }
+    else if (fixture_num >= 1 && fixture_num < 10) {
+        for (int i = 0; i < 6; ++i)
+            offs[i] = p_setup->parameters[5201+fixture_num*20+i];
+    }
+    else
+        for (int i = 0; i < 6; ++i)
+            offs[i] = 0.;
+    
+    return offs;
+}
+
+void GCodeInterpreter::SetOffsets(int fixture_num, floatvec offs)
+{
+    int nset = offs.size();
+    if (nset > 6) nset = 6;
+    if (!fixture_num) {
+        for (int i = 0; i < nset; ++i) {
+            ((double *)&p_setup->axis_offset_x)[i] = offs[i];
+            p_setup->parameters[5211+i] = offs[i];
+        }
+    }
+    else if (fixture_num >= 1 && fixture_num < 10) {
+        for (int i = 0; i < nset; ++i) {
+            p_setup->parameters[5201+fixture_num*20+i] = offs[i];
+            if (fixture_num == p_setup->origin_index)
+                ((double *)&p_setup->origin_offset_x)[i] = offs[i];
+                
+        }
+    }
+}
+
+floatvec GCodeInterpreter::GetCurrent(bool from_cm)
+{
+    floatvec v = floatvec(6);
+    if (from_cm) {
+        double p[6];
+        CoordMotion->ReadCurAbsPosition(p+0,p+1,p+2,p+3,p+4,p+5);
+        CGCodeInterpreter::ConvertAbsoluteToInterpreterCoord(p[0],p[1],p[2],p[3],p[4],p[5],p+0,p+1,p+2,p+3,p+4,p+5);
+        for (int i = 0; i < 6; ++i)
+            v[i] = p[i];
+    }
+    else
+        for (int i = 0; i < 6; ++i)
+            v[i] = ((double *)&p_setup->current_x)[i];
+    return v;
+}
+
 
 #endif
 

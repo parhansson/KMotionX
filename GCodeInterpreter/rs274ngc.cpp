@@ -10138,7 +10138,7 @@ int rs274ngc_open(		/* ARGUMENTS */
     CHK((_setup.file_pointer != NULL), NCE_A_FILE_IS_ALREADY_OPEN);
     CHK((strlen(filename) > (RS274NGC_TEXT_SIZE - 1)),
 	NCE_FILE_NAME_TOO_LONG);
-	_setup.file_pointer = fopen(filename, "r");
+	_setup.file_pointer = fopen(filename, "rb");
 	
 	if (_setup.file_pointer==NULL)
 	{
@@ -10907,7 +10907,7 @@ int search_label(int label, BOOL *pfound, int *lineno)
 
 			// skip spaces and tabs
 			for (i=0; i<n; i++)
-				if (s[i] != ' ' && s[i] != '\t') break;
+				if (!isspace(s[i])) break;
 
 			// must have at least 2 chars left and the first is an o
 			if (i<n-1 && (s[i] == 'o' || s[i] =='O'))
@@ -10925,7 +10925,7 @@ int search_label(int label, BOOL *pfound, int *lineno)
 
 					// skip spaces and tabs
 					for (i=i+1+nc; i<n; i++)
-						if (s[i] != ' ' && s[i] != '\t' &&  s[i] != '\n') break;
+						if (!isspace(s[i])) break;
 
 
 					if (i<n)  // anything left ?
@@ -10946,7 +10946,7 @@ int search_label(int label, BOOL *pfound, int *lineno)
 	
 						// skip spaces and tabs
 						for (i=i+1; i<n; i++)
-							if (s[i] != ' ' && s[i] != '\t' &&  s[i] != '\n') break;
+							if (!isspace(s[i])) break;
 	
 						if (i != n)  return NCE_INVALID_LABEL;
 					}

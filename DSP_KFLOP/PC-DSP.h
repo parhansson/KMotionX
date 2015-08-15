@@ -205,9 +205,49 @@
 #define PC_COMM_DISABLE_JOG_KEYS 38  // Disable allowing User to Push Jog Buttons while Job is Running
 
 
+//SJH - new protocol: allows "non-blocking" messages and other long-running things.
+// Runs in two phases:
+//  1. works like old-style protocol, except that PC immediately sets the command back to zero, to
+//     acknowledge receipt of the command.  This frees up the main command var for other threads.
+//  2. when PC finally has a result, it sets the specified result field persist variable to a
+//     non-zero value.
+// The kflop needs to initially wait with a short timeout for the command to be acknowledged.  It then
+// waits (with an arbitrary timeout) for the final result to come in the specified persist var.
+// PC command is divided into bitfields:
+#define PC_COMM_FIELD_COMMAND   0x000000FF  // Command number (start at 100 for new protocol commands)
+#define PC_COMM_SHIFT_COMMAND   0
+#define PC_COMM_FIELD_THREAD    0x00000F00  // Originating thread (1-7) or 0 if old protocol.  Can also use
+                                            // 8-15 for special purposes or if thread is unknown.
+#define PC_COMM_SHIFT_THREAD    8
+#define PC_COMM_FIELD_RESULT    0x000FF000  // A persist var number (0-199) which the PC sets non-zero when the
+                                            // command is finally complete.  Kflop must initialize
+                                            // this var to 0 before sending the command.  This var is not allowed
+                                            // to be 100-103, or >=200, otherwise the command is NAK'd.
+                                            // Also, if this is zero, the kflop does not wait for any final
+                                            // result; the command is only being used to specify a source thread.
+#define PC_COMM_SHIFT_RESULT    12
+
+// Put up status message.  Similar to message box, except no response required.  String can be multi-line
+// separated by \n chars.  By convention, each line is prefixed with a punctuation char which hints at
+// the type of message: !=error, #=warning, ?=operator action required (e.g. jogging), $=informational.
+// If a thread is specified (PC_COMM_FIELD_THREAD field non-zero) then the PC can have separate messages
+// per thread.
+#define PC_COMM_STATUS_MSG    50      // Persist+1=string (null terminated)
+#define PC_COMM_SLOT_TO_INDEX 51      // Convert slot number to tool table index. persist+1 is persist index
+                                         // for result, persist+2 is slot to look up.
+#define PC_COMM_STATUS_CLEAR  52      // Clear the status message.  This is better than sending a blank status
+                                      // message, since it allows the PC to manage a stack of messages.
+
+
+//SJH - new protocol commands
+#define PC_COMM_NB_MSG        53      // Non-blocking message box
+#define PC_COMM_NB_MDI        54      // Non-blocking MDI
+#define PC_COMM_NB_INPUT      55      // Non-blocking input box
+
 
 #define PC_COMM_PERSIST 100  // First Persist Variable that is uploaded in status
 #define N_PC_COMM_PERSIST 8  // Number of Persist Variables that are uploaded in status
+
 
 
 // Persist Variable used with CSS Constant Surface speed for Spindle

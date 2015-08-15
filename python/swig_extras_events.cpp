@@ -5,7 +5,7 @@
     
     // Code needs to define macros before including this file:
     //  GEV(enum_tag,fld,cbsel)
-    //  GEVX(enum_tag, array_size,fld,cbsel)
+    //  GEVX(enum_tag, first_elem, array_size,fld,cbsel)
     //  GEVXX(enum_tag, array_size,fld,fldcast,cbsel)
     //  GEVXB(enum_tag, array_size, bitfield_size,fld)
     // cbsel should be one of cb_bool, cb_int, cb_float
@@ -13,7 +13,7 @@
 #if defined(SWIG) || defined(GEV_GEN_ENUM)
     // SWIG needs to %import this as a full enum definition
 #define GEV(tag,fld,cbsel) tag,
-#define GEVX(tag, n,fld,cbsel) tag, _LAST_##tag = tag+n-1,
+#define GEVX(tag, ff, n,fld,cbsel) tag, _LAST_##tag = tag+n-1-ff,
 #define GEVXX(tag, n,fld,typ,cbsel) tag, _LAST_##tag = tag+n-1,
 #define GEVXB(tag, n, bits,fld) tag, _LAST_##tag = tag+n-1,
 #define GEV_BLOCK_KMOTION
@@ -23,12 +23,12 @@ enum GEvtCode {
     
 #ifdef GEV_BLOCK_KMOTION
     // First block corresponds to KMotion MAIN_STATUS fields
-    GEVX(CHG_POS,N_CHANNELS,Position,cb_float)
-    GEVX(CHG_DEST,N_CHANNELS,Dest,cb_float)
-    GEVX(CHG_ADC,N_ADCS,ADC,cb_int)
-    GEVX(CHG_DAC,N_DACS,DAC,cb_int)
-    GEVX(CHG_PWM,N_PWMS,PWM,cb_int)
-    GEVX(CHG_OUT_CHAN,N_CHANNELS,OutputChan0,cb_int)
+    GEVX(CHG_POS,0,N_CHANNELS,Position,cb_float)
+    GEVX(CHG_DEST,0,N_CHANNELS,Dest,cb_float)
+    GEVX(CHG_ADC,0,N_ADCS,ADC,cb_int)
+    GEVX(CHG_DAC,0,N_DACS,DAC,cb_int)
+    GEVX(CHG_PWM,0,N_PWMS,PWM,cb_int)
+    GEVX(CHG_OUT_CHAN,0,N_CHANNELS,OutputChan0,cb_int)
     GEVXB(CHG_IN_MODE,N_CHANNELS,4,InputModes)
     GEVXB(CHG_OUT_MODE,N_CHANNELS,4,OutputModes)
     GEVXB(CHG_ENABLE,8,1,Enables)
@@ -37,14 +37,17 @@ enum GEvtCode {
     GEVXB(CHG_IO_STATE,64,1,BitsState[0])
     GEVXB(CHG_THREAD,8,1,ThreadActive)
     GEV(CHG_STOP,StopImmediateState,cb_int)
-    GEVX(CHG_PCCOMM,1,PC_comm,cb_int)     // only looks for command var (persist[100]) changes
+    GEVX(CHG_PCCOMM,0,1,PC_comm,cb_int)     // only looks for command var (persist[100]) changes
+    GEVX(CHG_PCCOMMSFB,5,6,PC_comm,cb_int)  // looks for spindle speed/load feedback vars (persist[105]) changes
+    GEVX(CHG_PCCOMMIO,6,7,PC_comm,cb_int)   // looks for I/O status vars (persist[106]) changes
+    GEVX(CHG_PCCOMMST,7,8,PC_comm,cb_int)   // looks for general status vars (persist[107]) changes
     #undef GEV_BLOCK_KMOTION
 #endif //GEV_BLOCK_KMOTION
 
 #ifdef GEV_BLOCK_INTERPETER
     // This block is for GCode interpreter events (contents of the rs274ngc setup struct)
-    GEVX(CHG_ACTIVE_G,RS274NGC_ACTIVE_G_CODES,active_g_codes,cb_int)
-    GEVX(CHG_ACTIVE_M,RS274NGC_ACTIVE_M_CODES,active_m_codes,cb_int)
+    GEVX(CHG_ACTIVE_G,0,RS274NGC_ACTIVE_G_CODES,active_g_codes,cb_int)
+    GEVX(CHG_ACTIVE_M,0,RS274NGC_ACTIVE_M_CODES,active_m_codes,cb_int)
     GEVXX(CHG_G92_OFFSET,6,axis_offset_x,double,cb_float)
     GEVXX(CHG_ORIGIN_OFFSET,6,origin_offset_x,double,cb_float)
     GEVXX(CHG_CURRENT,6,current_x,double,cb_float)

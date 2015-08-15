@@ -7,14 +7,18 @@ import os, time
 
 
 class Message(object):
-    def __init__(self, lineno, msg):
+    def __init__(self, lineno, msg, strip=True):
         self.lineno = lineno
-        self.msg = msg.strip()
+        self.msg = msg.strip() if strip else msg
     def get_type(self):
         return "status"
+    def get_log_prefix(self):
+        return "E"
     def get_severity(self):
         return "I"
     def is_fatal(self):
+        return False
+    def is_popup(self):
         return False
     def get_line(self):
         return self.lineno
@@ -22,6 +26,8 @@ class Message(object):
         return False
     def show_on_status(self):
         return False
+    def get_msg_color(self):
+        return "black"
     def is_valid_line(self):
         return self.lineno > 0
     def get_msg(self):
@@ -30,6 +36,8 @@ class Message(object):
         return 0
     def get_filename(self):
         return None
+    def get_kflop_thread(self):
+        return None
     def __str__(self):
         if self.is_valid_line():
             return self.get_type()+":"+str(self.get_line())+": "+self.get_msg()
@@ -37,23 +45,53 @@ class Message(object):
         
 class ConsoleMessage(Message):
     def __init__(self, msg):
-        super(ConsoleMessage, self).__init__(-1, msg)
+        super(ConsoleMessage, self).__init__(-1, msg, strip=False)
     def get_type(self):
         return "console"
+    def get_log_prefix(self):
+        return "k"
     def get_severity(self):
         return "I"
-    def is_valid_line(self):
-        return False
+
+class StatusMessage(Message):   # from pc cmd 50
+    clrmap = { '!' : "red", '$' : "black", '#' : "black", '?' : "black" }
+    def __init__(self, msg, kflop_thread=None):
+        super(StatusMessage, self).__init__(-1, msg, strip=False)
+        self.kflop_thread = kflop_thread
+    def get_type(self):
+        return "status"
+    def get_log_prefix(self):
+        return "s"
+    def get_severity(self):
+        return "I"
+    def show_on_status(self):
+        return True
+    def get_msg_color(self):
+        try:
+            return self.clrmap[self.msg[0]]
+        except:
+            return "black"
+    def get_kflop_thread(self):
+        """Return message-originating thread on kflop (1-7), or 0 if unknown (old protocol)
+        or None if locally generated.
+        """
+        return self.kflop_thread
+
+class StatusClearMessage(StatusMessage):
+    def __init__(self, kflop_thread=None):
+        super(StatusClearMessage, self).__init__('')
+    def get_type(self):
+        return "status clear"
 
 class DebugMessage(Message):
     def __init__(self, msg):
         super(DebugMessage, self).__init__(-1, msg)
     def get_type(self):
         return "debug"
+    def get_log_prefix(self):
+        return "d"
     def get_severity(self):
         return "D"
-    def is_valid_line(self):
-        return False
 
 class ErrorMessage(Message):
     def __init__(self, lineno, msg, code):
@@ -81,6 +119,8 @@ class DLLErrorMessage(ErrorMessage):
         super(DLLErrorMessage, self).__init__(-1, msg, 0)
     def get_type(self):
         return "DLL ERROR"
+    def get_log_prefix(self):
+        return "F"
     def get_severity(self):
         return "F"
     def is_fatal(self):
@@ -116,9 +156,142 @@ class InternalErrorMessage(ErrorMessage):
         return False
     def show_on_status(self):
         return True
+    def get_msg_color(self):
+        return "red"
+
+class PopupMessage(Message):
+    def __init__(self, msg, title, opts, kflop_thread=None, result_var=None):
+        super(PopupMessage, self).__init__(-1, msg)
+        self.title = title
+        self.opts = opts
+        self.kflop_thread = kflop_thread
+        self.result_var = result_var
+    def get_type(self):
+        return "popup"
+    def get_log_prefix(self):
+        return "d"
+    def get_severity(self):
+        return "I"
+    def is_valid_line(self):
+        return False
+    def is_popup(self):
+        return True
+    def get_title(self):
+        return self.title
+    def get_opts(self):
+        return self.opts
+    def get_kflop_thread(self):
+        """Return message-originating thread on kflop (1-7), or 0 if unknown (old protocol)
+        or None if locally generated.
+        """
+        return self.kflop_thread
+    def get_result_var(self):
+        """Return final result persist var number (1-199) or None if n/a.
+        """
+        return self.result_var
 
 
-
+class Tool(object):
+    """Class to represent tools in tool table
+    """
+    UNITS_UNSPECIFIED = 'none'   # Traditional: units are whatever the interpreter mode is at time of use (g20/21).  This is classic
+                            #   RS485 NGC, but is not recommended except to maintain bug-for-bug compatibility.
+    UNITS_INCH = 'inch'          # Fixed imperial or metric: interpreter tool table is recalculated when switching between g20/21.
+    UNITS_MM = 'mm'            #   Note that all dimensions (length, diam, etc.) in the Tool entry are assumed to have the same units.
+    column_names = ('Slot', 'ID', 'Length', 'Diam', 'X-offs', 'Y-offs', 'Units', 'Comment', 'Image', 'Shank', 'Tip-rad')
+    column_types = (int, int, float, float, float, float, str, str, str, float, float)
+    def __init__(self, slot=0, id=0, length=0., diam=0., xoffset=0., yoffset=0., units='none', comment="", image="", shank_diam=0., tip_radius=0.):
+        self.set_slot(slot)
+        self.set_id(id)
+        self.set_length(length)
+        self.set_diam(diam)
+        self.set_xoffset(xoffset)
+        self.set_yoffset(yoffset)
+        self.set_units(units)
+        self.set_comment(comment)
+        self.set_image(image)
+        self.set_shank_diam(shank_diam)
+        self.set_tip_radius(tip_radius) # This allows controlled point to be adjusted to within (+) or beyond (-) the tool tip as measured by the THS.
+                                        # When the THS is measured on the machine, the returned length offset (stored in length field) will be adjusted
+                                        # according to this value.  It is thus used only by the machine, not the interpreter.  The machine needs to
+                                        # explicitly query the tip_radius value, otherwise it is not used.
+    def get_as_row(self, metric=None):
+        if metric is None:
+            return [self.slot, self.id, self.length, self.diam, self.xoffset, self.yoffset, \
+                    self.units, self.comment, self.image, self.shank_diam, self.tip_radius]
+        elif metric:
+            return self.get_as_row_metric()
+        else:
+            return self.get_as_row_imperial()
+    def get_as_row_metric(self):
+        # Note that we omit the 'units' field...  This makes it compatible with legacy file format.
+        conv = 25.4 if self.units=='inch' else 1.
+        return [self.slot, self.id, self.length*conv, self.diam*conv, self.xoffset*conv, self.yoffset*conv, \
+                self.comment, self.image, self.shank_diam*conv, self.tip_radius*conv]
+    def get_as_row_imperial(self):
+        conv = 1./25.4 if self.units=='mm' else 1.
+        return [self.slot, self.id, self.length*conv, self.diam*conv, self.xoffset*conv, self.yoffset*conv, \
+                self.comment, self.image, self.shank_diam*conv, self.tip_radius*conv]
+    def set_slot(self, s):
+        v = int(s)
+        if v < 0 or v > 99:
+            raise ValueError("Tool slot must be in range 0..99")
+        self.slot = v
+    def set_id(self, s):
+        v = int(s)
+        if v < 0 or v > 9999:
+            raise ValueError("Tool id must be in range 0..9999")
+        self.id = v
+    def set_length(self, s):
+        if isinstance(s, str):
+            v = float(s)
+        else: v = s
+        self.length = v
+    def set_diam(self, s):
+        if isinstance(s, str):
+            v = float(s)
+        else: v = s
+        self.diam = v
+    def set_xoffset(self, s):
+        if isinstance(s, str):
+            v = float(s)
+        else: v = s
+        self.xoffset = v
+    def set_yoffset(self, s):
+        if isinstance(s, str):
+            v = float(s)
+        else: v = s
+        self.yoffset = v
+    def set_units(self, s):
+        s = s.lower()
+        if s not in ('none','inch','mm','','in'):
+            raise ValueError("Tool units invalid")
+        if s == '':
+            s = 'none'
+        elif s == 'in':
+            s = 'inch'
+        self.units = s
+    def set_comment(self, s):
+        self.comment = s
+    def set_image(self, s):
+        self.image = s
+    def set_shank_diam(self, s):
+        if isinstance(s, str):
+            v = float(s)
+        else: v = s
+        self.shank_diam = v
+    def set_tip_radius(self, s):
+        if isinstance(s, str):
+            v = float(s)
+        else: v = s
+        self.tip_radius = v
+    def set_column(self, col, s):
+        f = (self.set_slot, self.set_id, self.set_length, self.set_diam, self.set_xoffset, self.set_yoffset, \
+             self.set_units, self.set_comment, self.set_image, self.set_shank_diam, self.set_tip_radius)[col]
+        f(s)
+        
+def new_tool_from_row(row):
+    return Tool(*tuple(row))
 
 class ThreadManager(object):
     """Class to manage kflop thread execution.
@@ -130,7 +303,7 @@ class ThreadManager(object):
     SKIP = 2        # Skip this operation
     FORCE = 3       # Always do this operation (unless previous op was 'ONLY')
     
-    def __init__(self, k, srcdir=None, cc="tcc67wine", ccbindir=None, kflopdir=None, kflopname="DSPKFLOP.out"):
+    def __init__(self, k, srcdir=None, cc="tcc67wine", ccbindir=None, kflopdir=None, kflopname="DSPKFLOP.out", verbose=False):
         self.k = k; # KMotionX object (see below) or derivative.  May contain special
                     # compilation methods: ccompile_xxx(), gen_depend_xxx().  
                     # where xxx is the compiler name (cl6x or tcc67 etc.)  The method in
@@ -144,6 +317,7 @@ class ThreadManager(object):
         self.set_srcdir(os.path.expanduser(srcdir or "~"))
         self.defines = []
         self.opts = None
+        self.verbose = verbose
         
     def _set_ccbindir(self, ccbindir, cc):
         if not ccbindir:
@@ -232,7 +406,7 @@ class ThreadManager(object):
             if load_opts == self.ONLY:
                 return True
         if run_opts != self.SKIP:
-            print "Executing thread", thread
+            if self.verbose: print "Executing thread", thread
             if not do_load:
                 self.k.kill(thread)
             self.k.execute(thread);
@@ -241,26 +415,26 @@ class ThreadManager(object):
     def need_compile(self, outfile, filename, thread):
         """Return True if need to compile filename to run as thread.
         """
-        print "Need compile?...", filename, "->", outfile
+        if self.verbose: print "Need compile?...", filename, "->", outfile
         try:
             mtold = os.path.getmtime(outfile)
             if mtold <= os.path.getmtime(filename):
                 # outfile is older, definitely need recompile
                 # Also, if either does not exist, will raise exception.
-                print "...yes"
+                if self.verbose: print "...yes"
                 return True
         except:
-            print "...yes, out file non-existent"
+            if self.verbose: print "...yes, out file non-existent"
             return True
         cccmd, deplist = self.get_deplist(filename)
         if cccmd != self.cc:
-            print "...yes, compiler changed", self.cc, "->", cccmd
+            if self.verbose: print "...yes, compiler changed", self.cc, "->", cccmd
             return True         # Using a different compiler
         for dfile in deplist:
             if mtold <= os.path.getmtime(dfile):
-                print "...yes,", dfile, "is more recent"
+                if self.verbose: print "...yes,", dfile, "is more recent"
                 return True     # some dependency is more recent
-        print "...no"
+        if self.verbose: print "...no"
         return False
     def get_ccfile_name(self, sourcefile_name):
         return sourcefile_name + ".dc"
@@ -289,22 +463,22 @@ class ThreadManager(object):
         """Return true if need to load outfile to run as thread.
         False only returned if file name is same and it has the same mtime as the currently loaded obj file.
         """
-        print "Need load?...", thread, ":"
+        if self.verbose: print "Need load?...", thread, ":"
         try:
             if self.thd2obj[thread][0] != outfile:
-                print "...yes, new code for thread"
+                if self.verbose: print "...yes, new code for thread"
                 return True
             if self.thd2obj[thread][2] != os.path.getmtime(outfile):
-                print "...yes, recompiled"
+                if self.verbose: print "...yes, recompiled"
                 return True
         except KeyError:
-            print "...yes, current unknown"
+            if self.verbose: print "...yes, current unknown"
             return True
-        print "...no"
+        if self.verbose: print "...no"
         return False
         
     def runcmd(self, cmd):
-        print "Running command", cmd
+        if self.verbose: print "Running command", cmd
         try:
             rc = os.system(cmd)
             return (rc, cmd)
@@ -472,6 +646,13 @@ class KMotionX(kmotion.KMotion):
     def HandleErrMsg(self, line):
         #print "Err:", line
         self.add_message(DLLErrorMessage(line))
+    def HandleMsgBox(self, title, msg, opts):
+        """This is a callback for handling error conditions encountered by the DLL.
+        Since this may be invoked in another thread, pass message to UI instead of
+        trying to multithread with GTK.
+        """
+        self.add_message(PopupMessage(msg, title, opts))
+        return 0
         
 
     # Since we are not polling, this will not be called from self.Poll(),
@@ -552,6 +733,7 @@ class Interpreter(kmotion.GCodeInterpreter):
           popup_remote(opts, msg) -- display remote action dialog (delegated from PC_MsgBox)
           done_remote() -- check whether remote action dialog completed (>0 = response code)
           cancel_remote() -- pop down remote action dialog
+          handle_pc_other(intvec) -- handle non-standard kflop to pc command.  intvec is 8 ints.
         """
         cm = kmotion.CoordMotion(k) if cm is None else cm
         super(Interpreter, self).__init__(cm)
@@ -579,17 +761,19 @@ class Interpreter(kmotion.GCodeInterpreter):
             elif acode < kmotion.MAX_MCODE_ACTIONS_M1+kmotion.MAX_MCODE_ACTIONS_BUTTONS:
                 mname = "user%d" % (acode - kmotion.MAX_MCODE_ACTIONS_M1 + 1)
             else:
-                mname = "m%d" % (acode - kmotion.MAX_MCODE_ACTIONS_M1+kmotion.MAX_MCODE_ACTIONS_BUTTONS + 100)
+                mname = "m%d" % (acode - kmotion.MAX_MCODE_ACTIONS_M1+kmotion.MAX_MCODE_ACTIONS_BUTTONS + 80)
             cb = getattr(self, mname, None) or getattr(self.ui, mname, None)
+            #print mname
             if not cb:
                 continue
-            #print "Setting acode", acode, "callback to", mname
+            print "Setting acode", acode, "callback to", mname
             self.SetActionCallback(acode);
             self.hdict[acode] = cb
 
     # Overrides of virtual methods in superclass...
     # Note that the Handle* (except HandleEvent) methods are called from a separate thread.  This is OK for
     # Python, but be cautious about calling external API that may not be thread-safe.
+
     def HandleStatus(self, lineno, msg):
 	    self.CurrentLineNo=lineno;
 	    if msg:
@@ -608,8 +792,9 @@ class Interpreter(kmotion.GCodeInterpreter):
     def HandleUser(self, msg):
         print "User callback:", msg
         return 0
-    def HandleMCode(self, acode):
-        print "Handle acode", acode
+    def HandleMCode(self, mcode):
+        print "Handle mcode", mcode
+        acode = mcode if mcode < 100 else mcode-79
         try:
             return self.hdict.get(acode, self.no_op)() or 0
         except Exception as e:
@@ -617,12 +802,57 @@ class Interpreter(kmotion.GCodeInterpreter):
             return 1
     def no_op(self):
         return 0
+
+    def PC_SetToolLength(self):
+        pc_comm = self.GetPCComm()
+        index = pc_comm[1]
+        where = pc_comm[2]
+        length = self.GetOnePersistDouble(where*2)
+        return self.ui.update_tool_entry(length=length, index=index)
+    def PC_GetToolLength(self):
+        pc_comm = self.GetPCComm()
+        index = pc_comm[1]
+        where = pc_comm[2]
+        lengthv = self.ui.get_tool_entry(field='length', index=index, units=self.UserIsMetric())
+        if length is None:
+            return -1
+        self.SetOnePersistDouble(where*2, length)
+        return 0
+    def PC_UpdateFixture(self):
+        return -1
+    def PC_GetToolOffsetX(self):
+        return -1
+    def PC_SetToolOffsetX(self):
+        return -1
+    def PC_GetToolOffsetY(self):
+        return -1
+    def PC_SetToolOffsetY(self):
+        return -1
+    def PC_SlotToIndex(self):
+        pc_comm = self.GetPCComm()
+        where = pc_comm[1]
+        slot = pc_comm[2]
+        index = self.ui.get_tool_table_index(slot=slot)
+        if index is None:
+            return -1
+        self.SetPersistOneInt(where, index)
+        return 0
+        
+    def PC_StatusMsg(self):
+        pc_comm = self.GetPCComm()
+        kthread = self.GetKFlopThread()
+        self.k.add_message(StatusMessage(self.GetGatherString(pc_comm[1], 1000), kthread))
+        return 0
+    def PC_StatusClear(self):
+        kthread = self.GetKFlopThread()
+        self.k.add_message(StatusClearMessage(kthread))
         
     def PC_MsgBox(self):
         msg = self.GetLastGatherString()
         opts = self.GetPCOptions()
+        kthread = self.GetKFlopThread()
         try:
-            self.ui.popup_remote(opts, msg)
+            self.ui.popup_remote(opts, msg, kthread)
             return 0
         except:
             return -1
@@ -643,6 +873,16 @@ class Interpreter(kmotion.GCodeInterpreter):
             self.ui.cancel_remote()
         except:
             pass
+    def PC_NBMsgBox(self):
+        msg = self.GetLastGatherString()
+        opts = self.GetPCOptions()
+        kthread = self.GetKFlopThread()
+        #self.k.add_message(PopupMessage(msg, title, opts, kthread, self.GetResultPersist()))
+        try:
+            self.ui.popup_remote(opts, msg, kthread, self.GetResultPersist())
+            return 0
+        except:
+            return -1
         
     def HandleFloatEvt(self, evt_code, newval, oldval):
         """Invoked when Poll() is called (e.g. from main app idle processing).
@@ -692,6 +932,13 @@ class Interpreter(kmotion.GCodeInterpreter):
     def run_step(self, filename):
         self.ready_run()
         self.Interpret(kmotion.BOARD_TYPE_KFLOP, filename, self.CurrentLineNo, self.CurrentLineNo, False)
-
+    def run_mdi(self, text):
+        tempfile = "/tmp/mdi.ngc"
+        with open(tempfile, "w") as f:
+            f.write(text + '\n')
+        self.finished = False
+        self.ui.handle_running(True)
+        self.Interpret(kmotion.BOARD_TYPE_KFLOP, tempfile, 0, 0, False)
+        
 
 

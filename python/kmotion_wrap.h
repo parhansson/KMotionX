@@ -103,6 +103,18 @@ public:
     virtual int PC_UpdateFixture();
     virtual int PC_UserButton();
     virtual int PC_MCode();
+    virtual int PC_GetToolDiam();
+    virtual int PC_SetToolDiam();
+    virtual int PC_GetToolOffsetX();
+    virtual int PC_SetToolOffsetX();
+    virtual int PC_GetToolOffsetY();
+    virtual int PC_SetToolOffsetY();
+    virtual int PC_HaltNextLine();
+    virtual int PC_EnableJogKeys();
+    virtual int PC_DisableJogKeys();
+    virtual int PC_StatusMsg();
+    virtual int PC_SlotToIndex();
+    virtual int PC_StatusClear();
     virtual int PC_Other();
     virtual int PC_MsgBox();
     virtual void PC_Cancel_MsgBox();
@@ -110,6 +122,12 @@ public:
     virtual int PC_MDI();
     virtual void PC_Cancel_MDI();
     virtual int PC_Running_MDI();
+    virtual int PC_InputBox();
+    virtual void PC_Cancel_InputBox();
+    virtual int PC_Running_InputBox();
+    virtual int PC_NBMsgBox();
+    virtual int PC_NBMDI();
+    virtual int PC_NBInputBox();
 
 /* Internal director utilities */
 public:
@@ -140,7 +158,7 @@ private:
       return method;
     }
 private:
-    mutable swig::SwigVar_PyObject vtable[28];
+    mutable swig::SwigVar_PyObject vtable[46];
 #endif
 
 };
