@@ -118,9 +118,9 @@ AFX_MESSAGE_BOX_CALLBACK2 AfxMessageBox;
 #define MB_MISCMASK                 0x0000C000L
 
 
-#define IDCANCEL 1
-#define IDYES 64
-#define IDNO 65
+#define IDCANCEL 2
+#define IDYES 6
+#define IDNO 7
 #ifdef __cplusplus
 extern int AfxMessageBox(const char* value, int type = 0/*NULL*/);
 #endif

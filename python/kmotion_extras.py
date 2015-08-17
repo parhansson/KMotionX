@@ -638,6 +638,11 @@ class KMotionX(kmotion.KMotion):
             self.SetConsoleCallback()
         self.tmgr = ThreadManager(self, cc="tcc67wine", srcdir="~/DM6/DM6-SCL-Rev01")
         self.set_comm_result(-2)
+        self.msgresp_poll_func = self.return_cancel
+    def return_cancel(self, kthread):
+        return kmotion.IDCANCEL
+    def set_msgresp_poll(self, msgresp_poll_func):
+        self.msgresp_poll_func = msgresp_poll_func
     # Overrides of virtual methods in superclass.  These may be called from
     # different thread (e.g. g-code interpreter).
     def HandleConsole(self, line):
@@ -651,8 +656,18 @@ class KMotionX(kmotion.KMotion):
         Since this may be invoked in another thread, pass message to UI instead of
         trying to multithread with GTK.
         """
-        self.add_message(PopupMessage(msg, title, opts))
-        return 0
+        print "HandleMsgBox"
+        self.add_message(PopupMessage(msg, title, opts, kflop_thread="DLL"))
+        # Wait 1 sec for ui to process message
+        time.sleep(1.)
+        # Now poll main ui for response
+        while True:
+            rc = self.msgresp_poll_func("DLL")
+            if rc != 0:
+                break
+            time.sleep(0.5)
+        print "HMB response:", rc
+        return rc
         
 
     # Since we are not polling, this will not be called from self.Poll(),
@@ -846,7 +861,8 @@ class Interpreter(kmotion.GCodeInterpreter):
     def PC_StatusClear(self):
         kthread = self.GetKFlopThread()
         self.k.add_message(StatusClearMessage(kthread))
-        
+    
+    # Old-style message box (deprecated) - assumes kflop unknown thread.
     def PC_MsgBox(self):
         msg = self.GetLastGatherString()
         opts = self.GetPCOptions()
@@ -858,7 +874,7 @@ class Interpreter(kmotion.GCodeInterpreter):
             return -1
     def PC_Running_MsgBox(self):
         try:
-            rc = self.ui.done_remote()
+            rc = self.ui.done_remote(0)
             if rc > 0:
                 self.SetPCResult(rc);
                 return 0
@@ -870,9 +886,12 @@ class Interpreter(kmotion.GCodeInterpreter):
     def PC_Cancel_MsgBox(self):
         print "MsgBox: cancelled by kflop"
         try:
-            self.ui.cancel_remote()
+            self.ui.cancel_remote(0)
         except:
             pass
+            
+    # New-style message box: accepts thread and result variable parameter so that several
+    # messages may be outstanding.
     def PC_NBMsgBox(self):
         msg = self.GetLastGatherString()
         opts = self.GetPCOptions()
