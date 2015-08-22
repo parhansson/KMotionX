@@ -72,6 +72,8 @@ void CKMotionDLL::_init(int boardid)
     first_status = true;
     poll_interest = 0;
     HostStatus = 0;
+    sprintf(DSPKFLOP, "%s%cDSP_KFLOP%cDSPKFLOP.out",MainPathRoot,PATH_SEPARATOR,PATH_SEPARATOR);
+
 }
 
 CKMotionDLL::CKMotionDLL(int boardid)
@@ -821,7 +823,8 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	if (BoardType == BOARD_TYPE_KMOTION)
 		BindTo = MainPathRoot + "\\DSP_KMotion\\DSPKMotion.out";
 	else 
-		BindTo = MainPathRoot + "\\DSP_KFLOP\\DSPKFLOP.out";
+		BindTo = DSPKFLOP;
+;
 
 
 	cmd.Format(" -text %08X -g -nostdinc " + IncSrcPath1 + IncSrcPath2 + " -o ",GetLoadAddress(Thread,BoardType));
@@ -952,7 +955,7 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 		sprintf(BindTo, "\"%s%cDSP_KMotion%cDSPKMotion.out\"", MainPathRoot,PATH_SEPARATOR,PATH_SEPARATOR);
 	} else {
 		sprintf(IncSrcPath1,"-I\"%s%cDSP_KFLOP\"", MainPathRoot, PATH_SEPARATOR) ;
-		sprintf(BindTo, "\"%s%cDSP_KFLOP%cDSPKFLOP.out\"", MainPathRoot, PATH_SEPARATOR, PATH_SEPARATOR);
+		strcpy(BindTo, DSPKFLOP);
 	}
 	ExtractPath(Name,path);
 	sprintf(IncSrcPath2,"-I\"%s\"", path) ;
@@ -1074,6 +1077,13 @@ unsigned int CKMotionDLL::GetLoadAddress(int thread, int BoardType)
 }
 
 
+void CKMotionDLL::SetDSPKFLOP(const char * filename)
+{
+    strncpy(DSPKFLOP, filename, sizeof(DSPKFLOP)-1);
+    DSPKFLOP[sizeof(DSPKFLOP)-1] = 0;
+}
+
+
 int CKMotionDLL::CheckKMotionVersion(int *type, bool GetBoardTypeOnly) 
 {
 	int result;
@@ -1100,7 +1110,7 @@ int CKMotionDLL::CheckKMotionVersion(int *type, bool GetBoardTypeOnly)
 		if(strstr(BoardVersion,"KFLOP") != NULL)
 		//if (BoardVersion.Find("KFLOP")==0)
 		{
-			sprintf(OutFile,"%s%cDSP_KFLOP%cDSPKFLOP.out",MainPathRoot,PATH_SEPARATOR,PATH_SEPARATOR);
+			strcpy(OutFile,DSPKFLOP);
 			if (type) *type = BOARD_TYPE_KFLOP;
 		}
 		else
@@ -1132,7 +1142,7 @@ int CKMotionDLL::CheckKMotionVersion(int *type, bool GetBoardTypeOnly)
 				" Download New Version.  This will install compatible Firmware with" LINE_BREAK
 				" this version of software" LINE_BREAK LINE_BREAK
 				" %s  KFLOP Firmware" LINE_BREAK
-				" %s  DSP_KFLOP.out file",
+				" %s  .out file",
 				BoardVersion,
 				CoffVersion);
 		else
@@ -1141,7 +1151,7 @@ int CKMotionDLL::CheckKMotionVersion(int *type, bool GetBoardTypeOnly)
 				" Download New Version.  This will install compatible Firmware with" LINE_BREAK
 				" this version of software" LINE_BREAK LINE_BREAK
 				" %s  KMotion Firmware" LINE_BREAK
-				" %s  DSP_KMotion.out file",
+				" %s  .out file",
 				BoardVersion,
 				CoffVersion);
 

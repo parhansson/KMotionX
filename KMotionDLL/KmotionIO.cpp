@@ -378,6 +378,7 @@ int CKMotionIO::CheckForReady()
 						beg=buf;
 				
 					strncpy(copy,beg,255);
+					copy[255] = 0;
 					_strupr(copy);
 
 					// check for "Error"
@@ -511,10 +512,7 @@ int CKMotionIO::ReadLineTimeOutRaw(char *buf, int TimeOutms)
 			timeEndPeriod(1);
 		}
 
-		for (i=0; i<200; i++)
-		{
-			ReadBuffer[i]=0;
-		}
+		memset(ReadBuffer, 0, sizeof(ReadBuffer));
 
 		freespace = MAX_LINE-TotalBytes-1;
 
@@ -675,7 +673,9 @@ int CKMotionIO::WriteLineReadLine(const char *send, char *response)
 		return 1;
 	}
 	
-	response[strlen(response)-2]=0;  // remove the /r /n
+	int L = strlen(response);
+	if (L >= 2)
+	    response[L-2]=0;  // remove the /r /n
 
 	Mutex->Unlock();
 

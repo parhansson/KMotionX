@@ -217,6 +217,11 @@ public:
     virtual void ChangedStop(int StopImmediateState) {}
     virtual void ChangedPCComm(const intvec & PC_comm) {}
 
+    // Support multiple DSPKFLOP.out files.  Default .out file is in <installdir>/DSP_KFLOP/DSPKFLOP.out
+    // but this function can change that.  Caller is responsible for pointing to a valid .out file,
+    // which must be an absolute path.
+    void SetDSPKFLOP(const char * filename);
+    const char * GetDSPKFLOP(void) const { return DSPKFLOP; }
 
 private:
 
@@ -256,6 +261,7 @@ private:
     bool first_status;
     MAIN_STATUS last_status;
     int HostStatus;
+    char DSPKFLOP[257];
 };
 
 #endif

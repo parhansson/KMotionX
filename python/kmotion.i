@@ -56,6 +56,7 @@ typedef unsigned BOOL;
 %cstring_bounded_output(char *buf, MAX_LINE);
 %cstring_output_maxsize(char *Err, int MaxErrLen);
 %cstring_output_maxsize(char *OutFile, int MaxLength);
+%cstring_bounded_output(char *Version, MAX_LINE);
 
 %apply int * OUTPUT { int *size_text, int *size_bss, int *size_data, int *size_total };
 %apply double * OUTPUT { double * actual, double * desired };
