@@ -221,7 +221,7 @@
 #define PC_COMM_SHIFT_THREAD    8
 #define PC_COMM_FIELD_RESULT    0x000FF000  // A persist var number (0-199) which the PC sets non-zero when the
                                             // command is finally complete.  Kflop must initialize
-                                            // this var to 0 before sending the command.  This var is not allowed
+                                            // this persist var to 0 before sending the command.  This field is not allowed
                                             // to be 100-103, or >=200, otherwise the command is NAK'd.
                                             // Also, if this is zero, the kflop does not wait for any final
                                             // result; the command is only being used to specify a source thread.
@@ -244,7 +244,34 @@
 #define PC_COMM_NB_MDI        54      // Non-blocking MDI
 #define PC_COMM_NB_INPUT      55      // Non-blocking input box
 
+#define PC_COMM_QUERY_APP       56      // Query PC program for its identification.  Legacy PC application will
+                                        // respond with an error code since they won't understand this command.  
+                                        // New applications should place a result in the persist var indicated by
+                                        // the FIELD_RESULT field.  The result will be 4 8-bit fields.  MSB identifies
+                                        // the application according to the following table.  Other 3 fields indicate
+                                        // major, mid, minor versions e.g. 0x22010203 identifies application
+                                        // 0x22, version 1.2.3.  If necessary, define separate codes for each
+                                        // supported platform.
+    #define PC_APP_GENERIC_LINUX      0x00  // Linux/Posix on PC
+    #define PC_APP_GENERIC_WIN        0x01  // Windows PC
+    #define PC_APP_GENERIC_OSX        0x02  // Mac
+    #define PC_APP_GENERIC_RPI        0x03  // Raspberry Pi or similar - SBC with limited resources.
+    #define PC_APP_MENIGCNC_WIN       0x0A
+    
 
+// Following commands use gather buffer instead of persist vars as the buffer for transferring
+// g-code hashvars. persist+1 = first hashvar to transfer; +2 = consecutive hashvars to transfer;
+// +3 = gather buffer offset for kflop source/dest (as a 64-bit word offset, since hashvars
+// are all doubles).
+#define PC_COMM_GET_VARS_G      57      // Higher speed non-blocking version of GET_VARS.
+#define PC_COMM_SET_VARS_G      58      // Higher speed non-blocking version of SET_VARS.
+
+#define PC_COMM_NB_MSG_DISMISS  59      // Dismiss non-blocking message box on host.  persist+1=equivalent
+                                        // button response (e.g. IDOK or IDCANCEL; or 0 for an undetermined response)
+
+
+#define PC_COMM_TIMEOUT (-10)   // Return code from DoPC() if timed out.
+#define PC_COMM_TIMEOUT_SEC 0.4 // Default timeout when waiting for PC command result.
 #define PC_COMM_PERSIST 100  // First Persist Variable that is uploaded in status
 #define N_PC_COMM_PERSIST 8  // Number of Persist Variables that are uploaded in status
 

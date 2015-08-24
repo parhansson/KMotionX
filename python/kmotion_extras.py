@@ -380,6 +380,10 @@ class ThreadManager(object):
     SKIP = 2        # Skip this operation
     FORCE = 3       # Always do this operation (unless previous op was 'ONLY')
     
+    COMPILED = 1
+    LOADED = 2
+    EXECUTED = 3
+    
     def __init__(self, k, srcdir=None, cc="tcc67", ccbindir=None, kflopdir=None, kflopname=None, verbose=False, target_firmware_version=None):
         self.verbose = verbose
         self.k = k; # KMotionX object (see below) or derivative.  May contain special
@@ -594,7 +598,7 @@ class ThreadManager(object):
         self.srcdir = srcdir
         self.incldirs = [self.kflopdir, self.srcdir]
         
-    def run(self, filename, thread, compile_opts=AUTO, load_opts=AUTO, run_opts=AUTO):
+    def run(self, filename, thread, compile_opts=AUTO, load_opts=AUTO, run_opts=AUTO, actions_done=[]):
         """Compile, load and run a C program in specified thread.
         By default, all steps are done automatically if required, and is the normal mode since it
         skips unnecessary steps, like a makefile.  Otherwise, one or more of the steps compile, load,
@@ -603,7 +607,15 @@ class ThreadManager(object):
         Note that it is permitted to have only a .out file with no source.  In this case, any
         compilation is skipped (since it can't be rebuilt).  Useful for 'object code only'
         such as the supervisor.
+        
+        actions_done is a list (mutable) which, on return, will contain zero or more of integers:
+          1 (ThreadManager.COMPILED): .c successfully compiled into .out
+          2 (ThreadManager.LOADED): .out successfully loaded to kflop
+          3 (ThreadManager.EXECUTED): thread executed on kflop
+        The value will not be set if the action was skipped because it was not necessary, or if the
+        action failed.
         """
+        actions_done[:] = []
         if filename.lower().endswith(".out"):
             # If outfile specified, cannot compile, and must force load.
             outfile = filename
@@ -628,7 +640,9 @@ class ThreadManager(object):
                     rc, err = self.gen_depend(filename)
                     if not rc:
                         rc, err = self.ccompile(outfile, filename, thread)
-                        self.write_ccfile(filename)
+                        if not rc:
+                            actions_done.append(self.COMPILED)
+                            self.write_ccfile(filename)
                     else:
                         print "gen_depend failure, rc=",rc,":"
                         print err
@@ -650,6 +664,7 @@ class ThreadManager(object):
                     err = "Could not load object file %s, rc=%d" % (outfile, rc)
                     self.k.add_message(DLLErrorMessage(err))
                     return False
+                actions_done.append(self.LOADED)
                 self.thd2obj[thread] = (outfile, filename, os.path.getmtime(outfile))
             #else:
                 #print "Load skipped"
@@ -660,6 +675,7 @@ class ThreadManager(object):
             if not do_load:
                 self.k.kill(thread)
             self.k.execute(thread);
+            actions_done.append(self.EXECUTED)
         return True
         
     def need_compile(self, outfile, filename, thread):
