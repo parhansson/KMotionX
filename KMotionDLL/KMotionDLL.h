@@ -59,6 +59,7 @@
   #define KMOTIONDLL_LOCAL
 #endif // KMOTIONDLL_DLL
 #pragma warning ( disable : 4251 )
+#pragma warning ( disable : 4996 )
 
 
 
@@ -67,6 +68,10 @@
 #define MAX_BOARDS 16
 
 #define OLD_COMPILER 1              // Select default compiler: 1 to use 0.9.16 tcc, else 0 to use later version
+
+#ifdef COMPILER
+	#undef COMPILER
+#endif
 
 #ifdef _KMOTIONX
     #if OLD_COMPILER

@@ -81,7 +81,7 @@ CKMotionDLL::CKMotionDLL(int boardid)
 	_init(boardid);
 }
 
-
+#ifdef _KMOTIONX
 CKMotionDLL::CKMotionDLL(int boardid, unsigned int dfltport, const char * url)
 {
 	_init(boardid);
@@ -90,7 +90,7 @@ CKMotionDLL::CKMotionDLL(int boardid, unsigned int dfltport, const char * url)
 	strncpy(hostname, url, sizeof(hostname)-1);
 	hostname[sizeof(hostname)-1] = 0;
 }
-
+#endif
 
 CKMotionDLL::~CKMotionDLL()
 {
@@ -489,21 +489,27 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 			}
 		}
 
+#ifdef _KMOTIONX	// Until we support tcp/ip under windows, use the old protocol (no length prefix)
         msglen = n;
 		PipeFile.Write(&msglen, sizeof(msglen));   // Send the request length prefix
+#endif
 		PipeFile.Write(s, n);           // Send the request
 		
 		for (;;)
 		{
+#ifndef _KMOTIONX
+			*m = PipeFile.Read(r, MAX_LINE + 1);     // Get the response
+#else
 		    len = 0;
 		    while (len < sizeof(msglen))
 		        len += PipeFile.Read((char *)(&msglen)+len, sizeof(msglen)-len);
-		    if (msglen > MAX_LINE+1)
+			if (msglen > MAX_LINE + 1)
 		        throw std::system_error(E2BIG, std::system_category(), "Read");
 		    len = 0;
 		    while (len < msglen)
 			    len += PipeFile.Read(r+len, msglen-len);     // Get the response
             *m = len;
+#endif
 			// the first byte of the response is the destination
 			// currently DEST_NORMAL, DEST_CONSOLE
 			
@@ -543,12 +549,20 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 		PipeMutex->Unlock();
 		
 	}
+#ifndef _KMOTIONX
+	catch (CFileException)
+#else
 	catch (std::system_error & serr)
+#endif
 	{
 		EntryCount--;
 		CFExcept = true;
 		PipeMutex->Unlock();
+#ifndef _KMOTIONX
+		serr_msg = "Unable to Connect to KMotion Server";
+#else
 		serr_msg = serr.what();
+#endif
 	}
 
 	for (unsigned i = 0; i < cons.size(); ++i) 
@@ -570,7 +584,6 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 		if (ServerMessDisplayed) return 1;
 		ServerMessDisplayed=TRUE;
 
-		//DoErrMsg("Unable to Connect to KMotion Server");
 		DoErrMsg(serr_msg);
 		exit(1);
 	}

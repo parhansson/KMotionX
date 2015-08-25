@@ -487,6 +487,13 @@ static inline const char *rs274ngc_file()
 
 extern const int _gees[];  // maps GCode to groups
 
+#ifndef _KMOTIONX
+#ifdef GCODEINTERPRETER_EXPORTS
+__declspec(dllexport)
+#else
+__declspec(dllimport)
+#endif
+#endif
 extern setup _setup;
 
 

@@ -482,7 +482,7 @@ int CKinematics::MaxRapidJerkInDirection(double dx, double dy, double dz, double
 // from : http://mcraefamily.com/MathHelp/GeometryConicSectionCircleIntersection.htm
 
 
-int CKinematics::IntersectionTwoCircles(CPT2D c0, double r0, CPT2D c1, double r1, CPT2D *q)
+int CKinematics::IntersectionTwoCircles(const CPT2D & c0, double r0, const CPT2D & c1, double r1, CPT2D *q)
 {
 	double d2 = sqr(c1.x-c0.x) + sqr(c1.y-c0.y);  
 	double K = 0.25 * sqrt((sqr(r0+r1)-d2)*(d2-sqr(r0-r1)));

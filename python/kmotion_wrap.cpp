@@ -22685,18 +22685,18 @@ fail:
 SWIGINTERN PyObject *_wrap_Kinematics_IntersectionTwoCircles(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CKinematics *arg1 = (CKinematics *) 0 ;
-  CPT2D arg2 ;
+  CPT2D *arg2 = 0 ;
   double arg3 ;
-  CPT2D arg4 ;
+  CPT2D *arg4 = 0 ;
   double arg5 ;
   CPT2D *arg6 = (CPT2D *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  void *argp2 ;
+  void *argp2 = 0 ;
   int res2 = 0 ;
   double val3 ;
   int ecode3 = 0 ;
-  void *argp4 ;
+  void *argp4 = 0 ;
   int res4 = 0 ;
   double val5 ;
   int ecode5 = 0 ;
@@ -22715,37 +22715,27 @@ SWIGINTERN PyObject *_wrap_Kinematics_IntersectionTwoCircles(PyObject *self, PyO
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Kinematics_IntersectionTwoCircles" "', argument " "1"" of type '" "CKinematics *""'"); 
   }
   arg1 = reinterpret_cast< CKinematics * >(argp1);
-  {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_CPT2D,  0  | 0);
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Kinematics_IntersectionTwoCircles" "', argument " "2"" of type '" "CPT2D""'"); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Kinematics_IntersectionTwoCircles" "', argument " "2"" of type '" "CPT2D""'");
-    } else {
-      CPT2D * temp = reinterpret_cast< CPT2D * >(argp2);
-      arg2 = *temp;
-      if (SWIG_IsNewObj(res2)) delete temp;
-    }
+  res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_CPT2D,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Kinematics_IntersectionTwoCircles" "', argument " "2"" of type '" "CPT2D const &""'"); 
   }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Kinematics_IntersectionTwoCircles" "', argument " "2"" of type '" "CPT2D const &""'"); 
+  }
+  arg2 = reinterpret_cast< CPT2D * >(argp2);
   ecode3 = SWIG_AsVal_double(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Kinematics_IntersectionTwoCircles" "', argument " "3"" of type '" "double""'");
   } 
   arg3 = static_cast< double >(val3);
-  {
-    res4 = SWIG_ConvertPtr(obj3, &argp4, SWIGTYPE_p_CPT2D,  0  | 0);
-    if (!SWIG_IsOK(res4)) {
-      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "Kinematics_IntersectionTwoCircles" "', argument " "4"" of type '" "CPT2D""'"); 
-    }  
-    if (!argp4) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Kinematics_IntersectionTwoCircles" "', argument " "4"" of type '" "CPT2D""'");
-    } else {
-      CPT2D * temp = reinterpret_cast< CPT2D * >(argp4);
-      arg4 = *temp;
-      if (SWIG_IsNewObj(res4)) delete temp;
-    }
+  res4 = SWIG_ConvertPtr(obj3, &argp4, SWIGTYPE_p_CPT2D,  0  | 0);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "Kinematics_IntersectionTwoCircles" "', argument " "4"" of type '" "CPT2D const &""'"); 
   }
+  if (!argp4) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Kinematics_IntersectionTwoCircles" "', argument " "4"" of type '" "CPT2D const &""'"); 
+  }
+  arg4 = reinterpret_cast< CPT2D * >(argp4);
   ecode5 = SWIG_AsVal_double(obj4, &val5);
   if (!SWIG_IsOK(ecode5)) {
     SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "Kinematics_IntersectionTwoCircles" "', argument " "5"" of type '" "double""'");
@@ -22756,7 +22746,7 @@ SWIGINTERN PyObject *_wrap_Kinematics_IntersectionTwoCircles(PyObject *self, PyO
     SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "Kinematics_IntersectionTwoCircles" "', argument " "6"" of type '" "CPT2D *""'"); 
   }
   arg6 = reinterpret_cast< CPT2D * >(argp6);
-  result = (int)(arg1)->IntersectionTwoCircles(arg2,arg3,arg4,arg5,arg6);
+  result = (int)(arg1)->IntersectionTwoCircles((CPT2D const &)*arg2,arg3,(CPT2D const &)*arg4,arg5,arg6);
   resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:

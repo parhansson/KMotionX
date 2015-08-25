@@ -3,6 +3,10 @@
 #include <afxtempl.h>
 #include "rs274ngc.h"
 
+#ifndef _KMOTIONX
+typedef long long int64_t;
+#endif
+
 typedef struct
 {
 	int64_t data; 
