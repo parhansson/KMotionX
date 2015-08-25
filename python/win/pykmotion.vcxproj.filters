@@ -7,7 +7,7 @@
     <ClInclude Include="kmotion_wrap.h" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="\\pluto\steve-home\KMotionX\python\kmotion.i" />
+    <CustomBuild Include="..\..\python\kmotion.i" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headers">
