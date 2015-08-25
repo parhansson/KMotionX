@@ -80,8 +80,19 @@ class KMotion : public CKMotionDLL
 {
 public:
     // Ctor overrides 
-	KMotion(int boardid) : CKMotionDLL(boardid) { _theKMotion = this; mb_callback = _msgbox_bouncer; }
-	KMotion(int boardid, unsigned int dfltport, const char * url = NULL) : CKMotionDLL(boardid, dfltport, url) { }
+	KMotion(int boardid) : CKMotionDLL(boardid) {
+		_theKMotion = this; 
+#ifdef _KMOTIONX
+        //TODO: need to sort this callback out on Windows.  Change to not call AfxMessageBox().
+		mb_callback = _msgbox_bouncer; 
+#endif
+	}
+#ifdef _KMOTIONX
+	KMotion(int boardid, unsigned int dfltport, const char * url = NULL) : CKMotionDLL(boardid, dfltport, url) { 
+		_theKMotion = this; 
+		mb_callback = _msgbox_bouncer; 
+	}
+#endif
     virtual void Console(const char *buf);
     virtual void ErrMsg(const char *buf);
     int MsgBox(const char *title, const char *msg, int options);   // Bounce into binding
@@ -209,7 +220,7 @@ static void _gci_complete(int status, int lineno, int sequence_number, const cha
 #define MAX_GATHER_DATA     65536
 
 
-class GCODEINTERPRETER_API GCodeInterpreter: public CGCodeInterpreter
+class GCodeInterpreter: public CGCodeInterpreter
 {
 public:
     GCodeInterpreter(CCoordMotion *CM);

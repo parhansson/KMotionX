@@ -896,7 +896,9 @@ class KMotionX(kmotion.KMotion):
          kmotionobjpath : KMotion .out file path
       xxx.c ->[compile] xxx.o
     """
-    def __init__(self, dev, hostname = None, port = kmotion.KMOTION_PORT, with_console=False, dirlist=[]):
+    def __init__(self, dev, hostname = None, port = kmotion.KMOTION_PORT, with_console=False, dirlist=[], \
+                srcdir=None, cc="tcc67", ccbindir=None, kflopdir=None, kflopname=None, verbose_tmgr=False, \
+                target_firmware_version=None):
         if hostname is None:
             super(KMotionX, self).__init__(dev)
         else:
@@ -913,7 +915,8 @@ class KMotionX(kmotion.KMotion):
         self.clear_messages()
         if with_console:
             self.SetConsoleCallback()
-        self.tmgr = ThreadManager(self, cc="tcc67wine", srcdir="~/DM6/DM6-SCL-Rev01")
+        self.tmgr = ThreadManager(self, srcdir=srcdir, cc=cc, ccbindir=ccbindir, kflopdir=kflopdir, kflopname=kflopname, \
+                                    verbose=verbose_tmgr, target_firmware_version=target_firmware_version)
         self.set_comm_result(-2)
         self.msgresp_poll_func = self.return_cancel
         self.firmware_version = None

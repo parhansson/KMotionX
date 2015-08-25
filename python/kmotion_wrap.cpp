@@ -3894,50 +3894,50 @@ namespace Swig {
 
 /* -------- TYPES TABLE (BEGIN) -------- */
 
-#define SWIGTYPE_p_CANON_PLANE swig_types[0]
-#define SWIGTYPE_p_CCoordMotion swig_types[1]
-#define SWIGTYPE_p_CGCodeInterpreter swig_types[2]
-#define SWIGTYPE_p_CKMotionDLL swig_types[3]
-#define SWIGTYPE_p_CKinematics swig_types[4]
-#define SWIGTYPE_p_CPT2D swig_types[5]
-#define SWIGTYPE_p_CPT3D swig_types[6]
-#define SWIGTYPE_p_GCodeInterpreter swig_types[7]
-#define SWIGTYPE_p_KMotion swig_types[8]
-#define SWIGTYPE_p_MAIN_STATUS swig_types[9]
-#define SWIGTYPE_p_MCODE_ACTION swig_types[10]
-#define SWIGTYPE_p_MOTION_PARAMS swig_types[11]
-#define SWIGTYPE_p_SEGMENT swig_types[12]
-#define SWIGTYPE_p_SwigPyObject swig_types[13]
-#define SWIGTYPE_p_allocator_type swig_types[14]
-#define SWIGTYPE_p_char swig_types[15]
-#define SWIGTYPE_p_const_reference swig_types[16]
-#define SWIGTYPE_p_difference_type swig_types[17]
-#define SWIGTYPE_p_double swig_types[18]
-#define SWIGTYPE_p_f_bool_double_CANON_PLANE_double_double_double_double_int_double_double_double_double_double_double_double_int_int__void swig_types[19]
-#define SWIGTYPE_p_f_bool_double_CANON_PLANE_double_double_double_double_int_double_double_double_double_int_int__void swig_types[20]
-#define SWIGTYPE_p_f_double_double_double_double_double_double_double_int_int__void swig_types[21]
-#define SWIGTYPE_p_f_double_double_double_double_double_double_int__void swig_types[22]
-#define SWIGTYPE_p_f_double_double_double_double_int_int__void swig_types[23]
-#define SWIGTYPE_p_f_double_double_double_int__void swig_types[24]
-#define SWIGTYPE_p_f_p_q_const__char__int swig_types[25]
-#define SWIGTYPE_p_f_p_q_const__char__void swig_types[26]
-#define SWIGTYPE_p_float swig_types[27]
-#define SWIGTYPE_p_int swig_types[28]
-#define SWIGTYPE_p_p_PyObject swig_types[29]
-#define SWIGTYPE_p_reference swig_types[30]
-#define SWIGTYPE_p_setup swig_types[31]
-#define SWIGTYPE_p_setup_pointer swig_types[32]
-#define SWIGTYPE_p_size_type swig_types[33]
-#define SWIGTYPE_p_std__allocatorT_bool_t swig_types[34]
-#define SWIGTYPE_p_std__allocatorT_double_t swig_types[35]
-#define SWIGTYPE_p_std__allocatorT_int_t swig_types[36]
-#define SWIGTYPE_p_std__invalid_argument swig_types[37]
-#define SWIGTYPE_p_std__vectorT_bool_std__allocatorT_bool_t_t swig_types[38]
-#define SWIGTYPE_p_std__vectorT_double_std__allocatorT_double_t_t swig_types[39]
-#define SWIGTYPE_p_std__vectorT_int_std__allocatorT_int_t_t swig_types[40]
-#define SWIGTYPE_p_swig__SwigPyIterator swig_types[41]
-#define SWIGTYPE_p_unsigned_char swig_types[42]
-#define SWIGTYPE_p_unsigned_int swig_types[43]
+#define SWIGTYPE_p_BOOL swig_types[0]
+#define SWIGTYPE_p_CANON_PLANE swig_types[1]
+#define SWIGTYPE_p_CCoordMotion swig_types[2]
+#define SWIGTYPE_p_CGCodeInterpreter swig_types[3]
+#define SWIGTYPE_p_CKMotionDLL swig_types[4]
+#define SWIGTYPE_p_CKinematics swig_types[5]
+#define SWIGTYPE_p_CPT2D swig_types[6]
+#define SWIGTYPE_p_CPT3D swig_types[7]
+#define SWIGTYPE_p_GCodeInterpreter swig_types[8]
+#define SWIGTYPE_p_KMotion swig_types[9]
+#define SWIGTYPE_p_MAIN_STATUS swig_types[10]
+#define SWIGTYPE_p_MCODE_ACTION swig_types[11]
+#define SWIGTYPE_p_MOTION_PARAMS swig_types[12]
+#define SWIGTYPE_p_SEGMENT swig_types[13]
+#define SWIGTYPE_p_SwigPyObject swig_types[14]
+#define SWIGTYPE_p_allocator_type swig_types[15]
+#define SWIGTYPE_p_char swig_types[16]
+#define SWIGTYPE_p_const_reference swig_types[17]
+#define SWIGTYPE_p_difference_type swig_types[18]
+#define SWIGTYPE_p_double swig_types[19]
+#define SWIGTYPE_p_f_bool_double_CANON_PLANE_double_double_double_double_int_double_double_double_double_double_double_double_int_int__void swig_types[20]
+#define SWIGTYPE_p_f_bool_double_CANON_PLANE_double_double_double_double_int_double_double_double_double_int_int__void swig_types[21]
+#define SWIGTYPE_p_f_double_double_double_double_double_double_double_int_int__void swig_types[22]
+#define SWIGTYPE_p_f_double_double_double_double_double_double_int__void swig_types[23]
+#define SWIGTYPE_p_f_double_double_double_double_int_int__void swig_types[24]
+#define SWIGTYPE_p_f_double_double_double_int__void swig_types[25]
+#define SWIGTYPE_p_f_p_q_const__char__int swig_types[26]
+#define SWIGTYPE_p_f_p_q_const__char__void swig_types[27]
+#define SWIGTYPE_p_float swig_types[28]
+#define SWIGTYPE_p_int swig_types[29]
+#define SWIGTYPE_p_p_PyObject swig_types[30]
+#define SWIGTYPE_p_reference swig_types[31]
+#define SWIGTYPE_p_setup swig_types[32]
+#define SWIGTYPE_p_setup_pointer swig_types[33]
+#define SWIGTYPE_p_size_type swig_types[34]
+#define SWIGTYPE_p_std__allocatorT_bool_t swig_types[35]
+#define SWIGTYPE_p_std__allocatorT_double_t swig_types[36]
+#define SWIGTYPE_p_std__allocatorT_int_t swig_types[37]
+#define SWIGTYPE_p_std__invalid_argument swig_types[38]
+#define SWIGTYPE_p_std__vectorT_bool_std__allocatorT_bool_t_t swig_types[39]
+#define SWIGTYPE_p_std__vectorT_double_std__allocatorT_double_t_t swig_types[40]
+#define SWIGTYPE_p_std__vectorT_int_std__allocatorT_int_t_t swig_types[41]
+#define SWIGTYPE_p_swig__SwigPyIterator swig_types[42]
+#define SWIGTYPE_p_unsigned_char swig_types[43]
 #define SWIGTYPE_p_value_type swig_types[44]
 static swig_type_info *swig_types[46];
 static swig_module_info swig_module = {swig_types, 45, 0, 0, 0, 0};
@@ -4435,11 +4435,15 @@ SWIG_AsVal_ptrdiff_t (PyObject * obj, ptrdiff_t *val)
 #endif
 
 
+#ifdef _KMOTIONX
 typedef unsigned BOOL;
 #include "KMotionX.h"
 #include "SocketWrapper.h"
 #include "CMutex.h"
 #include "CString.h"
+#else
+#include "afx.h"
+#endif
 #include "KMotionDLL.h"
 #include "rs274ngc_return.h"
 #include "rs274ngc.h"
@@ -23980,8 +23984,8 @@ SWIGINTERN PyObject *_wrap_CoordMotion_WaitForSegmentsFinished__SWIG_0(PyObject 
   BOOL arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  unsigned int val2 ;
-  int ecode2 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
   PyObject * obj1 = 0 ;
   int result;
   
@@ -23991,11 +23995,19 @@ SWIGINTERN PyObject *_wrap_CoordMotion_WaitForSegmentsFinished__SWIG_0(PyObject 
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CoordMotion_WaitForSegmentsFinished" "', argument " "1"" of type '" "CCoordMotion *""'"); 
   }
   arg1 = reinterpret_cast< CCoordMotion * >(argp1);
-  ecode2 = SWIG_AsVal_unsigned_SS_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CoordMotion_WaitForSegmentsFinished" "', argument " "2"" of type '" "BOOL""'");
-  } 
-  arg2 = static_cast< BOOL >(val2);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_BOOL,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CoordMotion_WaitForSegmentsFinished" "', argument " "2"" of type '" "BOOL""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CoordMotion_WaitForSegmentsFinished" "', argument " "2"" of type '" "BOOL""'");
+    } else {
+      BOOL * temp = reinterpret_cast< BOOL * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
   result = (int)(arg1)->WaitForSegmentsFinished(arg2);
   resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
@@ -24052,10 +24064,8 @@ SWIGINTERN PyObject *_wrap_CoordMotion_WaitForSegmentsFinished(PyObject *self, P
     int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_CCoordMotion, 0);
     _v = SWIG_CheckState(res);
     if (_v) {
-      {
-        int res = SWIG_AsVal_unsigned_SS_int(argv[1], NULL);
-        _v = SWIG_CheckState(res);
-      }
+      int res = SWIG_ConvertPtr(argv[1], 0, SWIGTYPE_p_BOOL, 0);
+      _v = SWIG_CheckState(res);
       if (_v) {
         return _wrap_CoordMotion_WaitForSegmentsFinished__SWIG_0(self, args);
       }
@@ -24102,8 +24112,8 @@ SWIGINTERN PyObject *_wrap_CoordMotion_DoKMotionCmd(PyObject *self, PyObject *ar
   int res2 ;
   char *buf2 = 0 ;
   int alloc2 = 0 ;
-  unsigned int val3 ;
-  int ecode3 = 0 ;
+  void *argp3 ;
+  int res3 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   int result;
@@ -24119,11 +24129,19 @@ SWIGINTERN PyObject *_wrap_CoordMotion_DoKMotionCmd(PyObject *self, PyObject *ar
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CoordMotion_DoKMotionCmd" "', argument " "2"" of type '" "char const *""'");
   }
   arg2 = reinterpret_cast< char * >(buf2);
-  ecode3 = SWIG_AsVal_unsigned_SS_int(obj2, &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "CoordMotion_DoKMotionCmd" "', argument " "3"" of type '" "BOOL""'");
-  } 
-  arg3 = static_cast< BOOL >(val3);
+  {
+    res3 = SWIG_ConvertPtr(obj2, &argp3, SWIGTYPE_p_BOOL,  0  | 0);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CoordMotion_DoKMotionCmd" "', argument " "3"" of type '" "BOOL""'"); 
+    }  
+    if (!argp3) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CoordMotion_DoKMotionCmd" "', argument " "3"" of type '" "BOOL""'");
+    } else {
+      BOOL * temp = reinterpret_cast< BOOL * >(argp3);
+      arg3 = *temp;
+      if (SWIG_IsNewObj(res3)) delete temp;
+    }
+  }
   result = (int)(arg1)->DoKMotionCmd((char const *)arg2,arg3);
   resultobj = SWIG_From_int(static_cast< int >(result));
   if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
@@ -26519,8 +26537,8 @@ SWIGINTERN PyObject *_wrap_CoordMotion_CheckSoftLimitsArc(PyObject *self, PyObje
   int ecode12 = 0 ;
   double val13 ;
   int ecode13 = 0 ;
-  unsigned int val14 ;
-  int ecode14 = 0 ;
+  void *argp14 ;
+  int res14 = 0 ;
   double val15 ;
   int ecode15 = 0 ;
   double val16 ;
@@ -26633,11 +26651,19 @@ SWIGINTERN PyObject *_wrap_CoordMotion_CheckSoftLimitsArc(PyObject *self, PyObje
     SWIG_exception_fail(SWIG_ArgError(ecode13), "in method '" "CoordMotion_CheckSoftLimitsArc" "', argument " "13"" of type '" "double""'");
   } 
   arg13 = static_cast< double >(val13);
-  ecode14 = SWIG_AsVal_unsigned_SS_int(obj13, &val14);
-  if (!SWIG_IsOK(ecode14)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode14), "in method '" "CoordMotion_CheckSoftLimitsArc" "', argument " "14"" of type '" "BOOL""'");
-  } 
-  arg14 = static_cast< BOOL >(val14);
+  {
+    res14 = SWIG_ConvertPtr(obj13, &argp14, SWIGTYPE_p_BOOL,  0  | 0);
+    if (!SWIG_IsOK(res14)) {
+      SWIG_exception_fail(SWIG_ArgError(res14), "in method '" "CoordMotion_CheckSoftLimitsArc" "', argument " "14"" of type '" "BOOL""'"); 
+    }  
+    if (!argp14) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CoordMotion_CheckSoftLimitsArc" "', argument " "14"" of type '" "BOOL""'");
+    } else {
+      BOOL * temp = reinterpret_cast< BOOL * >(argp14);
+      arg14 = *temp;
+      if (SWIG_IsNewObj(res14)) delete temp;
+    }
+  }
   ecode15 = SWIG_AsVal_double(obj14, &val15);
   if (!SWIG_IsOK(ecode15)) {
     SWIG_exception_fail(SWIG_ArgError(ecode15), "in method '" "CoordMotion_CheckSoftLimitsArc" "', argument " "15"" of type '" "double""'");
@@ -29842,7 +29868,7 @@ SWIGINTERN PyObject *_wrap_CoordMotion_FeedRateDistance(PyObject *self, PyObject
     SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "CoordMotion_FeedRateDistance" "', argument " "7"" of type '" "double""'");
   } 
   arg7 = static_cast< double >(val7);
-  res8 = SWIG_ConvertPtr(obj7, &argp8,SWIGTYPE_p_unsigned_int, 0 |  0 );
+  res8 = SWIG_ConvertPtr(obj7, &argp8,SWIGTYPE_p_BOOL, 0 |  0 );
   if (!SWIG_IsOK(res8)) {
     SWIG_exception_fail(SWIG_ArgError(res8), "in method '" "CoordMotion_FeedRateDistance" "', argument " "8"" of type '" "BOOL *""'"); 
   }
@@ -30844,8 +30870,8 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_InvokeAction__SWIG_0(PyObject *self
   int res1 = 0 ;
   int val2 ;
   int ecode2 = 0 ;
-  unsigned int val3 ;
-  int ecode3 = 0 ;
+  void *argp3 ;
+  int res3 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   int result;
@@ -30861,11 +30887,19 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_InvokeAction__SWIG_0(PyObject *self
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CGCodeInterpreter_InvokeAction" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = static_cast< int >(val2);
-  ecode3 = SWIG_AsVal_unsigned_SS_int(obj2, &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "CGCodeInterpreter_InvokeAction" "', argument " "3"" of type '" "BOOL""'");
-  } 
-  arg3 = static_cast< BOOL >(val3);
+  {
+    res3 = SWIG_ConvertPtr(obj2, &argp3, SWIGTYPE_p_BOOL,  0  | 0);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CGCodeInterpreter_InvokeAction" "', argument " "3"" of type '" "BOOL""'"); 
+    }  
+    if (!argp3) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CGCodeInterpreter_InvokeAction" "', argument " "3"" of type '" "BOOL""'");
+    } else {
+      BOOL * temp = reinterpret_cast< BOOL * >(argp3);
+      arg3 = *temp;
+      if (SWIG_IsNewObj(res3)) delete temp;
+    }
+  }
   result = (int)(arg1)->InvokeAction(arg2,arg3);
   resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
@@ -30942,10 +30976,8 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_InvokeAction(PyObject *self, PyObje
         _v = SWIG_CheckState(res);
       }
       if (_v) {
-        {
-          int res = SWIG_AsVal_unsigned_SS_int(argv[2], NULL);
-          _v = SWIG_CheckState(res);
-        }
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_BOOL, 0);
+        _v = SWIG_CheckState(res);
         if (_v) {
           return _wrap_CGCodeInterpreter_InvokeAction__SWIG_0(self, args);
         }
@@ -32432,8 +32464,8 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_ResumeMoveToSafeZ_set(PyObject *s
   BOOL arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  unsigned int val2 ;
-  int ecode2 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
   PyObject * obj1 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:CGCodeInterpreter_m_ResumeMoveToSafeZ_set",&obj1)) SWIG_fail;
@@ -32442,11 +32474,19 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_ResumeMoveToSafeZ_set(PyObject *s
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_m_ResumeMoveToSafeZ_set" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
   }
   arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
-  ecode2 = SWIG_AsVal_unsigned_SS_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CGCodeInterpreter_m_ResumeMoveToSafeZ_set" "', argument " "2"" of type '" "BOOL""'");
-  } 
-  arg2 = static_cast< BOOL >(val2);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_BOOL,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CGCodeInterpreter_m_ResumeMoveToSafeZ_set" "', argument " "2"" of type '" "BOOL""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CGCodeInterpreter_m_ResumeMoveToSafeZ_set" "', argument " "2"" of type '" "BOOL""'");
+    } else {
+      BOOL * temp = reinterpret_cast< BOOL * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
   if (arg1) (arg1)->m_ResumeMoveToSafeZ = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -32468,8 +32508,8 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_ResumeMoveToSafeZ_get(PyObject *s
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_m_ResumeMoveToSafeZ_get" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
   }
   arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
-  result = (BOOL) ((arg1)->m_ResumeMoveToSafeZ);
-  resultobj = SWIG_From_unsigned_SS_int(static_cast< unsigned int >(result));
+  result =  ((arg1)->m_ResumeMoveToSafeZ);
+  resultobj = SWIG_NewPointerObj((new BOOL(static_cast< const BOOL& >(result))), SWIGTYPE_p_BOOL, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -32482,8 +32522,8 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_ResumeTraverseXY_set(PyObject *se
   BOOL arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  unsigned int val2 ;
-  int ecode2 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
   PyObject * obj1 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:CGCodeInterpreter_m_ResumeTraverseXY_set",&obj1)) SWIG_fail;
@@ -32492,11 +32532,19 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_ResumeTraverseXY_set(PyObject *se
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_m_ResumeTraverseXY_set" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
   }
   arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
-  ecode2 = SWIG_AsVal_unsigned_SS_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CGCodeInterpreter_m_ResumeTraverseXY_set" "', argument " "2"" of type '" "BOOL""'");
-  } 
-  arg2 = static_cast< BOOL >(val2);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_BOOL,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CGCodeInterpreter_m_ResumeTraverseXY_set" "', argument " "2"" of type '" "BOOL""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CGCodeInterpreter_m_ResumeTraverseXY_set" "', argument " "2"" of type '" "BOOL""'");
+    } else {
+      BOOL * temp = reinterpret_cast< BOOL * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
   if (arg1) (arg1)->m_ResumeTraverseXY = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -32518,8 +32566,8 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_ResumeTraverseXY_get(PyObject *se
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_m_ResumeTraverseXY_get" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
   }
   arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
-  result = (BOOL) ((arg1)->m_ResumeTraverseXY);
-  resultobj = SWIG_From_unsigned_SS_int(static_cast< unsigned int >(result));
+  result =  ((arg1)->m_ResumeTraverseXY);
+  resultobj = SWIG_NewPointerObj((new BOOL(static_cast< const BOOL& >(result))), SWIGTYPE_p_BOOL, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -32632,8 +32680,8 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_ResumeSafeStartSpindle_set(PyObje
   BOOL arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  unsigned int val2 ;
-  int ecode2 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
   PyObject * obj1 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:CGCodeInterpreter_m_ResumeSafeStartSpindle_set",&obj1)) SWIG_fail;
@@ -32642,11 +32690,19 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_ResumeSafeStartSpindle_set(PyObje
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_m_ResumeSafeStartSpindle_set" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
   }
   arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
-  ecode2 = SWIG_AsVal_unsigned_SS_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CGCodeInterpreter_m_ResumeSafeStartSpindle_set" "', argument " "2"" of type '" "BOOL""'");
-  } 
-  arg2 = static_cast< BOOL >(val2);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_BOOL,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CGCodeInterpreter_m_ResumeSafeStartSpindle_set" "', argument " "2"" of type '" "BOOL""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CGCodeInterpreter_m_ResumeSafeStartSpindle_set" "', argument " "2"" of type '" "BOOL""'");
+    } else {
+      BOOL * temp = reinterpret_cast< BOOL * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
   if (arg1) (arg1)->m_ResumeSafeStartSpindle = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -32668,8 +32724,8 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_ResumeSafeStartSpindle_get(PyObje
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_m_ResumeSafeStartSpindle_get" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
   }
   arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
-  result = (BOOL) ((arg1)->m_ResumeSafeStartSpindle);
-  resultobj = SWIG_From_unsigned_SS_int(static_cast< unsigned int >(result));
+  result =  ((arg1)->m_ResumeSafeStartSpindle);
+  resultobj = SWIG_NewPointerObj((new BOOL(static_cast< const BOOL& >(result))), SWIGTYPE_p_BOOL, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -32732,8 +32788,8 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_ResumeDoSafeFeedZ_set(PyObject *s
   BOOL arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  unsigned int val2 ;
-  int ecode2 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
   PyObject * obj1 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:CGCodeInterpreter_m_ResumeDoSafeFeedZ_set",&obj1)) SWIG_fail;
@@ -32742,11 +32798,19 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_ResumeDoSafeFeedZ_set(PyObject *s
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_m_ResumeDoSafeFeedZ_set" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
   }
   arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
-  ecode2 = SWIG_AsVal_unsigned_SS_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CGCodeInterpreter_m_ResumeDoSafeFeedZ_set" "', argument " "2"" of type '" "BOOL""'");
-  } 
-  arg2 = static_cast< BOOL >(val2);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_BOOL,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CGCodeInterpreter_m_ResumeDoSafeFeedZ_set" "', argument " "2"" of type '" "BOOL""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CGCodeInterpreter_m_ResumeDoSafeFeedZ_set" "', argument " "2"" of type '" "BOOL""'");
+    } else {
+      BOOL * temp = reinterpret_cast< BOOL * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
   if (arg1) (arg1)->m_ResumeDoSafeFeedZ = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -32768,8 +32832,8 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_ResumeDoSafeFeedZ_get(PyObject *s
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_m_ResumeDoSafeFeedZ_get" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
   }
   arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
-  result = (BOOL) ((arg1)->m_ResumeDoSafeFeedZ);
-  resultobj = SWIG_From_unsigned_SS_int(static_cast< unsigned int >(result));
+  result =  ((arg1)->m_ResumeDoSafeFeedZ);
+  resultobj = SWIG_NewPointerObj((new BOOL(static_cast< const BOOL& >(result))), SWIGTYPE_p_BOOL, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -32932,8 +32996,8 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_ResumeRestoreFeedRate_set(PyObjec
   BOOL arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  unsigned int val2 ;
-  int ecode2 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
   PyObject * obj1 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:CGCodeInterpreter_m_ResumeRestoreFeedRate_set",&obj1)) SWIG_fail;
@@ -32942,11 +33006,19 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_ResumeRestoreFeedRate_set(PyObjec
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_m_ResumeRestoreFeedRate_set" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
   }
   arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
-  ecode2 = SWIG_AsVal_unsigned_SS_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CGCodeInterpreter_m_ResumeRestoreFeedRate_set" "', argument " "2"" of type '" "BOOL""'");
-  } 
-  arg2 = static_cast< BOOL >(val2);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_BOOL,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CGCodeInterpreter_m_ResumeRestoreFeedRate_set" "', argument " "2"" of type '" "BOOL""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CGCodeInterpreter_m_ResumeRestoreFeedRate_set" "', argument " "2"" of type '" "BOOL""'");
+    } else {
+      BOOL * temp = reinterpret_cast< BOOL * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
   if (arg1) (arg1)->m_ResumeRestoreFeedRate = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -32968,8 +33040,8 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_ResumeRestoreFeedRate_get(PyObjec
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_m_ResumeRestoreFeedRate_get" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
   }
   arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
-  result = (BOOL) ((arg1)->m_ResumeRestoreFeedRate);
-  resultobj = SWIG_From_unsigned_SS_int(static_cast< unsigned int >(result));
+  result =  ((arg1)->m_ResumeRestoreFeedRate);
+  resultobj = SWIG_NewPointerObj((new BOOL(static_cast< const BOOL& >(result))), SWIGTYPE_p_BOOL, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -41683,6 +41755,7 @@ static void *_p_GCodeInterpreterTo_p_CGCodeInterpreter(void *x, int *SWIGUNUSEDP
 static void *_p_KMotionTo_p_CKMotionDLL(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((CKMotionDLL *)  ((KMotion *) x));
 }
+static swig_type_info _swigt__p_BOOL = {"_p_BOOL", "BOOL *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_CANON_PLANE = {"_p_CANON_PLANE", "CANON_PLANE *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_CCoordMotion = {"_p_CCoordMotion", "CCoordMotion *", 0, 0, (void*)&SwigPyBuiltin__CCoordMotion_clientdata, 0};
 static swig_type_info _swigt__p_CGCodeInterpreter = {"_p_CGCodeInterpreter", "CGCodeInterpreter *", 0, 0, (void*)&SwigPyBuiltin__CGCodeInterpreter_clientdata, 0};
@@ -41726,10 +41799,10 @@ static swig_type_info _swigt__p_std__vectorT_double_std__allocatorT_double_t_t =
 static swig_type_info _swigt__p_std__vectorT_int_std__allocatorT_int_t_t = {"_p_std__vectorT_int_std__allocatorT_int_t_t", "std::vector< int,std::allocator< int > > *|intvec *|std::vector< int > *", 0, 0, (void*)&SwigPyBuiltin__std__vectorT_int_t_clientdata, 0};
 static swig_type_info _swigt__p_swig__SwigPyIterator = {"_p_swig__SwigPyIterator", "swig::SwigPyIterator *", 0, 0, (void*)&SwigPyBuiltin__swig__SwigPyIterator_clientdata, 0};
 static swig_type_info _swigt__p_unsigned_char = {"_p_unsigned_char", "unsigned char *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_unsigned_int = {"_p_unsigned_int", "BOOL *|unsigned int *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_value_type = {"_p_value_type", "value_type *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
+  &_swigt__p_BOOL,
   &_swigt__p_CANON_PLANE,
   &_swigt__p_CCoordMotion,
   &_swigt__p_CGCodeInterpreter,
@@ -41773,10 +41846,10 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_std__vectorT_int_std__allocatorT_int_t_t,
   &_swigt__p_swig__SwigPyIterator,
   &_swigt__p_unsigned_char,
-  &_swigt__p_unsigned_int,
   &_swigt__p_value_type,
 };
 
+static swig_cast_info _swigc__p_BOOL[] = {  {&_swigt__p_BOOL, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CANON_PLANE[] = {  {&_swigt__p_CANON_PLANE, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CCoordMotion[] = {  {&_swigt__p_CCoordMotion, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CGCodeInterpreter[] = {  {&_swigt__p_CGCodeInterpreter, 0, 0, 0},  {&_swigt__p_GCodeInterpreter, _p_GCodeInterpreterTo_p_CGCodeInterpreter, 0, 0},{0, 0, 0, 0}};
@@ -41820,10 +41893,10 @@ static swig_cast_info _swigc__p_std__vectorT_double_std__allocatorT_double_t_t[]
 static swig_cast_info _swigc__p_std__vectorT_int_std__allocatorT_int_t_t[] = {  {&_swigt__p_std__vectorT_int_std__allocatorT_int_t_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_swig__SwigPyIterator[] = {  {&_swigt__p_swig__SwigPyIterator, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_char[] = {  {&_swigt__p_unsigned_char, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_unsigned_int[] = {  {&_swigt__p_unsigned_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_value_type[] = {  {&_swigt__p_value_type, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
+  _swigc__p_BOOL,
   _swigc__p_CANON_PLANE,
   _swigc__p_CCoordMotion,
   _swigc__p_CGCodeInterpreter,
@@ -41867,7 +41940,6 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_std__vectorT_int_std__allocatorT_int_t_t,
   _swigc__p_swig__SwigPyIterator,
   _swigc__p_unsigned_char,
-  _swigc__p_unsigned_int,
   _swigc__p_value_type,
 };
 
@@ -42792,6 +42864,17 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_NB_MSG",SWIG_From_int(static_cast< int >(53)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_NB_MDI",SWIG_From_int(static_cast< int >(54)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_NB_INPUT",SWIG_From_int(static_cast< int >(55)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_QUERY_APP",SWIG_From_int(static_cast< int >(56)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_APP_GENERIC_LINUX",SWIG_From_int(static_cast< int >(0x00)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_APP_GENERIC_WIN",SWIG_From_int(static_cast< int >(0x01)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_APP_GENERIC_OSX",SWIG_From_int(static_cast< int >(0x02)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_APP_GENERIC_RPI",SWIG_From_int(static_cast< int >(0x03)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_APP_MENIGCNC_WIN",SWIG_From_int(static_cast< int >(0x0A)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_GET_VARS_G",SWIG_From_int(static_cast< int >(57)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_SET_VARS_G",SWIG_From_int(static_cast< int >(58)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_NB_MSG_DISMISS",SWIG_From_int(static_cast< int >(59)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_TIMEOUT",SWIG_From_int(static_cast< int >((-10))));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_TIMEOUT_SEC",SWIG_From_double(static_cast< double >(0.4)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_PERSIST",SWIG_From_int(static_cast< int >(100)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "N_PC_COMM_PERSIST",SWIG_From_int(static_cast< int >(8)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_CSS_MODE",SWIG_From_int(static_cast< int >(110)));

@@ -1,7 +1,10 @@
 %module(directors="1") kmotion
 
-
+#ifdef _KMOTIONX
 #define __attribute__(x)
+#else
+%include "windows.i"
+#endif
 
 // from /usr/local/share/swig/3.0.4/python ...
 //%include "pyopers.swg"
@@ -28,11 +31,15 @@
 #endif
 
 
+#ifdef _KMOTIONX
 typedef unsigned BOOL;
 #include "KMotionX.h"
 #include "SocketWrapper.h"
 #include "CMutex.h"
 #include "CString.h"
+#else
+#include "afx.h"
+#endif
 #include "KMotionDLL.h"
 #include "rs274ngc_return.h"
 #include "rs274ngc.h"
@@ -46,7 +53,6 @@ typedef unsigned BOOL;
 #include "swig_extras.cpp"
 %}
 
-typedef unsigned BOOL;
 
 %template(BoolVector) std::vector<bool>;
 %template(IntVector) std::vector<int>;
@@ -92,8 +98,9 @@ typedef unsigned BOOL;
 //%feature("director") CKMotionDLL;
 %feature("director") KMotion;
 %feature("director") GCodeInterpreter;
-
+#ifdef _KMOTIONX
 %import "SocketWrapper.h"
+#endif
 
 %include "KMotionDLL.h"
 
