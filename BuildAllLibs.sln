@@ -1,28 +1,16 @@
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GCodeInterpreter", "GCodeInterpreter\GCodeInterpreter.vcproj", "{FB604DCB-AE28-48CA-8256-95E450E170D7}"
-	ProjectSection(ProjectDependencies) = postProject
-		{FF59B059-0303-47F0-BE70-71F66E39C1A4} = {FF59B059-0303-47F0-BE70-71F66E39C1A4}
-		{E6C1A3CB-B812-4FEF-A3CC-5AF62CFFB06D} = {E6C1A3CB-B812-4FEF-A3CC-5AF62CFFB06D}
-		{8EE3F6E8-BBC3-4C25-ADE2-F714653FCC03} = {8EE3F6E8-BBC3-4C25-ADE2-F714653FCC03}
-		{8B437BFD-1793-4B31-8370-D46409DCB8F9} = {8B437BFD-1793-4B31-8370-D46409DCB8F9}
-	EndProjectSection
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GCodeInterpreter", "GCodeInterpreter\GCodeInterpreter.vcxproj", "{FB604DCB-AE28-48CA-8256-95E450E170D7}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KMViaVB", "KMViaVB\KMViaVB.vcproj", "{8EE3F6E8-BBC3-4C25-ADE2-F714653FCC03}"
-	ProjectSection(ProjectDependencies) = postProject
-		{FF59B059-0303-47F0-BE70-71F66E39C1A4} = {FF59B059-0303-47F0-BE70-71F66E39C1A4}
-		{E6C1A3CB-B812-4FEF-A3CC-5AF62CFFB06D} = {E6C1A3CB-B812-4FEF-A3CC-5AF62CFFB06D}
-		{8B437BFD-1793-4B31-8370-D46409DCB8F9} = {8B437BFD-1793-4B31-8370-D46409DCB8F9}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KMViaVB", "KMViaVB\KMViaVB.vcxproj", "{8EE3F6E8-BBC3-4C25-ADE2-F714653FCC03}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KMotionDLL", "KMotionDLL\KMotionDLL.vcproj", "{FF59B059-0303-47F0-BE70-71F66E39C1A4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KMotionDLL", "KMotionDLL\KMotionDLL.vcxproj", "{FF59B059-0303-47F0-BE70-71F66E39C1A4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KMotionServer", "KMotionServer\KMotionServer.vcproj", "{E6C1A3CB-B812-4FEF-A3CC-5AF62CFFB06D}"
-	ProjectSection(ProjectDependencies) = postProject
-		{FF59B059-0303-47F0-BE70-71F66E39C1A4} = {FF59B059-0303-47F0-BE70-71F66E39C1A4}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KMotionServer", "KMotionServer\KMotionServer.vcxproj", "{E6C1A3CB-B812-4FEF-A3CC-5AF62CFFB06D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TCC67", "TCC67\TCC67.vcproj", "{8B437BFD-1793-4B31-8370-D46409DCB8F9}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TCC67", "TCC67\TCC67.vcxproj", "{8B437BFD-1793-4B31-8370-D46409DCB8F9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KMotion_dotNet", "KMotion_dotNet\KMotion_dotNet.csproj", "{6E7CF9BA-11BD-428B-B23E-2E16EF7BF2BD}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -33,16 +21,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KMotion_dotNet", "KMotion_d
 		{8B437BFD-1793-4B31-8370-D46409DCB8F9} = {8B437BFD-1793-4B31-8370-D46409DCB8F9}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KMotion_dotNet_Interop", "KMotion_dotNet_Interop\KMotion_dotNet_Interop.vcproj", "{44FD12A3-D043-4DE3-BA2F-0F1DC1440488}"
-	ProjectSection(ProjectDependencies) = postProject
-		{FF59B059-0303-47F0-BE70-71F66E39C1A4} = {FF59B059-0303-47F0-BE70-71F66E39C1A4}
-		{FB604DCB-AE28-48CA-8256-95E450E170D7} = {FB604DCB-AE28-48CA-8256-95E450E170D7}
-		{E6C1A3CB-B812-4FEF-A3CC-5AF62CFFB06D} = {E6C1A3CB-B812-4FEF-A3CC-5AF62CFFB06D}
-		{8B437BFD-1793-4B31-8370-D46409DCB8F9} = {8B437BFD-1793-4B31-8370-D46409DCB8F9}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KMotion_dotNet_Interop", "KMotion_dotNet_Interop\KMotion_dotNet_Interop.vcxproj", "{44FD12A3-D043-4DE3-BA2F-0F1DC1440488}"
 EndProject
 Global
-	
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -55,8 +36,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{FB604DCB-AE28-48CA-8256-95E450E170D7}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{FB604DCB-AE28-48CA-8256-95E450E170D7}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{FB604DCB-AE28-48CA-8256-95E450E170D7}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{FB604DCB-AE28-48CA-8256-95E450E170D7}.Debug|Mixed Platforms.ActiveCfg = Release|Win32
+		{FB604DCB-AE28-48CA-8256-95E450E170D7}.Debug|Mixed Platforms.Build.0 = Release|Win32
 		{FB604DCB-AE28-48CA-8256-95E450E170D7}.Debug|Win32.ActiveCfg = Debug|Win32
 		{FB604DCB-AE28-48CA-8256-95E450E170D7}.Debug|Win32.Build.0 = Debug|Win32
 		{FB604DCB-AE28-48CA-8256-95E450E170D7}.Debug|x86.ActiveCfg = Debug|Win32
@@ -77,7 +58,6 @@ Global
 		{8EE3F6E8-BBC3-4C25-ADE2-F714653FCC03}.Debug|x86.Build.0 = Debug|Win32
 		{8EE3F6E8-BBC3-4C25-ADE2-F714653FCC03}.Release|Any CPU.ActiveCfg = Release|Win32
 		{8EE3F6E8-BBC3-4C25-ADE2-F714653FCC03}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{8EE3F6E8-BBC3-4C25-ADE2-F714653FCC03}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{8EE3F6E8-BBC3-4C25-ADE2-F714653FCC03}.Release|Win32.ActiveCfg = Release|Win32
 		{8EE3F6E8-BBC3-4C25-ADE2-F714653FCC03}.Release|Win32.Build.0 = Release|Win32
 		{8EE3F6E8-BBC3-4C25-ADE2-F714653FCC03}.Release|x86.ActiveCfg = Release|Win32
@@ -105,7 +85,6 @@ Global
 		{E6C1A3CB-B812-4FEF-A3CC-5AF62CFFB06D}.Debug|x86.Build.0 = Debug|Win32
 		{E6C1A3CB-B812-4FEF-A3CC-5AF62CFFB06D}.Release|Any CPU.ActiveCfg = Release|Win32
 		{E6C1A3CB-B812-4FEF-A3CC-5AF62CFFB06D}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{E6C1A3CB-B812-4FEF-A3CC-5AF62CFFB06D}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{E6C1A3CB-B812-4FEF-A3CC-5AF62CFFB06D}.Release|Win32.ActiveCfg = Release|Win32
 		{E6C1A3CB-B812-4FEF-A3CC-5AF62CFFB06D}.Release|Win32.Build.0 = Release|Win32
 		{E6C1A3CB-B812-4FEF-A3CC-5AF62CFFB06D}.Release|x86.ActiveCfg = Release|Win32
@@ -119,7 +98,6 @@ Global
 		{8B437BFD-1793-4B31-8370-D46409DCB8F9}.Debug|x86.Build.0 = Debug|Win32
 		{8B437BFD-1793-4B31-8370-D46409DCB8F9}.Release|Any CPU.ActiveCfg = Release|Win32
 		{8B437BFD-1793-4B31-8370-D46409DCB8F9}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{8B437BFD-1793-4B31-8370-D46409DCB8F9}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{8B437BFD-1793-4B31-8370-D46409DCB8F9}.Release|Win32.ActiveCfg = Release|Win32
 		{8B437BFD-1793-4B31-8370-D46409DCB8F9}.Release|Win32.Build.0 = Release|Win32
 		{8B437BFD-1793-4B31-8370-D46409DCB8F9}.Release|x86.ActiveCfg = Release|Win32
@@ -134,7 +112,6 @@ Global
 		{6E7CF9BA-11BD-428B-B23E-2E16EF7BF2BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E7CF9BA-11BD-428B-B23E-2E16EF7BF2BD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6E7CF9BA-11BD-428B-B23E-2E16EF7BF2BD}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{6E7CF9BA-11BD-428B-B23E-2E16EF7BF2BD}.Release|Mixed Platforms.Build.0 = Release|x86
 		{6E7CF9BA-11BD-428B-B23E-2E16EF7BF2BD}.Release|Win32.ActiveCfg = Release|x86
 		{6E7CF9BA-11BD-428B-B23E-2E16EF7BF2BD}.Release|x86.ActiveCfg = Release|x86
 		{6E7CF9BA-11BD-428B-B23E-2E16EF7BF2BD}.Release|x86.Build.0 = Release|x86
@@ -147,7 +124,6 @@ Global
 		{44FD12A3-D043-4DE3-BA2F-0F1DC1440488}.Debug|x86.Build.0 = Debug|Win32
 		{44FD12A3-D043-4DE3-BA2F-0F1DC1440488}.Release|Any CPU.ActiveCfg = Release|Win32
 		{44FD12A3-D043-4DE3-BA2F-0F1DC1440488}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{44FD12A3-D043-4DE3-BA2F-0F1DC1440488}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{44FD12A3-D043-4DE3-BA2F-0F1DC1440488}.Release|Win32.ActiveCfg = Release|Win32
 		{44FD12A3-D043-4DE3-BA2F-0F1DC1440488}.Release|Win32.Build.0 = Release|Win32
 		{44FD12A3-D043-4DE3-BA2F-0F1DC1440488}.Release|x86.ActiveCfg = Release|Win32

@@ -140,7 +140,7 @@
       <ImportLibrary>.\Release\_kmotion.lib</ImportLibrary>
       <AdditionalDependencies>$(PYTHON_LIB);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\KMotion\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalOptions>c:/cnc/KMotion/Release/KMotionDLL.lib c:/cnc/KMotion/Release/GCodeInterpreter.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>../../KMotion/Release/KMotionDLL.lib ../../KMotion/Release/GCodeInterpreter.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
