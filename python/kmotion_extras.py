@@ -492,6 +492,9 @@ class ThreadManager(object):
                     kflopname = os.path.basename(specific)
                 #print "kflopname=", kflopname
         if kflopname is None:
+            if self.verbose:
+                print "kflopdir=", self.kflopdir
+                print "target firmware version=", fv
             raise ValueError("Failed to locate a firmware binary")
         if kflopname != self.kflopname:
             self.invalidate_thread_cache()
