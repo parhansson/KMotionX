@@ -43028,8 +43028,6 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_GET_VARS_G",SWIG_From_int(static_cast< int >(57)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_SET_VARS_G",SWIG_From_int(static_cast< int >(58)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_NB_MSG_DISMISS",SWIG_From_int(static_cast< int >(59)));
-  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_TIMEOUT",SWIG_From_int(static_cast< int >((-10))));
-  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_TIMEOUT_SEC",SWIG_From_double(static_cast< double >(0.4)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_PERSIST",SWIG_From_int(static_cast< int >(100)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "N_PC_COMM_PERSIST",SWIG_From_int(static_cast< int >(8)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_CSS_MODE",SWIG_From_int(static_cast< int >(110)));

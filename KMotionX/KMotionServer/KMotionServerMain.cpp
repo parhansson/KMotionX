@@ -29,6 +29,13 @@ either expressed or implied, of the FreeBSD Project.
 
 // KMotionServerMain.cpp 
 
+#ifdef __arm__
+    // On embedded systems (e.g. Beaglebone, Raspberry Pi) we don't want the syslog to
+    // fill up.  We generate a lot of logging so this can be a problem.
+    #define USE_SYSLOG 0
+#else
+    #define USE_SYSLOG 1
+#endif
 
 
 #include <HiResTimer.h>
@@ -43,12 +50,12 @@ either expressed or implied, of the FreeBSD Project.
 #include <stdlib.h>     /* General Utilities */
 #include <pthread.h>    /* POSIX Threads */
 #include <string.h>     /* String handling */
-#include <errno.h>
-#include <string.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/stat.h>
+#if USE_SYSLOG
 #include <syslog.h>
+#endif
 #include <fcntl.h>
 #include <list>
 #include <signal.h>
@@ -62,6 +69,11 @@ either expressed or implied, of the FreeBSD Project.
 #include <KMotionDLL.h>
 #include <KmotionIO.h>
 #include <KMotionDLL_Direct.h>
+
+#if !USE_SYSLOG
+    // Compile out all syslog calls
+    #define syslog(x,...)
+#endif
 
 
 #define BUFSIZE 4096
