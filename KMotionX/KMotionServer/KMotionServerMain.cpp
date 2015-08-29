@@ -266,8 +266,9 @@ int main(void)
     pthread_attr_setschedpolicy(&attr, SCHED_FIFO); // FIFO scheduling for threads
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED); // Don't want threads (particualrly main)
                                                                    // waiting on each other
-
+#if USE_SYSLOG
 	openlog("KMotionServer", LOG_PID|LOG_CONS, LOG_USER);
+#endif
 	syslog(LOG_ERR, "KMotionServer started ");
 
 
@@ -398,7 +399,9 @@ int main(void)
        }
 
    }
+#if USE_LOG
    closelog();
+#endif
    exit(EXIT_SUCCESS);
 } 
 //http://www.amparo.net/ce155/thread-ex.html
