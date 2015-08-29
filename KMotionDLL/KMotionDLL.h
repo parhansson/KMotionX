@@ -59,7 +59,6 @@
   #define KMOTIONDLL_LOCAL
 #endif // KMOTIONDLL_DLL
 #pragma warning ( disable : 4251 )
-#pragma warning ( disable : 4996 )
 
 
 
@@ -191,13 +190,15 @@ public:
     void SetPollCallback(unsigned int interest);  // Set status change interest according to OR'd combo of POLL_* enum above.
 	void DoErrMsg(const char *s);
 #ifdef _KMOTIONX
-	const char* getInstallRoot();
+    const char * getInstallRoot(void) const { return GetMainPathRoot(); }
 	// Use to override default compiler executable.  options controls whether -g (and other) option supplied.
 	// tcc_minor_version should be set to e.g. 26 for tcc version 0.9.26 (controls options), or 0 to
 	// not change the version.
 	// If compiler is absolute path, then that exact compiler is used.  Otherwise, it should just be the
-	// name of the compiler without any path, and it will be searched for in standard locations.
-	// If NULL, compiler is set back to default.
+	// name of the compiler without any path, and it will be searched for in standard locations.  If an abs
+	// path is provided, it is a short-cut to calling SetCompilerDir() with the directory component.
+	// If NULL, compiler is set back to default.  In this case, SetCompilerDir(NULL) should be called to
+	// reset the compiler location directory back to default as well.
 	void SetCustomCompiler(const char * compiler = NULL, const char * options = NULL, int tcc_minor_version = 0); 
 	
 	// Alternative ctor to connect via TCP.  If url is NULL, assumes localhost, else is a host name.
@@ -227,6 +228,15 @@ public:
     // which must be an absolute path.
     void SetDSPKFLOP(const char * filename);
     const char * GetDSPKFLOP(void) const { return DSPKFLOP; }
+    
+    // For special applications, allow changing the locations of where things are found.
+    // The Get* members are not 'const' since they may do some caching.
+    void SetMainPathRoot(const char * dir);
+    const char * GetMainPathRoot(void) const;
+    void SetCompilerDir(const char * dir);
+    const char * GetCompilerDir(void);
+    void SetServerDir(const char * dir);
+    const char * GetServerDir(void);
 
 private:
 
@@ -267,6 +277,8 @@ private:
     MAIN_STATUS last_status;
     int HostStatus;
     char DSPKFLOP[257];
+    char compiler_dir[257];
+    char server_dir[257];
 };
 
 #endif

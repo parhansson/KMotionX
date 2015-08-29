@@ -727,6 +727,24 @@ class CKMotionDLL(_object):
     def GetDSPKFLOP(self):
         return _kmotion.CKMotionDLL_GetDSPKFLOP(self)
 
+    def SetMainPathRoot(self, dir):
+        return _kmotion.CKMotionDLL_SetMainPathRoot(self, dir)
+
+    def GetMainPathRoot(self):
+        return _kmotion.CKMotionDLL_GetMainPathRoot(self)
+
+    def SetCompilerDir(self, dir):
+        return _kmotion.CKMotionDLL_SetCompilerDir(self, dir)
+
+    def GetCompilerDir(self):
+        return _kmotion.CKMotionDLL_GetCompilerDir(self)
+
+    def SetServerDir(self, dir):
+        return _kmotion.CKMotionDLL_SetServerDir(self, dir)
+
+    def GetServerDir(self):
+        return _kmotion.CKMotionDLL_GetServerDir(self)
+
     def ListLocations(self):
         return _kmotion.CKMotionDLL_ListLocations(self)
 

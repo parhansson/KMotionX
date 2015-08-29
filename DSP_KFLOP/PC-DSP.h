@@ -270,8 +270,6 @@
                                         // button response (e.g. IDOK or IDCANCEL; or 0 for an undetermined response)
 
 
-#define PC_COMM_TIMEOUT (-10)   // Return code from DoPC() if timed out.
-#define PC_COMM_TIMEOUT_SEC 0.4 // Default timeout when waiting for PC command result.
 #define PC_COMM_PERSIST 100  // First Persist Variable that is uploaded in status
 #define N_PC_COMM_PERSIST 8  // Number of Persist Variables that are uploaded in status
 

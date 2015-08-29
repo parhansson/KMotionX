@@ -3,5 +3,12 @@ config.h
 config.mak
 *~
 *.out
+*.nm
+*.suo
+*.orig
+*.ilk
+*.pdb
+*.hex
+*.pyc
 .pl_persist
 

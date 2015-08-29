@@ -930,7 +930,7 @@ void GCodeInterpreter::EnableEventByClasses(unsigned clsbits, bool enable, bool 
         rc = vmname(); \
         _EXIT_BINDING; \
         if (rc == 1) rc = GCodeInterpreter::vmname(); \
-        SetKFLOPCommandResult(rc ? -1 : 0); \
+        SetKFLOPCommandResult(rc<0 ? rc : 0); \
     } while (0)
     
 #define CALL_LONG_BINDING(vmname) do { \
@@ -954,7 +954,7 @@ void GCodeInterpreter::EnableEventByClasses(unsigned clsbits, bool enable, bool 
         if (rc < 1) { \
 			sprintf(s, "SetPersistDec%d %d",PC_COMM_PERSIST+pres,pc_result); \
 			if (CoordMotion->KMotionDLL->WriteLine(s)) rc = -1; \
-            SetKFLOPCommandResult(rc ? -1 : 0); \
+            SetKFLOPCommandResult(rc<0 ? rc : 0); \
         } \
     } while (0)
     
@@ -1243,8 +1243,8 @@ void GCodeInterpreter::ServiceKFLOPCommands()
 	    SetKFLOPCommandResult(-1);
 	    return;
 	}
-	    
-	    
+	
+    
 	switch (nm.PC_comm[0] & PC_COMM_FIELD_COMMAND)
 	{
 	case PC_COMM_ESTOP:

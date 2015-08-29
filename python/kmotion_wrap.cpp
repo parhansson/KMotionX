@@ -16268,10 +16268,10 @@ SWIGINTERN PyObject *_wrap_CKMotionDLL_getInstallRoot(PyObject *self, PyObject *
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CKMotionDLL, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CKMotionDLL_getInstallRoot" "', argument " "1"" of type '" "CKMotionDLL *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CKMotionDLL_getInstallRoot" "', argument " "1"" of type '" "CKMotionDLL const *""'"); 
   }
   arg1 = reinterpret_cast< CKMotionDLL * >(argp1);
-  result = (char *)(arg1)->getInstallRoot();
+  result = (char *)((CKMotionDLL const *)arg1)->getInstallRoot();
   resultobj = SWIG_FromCharPtr((const char *)result);
   return resultobj;
 fail:
@@ -17177,6 +17177,165 @@ SWIGINTERN PyObject *_wrap_CKMotionDLL_GetDSPKFLOP(PyObject *self, PyObject *arg
   }
   arg1 = reinterpret_cast< CKMotionDLL * >(argp1);
   result = (char *)((CKMotionDLL const *)arg1)->GetDSPKFLOP();
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CKMotionDLL_SetMainPathRoot(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CKMotionDLL *arg1 = (CKMotionDLL *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:CKMotionDLL_SetMainPathRoot",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CKMotionDLL, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CKMotionDLL_SetMainPathRoot" "', argument " "1"" of type '" "CKMotionDLL *""'"); 
+  }
+  arg1 = reinterpret_cast< CKMotionDLL * >(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CKMotionDLL_SetMainPathRoot" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  (arg1)->SetMainPathRoot((char const *)arg2);
+  resultobj = SWIG_Py_Void();
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CKMotionDLL_GetMainPathRoot(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CKMotionDLL *arg1 = (CKMotionDLL *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  char *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CKMotionDLL, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CKMotionDLL_GetMainPathRoot" "', argument " "1"" of type '" "CKMotionDLL const *""'"); 
+  }
+  arg1 = reinterpret_cast< CKMotionDLL * >(argp1);
+  result = (char *)((CKMotionDLL const *)arg1)->GetMainPathRoot();
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CKMotionDLL_SetCompilerDir(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CKMotionDLL *arg1 = (CKMotionDLL *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:CKMotionDLL_SetCompilerDir",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CKMotionDLL, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CKMotionDLL_SetCompilerDir" "', argument " "1"" of type '" "CKMotionDLL *""'"); 
+  }
+  arg1 = reinterpret_cast< CKMotionDLL * >(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CKMotionDLL_SetCompilerDir" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  (arg1)->SetCompilerDir((char const *)arg2);
+  resultobj = SWIG_Py_Void();
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CKMotionDLL_GetCompilerDir(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CKMotionDLL *arg1 = (CKMotionDLL *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  char *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CKMotionDLL, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CKMotionDLL_GetCompilerDir" "', argument " "1"" of type '" "CKMotionDLL *""'"); 
+  }
+  arg1 = reinterpret_cast< CKMotionDLL * >(argp1);
+  result = (char *)(arg1)->GetCompilerDir();
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CKMotionDLL_SetServerDir(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CKMotionDLL *arg1 = (CKMotionDLL *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:CKMotionDLL_SetServerDir",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CKMotionDLL, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CKMotionDLL_SetServerDir" "', argument " "1"" of type '" "CKMotionDLL *""'"); 
+  }
+  arg1 = reinterpret_cast< CKMotionDLL * >(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CKMotionDLL_SetServerDir" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  (arg1)->SetServerDir((char const *)arg2);
+  resultobj = SWIG_Py_Void();
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CKMotionDLL_GetServerDir(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CKMotionDLL *arg1 = (CKMotionDLL *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  char *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CKMotionDLL, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CKMotionDLL_GetServerDir" "', argument " "1"" of type '" "CKMotionDLL *""'"); 
+  }
+  arg1 = reinterpret_cast< CKMotionDLL * >(argp1);
+  result = (char *)(arg1)->GetServerDir();
   resultobj = SWIG_FromCharPtr((const char *)result);
   return resultobj;
 fail:
@@ -39246,6 +39405,12 @@ SWIGINTERN PyMethodDef SwigPyBuiltin__CKMotionDLL_methods[] = {
   { "ChangedPCComm", (PyCFunction) _wrap_CKMotionDLL_ChangedPCComm, METH_VARARGS, (char*) "" },
   { "SetDSPKFLOP", (PyCFunction) _wrap_CKMotionDLL_SetDSPKFLOP, METH_VARARGS, (char*) "" },
   { "GetDSPKFLOP", (PyCFunction) _wrap_CKMotionDLL_GetDSPKFLOP, METH_VARARGS, (char*) "" },
+  { "SetMainPathRoot", (PyCFunction) _wrap_CKMotionDLL_SetMainPathRoot, METH_VARARGS, (char*) "" },
+  { "GetMainPathRoot", (PyCFunction) _wrap_CKMotionDLL_GetMainPathRoot, METH_VARARGS, (char*) "" },
+  { "SetCompilerDir", (PyCFunction) _wrap_CKMotionDLL_SetCompilerDir, METH_VARARGS, (char*) "" },
+  { "GetCompilerDir", (PyCFunction) _wrap_CKMotionDLL_GetCompilerDir, METH_VARARGS, (char*) "" },
+  { "SetServerDir", (PyCFunction) _wrap_CKMotionDLL_SetServerDir, METH_VARARGS, (char*) "" },
+  { "GetServerDir", (PyCFunction) _wrap_CKMotionDLL_GetServerDir, METH_VARARGS, (char*) "" },
   { "ListLocations", (PyCFunction) _wrap_CKMotionDLL_ListLocations, METH_VARARGS, (char*) "" },
   { "SetConsoleCallback", (PyCFunction) _wrap_CKMotionDLL_SetConsoleCallback, METH_VARARGS, (char*) "" },
   { "SetPersistInt", (PyCFunction) _wrap_CKMotionDLL_SetPersistInt, METH_VARARGS, (char*) "" },

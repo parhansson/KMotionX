@@ -25,7 +25,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>v120</PlatformToolset>
-    <UseOfMfc>Static</UseOfMfc>
+    <UseOfMfc>Dynamic</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -43,7 +43,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>.\Debug\</OutDir>
     <IntDir>.\Debug\</IntDir>
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <TargetName>_kmotion</TargetName>
     <TargetExt>.pyd</TargetExt>
     <IncludePath>..\..\python;..\..\KMotionDLL;..\..\DSP_KFLOP;..\..\GCodeInterpreter;$(IncludePath)</IncludePath>
@@ -58,7 +58,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <Optimization>Disabled</Optimization>
@@ -97,8 +97,8 @@
       <OutputFile>Debug\_kmotion.pyd</OutputFile>
       <ImportLibrary>.\Debug\_kmotion.lib</ImportLibrary>
       <AdditionalDependencies>$(PYTHON_LIB);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\KMotion\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalOptions>c:/cnc/KMotion/Release/KMotionDLL.lib c:/cnc/KMotion/Release/GCodeInterpreter.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>../../KMotion/$(Configuration)/KMotionDLL.lib ../../KMotion/$(Configuration)/GCodeInterpreter.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -139,8 +139,8 @@
       <OutputFile>Release\_kmotion.pyd</OutputFile>
       <ImportLibrary>.\Release\_kmotion.lib</ImportLibrary>
       <AdditionalDependencies>$(PYTHON_LIB);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\KMotion\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalOptions>../../KMotion/Release/KMotionDLL.lib ../../KMotion/Release/GCodeInterpreter.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>..\..\KMotion\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>../../KMotion/$(Configuration)/KMotionDLL.lib ../../KMotion/$(Configuration)/GCodeInterpreter.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -151,7 +151,8 @@ echo PYTHON_INCLUDE: %PYTHON_INCLUDE%
 echo PYTHON_LIB: %PYTHON_LIB% 
 echo on 
 net use x: \\pluto\steve-home
-cd x:\KMotionX\python\win
+x:
+cd \KMotionX\python\win
 cd
 c:/swigwin-3.0.7/swig.exe -python -v -c++  -Ix:\KMotionX\KMotionDLL -Ix:\KMotionX\DSP_KFLOP -Ix:\KMotionX\GCodeInterpreter -Ix:\KMotionX\python -Ic:\python27\include -DWIN32 -cppext cpp -outcurrentdir "%(FullPath)"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InputName)_wrap.cpp;$(InputName)_wrap.h;%(Outputs)</Outputs>
@@ -160,7 +161,8 @@ echo PYTHON_INCLUDE: %PYTHON_INCLUDE%
 echo PYTHON_LIB: %PYTHON_LIB% 
 echo on 
 net use x: \\pluto\steve-home
-cd x:\KMotionX\python\win
+x:
+cd \KMotionX\python\win
 cd
 c:/swigwin-3.0.7/swig.exe -python -v -c++  -Ix:\KMotionX\KMotionDLL -Ix:\KMotionX\DSP_KFLOP -Ix:\KMotionX\GCodeInterpreter -Ix:\KMotionX\python -Ic:\python27\include -DWIN32 -cppext cpp -outcurrentdir "%(FullPath)"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(InputName)_wrap.cpp;$(InputName)_wrap.h;%(Outputs)</Outputs>

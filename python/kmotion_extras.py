@@ -2,8 +2,16 @@
 Extra utilities for kmotion.py
 """
 
-import kmotion
 import os, time, threading, sys, traceback
+
+if sys.platform == 'win32':
+    from . import _menigcnc_root, _menigcnc_version
+    from . import kmotion
+else:
+    #FIXME: modularize this!
+    _menigcnc_root = os.path.expanduser("~/KMotionX")
+    _menigcnc_version = "v2"
+    import kmotion
 
 
 
@@ -56,7 +64,7 @@ class ConsoleMessage(Message):
         return "I"
 
 class StatusMessage(Message):   # from pc cmd 50
-    clrmap = { '!' : "red", '$' : "black", '#' : "black", '?' : "black" }
+    clrmap = { '!' : "red", '$' : "black", '#' : "#AA6600", '?' : "#99bb33" }
     def __init__(self, msg, kflop_thread=None):
         super(StatusMessage, self).__init__(-1, msg, strip=False)
         self.kflop_thread = kflop_thread
@@ -78,6 +86,8 @@ class StatusMessage(Message):   # from pc cmd 50
         or None if locally generated.
         """
         return self.kflop_thread
+    def get_msg(self):
+        return self.msg[1:]
 
 class StatusClearMessage(StatusMessage):
     def __init__(self, kflop_thread=None):
@@ -235,9 +245,7 @@ class Task(threading.Thread):
                 self.msgqueue.append(TaskStatusMessage(TaskStatusMessage.DONE, rc, self))
             except Exception as e:
                 print "task", self.name, "abend"
-                typ, val, tb = sys.exc_info()
-                s = '\n'.join([filename+' '+str(oline)+' '+func+' '+text for filename, oline, func, text in reversed(traceback.extract_tb(tb)[1:])])
-                self.result = str(e)+'\n'+s
+                self.result = traceback.format_exc(32)
                 self.err_result = True
                 self.done = True
                 self.msgqueue.append(TaskStatusMessage(TaskStatusMessage.ERROR, e, self))
@@ -915,6 +923,11 @@ class KMotionX(kmotion.KMotion):
         self.clear_messages()
         if with_console:
             self.SetConsoleCallback()
+        if kflopdir is None:
+            # Default firmware directory: this is compatible with legacy CNC apps.  New apps should
+            # provide an explicit directory.
+            kflopdir = os.path.join(_menigcnc_root, "DSP_KFLOP")
+        self.SetMainPathRoot(_menigcnc_root)
         self.tmgr = ThreadManager(self, srcdir=srcdir, cc=cc, ccbindir=ccbindir, kflopdir=kflopdir, kflopname=kflopname, \
                                     verbose=verbose_tmgr, target_firmware_version=target_firmware_version)
         self.set_comm_result(-2)
@@ -1004,7 +1017,7 @@ class KMotionX(kmotion.KMotion):
         return self.tmgr.run(filename, thread)
     def wait_c(self, thread, idle_func=None, sleep_time=0.05):
         while not self.thread_done(thread):
-            if idle_func and idle_func(thread):
+            if idle_func and not idle_func(thread):
                 return
             time.sleep(sleep_time)
     def thread_done(self, thread):
@@ -1034,13 +1047,17 @@ class KMotionX(kmotion.KMotion):
     def read_firmware_version(self):
         rc, self.version_str = self.WriteLineReadLine("version")
         if not rc:
-            self.firmware_version, self.firmware_build = self.parse_firmware_version(self.version_str)
             try:
+                self.firmware_version, self.firmware_build = self.parse_firmware_version(self.version_str)
                 self.tmgr.set_target_firmware_version(self.get_firmware_version())
             except ValueError:
                 #FIXME: for now, fall back to unqualified version (dspkflop.out) and hope for the best
                 self.add_message(ErrorMessage(-1, "Falling back to unversioned firmware binary - no match for version %s" % self.get_firmware_version(), 0))
                 self.tmgr.set_target_firmware_version('')
+            except:
+                self.add_message(ErrorMessage(-1, "Could not parse version string", 0))
+                self.firmware_version, self.firmware_build = None, None
+                
         self.find_matching_firmware()
         return rc
     def get_firmware_version(self):
@@ -1051,8 +1068,10 @@ class KMotionX(kmotion.KMotion):
         return self.firmware_build if self.firmware_build else ''
     def set_firmware_dir_list(self, dirlist):
         """Set list of directories to search when locating a firmware (DSPKFLOP*.out) file.
+        Also try to locate matching firmware so that we keep consistent state.
         """
         self.fw_dirlist = dirlist
+        self.find_matching_firmware()
     def find_matching_firmware(self):
         """Scan firmware directory list to find firmware .out file which matches the
         current Kflop version.  Sets this as the firmware to use when compiling etc.
@@ -1062,24 +1081,24 @@ class KMotionX(kmotion.KMotion):
         and match to full version string.
         """
         filename = None
-        print "Looking for firmware matching", self.get_firmware_version_str()
         for d in self.fw_dirlist:
             filename = self.find_matching_firmware_by_str(d, self.get_firmware_version_str())
             if filename: break
         if filename:
             self.SetDSPKFLOP(filename)
             print "Found matching firmware:", filename
-        else:
-            print "No matching firmware located in", self.fw_dirlist
+        elif self.fw_dirlist:
+            print "No firmware matching", self.get_firmware_version_str()
+            print "  located in", self.fw_dirlist
         return self.GetDSPKFLOP()
     def _find_match_fw(self, version_str, dirname, fnames):
         for filename in fnames:
-            print "candidate", os.path.join(dirname, filename)
+            #print "candidate", os.path.join(dirname, filename)
             f = filename.lower()
             if f.startswith("dspkflop") and f.endswith(".out"):
                 filename = os.path.join(dirname, filename)
                 rc, fvs = self.ExtractCoffVersionString(filename)
-                print "...", rc, fvs
+                #print "...", rc, fvs
                 if rc == 0 and fvs.strip() == version_str:
                     self._found_fw = filename
                     break
@@ -1178,7 +1197,7 @@ class Interpreter(kmotion.GCodeInterpreter):
         try:
             return self.hdict.get(acode, self.no_op)() or 0
         except Exception as e:
-            print e
+            traceback.print_exc(32)
             return 1
     def no_op(self):
         return 0
@@ -1199,7 +1218,7 @@ class Interpreter(kmotion.GCodeInterpreter):
         self.SetOnePersistDouble(where*2, length)
         return 0
     def PC_UpdateFixture(self):
-        return -1
+        return 1
     def PC_GetToolOffsetX(self):
         return -1
     def PC_SetToolOffsetX(self):
@@ -1226,6 +1245,7 @@ class Interpreter(kmotion.GCodeInterpreter):
     def PC_StatusClear(self):
         kthread = self.GetKFlopThread()
         self.k.add_message(StatusClearMessage(kthread))
+        return 0
     
     # Old-style message box (deprecated) - assumes kflop unknown thread.
     def PC_MsgBox(self):

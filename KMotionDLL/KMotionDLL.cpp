@@ -73,6 +73,8 @@ void CKMotionDLL::_init(int boardid)
     poll_interest = 0;
     HostStatus = 0;
     sprintf(DSPKFLOP, "%s%cDSP_KFLOP%cDSPKFLOP.out",MainPathRoot,PATH_SEPARATOR,PATH_SEPARATOR);
+    server_dir[0] = 0;
+    compiler_dir[0] = 0;
 
 }
 
@@ -598,8 +600,32 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 
 
 
+void CKMotionDLL::SetServerDir(const char * dir)
+{
+    if (dir) {
+        strncpy(server_dir, dir, sizeof(server_dir)-1);
+        server_dir[sizeof(server_dir)-1] = 0;
+    }
+    else
+        server_dir[0] = 0;
+}
+
+const char * CKMotionDLL::GetServerDir()
+{
+#ifndef _KMOTIONX
+    return server_dir;  // May be empty string, which means in the normal DOS search path.
+#else
+    // Not DOS, so use either override path (from SetServerDir) or MainPath obtained from environ variable.
+    if (server_dir[0])
+        return server_dir;
+    else
+        return MainPath;
+#endif
+}
+
 int CKMotionDLL::LaunchServer()
 {
+	char                cmd[sizeof(server_dir)+32];
 
 #ifndef _KMOTIONX
 	SECURITY_ATTRIBUTES sa          = {0};
@@ -642,13 +668,15 @@ int CKMotionDLL::LaunchServer()
 	si.hStdOutput  = hPipeOutputWrite;
 	si.hStdError   = hPipeOutputWrite;
 
-	CString cmd;  // build command line
+	strcpy(cmd, GetServerDir());
 
-	cmd = "KMotionServer.exe";
+    if (cmd[0])
+        strcat(cmd, "\\");
+	strcat(cmd, "KMotionServer.exe");
 	
 	if (!CreateProcess (
 		NULL,
-		cmd.GetBuffer(0), 
+		cmd, 
 		NULL, NULL,
 		TRUE, 0,
 		NULL, NULL,
@@ -667,26 +695,24 @@ int CKMotionDLL::LaunchServer()
 	CloseHandle(hPipeInputRead);
 #elif defined(__APPLE__)
 	//The daemon is currently not supported on Apple
-	char command[1024];
-#ifdef _DEAMON
+    #ifdef _DEAMON
     //sprintf(command, "%s/%s", MainPath,"KMotionServer");
-	printf("%s:%d Launch KMotionServer first: %s\n",__FILE__,__LINE__,command);
+	printf("%s:%d Launch KMotionServer first!\n",__FILE__,__LINE__);
 	PipeMutex->Unlock();
 	exit(1);
-#else
-    sprintf(command, "%s/%s", MainPath,"KMotionServer &");
-    system(command);
-#endif
+    #else
+    sprintf(cmd, "%s/%s", GetServerDir(),"KMotionServer &");
+    system(cmd);
+    #endif
 
 #else
-    char command[1024];
-#ifdef _DEAMON
-    sprintf(command, "%s/%s", MainPath,"KMotionServer");
-#else
-    sprintf(command, "%s/%s", MainPath,"KMotionServer &");
-#endif
-    printf("%s:%d Launching KMotionServer %s\n",__FILE__,__LINE__, command);
-    system(command);
+    #ifdef _DEAMON
+    sprintf(cmd, "%s/%s", GetServerDir(),"KMotionServer");
+    #else
+    sprintf(cmd, "%s/%s", GetServerDir(),"KMotionServer &");
+    #endif
+    printf("%s:%d Launching KMotionServer %s\n",__FILE__,__LINE__, cmd);
+    system(cmd);
 #endif
 
 	return 0;
@@ -746,6 +772,91 @@ void CKMotionDLL::SetCustomCompiler(const char * compiler, const char * options,
 }
 #endif
 
+
+void CKMotionDLL::SetCompilerDir(const char * dir)
+{
+    if (dir) {
+        strncpy(compiler_dir, dir, sizeof(compiler_dir)-1);
+        compiler_dir[sizeof(compiler_dir)-1] = 0;
+    }
+    else
+        compiler_dir[0] = 0;
+}
+
+const char * CKMotionDLL::GetCompilerDir()
+{
+    FILE *f;
+    
+    if (compiler_dir[0])
+        return compiler_dir;
+
+#ifndef _KMOTIONX
+    
+    // Find and cache the compiler location
+	CString Compiler = MainPathDLL + COMPILER;
+
+	f=fopen(Compiler,"r");  // try where the KMotionDLL was irst
+
+	if (f==NULL)
+	{
+		Compiler = MainPath + "\\Release" + COMPILER;
+	
+		f=fopen(Compiler,"r");  // try in the released directory next
+		if (f==NULL)
+		{
+			Compiler = MainPath + "\\Debug" + COMPILER;
+			f=fopen(Compiler,"r");  // try in the debug directory next
+			if (f!=NULL)
+		        strcpy(compiler_dir, MainPath + "\\Debug");
+		}
+		else
+		    strcpy(compiler_dir, MainPath + "\\Release");
+	}
+	else
+	    strcpy(compiler_dir, MainPath);
+#else
+	char Compiler[MAX_PATH +1];
+
+    strcpy(Compiler, customCompiler);
+	if (Compiler[0] == '/') {
+	    // Custom compiler is absolute, break it into dir and file
+	    strcpy(compiler_dir, Compiler);
+	    *strrchr(compiler_dir, '/') = 0;
+	    // Now custom compiler is file name part only...
+	    strcpy(customCompiler, Compiler + strlen(compiler_dir) + 1);
+	    // Have fixed path, so return it.
+	    return compiler_dir;
+	}
+
+    f=fopen(Compiler,"r");  // try if compiler is in pwd
+    if (f==NULL)
+    {
+	    sprintf(Compiler, "%s/%s", MainPath, customCompiler);
+	    f=fopen(Compiler,"r");  // try in the released directory next
+	    if (f==NULL)
+	    {
+	        if (tcc_vers < 26)
+		        sprintf(Compiler, "%s/TCC67/%s", MainPathRoot, customCompiler);
+		    else
+		        sprintf(Compiler, "%s/KMotionX/tcc-0.9.26/%s", MainPathRoot, customCompiler);
+		    f=fopen(Compiler,"r");  // try in the released directory next
+		    if (f!=NULL) {
+		        *strrchr(Compiler, '/') = 0;
+                strcpy(compiler_dir, Compiler);
+            }
+	    }
+	    else
+            strcpy(compiler_dir, MainPathRoot);
+    }
+    else
+        strcpy(compiler_dir, ".");  // It's in PWD
+#endif
+	if (f)
+	    fclose(f);
+	return compiler_dir;
+}
+
+
 int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardType, int Thread, char *Err, int MaxErrLen)
 {
 #ifndef _KMOTIONX
@@ -766,26 +877,15 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	// Try and locate the Compiler
 
 	CString Errors;
-	CString Compiler = MainPathDLL + COMPILER;
+	CString Compiler = CString(GetCompilerDir()) + COMPILER;
 	CString OFile=OutFile;
 
-	FILE *f=fopen(Compiler,"r");  // try where the KMotionDLL was irst
+	FILE *f=fopen(Compiler,"r");  // try where the KMotionDLL was first
 
 	if (f==NULL)
 	{
-		Compiler = MainPath + "\\Release" + COMPILER;
-	
-		f=fopen(Compiler,"r");  // try in the released directory next
-		if (f==NULL)
-		{
-			Compiler = MainPath + "\\Debug" + COMPILER;
-			f=fopen(Compiler,"r");  // try in the debug directory next
-			if (f==NULL)
-			{
-				DoErrMsg("Error Locating TCC67.exe Compiler");
-				return 1;
-			}
-		}
+		DoErrMsg("Error Locating TCC67.exe Compiler");
+		return 1;
 	}
 	fclose(f);
 
@@ -1610,7 +1710,7 @@ void CKMotionDLL::Poll()
             ChangedDone(m.AxisDone);
         if (changes & POLL_IO) {
             // Populate bool vector so it is indexed by I/O bit number.
-            boolvec outdir(KSTEP_OPTO_IN_BITS, false);   // FIXME: not best choice of constant, but we do bits up to KAnalog. 
+            boolvec outdir(KSTEP_OPTO_IN_BITS, false);   // FIXME: not best choice of constant, but we do bits up to KAnalog.
             boolvec state(KSTEP_OPTO_IN_BITS, false);
             for (unsigned int i = 0; i < KSTEP_OPTO_IN_BITS; ++i) {
                 unsigned int j = 1u << (i & 0x1F);
@@ -1656,10 +1756,19 @@ void CKMotionDLL::SetPollCallback(unsigned int interest)
     poll_interest = interest;
 }
 
-
+void CKMotionDLL::SetMainPathRoot(const char * dir)
+{
 #ifdef _KMOTIONX
-const char* CKMotionDLL::getInstallRoot(){
+    strncpy(MainPathRoot, dir, sizeof(MainPathRoot)-1);
+    MainPathRoot[sizeof(MainPathRoot)-1] = 0;
+#else
+    MainPathRoot = dir;
+#endif
+}
+
+const char* CKMotionDLL::GetMainPathRoot() const
+{
 	return MainPathRoot;
 }
-#endif
+
 
