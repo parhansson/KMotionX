@@ -129,7 +129,9 @@ void MyErrExit(const char *s)
 {
 
 	syslog(LOG_ERR, "%s", s);
+#if USE_SYSLOG
 	closelog();
+#endif
 	exit(1);
 }
 void logError(const char *s){
@@ -399,7 +401,7 @@ int main(void)
        }
 
    }
-#if USE_LOG
+#if USE_SYSLOG
    closelog();
 #endif
    exit(EXIT_SUCCESS);
