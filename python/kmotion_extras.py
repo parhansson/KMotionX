@@ -9,7 +9,7 @@ if sys.platform == 'win32':
     from . import kmotion
 else:
     #FIXME: modularize this!
-    _menigcnc_root = os.path.expanduser("~/KMotionX")
+    _menigcnc_root = os.path.abspath(os.path.join(os.environ['KMOTION_BIN'], ".."))
     _menigcnc_version = "v2"
     import kmotion
 
@@ -370,6 +370,47 @@ class Tool(object):
         
 def new_tool_from_row(row):
     return Tool(*tuple(row))
+    
+    
+class KMotionX_NoKFlop(object):
+    """This is a dummy KMotion class for use without actually connecting to a kflop.
+    Used just for the thread manager, when precompiling C source files etc.
+    Helps build .out file distros.
+    
+    Aditionally, this defines the minimum set of methods required for the 'k'
+    parameter when creating a ThreadManager.
+    """
+    def __init__(self, **tmgr_args):
+        self.tmgr = ThreadManager(self, **tmgr_args)
+    def get_tmgr(self):
+        # Not really part of the interface, but convenient for getting the ThreadManager.
+        return self.tmgr
+        
+    def ConvertToOut(self, thread, filename, n):
+        return filename[:-2] + '(' + str(thread) + ').out'
+    def add_message(self, s):
+        print s
+    def ExtractCoffVersionString(self, filename):
+        #FIXME: need to implement this without the DLL.  When standalone compiling,
+        # its use can be avoided by explicitly specifying a target firmware version
+        # and firmware .out file.
+        raise NotImplementedError
+    def LoadCoff(self, thread, outfile):
+        # Can avoid calling this by not specifying load or exec to ThreadManager.run()
+        raise NotImplementedError
+    def kill(self, thread):
+        # Can avoid calling this by not specifying load or exec to ThreadManager.run()
+        raise NotImplementedError
+    def execute(self, thread):
+        # Can avoid calling this by not specifying load or exec to ThreadManager.run()
+        raise NotImplementedError
+    def SetCustomCompiler(self, comp, opts):
+        # Can avoid by using only cl6x for compilation.  tcc67 uses the kmotion DLL.
+        raise NotImplementedError
+    def Compile(self, filename, outfile, boardtype, thread, maxmsg):
+        # Can avoid by using only cl6x for compilation.  tcc67 uses the kmotion DLL.
+        raise NotImplementedError
+
 
 class ThreadManager(object):
     """Class to manage kflop thread execution, including compile, link and load.  
@@ -379,7 +420,8 @@ class ThreadManager(object):
     '' - unknown version e.g. because using old style dspkflop.out file name.  This
              is treated as the 'oldest' version.
     '433m' - version extracted from .out file name e.g. dspkflop-433m.out
-             or can be parsed from Version string returned from kflop.
+             or can be parsed from Version string returned from kflop, or
+             by using kmotion.ExtractCoffVersionString() on a firmware file.
     None - not known.  This will often cause exceptions if the version needs to be known.
     """
     # Options for compile and/or load and/or run (in that sequence)...
@@ -413,21 +455,61 @@ class ThreadManager(object):
         reflashing the firmware.
         """
         self.thd2obj = {}
+    def parse_firmware_version(self, version_str):
+        """version_str is string from "version" script command.  Something like:
+          KFLOP 4.33m Build 16:29:35 Jun 26 2015
+        Extract the 4.33m, lowercase, and remove any punctuation e.g. 433m.  We then assume
+        a lexicographically increasing sequence for successive versions.
+        Also extract the build date e.g. "16:29:35 Jun 26 2015" and reorder
+        so it will sort properly too.
+        Return tuple e.g. ("433m", "2015/06/26 16:29:35").
+        It's wise to wrap this in a try/except just in case the kflop comms or firmware
+        file are garbled.
+        """
+        x = version_str.split(' ')
+        ver = x[1].lower().translate(None, '.,():[]{}')
+        t = x[3].split(':')
+        t = "%02d:%02d:%02d" % (int(t[0]),int(t[1]),int(t[2]),)
+        mm = {'jan':1,'feb':2,'mar':3,'apr':4,'may':5,'jun':6,'jul':7,'aug':8,'sep':9,'oct':10,'nov':11,'dec':12,}[x[4].lower()]
+        dd = int(x[5])
+        yyyy = int(x[6])
+        d = "%04d/%02d/%02d" % (yyyy, mm, dd)
+        return (ver, d+' '+t)
     def _fv_from_outfilename(self, filename):
+        """Return firmware version from a firmware file.
+        If filename is absolute, then the file may be opened to read the version symbol.
+        Filename's basename must start with 'dspkflop' and end with '.out' (case insensitive).
+        If the filename is relative, then the version is guessed by looking at the name
+        for a version identifier e.g. dspkflop-433M.out will be '433m'.  If the name is
+        just dspkflop.out then a zero length string will be returned, so ideally absolute
+        paths should be provided so that the version can be definitively otained.
+        """
         nx = os.path.splitext(filename)
         if nx[1].lower() != ".out":
             return None # not a .out file
         name = os.path.basename(nx[0]).lower()
+        if not name.startswith('dspkflop'):
+            return None
+        if os.path.isabs(filename):
+            rc, fvs = self.k.ExtractCoffVersionString(filename)
+            if rc==0:
+                try:
+                    fv, datecode = self.parse_firmware_version(fvs)
+                    return fv
+                except:
+                    pass
+            print "Warning: trouble extracting version info from", filename
         if name == 'dspkflop':
             return ''   # unversioned
         elif name.startswith('dspkflop-'):
-            return name[9:] # should be e.g. '433m'
+            return name[9:].lower() # should be e.g. '433m'
         return None # not a dspkflop file
     def _get_firmware_files(self, lst, dirname, fnames):
         for filename in fnames:
-            fv = self._fv_from_outfilename(filename)
+            absfile = os.path.join(dirname, filename)
+            fv = self._fv_from_outfilename(absfile)
             if fv is not None:
-                lst.append((fv, os.path.join(dirname, filename)))
+                lst.append((fv, absfile))
         fnames[:] = []  # No recursion
     def _find_fw_list(self, dirname):
         lst = []
@@ -455,7 +537,7 @@ class ThreadManager(object):
         return self.kflopoutfile
     def set_kflop(self, kflopdir=None, kflopname=None, fv=None, extract_syms=True):
         """Set kflop firmware parameters:
-        kflopdir -- firmware directory (default ~/KMotionX/DSP_KFLOP)
+        kflopdir -- firmware directory (default <_menigcnc_root>/DSP_KFLOP)
         kflopname -- specific .out file name e.g. DSPKFLOP-433m.out, or
                     defaults to latest firmware version available in
                     kflopdir if fv not specified, or else specific
@@ -476,8 +558,12 @@ class ThreadManager(object):
         the .dc file so that the .out files can be checked that they are
         compiled correctly.  The .dc and .out files should be kept together
         in the same directory.
+        FIXME: requiring the .c.dc file is error-prone.  Intention is to change
+        the naming convention for .out files to include the target version
+        e.g. foomatic(1-433p).out i.e. in the parens, 1st digit is the target
+        thread, then all after the dash is the condensed version id.
         """
-        self.kflopdir = os.path.expanduser(kflopdir or "~/KMotionX/DSP_KFLOP")
+        self.kflopdir = os.path.expanduser(kflopdir or os.path.join(_menigcnc_root, "DSP_KFLOP"))
         if kflopname is None:
             if fv is None:
                 # automatically find latest firmware if fv is None
@@ -525,7 +611,9 @@ class ThreadManager(object):
     def get_firmware_version_from_filename(self, filename):
         """Compute target version based on the file name (if it is a dspkflop firmware file)
         or look in the .dc file for target version of compiled source code.
-        filename -- for firmware, may be a relative name since it only looks at the name.
+        filename -- for firmware, may be a relative name since it only looks at the name,
+                    however a better result is obtained if an absolute path is provided
+                    since then it can check for sure.
                     For source code, an absolute path should be given since it needs to
                     look inside the matching .dc file.
                     Should be a xxx.c or a xxx(n).out file for source files.
@@ -565,11 +653,12 @@ class ThreadManager(object):
         
     def _set_ccbindir(self, ccbindir, cc):
         if not ccbindir:
-            homedir = os.path.expanduser("~")
             if cc == "cl6x":
+                # Linux development only...
+                homedir = os.path.expanduser("~")
                 self.ccbindir = os.path.join(homedir, "c6000_7.4.14/bin")
             else:
-                self.ccbindir = os.path.join(homedir, "KMotionX/bin")
+                self.ccbindir = os.path.join(_menigcnc_root, "bin")
         else:
             self.ccbindir = ccbindir
     def add_define(self, name, value):
@@ -640,8 +729,10 @@ class ThreadManager(object):
             #print "filename=", filename, os.path.exists(filename)
             if os.path.exists(outfile) and not os.path.exists(filename):
                 fv = self.get_firmware_version_from_filename(filename)
-                if fv and fv != self.target_firmware_version:
-                    err = "Binary file version %s not compatible with target firmware version %s:\n  %s" % (fv, self.target_firmware_version, filename)
+                tfv = self.target_firmware_version
+                if fv and fv != tfv:
+                    err = "Binary file version %s not compatible with target firmware version %s:\n  %s" \
+                            % (fv, tfv if tfv else '<unversioned>', filename)
                     self.k.add_message(CompilerErrorMessage(err, -1, filename))
                 rc = 0
                 if self.verbose: print "Skipping compile, object only"
@@ -1029,29 +1120,11 @@ class KMotionX(kmotion.KMotion):
             return r == "0"
         return -1
        
-    def parse_firmware_version(self, v):
-        """v is string from "version" script command.  Something like:
-          KFLOP 4.33m Build 16:29:35 Jun 26 2015
-        Extract the 4.33m, lowercase, and remove any punctuation e.g. 433m.  We then assume
-        a lexicographically increasing sequence for successive versions.
-        Also extract the build date e.g. "16:29:35 Jun 26 2015" and reorder
-        so it will sort properly too.
-        Return tuple e.g. ("433m", "2015/06/26 16:29:35")
-        """
-        x = v.split(' ')
-        ver = x[1].lower().translate(None, '.,():[]{}')
-        t = x[3].split(':')
-        t = "%02d:%02d:%02d" % (int(t[0]),int(t[1]),int(t[2]),)
-        mm = {'jan':1,'feb':2,'mar':3,'apr':4,'may':5,'jun':6,'jul':7,'aug':8,'sep':9,'oct':10,'nov':11,'dec':12,}[x[4].lower()]
-        dd = int(x[5])
-        yyyy = int(x[6])
-        d = "%04d/%02d/%02d" % (yyyy, mm, dd)
-        return (ver, d+' '+t)
     def read_firmware_version(self):
         rc, self.version_str = self.WriteLineReadLine("version")
         if not rc:
             try:
-                self.firmware_version, self.firmware_build = self.parse_firmware_version(self.version_str)
+                self.firmware_version, self.firmware_build = self.tmgr.parse_firmware_version(self.version_str)
                 self.tmgr.set_target_firmware_version(self.get_firmware_version())
             except ValueError:
                 #FIXME: for now, fall back to unqualified version (dspkflop.out) and hope for the best
