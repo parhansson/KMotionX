@@ -448,7 +448,6 @@ class ThreadManager(object):
         self.set_srcdir(os.path.expanduser(srcdir or "~"))
         self.defines = []
         self.opts = None
-        self.target_firmware_version = self.get_firmware_version_from_filename(self.kflopname)
     def invalidate_thread_cache(self):
         """Forget the thread code which is currently loaded in the kflop.  This should
         be called if the kflop threads become invalidated because of a reboot or
@@ -586,7 +585,7 @@ class ThreadManager(object):
             self.invalidate_thread_cache()
         self.kflopname = kflopname
         self.kflopoutfile = os.path.join(self.kflopdir, self.kflopname)
-        self.target_firmware_version = self.get_firmware_version_from_filename(kflopname)
+        self.target_firmware_version = self.get_firmware_version_from_filename(self.kflopoutfile)
         if self.verbose: print "Set target firmware:", self.kflopoutfile
         if extract_syms:
             # use nm to extract symbols...
