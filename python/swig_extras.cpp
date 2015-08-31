@@ -1920,6 +1920,7 @@ int GCodeInterpreter::SendToolSlot(int persist)
     int slot = p_setup->tool_table[p_setup->selected_tool_slot].slot;
 	//sprintf(s, "SetPersistHex %d %x", persist, p_setup->selected_tool_slot);
 	sprintf(s, "SetPersistHex %d %x", persist, slot);
+	printf("GCodeInterpreter::SendToolSlot setup=%p slot=%d\n", p_setup, slot);
 	if (CoordMotion->KMotionDLL->WriteLine(s)) {
 	    CoordMotion->SetAbort(); 
 	    return 1;

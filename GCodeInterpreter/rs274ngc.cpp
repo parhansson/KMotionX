@@ -5674,6 +5674,7 @@ static int convert_tool_select(	/* ARGUMENTS */
 
 	if (result=ConvertToolToIndex(settings,block->t_number,&settings->selected_tool_slot)) return result;
 	SELECT_TOOL(settings->selected_tool_slot);
+	printf("convert_tool_select: settings %p selected %d\n", settings, settings->selected_tool_slot);
     return RS274NGC_OK;
 }
 
