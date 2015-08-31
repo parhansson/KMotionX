@@ -434,8 +434,9 @@ class ThreadManager(object):
     LOADED = 2
     EXECUTED = 3
     
-    def __init__(self, k, srcdir=None, cc="tcc67", ccbindir=None, kflopdir=None, kflopname=None, verbose=False, target_firmware_version=None):
-        self.verbose = verbose
+    def __init__(self, k, srcdir=None, cc="tcc67", ccbindir=None, kflopdir=None, kflopname=None, \
+                 verbose_tmgr=False, target_firmware_version=None, objonly=False):
+        self.verbose = verbose_tmgr
         self.k = k; # KMotionX object (see below) or derivative.  May contain special
                     # compilation methods: ccompile_xxx(), gen_depend_xxx().  
                     # where xxx is the compiler name (cl6x or tcc67 etc.)  The method in
@@ -448,6 +449,7 @@ class ThreadManager(object):
         self.set_srcdir(os.path.expanduser(srcdir or "~"))
         self.defines = []
         self.opts = None
+        self.objonly = objonly
     def invalidate_thread_cache(self):
         """Forget the thread code which is currently loaded in the kflop.  This should
         be called if the kflop threads become invalidated because of a reboot or
@@ -722,6 +724,9 @@ class ThreadManager(object):
             load_opts = self.FORCE
         else:
             outfile = self.k.ConvertToOut(thread, filename, 1000)
+        if self.objonly:
+            # objonly option forces compilation to be skipped (useful for obj only distributions).
+            compile_opts = self.SKIP
         if compile_opts != self.SKIP:
             #print "test compile:"
             #print "outfile=", outfile, os.path.exists(outfile)
@@ -989,6 +994,9 @@ class KMotionX(kmotion.KMotion):
     Wrapper class for 'raw' KMotion.
     
     Adds thread manager for more intelligent handling of threads, different compilers etc.
+    
+    ThreadManager init defaults:
+    srcdir=None, cc="tcc67", ccbindir=None, kflopdir=None, kflopname=None, verbose=False, target_firmware_version=None, objonly=False
 
     Naming convention:
       UI options provide
@@ -997,9 +1005,8 @@ class KMotionX(kmotion.KMotion):
          kmotionobjpath : KMotion .out file path
       xxx.c ->[compile] xxx.o
     """
-    def __init__(self, dev, hostname = None, port = kmotion.KMOTION_PORT, with_console=False, dirlist=[], \
-                srcdir=None, cc="tcc67", ccbindir=None, kflopdir=None, kflopname=None, verbose_tmgr=False, \
-                target_firmware_version=None):
+    def __init__(self, dev, hostname = None, port = kmotion.KMOTION_PORT, with_console=False, dirlist=[], kflopdir=None, \
+                **tmgr_kwargs):
         if hostname is None:
             super(KMotionX, self).__init__(dev)
         else:
@@ -1021,8 +1028,7 @@ class KMotionX(kmotion.KMotion):
             # provide an explicit directory.
             kflopdir = os.path.join(_menigcnc_root, "DSP_KFLOP")
         self.SetMainPathRoot(_menigcnc_root)
-        self.tmgr = ThreadManager(self, srcdir=srcdir, cc=cc, ccbindir=ccbindir, kflopdir=kflopdir, kflopname=kflopname, \
-                                    verbose=verbose_tmgr, target_firmware_version=target_firmware_version)
+        self.tmgr = ThreadManager(self, kflopdir=kflopdir, **tmgr_kwargs)
         self.set_comm_result(-2)
         self.msgresp_poll_func = self.return_cancel
         self.firmware_version = None
