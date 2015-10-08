@@ -463,17 +463,18 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 			PipeOpen=true;  // only try once
 			if (!OpenPipe())
 			{
-			    #define OPEN_ATTEMPTS 100
-			    if (!remote_tcp) {
+			    #define OPEN_ATTEMPTS 10
+			    if (!use_tcp) {
 				    // pipe won't open try to launch server
 				    LaunchServer();
+					Sleep(100);
 				
 				    for (i=0; i<OPEN_ATTEMPTS; i++) // try for a few secs
 				    {
 					    if (OpenPipe())
 						    break;
 					
-					    Sleep(100);
+					    Sleep(500);
 				    }
 			    }
 			    else
@@ -486,7 +487,11 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 					ServerMessDisplayed=TRUE;
 					DoErrMsg("Unable to Connect to KMotion Server");
 					PipeMutex->Unlock();
-					exit(1);
+#ifdef _KMOTIONX
+		            throw std::system_error(ENXIO, std::system_category(), "Connect");
+#else
+                    exit(1);
+#endif
 				}
 			}
 		}

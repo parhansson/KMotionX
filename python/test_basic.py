@@ -21,8 +21,8 @@ def poll(k):
         
 
 # Select TCP or unix domain socket...
-#k = KMotionX(0, "192.168.7.2", with_console=True)
-k = KMotionX(0, with_console=True)
+k = KMotionX(0, "10.0.0.2", with_console=True)
+#k = KMotionX(0, with_console=True)
         
 poll(k)
 

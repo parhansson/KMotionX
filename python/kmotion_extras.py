@@ -3,6 +3,7 @@ Extra utilities for kmotion.py
 """
 
 import os, time, threading, sys, traceback
+import subprocess, shlex
 
 if sys.platform == 'win32':
     from . import _menigcnc_root, _menigcnc_version
@@ -239,12 +240,12 @@ class Task(threading.Thread):
             """
             try:
                 rc = target(self, *args, **kwargs)
-                print "task", self.name, "ran ok, rc=", rc
+                #print "task", self.name, "ran ok, rc=", rc
                 self.result = rc
                 self.done = True
                 self.msgqueue.append(TaskStatusMessage(TaskStatusMessage.DONE, rc, self))
             except Exception as e:
-                print "task", self.name, "abend"
+                #print "task", self.name, "abend"
                 self.result = traceback.format_exc(32)
                 self.err_result = True
                 self.done = True
@@ -266,6 +267,28 @@ class Task(threading.Thread):
         if self.can_start:
             self.can_start = False
             super(Task,self).start()
+        
+
+class RunCmd(object):
+    def __init__(self, cmd=None, cwd=None, input=None):
+        if isinstance(cmd, str):
+            #self.cmdlist = shlex.split(cmd)
+            self.cmd = cmd
+            self.shell = True
+        elif cmd is not None:
+            self.cmdlist = list(cmd)
+            self.shell = False
+        self.cwd = cwd
+        self.input = input
+    def __call__(self, task=None):
+        if self.shell:
+            rc = os.system(self.cmd)
+            return (rc, '')
+        else:
+		    p = subprocess.Popen(self.cmdlist, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+				    stderr=subprocess.STDOUT, cwd=self.cwd)
+		    s = p.communicate(input = self.input)[0]
+		    return (p.returncode, s)
         
 
 
@@ -394,7 +417,7 @@ class KMotionX_NoKFlop(object):
         #FIXME: need to implement this without the DLL.  When standalone compiling,
         # its use can be avoided by explicitly specifying a target firmware version
         # and firmware .out file.
-        raise NotImplementedError
+        raise NotImplementedError("ExtractCoffVersionString(%s)" % filename)
     def LoadCoff(self, thread, outfile):
         # Can avoid calling this by not specifying load or exec to ThreadManager.run()
         raise NotImplementedError
@@ -450,6 +473,9 @@ class ThreadManager(object):
         self.defines = []
         self.opts = None
         self.objonly = objonly
+        self.outdir = None  # use default (same as source dir)
+        self.ccfiledir = None  # use default (same as source dir)
+        self.depfiledir = None  # use default (same as source dir)
     def invalidate_thread_cache(self):
         """Forget the thread code which is currently loaded in the kflop.  This should
         be called if the kflop threads become invalidated because of a reboot or
@@ -492,13 +518,19 @@ class ThreadManager(object):
         if not name.startswith('dspkflop'):
             return None
         if os.path.isabs(filename):
-            rc, fvs = self.k.ExtractCoffVersionString(filename)
-            if rc==0:
-                try:
-                    fv, datecode = self.parse_firmware_version(fvs)
-                    return fv
-                except:
-                    pass
+            try:
+                rc, fvs = self.k.ExtractCoffVersionString(filename)
+                if rc==0:
+                    try:
+                        fv, datecode = self.parse_firmware_version(fvs)
+                        return fv
+                    except:
+                        pass
+            except NotImplementedError:
+                # Using dummy self.k without DLL.  Assume user knows what they're
+                # doing and extract version from the filename alone.
+                print "Warning: cannot verify firmware version, relying on naming convention for", filename
+                return self._fv_from_outfilename(os.path.basename(filename))
             print "Warning: trouble extracting version info from", filename
         if name == 'dspkflop':
             return ''   # unversioned
@@ -564,6 +596,8 @@ class ThreadManager(object):
         e.g. foomatic(1-433p).out i.e. in the parens, 1st digit is the target
         thread, then all after the dash is the condensed version id.
         """
+        if self.verbose:
+            print "set_kflop: dir=%s name=%s fv=%s" % (str(kflopdir), str(kflopname), str(fv))
         self.kflopdir = os.path.expanduser(kflopdir or os.path.join(_menigcnc_root, "DSP_KFLOP"))
         if kflopname is None:
             if fv is None:
@@ -675,7 +709,7 @@ class ThreadManager(object):
         self.incldirs.extend(dirnames)
     def set_opts(self, opts):
         self.opts = opts
-    def set_cc(self, cc, ccbindir=None):
+    def set_cc(self, cc, ccbindir=None, nmdir=None):
         """Set the C compiler (and, implicitly, linker and other related tools).
         We support one of 'cl6x' (TI compiler), 'tcc67' (native TCC67) or 'tcc67wine'
         (original Dynomotion compiler run under wine).
@@ -687,7 +721,10 @@ class ThreadManager(object):
         if cc == 'cl6x':
             self.cl6x = os.path.join(self.ccbindir, "cl6x")
             self.nm6x = os.path.join(self.ccbindir, "nm6x") # Needed for special linking
-            self.kflopexportsyms = self.kflopoutfile + ".nm"
+            if nmdir:
+                self.kflopexportsyms = os.path.join(nmdir, self.kflopname + ".nm")
+            else:
+                self.kflopexportsyms = self.kflopoutfile + ".nm"
             self.get_kflopsyms(self.kflopoutfile, self.kflopexportsyms)
         elif cc == 'tcc67' or cc == 'tcc67wine':
             self.tcc67 = os.path.join(self.ccbindir, cc)
@@ -698,6 +735,12 @@ class ThreadManager(object):
     def set_srcdir(self, srcdir):
         self.srcdir = srcdir
         self.incldirs = [self.kflopdir, self.srcdir]
+    def set_outdir(self, outdir):
+        self.outdir = outdir
+    def set_ccfiledir(self, outdir):
+        self.ccfiledir = outdir
+    def set_depfiledir(self, outdir):
+        self.depfiledir = outdir
         
     def run(self, filename, thread, compile_opts=AUTO, load_opts=AUTO, run_opts=AUTO, actions_done=[]):
         """Compile, load and run a C program in specified thread.
@@ -724,6 +767,8 @@ class ThreadManager(object):
             load_opts = self.FORCE
         else:
             outfile = self.k.ConvertToOut(thread, filename, 1000)
+            if self.outdir:
+                outfile = os.path.join(self.outdir, os.path.basename(outfile))
         if self.objonly:
             # objonly option forces compilation to be skipped (useful for obj only distributions).
             compile_opts = self.SKIP
@@ -799,15 +844,21 @@ class ThreadManager(object):
             if self.verbose: print "...yes, out file non-existent"
             return True
         try:
-            cccmd, deplist, fv = self.get_deplist(filename)
+            cccmd, deplist, fv, incldirs, macros = self.get_deplist(filename)
         except:
-            if self.verbose: print "...yes, no dependency file"
+            if self.verbose: print "...yes, no (or bad) dependency file"
             return True
         if cccmd != self.cc:
             if self.verbose: print "...yes, compiler changed", cccmd, '->', self.cc
             return True
         if fv != self.target_firmware_version:
             if self.verbose: print "...yes, target firmware changed", fv, '->', self.target_firmware_version
+            return True
+        if incldirs != self.incldirs:
+            if self.verbose: print "...yes, include dir path changed"
+            return True
+        if macros != self.defines:
+            if self.verbose: print "...yes, command line defines changed"
             return True
         for dfile in deplist:
             if mtold <= os.path.getmtime(dfile):
@@ -816,11 +867,16 @@ class ThreadManager(object):
         if self.verbose: print "...no"
         return False
     def get_ccfile_name(self, sourcefile_name):
+        if self.ccfiledir:
+            return os.path.join(self.ccfiledir, os.path.basename(sourcefile_name) + ".dc")
         return sourcefile_name + ".dc"
     def get_depfile_name(self, sourcefile_name):
+        if self.depfiledir:
+            return os.path.join(self.depfiledir, os.path.basename(sourcefile_name) + ".d")
         return sourcefile_name + ".d"
     def get_deplist(self, filename):
-        """Return tuple (cc, list of file names which 'filename' (source file) depends on, target firmware version).
+        """Return tuple (cc, list of file names which 'filename' (source file) depends on, target firmware version,
+                         list of incldirs, list of command line macro definitions).
         
         If there is a file of same name as filename, with a .dc extension then it
         is assumed to contain the compiler command line used last time.
@@ -834,12 +890,24 @@ class ThreadManager(object):
         """
         ccfile = self.get_ccfile_name(filename)
         depfile = self.get_depfile_name(filename)
+        incldirs = []
+        macros = []
         with open(ccfile, "r") as f:
             x = f.read().split('\n')
             cccmd = x[0]
             fv = x[1] if len(x)>1 else ''
+            if len(x) > 2:
+                for l in x[2:]:
+                    if len(l) > 2:
+                        typ = l[0]
+                        val = l[2:].strip()
+                        if typ == 'i':
+                            incldirs.append(val)
+                        elif typ == 'd':
+                            mm = val.split('=')
+                            macros.append((mm[0], mm[1])) 
         with open(depfile, "r") as f:
-            return (cccmd, [s.strip() for s in f.readlines()], fv)
+            return (cccmd, [s.strip() for s in f.readlines()], fv, incldirs, macros)
     def need_load(self, outfile, filename, thread):
         """Return true if need to load outfile to run as thread.
         False only returned if file name is same and it has the same mtime as the currently loaded obj file.
@@ -858,19 +926,36 @@ class ThreadManager(object):
         if self.verbose: print "...no"
         return False
         
-    def runcmd(self, cmd):
-        if self.verbose: print "Running command", cmd
+    def runcmd(self, cmd, cwd=None, input=None, silent=False):
+        """Run a system command.  
+        cmd may be a string a-la posix shell, or a list of
+          arg strings with the first entry as the command to run.
+        cwd (optional) is working directory for command
+        input (opt.) is string sent to command stdin.
+        Returns tuple (rc, sout) where rc is the int result code
+          and sout is the combined stdout/stderr string.  If there
+          is an error starting the command, returns (-1, 'cmd abend')
+        """
+        if not silent and self.verbose: print "Running command", cmd
         try:
-            rc = os.system(cmd)
-            return (rc, cmd)
+            rc, sout = RunCmd(cmd, cwd=cwd, input=input)()
+            if not silent and self.verbose: print sout
+            elif rc:
+                if silent or not self.verbose: 
+                    print "Error running command", cmd
+                print "result code:", rc
+                print sout
+            return (rc, sout)
         except:
-            return (1, "cmd abend")
+            return (-1, "cmd abend")
             
     def write_ccfile(self, filename):
         with open(self.get_ccfile_name(filename), "w") as f:
-            f.write(self.cc)
-            f.write('\n')
-            f.write(self.target_firmware_version)
+            f.write(self.cc + '\n' + self.target_firmware_version + '\n')
+            for inc in self.incldirs:
+                f.write("i "+inc+'\n')
+            for d, v in self.defines:
+                f.write("d "+d+"="+v+'\n')
             
     def gen_depend_cl6x(self, filename):
         depfilename = self.get_depfile_name(filename)
@@ -1259,16 +1344,17 @@ class Interpreter(kmotion.GCodeInterpreter):
 	    if msg:
 	        self.k.add_message(Message(lineno, msg))
     def HandleComplete(self, status, lineno, sequence_number, err):
-	    self.ErrorLineNo=lineno
-	    self.ErrorMsg=err
-	    self.exitcode=status
-	    self.finished=True;
-	    self.ui.handle_running(False)
-	    if status:
-	        self.k.add_message(ErrorMessage(lineno, err, status))
-	    else:
-	        self.k.add_message(Message(lineno, "complete"))
-	    #print "-k-", self.cm.WaitForMoveXYZABCFinished()
+        #print "Interpreter complete"
+        self.ErrorLineNo=lineno
+        self.ErrorMsg=err
+        self.exitcode=status
+        self.finished=True;
+        self.ui.handle_running(False)
+        if status:
+            self.k.add_message(ErrorMessage(lineno, err, status))
+        else:
+            self.k.add_message(Message(lineno, "complete"))
+        #print "-k-", self.cm.WaitForMoveXYZABCFinished()
     def HandleUser(self, msg):
         print "User callback:", msg
         return 0
