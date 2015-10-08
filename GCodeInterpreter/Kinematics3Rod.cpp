@@ -33,6 +33,7 @@ CKinematics3Rod::CKinematics3Rod()
 	Act2Off = sqrt(sqr(Act2Center.x) + sqr(Act2Center.y) + sqr(Act2Center.z));
 
 	m_MotionParams.MaxLinearLength = 0.25;  // limit the segment lengs for nonlinear systems
+	m_MotionParams.MaxRapidFRO = 1.0;       // limit the increase in Rapid HW FRO
 	m_MotionParams.UseOnlyLinearSegments=true;
 }
 

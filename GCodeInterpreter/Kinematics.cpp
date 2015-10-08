@@ -53,10 +53,12 @@ CKinematics::CKinematics()
 	m_MotionParams.CountsPerInchY = 100.0;
 	m_MotionParams.CountsPerInchZ = 100.0;
 	m_MotionParams.MaxLinearLength = 1e30;  //Infinity for default case
+	m_MotionParams.MaxRapidFRO = 1;
 	m_MotionParams.CollinearTol = 0.0002;
 	m_MotionParams.CornerTol = 0.0002;
 	m_MotionParams.FacetAngle = 0.5;
 	m_MotionParams.UseOnlyLinearSegments=false;
+	m_MotionParams.DoRapidsAsFeeds=false;
 	m_MotionParams.DegreesA=false;
 	m_MotionParams.DegreesB=false;
 	m_MotionParams.DegreesC=false;

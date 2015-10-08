@@ -464,7 +464,7 @@ void InvokeStatusCallback(int line_no, const char *msg)
 int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 {
 	MCODE_ACTION *p;
-	CString s;
+	CString s,e;
 	double value;
 	int ivalue,ipersist;
 
@@ -550,10 +550,10 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 		}
 
 
-		s = p->String;
-		s = s.Right(4);
-		s.MakeLower();
-		if (s.Right(4) == ".ngc")
+		e = p->String;
+		e = e.Right(4);
+		e.MakeLower();
+		if (e.Right(4) == ".ngc")
 		{
 			if (_setup.file_pointer!= NULL)
 			{
@@ -655,7 +655,15 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 	
 			// If a C File is specified then Compile and load it
 	
-			if (p->String[0])
+			if (e.Right(4) == ".out")
+			{
+				if (CoordMotion->KMotionDLL->LoadCoff((int)p->dParams[0], p->String))
+				{
+					CoordMotion->KMotionDLL->DoErrMsg("Error Loading KMotion Coff Program\r\r" + ((CString)p->String) + "\r\r");
+					return 1;
+				}
+			}
+			else if (p->String[0])
 			{
 				CString Err;
 	
@@ -1522,7 +1530,7 @@ int CGCodeInterpreter::SetCSS(int mode)  // set CSS mode
 		if (x_res != 0.0)
 			x_factor = (float)(1.0 / x_res);
 
-		float xoffset = (float)(UserUnitsToInchesX(_setup.axis_offset_x+_setup.origin_offset_x)*x_res);
+		float xoffset = (float)(UserUnitsToInchesX(_setup.axis_offset_x+_setup.origin_offset_x+_setup.tool_xoffset)*x_res);
 
 		float fspeed = (float)(p_setup->speed * CoordMotion->GetSpindleRateOverride());
 
