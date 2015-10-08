@@ -455,10 +455,10 @@ int CKMotionIO::ReadLineTimeOut(char *buf, int TimeOutms)
 			{
 				// it is!  
 				
-				// if next character is 1, 2, or 3
+				// if next character is 1-6
 				// handle it as a write file command
 				
-				if (buf[1] >=1 && buf[1] <=3)
+				if (buf[1] >=1 && buf[1] <=6)
 				{
 					// it is a disk command
 					HandleDiskIO(buf+1);
@@ -943,14 +943,22 @@ int CKMotionIO::LogToConsole(char *s)
 int CKMotionIO::HandleDiskIO(char *s)
 {
 	static FILE *f=NULL;
+	static FILE *fr=NULL;
 
 	int len = strlen(s);
 
 	if (len > 2) s[len-2]=0;  // strip off the CR LF
 
+// esc code 1 = fopen wt
+// esc code 2 = fprintf
+// esc code 3 = fclose write
+// esc code 4 = fopen rt
+// esc code 5 = read next
+// esc code 6 = fclose read
 
 	if (s[0] == 1)  // file open
 	{
+		if (f) fclose(f);
 		f=fopen(s+1,"wt");
 	}
 	else if (s[0] == 2)  // file write
@@ -967,9 +975,104 @@ int CKMotionIO::HandleDiskIO(char *s)
 		if (f) fclose(f);
 		f=NULL;
 	}
+	else if (s[0] == 4)  // file open read
+	{
+		if (fr) fclose(fr);
+		fr=fopen(s+1,"rt");
+
+		if (fr)
+		{
+			return ReadSendNextLine(fr);
+		}
+		else
+		{
+			return WriteLine("ReadDiskData 2 0");  // flag as file open error
+		}
+	}
+	else if (s[0] == 5)  // file read
+	{
+		ReadSendNextLine(fr);
+	}
+	else if (s[0] == 6)  // file close
+	{
+		if (fr) fclose(fr);
+		fr=NULL;
+	}
+
+	return 0;
+}
+
+int CKMotionIO::ReadSendNextLine(FILE *fr)
+{
+	char s[1024];
+	char w[256];
+
+	if (fr)
+	{
+		if (feof(fr))  // eof?
+		{
+			return WriteLine("ReadDiskData 3 0");  //signal eof
+		}
+		else
+		{
+			if (fgets(s,1024,fr)==NULL)
+			{
+				return WriteLine("ReadDiskData 3 0");  //signal eof
+			}
+
+			char *src, *dst;  // remove any CR LF characters
+			for (src = dst = s; *src != '\0'; src++) 
+			{
+				*dst = *src;
+				if (*dst != '\n' && *dst != '\r') dst++;
+			}
+			*dst = '\0';
+
+			int n = strlen(s);
+
+			Mutex->Lock();
+
+			sprintf(w,"ReadDiskData 1 %d",n);
+			if (WriteLine(w))
+			{
+				Mutex->Unlock();
+				return 1;
+			}
 
 
-
+			int i,k=0;  // reset bytes/line
+			for (i=0; i<n; i++)
+			{
+				sprintf(w+3*k,"%02X ",s[i]);  // append hex code
+				k++;
+				if (k==80) // full line? 
+				{
+					w[3*k-1]=0;  // null terminate
+					if (WriteLine(w))  //send the line
+					{
+						Mutex->Unlock();
+						return 1;
+					}
+					k=0;
+				}
+			}
+			
+			if (k>0) // any partial line remaining? 
+			{
+				w[3*k-1]=0;  // null terminate
+				if (WriteLine(w))  //send the line
+				{
+					Mutex->Unlock();
+					return 1;
+				}
+			}
+			Mutex->Unlock();
+		}
+	}
+	else
+	{
+		return WriteLine("ReadDiskData 2 0");  //signal error
+	}
 	return 0;
 }
 

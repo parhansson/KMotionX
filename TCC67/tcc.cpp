@@ -4037,7 +4037,7 @@ int get_reg(int rc)
     notfound: ;
     }
 
-	/* no register left : free the first one on the stack (VERY
+    /* no register left : free the first one on the stack (VERY
        IMPORTANT to start from the bottom to ensure that we don't
        spill registers used in gen_opi()) */
     

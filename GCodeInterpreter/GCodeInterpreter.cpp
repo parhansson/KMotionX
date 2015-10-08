@@ -324,7 +324,7 @@ int CGCodeInterpreter::DoExecute()
 		_setup.current_line = m_CurrentLine = m_GCodeReads;
 
 		StateSaved=false;  // remember we should save the state at some point
-		
+
 		// give output to caller			
 #ifndef _KMOTIONX
 		//not needed on linux
@@ -412,7 +412,7 @@ int CGCodeInterpreter::DoExecuteComplete()
 			// convert stopped absolute coordinates to GCode interpreter coordinates
 
 			ConvertAbsoluteToInterpreterCoord(CoordMotion->m_StoppedMachinex, CoordMotion->m_StoppedMachiney, CoordMotion->m_StoppedMachinez, CoordMotion->m_StoppedMachinea, CoordMotion->m_StoppedMachineb, CoordMotion->m_StoppedMachinec,
-												 &CoordMotion->m_Stoppedx,       &CoordMotion->m_Stoppedy, &CoordMotion->m_Stoppedz, &CoordMotion->m_Stoppeda, &CoordMotion->m_Stoppedb, &CoordMotion->m_Stoppedc);
+												 &CoordMotion->m_Stoppedx, &CoordMotion->m_Stoppedy, &CoordMotion->m_Stoppedz, &CoordMotion->m_Stoppeda, &CoordMotion->m_Stoppedb, &CoordMotion->m_Stoppedc);
 
 			_setup.file_pointer=NULL;
 		}
@@ -479,7 +479,7 @@ void InvokeStatusCallback(int line_no, const char *msg)
 int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 {
 	MCODE_ACTION *p;
-	char s[MAX_LINE];
+	CString s;
 	double value;
 	int ivalue,ipersist;
 
@@ -564,12 +564,11 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 			if (CoordMotion->WaitForSegmentsFinished()) {CoordMotion->SetAbort(); return 1;}
 		}
 
-		s[0] = '\0';
-		if(strlen(p->String) >= 4){
-			strcpy(s,p->String+ strlen(p->String) -4);
-			_strlwr(s);
-		}
-		if(s[0] != '\0' && strcmp(s,".ngc")==0)
+
+		s = p->String;
+		s = s.Right(4);
+		s.MakeLower();
+		if (s.Right(4) == ".ngc")
 		{
 			if (_setup.file_pointer!= NULL)
 			{
@@ -671,7 +670,15 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 	
 			// If a C File is specified then Compile and load it
 	
-			if (p->String[0])
+			if (e.Right(4) == ".out")
+			{
+				if (CoordMotion->KMotionDLL->LoadCoff((int)p->dParams[0], p->String))
+				{
+					CoordMotion->KMotionDLL->DoErrMsg("Error Loading KMotion Coff Program\r\r" + ((CString)p->String) + "\r\r");
+					return 1;
+				}
+			}
+			else if (p->String[0])
 			{
 				char Err[500];
 	
@@ -1476,10 +1483,10 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 			sprintf(s, "New Line does not contain a Feedrate F command.  Backward scan found:\r\rF%g\r\rUse this feedrate?",f);
 			if (AfxMessageBox(s,MB_YESNO)==IDYES)
 			{
-					p_setup->feed_rate=m_StoppedInterpState.feed_rate=f;
-				}
+				p_setup->feed_rate=m_StoppedInterpState.feed_rate=f;
+			}
 			else
-				{
+			{
 				m_StoppedInterpState.feed_rate=p_setup->feed_rate;
 			}
 		}
@@ -1556,7 +1563,7 @@ int CGCodeInterpreter::SetCSS(int mode)  // set CSS mode
 		if (x_res != 0.0)
 			x_factor = (float)(1.0 / x_res);
 
-		float xoffset = (float)(UserUnitsToInchesX(_setup.axis_offset_x+_setup.origin_offset_x)*x_res);
+		float xoffset = (float)(UserUnitsToInchesX(_setup.axis_offset_x+_setup.origin_offset_x+_setup.tool_xoffset)*x_res);
 
 		float fspeed = (float)(p_setup->speed * CoordMotion->GetSpindleRateOverride());
 
