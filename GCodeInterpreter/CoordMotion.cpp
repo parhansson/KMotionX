@@ -291,10 +291,24 @@ int CCoordMotion::StraightTraverse(double x, double y, double z, double a, doubl
 
 	if (m_Abort) return 1;
 
+	// check if we should treat rapids as 2nd order feeds as required on some non-linear systems
+	if (Kinematics->m_MotionParams.DoRapidsAsFeeds)
+	{
+		// commit any segments waiting to potentially be combined
+		if (CommitPendingSegments(false)) return 1;
+		if (nsegs>0)GetSegPtr(nsegs-1)->StopRequiredNextSeg=TRUE;  // stop in case FRO changes
+		if (DoKMotionBufCmd("BegRapidBuf",sequence_number)) return 1;
+		int result = StraightFeedAccelRapid(1e99, 1e99, true, NoCallback, x, y, z, a, b, c, sequence_number, ID);
+		// commit any segments waiting to potentially be combined
+		if (CommitPendingSegments(true)) return 1;
+		if (nsegs>0)GetSegPtr(nsegs-1)->StopRequiredNextSeg=TRUE;  // stop in case FRO changes
+		if (DoKMotionBufCmd("EndRapidBuf",sequence_number)) return 1;
+		return result;
+	}
+
 	// check if we should sync parameters with KFLOP
 	if (GetRapidSettings()) return 1;
 		
-
 	// if exceeding limits trigger Halt
 	char errmsg[10];
 	if (CheckSoftLimits(x,y,z,a,b,c,errmsg)) 
@@ -334,7 +348,7 @@ int CCoordMotion::StraightTraverse(double x, double y, double z, double a, doubl
 
 
 	// commit any segments waiting to potentially be combined
-	if (CommitPendingSegments()) return 1;
+	if (CommitPendingSegments(false)) return 1;
 
 	if (m_StraightTraverseCallback && !NoCallback) m_StraightTraverseCallback(x,y,z,_setup.sequence_number);
 	if (m_StraightTraverseSixAxisCallback && !NoCallback) m_StraightTraverseSixAxisCallback(x,y,z,a,b,c,_setup.sequence_number);
@@ -535,7 +549,7 @@ int CCoordMotion::ArcFeedAccel(double DesiredFeedRate_in_per_sec, double Desired
 	}
 
 	// commit any segments waiting to potentially be combined
-	if (CommitPendingSegments()) return 1;
+	if (CommitPendingSegments(false)) return 1;
 
 	// Normal case: just draw the entire single simple arc
 	// from where we are now to the end of the arc
@@ -676,7 +690,7 @@ int CCoordMotion::ArcFeedAccel(double DesiredFeedRate_in_per_sec, double Desired
 
 // Commit those segments pending to be combined
 
-int CCoordMotion::CommitPendingSegments()
+int CCoordMotion::CommitPendingSegments(bool RapidMode)
 {
 	if (m_NumLinearNotDrawn>0)
 	{
@@ -687,6 +701,9 @@ int CCoordMotion::CommitPendingSegments()
 		// only call back and draw segments that were not combined
 		// also multiple segments might have been added to round the corner
 		
+		if (RapidMode)
+			DoSegmentCallbacksRapid(PrevNsegs-m_NumLinearNotDrawn,nsegs-1);
+		else
 		DoSegmentCallbacks(PrevNsegs-m_NumLinearNotDrawn,nsegs-1);
 
 		// limit speeds based on proportion in that direction
@@ -704,7 +721,7 @@ int CCoordMotion::CommitPendingSegments()
 	return 0;
 }
 
-// Straight Feed with specified Acceleration
+// Straight Feed (using Max possible Acceleration)
 
 int CCoordMotion::StraightFeed(double DesiredFeedRate_in_per_sec,
 							   double x, double y, double z, double a, double b, double c, int sequence_number, int ID)
@@ -712,17 +729,36 @@ int CCoordMotion::StraightFeed(double DesiredFeedRate_in_per_sec,
 	return StraightFeedAccel(DesiredFeedRate_in_per_sec, 1e99, x, y, z, a, b, c, sequence_number, ID);
 }
 	
-// Straight Feed (using Max possible Acceleration)
+// Straight Feed with specified Acceleration	
 	
 int CCoordMotion::StraightFeedAccel(double DesiredFeedRate_in_per_sec, double DesiredAccel,
 							   double x, double y, double z, double a, double b, double c, int sequence_number, int ID)
 {
+	return StraightFeedAccelRapid(DesiredFeedRate_in_per_sec, 1e99, false, false, x, y, z, a, b, c, sequence_number, ID);
+}
+
+// Straight Feed with specified Acceleration and RapidMode	
+
+int CCoordMotion::StraightFeedAccelRapid(double DesiredFeedRate_in_per_sec, double DesiredAccel, bool RapidMode, bool NoCallback,
+							   double x, double y, double z, double a, double b, double c, int sequence_number, int ID)
+{
+	MOTION_PARAMS *MP=&Kinematics->m_MotionParams;
 	double HW,SW;
+
+	if (RapidMode)
+	{
+		SW = 1.0;  // for rapids use all HW
+		HW = m_FeedRateRapidOverride;
+
+		if (HW > MP->MaxRapidFRO) HW = MP->MaxRapidFRO;  // limit to max allowed regardless
+	}
+	else
+	{
 	DetermineSoftwareHardwareFRO(HW,SW);
+	}
 
 	double FeedRateToUse = DesiredFeedRate_in_per_sec * SW;
 	double MaxLength;
-	MOTION_PARAMS *MP=&Kinematics->m_MotionParams;
 
 	if (m_Abort) return 1;
 
@@ -742,10 +778,13 @@ int CCoordMotion::StraightFeedAccel(double DesiredFeedRate_in_per_sec, double De
 	if (CheckSoftLimits(x,y,z,a,b,c,errmsg)) 
 	{
 		char message[200];
+		const char * FunctionType;
+		if (RapidMode) FunctionType=" Straight Traverse";
+		else FunctionType=" Straight Feed";
 		if (m_Simulate)
 		{
-			sprintf(message, "Soft Limit %s Straight Feed\r\r"
-					"Soft Limits disabled for remainder of Simulation",errmsg);
+			sprintf(message, "Soft Limit %s%s\r\r"
+					"Soft Limits disabled for remainder of Simulation",errmsg,FunctionType);
 			KMotionDLL->DoErrMsg(message);
 			m_DisableSoftLimits=true;
 		}
@@ -754,7 +793,7 @@ int CCoordMotion::StraightFeedAccel(double DesiredFeedRate_in_per_sec, double De
 			SetHalt();
 			CheckMotionHalt(true);
 			SetAbort();
-			sprintf(message, "Soft Limit %s Straight Feed Job Halted",errmsg);
+			sprintf(message, "Soft Limit %s%s Job Halted",errmsg, FunctionType);
 			KMotionDLL->DoErrMsg(message);
 			return 1;
 		}
@@ -775,7 +814,7 @@ int CCoordMotion::StraightFeedAccel(double DesiredFeedRate_in_per_sec, double De
 
 	double d = FeedRateDistance(dx, dy, dz, da, db, dc, &pure_angle);
 
-	if (d==0.0) return 0;  // ignore zero length moves
+	if (d==0.0 && !RapidMode) return 0;  // ignore zero length moves
 
 	// if this move is expected to take more than 1/2th of the download time then break int0 2 parts (recursively)
 	// (or if greater than the Kinematics length (line might actually be curved in actuator space)
@@ -785,11 +824,11 @@ int CCoordMotion::StraightFeedAccel(double DesiredFeedRate_in_per_sec, double De
 
 	if (!m_Simulate && !pure_angle && d > MaxLength)
 	{
-		int result = StraightFeedAccel(DesiredFeedRate_in_per_sec, DesiredAccel, current_x+dx/2.0, current_y+dy/2.0, current_z+dz/2.0, 
+		int result = StraightFeedAccelRapid(DesiredFeedRate_in_per_sec, DesiredAccel, RapidMode, NoCallback,current_x+dx/2.0, current_y+dy/2.0, current_z+dz/2.0, 
 																				 current_a+da/2.0, current_b+db/2.0, current_c+dc/2.0, sequence_number, ID);
 		if (result) return result;
 		
-		return StraightFeedAccel(DesiredFeedRate_in_per_sec, DesiredAccel, x, y, z, a, b, c, sequence_number, ID);
+		return StraightFeedAccelRapid(DesiredFeedRate_in_per_sec, DesiredAccel, RapidMode, NoCallback, x, y, z, a, b, c, sequence_number, ID);
 	}
 
 
@@ -797,8 +836,16 @@ int CCoordMotion::StraightFeedAccel(double DesiredFeedRate_in_per_sec, double De
 	if (m_Simulate) 
 	{
 		// if simulating just draw it now
+		if (RapidMode)
+		{
+			if (m_StraightTraverseCallback && !NoCallback) m_StraightTraverseCallback(x,y,z,_setup.sequence_number);
+			if (m_StraightTraverseSixAxisCallback && !NoCallback) m_StraightTraverseSixAxisCallback(x,y,z,a,b,c,_setup.sequence_number);
+		}
+		else
+		{
 		if (m_StraightFeedCallback) m_StraightFeedCallback(DesiredFeedRate_in_per_sec,x,y,z,sequence_number, ID);
 		if (m_StraightFeedSixAxisCallback) m_StraightFeedSixAxisCallback(DesiredFeedRate_in_per_sec,x,y,z,a,b,c,sequence_number, ID);
+		}
 		current_x  = x;
 		current_y  = y;
 		current_z  = z;
@@ -822,7 +869,7 @@ int CCoordMotion::StraightFeedAccel(double DesiredFeedRate_in_per_sec, double De
 						 x, y, z, a, b, c,
 						 FeedRateToUse, 
 						 DesiredAccel,
-						 MaxLength, sequence_number, ID);
+						 MaxLength, sequence_number, ID, m_NumLinearNotDrawn);
 
 	if (result==1) {SetAbort(); return 1;}
 
@@ -836,7 +883,19 @@ int CCoordMotion::StraightFeedAccel(double DesiredFeedRate_in_per_sec, double De
 	// also multiple segments might have been added to round the corner
 	
 	if (result==0)
+	{
+		if (RapidMode)
+		{
+			if (!NoCallback)
+			{
+				DoSegmentCallbacksRapid(AlreadyDrawn+1,nsegs-1-m_NumLinearNotDrawn);
+			}
+		}
+		else
+		{
 		DoSegmentCallbacks(AlreadyDrawn+1,nsegs-1-m_NumLinearNotDrawn);
+		}
+	}
 
 	// limit speeds based on proportion in that direction
 	// since the segment might have been combined
@@ -878,6 +937,27 @@ void CCoordMotion::DoSegmentCallbacks(int i0, int i1)
 						m_StraightFeedCallback(p->OrigVel,p->x1,p->y1,p->z1,p->sequence_number,p->ID);
 					if (m_StraightFeedSixAxisCallback)
 						m_StraightFeedSixAxisCallback(p->OrigVel,p->x1,p->y1,p->z1,p->a1,p->b1,p->c1,p->sequence_number,p->ID);
+				}
+			}
+		}
+	}
+}
+
+void CCoordMotion::DoSegmentCallbacksRapid(int i0, int i1)
+{
+	if (nsegs >= 1 && (m_StraightTraverseCallback || m_StraightTraverseSixAxisCallback)) 
+	{
+		for (int i = i0; i<=i1; i++)
+		{
+			if (i>=0)
+			{
+				SEGMENT *p=GetSegPtr(i);
+				if (p->type == SEG_LINEAR)
+				{
+					if (m_StraightTraverseCallback)
+						if (m_StraightTraverseCallback) m_StraightTraverseCallback(p->x1,p->y1,p->z1,_setup.sequence_number);
+					if (m_StraightTraverseSixAxisCallback)
+						if (m_StraightTraverseSixAxisCallback) m_StraightTraverseSixAxisCallback(p->x1,p->y1,p->z1,p->a1,p->b1,p->c1,p->sequence_number);
 				}
 			}
 		}
@@ -1052,7 +1132,7 @@ int CCoordMotion::Dwell(double seconds, int sequence_number)
 	if (m_Abort) return 1;
 
 	// commit any segments waiting to potentially be combined
-	if (CommitPendingSegments()) return 1;
+	if (CommitPendingSegments(false)) return 1;
 
 	// put something in the displayed path that can be found
 	if (m_StraightTraverseCallback) m_StraightTraverseCallback(current_x, current_y, current_z,_setup.sequence_number);
@@ -1559,7 +1639,7 @@ int CCoordMotion::FlushSegments()
 			m_SegmentsStartedExecuting = true;
 			segments_executing=segments;
 		}
-
+		
 		// Tell KFLOP that the buffer is complete sp that it doesn't worry about starvation
 		if(KMotionDLL->WriteLine("FlushBuf")) {SetAbort(); return 1;}
 
@@ -1630,7 +1710,7 @@ void CCoordMotion::DownloadInit()
 int CCoordMotion::ExecutionStop()
 {
 	// commit any segments waiting to potentially be combined
-	if (CommitPendingSegments()) return 1;
+	if (CommitPendingSegments(false)) return 1;
 
 	if (m_Abort) return 1;
 
@@ -2557,7 +2637,7 @@ void CCoordMotion::SetFeedRateOverride(double v)
 	char s[MAX_LINE];
 	double HW,SW;
 
-	m_FeedRateOverride=v;
+	m_FeedRateOverride=v;	
 	
 	if (!m_Simulate)
 	{
@@ -2570,6 +2650,8 @@ void CCoordMotion::SetFeedRateOverride(double v)
 void CCoordMotion::SetFeedRateRapidOverride(double v)
 {
 	char s[MAX_LINE];
+
+	if (v > Kinematics->m_MotionParams.MaxRapidFRO) v = Kinematics->m_MotionParams.MaxRapidFRO;
 
 	m_FeedRateRapidOverride=v;	
 

@@ -58,6 +58,7 @@ public:
 	int WriteLineWithEcho(const char * s);
 	int WriteLine(const char *s);
 	int ReadBytesAvailable(char *RxBuffer, int maxbytes, DWORD *BytesReceived, int timeout_ms);
+	int ReadSendNextLine(FILE *fr);
 	int ServiceConsole();
 	int SetConsoleCallback(SERVER_CONSOLE_HANDLER *ch);
 	int Connect();
