@@ -291,8 +291,12 @@ int read_setup_file(     /* ARGUMENT VALUES             */
 	{
 		if (fgets(buffer, 1000, setup_file_port) IS NULL)
 			DRIVER_ERROR_CF("Bad %s file format", "setup");
-		else if (buffer[0] IS '\n')
-			break;
+		else {
+		    char * p;
+		    for (p = buffer; isspace(*p); ++p);
+		    if (!*p)
+			    break;
+        }
 	}
 
 	for (;;)

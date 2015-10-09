@@ -484,7 +484,8 @@ void InvokeStatusCallback(int line_no, const char *msg)
 int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 {
 	MCODE_ACTION *p;
-	CString s;
+	char s[MAX_LINE];
+	char e[MAX_LINE];
 	double value;
 	int ivalue,ipersist;
 
@@ -569,11 +570,14 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 			if (CoordMotion->WaitForSegmentsFinished()) {CoordMotion->SetAbort(); return 1;}
 		}
 
-
-		s = p->String;
-		s = s.Right(4);
-		s.MakeLower();
-		if (s.Right(4) == ".ngc")
+        // Get lowercase file extension (incl. the dot).
+		e[0] = '\0';
+		if(strlen(p->String) >= 4){
+			strcpy(e,p->String+ strlen(p->String) -4);
+			_strlwr(e);
+		}
+		
+		if(!strcmp(e,".ngc"))
 		{
 			if (_setup.file_pointer!= NULL)
 			{
@@ -674,12 +678,14 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 			}
 	
 			// If a C File is specified then Compile and load it
-	
-			if (e.Right(4) == ".out")
+	        // Also support a .out file, which is loaded only.
+			if(!strcmp(e,".out"))
 			{
 				if (CoordMotion->KMotionDLL->LoadCoff((int)p->dParams[0], p->String))
 				{
-					CoordMotion->KMotionDLL->DoErrMsg("Error Loading KMotion Coff Program\r\r" + ((CString)p->String) + "\r\r");
+					char message[1024];
+					sprintf(message,"Error Loading KMotion Coff Program\r\r%s", p->String);
+					CoordMotion->KMotionDLL->DoErrMsg(message);
 					return 1;
 				}
 			}
