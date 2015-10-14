@@ -424,6 +424,12 @@ int CKMotionDLL::OpenPipe()
 }
 
 
+void CKMotionDLL::Terminate(int exit_code)
+{
+    // Default implementation just calls ::exit()
+    ::exit(exit_code);
+}
+
 
 int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 {
@@ -490,7 +496,7 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 #ifdef _KMOTIONX
 		            throw std::system_error(ENXIO, std::system_category(), "Connect");
 #else
-                    exit(1);
+                    Terminate(1);
 #endif
 				}
 			}
@@ -592,7 +598,7 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 		ServerMessDisplayed=TRUE;
 
 		DoErrMsg(serr_msg);
-		exit(1);
+		Terminate(1);
 	}
 	
 	if (ReceivedErrMsg)
@@ -690,7 +696,7 @@ int CKMotionDLL::LaunchServer()
 		ServerMessDisplayed = true;
 		DoErrMsg("Unable to execute:\r\rKMotionServer.exe\r\r"
 			"Try re-installing software or copy this file to the same location as KMotion.exe");
-		exit(1);
+		Terminate(1);
 	}
 
 	
@@ -704,7 +710,7 @@ int CKMotionDLL::LaunchServer()
     //sprintf(command, "%s/%s", MainPath,"KMotionServer");
 	printf("%s:%d Launch KMotionServer first!\n",__FILE__,__LINE__);
 	PipeMutex->Unlock();
-	exit(1);
+	Terminate(1);
     #else
     sprintf(cmd, "%s/%s", GetServerDir(),"KMotionServer &");
     system(cmd);

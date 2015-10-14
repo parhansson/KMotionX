@@ -237,6 +237,8 @@ public:
     const char * GetCompilerDir(void);
     void SetServerDir(const char * dir);
     const char * GetServerDir(void);
+    
+    virtual void Terminate(int exit_code);
 
 private:
 

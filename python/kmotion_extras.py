@@ -8,6 +8,10 @@ import subprocess, shlex
 if sys.platform == 'win32':
     from . import _menigcnc_root, _menigcnc_version
     from . import kmotion
+    #_menigcnc_root = "c:\\cnc"
+    #_menigcnc_version = "v2"
+    #print "Windows"
+    #import kmotion
 else:
     #FIXME: modularize this!
     _menigcnc_root = os.path.abspath(os.path.join(os.environ['KMOTION_BIN'], ".."))
@@ -1121,6 +1125,8 @@ class KMotionX(kmotion.KMotion):
         self.version_str = ''
         self.fw_dirlist = dirlist
         self.read_firmware_version()
+    def Terminate(self, exit_code):
+        raise RuntimeError("KMotion module terminated, exit code %d" % exit_code)
     def return_cancel(self, kthread):
         return kmotion.IDCANCEL
     def set_msgresp_poll(self, msgresp_poll_func):

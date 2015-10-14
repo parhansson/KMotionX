@@ -6640,6 +6640,31 @@ void SwigDirector_KMotion::ChangedPCComm(intvec const &PC_comm) {
 }
 
 
+void SwigDirector_KMotion::Terminate(int exit_code) {
+  PyObject *self = NULL;
+  (void)self;
+  swig::SwigVar_PyObject obj0;
+  obj0 = SWIG_From_int(static_cast< int >(exit_code));
+  if (!swig_get_self()) {
+    Swig::DirectorException::raise("'self' uninitialized, maybe you forgot to call KMotion.__init__.");
+  }
+#if defined(SWIG_PYTHON_DIRECTOR_VTABLE)
+  const size_t swig_method_index = 13;
+  const char * const swig_method_name = "Terminate";
+  PyObject* method = swig_get_method(swig_method_index, swig_method_name);
+  swig::SwigVar_PyObject result = PyObject_CallFunction(method, (char *)"(O)" ,(PyObject *)obj0);
+#else
+  swig::SwigVar_PyObject result = PyObject_CallMethod(swig_get_self(), (char *)"Terminate", (char *)"(O)" ,(PyObject *)obj0);
+#endif
+  if (!result) {
+    PyObject *error = PyErr_Occurred();
+    if (error) {
+      Swig::DirectorMethodException::raise("Error detected when calling 'KMotion.Terminate'");
+    }
+  }
+}
+
+
 void SwigDirector_KMotion::HandleConsole(char const *buf) {
   PyObject *self = NULL;
   (void)self;
@@ -6649,7 +6674,7 @@ void SwigDirector_KMotion::HandleConsole(char const *buf) {
     Swig::DirectorException::raise("'self' uninitialized, maybe you forgot to call KMotion.__init__.");
   }
 #if defined(SWIG_PYTHON_DIRECTOR_VTABLE)
-  const size_t swig_method_index = 13;
+  const size_t swig_method_index = 14;
   const char * const swig_method_name = "HandleConsole";
   PyObject* method = swig_get_method(swig_method_index, swig_method_name);
   swig::SwigVar_PyObject result = PyObject_CallFunction(method, (char *)"(O)" ,(PyObject *)obj0);
@@ -6674,7 +6699,7 @@ void SwigDirector_KMotion::HandleErrMsg(char const *buf) {
     Swig::DirectorException::raise("'self' uninitialized, maybe you forgot to call KMotion.__init__.");
   }
 #if defined(SWIG_PYTHON_DIRECTOR_VTABLE)
-  const size_t swig_method_index = 14;
+  const size_t swig_method_index = 15;
   const char * const swig_method_name = "HandleErrMsg";
   PyObject* method = swig_get_method(swig_method_index, swig_method_name);
   swig::SwigVar_PyObject result = PyObject_CallFunction(method, (char *)"(O)" ,(PyObject *)obj0);
@@ -6704,7 +6729,7 @@ int SwigDirector_KMotion::HandleMsgBox(char const *title, char const *msg, int o
     Swig::DirectorException::raise("'self' uninitialized, maybe you forgot to call KMotion.__init__.");
   }
 #if defined(SWIG_PYTHON_DIRECTOR_VTABLE)
-  const size_t swig_method_index = 15;
+  const size_t swig_method_index = 16;
   const char * const swig_method_name = "HandleMsgBox";
   PyObject* method = swig_get_method(swig_method_index, swig_method_name);
   swig::SwigVar_PyObject result = PyObject_CallFunction(method, (char *)"(OOO)" ,(PyObject *)obj0,(PyObject *)obj1,(PyObject *)obj2);
@@ -17343,6 +17368,35 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_CKMotionDLL_Terminate(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CKMotionDLL *arg1 = (CKMotionDLL *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:CKMotionDLL_Terminate",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CKMotionDLL, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CKMotionDLL_Terminate" "', argument " "1"" of type '" "CKMotionDLL *""'"); 
+  }
+  arg1 = reinterpret_cast< CKMotionDLL * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CKMotionDLL_Terminate" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  (arg1)->Terminate(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_CKMotionDLL_ListLocations(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CKMotionDLL *arg1 = (CKMotionDLL *) 0 ;
@@ -21847,56 +21901,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_MotionParams_UseOnlyLinearSegments_set(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  MOTION_PARAMS *arg1 = (MOTION_PARAMS *) 0 ;
-  bool arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  bool val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:MotionParams_UseOnlyLinearSegments_set",&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_MOTION_PARAMS, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MotionParams_UseOnlyLinearSegments_set" "', argument " "1"" of type '" "MOTION_PARAMS *""'"); 
-  }
-  arg1 = reinterpret_cast< MOTION_PARAMS * >(argp1);
-  ecode2 = SWIG_AsVal_bool(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MotionParams_UseOnlyLinearSegments_set" "', argument " "2"" of type '" "bool""'");
-  } 
-  arg2 = static_cast< bool >(val2);
-  if (arg1) (arg1)->UseOnlyLinearSegments = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_MotionParams_UseOnlyLinearSegments_get(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  MOTION_PARAMS *arg1 = (MOTION_PARAMS *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  bool result;
-  
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_MOTION_PARAMS, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MotionParams_UseOnlyLinearSegments_get" "', argument " "1"" of type '" "MOTION_PARAMS *""'"); 
-  }
-  arg1 = reinterpret_cast< MOTION_PARAMS * >(argp1);
-  result = (bool) ((arg1)->UseOnlyLinearSegments);
-  resultobj = SWIG_From_bool(static_cast< bool >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_MotionParams_ArcsToSegs_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   MOTION_PARAMS *arg1 = (MOTION_PARAMS *) 0 ;
@@ -22091,6 +22095,156 @@ SWIGINTERN PyObject *_wrap_MotionParams_DegreesC_get(PyObject *self, PyObject *a
   arg1 = reinterpret_cast< MOTION_PARAMS * >(argp1);
   result = (bool) ((arg1)->DegreesC);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MotionParams_UseOnlyLinearSegments_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MOTION_PARAMS *arg1 = (MOTION_PARAMS *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:MotionParams_UseOnlyLinearSegments_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_MOTION_PARAMS, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MotionParams_UseOnlyLinearSegments_set" "', argument " "1"" of type '" "MOTION_PARAMS *""'"); 
+  }
+  arg1 = reinterpret_cast< MOTION_PARAMS * >(argp1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MotionParams_UseOnlyLinearSegments_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->UseOnlyLinearSegments = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MotionParams_UseOnlyLinearSegments_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MOTION_PARAMS *arg1 = (MOTION_PARAMS *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_MOTION_PARAMS, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MotionParams_UseOnlyLinearSegments_get" "', argument " "1"" of type '" "MOTION_PARAMS *""'"); 
+  }
+  arg1 = reinterpret_cast< MOTION_PARAMS * >(argp1);
+  result = (bool) ((arg1)->UseOnlyLinearSegments);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MotionParams_DoRapidsAsFeeds_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MOTION_PARAMS *arg1 = (MOTION_PARAMS *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:MotionParams_DoRapidsAsFeeds_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_MOTION_PARAMS, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MotionParams_DoRapidsAsFeeds_set" "', argument " "1"" of type '" "MOTION_PARAMS *""'"); 
+  }
+  arg1 = reinterpret_cast< MOTION_PARAMS * >(argp1);
+  ecode2 = SWIG_AsVal_bool(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MotionParams_DoRapidsAsFeeds_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->DoRapidsAsFeeds = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MotionParams_DoRapidsAsFeeds_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MOTION_PARAMS *arg1 = (MOTION_PARAMS *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_MOTION_PARAMS, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MotionParams_DoRapidsAsFeeds_get" "', argument " "1"" of type '" "MOTION_PARAMS *""'"); 
+  }
+  arg1 = reinterpret_cast< MOTION_PARAMS * >(argp1);
+  result = (bool) ((arg1)->DoRapidsAsFeeds);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MotionParams_MaxRapidFRO_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MOTION_PARAMS *arg1 = (MOTION_PARAMS *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:MotionParams_MaxRapidFRO_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_MOTION_PARAMS, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MotionParams_MaxRapidFRO_set" "', argument " "1"" of type '" "MOTION_PARAMS *""'"); 
+  }
+  arg1 = reinterpret_cast< MOTION_PARAMS * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MotionParams_MaxRapidFRO_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->MaxRapidFRO = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MotionParams_MaxRapidFRO_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MOTION_PARAMS *arg1 = (MOTION_PARAMS *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_MOTION_PARAMS, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MotionParams_MaxRapidFRO_get" "', argument " "1"" of type '" "MOTION_PARAMS *""'"); 
+  }
+  arg1 = reinterpret_cast< MOTION_PARAMS * >(argp1);
+  result = (double) ((arg1)->MaxRapidFRO);
+  resultobj = SWIG_From_double(static_cast< double >(result));
   return resultobj;
 fail:
   return NULL;
@@ -25592,6 +25746,135 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_CoordMotion_StraightFeedAccelRapid(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CCoordMotion *arg1 = (CCoordMotion *) 0 ;
+  double arg2 ;
+  double arg3 ;
+  bool arg4 ;
+  bool arg5 ;
+  double arg6 ;
+  double arg7 ;
+  double arg8 ;
+  double arg9 ;
+  double arg10 ;
+  double arg11 ;
+  int arg12 ;
+  int arg13 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  double val3 ;
+  int ecode3 = 0 ;
+  bool val4 ;
+  int ecode4 = 0 ;
+  bool val5 ;
+  int ecode5 = 0 ;
+  double val6 ;
+  int ecode6 = 0 ;
+  double val7 ;
+  int ecode7 = 0 ;
+  double val8 ;
+  int ecode8 = 0 ;
+  double val9 ;
+  int ecode9 = 0 ;
+  double val10 ;
+  int ecode10 = 0 ;
+  double val11 ;
+  int ecode11 = 0 ;
+  int val12 ;
+  int ecode12 = 0 ;
+  int val13 ;
+  int ecode13 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
+  PyObject * obj7 = 0 ;
+  PyObject * obj8 = 0 ;
+  PyObject * obj9 = 0 ;
+  PyObject * obj10 = 0 ;
+  PyObject * obj11 = 0 ;
+  PyObject * obj12 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOOO:CoordMotion_StraightFeedAccelRapid",&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10,&obj11,&obj12)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CCoordMotion, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CoordMotion_StraightFeedAccelRapid" "', argument " "1"" of type '" "CCoordMotion *""'"); 
+  }
+  arg1 = reinterpret_cast< CCoordMotion * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CoordMotion_StraightFeedAccelRapid" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  ecode3 = SWIG_AsVal_double(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "CoordMotion_StraightFeedAccelRapid" "', argument " "3"" of type '" "double""'");
+  } 
+  arg3 = static_cast< double >(val3);
+  ecode4 = SWIG_AsVal_bool(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "CoordMotion_StraightFeedAccelRapid" "', argument " "4"" of type '" "bool""'");
+  } 
+  arg4 = static_cast< bool >(val4);
+  ecode5 = SWIG_AsVal_bool(obj4, &val5);
+  if (!SWIG_IsOK(ecode5)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "CoordMotion_StraightFeedAccelRapid" "', argument " "5"" of type '" "bool""'");
+  } 
+  arg5 = static_cast< bool >(val5);
+  ecode6 = SWIG_AsVal_double(obj5, &val6);
+  if (!SWIG_IsOK(ecode6)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "CoordMotion_StraightFeedAccelRapid" "', argument " "6"" of type '" "double""'");
+  } 
+  arg6 = static_cast< double >(val6);
+  ecode7 = SWIG_AsVal_double(obj6, &val7);
+  if (!SWIG_IsOK(ecode7)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "CoordMotion_StraightFeedAccelRapid" "', argument " "7"" of type '" "double""'");
+  } 
+  arg7 = static_cast< double >(val7);
+  ecode8 = SWIG_AsVal_double(obj7, &val8);
+  if (!SWIG_IsOK(ecode8)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "CoordMotion_StraightFeedAccelRapid" "', argument " "8"" of type '" "double""'");
+  } 
+  arg8 = static_cast< double >(val8);
+  ecode9 = SWIG_AsVal_double(obj8, &val9);
+  if (!SWIG_IsOK(ecode9)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode9), "in method '" "CoordMotion_StraightFeedAccelRapid" "', argument " "9"" of type '" "double""'");
+  } 
+  arg9 = static_cast< double >(val9);
+  ecode10 = SWIG_AsVal_double(obj9, &val10);
+  if (!SWIG_IsOK(ecode10)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode10), "in method '" "CoordMotion_StraightFeedAccelRapid" "', argument " "10"" of type '" "double""'");
+  } 
+  arg10 = static_cast< double >(val10);
+  ecode11 = SWIG_AsVal_double(obj10, &val11);
+  if (!SWIG_IsOK(ecode11)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "CoordMotion_StraightFeedAccelRapid" "', argument " "11"" of type '" "double""'");
+  } 
+  arg11 = static_cast< double >(val11);
+  ecode12 = SWIG_AsVal_int(obj11, &val12);
+  if (!SWIG_IsOK(ecode12)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode12), "in method '" "CoordMotion_StraightFeedAccelRapid" "', argument " "12"" of type '" "int""'");
+  } 
+  arg12 = static_cast< int >(val12);
+  ecode13 = SWIG_AsVal_int(obj12, &val13);
+  if (!SWIG_IsOK(ecode13)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode13), "in method '" "CoordMotion_StraightFeedAccelRapid" "', argument " "13"" of type '" "int""'");
+  } 
+  arg13 = static_cast< int >(val13);
+  result = (int)(arg1)->StraightFeedAccelRapid(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_CoordMotion_Dwell__SWIG_0(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CCoordMotion *arg1 = (CCoordMotion *) 0 ;
@@ -26435,6 +26718,44 @@ SWIGINTERN PyObject *_wrap_CoordMotion_DoSegmentCallbacks(PyObject *self, PyObje
   } 
   arg3 = static_cast< int >(val3);
   (arg1)->DoSegmentCallbacks(arg2,arg3);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CoordMotion_DoSegmentCallbacksRapid(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CCoordMotion *arg1 = (CCoordMotion *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:CoordMotion_DoSegmentCallbacksRapid",&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CCoordMotion, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CoordMotion_DoSegmentCallbacksRapid" "', argument " "1"" of type '" "CCoordMotion *""'"); 
+  }
+  arg1 = reinterpret_cast< CCoordMotion * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CoordMotion_DoSegmentCallbacksRapid" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "CoordMotion_DoSegmentCallbacksRapid" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
+  (arg1)->DoSegmentCallbacksRapid(arg2,arg3);
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -39411,6 +39732,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin__CKMotionDLL_methods[] = {
   { "GetCompilerDir", (PyCFunction) _wrap_CKMotionDLL_GetCompilerDir, METH_VARARGS, (char*) "" },
   { "SetServerDir", (PyCFunction) _wrap_CKMotionDLL_SetServerDir, METH_VARARGS, (char*) "" },
   { "GetServerDir", (PyCFunction) _wrap_CKMotionDLL_GetServerDir, METH_VARARGS, (char*) "" },
+  { "Terminate", (PyCFunction) _wrap_CKMotionDLL_Terminate, METH_VARARGS, (char*) "" },
   { "ListLocations", (PyCFunction) _wrap_CKMotionDLL_ListLocations, METH_VARARGS, (char*) "" },
   { "SetConsoleCallback", (PyCFunction) _wrap_CKMotionDLL_SetConsoleCallback, METH_VARARGS, (char*) "" },
   { "SetPersistInt", (PyCFunction) _wrap_CKMotionDLL_SetPersistInt, METH_VARARGS, (char*) "" },
@@ -39873,6 +40195,7 @@ static SwigPyGetSet MotionParams_MaxRapidJerkB_getset = { _wrap_MotionParams_Max
 static SwigPyGetSet MotionParams_SoftLimitPosB_getset = { _wrap_MotionParams_SoftLimitPosB_get, _wrap_MotionParams_SoftLimitPosB_set };
 static SwigPyGetSet MotionParams_MaxRapidJerkC_getset = { _wrap_MotionParams_MaxRapidJerkC_get, _wrap_MotionParams_MaxRapidJerkC_set };
 static SwigPyGetSet MotionParams_SoftLimitPosC_getset = { _wrap_MotionParams_SoftLimitPosC_get, _wrap_MotionParams_SoftLimitPosC_set };
+static SwigPyGetSet MotionParams_DoRapidsAsFeeds_getset = { _wrap_MotionParams_DoRapidsAsFeeds_get, _wrap_MotionParams_DoRapidsAsFeeds_set };
 static SwigPyGetSet MotionParams_MaxRapidAccelX_getset = { _wrap_MotionParams_MaxRapidAccelX_get, _wrap_MotionParams_MaxRapidAccelX_set };
 static SwigPyGetSet MotionParams_MaxAccelX_getset = { _wrap_MotionParams_MaxAccelX_get, _wrap_MotionParams_MaxAccelX_set };
 static SwigPyGetSet MotionParams_MaxVelA_getset = { _wrap_MotionParams_MaxVelA_get, _wrap_MotionParams_MaxVelA_set };
@@ -39902,6 +40225,7 @@ static SwigPyGetSet MotionParams_MaxAccelA_getset = { _wrap_MotionParams_MaxAcce
 static SwigPyGetSet MotionParams_MaxRapidAccelB_getset = { _wrap_MotionParams_MaxRapidAccelB_get, _wrap_MotionParams_MaxRapidAccelB_set };
 static SwigPyGetSet MotionParams_MaxAccelB_getset = { _wrap_MotionParams_MaxAccelB_get, _wrap_MotionParams_MaxAccelB_set };
 static SwigPyGetSet MotionParams_CountsPerInchA_getset = { _wrap_MotionParams_CountsPerInchA_get, _wrap_MotionParams_CountsPerInchA_set };
+static SwigPyGetSet MotionParams_MaxRapidFRO_getset = { _wrap_MotionParams_MaxRapidFRO_get, _wrap_MotionParams_MaxRapidFRO_set };
 static SwigPyGetSet MotionParams_MaxRapidVelX_getset = { _wrap_MotionParams_MaxRapidVelX_get, _wrap_MotionParams_MaxRapidVelX_set };
 static SwigPyGetSet MotionParams_MaxRapidAccelC_getset = { _wrap_MotionParams_MaxRapidAccelC_get, _wrap_MotionParams_MaxRapidAccelC_set };
 static SwigPyGetSet MotionParams_MaxAccelC_getset = { _wrap_MotionParams_MaxAccelC_get, _wrap_MotionParams_MaxAccelC_set };
@@ -39950,6 +40274,8 @@ SWIGINTERN PyGetSetDef SwigPyBuiltin__MOTION_PARAMS_getset[] = {
     { (char*) "MaxRapidJerkC", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidJerkC", (void*) &MotionParams_MaxRapidJerkC_getset }
 ,
     { (char*) "SoftLimitPosC", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.SoftLimitPosC", (void*) &MotionParams_SoftLimitPosC_getset }
+,
+    { (char*) "DoRapidsAsFeeds", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.DoRapidsAsFeeds", (void*) &MotionParams_DoRapidsAsFeeds_getset }
 ,
     { (char*) "MaxRapidAccelX", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidAccelX", (void*) &MotionParams_MaxRapidAccelX_getset }
 ,
@@ -40008,6 +40334,8 @@ SWIGINTERN PyGetSetDef SwigPyBuiltin__MOTION_PARAMS_getset[] = {
     { (char*) "MaxAccelB", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxAccelB", (void*) &MotionParams_MaxAccelB_getset }
 ,
     { (char*) "CountsPerInchA", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.CountsPerInchA", (void*) &MotionParams_CountsPerInchA_getset }
+,
+    { (char*) "MaxRapidFRO", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidFRO", (void*) &MotionParams_MaxRapidFRO_getset }
 ,
     { (char*) "MaxRapidVelX", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidVelX", (void*) &MotionParams_MaxRapidVelX_getset }
 ,
@@ -40689,6 +41017,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin__CCoordMotion_methods[] = {
   { "ArcFeedAccel", (PyCFunction) _wrap_CoordMotion_ArcFeedAccel, METH_VARARGS, (char*) "" },
   { "StraightFeed", (PyCFunction) _wrap_CoordMotion_StraightFeed, METH_VARARGS, (char*) "" },
   { "StraightFeedAccel", (PyCFunction) _wrap_CoordMotion_StraightFeedAccel, METH_VARARGS, (char*) "" },
+  { "StraightFeedAccelRapid", (PyCFunction) _wrap_CoordMotion_StraightFeedAccelRapid, METH_VARARGS, (char*) "" },
   { "Dwell", (PyCFunction) _wrap_CoordMotion_Dwell, METH_VARARGS, (char*) "" },
   { "ReadCurAbsPosition", (PyCFunction) _wrap_CoordMotion_ReadCurAbsPosition, METH_VARARGS, (char*) "" },
   { "SetStraightTraverseCallback", (PyCFunction) _wrap_CoordMotion_SetStraightTraverseCallback, METH_VARARGS, (char*) "" },
@@ -40699,6 +41028,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin__CCoordMotion_methods[] = {
   { "DoSpecialCommand", (PyCFunction) _wrap_CoordMotion_DoSpecialCommand, METH_VARARGS, (char*) "" },
   { "DoSpecialInitialCommands", (PyCFunction) _wrap_CoordMotion_DoSpecialInitialCommands, METH_VARARGS, (char*) "" },
   { "DoSegmentCallbacks", (PyCFunction) _wrap_CoordMotion_DoSegmentCallbacks, METH_VARARGS, (char*) "" },
+  { "DoSegmentCallbacksRapid", (PyCFunction) _wrap_CoordMotion_DoSegmentCallbacksRapid, METH_VARARGS, (char*) "" },
   { "DoRateAdjustments", (PyCFunction) _wrap_CoordMotion_DoRateAdjustments, METH_VARARGS, (char*) "" },
   { "DoRateAdjustmentsArc", (PyCFunction) _wrap_CoordMotion_DoRateAdjustmentsArc, METH_VARARGS, (char*) "" },
   { "CheckSoftLimits", (PyCFunction) _wrap_CoordMotion_CheckSoftLimits, METH_VARARGS, (char*) "" },
