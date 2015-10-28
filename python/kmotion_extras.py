@@ -8,16 +8,13 @@ import subprocess, shlex
 if sys.platform == 'win32':
     from . import _menigcnc_root, _menigcnc_version
     from . import kmotion
-    #_menigcnc_root = "c:\\cnc"
-    #_menigcnc_version = "v2"
-    #print "Windows"
-    #import kmotion
+    _tempdir = r'c:\temp'
 else:
     #FIXME: modularize this!
     _menigcnc_root = os.path.abspath(os.path.join(os.environ['KMOTION_BIN'], ".."))
     _menigcnc_version = "v2"
     import kmotion
-
+    _tempdir = '/tmp'
 
 
 
@@ -1009,7 +1006,7 @@ class ThreadManager(object):
     def ccompile_cl6x(self, outfile, filename, thread):
         """Invoke the TI compiler (cl6x) and link
         """
-        objfilename = "/tmp/%s.o" % (os.path.basename(filename),)
+        objfilename = os.path.join(_tempdir, "%s.o" % (os.path.basename(filename),))
         #opts = "-mv6710 -mu -ml3 -O0 --symdebug:dwarf"
         #opts = "-mv6710 -ml3 -mu -O2 --opt_for_space --entry_hook --exit_hook --entry_parm=name --exit_parm=name"
         opts = "-mv6710 -ml3 -mu -O2 --opt_for_space"
@@ -1021,7 +1018,7 @@ class ThreadManager(object):
         if rc:
             return (rc, err)
         
-        nmfilename = "/tmp/%s.nm" % (os.path.basename(filename),)
+        nmfilename = os.path.join(_tempdir, "%s.nm" % (os.path.basename(filename),))
         cmd = '%s "%s" > "%s"' % (self.nm6x, objfilename, nmfilename)
         self.runcmd(cmd)
         usyms = {}
@@ -1054,7 +1051,7 @@ SECTIONS {
 .switch: > THREAD_MEM
 }
 ''' % (outfile, outfile, objfilename, xsyms, 0x80040000 + thread*0x10000, 0x50000 if thread==7 else 0x10000, mtype, mtype, mtype)
-        linkcmdsfile = "/tmp/%s.cmd" % (os.path.basename(outfile))
+        linkcmdsfile = os.path.join(_tempdir, "%s.cmd" % (os.path.basename(outfile)))
         with open(linkcmdsfile, "w") as f:
             f.write(linkcmds)
 
@@ -1095,11 +1092,13 @@ class KMotionX(kmotion.KMotion):
       xxx.c ->[compile] xxx.o
     """
     def __init__(self, dev, hostname = None, port = kmotion.KMOTION_PORT, with_console=False, dirlist=[], kflopdir=None, \
-                **tmgr_kwargs):
+                serverdir=None, **tmgr_kwargs):
         if hostname is None:
             super(KMotionX, self).__init__(dev)
         else:
             super(KMotionX, self).__init__(dev, port, hostname)
+        if serverdir:
+            self.SetServerDir(serverdir)
         self.firstpoll = 0xFFFFFFFF
         self.pccmd_handlers = {
             kmotion.PC_COMM_ESTOP: self.handle_estop,
@@ -1510,7 +1509,7 @@ class Interpreter(kmotion.GCodeInterpreter):
         self.ready_run()
         self.Interpret(kmotion.BOARD_TYPE_KFLOP, filename, self.CurrentLineNo, self.CurrentLineNo, False)
     def run_mdi(self, text):
-        tempfile = "/tmp/mdi.ngc"
+        tempfile = os.path.join(_tempdir,"mdi.ngc")
         with open(tempfile, "w") as f:
             f.write(text + '\n')
         self.finished = False

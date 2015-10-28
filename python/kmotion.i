@@ -176,6 +176,7 @@ typedef unsigned BOOL;
 %ignore CHTB;
 
 %include "PC-DSP.h"
+%include "rs274ngc.h"
 %include "TrajectoryPlanner.h"
 %include "Kinematics.h"
 %include "CoordMotion.h"

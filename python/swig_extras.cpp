@@ -404,7 +404,9 @@ public:
     // from_cm is true if get from CoordMotion, else is interpreter position.  The latter is not necessarily the current
     // machine position except at the end of a programmed move.
     floatvec GetCurrent(bool from_cm);
-    
+    // Get/set contiguous range of hashvars
+    floatvec GetHashvars(int first, int n) const;
+    void SetHashvars(int first, floatvec values);
     
 
 protected:
@@ -2016,6 +2018,24 @@ floatvec GCodeInterpreter::GetCurrent(bool from_cm)
             v[i] = ((double *)&p_setup->current_x)[i];
     return v;
 }
+
+
+floatvec GCodeInterpreter::GetHashvars(int first, int n) const
+{
+    floatvec v = floatvec(n);
+    for (int i = 0; i < n; ++i, ++first)
+        v[i] = first >= 0 && first < RS274NGC_MAX_PARAMETERS ? p_setup->parameters[first] : 0.;
+    return v;
+}
+
+void GCodeInterpreter::SetHashvars(int first, floatvec values)
+{
+    int n = values.size();
+    for (int i = 0; i < n; ++i, ++first)
+        if (first >= 0 && first < RS274NGC_MAX_PARAMETERS)
+            p_setup->parameters[first] = values[i];
+}
+
 
 
 #endif

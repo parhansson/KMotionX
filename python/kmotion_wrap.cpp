@@ -3895,52 +3895,63 @@ namespace Swig {
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define SWIGTYPE_p_BOOL swig_types[0]
-#define SWIGTYPE_p_CANON_PLANE swig_types[1]
-#define SWIGTYPE_p_CCoordMotion swig_types[2]
-#define SWIGTYPE_p_CGCodeInterpreter swig_types[3]
-#define SWIGTYPE_p_CKMotionDLL swig_types[4]
-#define SWIGTYPE_p_CKinematics swig_types[5]
-#define SWIGTYPE_p_CPT2D swig_types[6]
-#define SWIGTYPE_p_CPT3D swig_types[7]
-#define SWIGTYPE_p_GCodeInterpreter swig_types[8]
-#define SWIGTYPE_p_KMotion swig_types[9]
-#define SWIGTYPE_p_MAIN_STATUS swig_types[10]
-#define SWIGTYPE_p_MCODE_ACTION swig_types[11]
-#define SWIGTYPE_p_MOTION_PARAMS swig_types[12]
-#define SWIGTYPE_p_SEGMENT swig_types[13]
-#define SWIGTYPE_p_SwigPyObject swig_types[14]
-#define SWIGTYPE_p_allocator_type swig_types[15]
-#define SWIGTYPE_p_char swig_types[16]
-#define SWIGTYPE_p_const_reference swig_types[17]
-#define SWIGTYPE_p_difference_type swig_types[18]
-#define SWIGTYPE_p_double swig_types[19]
-#define SWIGTYPE_p_f_bool_double_CANON_PLANE_double_double_double_double_int_double_double_double_double_double_double_double_int_int__void swig_types[20]
-#define SWIGTYPE_p_f_bool_double_CANON_PLANE_double_double_double_double_int_double_double_double_double_int_int__void swig_types[21]
-#define SWIGTYPE_p_f_double_double_double_double_double_double_double_int_int__void swig_types[22]
-#define SWIGTYPE_p_f_double_double_double_double_double_double_int__void swig_types[23]
-#define SWIGTYPE_p_f_double_double_double_double_int_int__void swig_types[24]
-#define SWIGTYPE_p_f_double_double_double_int__void swig_types[25]
-#define SWIGTYPE_p_f_p_q_const__char__int swig_types[26]
-#define SWIGTYPE_p_f_p_q_const__char__void swig_types[27]
-#define SWIGTYPE_p_float swig_types[28]
-#define SWIGTYPE_p_int swig_types[29]
-#define SWIGTYPE_p_p_PyObject swig_types[30]
-#define SWIGTYPE_p_reference swig_types[31]
-#define SWIGTYPE_p_setup swig_types[32]
-#define SWIGTYPE_p_setup_pointer swig_types[33]
-#define SWIGTYPE_p_size_type swig_types[34]
-#define SWIGTYPE_p_std__allocatorT_bool_t swig_types[35]
-#define SWIGTYPE_p_std__allocatorT_double_t swig_types[36]
-#define SWIGTYPE_p_std__allocatorT_int_t swig_types[37]
-#define SWIGTYPE_p_std__invalid_argument swig_types[38]
-#define SWIGTYPE_p_std__vectorT_bool_std__allocatorT_bool_t_t swig_types[39]
-#define SWIGTYPE_p_std__vectorT_double_std__allocatorT_double_t_t swig_types[40]
-#define SWIGTYPE_p_std__vectorT_int_std__allocatorT_int_t_t swig_types[41]
-#define SWIGTYPE_p_swig__SwigPyIterator swig_types[42]
-#define SWIGTYPE_p_unsigned_char swig_types[43]
-#define SWIGTYPE_p_value_type swig_types[44]
-static swig_type_info *swig_types[46];
-static swig_module_info swig_module = {swig_types, 45, 0, 0, 0, 0};
+#define SWIGTYPE_p_CANON_DIRECTION swig_types[1]
+#define SWIGTYPE_p_CANON_MOTION_MODE swig_types[2]
+#define SWIGTYPE_p_CANON_PLANE swig_types[3]
+#define SWIGTYPE_p_CANON_SPEED_FEED_MODE swig_types[4]
+#define SWIGTYPE_p_CANON_SPINDLE_MODE swig_types[5]
+#define SWIGTYPE_p_CANON_TOOL_TABLE swig_types[6]
+#define SWIGTYPE_p_CANON_UNITS swig_types[7]
+#define SWIGTYPE_p_CCoordMotion swig_types[8]
+#define SWIGTYPE_p_CGCodeInterpreter swig_types[9]
+#define SWIGTYPE_p_CKMotionDLL swig_types[10]
+#define SWIGTYPE_p_CKinematics swig_types[11]
+#define SWIGTYPE_p_CPT2D swig_types[12]
+#define SWIGTYPE_p_CPT3D swig_types[13]
+#define SWIGTYPE_p_DISTANCE_MODE swig_types[14]
+#define SWIGTYPE_p_FILE swig_types[15]
+#define SWIGTYPE_p_GCodeInterpreter swig_types[16]
+#define SWIGTYPE_p_KMotion swig_types[17]
+#define SWIGTYPE_p_MAIN_STATUS swig_types[18]
+#define SWIGTYPE_p_MCODE_ACTION swig_types[19]
+#define SWIGTYPE_p_MOTION_PARAMS swig_types[20]
+#define SWIGTYPE_p_RETRACT_MODE swig_types[21]
+#define SWIGTYPE_p_SEGMENT swig_types[22]
+#define SWIGTYPE_p_SwigPyObject swig_types[23]
+#define SWIGTYPE_p_a_80__char swig_types[24]
+#define SWIGTYPE_p_allocator_type swig_types[25]
+#define SWIGTYPE_p_block_struct swig_types[26]
+#define SWIGTYPE_p_char swig_types[27]
+#define SWIGTYPE_p_const_reference swig_types[28]
+#define SWIGTYPE_p_difference_type swig_types[29]
+#define SWIGTYPE_p_double swig_types[30]
+#define SWIGTYPE_p_f_bool_double_CANON_PLANE_double_double_double_double_int_double_double_double_double_double_double_double_int_int__void swig_types[31]
+#define SWIGTYPE_p_f_bool_double_CANON_PLANE_double_double_double_double_int_double_double_double_double_int_int__void swig_types[32]
+#define SWIGTYPE_p_f_double_double_double_double_double_double_double_int_int__void swig_types[33]
+#define SWIGTYPE_p_f_double_double_double_double_double_double_int__void swig_types[34]
+#define SWIGTYPE_p_f_double_double_double_double_int_int__void swig_types[35]
+#define SWIGTYPE_p_f_double_double_double_int__void swig_types[36]
+#define SWIGTYPE_p_f_p_q_const__char__int swig_types[37]
+#define SWIGTYPE_p_f_p_q_const__char__void swig_types[38]
+#define SWIGTYPE_p_float swig_types[39]
+#define SWIGTYPE_p_fpos_t swig_types[40]
+#define SWIGTYPE_p_int swig_types[41]
+#define SWIGTYPE_p_p_PyObject swig_types[42]
+#define SWIGTYPE_p_reference swig_types[43]
+#define SWIGTYPE_p_setup_struct swig_types[44]
+#define SWIGTYPE_p_size_type swig_types[45]
+#define SWIGTYPE_p_std__allocatorT_bool_t swig_types[46]
+#define SWIGTYPE_p_std__allocatorT_double_t swig_types[47]
+#define SWIGTYPE_p_std__allocatorT_int_t swig_types[48]
+#define SWIGTYPE_p_std__invalid_argument swig_types[49]
+#define SWIGTYPE_p_std__vectorT_bool_std__allocatorT_bool_t_t swig_types[50]
+#define SWIGTYPE_p_std__vectorT_double_std__allocatorT_double_t_t swig_types[51]
+#define SWIGTYPE_p_std__vectorT_int_std__allocatorT_int_t_t swig_types[52]
+#define SWIGTYPE_p_swig__SwigPyIterator swig_types[53]
+#define SWIGTYPE_p_unsigned_char swig_types[54]
+#define SWIGTYPE_p_value_type swig_types[55]
+static swig_type_info *swig_types[57];
+static swig_module_info swig_module = {swig_types, 56, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -6233,6 +6244,16 @@ SWIG_AsCharArray(PyObject * obj, char *val, size_t size)
 }
 
 
+size_t
+SWIG_strnlen(const char* s, size_t maxlen)
+{
+  const char *p;
+  for (p = s; maxlen-- && *p; p++)
+    ;
+  return p - s;
+}
+
+
 SWIGINTERN int
 SWIG_AsVal_char (PyObject * obj, char *val)
 {    
@@ -6249,16 +6270,6 @@ SWIG_AsVal_char (PyObject * obj, char *val)
     }
   }
   return res;
-}
-
-
-size_t
-SWIG_strnlen(const char* s, size_t maxlen)
-{
-  const char *p;
-  for (p = s; maxlen-- && *p; p++)
-    ;
-  return p - s;
 }
 
 
@@ -19051,6 +19062,6517 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_block_a_flag_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  ON_OFF arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_a_flag_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_a_flag_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_a_flag_set" "', argument " "2"" of type '" "ON_OFF""'");
+  } 
+  arg2 = static_cast< ON_OFF >(val2);
+  if (arg1) (arg1)->a_flag = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_a_flag_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ON_OFF result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_a_flag_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (ON_OFF) ((arg1)->a_flag);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_a_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_a_number_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_a_number_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_a_number_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->a_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_a_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_a_number_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (double) ((arg1)->a_number);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_b_flag_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  ON_OFF arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_b_flag_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_b_flag_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_b_flag_set" "', argument " "2"" of type '" "ON_OFF""'");
+  } 
+  arg2 = static_cast< ON_OFF >(val2);
+  if (arg1) (arg1)->b_flag = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_b_flag_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ON_OFF result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_b_flag_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (ON_OFF) ((arg1)->b_flag);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_b_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_b_number_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_b_number_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_b_number_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->b_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_b_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_b_number_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (double) ((arg1)->b_number);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_c_flag_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  ON_OFF arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_c_flag_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_c_flag_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_c_flag_set" "', argument " "2"" of type '" "ON_OFF""'");
+  } 
+  arg2 = static_cast< ON_OFF >(val2);
+  if (arg1) (arg1)->c_flag = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_c_flag_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ON_OFF result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_c_flag_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (ON_OFF) ((arg1)->c_flag);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_c_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_c_number_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_c_number_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_c_number_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->c_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_c_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_c_number_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (double) ((arg1)->c_number);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_comment_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  char *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  char temp2[256] ;
+  int res2 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_comment_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_comment_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  res2 = SWIG_AsCharArray(obj1, temp2, 256);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "block_comment_set" "', argument " "2"" of type '" "char [256]""'");
+  }
+  arg2 = reinterpret_cast< char * >(temp2);
+  if (arg2) memcpy(arg1->comment,arg2,256*sizeof(char));
+  else memset(arg1->comment,0,256*sizeof(char));
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_comment_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  char *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_comment_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (char *)(char *) ((arg1)->comment);
+  {
+    size_t size = SWIG_strnlen(result, 256);
+    
+    
+    
+    resultobj = SWIG_FromCharPtrAndSize(result, size);
+  }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_d_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_d_number_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_d_number_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_d_number_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->d_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_d_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_d_number_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (int) ((arg1)->d_number);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_f_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_f_number_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_f_number_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_f_number_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->f_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_f_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_f_number_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (double) ((arg1)->f_number);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_g_modes_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  int *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_g_modes_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_g_modes_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_int, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "block_g_modes_set" "', argument " "2"" of type '" "int [15]""'"); 
+  } 
+  arg2 = reinterpret_cast< int * >(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)15; ++ii) *(int *)&arg1->g_modes[ii] = *((int *)arg2 + ii);
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""g_modes""' of type '""int [15]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_g_modes_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_g_modes_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (int *)(int *) ((arg1)->g_modes);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_int, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_h_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_h_number_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_h_number_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_h_number_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->h_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_h_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_h_number_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (int) ((arg1)->h_number);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_i_flag_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  ON_OFF arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_i_flag_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_i_flag_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_i_flag_set" "', argument " "2"" of type '" "ON_OFF""'");
+  } 
+  arg2 = static_cast< ON_OFF >(val2);
+  if (arg1) (arg1)->i_flag = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_i_flag_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ON_OFF result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_i_flag_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (ON_OFF) ((arg1)->i_flag);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_i_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_i_number_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_i_number_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_i_number_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->i_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_i_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_i_number_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (double) ((arg1)->i_number);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_j_flag_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  ON_OFF arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_j_flag_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_j_flag_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_j_flag_set" "', argument " "2"" of type '" "ON_OFF""'");
+  } 
+  arg2 = static_cast< ON_OFF >(val2);
+  if (arg1) (arg1)->j_flag = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_j_flag_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ON_OFF result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_j_flag_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (ON_OFF) ((arg1)->j_flag);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_j_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_j_number_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_j_number_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_j_number_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->j_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_j_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_j_number_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (double) ((arg1)->j_number);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_k_flag_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  ON_OFF arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_k_flag_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_k_flag_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_k_flag_set" "', argument " "2"" of type '" "ON_OFF""'");
+  } 
+  arg2 = static_cast< ON_OFF >(val2);
+  if (arg1) (arg1)->k_flag = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_k_flag_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ON_OFF result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_k_flag_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (ON_OFF) ((arg1)->k_flag);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_k_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_k_number_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_k_number_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_k_number_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->k_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_k_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_k_number_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (double) ((arg1)->k_number);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_l_flag_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  ON_OFF arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_l_flag_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_l_flag_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_l_flag_set" "', argument " "2"" of type '" "ON_OFF""'");
+  } 
+  arg2 = static_cast< ON_OFF >(val2);
+  if (arg1) (arg1)->l_flag = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_l_flag_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ON_OFF result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_l_flag_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (ON_OFF) ((arg1)->l_flag);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_l_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_l_number_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_l_number_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_l_number_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->l_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_l_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_l_number_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (int) ((arg1)->l_number);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_line_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_line_number_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_line_number_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_line_number_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->line_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_line_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_line_number_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (int) ((arg1)->line_number);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_motion_to_be_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_motion_to_be_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_motion_to_be_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_motion_to_be_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->motion_to_be = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_motion_to_be_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_motion_to_be_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (int) ((arg1)->motion_to_be);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_m_count_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_m_count_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_m_count_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_m_count_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->m_count = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_m_count_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_m_count_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (int) ((arg1)->m_count);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_m_modes_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  int *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_m_modes_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_m_modes_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_int, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "block_m_modes_set" "', argument " "2"" of type '" "int [11]""'"); 
+  } 
+  arg2 = reinterpret_cast< int * >(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)11; ++ii) *(int *)&arg1->m_modes[ii] = *((int *)arg2 + ii);
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""m_modes""' of type '""int [11]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_m_modes_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_m_modes_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (int *)(int *) ((arg1)->m_modes);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_int, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_p_flag_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  ON_OFF arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_p_flag_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_p_flag_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_p_flag_set" "', argument " "2"" of type '" "ON_OFF""'");
+  } 
+  arg2 = static_cast< ON_OFF >(val2);
+  if (arg1) (arg1)->p_flag = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_p_flag_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ON_OFF result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_p_flag_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (ON_OFF) ((arg1)->p_flag);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_p_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_p_number_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_p_number_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_p_number_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->p_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_p_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_p_number_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (double) ((arg1)->p_number);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_q_flag_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  ON_OFF arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_q_flag_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_q_flag_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_q_flag_set" "', argument " "2"" of type '" "ON_OFF""'");
+  } 
+  arg2 = static_cast< ON_OFF >(val2);
+  if (arg1) (arg1)->q_flag = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_q_flag_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ON_OFF result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_q_flag_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (ON_OFF) ((arg1)->q_flag);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_q_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_q_number_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_q_number_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_q_number_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->q_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_q_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_q_number_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (double) ((arg1)->q_number);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_r_flag_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  ON_OFF arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_r_flag_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_r_flag_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_r_flag_set" "', argument " "2"" of type '" "ON_OFF""'");
+  } 
+  arg2 = static_cast< ON_OFF >(val2);
+  if (arg1) (arg1)->r_flag = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_r_flag_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ON_OFF result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_r_flag_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (ON_OFF) ((arg1)->r_flag);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_r_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_r_number_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_r_number_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_r_number_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->r_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_r_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_r_number_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (double) ((arg1)->r_number);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_s_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_s_number_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_s_number_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_s_number_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->s_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_s_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_s_number_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (double) ((arg1)->s_number);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_t_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_t_number_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_t_number_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_t_number_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->t_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_t_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_t_number_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (int) ((arg1)->t_number);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_x_flag_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  ON_OFF arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_x_flag_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_x_flag_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_x_flag_set" "', argument " "2"" of type '" "ON_OFF""'");
+  } 
+  arg2 = static_cast< ON_OFF >(val2);
+  if (arg1) (arg1)->x_flag = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_x_flag_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ON_OFF result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_x_flag_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (ON_OFF) ((arg1)->x_flag);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_x_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_x_number_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_x_number_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_x_number_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->x_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_x_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_x_number_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (double) ((arg1)->x_number);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_y_flag_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  ON_OFF arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_y_flag_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_y_flag_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_y_flag_set" "', argument " "2"" of type '" "ON_OFF""'");
+  } 
+  arg2 = static_cast< ON_OFF >(val2);
+  if (arg1) (arg1)->y_flag = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_y_flag_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ON_OFF result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_y_flag_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (ON_OFF) ((arg1)->y_flag);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_y_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_y_number_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_y_number_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_y_number_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->y_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_y_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_y_number_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (double) ((arg1)->y_number);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_z_flag_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  ON_OFF arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_z_flag_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_z_flag_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_z_flag_set" "', argument " "2"" of type '" "ON_OFF""'");
+  } 
+  arg2 = static_cast< ON_OFF >(val2);
+  if (arg1) (arg1)->z_flag = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_z_flag_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ON_OFF result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_z_flag_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (ON_OFF) ((arg1)->z_flag);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_z_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:block_z_number_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_z_number_set" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "block_z_number_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->z_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_block_z_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "block_z_number_get" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  result = (double) ((arg1)->z_number);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN int _wrap_new_block(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  result = (block_struct *)new block_struct();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_block_struct, SWIG_BUILTIN_INIT |  0 );
+  return resultobj == Py_None ? -1 : 0;
+fail:
+  return -1;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_block(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  block_struct *arg1 = (block_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_block_struct, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_block" "', argument " "1"" of type '" "block_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< block_struct * >(argp1);
+  delete arg1;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_active_g_codes_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_active_g_codes_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_active_g_codes_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_int, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_active_g_codes_set" "', argument " "2"" of type '" "int [12]""'"); 
+  } 
+  arg2 = reinterpret_cast< int * >(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)12; ++ii) *(int *)&arg1->active_g_codes[ii] = *((int *)arg2 + ii);
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""active_g_codes""' of type '""int [12]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_active_g_codes_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_active_g_codes_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int *)(int *) ((arg1)->active_g_codes);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_int, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_active_m_codes_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_active_m_codes_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_active_m_codes_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_int, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_active_m_codes_set" "', argument " "2"" of type '" "int [7]""'"); 
+  } 
+  arg2 = reinterpret_cast< int * >(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)7; ++ii) *(int *)&arg1->active_m_codes[ii] = *((int *)arg2 + ii);
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""active_m_codes""' of type '""int [7]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_active_m_codes_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_active_m_codes_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int *)(int *) ((arg1)->active_m_codes);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_int, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_active_settings_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_active_settings_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_active_settings_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_double, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_active_settings_set" "', argument " "2"" of type '" "double [3]""'"); 
+  } 
+  arg2 = reinterpret_cast< double * >(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)3; ++ii) *(double *)&arg1->active_settings[ii] = *((double *)arg2 + ii);
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""active_settings""' of type '""double [3]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_active_settings_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_active_settings_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double *)(double *) ((arg1)->active_settings);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_double, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_axis_offset_x_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_axis_offset_x_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_axis_offset_x_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_axis_offset_x_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->axis_offset_x = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_axis_offset_x_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_axis_offset_x_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->axis_offset_x);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_axis_offset_y_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_axis_offset_y_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_axis_offset_y_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_axis_offset_y_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->axis_offset_y = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_axis_offset_y_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_axis_offset_y_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->axis_offset_y);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_axis_offset_z_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_axis_offset_z_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_axis_offset_z_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_axis_offset_z_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->axis_offset_z = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_axis_offset_z_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_axis_offset_z_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->axis_offset_z);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_AA_axis_offset_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_AA_axis_offset_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_AA_axis_offset_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_AA_axis_offset_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->AA_axis_offset = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_AA_axis_offset_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_AA_axis_offset_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->AA_axis_offset);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_BB_axis_offset_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_BB_axis_offset_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_BB_axis_offset_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_BB_axis_offset_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->BB_axis_offset = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_BB_axis_offset_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_BB_axis_offset_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->BB_axis_offset);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_CC_axis_offset_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_CC_axis_offset_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_CC_axis_offset_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_CC_axis_offset_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->CC_axis_offset = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_CC_axis_offset_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_CC_axis_offset_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->CC_axis_offset);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_control_mode_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  CANON_MOTION_MODE arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_control_mode_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_control_mode_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_CANON_MOTION_MODE,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_control_mode_set" "', argument " "2"" of type '" "CANON_MOTION_MODE""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "setup_control_mode_set" "', argument " "2"" of type '" "CANON_MOTION_MODE""'");
+    } else {
+      CANON_MOTION_MODE * temp = reinterpret_cast< CANON_MOTION_MODE * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
+  if (arg1) (arg1)->control_mode = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_control_mode_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  CANON_MOTION_MODE result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_control_mode_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result =  ((arg1)->control_mode);
+  resultobj = SWIG_NewPointerObj((new CANON_MOTION_MODE(static_cast< const CANON_MOTION_MODE& >(result))), SWIGTYPE_p_CANON_MOTION_MODE, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_spindle_mode_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  CANON_SPINDLE_MODE arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_spindle_mode_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_spindle_mode_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_CANON_SPINDLE_MODE,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_spindle_mode_set" "', argument " "2"" of type '" "CANON_SPINDLE_MODE""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "setup_spindle_mode_set" "', argument " "2"" of type '" "CANON_SPINDLE_MODE""'");
+    } else {
+      CANON_SPINDLE_MODE * temp = reinterpret_cast< CANON_SPINDLE_MODE * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
+  if (arg1) (arg1)->spindle_mode = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_spindle_mode_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  CANON_SPINDLE_MODE result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_spindle_mode_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result =  ((arg1)->spindle_mode);
+  resultobj = SWIG_NewPointerObj((new CANON_SPINDLE_MODE(static_cast< const CANON_SPINDLE_MODE& >(result))), SWIGTYPE_p_CANON_SPINDLE_MODE, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_current_slot_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_current_slot_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_current_slot_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_current_slot_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->current_slot = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_current_slot_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_current_slot_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int) ((arg1)->current_slot);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_current_x_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_current_x_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_current_x_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_current_x_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->current_x = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_current_x_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_current_x_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->current_x);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_current_y_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_current_y_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_current_y_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_current_y_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->current_y = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_current_y_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_current_y_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->current_y);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_current_z_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_current_z_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_current_z_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_current_z_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->current_z = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_current_z_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_current_z_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->current_z);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_AA_current_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_AA_current_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_AA_current_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_AA_current_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->AA_current = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_AA_current_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_AA_current_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->AA_current);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_BB_current_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_BB_current_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_BB_current_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_BB_current_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->BB_current = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_BB_current_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_BB_current_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->BB_current);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_CC_current_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_CC_current_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_CC_current_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_CC_current_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->CC_current = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_CC_current_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_CC_current_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->CC_current);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cutter_comp_radius_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_cutter_comp_radius_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cutter_comp_radius_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_cutter_comp_radius_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->cutter_comp_radius = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cutter_comp_radius_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cutter_comp_radius_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->cutter_comp_radius);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cutter_comp_side_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_cutter_comp_side_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cutter_comp_side_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_cutter_comp_side_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->cutter_comp_side = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cutter_comp_side_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cutter_comp_side_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int) ((arg1)->cutter_comp_side);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cycle_cc_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_cycle_cc_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cycle_cc_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_cycle_cc_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->cycle_cc = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cycle_cc_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cycle_cc_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->cycle_cc);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cycle_i_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_cycle_i_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cycle_i_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_cycle_i_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->cycle_i = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cycle_i_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cycle_i_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->cycle_i);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cycle_j_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_cycle_j_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cycle_j_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_cycle_j_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->cycle_j = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cycle_j_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cycle_j_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->cycle_j);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cycle_k_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_cycle_k_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cycle_k_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_cycle_k_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->cycle_k = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cycle_k_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cycle_k_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->cycle_k);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cycle_l_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_cycle_l_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cycle_l_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_cycle_l_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->cycle_l = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cycle_l_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cycle_l_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int) ((arg1)->cycle_l);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cycle_p_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_cycle_p_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cycle_p_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_cycle_p_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->cycle_p = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cycle_p_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cycle_p_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->cycle_p);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cycle_q_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_cycle_q_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cycle_q_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_cycle_q_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->cycle_q = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cycle_q_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cycle_q_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->cycle_q);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cycle_r_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_cycle_r_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cycle_r_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_cycle_r_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->cycle_r = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cycle_r_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cycle_r_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->cycle_r);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_distance_mode_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  DISTANCE_MODE arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_distance_mode_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_distance_mode_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_distance_mode_set" "', argument " "2"" of type '" "DISTANCE_MODE""'");
+  } 
+  arg2 = static_cast< DISTANCE_MODE >(val2);
+  if (arg1) (arg1)->distance_mode = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_distance_mode_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  DISTANCE_MODE result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_distance_mode_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (DISTANCE_MODE) ((arg1)->distance_mode);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_feed_mode_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_feed_mode_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_feed_mode_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_feed_mode_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->feed_mode = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_feed_mode_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_feed_mode_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int) ((arg1)->feed_mode);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_feed_override_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  ON_OFF arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_feed_override_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_feed_override_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_feed_override_set" "', argument " "2"" of type '" "ON_OFF""'");
+  } 
+  arg2 = static_cast< ON_OFF >(val2);
+  if (arg1) (arg1)->feed_override = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_feed_override_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ON_OFF result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_feed_override_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (ON_OFF) ((arg1)->feed_override);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_feed_rate_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_feed_rate_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_feed_rate_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_feed_rate_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->feed_rate = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_feed_rate_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_feed_rate_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->feed_rate);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_flood_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  ON_OFF arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_flood_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_flood_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_flood_set" "', argument " "2"" of type '" "ON_OFF""'");
+  } 
+  arg2 = static_cast< ON_OFF >(val2);
+  if (arg1) (arg1)->flood = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_flood_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ON_OFF result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_flood_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (ON_OFF) ((arg1)->flood);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_length_offset_index_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_length_offset_index_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_length_offset_index_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_length_offset_index_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->length_offset_index = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_length_offset_index_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_length_offset_index_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int) ((arg1)->length_offset_index);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_length_units_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  CANON_UNITS arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_length_units_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_length_units_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_CANON_UNITS,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_length_units_set" "', argument " "2"" of type '" "CANON_UNITS""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "setup_length_units_set" "', argument " "2"" of type '" "CANON_UNITS""'");
+    } else {
+      CANON_UNITS * temp = reinterpret_cast< CANON_UNITS * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
+  if (arg1) (arg1)->length_units = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_length_units_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  CANON_UNITS result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_length_units_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result =  ((arg1)->length_units);
+  resultobj = SWIG_NewPointerObj((new CANON_UNITS(static_cast< const CANON_UNITS& >(result))), SWIGTYPE_p_CANON_UNITS, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_mist_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  ON_OFF arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_mist_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_mist_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_mist_set" "', argument " "2"" of type '" "ON_OFF""'");
+  } 
+  arg2 = static_cast< ON_OFF >(val2);
+  if (arg1) (arg1)->mist = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_mist_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ON_OFF result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_mist_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (ON_OFF) ((arg1)->mist);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_motion_mode_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_motion_mode_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_motion_mode_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_motion_mode_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->motion_mode = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_motion_mode_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_motion_mode_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int) ((arg1)->motion_mode);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_origin_index_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_origin_index_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_origin_index_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_origin_index_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->origin_index = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_origin_index_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_origin_index_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int) ((arg1)->origin_index);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_origin_offset_x_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_origin_offset_x_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_origin_offset_x_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_origin_offset_x_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->origin_offset_x = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_origin_offset_x_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_origin_offset_x_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->origin_offset_x);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_origin_offset_y_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_origin_offset_y_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_origin_offset_y_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_origin_offset_y_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->origin_offset_y = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_origin_offset_y_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_origin_offset_y_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->origin_offset_y);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_origin_offset_z_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_origin_offset_z_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_origin_offset_z_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_origin_offset_z_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->origin_offset_z = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_origin_offset_z_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_origin_offset_z_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->origin_offset_z);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_AA_origin_offset_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_AA_origin_offset_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_AA_origin_offset_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_AA_origin_offset_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->AA_origin_offset = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_AA_origin_offset_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_AA_origin_offset_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->AA_origin_offset);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_BB_origin_offset_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_BB_origin_offset_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_BB_origin_offset_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_BB_origin_offset_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->BB_origin_offset = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_BB_origin_offset_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_BB_origin_offset_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->BB_origin_offset);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_CC_origin_offset_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_CC_origin_offset_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_CC_origin_offset_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_CC_origin_offset_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->CC_origin_offset = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_CC_origin_offset_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_CC_origin_offset_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->CC_origin_offset);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_percent_flag_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  ON_OFF arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_percent_flag_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_percent_flag_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_percent_flag_set" "', argument " "2"" of type '" "ON_OFF""'");
+  } 
+  arg2 = static_cast< ON_OFF >(val2);
+  if (arg1) (arg1)->percent_flag = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_percent_flag_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ON_OFF result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_percent_flag_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (ON_OFF) ((arg1)->percent_flag);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_plane_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  CANON_PLANE arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_plane_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_plane_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_CANON_PLANE,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_plane_set" "', argument " "2"" of type '" "CANON_PLANE""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "setup_plane_set" "', argument " "2"" of type '" "CANON_PLANE""'");
+    } else {
+      CANON_PLANE * temp = reinterpret_cast< CANON_PLANE * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
+  if (arg1) (arg1)->plane = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_plane_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  CANON_PLANE result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_plane_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result =  ((arg1)->plane);
+  resultobj = SWIG_NewPointerObj((new CANON_PLANE(static_cast< const CANON_PLANE& >(result))), SWIGTYPE_p_CANON_PLANE, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_probe_flag_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  ON_OFF arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_probe_flag_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_probe_flag_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_probe_flag_set" "', argument " "2"" of type '" "ON_OFF""'");
+  } 
+  arg2 = static_cast< ON_OFF >(val2);
+  if (arg1) (arg1)->probe_flag = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_probe_flag_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ON_OFF result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_probe_flag_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (ON_OFF) ((arg1)->probe_flag);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_program_x_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_program_x_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_program_x_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_program_x_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->program_x = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_program_x_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_program_x_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->program_x);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_program_y_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_program_y_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_program_y_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_program_y_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->program_y = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_program_y_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_program_y_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->program_y);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_retract_mode_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  RETRACT_MODE arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_retract_mode_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_retract_mode_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_retract_mode_set" "', argument " "2"" of type '" "RETRACT_MODE""'");
+  } 
+  arg2 = static_cast< RETRACT_MODE >(val2);
+  if (arg1) (arg1)->retract_mode = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_retract_mode_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  RETRACT_MODE result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_retract_mode_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (RETRACT_MODE) ((arg1)->retract_mode);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_selected_tool_slot_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_selected_tool_slot_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_selected_tool_slot_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_selected_tool_slot_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->selected_tool_slot = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_selected_tool_slot_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_selected_tool_slot_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int) ((arg1)->selected_tool_slot);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_sequence_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_sequence_number_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_sequence_number_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_sequence_number_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->sequence_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_sequence_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_sequence_number_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int) ((arg1)->sequence_number);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_speed_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_speed_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_speed_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_speed_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->speed = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_speed_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_speed_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->speed);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_speed_feed_mode_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  CANON_SPEED_FEED_MODE arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_speed_feed_mode_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_speed_feed_mode_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_CANON_SPEED_FEED_MODE,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_speed_feed_mode_set" "', argument " "2"" of type '" "CANON_SPEED_FEED_MODE""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "setup_speed_feed_mode_set" "', argument " "2"" of type '" "CANON_SPEED_FEED_MODE""'");
+    } else {
+      CANON_SPEED_FEED_MODE * temp = reinterpret_cast< CANON_SPEED_FEED_MODE * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
+  if (arg1) (arg1)->speed_feed_mode = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_speed_feed_mode_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  CANON_SPEED_FEED_MODE result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_speed_feed_mode_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result =  ((arg1)->speed_feed_mode);
+  resultobj = SWIG_NewPointerObj((new CANON_SPEED_FEED_MODE(static_cast< const CANON_SPEED_FEED_MODE& >(result))), SWIGTYPE_p_CANON_SPEED_FEED_MODE, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_speed_override_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  ON_OFF arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_speed_override_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_speed_override_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_speed_override_set" "', argument " "2"" of type '" "ON_OFF""'");
+  } 
+  arg2 = static_cast< ON_OFF >(val2);
+  if (arg1) (arg1)->speed_override = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_speed_override_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ON_OFF result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_speed_override_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (ON_OFF) ((arg1)->speed_override);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_spindle_turning_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  CANON_DIRECTION arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_spindle_turning_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_spindle_turning_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_CANON_DIRECTION,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_spindle_turning_set" "', argument " "2"" of type '" "CANON_DIRECTION""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "setup_spindle_turning_set" "', argument " "2"" of type '" "CANON_DIRECTION""'");
+    } else {
+      CANON_DIRECTION * temp = reinterpret_cast< CANON_DIRECTION * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
+  if (arg1) (arg1)->spindle_turning = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_spindle_turning_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  CANON_DIRECTION result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_spindle_turning_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result =  ((arg1)->spindle_turning);
+  resultobj = SWIG_NewPointerObj((new CANON_DIRECTION(static_cast< const CANON_DIRECTION& >(result))), SWIGTYPE_p_CANON_DIRECTION, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_tool_length_offset_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_tool_length_offset_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_tool_length_offset_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_tool_length_offset_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->tool_length_offset = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_tool_length_offset_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_tool_length_offset_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->tool_length_offset);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_tool_xoffset_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_tool_xoffset_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_tool_xoffset_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_tool_xoffset_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->tool_xoffset = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_tool_xoffset_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_tool_xoffset_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->tool_xoffset);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_tool_yoffset_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_tool_yoffset_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_tool_yoffset_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_tool_yoffset_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->tool_yoffset = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_tool_yoffset_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_tool_yoffset_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->tool_yoffset);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_tool_max_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_tool_max_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_tool_max_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_tool_max_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->tool_max = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_tool_max_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_tool_max_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int) ((arg1)->tool_max);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_tool_table_index_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_tool_table_index_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_tool_table_index_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_tool_table_index_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->tool_table_index = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_tool_table_index_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_tool_table_index_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int) ((arg1)->tool_table_index);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_traverse_rate_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_traverse_rate_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_traverse_rate_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_traverse_rate_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->traverse_rate = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_traverse_rate_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_traverse_rate_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->traverse_rate);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_block_delete_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  ON_OFF arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_block_delete_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_block_delete_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_block_delete_set" "', argument " "2"" of type '" "ON_OFF""'");
+  } 
+  arg2 = static_cast< ON_OFF >(val2);
+  if (arg1) (arg1)->block_delete = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_block_delete_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ON_OFF result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_block_delete_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (ON_OFF) ((arg1)->block_delete);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_DiameterMode_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  ON_OFF arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_DiameterMode_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_DiameterMode_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_DiameterMode_set" "', argument " "2"" of type '" "ON_OFF""'");
+  } 
+  arg2 = static_cast< ON_OFF >(val2);
+  if (arg1) (arg1)->DiameterMode = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_DiameterMode_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ON_OFF result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_DiameterMode_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (ON_OFF) ((arg1)->DiameterMode);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cutter_radius_compensation_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_cutter_radius_compensation_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cutter_radius_compensation_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_cutter_radius_compensation_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->cutter_radius_compensation = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cutter_radius_compensation_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cutter_radius_compensation_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int) ((arg1)->cutter_radius_compensation);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cycle_z_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_cycle_z_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cycle_z_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_cycle_z_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->cycle_z = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_cycle_z_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_cycle_z_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double) ((arg1)->cycle_z);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_current_line_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_current_line_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_current_line_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_current_line_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->current_line = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_current_line_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_current_line_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int) ((arg1)->current_line);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_sub_stack_pos_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  fpos_t *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_sub_stack_pos_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_sub_stack_pos_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fpos_t, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_sub_stack_pos_set" "', argument " "2"" of type '" "fpos_t [10]""'"); 
+  } 
+  arg2 = reinterpret_cast< fpos_t * >(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)10; ++ii) *(fpos_t *)&arg1->sub_stack_pos[ii] = *((fpos_t *)arg2 + ii);
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""sub_stack_pos""' of type '""fpos_t [10]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_sub_stack_pos_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  fpos_t *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_sub_stack_pos_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (fpos_t *)(fpos_t *) ((arg1)->sub_stack_pos);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fpos_t, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_sub_stack_sub_start_pos_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  fpos_t *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_sub_stack_sub_start_pos_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_sub_stack_sub_start_pos_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fpos_t, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_sub_stack_sub_start_pos_set" "', argument " "2"" of type '" "fpos_t [10]""'"); 
+  } 
+  arg2 = reinterpret_cast< fpos_t * >(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)10; ++ii) *(fpos_t *)&arg1->sub_stack_sub_start_pos[ii] = *((fpos_t *)arg2 + ii);
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""sub_stack_sub_start_pos""' of type '""fpos_t [10]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_sub_stack_sub_start_pos_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  fpos_t *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_sub_stack_sub_start_pos_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (fpos_t *)(fpos_t *) ((arg1)->sub_stack_sub_start_pos);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fpos_t, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_sub_stack_lineno_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_sub_stack_lineno_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_sub_stack_lineno_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_int, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_sub_stack_lineno_set" "', argument " "2"" of type '" "int [10]""'"); 
+  } 
+  arg2 = reinterpret_cast< int * >(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)10; ++ii) *(int *)&arg1->sub_stack_lineno[ii] = *((int *)arg2 + ii);
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""sub_stack_lineno""' of type '""int [10]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_sub_stack_lineno_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_sub_stack_lineno_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int *)(int *) ((arg1)->sub_stack_lineno);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_int, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_sub_stack_sub_start_lineno_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_sub_stack_sub_start_lineno_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_sub_stack_sub_start_lineno_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_int, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_sub_stack_sub_start_lineno_set" "', argument " "2"" of type '" "int [10]""'"); 
+  } 
+  arg2 = reinterpret_cast< int * >(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)10; ++ii) *(int *)&arg1->sub_stack_sub_start_lineno[ii] = *((int *)arg2 + ii);
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""sub_stack_sub_start_lineno""' of type '""int [10]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_sub_stack_sub_start_lineno_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_sub_stack_sub_start_lineno_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int *)(int *) ((arg1)->sub_stack_sub_start_lineno);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_int, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_sub_stack_call_cnt_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_sub_stack_call_cnt_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_sub_stack_call_cnt_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_int, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_sub_stack_call_cnt_set" "', argument " "2"" of type '" "int [10]""'"); 
+  } 
+  arg2 = reinterpret_cast< int * >(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)10; ++ii) *(int *)&arg1->sub_stack_call_cnt[ii] = *((int *)arg2 + ii);
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""sub_stack_call_cnt""' of type '""int [10]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_sub_stack_call_cnt_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_sub_stack_call_cnt_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int *)(int *) ((arg1)->sub_stack_call_cnt);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_int, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_stacki_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_stacki_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_stacki_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_stacki_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->stacki = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_stacki_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_stacki_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int) ((arg1)->stacki);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_parameters_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_parameters_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_parameters_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_double, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_parameters_set" "', argument " "2"" of type '" "double [5400]""'"); 
+  } 
+  arg2 = reinterpret_cast< double * >(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)5400; ++ii) *(double *)&arg1->parameters[ii] = *((double *)arg2 + ii);
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""parameters""' of type '""double [5400]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_parameters_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_parameters_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double *)(double *) ((arg1)->parameters);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_double, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_line_length_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_line_length_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_line_length_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_line_length_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->line_length = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_line_length_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_line_length_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int) ((arg1)->line_length);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_linetext_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  char *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  char temp2[256] ;
+  int res2 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_linetext_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_linetext_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  res2 = SWIG_AsCharArray(obj1, temp2, 256);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_linetext_set" "', argument " "2"" of type '" "char [256]""'");
+  }
+  arg2 = reinterpret_cast< char * >(temp2);
+  if (arg2) memcpy(arg1->linetext,arg2,256*sizeof(char));
+  else memset(arg1->linetext,0,256*sizeof(char));
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_linetext_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  char *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_linetext_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (char *)(char *) ((arg1)->linetext);
+  {
+    size_t size = SWIG_strnlen(result, 256);
+    
+    
+    
+    resultobj = SWIG_FromCharPtrAndSize(result, size);
+  }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_filename_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  char *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  char temp2[256] ;
+  int res2 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_filename_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_filename_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  res2 = SWIG_AsCharArray(obj1, temp2, 256);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_filename_set" "', argument " "2"" of type '" "char [256]""'");
+  }
+  arg2 = reinterpret_cast< char * >(temp2);
+  if (arg2) memcpy(arg1->filename,arg2,256*sizeof(char));
+  else memset(arg1->filename,0,256*sizeof(char));
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_filename_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  char *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_filename_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (char *)(char *) ((arg1)->filename);
+  {
+    size_t size = SWIG_strnlen(result, 256);
+    
+    
+    
+    resultobj = SWIG_FromCharPtrAndSize(result, size);
+  }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_file_pointer_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  FILE *arg2 = (FILE *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_file_pointer_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_file_pointer_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_FILE, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_file_pointer_set" "', argument " "2"" of type '" "FILE *""'"); 
+  }
+  arg2 = reinterpret_cast< FILE * >(argp2);
+  if (arg1) (arg1)->file_pointer = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_file_pointer_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  FILE *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_file_pointer_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (FILE *) ((arg1)->file_pointer);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_FILE, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_parameter_occurrence_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_parameter_occurrence_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_parameter_occurrence_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_parameter_occurrence_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->parameter_occurrence = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_parameter_occurrence_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_parameter_occurrence_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int) ((arg1)->parameter_occurrence);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_parameter_numbers_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_parameter_numbers_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_parameter_numbers_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_int, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_parameter_numbers_set" "', argument " "2"" of type '" "int [50]""'"); 
+  } 
+  arg2 = reinterpret_cast< int * >(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)50; ++ii) *(int *)&arg1->parameter_numbers[ii] = *((int *)arg2 + ii);
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""parameter_numbers""' of type '""int [50]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_parameter_numbers_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_parameter_numbers_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int *)(int *) ((arg1)->parameter_numbers);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_int, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_parameter_values_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  double *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_parameter_values_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_parameter_values_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_double, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_parameter_values_set" "', argument " "2"" of type '" "double [50]""'"); 
+  } 
+  arg2 = reinterpret_cast< double * >(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)50; ++ii) *(double *)&arg1->parameter_values[ii] = *((double *)arg2 + ii);
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""parameter_values""' of type '""double [50]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_parameter_values_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_parameter_values_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (double *)(double *) ((arg1)->parameter_values);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_double, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_stack_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  char (*arg2)[80] ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_stack_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_stack_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_a_80__char, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_stack_set" "', argument " "2"" of type '" "char [50][80]""'"); 
+  } 
+  arg2 = reinterpret_cast< char (*)[80] >(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)50; ++ii) {
+        if (arg2[ii]) {
+          size_t jj = 0;
+          for (; jj < (size_t)80; ++jj) arg1->stack[ii][jj] = arg2[ii][jj];
+        } else {
+          SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""stack""' of type '""char [50][80]""'");
+        }
+      }
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""stack""' of type '""char [50][80]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_stack_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  char (*result)[80] = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_stack_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (char (*)[80])(char (*)[80]) ((arg1)->stack);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_a_80__char, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_stack_index_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_stack_index_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_stack_index_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_stack_index_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->stack_index = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_stack_index_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_stack_index_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int) ((arg1)->stack_index);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_tool_table_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  CANON_TOOL_TABLE *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_tool_table_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_tool_table_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_CANON_TOOL_TABLE, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_tool_table_set" "', argument " "2"" of type '" "CANON_TOOL_TABLE [CANON_TOOL_MAX+1]""'"); 
+  } 
+  arg2 = reinterpret_cast< CANON_TOOL_TABLE * >(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)CANON_TOOL_MAX+1; ++ii) *(CANON_TOOL_TABLE *)&arg1->tool_table[ii] = *((CANON_TOOL_TABLE *)arg2 + ii);
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""tool_table""' of type '""CANON_TOOL_TABLE [CANON_TOOL_MAX+1]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_tool_table_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  CANON_TOOL_TABLE *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_tool_table_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (CANON_TOOL_TABLE *)(CANON_TOOL_TABLE *) ((arg1)->tool_table);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_CANON_TOOL_TABLE, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_block1_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  block *arg2 = (block *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_block1_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_block1_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_block_struct, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_block1_set" "', argument " "2"" of type '" "block *""'"); 
+  }
+  arg2 = reinterpret_cast< block * >(argp2);
+  if (arg1) (arg1)->block1 = *arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_block1_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  block *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_block1_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (block *)& ((arg1)->block1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_block_struct, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_blocktext_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  char *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  char temp2[256] ;
+  int res2 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_blocktext_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_blocktext_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  res2 = SWIG_AsCharArray(obj1, temp2, 256);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_blocktext_set" "', argument " "2"" of type '" "char [256]""'");
+  }
+  arg2 = reinterpret_cast< char * >(temp2);
+  if (arg2) memcpy(arg1->blocktext,arg2,256*sizeof(char));
+  else memset(arg1->blocktext,0,256*sizeof(char));
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_blocktext_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  char *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_blocktext_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (char *)(char *) ((arg1)->blocktext);
+  {
+    size_t size = SWIG_strnlen(result, 256);
+    
+    
+    
+    resultobj = SWIG_FromCharPtrAndSize(result, size);
+  }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_n_ParamChanges_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_n_ParamChanges_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_n_ParamChanges_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "setup_n_ParamChanges_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->n_ParamChanges = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_n_ParamChanges_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_n_ParamChanges_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int) ((arg1)->n_ParamChanges);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_ParamChanges_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  int *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:setup_ParamChanges_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_ParamChanges_set" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_int, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "setup_ParamChanges_set" "', argument " "2"" of type '" "int [50]""'"); 
+  } 
+  arg2 = reinterpret_cast< int * >(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)50; ++ii) *(int *)&arg1->ParamChanges[ii] = *((int *)arg2 + ii);
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""ParamChanges""' of type '""int [50]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_setup_ParamChanges_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "setup_ParamChanges_get" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  result = (int *)(int *) ((arg1)->ParamChanges);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_int, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN int _wrap_new_setup(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  result = (setup_struct *)new setup_struct();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_setup_struct, SWIG_BUILTIN_INIT |  0 );
+  return resultobj == Py_None ? -1 : 0;
+fail:
+  return -1;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_setup(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  setup_struct *arg1 = (setup_struct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_setup_struct, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_setup" "', argument " "1"" of type '" "setup_struct *""'"); 
+  }
+  arg1 = reinterpret_cast< setup_struct * >(argp1);
+  delete arg1;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_MotionParams_BreakAngle_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   MOTION_PARAMS *arg1 = (MOTION_PARAMS *) 0 ;
@@ -31172,7 +37694,7 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord(P
   double *arg11 = (double *) 0 ;
   double *arg12 = (double *) 0 ;
   double *arg13 = (double *) 0 ;
-  setup_pointer arg14 ;
+  setup_pointer arg14 = (setup_pointer) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   double val2 ;
@@ -31199,7 +37721,7 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord(P
   int res12 = 0 ;
   void *argp13 = 0 ;
   int res13 = 0 ;
-  void *argp14 ;
+  void *argp14 = 0 ;
   int res14 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
@@ -31281,19 +37803,11 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord(P
     SWIG_exception_fail(SWIG_ArgError(res13), "in method '" "CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord" "', argument " "13"" of type '" "double *""'"); 
   }
   arg13 = reinterpret_cast< double * >(argp13);
-  {
-    res14 = SWIG_ConvertPtr(obj13, &argp14, SWIGTYPE_p_setup_pointer,  0  | 0);
-    if (!SWIG_IsOK(res14)) {
-      SWIG_exception_fail(SWIG_ArgError(res14), "in method '" "CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord" "', argument " "14"" of type '" "setup_pointer""'"); 
-    }  
-    if (!argp14) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord" "', argument " "14"" of type '" "setup_pointer""'");
-    } else {
-      setup_pointer * temp = reinterpret_cast< setup_pointer * >(argp14);
-      arg14 = *temp;
-      if (SWIG_IsNewObj(res14)) delete temp;
-    }
+  res14 = SWIG_ConvertPtr(obj13, &argp14,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res14)) {
+    SWIG_exception_fail(SWIG_ArgError(res14), "in method '" "CGCodeInterpreter_ConvertAbsoluteToInterpreterCoord" "', argument " "14"" of type '" "setup_pointer""'"); 
   }
+  arg14 = reinterpret_cast< setup_pointer >(argp14);
   (arg1)->ConvertAbsoluteToInterpreterCoord(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -32523,10 +39037,10 @@ fail:
 SWIGINTERN PyObject *_wrap_CGCodeInterpreter_p_setup_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CGCodeInterpreter *arg1 = (CGCodeInterpreter *) 0 ;
-  setup_pointer arg2 ;
+  setup_pointer arg2 = (setup_pointer) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  void *argp2 ;
+  void *argp2 = 0 ;
   int res2 = 0 ;
   PyObject * obj1 = 0 ;
   
@@ -32536,19 +39050,11 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_p_setup_set(PyObject *self, PyObjec
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_p_setup_set" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
   }
   arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
-  {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_setup_pointer,  0  | 0);
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CGCodeInterpreter_p_setup_set" "', argument " "2"" of type '" "setup_pointer""'"); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CGCodeInterpreter_p_setup_set" "', argument " "2"" of type '" "setup_pointer""'");
-    } else {
-      setup_pointer * temp = reinterpret_cast< setup_pointer * >(argp2);
-      arg2 = *temp;
-      if (SWIG_IsNewObj(res2)) delete temp;
-    }
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_setup_struct, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CGCodeInterpreter_p_setup_set" "', argument " "2"" of type '" "setup_pointer""'"); 
   }
+  arg2 = reinterpret_cast< setup_pointer >(argp2);
   if (arg1) (arg1)->p_setup = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -32570,8 +39076,8 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_p_setup_get(PyObject *self, PyObjec
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_p_setup_get" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
   }
   arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
-  result =  ((arg1)->p_setup);
-  resultobj = SWIG_NewPointerObj((new setup_pointer(static_cast< const setup_pointer& >(result))), SWIGTYPE_p_setup_pointer, SWIG_POINTER_OWN |  0 );
+  result = (setup_pointer) ((arg1)->p_setup);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_setup_struct, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -33531,8 +40037,8 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_GetRealTimeState(PyObject *self, Py
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_GetRealTimeState" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
   }
   arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
-  result = (arg1)->GetRealTimeState();
-  resultobj = SWIG_NewPointerObj((new setup_pointer(static_cast< const setup_pointer& >(result))), SWIGTYPE_p_setup_pointer, SWIG_POINTER_OWN |  0 );
+  result = (setup_pointer)(arg1)->GetRealTimeState();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_setup_struct, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -33612,10 +40118,10 @@ fail:
 SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_StoppedInterpState_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CGCodeInterpreter *arg1 = (CGCodeInterpreter *) 0 ;
-  setup arg2 ;
+  setup *arg2 = (setup *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  void *argp2 ;
+  void *argp2 = 0 ;
   int res2 = 0 ;
   PyObject * obj1 = 0 ;
   
@@ -33625,20 +40131,12 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_StoppedInterpState_set(PyObject *
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_m_StoppedInterpState_set" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
   }
   arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
-  {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_setup,  0  | 0);
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CGCodeInterpreter_m_StoppedInterpState_set" "', argument " "2"" of type '" "setup""'"); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CGCodeInterpreter_m_StoppedInterpState_set" "', argument " "2"" of type '" "setup""'");
-    } else {
-      setup * temp = reinterpret_cast< setup * >(argp2);
-      arg2 = *temp;
-      if (SWIG_IsNewObj(res2)) delete temp;
-    }
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_setup_struct, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CGCodeInterpreter_m_StoppedInterpState_set" "', argument " "2"" of type '" "setup *""'"); 
   }
-  if (arg1) (arg1)->m_StoppedInterpState = arg2;
+  arg2 = reinterpret_cast< setup * >(argp2);
+  if (arg1) (arg1)->m_StoppedInterpState = *arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -33651,7 +40149,7 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_StoppedInterpState_get(PyObject *
   CGCodeInterpreter *arg1 = (CGCodeInterpreter *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  setup result;
+  setup *result = 0 ;
   
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CGCodeInterpreter, 0 |  0 );
@@ -33659,8 +40157,8 @@ SWIGINTERN PyObject *_wrap_CGCodeInterpreter_m_StoppedInterpState_get(PyObject *
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CGCodeInterpreter_m_StoppedInterpState_get" "', argument " "1"" of type '" "CGCodeInterpreter *""'"); 
   }
   arg1 = reinterpret_cast< CGCodeInterpreter * >(argp1);
-  result =  ((arg1)->m_StoppedInterpState);
-  resultobj = SWIG_NewPointerObj((new setup(static_cast< const setup& >(result))), SWIGTYPE_p_setup, SWIG_POINTER_OWN |  0 );
+  result = (setup *)& ((arg1)->m_StoppedInterpState);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_setup_struct, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -38606,7 +45104,7 @@ SWIGINTERN PyObject *_wrap_GCodeInterpreter_GetInterpreterParams(PyObject *self,
   }
   arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
   result = ((GCodeInterpreter const *)arg1)->GetInterpreterParams();
-  resultobj = SWIG_NewPointerObj((new setup(static_cast< const setup& >(result))), SWIGTYPE_p_setup, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new setup(static_cast< const setup& >(result))), SWIGTYPE_p_setup_struct, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -38629,7 +45127,7 @@ SWIGINTERN PyObject *_wrap_GCodeInterpreter_SetInterpreterParams(PyObject *self,
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_SetInterpreterParams" "', argument " "1"" of type '" "GCodeInterpreter *""'"); 
   }
   arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_setup,  0  | 0);
+  res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_setup_struct,  0  | 0);
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GCodeInterpreter_SetInterpreterParams" "', argument " "2"" of type '" "setup const &""'"); 
   }
@@ -38739,6 +45237,85 @@ SWIGINTERN PyObject *_wrap_GCodeInterpreter_GetCurrent(PyObject *self, PyObject 
   arg2 = static_cast< bool >(val2);
   result = (arg1)->GetCurrent(arg2);
   resultobj = swig::from(static_cast< std::vector<double,std::allocator< double > > >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_GetHashvars(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  floatvec result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:GCodeInterpreter_GetHashvars",&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_GetHashvars" "', argument " "1"" of type '" "GCodeInterpreter const *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GCodeInterpreter_GetHashvars" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "GCodeInterpreter_GetHashvars" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
+  result = ((GCodeInterpreter const *)arg1)->GetHashvars(arg2,arg3);
+  resultobj = swig::from(static_cast< std::vector<double,std::allocator< double > > >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_SetHashvars(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  int arg2 ;
+  floatvec arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:GCodeInterpreter_SetHashvars",&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_SetHashvars" "', argument " "1"" of type '" "GCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GCodeInterpreter_SetHashvars" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  {
+    std::vector<double,std::allocator< double > > *ptr = (std::vector<double,std::allocator< double > > *)0;
+    int res = swig::asptr(obj2, &ptr);
+    if (!SWIG_IsOK(res) || !ptr) {
+      SWIG_exception_fail(SWIG_ArgError((ptr ? res : SWIG_TypeError)), "in method '" "GCodeInterpreter_SetHashvars" "', argument " "3"" of type '" "floatvec""'"); 
+    }
+    arg3 = *ptr;
+    if (SWIG_IsNewObj(res)) delete ptr;
+  }
+  (arg1)->SetHashvars(arg2,arg3);
+  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -40179,83 +46756,840 @@ static PyHeapTypeObject SwigPyBuiltin__MAIN_STATUS_type = {
 
 SWIGINTERN SwigPyClientData SwigPyBuiltin__MAIN_STATUS_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin__MAIN_STATUS_type};
 
+SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_block)
+static SwigPyGetSet block_k_flag_getset = { _wrap_block_k_flag_get, _wrap_block_k_flag_set };
+static SwigPyGetSet block_x_flag_getset = { _wrap_block_x_flag_get, _wrap_block_x_flag_set };
+static SwigPyGetSet block_m_count_getset = { _wrap_block_m_count_get, _wrap_block_m_count_set };
+static SwigPyGetSet block_z_flag_getset = { _wrap_block_z_flag_get, _wrap_block_z_flag_set };
+static SwigPyGetSet block_b_flag_getset = { _wrap_block_b_flag_get, _wrap_block_b_flag_set };
+static SwigPyGetSet block_q_flag_getset = { _wrap_block_q_flag_get, _wrap_block_q_flag_set };
+static SwigPyGetSet block_x_number_getset = { _wrap_block_x_number_get, _wrap_block_x_number_set };
+static SwigPyGetSet block_t_number_getset = { _wrap_block_t_number_get, _wrap_block_t_number_set };
+static SwigPyGetSet block_s_number_getset = { _wrap_block_s_number_get, _wrap_block_s_number_set };
+static SwigPyGetSet block_r_number_getset = { _wrap_block_r_number_get, _wrap_block_r_number_set };
+static SwigPyGetSet block_q_number_getset = { _wrap_block_q_number_get, _wrap_block_q_number_set };
+static SwigPyGetSet block_p_number_getset = { _wrap_block_p_number_get, _wrap_block_p_number_set };
+static SwigPyGetSet block_line_number_getset = { _wrap_block_line_number_get, _wrap_block_line_number_set };
+static SwigPyGetSet block_l_number_getset = { _wrap_block_l_number_get, _wrap_block_l_number_set };
+static SwigPyGetSet block_k_number_getset = { _wrap_block_k_number_get, _wrap_block_k_number_set };
+static SwigPyGetSet block_j_number_getset = { _wrap_block_j_number_get, _wrap_block_j_number_set };
+static SwigPyGetSet block_i_number_getset = { _wrap_block_i_number_get, _wrap_block_i_number_set };
+static SwigPyGetSet block_h_number_getset = { _wrap_block_h_number_get, _wrap_block_h_number_set };
+static SwigPyGetSet block_f_number_getset = { _wrap_block_f_number_get, _wrap_block_f_number_set };
+static SwigPyGetSet block_d_number_getset = { _wrap_block_d_number_get, _wrap_block_d_number_set };
+static SwigPyGetSet block_c_number_getset = { _wrap_block_c_number_get, _wrap_block_c_number_set };
+static SwigPyGetSet block_b_number_getset = { _wrap_block_b_number_get, _wrap_block_b_number_set };
+static SwigPyGetSet block_a_number_getset = { _wrap_block_a_number_get, _wrap_block_a_number_set };
+static SwigPyGetSet block_y_number_getset = { _wrap_block_y_number_get, _wrap_block_y_number_set };
+static SwigPyGetSet block_z_number_getset = { _wrap_block_z_number_get, _wrap_block_z_number_set };
+static SwigPyGetSet block_j_flag_getset = { _wrap_block_j_flag_get, _wrap_block_j_flag_set };
+static SwigPyGetSet block_l_flag_getset = { _wrap_block_l_flag_get, _wrap_block_l_flag_set };
+static SwigPyGetSet block_comment_getset = { _wrap_block_comment_get, _wrap_block_comment_set };
+static SwigPyGetSet block_y_flag_getset = { _wrap_block_y_flag_get, _wrap_block_y_flag_set };
+static SwigPyGetSet block_a_flag_getset = { _wrap_block_a_flag_get, _wrap_block_a_flag_set };
+static SwigPyGetSet block_m_modes_getset = { _wrap_block_m_modes_get, _wrap_block_m_modes_set };
+static SwigPyGetSet block_g_modes_getset = { _wrap_block_g_modes_get, _wrap_block_g_modes_set };
+static SwigPyGetSet block_c_flag_getset = { _wrap_block_c_flag_get, _wrap_block_c_flag_set };
+static SwigPyGetSet block_p_flag_getset = { _wrap_block_p_flag_get, _wrap_block_p_flag_set };
+static SwigPyGetSet block_r_flag_getset = { _wrap_block_r_flag_get, _wrap_block_r_flag_set };
+static SwigPyGetSet block_motion_to_be_getset = { _wrap_block_motion_to_be_get, _wrap_block_motion_to_be_set };
+static SwigPyGetSet block_i_flag_getset = { _wrap_block_i_flag_get, _wrap_block_i_flag_set };
+SWIGINTERN PyGetSetDef SwigPyBuiltin__block_struct_getset[] = {
+    { (char*) "k_flag", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.k_flag", (void*) &block_k_flag_getset }
+,
+    { (char*) "x_flag", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.x_flag", (void*) &block_x_flag_getset }
+,
+    { (char*) "m_count", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.m_count", (void*) &block_m_count_getset }
+,
+    { (char*) "z_flag", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.z_flag", (void*) &block_z_flag_getset }
+,
+    { (char*) "b_flag", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.b_flag", (void*) &block_b_flag_getset }
+,
+    { (char*) "q_flag", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.q_flag", (void*) &block_q_flag_getset }
+,
+    { (char*) "x_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.x_number", (void*) &block_x_number_getset }
+,
+    { (char*) "t_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.t_number", (void*) &block_t_number_getset }
+,
+    { (char*) "s_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.s_number", (void*) &block_s_number_getset }
+,
+    { (char*) "r_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.r_number", (void*) &block_r_number_getset }
+,
+    { (char*) "q_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.q_number", (void*) &block_q_number_getset }
+,
+    { (char*) "p_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.p_number", (void*) &block_p_number_getset }
+,
+    { (char*) "line_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.line_number", (void*) &block_line_number_getset }
+,
+    { (char*) "l_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.l_number", (void*) &block_l_number_getset }
+,
+    { (char*) "k_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.k_number", (void*) &block_k_number_getset }
+,
+    { (char*) "j_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.j_number", (void*) &block_j_number_getset }
+,
+    { (char*) "i_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.i_number", (void*) &block_i_number_getset }
+,
+    { (char*) "h_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.h_number", (void*) &block_h_number_getset }
+,
+    { (char*) "f_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.f_number", (void*) &block_f_number_getset }
+,
+    { (char*) "d_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.d_number", (void*) &block_d_number_getset }
+,
+    { (char*) "c_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.c_number", (void*) &block_c_number_getset }
+,
+    { (char*) "b_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.b_number", (void*) &block_b_number_getset }
+,
+    { (char*) "a_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.a_number", (void*) &block_a_number_getset }
+,
+    { (char*) "y_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.y_number", (void*) &block_y_number_getset }
+,
+    { (char*) "z_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.z_number", (void*) &block_z_number_getset }
+,
+    { (char*) "j_flag", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.j_flag", (void*) &block_j_flag_getset }
+,
+    { (char*) "l_flag", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.l_flag", (void*) &block_l_flag_getset }
+,
+    { (char*) "comment", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.comment", (void*) &block_comment_getset }
+,
+    { (char*) "y_flag", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.y_flag", (void*) &block_y_flag_getset }
+,
+    { (char*) "a_flag", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.a_flag", (void*) &block_a_flag_getset }
+,
+    { (char*) "m_modes", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.m_modes", (void*) &block_m_modes_getset }
+,
+    { (char*) "g_modes", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.g_modes", (void*) &block_g_modes_getset }
+,
+    { (char*) "c_flag", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.c_flag", (void*) &block_c_flag_getset }
+,
+    { (char*) "p_flag", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.p_flag", (void*) &block_p_flag_getset }
+,
+    { (char*) "r_flag", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.r_flag", (void*) &block_r_flag_getset }
+,
+    { (char*) "motion_to_be", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.motion_to_be", (void*) &block_motion_to_be_getset }
+,
+    { (char*) "i_flag", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"block_struct.i_flag", (void*) &block_i_flag_getset }
+,
+    {NULL, NULL, NULL, NULL, NULL} /* Sentinel */
+};
+
+SWIGINTERN PyObject *
+SwigPyBuiltin__block_struct_richcompare(PyObject *self, PyObject *other, int op) {
+  PyObject *result = NULL;
+  PyObject *tuple = PyTuple_New(1);
+  assert(tuple);
+  PyTuple_SET_ITEM(tuple, 0, other);
+  Py_XINCREF(other);
+  if (!result) {
+    if (SwigPyObject_Check(self) && SwigPyObject_Check(other)) {
+      result = SwigPyObject_richcompare((SwigPyObject *)self, (SwigPyObject *)other, op);
+    } else {
+      result = Py_NotImplemented;
+      Py_INCREF(result);
+    }
+  }
+  Py_DECREF(tuple);
+  return result;
+}
+
+SWIGINTERN PyMethodDef SwigPyBuiltin__block_struct_methods[] = {
+  { NULL, NULL, 0, NULL } /* Sentinel */
+};
+
+static PyHeapTypeObject SwigPyBuiltin__block_struct_type = {
+  {
+#if PY_VERSION_HEX >= 0x03000000
+    PyVarObject_HEAD_INIT(NULL, 0)
+#else
+    PyObject_HEAD_INIT(NULL)
+    0,                                        /* ob_size */
+#endif
+    "kmotion.block",                          /* tp_name */
+    sizeof(SwigPyObject),                     /* tp_basicsize */
+    0,                                        /* tp_itemsize */
+    (destructor) _wrap_delete_block_closure,  /* tp_dealloc */
+    (printfunc) 0,                            /* tp_print */
+    (getattrfunc) 0,                          /* tp_getattr */
+    (setattrfunc) 0,                          /* tp_setattr */
+#if PY_VERSION_HEX >= 0x03000000
+    0,                                        /* tp_compare */
+#else
+    (cmpfunc) 0,                              /* tp_compare */
+#endif
+    (reprfunc) 0,                             /* tp_repr */
+    &SwigPyBuiltin__block_struct_type.as_number,      /* tp_as_number */
+    &SwigPyBuiltin__block_struct_type.as_sequence,    /* tp_as_sequence */
+    &SwigPyBuiltin__block_struct_type.as_mapping,     /* tp_as_mapping */
+    (hashfunc) 0,                             /* tp_hash */
+    (ternaryfunc) 0,                          /* tp_call */
+    (reprfunc) 0,                             /* tp_str */
+    (getattrofunc) 0,                         /* tp_getattro */
+    (setattrofunc) 0,                         /* tp_setattro */
+    &SwigPyBuiltin__block_struct_type.as_buffer,      /* tp_as_buffer */
+#if PY_VERSION_HEX >= 0x03000000
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,   /* tp_flags */
+#else
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+#endif
+    "::block_struct",                         /* tp_doc */
+    (traverseproc) 0,                         /* tp_traverse */
+    (inquiry) 0,                              /* tp_clear */
+    (richcmpfunc) SwigPyBuiltin__block_struct_richcompare, /* feature:python:tp_richcompare */
+    0,                                        /* tp_weaklistoffset */
+    (getiterfunc) 0,                          /* tp_iter */
+    (iternextfunc) 0,                         /* tp_iternext */
+    SwigPyBuiltin__block_struct_methods,      /* tp_methods */
+    0,                                        /* tp_members */
+    SwigPyBuiltin__block_struct_getset,       /* tp_getset */
+    0,                                        /* tp_base */
+    0,                                        /* tp_dict */
+    (descrgetfunc) 0,                         /* tp_descr_get */
+    (descrsetfunc) 0,                         /* tp_descr_set */
+    (Py_ssize_t)offsetof(SwigPyObject, dict), /* tp_dictoffset */
+    (initproc) _wrap_new_block,               /* tp_init */
+    (allocfunc) 0,                            /* tp_alloc */
+    (newfunc) 0,                              /* tp_new */
+    (freefunc) 0,                             /* tp_free */
+    (inquiry) 0,                              /* tp_is_gc */
+    (PyObject*) 0,                            /* tp_bases */
+    (PyObject*) 0,                            /* tp_mro */
+    (PyObject*) 0,                            /* tp_cache */
+    (PyObject*) 0,                            /* tp_subclasses */
+    (PyObject*) 0,                            /* tp_weaklist */
+    (destructor) 0,                           /* tp_del */
+#if PY_VERSION_HEX >= 0x02060000
+    (int) 0,                                  /* tp_version_tag */
+#endif
+  },
+  {
+    (binaryfunc) 0,                           /* nb_add */
+    (binaryfunc) 0,                           /* nb_subtract */
+    (binaryfunc) 0,                           /* nb_multiply */
+#if PY_VERSION_HEX < 0x03000000
+    (binaryfunc) 0,                           /* nb_divide */
+#endif
+    (binaryfunc) 0,                           /* nb_remainder */
+    (binaryfunc) 0,                           /* nb_divmod */
+    (ternaryfunc) 0,                          /* nb_power */
+    (unaryfunc) 0,                            /* nb_negative */
+    (unaryfunc) 0,                            /* nb_positive */
+    (unaryfunc) 0,                            /* nb_absolute */
+    (inquiry) 0,                              /* nb_nonzero */
+    (unaryfunc) 0,                            /* nb_invert */
+    (binaryfunc) 0,                           /* nb_lshift */
+    (binaryfunc) 0,                           /* nb_rshift */
+    (binaryfunc) 0,                           /* nb_and */
+    (binaryfunc) 0,                           /* nb_xor */
+    (binaryfunc) 0,                           /* nb_or */
+#if PY_VERSION_HEX < 0x03000000
+    (coercion) 0,                             /* nb_coerce */
+#endif
+    (unaryfunc) 0,                            /* nb_int */
+#if PY_VERSION_HEX >= 0x03000000
+    (void*) 0,                                /* nb_reserved */
+#else
+    (unaryfunc) 0,                            /* nb_long */
+#endif
+    (unaryfunc) 0,                            /* nb_float */
+#if PY_VERSION_HEX < 0x03000000
+    (unaryfunc) 0,                            /* nb_oct */
+    (unaryfunc) 0,                            /* nb_hex */
+#endif
+    (binaryfunc) 0,                           /* nb_inplace_add */
+    (binaryfunc) 0,                           /* nb_inplace_subtract */
+    (binaryfunc) 0,                           /* nb_inplace_multiply */
+#if PY_VERSION_HEX < 0x03000000
+    (binaryfunc) 0,                           /* nb_inplace_divide */
+#endif
+    (binaryfunc) 0,                           /* nb_inplace_remainder */
+    (ternaryfunc) 0,                          /* nb_inplace_power */
+    (binaryfunc) 0,                           /* nb_inplace_lshift */
+    (binaryfunc) 0,                           /* nb_inplace_rshift */
+    (binaryfunc) 0,                           /* nb_inplace_and */
+    (binaryfunc) 0,                           /* nb_inplace_xor */
+    (binaryfunc) 0,                           /* nb_inplace_or */
+    (binaryfunc) 0,                           /* nb_floor_divide */
+    (binaryfunc) 0,                           /* nb_true_divide */
+    (binaryfunc) 0,                           /* nb_inplace_floor_divide */
+    (binaryfunc) 0,                           /* nb_inplace_true_divide */
+#if PY_VERSION_HEX >= 0x02050000
+    (unaryfunc) 0,                            /* nb_index */
+#endif
+  },
+  {
+    (lenfunc) 0,                              /* mp_length */
+    (binaryfunc) 0,                           /* mp_subscript */
+    (objobjargproc) 0,                        /* mp_ass_subscript */
+  },
+  {
+    (lenfunc) 0,                              /* sq_length */
+    (binaryfunc) 0,                           /* sq_concat */
+    (ssizeargfunc) 0,                         /* sq_repeat */
+    (ssizeargfunc) 0,                         /* sq_item */
+#if PY_VERSION_HEX >= 0x03000000
+    (void*) 0,                                /* was_sq_slice */
+#else
+    (ssizessizeargfunc) 0,                    /* sq_slice */
+#endif
+    (ssizeobjargproc) 0,                      /* sq_ass_item */
+#if PY_VERSION_HEX >= 0x03000000
+    (void*) 0,                                /* was_sq_ass_slice */
+#else
+    (ssizessizeobjargproc) 0,                 /* sq_ass_slice */
+#endif
+    (objobjproc) 0,                           /* sq_contains */
+    (binaryfunc) 0,                           /* sq_inplace_concat */
+    (ssizeargfunc) 0,                         /* sq_inplace_repeat */
+  },
+  {
+#if PY_VERSION_HEX < 0x03000000
+    (readbufferproc) 0,                       /* bf_getreadbuffer */
+    (writebufferproc) 0,                      /* bf_getwritebuffer */
+    (segcountproc) 0,                         /* bf_getsegcount */
+    (charbufferproc) 0,                       /* bf_getcharbuffer */
+#endif
+#if PY_VERSION_HEX >= 0x02060000
+    (getbufferproc) 0,                        /* bf_getbuffer */
+    (releasebufferproc) 0,                    /* bf_releasebuffer */
+#endif
+  },
+    (PyObject*) 0,                            /* ht_name */
+    (PyObject*) 0,                            /* ht_slots */
+};
+
+SWIGINTERN SwigPyClientData SwigPyBuiltin__block_struct_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin__block_struct_type};
+
+SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_setup)
+static SwigPyGetSet setup_current_line_getset = { _wrap_setup_current_line_get, _wrap_setup_current_line_set };
+static SwigPyGetSet setup_n_ParamChanges_getset = { _wrap_setup_n_ParamChanges_get, _wrap_setup_n_ParamChanges_set };
+static SwigPyGetSet setup_ParamChanges_getset = { _wrap_setup_ParamChanges_get, _wrap_setup_ParamChanges_set };
+static SwigPyGetSet setup_cutter_comp_radius_getset = { _wrap_setup_cutter_comp_radius_get, _wrap_setup_cutter_comp_radius_set };
+static SwigPyGetSet setup_tool_xoffset_getset = { _wrap_setup_tool_xoffset_get, _wrap_setup_tool_xoffset_set };
+static SwigPyGetSet setup_parameter_occurrence_getset = { _wrap_setup_parameter_occurrence_get, _wrap_setup_parameter_occurrence_set };
+static SwigPyGetSet setup_traverse_rate_getset = { _wrap_setup_traverse_rate_get, _wrap_setup_traverse_rate_set };
+static SwigPyGetSet setup_length_units_getset = { _wrap_setup_length_units_get, _wrap_setup_length_units_set };
+static SwigPyGetSet setup_speed_override_getset = { _wrap_setup_speed_override_get, _wrap_setup_speed_override_set };
+static SwigPyGetSet setup_feed_override_getset = { _wrap_setup_feed_override_get, _wrap_setup_feed_override_set };
+static SwigPyGetSet setup_selected_tool_slot_getset = { _wrap_setup_selected_tool_slot_get, _wrap_setup_selected_tool_slot_set };
+static SwigPyGetSet setup_cycle_i_getset = { _wrap_setup_cycle_i_get, _wrap_setup_cycle_i_set };
+static SwigPyGetSet setup_sub_stack_sub_start_lineno_getset = { _wrap_setup_sub_stack_sub_start_lineno_get, _wrap_setup_sub_stack_sub_start_lineno_set };
+static SwigPyGetSet setup_sub_stack_lineno_getset = { _wrap_setup_sub_stack_lineno_get, _wrap_setup_sub_stack_lineno_set };
+static SwigPyGetSet setup_distance_mode_getset = { _wrap_setup_distance_mode_get, _wrap_setup_distance_mode_set };
+static SwigPyGetSet setup_cycle_j_getset = { _wrap_setup_cycle_j_get, _wrap_setup_cycle_j_set };
+static SwigPyGetSet setup_stacki_getset = { _wrap_setup_stacki_get, _wrap_setup_stacki_set };
+static SwigPyGetSet setup_cycle_k_getset = { _wrap_setup_cycle_k_get, _wrap_setup_cycle_k_set };
+static SwigPyGetSet setup_cycle_l_getset = { _wrap_setup_cycle_l_get, _wrap_setup_cycle_l_set };
+static SwigPyGetSet setup_CC_current_getset = { _wrap_setup_CC_current_get, _wrap_setup_CC_current_set };
+static SwigPyGetSet setup_BB_current_getset = { _wrap_setup_BB_current_get, _wrap_setup_BB_current_set };
+static SwigPyGetSet setup_AA_current_getset = { _wrap_setup_AA_current_get, _wrap_setup_AA_current_set };
+static SwigPyGetSet setup_cutter_comp_side_getset = { _wrap_setup_cutter_comp_side_get, _wrap_setup_cutter_comp_side_set };
+static SwigPyGetSet setup_tool_max_getset = { _wrap_setup_tool_max_get, _wrap_setup_tool_max_set };
+static SwigPyGetSet setup_cycle_p_getset = { _wrap_setup_cycle_p_get, _wrap_setup_cycle_p_set };
+static SwigPyGetSet setup_probe_flag_getset = { _wrap_setup_probe_flag_get, _wrap_setup_probe_flag_set };
+static SwigPyGetSet setup_cycle_q_getset = { _wrap_setup_cycle_q_get, _wrap_setup_cycle_q_set };
+static SwigPyGetSet setup_cycle_cc_getset = { _wrap_setup_cycle_cc_get, _wrap_setup_cycle_cc_set };
+static SwigPyGetSet setup_cycle_r_getset = { _wrap_setup_cycle_r_get, _wrap_setup_cycle_r_set };
+static SwigPyGetSet setup_block_delete_getset = { _wrap_setup_block_delete_get, _wrap_setup_block_delete_set };
+static SwigPyGetSet setup_tool_table_index_getset = { _wrap_setup_tool_table_index_get, _wrap_setup_tool_table_index_set };
+static SwigPyGetSet setup_stack_index_getset = { _wrap_setup_stack_index_get, _wrap_setup_stack_index_set };
+static SwigPyGetSet setup_active_m_codes_getset = { _wrap_setup_active_m_codes_get, _wrap_setup_active_m_codes_set };
+static SwigPyGetSet setup_active_g_codes_getset = { _wrap_setup_active_g_codes_get, _wrap_setup_active_g_codes_set };
+static SwigPyGetSet setup_filename_getset = { _wrap_setup_filename_get, _wrap_setup_filename_set };
+static SwigPyGetSet setup_speed_getset = { _wrap_setup_speed_get, _wrap_setup_speed_set };
+static SwigPyGetSet setup_parameter_numbers_getset = { _wrap_setup_parameter_numbers_get, _wrap_setup_parameter_numbers_set };
+static SwigPyGetSet setup_tool_yoffset_getset = { _wrap_setup_tool_yoffset_get, _wrap_setup_tool_yoffset_set };
+static SwigPyGetSet setup_tool_length_offset_getset = { _wrap_setup_tool_length_offset_get, _wrap_setup_tool_length_offset_set };
+static SwigPyGetSet setup_CC_origin_offset_getset = { _wrap_setup_CC_origin_offset_get, _wrap_setup_CC_origin_offset_set };
+static SwigPyGetSet setup_BB_origin_offset_getset = { _wrap_setup_BB_origin_offset_get, _wrap_setup_BB_origin_offset_set };
+static SwigPyGetSet setup_AA_origin_offset_getset = { _wrap_setup_AA_origin_offset_get, _wrap_setup_AA_origin_offset_set };
+static SwigPyGetSet setup_CC_axis_offset_getset = { _wrap_setup_CC_axis_offset_get, _wrap_setup_CC_axis_offset_set };
+static SwigPyGetSet setup_BB_axis_offset_getset = { _wrap_setup_BB_axis_offset_get, _wrap_setup_BB_axis_offset_set };
+static SwigPyGetSet setup_AA_axis_offset_getset = { _wrap_setup_AA_axis_offset_get, _wrap_setup_AA_axis_offset_set };
+static SwigPyGetSet setup_cycle_z_getset = { _wrap_setup_cycle_z_get, _wrap_setup_cycle_z_set };
+static SwigPyGetSet setup_cutter_radius_compensation_getset = { _wrap_setup_cutter_radius_compensation_get, _wrap_setup_cutter_radius_compensation_set };
+static SwigPyGetSet setup_flood_getset = { _wrap_setup_flood_get, _wrap_setup_flood_set };
+static SwigPyGetSet setup_spindle_turning_getset = { _wrap_setup_spindle_turning_get, _wrap_setup_spindle_turning_set };
+static SwigPyGetSet setup_blocktext_getset = { _wrap_setup_blocktext_get, _wrap_setup_blocktext_set };
+static SwigPyGetSet setup_feed_rate_getset = { _wrap_setup_feed_rate_get, _wrap_setup_feed_rate_set };
+static SwigPyGetSet setup_program_x_getset = { _wrap_setup_program_x_get, _wrap_setup_program_x_set };
+static SwigPyGetSet setup_origin_offset_x_getset = { _wrap_setup_origin_offset_x_get, _wrap_setup_origin_offset_x_set };
+static SwigPyGetSet setup_axis_offset_x_getset = { _wrap_setup_axis_offset_x_get, _wrap_setup_axis_offset_x_set };
+static SwigPyGetSet setup_program_y_getset = { _wrap_setup_program_y_get, _wrap_setup_program_y_set };
+static SwigPyGetSet setup_origin_offset_y_getset = { _wrap_setup_origin_offset_y_get, _wrap_setup_origin_offset_y_set };
+static SwigPyGetSet setup_axis_offset_y_getset = { _wrap_setup_axis_offset_y_get, _wrap_setup_axis_offset_y_set };
+static SwigPyGetSet setup_speed_feed_mode_getset = { _wrap_setup_speed_feed_mode_get, _wrap_setup_speed_feed_mode_set };
+static SwigPyGetSet setup_feed_mode_getset = { _wrap_setup_feed_mode_get, _wrap_setup_feed_mode_set };
+static SwigPyGetSet setup_origin_offset_z_getset = { _wrap_setup_origin_offset_z_get, _wrap_setup_origin_offset_z_set };
+static SwigPyGetSet setup_axis_offset_z_getset = { _wrap_setup_axis_offset_z_get, _wrap_setup_axis_offset_z_set };
+static SwigPyGetSet setup_active_settings_getset = { _wrap_setup_active_settings_get, _wrap_setup_active_settings_set };
+static SwigPyGetSet setup_sequence_number_getset = { _wrap_setup_sequence_number_get, _wrap_setup_sequence_number_set };
+static SwigPyGetSet setup_sub_stack_sub_start_pos_getset = { _wrap_setup_sub_stack_sub_start_pos_get, _wrap_setup_sub_stack_sub_start_pos_set };
+static SwigPyGetSet setup_block1_getset = { _wrap_setup_block1_get, _wrap_setup_block1_set };
+static SwigPyGetSet setup_file_pointer_getset = { _wrap_setup_file_pointer_get, _wrap_setup_file_pointer_set };
+static SwigPyGetSet setup_mist_getset = { _wrap_setup_mist_get, _wrap_setup_mist_set };
+static SwigPyGetSet setup_tool_table_getset = { _wrap_setup_tool_table_get, _wrap_setup_tool_table_set };
+static SwigPyGetSet setup_plane_getset = { _wrap_setup_plane_get, _wrap_setup_plane_set };
+static SwigPyGetSet setup_control_mode_getset = { _wrap_setup_control_mode_get, _wrap_setup_control_mode_set };
+static SwigPyGetSet setup_current_x_getset = { _wrap_setup_current_x_get, _wrap_setup_current_x_set };
+static SwigPyGetSet setup_current_y_getset = { _wrap_setup_current_y_get, _wrap_setup_current_y_set };
+static SwigPyGetSet setup_current_z_getset = { _wrap_setup_current_z_get, _wrap_setup_current_z_set };
+static SwigPyGetSet setup_parameters_getset = { _wrap_setup_parameters_get, _wrap_setup_parameters_set };
+static SwigPyGetSet setup_spindle_mode_getset = { _wrap_setup_spindle_mode_get, _wrap_setup_spindle_mode_set };
+static SwigPyGetSet setup_linetext_getset = { _wrap_setup_linetext_get, _wrap_setup_linetext_set };
+static SwigPyGetSet setup_sub_stack_pos_getset = { _wrap_setup_sub_stack_pos_get, _wrap_setup_sub_stack_pos_set };
+static SwigPyGetSet setup_retract_mode_getset = { _wrap_setup_retract_mode_get, _wrap_setup_retract_mode_set };
+static SwigPyGetSet setup_DiameterMode_getset = { _wrap_setup_DiameterMode_get, _wrap_setup_DiameterMode_set };
+static SwigPyGetSet setup_sub_stack_call_cnt_getset = { _wrap_setup_sub_stack_call_cnt_get, _wrap_setup_sub_stack_call_cnt_set };
+static SwigPyGetSet setup_stack_getset = { _wrap_setup_stack_get, _wrap_setup_stack_set };
+static SwigPyGetSet setup_origin_index_getset = { _wrap_setup_origin_index_get, _wrap_setup_origin_index_set };
+static SwigPyGetSet setup_length_offset_index_getset = { _wrap_setup_length_offset_index_get, _wrap_setup_length_offset_index_set };
+static SwigPyGetSet setup_percent_flag_getset = { _wrap_setup_percent_flag_get, _wrap_setup_percent_flag_set };
+static SwigPyGetSet setup_parameter_values_getset = { _wrap_setup_parameter_values_get, _wrap_setup_parameter_values_set };
+static SwigPyGetSet setup_current_slot_getset = { _wrap_setup_current_slot_get, _wrap_setup_current_slot_set };
+static SwigPyGetSet setup_motion_mode_getset = { _wrap_setup_motion_mode_get, _wrap_setup_motion_mode_set };
+static SwigPyGetSet setup_line_length_getset = { _wrap_setup_line_length_get, _wrap_setup_line_length_set };
+SWIGINTERN PyGetSetDef SwigPyBuiltin__setup_struct_getset[] = {
+    { (char*) "current_line", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.current_line", (void*) &setup_current_line_getset }
+,
+    { (char*) "n_ParamChanges", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.n_ParamChanges", (void*) &setup_n_ParamChanges_getset }
+,
+    { (char*) "ParamChanges", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.ParamChanges", (void*) &setup_ParamChanges_getset }
+,
+    { (char*) "cutter_comp_radius", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.cutter_comp_radius", (void*) &setup_cutter_comp_radius_getset }
+,
+    { (char*) "tool_xoffset", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.tool_xoffset", (void*) &setup_tool_xoffset_getset }
+,
+    { (char*) "parameter_occurrence", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.parameter_occurrence", (void*) &setup_parameter_occurrence_getset }
+,
+    { (char*) "traverse_rate", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.traverse_rate", (void*) &setup_traverse_rate_getset }
+,
+    { (char*) "length_units", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.length_units", (void*) &setup_length_units_getset }
+,
+    { (char*) "speed_override", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.speed_override", (void*) &setup_speed_override_getset }
+,
+    { (char*) "feed_override", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.feed_override", (void*) &setup_feed_override_getset }
+,
+    { (char*) "selected_tool_slot", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.selected_tool_slot", (void*) &setup_selected_tool_slot_getset }
+,
+    { (char*) "cycle_i", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.cycle_i", (void*) &setup_cycle_i_getset }
+,
+    { (char*) "sub_stack_sub_start_lineno", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.sub_stack_sub_start_lineno", (void*) &setup_sub_stack_sub_start_lineno_getset }
+,
+    { (char*) "sub_stack_lineno", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.sub_stack_lineno", (void*) &setup_sub_stack_lineno_getset }
+,
+    { (char*) "distance_mode", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.distance_mode", (void*) &setup_distance_mode_getset }
+,
+    { (char*) "cycle_j", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.cycle_j", (void*) &setup_cycle_j_getset }
+,
+    { (char*) "stacki", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.stacki", (void*) &setup_stacki_getset }
+,
+    { (char*) "cycle_k", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.cycle_k", (void*) &setup_cycle_k_getset }
+,
+    { (char*) "cycle_l", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.cycle_l", (void*) &setup_cycle_l_getset }
+,
+    { (char*) "CC_current", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.CC_current", (void*) &setup_CC_current_getset }
+,
+    { (char*) "BB_current", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.BB_current", (void*) &setup_BB_current_getset }
+,
+    { (char*) "AA_current", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.AA_current", (void*) &setup_AA_current_getset }
+,
+    { (char*) "cutter_comp_side", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.cutter_comp_side", (void*) &setup_cutter_comp_side_getset }
+,
+    { (char*) "tool_max", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.tool_max", (void*) &setup_tool_max_getset }
+,
+    { (char*) "cycle_p", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.cycle_p", (void*) &setup_cycle_p_getset }
+,
+    { (char*) "probe_flag", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.probe_flag", (void*) &setup_probe_flag_getset }
+,
+    { (char*) "cycle_q", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.cycle_q", (void*) &setup_cycle_q_getset }
+,
+    { (char*) "cycle_cc", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.cycle_cc", (void*) &setup_cycle_cc_getset }
+,
+    { (char*) "cycle_r", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.cycle_r", (void*) &setup_cycle_r_getset }
+,
+    { (char*) "block_delete", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.block_delete", (void*) &setup_block_delete_getset }
+,
+    { (char*) "tool_table_index", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.tool_table_index", (void*) &setup_tool_table_index_getset }
+,
+    { (char*) "stack_index", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.stack_index", (void*) &setup_stack_index_getset }
+,
+    { (char*) "active_m_codes", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.active_m_codes", (void*) &setup_active_m_codes_getset }
+,
+    { (char*) "active_g_codes", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.active_g_codes", (void*) &setup_active_g_codes_getset }
+,
+    { (char*) "filename", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.filename", (void*) &setup_filename_getset }
+,
+    { (char*) "speed", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.speed", (void*) &setup_speed_getset }
+,
+    { (char*) "parameter_numbers", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.parameter_numbers", (void*) &setup_parameter_numbers_getset }
+,
+    { (char*) "tool_yoffset", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.tool_yoffset", (void*) &setup_tool_yoffset_getset }
+,
+    { (char*) "tool_length_offset", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.tool_length_offset", (void*) &setup_tool_length_offset_getset }
+,
+    { (char*) "CC_origin_offset", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.CC_origin_offset", (void*) &setup_CC_origin_offset_getset }
+,
+    { (char*) "BB_origin_offset", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.BB_origin_offset", (void*) &setup_BB_origin_offset_getset }
+,
+    { (char*) "AA_origin_offset", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.AA_origin_offset", (void*) &setup_AA_origin_offset_getset }
+,
+    { (char*) "CC_axis_offset", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.CC_axis_offset", (void*) &setup_CC_axis_offset_getset }
+,
+    { (char*) "BB_axis_offset", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.BB_axis_offset", (void*) &setup_BB_axis_offset_getset }
+,
+    { (char*) "AA_axis_offset", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.AA_axis_offset", (void*) &setup_AA_axis_offset_getset }
+,
+    { (char*) "cycle_z", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.cycle_z", (void*) &setup_cycle_z_getset }
+,
+    { (char*) "cutter_radius_compensation", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.cutter_radius_compensation", (void*) &setup_cutter_radius_compensation_getset }
+,
+    { (char*) "flood", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.flood", (void*) &setup_flood_getset }
+,
+    { (char*) "spindle_turning", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.spindle_turning", (void*) &setup_spindle_turning_getset }
+,
+    { (char*) "blocktext", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.blocktext", (void*) &setup_blocktext_getset }
+,
+    { (char*) "feed_rate", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.feed_rate", (void*) &setup_feed_rate_getset }
+,
+    { (char*) "program_x", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.program_x", (void*) &setup_program_x_getset }
+,
+    { (char*) "origin_offset_x", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.origin_offset_x", (void*) &setup_origin_offset_x_getset }
+,
+    { (char*) "axis_offset_x", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.axis_offset_x", (void*) &setup_axis_offset_x_getset }
+,
+    { (char*) "program_y", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.program_y", (void*) &setup_program_y_getset }
+,
+    { (char*) "origin_offset_y", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.origin_offset_y", (void*) &setup_origin_offset_y_getset }
+,
+    { (char*) "axis_offset_y", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.axis_offset_y", (void*) &setup_axis_offset_y_getset }
+,
+    { (char*) "speed_feed_mode", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.speed_feed_mode", (void*) &setup_speed_feed_mode_getset }
+,
+    { (char*) "feed_mode", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.feed_mode", (void*) &setup_feed_mode_getset }
+,
+    { (char*) "origin_offset_z", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.origin_offset_z", (void*) &setup_origin_offset_z_getset }
+,
+    { (char*) "axis_offset_z", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.axis_offset_z", (void*) &setup_axis_offset_z_getset }
+,
+    { (char*) "active_settings", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.active_settings", (void*) &setup_active_settings_getset }
+,
+    { (char*) "sequence_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.sequence_number", (void*) &setup_sequence_number_getset }
+,
+    { (char*) "sub_stack_sub_start_pos", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.sub_stack_sub_start_pos", (void*) &setup_sub_stack_sub_start_pos_getset }
+,
+    { (char*) "block1", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.block1", (void*) &setup_block1_getset }
+,
+    { (char*) "file_pointer", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.file_pointer", (void*) &setup_file_pointer_getset }
+,
+    { (char*) "mist", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.mist", (void*) &setup_mist_getset }
+,
+    { (char*) "tool_table", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.tool_table", (void*) &setup_tool_table_getset }
+,
+    { (char*) "plane", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.plane", (void*) &setup_plane_getset }
+,
+    { (char*) "control_mode", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.control_mode", (void*) &setup_control_mode_getset }
+,
+    { (char*) "current_x", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.current_x", (void*) &setup_current_x_getset }
+,
+    { (char*) "current_y", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.current_y", (void*) &setup_current_y_getset }
+,
+    { (char*) "current_z", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.current_z", (void*) &setup_current_z_getset }
+,
+    { (char*) "parameters", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.parameters", (void*) &setup_parameters_getset }
+,
+    { (char*) "spindle_mode", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.spindle_mode", (void*) &setup_spindle_mode_getset }
+,
+    { (char*) "linetext", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.linetext", (void*) &setup_linetext_getset }
+,
+    { (char*) "sub_stack_pos", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.sub_stack_pos", (void*) &setup_sub_stack_pos_getset }
+,
+    { (char*) "retract_mode", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.retract_mode", (void*) &setup_retract_mode_getset }
+,
+    { (char*) "DiameterMode", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.DiameterMode", (void*) &setup_DiameterMode_getset }
+,
+    { (char*) "sub_stack_call_cnt", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.sub_stack_call_cnt", (void*) &setup_sub_stack_call_cnt_getset }
+,
+    { (char*) "stack", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.stack", (void*) &setup_stack_getset }
+,
+    { (char*) "origin_index", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.origin_index", (void*) &setup_origin_index_getset }
+,
+    { (char*) "length_offset_index", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.length_offset_index", (void*) &setup_length_offset_index_getset }
+,
+    { (char*) "percent_flag", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.percent_flag", (void*) &setup_percent_flag_getset }
+,
+    { (char*) "parameter_values", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.parameter_values", (void*) &setup_parameter_values_getset }
+,
+    { (char*) "current_slot", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.current_slot", (void*) &setup_current_slot_getset }
+,
+    { (char*) "motion_mode", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.motion_mode", (void*) &setup_motion_mode_getset }
+,
+    { (char*) "line_length", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"setup_struct.line_length", (void*) &setup_line_length_getset }
+,
+    {NULL, NULL, NULL, NULL, NULL} /* Sentinel */
+};
+
+SWIGINTERN PyObject *
+SwigPyBuiltin__setup_struct_richcompare(PyObject *self, PyObject *other, int op) {
+  PyObject *result = NULL;
+  PyObject *tuple = PyTuple_New(1);
+  assert(tuple);
+  PyTuple_SET_ITEM(tuple, 0, other);
+  Py_XINCREF(other);
+  if (!result) {
+    if (SwigPyObject_Check(self) && SwigPyObject_Check(other)) {
+      result = SwigPyObject_richcompare((SwigPyObject *)self, (SwigPyObject *)other, op);
+    } else {
+      result = Py_NotImplemented;
+      Py_INCREF(result);
+    }
+  }
+  Py_DECREF(tuple);
+  return result;
+}
+
+SWIGINTERN PyMethodDef SwigPyBuiltin__setup_struct_methods[] = {
+  { NULL, NULL, 0, NULL } /* Sentinel */
+};
+
+static PyHeapTypeObject SwigPyBuiltin__setup_struct_type = {
+  {
+#if PY_VERSION_HEX >= 0x03000000
+    PyVarObject_HEAD_INIT(NULL, 0)
+#else
+    PyObject_HEAD_INIT(NULL)
+    0,                                        /* ob_size */
+#endif
+    "kmotion.setup",                          /* tp_name */
+    sizeof(SwigPyObject),                     /* tp_basicsize */
+    0,                                        /* tp_itemsize */
+    (destructor) _wrap_delete_setup_closure,  /* tp_dealloc */
+    (printfunc) 0,                            /* tp_print */
+    (getattrfunc) 0,                          /* tp_getattr */
+    (setattrfunc) 0,                          /* tp_setattr */
+#if PY_VERSION_HEX >= 0x03000000
+    0,                                        /* tp_compare */
+#else
+    (cmpfunc) 0,                              /* tp_compare */
+#endif
+    (reprfunc) 0,                             /* tp_repr */
+    &SwigPyBuiltin__setup_struct_type.as_number,      /* tp_as_number */
+    &SwigPyBuiltin__setup_struct_type.as_sequence,    /* tp_as_sequence */
+    &SwigPyBuiltin__setup_struct_type.as_mapping,     /* tp_as_mapping */
+    (hashfunc) 0,                             /* tp_hash */
+    (ternaryfunc) 0,                          /* tp_call */
+    (reprfunc) 0,                             /* tp_str */
+    (getattrofunc) 0,                         /* tp_getattro */
+    (setattrofunc) 0,                         /* tp_setattro */
+    &SwigPyBuiltin__setup_struct_type.as_buffer,      /* tp_as_buffer */
+#if PY_VERSION_HEX >= 0x03000000
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,   /* tp_flags */
+#else
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+#endif
+    "::setup_struct",                         /* tp_doc */
+    (traverseproc) 0,                         /* tp_traverse */
+    (inquiry) 0,                              /* tp_clear */
+    (richcmpfunc) SwigPyBuiltin__setup_struct_richcompare, /* feature:python:tp_richcompare */
+    0,                                        /* tp_weaklistoffset */
+    (getiterfunc) 0,                          /* tp_iter */
+    (iternextfunc) 0,                         /* tp_iternext */
+    SwigPyBuiltin__setup_struct_methods,      /* tp_methods */
+    0,                                        /* tp_members */
+    SwigPyBuiltin__setup_struct_getset,       /* tp_getset */
+    0,                                        /* tp_base */
+    0,                                        /* tp_dict */
+    (descrgetfunc) 0,                         /* tp_descr_get */
+    (descrsetfunc) 0,                         /* tp_descr_set */
+    (Py_ssize_t)offsetof(SwigPyObject, dict), /* tp_dictoffset */
+    (initproc) _wrap_new_setup,               /* tp_init */
+    (allocfunc) 0,                            /* tp_alloc */
+    (newfunc) 0,                              /* tp_new */
+    (freefunc) 0,                             /* tp_free */
+    (inquiry) 0,                              /* tp_is_gc */
+    (PyObject*) 0,                            /* tp_bases */
+    (PyObject*) 0,                            /* tp_mro */
+    (PyObject*) 0,                            /* tp_cache */
+    (PyObject*) 0,                            /* tp_subclasses */
+    (PyObject*) 0,                            /* tp_weaklist */
+    (destructor) 0,                           /* tp_del */
+#if PY_VERSION_HEX >= 0x02060000
+    (int) 0,                                  /* tp_version_tag */
+#endif
+  },
+  {
+    (binaryfunc) 0,                           /* nb_add */
+    (binaryfunc) 0,                           /* nb_subtract */
+    (binaryfunc) 0,                           /* nb_multiply */
+#if PY_VERSION_HEX < 0x03000000
+    (binaryfunc) 0,                           /* nb_divide */
+#endif
+    (binaryfunc) 0,                           /* nb_remainder */
+    (binaryfunc) 0,                           /* nb_divmod */
+    (ternaryfunc) 0,                          /* nb_power */
+    (unaryfunc) 0,                            /* nb_negative */
+    (unaryfunc) 0,                            /* nb_positive */
+    (unaryfunc) 0,                            /* nb_absolute */
+    (inquiry) 0,                              /* nb_nonzero */
+    (unaryfunc) 0,                            /* nb_invert */
+    (binaryfunc) 0,                           /* nb_lshift */
+    (binaryfunc) 0,                           /* nb_rshift */
+    (binaryfunc) 0,                           /* nb_and */
+    (binaryfunc) 0,                           /* nb_xor */
+    (binaryfunc) 0,                           /* nb_or */
+#if PY_VERSION_HEX < 0x03000000
+    (coercion) 0,                             /* nb_coerce */
+#endif
+    (unaryfunc) 0,                            /* nb_int */
+#if PY_VERSION_HEX >= 0x03000000
+    (void*) 0,                                /* nb_reserved */
+#else
+    (unaryfunc) 0,                            /* nb_long */
+#endif
+    (unaryfunc) 0,                            /* nb_float */
+#if PY_VERSION_HEX < 0x03000000
+    (unaryfunc) 0,                            /* nb_oct */
+    (unaryfunc) 0,                            /* nb_hex */
+#endif
+    (binaryfunc) 0,                           /* nb_inplace_add */
+    (binaryfunc) 0,                           /* nb_inplace_subtract */
+    (binaryfunc) 0,                           /* nb_inplace_multiply */
+#if PY_VERSION_HEX < 0x03000000
+    (binaryfunc) 0,                           /* nb_inplace_divide */
+#endif
+    (binaryfunc) 0,                           /* nb_inplace_remainder */
+    (ternaryfunc) 0,                          /* nb_inplace_power */
+    (binaryfunc) 0,                           /* nb_inplace_lshift */
+    (binaryfunc) 0,                           /* nb_inplace_rshift */
+    (binaryfunc) 0,                           /* nb_inplace_and */
+    (binaryfunc) 0,                           /* nb_inplace_xor */
+    (binaryfunc) 0,                           /* nb_inplace_or */
+    (binaryfunc) 0,                           /* nb_floor_divide */
+    (binaryfunc) 0,                           /* nb_true_divide */
+    (binaryfunc) 0,                           /* nb_inplace_floor_divide */
+    (binaryfunc) 0,                           /* nb_inplace_true_divide */
+#if PY_VERSION_HEX >= 0x02050000
+    (unaryfunc) 0,                            /* nb_index */
+#endif
+  },
+  {
+    (lenfunc) 0,                              /* mp_length */
+    (binaryfunc) 0,                           /* mp_subscript */
+    (objobjargproc) 0,                        /* mp_ass_subscript */
+  },
+  {
+    (lenfunc) 0,                              /* sq_length */
+    (binaryfunc) 0,                           /* sq_concat */
+    (ssizeargfunc) 0,                         /* sq_repeat */
+    (ssizeargfunc) 0,                         /* sq_item */
+#if PY_VERSION_HEX >= 0x03000000
+    (void*) 0,                                /* was_sq_slice */
+#else
+    (ssizessizeargfunc) 0,                    /* sq_slice */
+#endif
+    (ssizeobjargproc) 0,                      /* sq_ass_item */
+#if PY_VERSION_HEX >= 0x03000000
+    (void*) 0,                                /* was_sq_ass_slice */
+#else
+    (ssizessizeobjargproc) 0,                 /* sq_ass_slice */
+#endif
+    (objobjproc) 0,                           /* sq_contains */
+    (binaryfunc) 0,                           /* sq_inplace_concat */
+    (ssizeargfunc) 0,                         /* sq_inplace_repeat */
+  },
+  {
+#if PY_VERSION_HEX < 0x03000000
+    (readbufferproc) 0,                       /* bf_getreadbuffer */
+    (writebufferproc) 0,                      /* bf_getwritebuffer */
+    (segcountproc) 0,                         /* bf_getsegcount */
+    (charbufferproc) 0,                       /* bf_getcharbuffer */
+#endif
+#if PY_VERSION_HEX >= 0x02060000
+    (getbufferproc) 0,                        /* bf_getbuffer */
+    (releasebufferproc) 0,                    /* bf_releasebuffer */
+#endif
+  },
+    (PyObject*) 0,                            /* ht_name */
+    (PyObject*) 0,                            /* ht_slots */
+};
+
+SWIGINTERN SwigPyClientData SwigPyBuiltin__setup_struct_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin__setup_struct_type};
+
 SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_MotionParams)
-static SwigPyGetSet MotionParams_BreakAngle_getset = { _wrap_MotionParams_BreakAngle_get, _wrap_MotionParams_BreakAngle_set };
-static SwigPyGetSet MotionParams_MaxVelX_getset = { _wrap_MotionParams_MaxVelX_get, _wrap_MotionParams_MaxVelX_set };
-static SwigPyGetSet MotionParams_CollinearTol_getset = { _wrap_MotionParams_CollinearTol_get, _wrap_MotionParams_CollinearTol_set };
-static SwigPyGetSet MotionParams_MaxVelY_getset = { _wrap_MotionParams_MaxVelY_get, _wrap_MotionParams_MaxVelY_set };
-static SwigPyGetSet MotionParams_MaxVelZ_getset = { _wrap_MotionParams_MaxVelZ_get, _wrap_MotionParams_MaxVelZ_set };
-static SwigPyGetSet MotionParams_ArcsToSegs_getset = { _wrap_MotionParams_ArcsToSegs_get, _wrap_MotionParams_ArcsToSegs_set };
+static SwigPyGetSet MotionParams_SoftLimitPosA_getset = { _wrap_MotionParams_SoftLimitPosA_get, _wrap_MotionParams_SoftLimitPosA_set };
+static SwigPyGetSet MotionParams_SoftLimitPosB_getset = { _wrap_MotionParams_SoftLimitPosB_get, _wrap_MotionParams_SoftLimitPosB_set };
+static SwigPyGetSet MotionParams_SoftLimitPosC_getset = { _wrap_MotionParams_SoftLimitPosC_get, _wrap_MotionParams_SoftLimitPosC_set };
+static SwigPyGetSet MotionParams_RadiusA_getset = { _wrap_MotionParams_RadiusA_get, _wrap_MotionParams_RadiusA_set };
+static SwigPyGetSet MotionParams_RadiusB_getset = { _wrap_MotionParams_RadiusB_get, _wrap_MotionParams_RadiusB_set };
+static SwigPyGetSet MotionParams_RadiusC_getset = { _wrap_MotionParams_RadiusC_get, _wrap_MotionParams_RadiusC_set };
 static SwigPyGetSet MotionParams_MaxRapidVelA_getset = { _wrap_MotionParams_MaxRapidVelA_get, _wrap_MotionParams_MaxRapidVelA_set };
 static SwigPyGetSet MotionParams_MaxRapidVelB_getset = { _wrap_MotionParams_MaxRapidVelB_get, _wrap_MotionParams_MaxRapidVelB_set };
 static SwigPyGetSet MotionParams_MaxRapidJerkA_getset = { _wrap_MotionParams_MaxRapidJerkA_get, _wrap_MotionParams_MaxRapidJerkA_set };
 static SwigPyGetSet MotionParams_MaxRapidVelC_getset = { _wrap_MotionParams_MaxRapidVelC_get, _wrap_MotionParams_MaxRapidVelC_set };
-static SwigPyGetSet MotionParams_SoftLimitPosA_getset = { _wrap_MotionParams_SoftLimitPosA_get, _wrap_MotionParams_SoftLimitPosA_set };
 static SwigPyGetSet MotionParams_MaxRapidJerkB_getset = { _wrap_MotionParams_MaxRapidJerkB_get, _wrap_MotionParams_MaxRapidJerkB_set };
-static SwigPyGetSet MotionParams_SoftLimitPosB_getset = { _wrap_MotionParams_SoftLimitPosB_get, _wrap_MotionParams_SoftLimitPosB_set };
 static SwigPyGetSet MotionParams_MaxRapidJerkC_getset = { _wrap_MotionParams_MaxRapidJerkC_get, _wrap_MotionParams_MaxRapidJerkC_set };
-static SwigPyGetSet MotionParams_SoftLimitPosC_getset = { _wrap_MotionParams_SoftLimitPosC_get, _wrap_MotionParams_SoftLimitPosC_set };
-static SwigPyGetSet MotionParams_DoRapidsAsFeeds_getset = { _wrap_MotionParams_DoRapidsAsFeeds_get, _wrap_MotionParams_DoRapidsAsFeeds_set };
-static SwigPyGetSet MotionParams_MaxRapidAccelX_getset = { _wrap_MotionParams_MaxRapidAccelX_get, _wrap_MotionParams_MaxRapidAccelX_set };
-static SwigPyGetSet MotionParams_MaxAccelX_getset = { _wrap_MotionParams_MaxAccelX_get, _wrap_MotionParams_MaxAccelX_set };
-static SwigPyGetSet MotionParams_MaxVelA_getset = { _wrap_MotionParams_MaxVelA_get, _wrap_MotionParams_MaxVelA_set };
-static SwigPyGetSet MotionParams_MaxRapidAccelY_getset = { _wrap_MotionParams_MaxRapidAccelY_get, _wrap_MotionParams_MaxRapidAccelY_set };
-static SwigPyGetSet MotionParams_MaxAccelY_getset = { _wrap_MotionParams_MaxAccelY_get, _wrap_MotionParams_MaxAccelY_set };
-static SwigPyGetSet MotionParams_CountsPerInchX_getset = { _wrap_MotionParams_CountsPerInchX_get, _wrap_MotionParams_CountsPerInchX_set };
-static SwigPyGetSet MotionParams_MaxVelB_getset = { _wrap_MotionParams_MaxVelB_get, _wrap_MotionParams_MaxVelB_set };
-static SwigPyGetSet MotionParams_MaxRapidAccelZ_getset = { _wrap_MotionParams_MaxRapidAccelZ_get, _wrap_MotionParams_MaxRapidAccelZ_set };
-static SwigPyGetSet MotionParams_MaxAccelZ_getset = { _wrap_MotionParams_MaxAccelZ_get, _wrap_MotionParams_MaxAccelZ_set };
-static SwigPyGetSet MotionParams_CountsPerInchY_getset = { _wrap_MotionParams_CountsPerInchY_get, _wrap_MotionParams_CountsPerInchY_set };
-static SwigPyGetSet MotionParams_CornerTol_getset = { _wrap_MotionParams_CornerTol_get, _wrap_MotionParams_CornerTol_set };
-static SwigPyGetSet MotionParams_MaxVelC_getset = { _wrap_MotionParams_MaxVelC_get, _wrap_MotionParams_MaxVelC_set };
-static SwigPyGetSet MotionParams_CountsPerInchZ_getset = { _wrap_MotionParams_CountsPerInchZ_get, _wrap_MotionParams_CountsPerInchZ_set };
 static SwigPyGetSet MotionParams_SoftLimitNegX_getset = { _wrap_MotionParams_SoftLimitNegX_get, _wrap_MotionParams_SoftLimitNegX_set };
 static SwigPyGetSet MotionParams_SoftLimitNegY_getset = { _wrap_MotionParams_SoftLimitNegY_get, _wrap_MotionParams_SoftLimitNegY_set };
-static SwigPyGetSet MotionParams_UseOnlyLinearSegments_getset = { _wrap_MotionParams_UseOnlyLinearSegments_get, _wrap_MotionParams_UseOnlyLinearSegments_set };
-static SwigPyGetSet MotionParams_RadiusA_getset = { _wrap_MotionParams_RadiusA_get, _wrap_MotionParams_RadiusA_set };
 static SwigPyGetSet MotionParams_SoftLimitNegZ_getset = { _wrap_MotionParams_SoftLimitNegZ_get, _wrap_MotionParams_SoftLimitNegZ_set };
-static SwigPyGetSet MotionParams_RadiusB_getset = { _wrap_MotionParams_RadiusB_get, _wrap_MotionParams_RadiusB_set };
-static SwigPyGetSet MotionParams_RadiusC_getset = { _wrap_MotionParams_RadiusC_get, _wrap_MotionParams_RadiusC_set };
-static SwigPyGetSet MotionParams_MaxLinearLength_getset = { _wrap_MotionParams_MaxLinearLength_get, _wrap_MotionParams_MaxLinearLength_set };
-static SwigPyGetSet MotionParams_DegreesA_getset = { _wrap_MotionParams_DegreesA_get, _wrap_MotionParams_DegreesA_set };
-static SwigPyGetSet MotionParams_DegreesB_getset = { _wrap_MotionParams_DegreesB_get, _wrap_MotionParams_DegreesB_set };
-static SwigPyGetSet MotionParams_DegreesC_getset = { _wrap_MotionParams_DegreesC_get, _wrap_MotionParams_DegreesC_set };
-static SwigPyGetSet MotionParams_MaxRapidAccelA_getset = { _wrap_MotionParams_MaxRapidAccelA_get, _wrap_MotionParams_MaxRapidAccelA_set };
-static SwigPyGetSet MotionParams_MaxAccelA_getset = { _wrap_MotionParams_MaxAccelA_get, _wrap_MotionParams_MaxAccelA_set };
-static SwigPyGetSet MotionParams_MaxRapidAccelB_getset = { _wrap_MotionParams_MaxRapidAccelB_get, _wrap_MotionParams_MaxRapidAccelB_set };
-static SwigPyGetSet MotionParams_MaxAccelB_getset = { _wrap_MotionParams_MaxAccelB_get, _wrap_MotionParams_MaxAccelB_set };
-static SwigPyGetSet MotionParams_CountsPerInchA_getset = { _wrap_MotionParams_CountsPerInchA_get, _wrap_MotionParams_CountsPerInchA_set };
+static SwigPyGetSet MotionParams_SoftLimitPosX_getset = { _wrap_MotionParams_SoftLimitPosX_get, _wrap_MotionParams_SoftLimitPosX_set };
+static SwigPyGetSet MotionParams_SoftLimitPosY_getset = { _wrap_MotionParams_SoftLimitPosY_get, _wrap_MotionParams_SoftLimitPosY_set };
+static SwigPyGetSet MotionParams_SoftLimitPosZ_getset = { _wrap_MotionParams_SoftLimitPosZ_get, _wrap_MotionParams_SoftLimitPosZ_set };
 static SwigPyGetSet MotionParams_MaxRapidFRO_getset = { _wrap_MotionParams_MaxRapidFRO_get, _wrap_MotionParams_MaxRapidFRO_set };
-static SwigPyGetSet MotionParams_MaxRapidVelX_getset = { _wrap_MotionParams_MaxRapidVelX_get, _wrap_MotionParams_MaxRapidVelX_set };
-static SwigPyGetSet MotionParams_MaxRapidAccelC_getset = { _wrap_MotionParams_MaxRapidAccelC_get, _wrap_MotionParams_MaxRapidAccelC_set };
+static SwigPyGetSet MotionParams_DegreesA_getset = { _wrap_MotionParams_DegreesA_get, _wrap_MotionParams_DegreesA_set };
+static SwigPyGetSet MotionParams_MaxAccelA_getset = { _wrap_MotionParams_MaxAccelA_get, _wrap_MotionParams_MaxAccelA_set };
+static SwigPyGetSet MotionParams_MaxRapidAccelA_getset = { _wrap_MotionParams_MaxRapidAccelA_get, _wrap_MotionParams_MaxRapidAccelA_set };
+static SwigPyGetSet MotionParams_DegreesB_getset = { _wrap_MotionParams_DegreesB_get, _wrap_MotionParams_DegreesB_set };
+static SwigPyGetSet MotionParams_MaxAccelB_getset = { _wrap_MotionParams_MaxAccelB_get, _wrap_MotionParams_MaxAccelB_set };
+static SwigPyGetSet MotionParams_MaxRapidAccelB_getset = { _wrap_MotionParams_MaxRapidAccelB_get, _wrap_MotionParams_MaxRapidAccelB_set };
+static SwigPyGetSet MotionParams_DegreesC_getset = { _wrap_MotionParams_DegreesC_get, _wrap_MotionParams_DegreesC_set };
 static SwigPyGetSet MotionParams_MaxAccelC_getset = { _wrap_MotionParams_MaxAccelC_get, _wrap_MotionParams_MaxAccelC_set };
-static SwigPyGetSet MotionParams_CountsPerInchB_getset = { _wrap_MotionParams_CountsPerInchB_get, _wrap_MotionParams_CountsPerInchB_set };
+static SwigPyGetSet MotionParams_MaxRapidAccelC_getset = { _wrap_MotionParams_MaxRapidAccelC_get, _wrap_MotionParams_MaxRapidAccelC_set };
+static SwigPyGetSet MotionParams_MaxRapidVelX_getset = { _wrap_MotionParams_MaxRapidVelX_get, _wrap_MotionParams_MaxRapidVelX_set };
 static SwigPyGetSet MotionParams_MaxRapidVelY_getset = { _wrap_MotionParams_MaxRapidVelY_get, _wrap_MotionParams_MaxRapidVelY_set };
-static SwigPyGetSet MotionParams_CountsPerInchC_getset = { _wrap_MotionParams_CountsPerInchC_get, _wrap_MotionParams_CountsPerInchC_set };
-static SwigPyGetSet MotionParams_FacetAngle_getset = { _wrap_MotionParams_FacetAngle_get, _wrap_MotionParams_FacetAngle_set };
 static SwigPyGetSet MotionParams_MaxRapidJerkX_getset = { _wrap_MotionParams_MaxRapidJerkX_get, _wrap_MotionParams_MaxRapidJerkX_set };
 static SwigPyGetSet MotionParams_MaxRapidVelZ_getset = { _wrap_MotionParams_MaxRapidVelZ_get, _wrap_MotionParams_MaxRapidVelZ_set };
-static SwigPyGetSet MotionParams_SoftLimitNegA_getset = { _wrap_MotionParams_SoftLimitNegA_get, _wrap_MotionParams_SoftLimitNegA_set };
-static SwigPyGetSet MotionParams_SoftLimitPosX_getset = { _wrap_MotionParams_SoftLimitPosX_get, _wrap_MotionParams_SoftLimitPosX_set };
 static SwigPyGetSet MotionParams_MaxRapidJerkY_getset = { _wrap_MotionParams_MaxRapidJerkY_get, _wrap_MotionParams_MaxRapidJerkY_set };
-static SwigPyGetSet MotionParams_SoftLimitNegB_getset = { _wrap_MotionParams_SoftLimitNegB_get, _wrap_MotionParams_SoftLimitNegB_set };
-static SwigPyGetSet MotionParams_SoftLimitPosY_getset = { _wrap_MotionParams_SoftLimitPosY_get, _wrap_MotionParams_SoftLimitPosY_set };
-static SwigPyGetSet MotionParams_TPLookahead_getset = { _wrap_MotionParams_TPLookahead_get, _wrap_MotionParams_TPLookahead_set };
 static SwigPyGetSet MotionParams_MaxRapidJerkZ_getset = { _wrap_MotionParams_MaxRapidJerkZ_get, _wrap_MotionParams_MaxRapidJerkZ_set };
+static SwigPyGetSet MotionParams_CountsPerInchA_getset = { _wrap_MotionParams_CountsPerInchA_get, _wrap_MotionParams_CountsPerInchA_set };
+static SwigPyGetSet MotionParams_CountsPerInchB_getset = { _wrap_MotionParams_CountsPerInchB_get, _wrap_MotionParams_CountsPerInchB_set };
+static SwigPyGetSet MotionParams_UseOnlyLinearSegments_getset = { _wrap_MotionParams_UseOnlyLinearSegments_get, _wrap_MotionParams_UseOnlyLinearSegments_set };
+static SwigPyGetSet MotionParams_CountsPerInchC_getset = { _wrap_MotionParams_CountsPerInchC_get, _wrap_MotionParams_CountsPerInchC_set };
+static SwigPyGetSet MotionParams_TPLookahead_getset = { _wrap_MotionParams_TPLookahead_get, _wrap_MotionParams_TPLookahead_set };
+static SwigPyGetSet MotionParams_CollinearTol_getset = { _wrap_MotionParams_CollinearTol_get, _wrap_MotionParams_CollinearTol_set };
+static SwigPyGetSet MotionParams_MaxVelA_getset = { _wrap_MotionParams_MaxVelA_get, _wrap_MotionParams_MaxVelA_set };
+static SwigPyGetSet MotionParams_MaxVelB_getset = { _wrap_MotionParams_MaxVelB_get, _wrap_MotionParams_MaxVelB_set };
+static SwigPyGetSet MotionParams_MaxVelC_getset = { _wrap_MotionParams_MaxVelC_get, _wrap_MotionParams_MaxVelC_set };
+static SwigPyGetSet MotionParams_DoRapidsAsFeeds_getset = { _wrap_MotionParams_DoRapidsAsFeeds_get, _wrap_MotionParams_DoRapidsAsFeeds_set };
+static SwigPyGetSet MotionParams_MaxAccelX_getset = { _wrap_MotionParams_MaxAccelX_get, _wrap_MotionParams_MaxAccelX_set };
+static SwigPyGetSet MotionParams_MaxRapidAccelX_getset = { _wrap_MotionParams_MaxRapidAccelX_get, _wrap_MotionParams_MaxRapidAccelX_set };
+static SwigPyGetSet MotionParams_MaxAccelY_getset = { _wrap_MotionParams_MaxAccelY_get, _wrap_MotionParams_MaxAccelY_set };
+static SwigPyGetSet MotionParams_MaxRapidAccelY_getset = { _wrap_MotionParams_MaxRapidAccelY_get, _wrap_MotionParams_MaxRapidAccelY_set };
+static SwigPyGetSet MotionParams_MaxAccelZ_getset = { _wrap_MotionParams_MaxAccelZ_get, _wrap_MotionParams_MaxAccelZ_set };
+static SwigPyGetSet MotionParams_MaxRapidAccelZ_getset = { _wrap_MotionParams_MaxRapidAccelZ_get, _wrap_MotionParams_MaxRapidAccelZ_set };
+static SwigPyGetSet MotionParams_ArcsToSegs_getset = { _wrap_MotionParams_ArcsToSegs_get, _wrap_MotionParams_ArcsToSegs_set };
+static SwigPyGetSet MotionParams_CountsPerInchX_getset = { _wrap_MotionParams_CountsPerInchX_get, _wrap_MotionParams_CountsPerInchX_set };
+static SwigPyGetSet MotionParams_FacetAngle_getset = { _wrap_MotionParams_FacetAngle_get, _wrap_MotionParams_FacetAngle_set };
+static SwigPyGetSet MotionParams_CountsPerInchY_getset = { _wrap_MotionParams_CountsPerInchY_get, _wrap_MotionParams_CountsPerInchY_set };
+static SwigPyGetSet MotionParams_CountsPerInchZ_getset = { _wrap_MotionParams_CountsPerInchZ_get, _wrap_MotionParams_CountsPerInchZ_set };
+static SwigPyGetSet MotionParams_CornerTol_getset = { _wrap_MotionParams_CornerTol_get, _wrap_MotionParams_CornerTol_set };
+static SwigPyGetSet MotionParams_MaxVelX_getset = { _wrap_MotionParams_MaxVelX_get, _wrap_MotionParams_MaxVelX_set };
+static SwigPyGetSet MotionParams_MaxVelY_getset = { _wrap_MotionParams_MaxVelY_get, _wrap_MotionParams_MaxVelY_set };
+static SwigPyGetSet MotionParams_MaxVelZ_getset = { _wrap_MotionParams_MaxVelZ_get, _wrap_MotionParams_MaxVelZ_set };
+static SwigPyGetSet MotionParams_BreakAngle_getset = { _wrap_MotionParams_BreakAngle_get, _wrap_MotionParams_BreakAngle_set };
+static SwigPyGetSet MotionParams_SoftLimitNegA_getset = { _wrap_MotionParams_SoftLimitNegA_get, _wrap_MotionParams_SoftLimitNegA_set };
+static SwigPyGetSet MotionParams_SoftLimitNegB_getset = { _wrap_MotionParams_SoftLimitNegB_get, _wrap_MotionParams_SoftLimitNegB_set };
 static SwigPyGetSet MotionParams_SoftLimitNegC_getset = { _wrap_MotionParams_SoftLimitNegC_get, _wrap_MotionParams_SoftLimitNegC_set };
-static SwigPyGetSet MotionParams_SoftLimitPosZ_getset = { _wrap_MotionParams_SoftLimitPosZ_get, _wrap_MotionParams_SoftLimitPosZ_set };
+static SwigPyGetSet MotionParams_MaxLinearLength_getset = { _wrap_MotionParams_MaxLinearLength_get, _wrap_MotionParams_MaxLinearLength_set };
 SWIGINTERN PyGetSetDef SwigPyBuiltin__MOTION_PARAMS_getset[] = {
-    { (char*) "BreakAngle", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.BreakAngle", (void*) &MotionParams_BreakAngle_getset }
+    { (char*) "SoftLimitPosA", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.SoftLimitPosA", (void*) &MotionParams_SoftLimitPosA_getset }
 ,
-    { (char*) "MaxVelX", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxVelX", (void*) &MotionParams_MaxVelX_getset }
+    { (char*) "SoftLimitPosB", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.SoftLimitPosB", (void*) &MotionParams_SoftLimitPosB_getset }
 ,
-    { (char*) "CollinearTol", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.CollinearTol", (void*) &MotionParams_CollinearTol_getset }
+    { (char*) "SoftLimitPosC", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.SoftLimitPosC", (void*) &MotionParams_SoftLimitPosC_getset }
 ,
-    { (char*) "MaxVelY", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxVelY", (void*) &MotionParams_MaxVelY_getset }
+    { (char*) "RadiusA", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.RadiusA", (void*) &MotionParams_RadiusA_getset }
 ,
-    { (char*) "MaxVelZ", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxVelZ", (void*) &MotionParams_MaxVelZ_getset }
+    { (char*) "RadiusB", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.RadiusB", (void*) &MotionParams_RadiusB_getset }
 ,
-    { (char*) "ArcsToSegs", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.ArcsToSegs", (void*) &MotionParams_ArcsToSegs_getset }
+    { (char*) "RadiusC", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.RadiusC", (void*) &MotionParams_RadiusC_getset }
 ,
     { (char*) "MaxRapidVelA", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidVelA", (void*) &MotionParams_MaxRapidVelA_getset }
 ,
@@ -40265,113 +47599,113 @@ SWIGINTERN PyGetSetDef SwigPyBuiltin__MOTION_PARAMS_getset[] = {
 ,
     { (char*) "MaxRapidVelC", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidVelC", (void*) &MotionParams_MaxRapidVelC_getset }
 ,
-    { (char*) "SoftLimitPosA", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.SoftLimitPosA", (void*) &MotionParams_SoftLimitPosA_getset }
-,
     { (char*) "MaxRapidJerkB", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidJerkB", (void*) &MotionParams_MaxRapidJerkB_getset }
 ,
-    { (char*) "SoftLimitPosB", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.SoftLimitPosB", (void*) &MotionParams_SoftLimitPosB_getset }
-,
     { (char*) "MaxRapidJerkC", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidJerkC", (void*) &MotionParams_MaxRapidJerkC_getset }
-,
-    { (char*) "SoftLimitPosC", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.SoftLimitPosC", (void*) &MotionParams_SoftLimitPosC_getset }
-,
-    { (char*) "DoRapidsAsFeeds", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.DoRapidsAsFeeds", (void*) &MotionParams_DoRapidsAsFeeds_getset }
-,
-    { (char*) "MaxRapidAccelX", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidAccelX", (void*) &MotionParams_MaxRapidAccelX_getset }
-,
-    { (char*) "MaxAccelX", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxAccelX", (void*) &MotionParams_MaxAccelX_getset }
-,
-    { (char*) "MaxVelA", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxVelA", (void*) &MotionParams_MaxVelA_getset }
-,
-    { (char*) "MaxRapidAccelY", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidAccelY", (void*) &MotionParams_MaxRapidAccelY_getset }
-,
-    { (char*) "MaxAccelY", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxAccelY", (void*) &MotionParams_MaxAccelY_getset }
-,
-    { (char*) "CountsPerInchX", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.CountsPerInchX", (void*) &MotionParams_CountsPerInchX_getset }
-,
-    { (char*) "MaxVelB", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxVelB", (void*) &MotionParams_MaxVelB_getset }
-,
-    { (char*) "MaxRapidAccelZ", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidAccelZ", (void*) &MotionParams_MaxRapidAccelZ_getset }
-,
-    { (char*) "MaxAccelZ", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxAccelZ", (void*) &MotionParams_MaxAccelZ_getset }
-,
-    { (char*) "CountsPerInchY", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.CountsPerInchY", (void*) &MotionParams_CountsPerInchY_getset }
-,
-    { (char*) "CornerTol", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.CornerTol", (void*) &MotionParams_CornerTol_getset }
-,
-    { (char*) "MaxVelC", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxVelC", (void*) &MotionParams_MaxVelC_getset }
-,
-    { (char*) "CountsPerInchZ", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.CountsPerInchZ", (void*) &MotionParams_CountsPerInchZ_getset }
 ,
     { (char*) "SoftLimitNegX", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.SoftLimitNegX", (void*) &MotionParams_SoftLimitNegX_getset }
 ,
     { (char*) "SoftLimitNegY", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.SoftLimitNegY", (void*) &MotionParams_SoftLimitNegY_getset }
 ,
-    { (char*) "UseOnlyLinearSegments", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.UseOnlyLinearSegments", (void*) &MotionParams_UseOnlyLinearSegments_getset }
-,
-    { (char*) "RadiusA", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.RadiusA", (void*) &MotionParams_RadiusA_getset }
-,
     { (char*) "SoftLimitNegZ", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.SoftLimitNegZ", (void*) &MotionParams_SoftLimitNegZ_getset }
 ,
-    { (char*) "RadiusB", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.RadiusB", (void*) &MotionParams_RadiusB_getset }
+    { (char*) "SoftLimitPosX", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.SoftLimitPosX", (void*) &MotionParams_SoftLimitPosX_getset }
 ,
-    { (char*) "RadiusC", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.RadiusC", (void*) &MotionParams_RadiusC_getset }
+    { (char*) "SoftLimitPosY", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.SoftLimitPosY", (void*) &MotionParams_SoftLimitPosY_getset }
 ,
-    { (char*) "MaxLinearLength", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxLinearLength", (void*) &MotionParams_MaxLinearLength_getset }
-,
-    { (char*) "DegreesA", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.DegreesA", (void*) &MotionParams_DegreesA_getset }
-,
-    { (char*) "DegreesB", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.DegreesB", (void*) &MotionParams_DegreesB_getset }
-,
-    { (char*) "DegreesC", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.DegreesC", (void*) &MotionParams_DegreesC_getset }
-,
-    { (char*) "MaxRapidAccelA", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidAccelA", (void*) &MotionParams_MaxRapidAccelA_getset }
-,
-    { (char*) "MaxAccelA", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxAccelA", (void*) &MotionParams_MaxAccelA_getset }
-,
-    { (char*) "MaxRapidAccelB", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidAccelB", (void*) &MotionParams_MaxRapidAccelB_getset }
-,
-    { (char*) "MaxAccelB", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxAccelB", (void*) &MotionParams_MaxAccelB_getset }
-,
-    { (char*) "CountsPerInchA", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.CountsPerInchA", (void*) &MotionParams_CountsPerInchA_getset }
+    { (char*) "SoftLimitPosZ", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.SoftLimitPosZ", (void*) &MotionParams_SoftLimitPosZ_getset }
 ,
     { (char*) "MaxRapidFRO", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidFRO", (void*) &MotionParams_MaxRapidFRO_getset }
 ,
-    { (char*) "MaxRapidVelX", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidVelX", (void*) &MotionParams_MaxRapidVelX_getset }
+    { (char*) "DegreesA", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.DegreesA", (void*) &MotionParams_DegreesA_getset }
 ,
-    { (char*) "MaxRapidAccelC", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidAccelC", (void*) &MotionParams_MaxRapidAccelC_getset }
+    { (char*) "MaxAccelA", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxAccelA", (void*) &MotionParams_MaxAccelA_getset }
+,
+    { (char*) "MaxRapidAccelA", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidAccelA", (void*) &MotionParams_MaxRapidAccelA_getset }
+,
+    { (char*) "DegreesB", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.DegreesB", (void*) &MotionParams_DegreesB_getset }
+,
+    { (char*) "MaxAccelB", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxAccelB", (void*) &MotionParams_MaxAccelB_getset }
+,
+    { (char*) "MaxRapidAccelB", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidAccelB", (void*) &MotionParams_MaxRapidAccelB_getset }
+,
+    { (char*) "DegreesC", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.DegreesC", (void*) &MotionParams_DegreesC_getset }
 ,
     { (char*) "MaxAccelC", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxAccelC", (void*) &MotionParams_MaxAccelC_getset }
 ,
-    { (char*) "CountsPerInchB", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.CountsPerInchB", (void*) &MotionParams_CountsPerInchB_getset }
+    { (char*) "MaxRapidAccelC", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidAccelC", (void*) &MotionParams_MaxRapidAccelC_getset }
+,
+    { (char*) "MaxRapidVelX", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidVelX", (void*) &MotionParams_MaxRapidVelX_getset }
 ,
     { (char*) "MaxRapidVelY", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidVelY", (void*) &MotionParams_MaxRapidVelY_getset }
-,
-    { (char*) "CountsPerInchC", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.CountsPerInchC", (void*) &MotionParams_CountsPerInchC_getset }
-,
-    { (char*) "FacetAngle", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.FacetAngle", (void*) &MotionParams_FacetAngle_getset }
 ,
     { (char*) "MaxRapidJerkX", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidJerkX", (void*) &MotionParams_MaxRapidJerkX_getset }
 ,
     { (char*) "MaxRapidVelZ", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidVelZ", (void*) &MotionParams_MaxRapidVelZ_getset }
 ,
-    { (char*) "SoftLimitNegA", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.SoftLimitNegA", (void*) &MotionParams_SoftLimitNegA_getset }
-,
-    { (char*) "SoftLimitPosX", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.SoftLimitPosX", (void*) &MotionParams_SoftLimitPosX_getset }
-,
     { (char*) "MaxRapidJerkY", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidJerkY", (void*) &MotionParams_MaxRapidJerkY_getset }
-,
-    { (char*) "SoftLimitNegB", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.SoftLimitNegB", (void*) &MotionParams_SoftLimitNegB_getset }
-,
-    { (char*) "SoftLimitPosY", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.SoftLimitPosY", (void*) &MotionParams_SoftLimitPosY_getset }
-,
-    { (char*) "TPLookahead", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.TPLookahead", (void*) &MotionParams_TPLookahead_getset }
 ,
     { (char*) "MaxRapidJerkZ", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidJerkZ", (void*) &MotionParams_MaxRapidJerkZ_getset }
 ,
+    { (char*) "CountsPerInchA", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.CountsPerInchA", (void*) &MotionParams_CountsPerInchA_getset }
+,
+    { (char*) "CountsPerInchB", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.CountsPerInchB", (void*) &MotionParams_CountsPerInchB_getset }
+,
+    { (char*) "UseOnlyLinearSegments", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.UseOnlyLinearSegments", (void*) &MotionParams_UseOnlyLinearSegments_getset }
+,
+    { (char*) "CountsPerInchC", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.CountsPerInchC", (void*) &MotionParams_CountsPerInchC_getset }
+,
+    { (char*) "TPLookahead", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.TPLookahead", (void*) &MotionParams_TPLookahead_getset }
+,
+    { (char*) "CollinearTol", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.CollinearTol", (void*) &MotionParams_CollinearTol_getset }
+,
+    { (char*) "MaxVelA", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxVelA", (void*) &MotionParams_MaxVelA_getset }
+,
+    { (char*) "MaxVelB", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxVelB", (void*) &MotionParams_MaxVelB_getset }
+,
+    { (char*) "MaxVelC", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxVelC", (void*) &MotionParams_MaxVelC_getset }
+,
+    { (char*) "DoRapidsAsFeeds", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.DoRapidsAsFeeds", (void*) &MotionParams_DoRapidsAsFeeds_getset }
+,
+    { (char*) "MaxAccelX", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxAccelX", (void*) &MotionParams_MaxAccelX_getset }
+,
+    { (char*) "MaxRapidAccelX", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidAccelX", (void*) &MotionParams_MaxRapidAccelX_getset }
+,
+    { (char*) "MaxAccelY", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxAccelY", (void*) &MotionParams_MaxAccelY_getset }
+,
+    { (char*) "MaxRapidAccelY", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidAccelY", (void*) &MotionParams_MaxRapidAccelY_getset }
+,
+    { (char*) "MaxAccelZ", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxAccelZ", (void*) &MotionParams_MaxAccelZ_getset }
+,
+    { (char*) "MaxRapidAccelZ", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxRapidAccelZ", (void*) &MotionParams_MaxRapidAccelZ_getset }
+,
+    { (char*) "ArcsToSegs", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.ArcsToSegs", (void*) &MotionParams_ArcsToSegs_getset }
+,
+    { (char*) "CountsPerInchX", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.CountsPerInchX", (void*) &MotionParams_CountsPerInchX_getset }
+,
+    { (char*) "FacetAngle", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.FacetAngle", (void*) &MotionParams_FacetAngle_getset }
+,
+    { (char*) "CountsPerInchY", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.CountsPerInchY", (void*) &MotionParams_CountsPerInchY_getset }
+,
+    { (char*) "CountsPerInchZ", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.CountsPerInchZ", (void*) &MotionParams_CountsPerInchZ_getset }
+,
+    { (char*) "CornerTol", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.CornerTol", (void*) &MotionParams_CornerTol_getset }
+,
+    { (char*) "MaxVelX", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxVelX", (void*) &MotionParams_MaxVelX_getset }
+,
+    { (char*) "MaxVelY", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxVelY", (void*) &MotionParams_MaxVelY_getset }
+,
+    { (char*) "MaxVelZ", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxVelZ", (void*) &MotionParams_MaxVelZ_getset }
+,
+    { (char*) "BreakAngle", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.BreakAngle", (void*) &MotionParams_BreakAngle_getset }
+,
+    { (char*) "SoftLimitNegA", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.SoftLimitNegA", (void*) &MotionParams_SoftLimitNegA_getset }
+,
+    { (char*) "SoftLimitNegB", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.SoftLimitNegB", (void*) &MotionParams_SoftLimitNegB_getset }
+,
     { (char*) "SoftLimitNegC", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.SoftLimitNegC", (void*) &MotionParams_SoftLimitNegC_getset }
 ,
-    { (char*) "SoftLimitPosZ", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.SoftLimitPosZ", (void*) &MotionParams_SoftLimitPosZ_getset }
+    { (char*) "MaxLinearLength", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MOTION_PARAMS.MaxLinearLength", (void*) &MotionParams_MaxLinearLength_getset }
 ,
     {NULL, NULL, NULL, NULL, NULL} /* Sentinel */
 };
@@ -40563,31 +47897,31 @@ static PyHeapTypeObject SwigPyBuiltin__MOTION_PARAMS_type = {
 SWIGINTERN SwigPyClientData SwigPyBuiltin__MOTION_PARAMS_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin__MOTION_PARAMS_type};
 
 SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_Kinematics)
-static SwigPyGetSet Kinematics_GeoSpacingX_getset = { _wrap_Kinematics_GeoSpacingX_get, _wrap_Kinematics_GeoSpacingX_set };
-static SwigPyGetSet Kinematics_GeoSpacingY_getset = { _wrap_Kinematics_GeoSpacingY_get, _wrap_Kinematics_GeoSpacingY_set };
-static SwigPyGetSet Kinematics_GeoTableValid_getset = { _wrap_Kinematics_GeoTableValid_get, _wrap_Kinematics_GeoTableValid_set };
-static SwigPyGetSet Kinematics_NRows_getset = { _wrap_Kinematics_NRows_get, _wrap_Kinematics_NRows_set };
 static SwigPyGetSet Kinematics_GeoOffsetX_getset = { _wrap_Kinematics_GeoOffsetX_get, _wrap_Kinematics_GeoOffsetX_set };
-static SwigPyGetSet Kinematics_GeoTable_getset = { _wrap_Kinematics_GeoTable_get, _wrap_Kinematics_GeoTable_set };
 static SwigPyGetSet Kinematics_GeoOffsetY_getset = { _wrap_Kinematics_GeoOffsetY_get, _wrap_Kinematics_GeoOffsetY_set };
 static SwigPyGetSet Kinematics_NCols_getset = { _wrap_Kinematics_NCols_get, _wrap_Kinematics_NCols_set };
+static SwigPyGetSet Kinematics_GeoTableValid_getset = { _wrap_Kinematics_GeoTableValid_get, _wrap_Kinematics_GeoTableValid_set };
+static SwigPyGetSet Kinematics_GeoSpacingX_getset = { _wrap_Kinematics_GeoSpacingX_get, _wrap_Kinematics_GeoSpacingX_set };
+static SwigPyGetSet Kinematics_GeoSpacingY_getset = { _wrap_Kinematics_GeoSpacingY_get, _wrap_Kinematics_GeoSpacingY_set };
+static SwigPyGetSet Kinematics_GeoTable_getset = { _wrap_Kinematics_GeoTable_get, _wrap_Kinematics_GeoTable_set };
+static SwigPyGetSet Kinematics_NRows_getset = { _wrap_Kinematics_NRows_get, _wrap_Kinematics_NRows_set };
 static SwigPyGetSet Kinematics_m_MotionParams_getset = { _wrap_Kinematics_m_MotionParams_get, _wrap_Kinematics_m_MotionParams_set };
 SWIGINTERN PyGetSetDef SwigPyBuiltin__CKinematics_getset[] = {
-    { (char*) "GeoSpacingX", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CKinematics.GeoSpacingX", (void*) &Kinematics_GeoSpacingX_getset }
-,
-    { (char*) "GeoSpacingY", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CKinematics.GeoSpacingY", (void*) &Kinematics_GeoSpacingY_getset }
-,
-    { (char*) "GeoTableValid", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CKinematics.GeoTableValid", (void*) &Kinematics_GeoTableValid_getset }
-,
-    { (char*) "NRows", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CKinematics.NRows", (void*) &Kinematics_NRows_getset }
-,
     { (char*) "GeoOffsetX", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CKinematics.GeoOffsetX", (void*) &Kinematics_GeoOffsetX_getset }
-,
-    { (char*) "GeoTable", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CKinematics.GeoTable", (void*) &Kinematics_GeoTable_getset }
 ,
     { (char*) "GeoOffsetY", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CKinematics.GeoOffsetY", (void*) &Kinematics_GeoOffsetY_getset }
 ,
     { (char*) "NCols", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CKinematics.NCols", (void*) &Kinematics_NCols_getset }
+,
+    { (char*) "GeoTableValid", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CKinematics.GeoTableValid", (void*) &Kinematics_GeoTableValid_getset }
+,
+    { (char*) "GeoSpacingX", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CKinematics.GeoSpacingX", (void*) &Kinematics_GeoSpacingX_getset }
+,
+    { (char*) "GeoSpacingY", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CKinematics.GeoSpacingY", (void*) &Kinematics_GeoSpacingY_getset }
+,
+    { (char*) "GeoTable", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CKinematics.GeoTable", (void*) &Kinematics_GeoTable_getset }
+,
+    { (char*) "NRows", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CKinematics.NRows", (void*) &Kinematics_NRows_getset }
 ,
     { (char*) "m_MotionParams", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CKinematics.m_MotionParams", (void*) &Kinematics_m_MotionParams_getset }
 ,
@@ -40793,146 +48127,140 @@ static PyHeapTypeObject SwigPyBuiltin__CKinematics_type = {
 SWIGINTERN SwigPyClientData SwigPyBuiltin__CKinematics_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin__CKinematics_type};
 
 SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_CoordMotion)
-static SwigPyGetSet CoordMotion_m_StoppedMachinec_getset = { _wrap_CoordMotion_m_StoppedMachinec_get, _wrap_CoordMotion_m_StoppedMachinec_set };
-static SwigPyGetSet CoordMotion_m_ThreadingBaseSpeedRPS_getset = { _wrap_CoordMotion_m_ThreadingBaseSpeedRPS_get, _wrap_CoordMotion_m_ThreadingBaseSpeedRPS_set };
-static SwigPyGetSet CoordMotion_m_Simulate_getset = { _wrap_CoordMotion_m_Simulate_get, _wrap_CoordMotion_m_Simulate_set };
-static SwigPyGetSet CoordMotion_m_StoppedMida_getset = { _wrap_CoordMotion_m_StoppedMida_get, _wrap_CoordMotion_m_StoppedMida_set };
-static SwigPyGetSet CoordMotion_m_StoppedMidb_getset = { _wrap_CoordMotion_m_StoppedMidb_get, _wrap_CoordMotion_m_StoppedMidb_set };
-static SwigPyGetSet CoordMotion_m_PreviouslyStopped_getset = { _wrap_CoordMotion_m_PreviouslyStopped_get, _wrap_CoordMotion_m_PreviouslyStopped_set };
-static SwigPyGetSet CoordMotion_m_StoppedMidc_getset = { _wrap_CoordMotion_m_StoppedMidc_get, _wrap_CoordMotion_m_StoppedMidc_set };
-static SwigPyGetSet CoordMotion_KMotionDLL_getset = { _wrap_CoordMotion_KMotionDLL_get, _wrap_CoordMotion_KMotionDLL_set };
-static SwigPyGetSet CoordMotion_m_DisableSoftLimits_getset = { _wrap_CoordMotion_m_DisableSoftLimits_get, _wrap_CoordMotion_m_DisableSoftLimits_set };
-static SwigPyGetSet CoordMotion_m_Stoppeda_getset = { _wrap_CoordMotion_m_Stoppeda_get, _wrap_CoordMotion_m_Stoppeda_set };
-static SwigPyGetSet CoordMotion_current_x_getset = { _wrap_CoordMotion_current_x_get, _wrap_CoordMotion_current_x_set };
-static SwigPyGetSet CoordMotion_m_Stoppedb_getset = { _wrap_CoordMotion_m_Stoppedb_get, _wrap_CoordMotion_m_Stoppedb_set };
-static SwigPyGetSet CoordMotion_x_axis_getset = { _wrap_CoordMotion_x_axis_get, _wrap_CoordMotion_x_axis_set };
-static SwigPyGetSet CoordMotion_current_y_getset = { _wrap_CoordMotion_current_y_get, _wrap_CoordMotion_current_y_set };
-static SwigPyGetSet CoordMotion_Kinematics_getset = { _wrap_CoordMotion_Kinematics_get, _wrap_CoordMotion_Kinematics_set };
-static SwigPyGetSet CoordMotion_m_realtime_Sequence_number_getset = { _wrap_CoordMotion_m_realtime_Sequence_number_get, _wrap_CoordMotion_m_realtime_Sequence_number_set };
-static SwigPyGetSet CoordMotion_m_Stoppedc_getset = { _wrap_CoordMotion_m_Stoppedc_get, _wrap_CoordMotion_m_Stoppedc_set };
-static SwigPyGetSet CoordMotion_current_z_getset = { _wrap_CoordMotion_current_z_get, _wrap_CoordMotion_current_z_set };
-static SwigPyGetSet CoordMotion_m_TotalDownloadedTime_getset = { _wrap_CoordMotion_m_TotalDownloadedTime_get, _wrap_CoordMotion_m_TotalDownloadedTime_set };
-static SwigPyGetSet CoordMotion_MainPath_getset = { _wrap_CoordMotion_MainPath_get, _wrap_CoordMotion_MainPath_set };
-static SwigPyGetSet CoordMotion_z_axis_getset = { _wrap_CoordMotion_z_axis_get, _wrap_CoordMotion_z_axis_set };
-static SwigPyGetSet CoordMotion_b_axis_getset = { _wrap_CoordMotion_b_axis_get, _wrap_CoordMotion_b_axis_set };
-static SwigPyGetSet CoordMotion_m_TimeAlreadyExecuted_getset = { _wrap_CoordMotion_m_TimeAlreadyExecuted_get, _wrap_CoordMotion_m_TimeAlreadyExecuted_set };
-static SwigPyGetSet CoordMotion_m_DefineCS_valid_getset = { _wrap_CoordMotion_m_DefineCS_valid_get, _wrap_CoordMotion_m_DefineCS_valid_set };
-static SwigPyGetSet CoordMotion_m_ThreadingMode_getset = { _wrap_CoordMotion_m_ThreadingMode_get, _wrap_CoordMotion_m_ThreadingMode_set };
-static SwigPyGetSet CoordMotion_m_StoppedMachinex_getset = { _wrap_CoordMotion_m_StoppedMachinex_get, _wrap_CoordMotion_m_StoppedMachinex_set };
-static SwigPyGetSet CoordMotion_m_StoppedMachiney_getset = { _wrap_CoordMotion_m_StoppedMachiney_get, _wrap_CoordMotion_m_StoppedMachiney_set };
-static SwigPyGetSet CoordMotion_m_StoppedMachinez_getset = { _wrap_CoordMotion_m_StoppedMachinez_get, _wrap_CoordMotion_m_StoppedMachinez_set };
-static SwigPyGetSet CoordMotion_m_board_type_getset = { _wrap_CoordMotion_m_board_type_get, _wrap_CoordMotion_m_board_type_set };
-static SwigPyGetSet CoordMotion_current_a_getset = { _wrap_CoordMotion_current_a_get, _wrap_CoordMotion_current_a_set };
-static SwigPyGetSet CoordMotion_MainPathRoot_getset = { _wrap_CoordMotion_MainPathRoot_get, _wrap_CoordMotion_MainPathRoot_set };
-static SwigPyGetSet CoordMotion_current_b_getset = { _wrap_CoordMotion_current_b_get, _wrap_CoordMotion_current_b_set };
-static SwigPyGetSet CoordMotion_m_nsegs_downloaded_getset = { _wrap_CoordMotion_m_nsegs_downloaded_get, _wrap_CoordMotion_m_nsegs_downloaded_set };
-static SwigPyGetSet CoordMotion_current_c_getset = { _wrap_CoordMotion_current_c_get, _wrap_CoordMotion_current_c_set };
-static SwigPyGetSet CoordMotion_m_AxisDisabled_getset = { _wrap_CoordMotion_m_AxisDisabled_get, _wrap_CoordMotion_m_AxisDisabled_set };
-static SwigPyGetSet CoordMotion_m_StoppedMidx_getset = { _wrap_CoordMotion_m_StoppedMidx_get, _wrap_CoordMotion_m_StoppedMidx_set };
-static SwigPyGetSet CoordMotion_m_PreviouslyStoppedType_getset = { _wrap_CoordMotion_m_PreviouslyStoppedType_get, _wrap_CoordMotion_m_PreviouslyStoppedType_set };
-static SwigPyGetSet CoordMotion_m_StoppedMidy_getset = { _wrap_CoordMotion_m_StoppedMidy_get, _wrap_CoordMotion_m_StoppedMidy_set };
-static SwigPyGetSet CoordMotion_m_realtime_Sequence_number_valid_getset = { _wrap_CoordMotion_m_realtime_Sequence_number_valid_get, _wrap_CoordMotion_m_realtime_Sequence_number_valid_set };
-static SwigPyGetSet CoordMotion_m_Stopping_getset = { _wrap_CoordMotion_m_Stopping_get, _wrap_CoordMotion_m_Stopping_set };
 static SwigPyGetSet CoordMotion_m_PreviouslyStoppedSeqNo_getset = { _wrap_CoordMotion_m_PreviouslyStoppedSeqNo_get, _wrap_CoordMotion_m_PreviouslyStoppedSeqNo_set };
-static SwigPyGetSet CoordMotion_m_StoppedMidz_getset = { _wrap_CoordMotion_m_StoppedMidz_get, _wrap_CoordMotion_m_StoppedMidz_set };
+static SwigPyGetSet CoordMotion_Kinematics_getset = { _wrap_CoordMotion_Kinematics_get, _wrap_CoordMotion_Kinematics_set };
+static SwigPyGetSet CoordMotion_m_Simulate_getset = { _wrap_CoordMotion_m_Simulate_get, _wrap_CoordMotion_m_Simulate_set };
+static SwigPyGetSet CoordMotion_m_board_type_getset = { _wrap_CoordMotion_m_board_type_get, _wrap_CoordMotion_m_board_type_set };
+static SwigPyGetSet CoordMotion_m_StoppedMachinea_getset = { _wrap_CoordMotion_m_StoppedMachinea_get, _wrap_CoordMotion_m_StoppedMachinea_set };
+static SwigPyGetSet CoordMotion_m_StoppedMachineb_getset = { _wrap_CoordMotion_m_StoppedMachineb_get, _wrap_CoordMotion_m_StoppedMachineb_set };
+static SwigPyGetSet CoordMotion_m_StoppedMachinec_getset = { _wrap_CoordMotion_m_StoppedMachinec_get, _wrap_CoordMotion_m_StoppedMachinec_set };
+static SwigPyGetSet CoordMotion_y_axis_getset = { _wrap_CoordMotion_y_axis_get, _wrap_CoordMotion_y_axis_set };
+static SwigPyGetSet CoordMotion_m_Stoppedx_getset = { _wrap_CoordMotion_m_Stoppedx_get, _wrap_CoordMotion_m_Stoppedx_set };
+static SwigPyGetSet CoordMotion_m_Stoppedy_getset = { _wrap_CoordMotion_m_Stoppedy_get, _wrap_CoordMotion_m_Stoppedy_set };
+static SwigPyGetSet CoordMotion_m_ThreadingBaseSpeedRPS_getset = { _wrap_CoordMotion_m_ThreadingBaseSpeedRPS_get, _wrap_CoordMotion_m_ThreadingBaseSpeedRPS_set };
+static SwigPyGetSet CoordMotion_m_Stoppedz_getset = { _wrap_CoordMotion_m_Stoppedz_get, _wrap_CoordMotion_m_Stoppedz_set };
+static SwigPyGetSet CoordMotion_m_PreviouslyStoppedType_getset = { _wrap_CoordMotion_m_PreviouslyStoppedType_get, _wrap_CoordMotion_m_PreviouslyStoppedType_set };
+static SwigPyGetSet CoordMotion_m_realtime_Sequence_number_valid_getset = { _wrap_CoordMotion_m_realtime_Sequence_number_valid_get, _wrap_CoordMotion_m_realtime_Sequence_number_valid_set };
+static SwigPyGetSet CoordMotion_m_AxisDisabled_getset = { _wrap_CoordMotion_m_AxisDisabled_get, _wrap_CoordMotion_m_AxisDisabled_set };
+static SwigPyGetSet CoordMotion_MainPathRoot_getset = { _wrap_CoordMotion_MainPathRoot_get, _wrap_CoordMotion_MainPathRoot_set };
+static SwigPyGetSet CoordMotion_b_axis_getset = { _wrap_CoordMotion_b_axis_get, _wrap_CoordMotion_b_axis_set };
+static SwigPyGetSet CoordMotion_m_PreviouslyStopped_getset = { _wrap_CoordMotion_m_PreviouslyStopped_get, _wrap_CoordMotion_m_PreviouslyStopped_set };
+static SwigPyGetSet CoordMotion_current_a_getset = { _wrap_CoordMotion_current_a_get, _wrap_CoordMotion_current_a_set };
+static SwigPyGetSet CoordMotion_current_b_getset = { _wrap_CoordMotion_current_b_get, _wrap_CoordMotion_current_b_set };
+static SwigPyGetSet CoordMotion_m_StoppedMachinex_getset = { _wrap_CoordMotion_m_StoppedMachinex_get, _wrap_CoordMotion_m_StoppedMachinex_set };
+static SwigPyGetSet CoordMotion_current_c_getset = { _wrap_CoordMotion_current_c_get, _wrap_CoordMotion_current_c_set };
+static SwigPyGetSet CoordMotion_m_StoppedMida_getset = { _wrap_CoordMotion_m_StoppedMida_get, _wrap_CoordMotion_m_StoppedMida_set };
+static SwigPyGetSet CoordMotion_m_StoppedMachiney_getset = { _wrap_CoordMotion_m_StoppedMachiney_get, _wrap_CoordMotion_m_StoppedMachiney_set };
+static SwigPyGetSet CoordMotion_m_StoppedMidb_getset = { _wrap_CoordMotion_m_StoppedMidb_get, _wrap_CoordMotion_m_StoppedMidb_set };
+static SwigPyGetSet CoordMotion_m_StoppedMachinez_getset = { _wrap_CoordMotion_m_StoppedMachinez_get, _wrap_CoordMotion_m_StoppedMachinez_set };
+static SwigPyGetSet CoordMotion_m_StoppedMidc_getset = { _wrap_CoordMotion_m_StoppedMidc_get, _wrap_CoordMotion_m_StoppedMidc_set };
+static SwigPyGetSet CoordMotion_x_axis_getset = { _wrap_CoordMotion_x_axis_get, _wrap_CoordMotion_x_axis_set };
+static SwigPyGetSet CoordMotion_m_realtime_Sequence_number_getset = { _wrap_CoordMotion_m_realtime_Sequence_number_get, _wrap_CoordMotion_m_realtime_Sequence_number_set };
+static SwigPyGetSet CoordMotion_m_nsegs_downloaded_getset = { _wrap_CoordMotion_m_nsegs_downloaded_get, _wrap_CoordMotion_m_nsegs_downloaded_set };
+static SwigPyGetSet CoordMotion_KMotionDLL_getset = { _wrap_CoordMotion_KMotionDLL_get, _wrap_CoordMotion_KMotionDLL_set };
+static SwigPyGetSet CoordMotion_RapidParamsDirty_getset = { _wrap_CoordMotion_RapidParamsDirty_get, _wrap_CoordMotion_RapidParamsDirty_set };
+static SwigPyGetSet CoordMotion_m_DefineCS_valid_getset = { _wrap_CoordMotion_m_DefineCS_valid_get, _wrap_CoordMotion_m_DefineCS_valid_set };
+static SwigPyGetSet CoordMotion_m_TotalDownloadedTime_getset = { _wrap_CoordMotion_m_TotalDownloadedTime_get, _wrap_CoordMotion_m_TotalDownloadedTime_set };
+static SwigPyGetSet CoordMotion_a_axis_getset = { _wrap_CoordMotion_a_axis_get, _wrap_CoordMotion_a_axis_set };
+static SwigPyGetSet CoordMotion_m_DisableSoftLimits_getset = { _wrap_CoordMotion_m_DisableSoftLimits_get, _wrap_CoordMotion_m_DisableSoftLimits_set };
+static SwigPyGetSet CoordMotion_current_x_getset = { _wrap_CoordMotion_current_x_get, _wrap_CoordMotion_current_x_set };
+static SwigPyGetSet CoordMotion_current_y_getset = { _wrap_CoordMotion_current_y_get, _wrap_CoordMotion_current_y_set };
+static SwigPyGetSet CoordMotion_current_z_getset = { _wrap_CoordMotion_current_z_get, _wrap_CoordMotion_current_z_set };
 static SwigPyGetSet CoordMotion_m_StraightTraverseCallback_getset = { _wrap_CoordMotion_m_StraightTraverseCallback_get, _wrap_CoordMotion_m_StraightTraverseCallback_set };
 static SwigPyGetSet CoordMotion_m_StraightTraverseSixAxisCallback_getset = { _wrap_CoordMotion_m_StraightTraverseSixAxisCallback_get, _wrap_CoordMotion_m_StraightTraverseSixAxisCallback_set };
 static SwigPyGetSet CoordMotion_m_StraightFeedCallback_getset = { _wrap_CoordMotion_m_StraightFeedCallback_get, _wrap_CoordMotion_m_StraightFeedCallback_set };
 static SwigPyGetSet CoordMotion_m_StraightFeedSixAxisCallback_getset = { _wrap_CoordMotion_m_StraightFeedSixAxisCallback_get, _wrap_CoordMotion_m_StraightFeedSixAxisCallback_set };
-static SwigPyGetSet CoordMotion_RapidParamsDirty_getset = { _wrap_CoordMotion_RapidParamsDirty_get, _wrap_CoordMotion_RapidParamsDirty_set };
-static SwigPyGetSet CoordMotion_y_axis_getset = { _wrap_CoordMotion_y_axis_get, _wrap_CoordMotion_y_axis_set };
-static SwigPyGetSet CoordMotion_m_PreviouslyStoppedID_getset = { _wrap_CoordMotion_m_PreviouslyStoppedID_get, _wrap_CoordMotion_m_PreviouslyStoppedID_set };
-static SwigPyGetSet CoordMotion_a_axis_getset = { _wrap_CoordMotion_a_axis_get, _wrap_CoordMotion_a_axis_set };
-static SwigPyGetSet CoordMotion_m_Stoppedx_getset = { _wrap_CoordMotion_m_Stoppedx_get, _wrap_CoordMotion_m_Stoppedx_set };
-static SwigPyGetSet CoordMotion_m_Stoppedy_getset = { _wrap_CoordMotion_m_Stoppedy_get, _wrap_CoordMotion_m_Stoppedy_set };
-static SwigPyGetSet CoordMotion_m_Stoppedz_getset = { _wrap_CoordMotion_m_Stoppedz_get, _wrap_CoordMotion_m_Stoppedz_set };
-static SwigPyGetSet CoordMotion_m_StoppedMachinea_getset = { _wrap_CoordMotion_m_StoppedMachinea_get, _wrap_CoordMotion_m_StoppedMachinea_set };
+static SwigPyGetSet CoordMotion_MainPath_getset = { _wrap_CoordMotion_MainPath_get, _wrap_CoordMotion_MainPath_set };
+static SwigPyGetSet CoordMotion_m_StoppedMidx_getset = { _wrap_CoordMotion_m_StoppedMidx_get, _wrap_CoordMotion_m_StoppedMidx_set };
+static SwigPyGetSet CoordMotion_m_TimeAlreadyExecuted_getset = { _wrap_CoordMotion_m_TimeAlreadyExecuted_get, _wrap_CoordMotion_m_TimeAlreadyExecuted_set };
+static SwigPyGetSet CoordMotion_m_StoppedMidy_getset = { _wrap_CoordMotion_m_StoppedMidy_get, _wrap_CoordMotion_m_StoppedMidy_set };
+static SwigPyGetSet CoordMotion_m_ThreadingMode_getset = { _wrap_CoordMotion_m_ThreadingMode_get, _wrap_CoordMotion_m_ThreadingMode_set };
+static SwigPyGetSet CoordMotion_m_StoppedMidz_getset = { _wrap_CoordMotion_m_StoppedMidz_get, _wrap_CoordMotion_m_StoppedMidz_set };
+static SwigPyGetSet CoordMotion_z_axis_getset = { _wrap_CoordMotion_z_axis_get, _wrap_CoordMotion_z_axis_set };
+static SwigPyGetSet CoordMotion_m_Stopping_getset = { _wrap_CoordMotion_m_Stopping_get, _wrap_CoordMotion_m_Stopping_set };
+static SwigPyGetSet CoordMotion_m_Stoppeda_getset = { _wrap_CoordMotion_m_Stoppeda_get, _wrap_CoordMotion_m_Stoppeda_set };
+static SwigPyGetSet CoordMotion_m_Stoppedb_getset = { _wrap_CoordMotion_m_Stoppedb_get, _wrap_CoordMotion_m_Stoppedb_set };
+static SwigPyGetSet CoordMotion_m_Stoppedc_getset = { _wrap_CoordMotion_m_Stoppedc_get, _wrap_CoordMotion_m_Stoppedc_set };
 static SwigPyGetSet CoordMotion_c_axis_getset = { _wrap_CoordMotion_c_axis_get, _wrap_CoordMotion_c_axis_set };
-static SwigPyGetSet CoordMotion_m_StoppedMachineb_getset = { _wrap_CoordMotion_m_StoppedMachineb_get, _wrap_CoordMotion_m_StoppedMachineb_set };
+static SwigPyGetSet CoordMotion_m_PreviouslyStoppedID_getset = { _wrap_CoordMotion_m_PreviouslyStoppedID_get, _wrap_CoordMotion_m_PreviouslyStoppedID_set };
 SWIGINTERN PyGetSetDef SwigPyBuiltin__CCoordMotion_getset[] = {
-    { (char*) "m_StoppedMachinec", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMachinec", (void*) &CoordMotion_m_StoppedMachinec_getset }
-,
-    { (char*) "m_ThreadingBaseSpeedRPS", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_ThreadingBaseSpeedRPS", (void*) &CoordMotion_m_ThreadingBaseSpeedRPS_getset }
-,
-    { (char*) "m_Simulate", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_Simulate", (void*) &CoordMotion_m_Simulate_getset }
-,
-    { (char*) "m_StoppedMida", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMida", (void*) &CoordMotion_m_StoppedMida_getset }
-,
-    { (char*) "m_StoppedMidb", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMidb", (void*) &CoordMotion_m_StoppedMidb_getset }
-,
-    { (char*) "m_PreviouslyStopped", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_PreviouslyStopped", (void*) &CoordMotion_m_PreviouslyStopped_getset }
-,
-    { (char*) "m_StoppedMidc", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMidc", (void*) &CoordMotion_m_StoppedMidc_getset }
-,
-    { (char*) "KMotionDLL", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.KMotionDLL", (void*) &CoordMotion_KMotionDLL_getset }
-,
-    { (char*) "m_DisableSoftLimits", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_DisableSoftLimits", (void*) &CoordMotion_m_DisableSoftLimits_getset }
-,
-    { (char*) "m_Stoppeda", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_Stoppeda", (void*) &CoordMotion_m_Stoppeda_getset }
-,
-    { (char*) "current_x", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.current_x", (void*) &CoordMotion_current_x_getset }
-,
-    { (char*) "m_Stoppedb", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_Stoppedb", (void*) &CoordMotion_m_Stoppedb_getset }
-,
-    { (char*) "x_axis", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.x_axis", (void*) &CoordMotion_x_axis_getset }
-,
-    { (char*) "current_y", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.current_y", (void*) &CoordMotion_current_y_getset }
+    { (char*) "m_PreviouslyStoppedSeqNo", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_PreviouslyStoppedSeqNo", (void*) &CoordMotion_m_PreviouslyStoppedSeqNo_getset }
 ,
     { (char*) "Kinematics", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.Kinematics", (void*) &CoordMotion_Kinematics_getset }
 ,
-    { (char*) "m_realtime_Sequence_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_realtime_Sequence_number", (void*) &CoordMotion_m_realtime_Sequence_number_getset }
-,
-    { (char*) "m_Stoppedc", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_Stoppedc", (void*) &CoordMotion_m_Stoppedc_getset }
-,
-    { (char*) "current_z", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.current_z", (void*) &CoordMotion_current_z_getset }
-,
-    { (char*) "m_TotalDownloadedTime", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_TotalDownloadedTime", (void*) &CoordMotion_m_TotalDownloadedTime_getset }
-,
-    { (char*) "MainPath", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.MainPath", (void*) &CoordMotion_MainPath_getset }
-,
-    { (char*) "z_axis", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.z_axis", (void*) &CoordMotion_z_axis_getset }
-,
-    { (char*) "b_axis", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.b_axis", (void*) &CoordMotion_b_axis_getset }
-,
-    { (char*) "m_TimeAlreadyExecuted", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_TimeAlreadyExecuted", (void*) &CoordMotion_m_TimeAlreadyExecuted_getset }
-,
-    { (char*) "m_DefineCS_valid", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_DefineCS_valid", (void*) &CoordMotion_m_DefineCS_valid_getset }
-,
-    { (char*) "m_ThreadingMode", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_ThreadingMode", (void*) &CoordMotion_m_ThreadingMode_getset }
-,
-    { (char*) "m_StoppedMachinex", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMachinex", (void*) &CoordMotion_m_StoppedMachinex_getset }
-,
-    { (char*) "m_StoppedMachiney", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMachiney", (void*) &CoordMotion_m_StoppedMachiney_getset }
-,
-    { (char*) "m_StoppedMachinez", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMachinez", (void*) &CoordMotion_m_StoppedMachinez_getset }
+    { (char*) "m_Simulate", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_Simulate", (void*) &CoordMotion_m_Simulate_getset }
 ,
     { (char*) "m_board_type", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_board_type", (void*) &CoordMotion_m_board_type_getset }
 ,
-    { (char*) "current_a", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.current_a", (void*) &CoordMotion_current_a_getset }
+    { (char*) "m_StoppedMachinea", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMachinea", (void*) &CoordMotion_m_StoppedMachinea_getset }
 ,
-    { (char*) "MainPathRoot", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.MainPathRoot", (void*) &CoordMotion_MainPathRoot_getset }
+    { (char*) "m_StoppedMachineb", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMachineb", (void*) &CoordMotion_m_StoppedMachineb_getset }
 ,
-    { (char*) "current_b", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.current_b", (void*) &CoordMotion_current_b_getset }
+    { (char*) "m_StoppedMachinec", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMachinec", (void*) &CoordMotion_m_StoppedMachinec_getset }
 ,
-    { (char*) "m_nsegs_downloaded", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_nsegs_downloaded", (void*) &CoordMotion_m_nsegs_downloaded_getset }
+    { (char*) "y_axis", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.y_axis", (void*) &CoordMotion_y_axis_getset }
 ,
-    { (char*) "current_c", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.current_c", (void*) &CoordMotion_current_c_getset }
+    { (char*) "m_Stoppedx", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_Stoppedx", (void*) &CoordMotion_m_Stoppedx_getset }
 ,
-    { (char*) "m_AxisDisabled", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_AxisDisabled", (void*) &CoordMotion_m_AxisDisabled_getset }
+    { (char*) "m_Stoppedy", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_Stoppedy", (void*) &CoordMotion_m_Stoppedy_getset }
 ,
-    { (char*) "m_StoppedMidx", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMidx", (void*) &CoordMotion_m_StoppedMidx_getset }
+    { (char*) "m_ThreadingBaseSpeedRPS", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_ThreadingBaseSpeedRPS", (void*) &CoordMotion_m_ThreadingBaseSpeedRPS_getset }
+,
+    { (char*) "m_Stoppedz", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_Stoppedz", (void*) &CoordMotion_m_Stoppedz_getset }
 ,
     { (char*) "m_PreviouslyStoppedType", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_PreviouslyStoppedType", (void*) &CoordMotion_m_PreviouslyStoppedType_getset }
 ,
-    { (char*) "m_StoppedMidy", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMidy", (void*) &CoordMotion_m_StoppedMidy_getset }
-,
     { (char*) "m_realtime_Sequence_number_valid", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_realtime_Sequence_number_valid", (void*) &CoordMotion_m_realtime_Sequence_number_valid_getset }
 ,
-    { (char*) "m_Stopping", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_Stopping", (void*) &CoordMotion_m_Stopping_getset }
+    { (char*) "m_AxisDisabled", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_AxisDisabled", (void*) &CoordMotion_m_AxisDisabled_getset }
 ,
-    { (char*) "m_PreviouslyStoppedSeqNo", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_PreviouslyStoppedSeqNo", (void*) &CoordMotion_m_PreviouslyStoppedSeqNo_getset }
+    { (char*) "MainPathRoot", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.MainPathRoot", (void*) &CoordMotion_MainPathRoot_getset }
 ,
-    { (char*) "m_StoppedMidz", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMidz", (void*) &CoordMotion_m_StoppedMidz_getset }
+    { (char*) "b_axis", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.b_axis", (void*) &CoordMotion_b_axis_getset }
+,
+    { (char*) "m_PreviouslyStopped", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_PreviouslyStopped", (void*) &CoordMotion_m_PreviouslyStopped_getset }
+,
+    { (char*) "current_a", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.current_a", (void*) &CoordMotion_current_a_getset }
+,
+    { (char*) "current_b", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.current_b", (void*) &CoordMotion_current_b_getset }
+,
+    { (char*) "m_StoppedMachinex", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMachinex", (void*) &CoordMotion_m_StoppedMachinex_getset }
+,
+    { (char*) "current_c", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.current_c", (void*) &CoordMotion_current_c_getset }
+,
+    { (char*) "m_StoppedMida", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMida", (void*) &CoordMotion_m_StoppedMida_getset }
+,
+    { (char*) "m_StoppedMachiney", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMachiney", (void*) &CoordMotion_m_StoppedMachiney_getset }
+,
+    { (char*) "m_StoppedMidb", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMidb", (void*) &CoordMotion_m_StoppedMidb_getset }
+,
+    { (char*) "m_StoppedMachinez", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMachinez", (void*) &CoordMotion_m_StoppedMachinez_getset }
+,
+    { (char*) "m_StoppedMidc", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMidc", (void*) &CoordMotion_m_StoppedMidc_getset }
+,
+    { (char*) "x_axis", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.x_axis", (void*) &CoordMotion_x_axis_getset }
+,
+    { (char*) "m_realtime_Sequence_number", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_realtime_Sequence_number", (void*) &CoordMotion_m_realtime_Sequence_number_getset }
+,
+    { (char*) "m_nsegs_downloaded", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_nsegs_downloaded", (void*) &CoordMotion_m_nsegs_downloaded_getset }
+,
+    { (char*) "KMotionDLL", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.KMotionDLL", (void*) &CoordMotion_KMotionDLL_getset }
+,
+    { (char*) "RapidParamsDirty", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.RapidParamsDirty", (void*) &CoordMotion_RapidParamsDirty_getset }
+,
+    { (char*) "m_DefineCS_valid", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_DefineCS_valid", (void*) &CoordMotion_m_DefineCS_valid_getset }
+,
+    { (char*) "m_TotalDownloadedTime", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_TotalDownloadedTime", (void*) &CoordMotion_m_TotalDownloadedTime_getset }
+,
+    { (char*) "a_axis", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.a_axis", (void*) &CoordMotion_a_axis_getset }
+,
+    { (char*) "m_DisableSoftLimits", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_DisableSoftLimits", (void*) &CoordMotion_m_DisableSoftLimits_getset }
+,
+    { (char*) "current_x", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.current_x", (void*) &CoordMotion_current_x_getset }
+,
+    { (char*) "current_y", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.current_y", (void*) &CoordMotion_current_y_getset }
+,
+    { (char*) "current_z", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.current_z", (void*) &CoordMotion_current_z_getset }
 ,
     { (char*) "m_StraightTraverseCallback", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StraightTraverseCallback", (void*) &CoordMotion_m_StraightTraverseCallback_getset }
 ,
@@ -40942,25 +48270,31 @@ SWIGINTERN PyGetSetDef SwigPyBuiltin__CCoordMotion_getset[] = {
 ,
     { (char*) "m_StraightFeedSixAxisCallback", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StraightFeedSixAxisCallback", (void*) &CoordMotion_m_StraightFeedSixAxisCallback_getset }
 ,
-    { (char*) "RapidParamsDirty", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.RapidParamsDirty", (void*) &CoordMotion_RapidParamsDirty_getset }
+    { (char*) "MainPath", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.MainPath", (void*) &CoordMotion_MainPath_getset }
 ,
-    { (char*) "y_axis", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.y_axis", (void*) &CoordMotion_y_axis_getset }
+    { (char*) "m_StoppedMidx", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMidx", (void*) &CoordMotion_m_StoppedMidx_getset }
 ,
-    { (char*) "m_PreviouslyStoppedID", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_PreviouslyStoppedID", (void*) &CoordMotion_m_PreviouslyStoppedID_getset }
+    { (char*) "m_TimeAlreadyExecuted", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_TimeAlreadyExecuted", (void*) &CoordMotion_m_TimeAlreadyExecuted_getset }
 ,
-    { (char*) "a_axis", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.a_axis", (void*) &CoordMotion_a_axis_getset }
+    { (char*) "m_StoppedMidy", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMidy", (void*) &CoordMotion_m_StoppedMidy_getset }
 ,
-    { (char*) "m_Stoppedx", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_Stoppedx", (void*) &CoordMotion_m_Stoppedx_getset }
+    { (char*) "m_ThreadingMode", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_ThreadingMode", (void*) &CoordMotion_m_ThreadingMode_getset }
 ,
-    { (char*) "m_Stoppedy", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_Stoppedy", (void*) &CoordMotion_m_Stoppedy_getset }
+    { (char*) "m_StoppedMidz", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMidz", (void*) &CoordMotion_m_StoppedMidz_getset }
 ,
-    { (char*) "m_Stoppedz", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_Stoppedz", (void*) &CoordMotion_m_Stoppedz_getset }
+    { (char*) "z_axis", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.z_axis", (void*) &CoordMotion_z_axis_getset }
 ,
-    { (char*) "m_StoppedMachinea", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMachinea", (void*) &CoordMotion_m_StoppedMachinea_getset }
+    { (char*) "m_Stopping", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_Stopping", (void*) &CoordMotion_m_Stopping_getset }
+,
+    { (char*) "m_Stoppeda", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_Stoppeda", (void*) &CoordMotion_m_Stoppeda_getset }
+,
+    { (char*) "m_Stoppedb", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_Stoppedb", (void*) &CoordMotion_m_Stoppedb_getset }
+,
+    { (char*) "m_Stoppedc", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_Stoppedc", (void*) &CoordMotion_m_Stoppedc_getset }
 ,
     { (char*) "c_axis", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.c_axis", (void*) &CoordMotion_c_axis_getset }
 ,
-    { (char*) "m_StoppedMachineb", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_StoppedMachineb", (void*) &CoordMotion_m_StoppedMachineb_getset }
+    { (char*) "m_PreviouslyStoppedID", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CCoordMotion.m_PreviouslyStoppedID", (void*) &CoordMotion_m_PreviouslyStoppedID_getset }
 ,
     {NULL, NULL, NULL, NULL, NULL} /* Sentinel */
 };
@@ -41209,15 +48543,15 @@ static PyHeapTypeObject SwigPyBuiltin__CCoordMotion_type = {
 SWIGINTERN SwigPyClientData SwigPyBuiltin__CCoordMotion_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin__CCoordMotion_type};
 
 SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_MCODE_ACTION)
-static SwigPyGetSet MCODE_ACTION_String_getset = { _wrap_MCODE_ACTION_String_get, _wrap_MCODE_ACTION_String_set };
 static SwigPyGetSet MCODE_ACTION_Action_getset = { _wrap_MCODE_ACTION_Action_get, _wrap_MCODE_ACTION_Action_set };
 static SwigPyGetSet MCODE_ACTION_dParams_getset = { _wrap_MCODE_ACTION_dParams_get, _wrap_MCODE_ACTION_dParams_set };
+static SwigPyGetSet MCODE_ACTION_String_getset = { _wrap_MCODE_ACTION_String_get, _wrap_MCODE_ACTION_String_set };
 SWIGINTERN PyGetSetDef SwigPyBuiltin__MCODE_ACTION_getset[] = {
-    { (char*) "String", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MCODE_ACTION.String", (void*) &MCODE_ACTION_String_getset }
-,
     { (char*) "Action", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MCODE_ACTION.Action", (void*) &MCODE_ACTION_Action_getset }
 ,
     { (char*) "dParams", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MCODE_ACTION.dParams", (void*) &MCODE_ACTION_dParams_getset }
+,
+    { (char*) "String", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"MCODE_ACTION.String", (void*) &MCODE_ACTION_String_getset }
 ,
     {NULL, NULL, NULL, NULL, NULL} /* Sentinel */
 };
@@ -41409,72 +48743,62 @@ static PyHeapTypeObject SwigPyBuiltin__MCODE_ACTION_type = {
 SWIGINTERN SwigPyClientData SwigPyBuiltin__MCODE_ACTION_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin__MCODE_ACTION_type};
 
 SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_CGCodeInterpreter)
-static SwigPyGetSet CGCodeInterpreter_ToolFile_getset = { _wrap_CGCodeInterpreter_ToolFile_get, _wrap_CGCodeInterpreter_ToolFile_set };
-static SwigPyGetSet CGCodeInterpreter_m_ReadToolFile_getset = { _wrap_CGCodeInterpreter_m_ReadToolFile_get, _wrap_CGCodeInterpreter_m_ReadToolFile_set };
-static SwigPyGetSet CGCodeInterpreter_m_ResumeSafeRelAbs_getset = { _wrap_CGCodeInterpreter_m_ResumeSafeRelAbs_get, _wrap_CGCodeInterpreter_m_ResumeSafeRelAbs_set };
-static SwigPyGetSet CGCodeInterpreter_CoordMotion_getset = { _wrap_CGCodeInterpreter_CoordMotion_get, _wrap_CGCodeInterpreter_CoordMotion_set };
-static SwigPyGetSet CGCodeInterpreter_m_GCodeReads_getset = { _wrap_CGCodeInterpreter_m_GCodeReads_get, _wrap_CGCodeInterpreter_m_GCodeReads_set };
-static SwigPyGetSet CGCodeInterpreter_m_CurrentLine_getset = { _wrap_CGCodeInterpreter_m_CurrentLine_get, _wrap_CGCodeInterpreter_m_CurrentLine_set };
+static SwigPyGetSet CGCodeInterpreter_m_Resume_getset = { _wrap_CGCodeInterpreter_m_Resume_get, _wrap_CGCodeInterpreter_m_Resume_set };
+static SwigPyGetSet CGCodeInterpreter_m_ResumeTraverseXY_getset = { _wrap_CGCodeInterpreter_m_ResumeTraverseXY_get, _wrap_CGCodeInterpreter_m_ResumeTraverseXY_set };
+static SwigPyGetSet CGCodeInterpreter_m_StoppedInterpState_getset = { _wrap_CGCodeInterpreter_m_StoppedInterpState_get, _wrap_CGCodeInterpreter_m_StoppedInterpState_set };
+static SwigPyGetSet CGCodeInterpreter_m_ResumeMoveToSafeZ_getset = { _wrap_CGCodeInterpreter_m_ResumeMoveToSafeZ_get, _wrap_CGCodeInterpreter_m_ResumeMoveToSafeZ_set };
 static SwigPyGetSet CGCodeInterpreter_StateSaved_getset = { _wrap_CGCodeInterpreter_StateSaved_get, _wrap_CGCodeInterpreter_StateSaved_set };
-static SwigPyGetSet CGCodeInterpreter_SetupFile_getset = { _wrap_CGCodeInterpreter_SetupFile_get, _wrap_CGCodeInterpreter_SetupFile_set };
+static SwigPyGetSet CGCodeInterpreter_m_HaltNextLine_getset = { _wrap_CGCodeInterpreter_m_HaltNextLine_get, _wrap_CGCodeInterpreter_m_HaltNextLine_set };
+static SwigPyGetSet CGCodeInterpreter_m_ResumeSafeRelAbs_getset = { _wrap_CGCodeInterpreter_m_ResumeSafeRelAbs_get, _wrap_CGCodeInterpreter_m_ResumeSafeRelAbs_set };
 static SwigPyGetSet CGCodeInterpreter_m_ResumeFeedSafeZ_getset = { _wrap_CGCodeInterpreter_m_ResumeFeedSafeZ_get, _wrap_CGCodeInterpreter_m_ResumeFeedSafeZ_set };
-static SwigPyGetSet CGCodeInterpreter_GeoFile_getset = { _wrap_CGCodeInterpreter_GeoFile_get, _wrap_CGCodeInterpreter_GeoFile_set };
-static SwigPyGetSet CGCodeInterpreter_m_end_getset = { _wrap_CGCodeInterpreter_m_end_get, _wrap_CGCodeInterpreter_m_end_set };
-static SwigPyGetSet CGCodeInterpreter_m_exitcode_getset = { _wrap_CGCodeInterpreter_m_exitcode_get, _wrap_CGCodeInterpreter_m_exitcode_set };
-static SwigPyGetSet CGCodeInterpreter_m_ResumeSafeStartSpindle_getset = { _wrap_CGCodeInterpreter_m_ResumeSafeStartSpindle_get, _wrap_CGCodeInterpreter_m_ResumeSafeStartSpindle_set };
-static SwigPyGetSet CGCodeInterpreter_m_ResumeDoSafeFeedZ_getset = { _wrap_CGCodeInterpreter_m_ResumeDoSafeFeedZ_get, _wrap_CGCodeInterpreter_m_ResumeDoSafeFeedZ_set };
+static SwigPyGetSet CGCodeInterpreter_CoordMotion_getset = { _wrap_CGCodeInterpreter_CoordMotion_get, _wrap_CGCodeInterpreter_CoordMotion_set };
 static SwigPyGetSet CGCodeInterpreter_m_start_getset = { _wrap_CGCodeInterpreter_m_start_get, _wrap_CGCodeInterpreter_m_start_set };
 static SwigPyGetSet CGCodeInterpreter_m_ResumeSafeSpindleCWCCW_getset = { _wrap_CGCodeInterpreter_m_ResumeSafeSpindleCWCCW_get, _wrap_CGCodeInterpreter_m_ResumeSafeSpindleCWCCW_set };
-static SwigPyGetSet CGCodeInterpreter_m_ResumeMoveToSafeZ_getset = { _wrap_CGCodeInterpreter_m_ResumeMoveToSafeZ_get, _wrap_CGCodeInterpreter_m_ResumeMoveToSafeZ_set };
+static SwigPyGetSet CGCodeInterpreter_m_InitializeOnExecute_getset = { _wrap_CGCodeInterpreter_m_InitializeOnExecute_get, _wrap_CGCodeInterpreter_m_InitializeOnExecute_set };
 static SwigPyGetSet CGCodeInterpreter_m_ResumeResumeFeedRate_getset = { _wrap_CGCodeInterpreter_m_ResumeResumeFeedRate_get, _wrap_CGCodeInterpreter_m_ResumeResumeFeedRate_set };
 static SwigPyGetSet CGCodeInterpreter_m_ResumeZFeedRate_getset = { _wrap_CGCodeInterpreter_m_ResumeZFeedRate_get, _wrap_CGCodeInterpreter_m_ResumeZFeedRate_set };
 static SwigPyGetSet CGCodeInterpreter_m_ResumeRestoreFeedRate_getset = { _wrap_CGCodeInterpreter_m_ResumeRestoreFeedRate_get, _wrap_CGCodeInterpreter_m_ResumeRestoreFeedRate_set };
-static SwigPyGetSet CGCodeInterpreter_m_HaltNextLine_getset = { _wrap_CGCodeInterpreter_m_HaltNextLine_get, _wrap_CGCodeInterpreter_m_HaltNextLine_set };
-static SwigPyGetSet CGCodeInterpreter_m_Resume_getset = { _wrap_CGCodeInterpreter_m_Resume_get, _wrap_CGCodeInterpreter_m_Resume_set };
-static SwigPyGetSet CGCodeInterpreter_m_ResumeTraverseSafeX_getset = { _wrap_CGCodeInterpreter_m_ResumeTraverseSafeX_get, _wrap_CGCodeInterpreter_m_ResumeTraverseSafeX_set };
-static SwigPyGetSet CGCodeInterpreter_m_StoppedInterpState_getset = { _wrap_CGCodeInterpreter_m_StoppedInterpState_get, _wrap_CGCodeInterpreter_m_StoppedInterpState_set };
+static SwigPyGetSet CGCodeInterpreter_VarsFile_getset = { _wrap_CGCodeInterpreter_VarsFile_get, _wrap_CGCodeInterpreter_VarsFile_set };
+static SwigPyGetSet CGCodeInterpreter_m_CurrentLine_getset = { _wrap_CGCodeInterpreter_m_CurrentLine_get, _wrap_CGCodeInterpreter_m_CurrentLine_set };
+static SwigPyGetSet CGCodeInterpreter_m_GCodeReads_getset = { _wrap_CGCodeInterpreter_m_GCodeReads_get, _wrap_CGCodeInterpreter_m_GCodeReads_set };
 static SwigPyGetSet CGCodeInterpreter_p_setup_getset = { _wrap_CGCodeInterpreter_p_setup_get, _wrap_CGCodeInterpreter_p_setup_set };
-static SwigPyGetSet CGCodeInterpreter_m_InitializeOnExecute_getset = { _wrap_CGCodeInterpreter_m_InitializeOnExecute_get, _wrap_CGCodeInterpreter_m_InitializeOnExecute_set };
+static SwigPyGetSet CGCodeInterpreter_GeoFile_getset = { _wrap_CGCodeInterpreter_GeoFile_get, _wrap_CGCodeInterpreter_GeoFile_set };
+static SwigPyGetSet CGCodeInterpreter_m_ResumeSafeStartSpindle_getset = { _wrap_CGCodeInterpreter_m_ResumeSafeStartSpindle_get, _wrap_CGCodeInterpreter_m_ResumeSafeStartSpindle_set };
+static SwigPyGetSet CGCodeInterpreter_m_Halt_getset = { _wrap_CGCodeInterpreter_m_Halt_get, _wrap_CGCodeInterpreter_m_Halt_set };
+static SwigPyGetSet CGCodeInterpreter_m_ResumeDoSafeFeedZ_getset = { _wrap_CGCodeInterpreter_m_ResumeDoSafeFeedZ_get, _wrap_CGCodeInterpreter_m_ResumeDoSafeFeedZ_set };
+static SwigPyGetSet CGCodeInterpreter_SetupFile_getset = { _wrap_CGCodeInterpreter_SetupFile_get, _wrap_CGCodeInterpreter_SetupFile_set };
+static SwigPyGetSet CGCodeInterpreter_m_exitcode_getset = { _wrap_CGCodeInterpreter_m_exitcode_get, _wrap_CGCodeInterpreter_m_exitcode_set };
+static SwigPyGetSet CGCodeInterpreter_ToolFile_getset = { _wrap_CGCodeInterpreter_ToolFile_get, _wrap_CGCodeInterpreter_ToolFile_set };
+static SwigPyGetSet CGCodeInterpreter_m_ReadToolFile_getset = { _wrap_CGCodeInterpreter_m_ReadToolFile_get, _wrap_CGCodeInterpreter_m_ReadToolFile_set };
+static SwigPyGetSet CGCodeInterpreter_m_end_getset = { _wrap_CGCodeInterpreter_m_end_get, _wrap_CGCodeInterpreter_m_end_set };
+static SwigPyGetSet CGCodeInterpreter_m_ResumeTraverseSafeX_getset = { _wrap_CGCodeInterpreter_m_ResumeTraverseSafeX_get, _wrap_CGCodeInterpreter_m_ResumeTraverseSafeX_set };
+static SwigPyGetSet CGCodeInterpreter_m_InFile_getset = { _wrap_CGCodeInterpreter_m_InFile_get, _wrap_CGCodeInterpreter_m_InFile_set };
 static SwigPyGetSet CGCodeInterpreter_m_ResumeTraverseSafeY_getset = { _wrap_CGCodeInterpreter_m_ResumeTraverseSafeY_get, _wrap_CGCodeInterpreter_m_ResumeTraverseSafeY_set };
 static SwigPyGetSet CGCodeInterpreter_m_ResumeSafeZ_getset = { _wrap_CGCodeInterpreter_m_ResumeSafeZ_get, _wrap_CGCodeInterpreter_m_ResumeSafeZ_set };
-static SwigPyGetSet CGCodeInterpreter_m_InFile_getset = { _wrap_CGCodeInterpreter_m_InFile_get, _wrap_CGCodeInterpreter_m_InFile_set };
-static SwigPyGetSet CGCodeInterpreter_VarsFile_getset = { _wrap_CGCodeInterpreter_VarsFile_get, _wrap_CGCodeInterpreter_VarsFile_set };
-static SwigPyGetSet CGCodeInterpreter_m_Halt_getset = { _wrap_CGCodeInterpreter_m_Halt_get, _wrap_CGCodeInterpreter_m_Halt_set };
-static SwigPyGetSet CGCodeInterpreter_m_ResumeTraverseXY_getset = { _wrap_CGCodeInterpreter_m_ResumeTraverseXY_get, _wrap_CGCodeInterpreter_m_ResumeTraverseXY_set };
 SWIGINTERN PyGetSetDef SwigPyBuiltin__CGCodeInterpreter_getset[] = {
-    { (char*) "ToolFile", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.ToolFile", (void*) &CGCodeInterpreter_ToolFile_getset }
+    { (char*) "m_Resume", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_Resume", (void*) &CGCodeInterpreter_m_Resume_getset }
 ,
-    { (char*) "m_ReadToolFile", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_ReadToolFile", (void*) &CGCodeInterpreter_m_ReadToolFile_getset }
+    { (char*) "m_ResumeTraverseXY", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_ResumeTraverseXY", (void*) &CGCodeInterpreter_m_ResumeTraverseXY_getset }
 ,
-    { (char*) "m_ResumeSafeRelAbs", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_ResumeSafeRelAbs", (void*) &CGCodeInterpreter_m_ResumeSafeRelAbs_getset }
+    { (char*) "m_StoppedInterpState", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_StoppedInterpState", (void*) &CGCodeInterpreter_m_StoppedInterpState_getset }
 ,
-    { (char*) "CoordMotion", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.CoordMotion", (void*) &CGCodeInterpreter_CoordMotion_getset }
-,
-    { (char*) "m_GCodeReads", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_GCodeReads", (void*) &CGCodeInterpreter_m_GCodeReads_getset }
-,
-    { (char*) "m_CurrentLine", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_CurrentLine", (void*) &CGCodeInterpreter_m_CurrentLine_getset }
+    { (char*) "m_ResumeMoveToSafeZ", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_ResumeMoveToSafeZ", (void*) &CGCodeInterpreter_m_ResumeMoveToSafeZ_getset }
 ,
     { (char*) "StateSaved", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.StateSaved", (void*) &CGCodeInterpreter_StateSaved_getset }
 ,
-    { (char*) "SetupFile", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.SetupFile", (void*) &CGCodeInterpreter_SetupFile_getset }
+    { (char*) "m_HaltNextLine", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_HaltNextLine", (void*) &CGCodeInterpreter_m_HaltNextLine_getset }
+,
+    { (char*) "m_ResumeSafeRelAbs", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_ResumeSafeRelAbs", (void*) &CGCodeInterpreter_m_ResumeSafeRelAbs_getset }
 ,
     { (char*) "m_ResumeFeedSafeZ", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_ResumeFeedSafeZ", (void*) &CGCodeInterpreter_m_ResumeFeedSafeZ_getset }
 ,
-    { (char*) "GeoFile", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.GeoFile", (void*) &CGCodeInterpreter_GeoFile_getset }
-,
-    { (char*) "m_end", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_end", (void*) &CGCodeInterpreter_m_end_getset }
-,
-    { (char*) "m_exitcode", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_exitcode", (void*) &CGCodeInterpreter_m_exitcode_getset }
-,
-    { (char*) "m_ResumeSafeStartSpindle", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_ResumeSafeStartSpindle", (void*) &CGCodeInterpreter_m_ResumeSafeStartSpindle_getset }
-,
-    { (char*) "m_ResumeDoSafeFeedZ", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_ResumeDoSafeFeedZ", (void*) &CGCodeInterpreter_m_ResumeDoSafeFeedZ_getset }
+    { (char*) "CoordMotion", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.CoordMotion", (void*) &CGCodeInterpreter_CoordMotion_getset }
 ,
     { (char*) "m_start", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_start", (void*) &CGCodeInterpreter_m_start_getset }
 ,
     { (char*) "m_ResumeSafeSpindleCWCCW", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_ResumeSafeSpindleCWCCW", (void*) &CGCodeInterpreter_m_ResumeSafeSpindleCWCCW_getset }
 ,
-    { (char*) "m_ResumeMoveToSafeZ", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_ResumeMoveToSafeZ", (void*) &CGCodeInterpreter_m_ResumeMoveToSafeZ_getset }
+    { (char*) "m_InitializeOnExecute", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_InitializeOnExecute", (void*) &CGCodeInterpreter_m_InitializeOnExecute_getset }
 ,
     { (char*) "m_ResumeResumeFeedRate", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_ResumeResumeFeedRate", (void*) &CGCodeInterpreter_m_ResumeResumeFeedRate_getset }
 ,
@@ -41482,29 +48806,39 @@ SWIGINTERN PyGetSetDef SwigPyBuiltin__CGCodeInterpreter_getset[] = {
 ,
     { (char*) "m_ResumeRestoreFeedRate", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_ResumeRestoreFeedRate", (void*) &CGCodeInterpreter_m_ResumeRestoreFeedRate_getset }
 ,
-    { (char*) "m_HaltNextLine", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_HaltNextLine", (void*) &CGCodeInterpreter_m_HaltNextLine_getset }
+    { (char*) "VarsFile", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.VarsFile", (void*) &CGCodeInterpreter_VarsFile_getset }
 ,
-    { (char*) "m_Resume", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_Resume", (void*) &CGCodeInterpreter_m_Resume_getset }
+    { (char*) "m_CurrentLine", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_CurrentLine", (void*) &CGCodeInterpreter_m_CurrentLine_getset }
 ,
-    { (char*) "m_ResumeTraverseSafeX", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_ResumeTraverseSafeX", (void*) &CGCodeInterpreter_m_ResumeTraverseSafeX_getset }
-,
-    { (char*) "m_StoppedInterpState", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_StoppedInterpState", (void*) &CGCodeInterpreter_m_StoppedInterpState_getset }
+    { (char*) "m_GCodeReads", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_GCodeReads", (void*) &CGCodeInterpreter_m_GCodeReads_getset }
 ,
     { (char*) "p_setup", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.p_setup", (void*) &CGCodeInterpreter_p_setup_getset }
 ,
-    { (char*) "m_InitializeOnExecute", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_InitializeOnExecute", (void*) &CGCodeInterpreter_m_InitializeOnExecute_getset }
+    { (char*) "GeoFile", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.GeoFile", (void*) &CGCodeInterpreter_GeoFile_getset }
+,
+    { (char*) "m_ResumeSafeStartSpindle", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_ResumeSafeStartSpindle", (void*) &CGCodeInterpreter_m_ResumeSafeStartSpindle_getset }
+,
+    { (char*) "m_Halt", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_Halt", (void*) &CGCodeInterpreter_m_Halt_getset }
+,
+    { (char*) "m_ResumeDoSafeFeedZ", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_ResumeDoSafeFeedZ", (void*) &CGCodeInterpreter_m_ResumeDoSafeFeedZ_getset }
+,
+    { (char*) "SetupFile", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.SetupFile", (void*) &CGCodeInterpreter_SetupFile_getset }
+,
+    { (char*) "m_exitcode", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_exitcode", (void*) &CGCodeInterpreter_m_exitcode_getset }
+,
+    { (char*) "ToolFile", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.ToolFile", (void*) &CGCodeInterpreter_ToolFile_getset }
+,
+    { (char*) "m_ReadToolFile", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_ReadToolFile", (void*) &CGCodeInterpreter_m_ReadToolFile_getset }
+,
+    { (char*) "m_end", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_end", (void*) &CGCodeInterpreter_m_end_getset }
+,
+    { (char*) "m_ResumeTraverseSafeX", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_ResumeTraverseSafeX", (void*) &CGCodeInterpreter_m_ResumeTraverseSafeX_getset }
+,
+    { (char*) "m_InFile", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_InFile", (void*) &CGCodeInterpreter_m_InFile_getset }
 ,
     { (char*) "m_ResumeTraverseSafeY", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_ResumeTraverseSafeY", (void*) &CGCodeInterpreter_m_ResumeTraverseSafeY_getset }
 ,
     { (char*) "m_ResumeSafeZ", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_ResumeSafeZ", (void*) &CGCodeInterpreter_m_ResumeSafeZ_getset }
-,
-    { (char*) "m_InFile", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_InFile", (void*) &CGCodeInterpreter_m_InFile_getset }
-,
-    { (char*) "VarsFile", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.VarsFile", (void*) &CGCodeInterpreter_VarsFile_getset }
-,
-    { (char*) "m_Halt", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_Halt", (void*) &CGCodeInterpreter_m_Halt_getset }
-,
-    { (char*) "m_ResumeTraverseXY", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"CGCodeInterpreter.m_ResumeTraverseXY", (void*) &CGCodeInterpreter_m_ResumeTraverseXY_getset }
 ,
     {NULL, NULL, NULL, NULL, NULL} /* Sentinel */
 };
@@ -42064,6 +49398,8 @@ SWIGINTERN PyMethodDef SwigPyBuiltin__GCodeInterpreter_methods[] = {
   { "GetOffsets", (PyCFunction) _wrap_GCodeInterpreter_GetOffsets, METH_VARARGS, (char*) "" },
   { "SetOffsets", (PyCFunction) _wrap_GCodeInterpreter_SetOffsets, METH_VARARGS, (char*) "" },
   { "GetCurrent", (PyCFunction) _wrap_GCodeInterpreter_GetCurrent, METH_VARARGS, (char*) "" },
+  { "GetHashvars", (PyCFunction) _wrap_GCodeInterpreter_GetHashvars, METH_VARARGS, (char*) "" },
+  { "SetHashvars", (PyCFunction) _wrap_GCodeInterpreter_SetHashvars, METH_VARARGS, (char*) "" },
   { "__disown__", (PyCFunction) Swig::Director::swig_pyobj_disown< GCodeInterpreter >, METH_NOARGS, "" },
   { NULL, NULL, 0, NULL } /* Sentinel */
 };
@@ -42241,21 +49577,32 @@ static void *_p_KMotionTo_p_CKMotionDLL(void *x, int *SWIGUNUSEDPARM(newmemory))
     return (void *)((CKMotionDLL *)  ((KMotion *) x));
 }
 static swig_type_info _swigt__p_BOOL = {"_p_BOOL", "BOOL *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_CANON_DIRECTION = {"_p_CANON_DIRECTION", "CANON_DIRECTION *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_CANON_MOTION_MODE = {"_p_CANON_MOTION_MODE", "CANON_MOTION_MODE *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_CANON_PLANE = {"_p_CANON_PLANE", "CANON_PLANE *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_CANON_SPEED_FEED_MODE = {"_p_CANON_SPEED_FEED_MODE", "CANON_SPEED_FEED_MODE *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_CANON_SPINDLE_MODE = {"_p_CANON_SPINDLE_MODE", "CANON_SPINDLE_MODE *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_CANON_TOOL_TABLE = {"_p_CANON_TOOL_TABLE", "CANON_TOOL_TABLE *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_CANON_UNITS = {"_p_CANON_UNITS", "CANON_UNITS *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_CCoordMotion = {"_p_CCoordMotion", "CCoordMotion *", 0, 0, (void*)&SwigPyBuiltin__CCoordMotion_clientdata, 0};
 static swig_type_info _swigt__p_CGCodeInterpreter = {"_p_CGCodeInterpreter", "CGCodeInterpreter *", 0, 0, (void*)&SwigPyBuiltin__CGCodeInterpreter_clientdata, 0};
 static swig_type_info _swigt__p_CKMotionDLL = {"_p_CKMotionDLL", "CKMotionDLL *", 0, 0, (void*)&SwigPyBuiltin__CKMotionDLL_clientdata, 0};
 static swig_type_info _swigt__p_CKinematics = {"_p_CKinematics", "CKinematics *", 0, 0, (void*)&SwigPyBuiltin__CKinematics_clientdata, 0};
 static swig_type_info _swigt__p_CPT2D = {"_p_CPT2D", "CPT2D *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_CPT3D = {"_p_CPT3D", "CPT3D *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_DISTANCE_MODE = {"_p_DISTANCE_MODE", "enum DISTANCE_MODE *|DISTANCE_MODE *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_FILE = {"_p_FILE", "FILE *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GCodeInterpreter = {"_p_GCodeInterpreter", "GCodeInterpreter *", 0, 0, (void*)&SwigPyBuiltin__GCodeInterpreter_clientdata, 0};
 static swig_type_info _swigt__p_KMotion = {"_p_KMotion", "KMotion *", 0, 0, (void*)&SwigPyBuiltin__KMotion_clientdata, 0};
 static swig_type_info _swigt__p_MAIN_STATUS = {"_p_MAIN_STATUS", "MAIN_STATUS *", 0, 0, (void*)&SwigPyBuiltin__MAIN_STATUS_clientdata, 0};
 static swig_type_info _swigt__p_MCODE_ACTION = {"_p_MCODE_ACTION", "MCODE_ACTION *", 0, 0, (void*)&SwigPyBuiltin__MCODE_ACTION_clientdata, 0};
 static swig_type_info _swigt__p_MOTION_PARAMS = {"_p_MOTION_PARAMS", "MOTION_PARAMS *", 0, 0, (void*)&SwigPyBuiltin__MOTION_PARAMS_clientdata, 0};
+static swig_type_info _swigt__p_RETRACT_MODE = {"_p_RETRACT_MODE", "enum RETRACT_MODE *|RETRACT_MODE *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_SEGMENT = {"_p_SEGMENT", "SEGMENT *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_SwigPyObject = {"_p_SwigPyObject", "SwigPyObject *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_a_80__char = {"_p_a_80__char", "char (*)[80]", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_allocator_type = {"_p_allocator_type", "allocator_type *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_block_struct = {"_p_block_struct", "block *|block_struct *", 0, 0, (void*)&SwigPyBuiltin__block_struct_clientdata, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_const_reference = {"_p_const_reference", "const_reference *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_difference_type = {"_p_difference_type", "difference_type *", 0, 0, (void*)0, 0};
@@ -42269,11 +49616,11 @@ static swig_type_info _swigt__p_f_double_double_double_int__void = {"_p_f_double
 static swig_type_info _swigt__p_f_p_q_const__char__int = {"_p_f_p_q_const__char__int", "CONSOLE_HANDLER *|int (*)(char const *)", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_f_p_q_const__char__void = {"_p_f_p_q_const__char__void", "ERRMSG_HANDLER *|void (*)(char const *)", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_float = {"_p_float", "float *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_int = {"_p_int", "int *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_fpos_t = {"_p_fpos_t", "fpos_t *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_int = {"_p_int", "int *|ON_OFF *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p_PyObject = {"_p_p_PyObject", "PyObject **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_reference = {"_p_reference", "reference *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_setup = {"_p_setup", "setup *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_setup_pointer = {"_p_setup_pointer", "setup_pointer *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_setup_struct = {"_p_setup_struct", "setup_pointer|setup_struct *|setup *", 0, 0, (void*)&SwigPyBuiltin__setup_struct_clientdata, 0};
 static swig_type_info _swigt__p_size_type = {"_p_size_type", "size_type *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__allocatorT_bool_t = {"_p_std__allocatorT_bool_t", "std::vector< bool >::allocator_type *|std::allocator< bool > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__allocatorT_double_t = {"_p_std__allocatorT_double_t", "std::vector< double >::allocator_type *|std::allocator< double > *", 0, 0, (void*)0, 0};
@@ -42288,21 +49635,32 @@ static swig_type_info _swigt__p_value_type = {"_p_value_type", "value_type *", 0
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_BOOL,
+  &_swigt__p_CANON_DIRECTION,
+  &_swigt__p_CANON_MOTION_MODE,
   &_swigt__p_CANON_PLANE,
+  &_swigt__p_CANON_SPEED_FEED_MODE,
+  &_swigt__p_CANON_SPINDLE_MODE,
+  &_swigt__p_CANON_TOOL_TABLE,
+  &_swigt__p_CANON_UNITS,
   &_swigt__p_CCoordMotion,
   &_swigt__p_CGCodeInterpreter,
   &_swigt__p_CKMotionDLL,
   &_swigt__p_CKinematics,
   &_swigt__p_CPT2D,
   &_swigt__p_CPT3D,
+  &_swigt__p_DISTANCE_MODE,
+  &_swigt__p_FILE,
   &_swigt__p_GCodeInterpreter,
   &_swigt__p_KMotion,
   &_swigt__p_MAIN_STATUS,
   &_swigt__p_MCODE_ACTION,
   &_swigt__p_MOTION_PARAMS,
+  &_swigt__p_RETRACT_MODE,
   &_swigt__p_SEGMENT,
   &_swigt__p_SwigPyObject,
+  &_swigt__p_a_80__char,
   &_swigt__p_allocator_type,
+  &_swigt__p_block_struct,
   &_swigt__p_char,
   &_swigt__p_const_reference,
   &_swigt__p_difference_type,
@@ -42316,11 +49674,11 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_f_p_q_const__char__int,
   &_swigt__p_f_p_q_const__char__void,
   &_swigt__p_float,
+  &_swigt__p_fpos_t,
   &_swigt__p_int,
   &_swigt__p_p_PyObject,
   &_swigt__p_reference,
-  &_swigt__p_setup,
-  &_swigt__p_setup_pointer,
+  &_swigt__p_setup_struct,
   &_swigt__p_size_type,
   &_swigt__p_std__allocatorT_bool_t,
   &_swigt__p_std__allocatorT_double_t,
@@ -42335,21 +49693,32 @@ static swig_type_info *swig_type_initial[] = {
 };
 
 static swig_cast_info _swigc__p_BOOL[] = {  {&_swigt__p_BOOL, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_CANON_DIRECTION[] = {  {&_swigt__p_CANON_DIRECTION, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_CANON_MOTION_MODE[] = {  {&_swigt__p_CANON_MOTION_MODE, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CANON_PLANE[] = {  {&_swigt__p_CANON_PLANE, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_CANON_SPEED_FEED_MODE[] = {  {&_swigt__p_CANON_SPEED_FEED_MODE, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_CANON_SPINDLE_MODE[] = {  {&_swigt__p_CANON_SPINDLE_MODE, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_CANON_TOOL_TABLE[] = {  {&_swigt__p_CANON_TOOL_TABLE, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_CANON_UNITS[] = {  {&_swigt__p_CANON_UNITS, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CCoordMotion[] = {  {&_swigt__p_CCoordMotion, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CGCodeInterpreter[] = {  {&_swigt__p_CGCodeInterpreter, 0, 0, 0},  {&_swigt__p_GCodeInterpreter, _p_GCodeInterpreterTo_p_CGCodeInterpreter, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CKMotionDLL[] = {  {&_swigt__p_KMotion, _p_KMotionTo_p_CKMotionDLL, 0, 0},  {&_swigt__p_CKMotionDLL, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CKinematics[] = {  {&_swigt__p_CKinematics, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CPT2D[] = {  {&_swigt__p_CPT2D, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CPT3D[] = {  {&_swigt__p_CPT3D, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_DISTANCE_MODE[] = {  {&_swigt__p_DISTANCE_MODE, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_FILE[] = {  {&_swigt__p_FILE, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_GCodeInterpreter[] = {  {&_swigt__p_GCodeInterpreter, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_KMotion[] = {  {&_swigt__p_KMotion, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_MAIN_STATUS[] = {  {&_swigt__p_MAIN_STATUS, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_MCODE_ACTION[] = {  {&_swigt__p_MCODE_ACTION, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_MOTION_PARAMS[] = {  {&_swigt__p_MOTION_PARAMS, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_RETRACT_MODE[] = {  {&_swigt__p_RETRACT_MODE, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_SEGMENT[] = {  {&_swigt__p_SEGMENT, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_SwigPyObject[] = {  {&_swigt__p_SwigPyObject, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_a_80__char[] = {  {&_swigt__p_a_80__char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_allocator_type[] = {  {&_swigt__p_allocator_type, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_block_struct[] = {  {&_swigt__p_block_struct, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_const_reference[] = {  {&_swigt__p_const_reference, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_difference_type[] = {  {&_swigt__p_difference_type, 0, 0, 0},{0, 0, 0, 0}};
@@ -42363,11 +49732,11 @@ static swig_cast_info _swigc__p_f_double_double_double_int__void[] = {  {&_swigt
 static swig_cast_info _swigc__p_f_p_q_const__char__int[] = {  {&_swigt__p_f_p_q_const__char__int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_f_p_q_const__char__void[] = {  {&_swigt__p_f_p_q_const__char__void, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_float[] = {  {&_swigt__p_float, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_fpos_t[] = {  {&_swigt__p_fpos_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_PyObject[] = {  {&_swigt__p_p_PyObject, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_reference[] = {  {&_swigt__p_reference, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_setup[] = {  {&_swigt__p_setup, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_setup_pointer[] = {  {&_swigt__p_setup_pointer, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_setup_struct[] = {  {&_swigt__p_setup_struct, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_size_type[] = {  {&_swigt__p_size_type, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__allocatorT_bool_t[] = {  {&_swigt__p_std__allocatorT_bool_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__allocatorT_double_t[] = {  {&_swigt__p_std__allocatorT_double_t, 0, 0, 0},{0, 0, 0, 0}};
@@ -42382,21 +49751,32 @@ static swig_cast_info _swigc__p_value_type[] = {  {&_swigt__p_value_type, 0, 0, 
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_BOOL,
+  _swigc__p_CANON_DIRECTION,
+  _swigc__p_CANON_MOTION_MODE,
   _swigc__p_CANON_PLANE,
+  _swigc__p_CANON_SPEED_FEED_MODE,
+  _swigc__p_CANON_SPINDLE_MODE,
+  _swigc__p_CANON_TOOL_TABLE,
+  _swigc__p_CANON_UNITS,
   _swigc__p_CCoordMotion,
   _swigc__p_CGCodeInterpreter,
   _swigc__p_CKMotionDLL,
   _swigc__p_CKinematics,
   _swigc__p_CPT2D,
   _swigc__p_CPT3D,
+  _swigc__p_DISTANCE_MODE,
+  _swigc__p_FILE,
   _swigc__p_GCodeInterpreter,
   _swigc__p_KMotion,
   _swigc__p_MAIN_STATUS,
   _swigc__p_MCODE_ACTION,
   _swigc__p_MOTION_PARAMS,
+  _swigc__p_RETRACT_MODE,
   _swigc__p_SEGMENT,
   _swigc__p_SwigPyObject,
+  _swigc__p_a_80__char,
   _swigc__p_allocator_type,
+  _swigc__p_block_struct,
   _swigc__p_char,
   _swigc__p_const_reference,
   _swigc__p_difference_type,
@@ -42410,11 +49790,11 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_f_p_q_const__char__int,
   _swigc__p_f_p_q_const__char__void,
   _swigc__p_float,
+  _swigc__p_fpos_t,
   _swigc__p_int,
   _swigc__p_p_PyObject,
   _swigc__p_reference,
-  _swigc__p_setup,
-  _swigc__p_setup_pointer,
+  _swigc__p_setup_struct,
   _swigc__p_size_type,
   _swigc__p_std__allocatorT_bool_t,
   _swigc__p_std__allocatorT_double_t,
@@ -43411,6 +50791,173 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "BACKLASH_LINEAR",SWIG_From_int(static_cast< int >(1)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "NUM_BACKLASH_MODES",SWIG_From_int(static_cast< int >(1)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "HOST_JOB_ACTIVE_BIT",SWIG_From_int(static_cast< int >(1)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "INTERP_TEXT_SIZE",SWIG_From_int(static_cast< int >(256)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "RS274NGC_ERROR",SWIG_From_int(static_cast< int >(-1)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "TRUE",SWIG_From_int(static_cast< int >(1)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "FALSE",SWIG_From_int(static_cast< int >(0)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "RS274NGC_TEXT_SIZE",SWIG_From_int(static_cast< int >(256)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "TOLERANCE_INCH",SWIG_From_double(static_cast< double >(0.0005)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "TOLERANCE_MM",SWIG_From_double(static_cast< double >(0.005)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "TOLERANCE_CONCAVE_CORNER",SWIG_From_double(static_cast< double >(0.05)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "TINY",SWIG_From_double(static_cast< double >(1e-12)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "UNKNOWN",SWIG_From_double(static_cast< double >(1e-20)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "TWO_PI",SWIG_From_double(static_cast< double >(6.2831853071795864)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PI",SWIG_From_double(static_cast< double >(3.1415926535897932)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PI2",SWIG_From_double(static_cast< double >(1.5707963267948966)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "RS274NGC_ACTIVE_G_CODES",SWIG_From_int(static_cast< int >(12)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "RS274NGC_ACTIVE_M_CODES",SWIG_From_int(static_cast< int >(7)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "RS274NGC_ACTIVE_SETTINGS",SWIG_From_int(static_cast< int >(3)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "RS274NGC_PARAMETER_FILE_NAME_DEFAULT",SWIG_FromCharPtr("rs274ngc.var"));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "RS274NGC_PARAMETER_FILE_BACKUP_SUFFIX",SWIG_FromCharPtr(".bak"));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "MAX_EMS",SWIG_From_int(static_cast< int >(4)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "MM_PER_INCH",SWIG_From_double(static_cast< double >(25.4)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "INCH_PER_MM",SWIG_From_double(static_cast< double >(0.039370078740157477)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "OFF",SWIG_From_int(static_cast< int >(0)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "ON",SWIG_From_int(static_cast< int >(1)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "UNITS_PER_MINUTE",SWIG_From_int(static_cast< int >(0)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "INVERSE_TIME",SWIG_From_int(static_cast< int >(1)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "RIGHT",SWIG_From_int(static_cast< int >(1)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "LEFT",SWIG_From_int(static_cast< int >(2)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "RS274NGC_MAX_PARAMETERS",SWIG_From_int(static_cast< int >(5400)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "MAX_SUB_STACK",SWIG_From_int(static_cast< int >(10)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "ABS",SWIG_From_int(static_cast< int >(1)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "ACOS",SWIG_From_int(static_cast< int >(2)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "ASIN",SWIG_From_int(static_cast< int >(3)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "ATAN",SWIG_From_int(static_cast< int >(4)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "COS",SWIG_From_int(static_cast< int >(5)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "EXP",SWIG_From_int(static_cast< int >(6)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "FIX",SWIG_From_int(static_cast< int >(7)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "FUP",SWIG_From_int(static_cast< int >(8)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "LN",SWIG_From_int(static_cast< int >(9)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "ROUND",SWIG_From_int(static_cast< int >(10)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "SIN",SWIG_From_int(static_cast< int >(11)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "SQRT",SWIG_From_int(static_cast< int >(12)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "TAN",SWIG_From_int(static_cast< int >(13)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "NO_OPERATION",SWIG_From_int(static_cast< int >(0)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "DIVIDED_BY",SWIG_From_int(static_cast< int >(1)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "MODULO",SWIG_From_int(static_cast< int >(2)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "POWER",SWIG_From_int(static_cast< int >(3)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "TIMES",SWIG_From_int(static_cast< int >(4)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "AND2",SWIG_From_int(static_cast< int >(5)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "EXCLUSIVE_OR",SWIG_From_int(static_cast< int >(6)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "MINUS",SWIG_From_int(static_cast< int >(7)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "NON_EXCLUSIVE_OR",SWIG_From_int(static_cast< int >(8)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PLUS",SWIG_From_int(static_cast< int >(9)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "RIGHT_BRACKET",SWIG_From_int(static_cast< int >(10)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "LOGICAL_LT",SWIG_From_int(static_cast< int >(11)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "LOGICAL_GT",SWIG_From_int(static_cast< int >(12)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "LOGICAL_LE",SWIG_From_int(static_cast< int >(13)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "LOGICAL_GE",SWIG_From_int(static_cast< int >(14)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "LOGICAL_EQ",SWIG_From_int(static_cast< int >(15)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "LOGICAL_NE",SWIG_From_int(static_cast< int >(16)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_0",SWIG_From_int(static_cast< int >(0)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_1",SWIG_From_int(static_cast< int >(10)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_2",SWIG_From_int(static_cast< int >(20)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_3",SWIG_From_int(static_cast< int >(30)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_4",SWIG_From_int(static_cast< int >(40)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_10",SWIG_From_int(static_cast< int >(100)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_17",SWIG_From_int(static_cast< int >(170)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_18",SWIG_From_int(static_cast< int >(180)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_19",SWIG_From_int(static_cast< int >(190)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_20",SWIG_From_int(static_cast< int >(200)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_21",SWIG_From_int(static_cast< int >(210)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_28",SWIG_From_int(static_cast< int >(280)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_30",SWIG_From_int(static_cast< int >(300)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_32",SWIG_From_int(static_cast< int >(320)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_33",SWIG_From_int(static_cast< int >(330)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_38_2",SWIG_From_int(static_cast< int >(382)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_40",SWIG_From_int(static_cast< int >(400)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_41",SWIG_From_int(static_cast< int >(410)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_42",SWIG_From_int(static_cast< int >(420)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_43",SWIG_From_int(static_cast< int >(430)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_49",SWIG_From_int(static_cast< int >(490)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_52",SWIG_From_int(static_cast< int >(520)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_53",SWIG_From_int(static_cast< int >(530)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_54",SWIG_From_int(static_cast< int >(540)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_55",SWIG_From_int(static_cast< int >(550)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_56",SWIG_From_int(static_cast< int >(560)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_57",SWIG_From_int(static_cast< int >(570)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_58",SWIG_From_int(static_cast< int >(580)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_59",SWIG_From_int(static_cast< int >(590)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_59_1",SWIG_From_int(static_cast< int >(591)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_59_2",SWIG_From_int(static_cast< int >(592)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_59_3",SWIG_From_int(static_cast< int >(593)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_61",SWIG_From_int(static_cast< int >(610)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_61_1",SWIG_From_int(static_cast< int >(611)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_64",SWIG_From_int(static_cast< int >(640)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_80",SWIG_From_int(static_cast< int >(800)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_81",SWIG_From_int(static_cast< int >(810)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_82",SWIG_From_int(static_cast< int >(820)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_83",SWIG_From_int(static_cast< int >(830)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_84",SWIG_From_int(static_cast< int >(840)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_85",SWIG_From_int(static_cast< int >(850)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_86",SWIG_From_int(static_cast< int >(860)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_87",SWIG_From_int(static_cast< int >(870)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_88",SWIG_From_int(static_cast< int >(880)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_89",SWIG_From_int(static_cast< int >(890)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_90",SWIG_From_int(static_cast< int >(900)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_91",SWIG_From_int(static_cast< int >(910)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_92",SWIG_From_int(static_cast< int >(920)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_92_1",SWIG_From_int(static_cast< int >(921)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_92_2",SWIG_From_int(static_cast< int >(922)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_92_3",SWIG_From_int(static_cast< int >(923)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_93",SWIG_From_int(static_cast< int >(930)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_94",SWIG_From_int(static_cast< int >(940)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_96",SWIG_From_int(static_cast< int >(960)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_97",SWIG_From_int(static_cast< int >(970)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_98",SWIG_From_int(static_cast< int >(980)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "G_99",SWIG_From_int(static_cast< int >(990)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "MAX_PARAM_CHANGES",SWIG_From_int(static_cast< int >(50)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "MODE_ABSOLUTE",SWIG_From_int(static_cast< int >(MODE_ABSOLUTE)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "MODE_INCREMENTAL",SWIG_From_int(static_cast< int >(MODE_INCREMENTAL)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "R_PLANE",SWIG_From_int(static_cast< int >(R_PLANE)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "OLD_Z",SWIG_From_int(static_cast< int >(OLD_Z)));
+  
+  /* type '::block_struct' */
+  builtin_pytype = (PyTypeObject *)&SwigPyBuiltin__block_struct_type;
+  builtin_pytype->tp_dict = d = PyDict_New();
+  SwigPyBuiltin_SetMetaType(builtin_pytype, metatype);
+  builtin_pytype->tp_new = PyType_GenericNew;
+  builtin_base_count = 0;
+  builtin_bases[builtin_base_count] = NULL;
+  SwigPyBuiltin_InitBases(builtin_pytype, builtin_bases);
+  PyDict_SetItemString(d, "this", this_descr);
+  PyDict_SetItemString(d, "thisown", thisown_descr);
+  if (PyType_Ready(builtin_pytype) < 0) {
+    PyErr_SetString(PyExc_TypeError, "Could not create type 'block'.");
+#if PY_VERSION_HEX >= 0x03000000
+    return NULL;
+#else
+    return;
+#endif
+  }
+  Py_INCREF(builtin_pytype);
+  PyModule_AddObject(m, "block", (PyObject*) builtin_pytype);
+  SwigPyBuiltin_AddPublicSymbol(public_interface, "block");
+  d = md;
+  
+  /* type '::setup_struct' */
+  builtin_pytype = (PyTypeObject *)&SwigPyBuiltin__setup_struct_type;
+  builtin_pytype->tp_dict = d = PyDict_New();
+  SwigPyBuiltin_SetMetaType(builtin_pytype, metatype);
+  builtin_pytype->tp_new = PyType_GenericNew;
+  builtin_base_count = 0;
+  builtin_bases[builtin_base_count] = NULL;
+  SwigPyBuiltin_InitBases(builtin_pytype, builtin_bases);
+  PyDict_SetItemString(d, "this", this_descr);
+  PyDict_SetItemString(d, "thisown", thisown_descr);
+  if (PyType_Ready(builtin_pytype) < 0) {
+    PyErr_SetString(PyExc_TypeError, "Could not create type 'setup'.");
+#if PY_VERSION_HEX >= 0x03000000
+    return NULL;
+#else
+    return;
+#endif
+  }
+  Py_INCREF(builtin_pytype);
+  PyModule_AddObject(m, "setup", (PyObject*) builtin_pytype);
+  SwigPyBuiltin_AddPublicSymbol(public_interface, "setup");
+  d = md;
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "SEG_UNDEFINED",SWIG_From_int(static_cast< int >(SEG_UNDEFINED)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "SEG_LINEAR",SWIG_From_int(static_cast< int >(SEG_LINEAR)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "SEG_ARC",SWIG_From_int(static_cast< int >(SEG_ARC)));

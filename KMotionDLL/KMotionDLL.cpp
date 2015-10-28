@@ -598,7 +598,7 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 		ServerMessDisplayed=TRUE;
 
 		DoErrMsg(serr_msg);
-		Terminate(1);
+		Terminate(2);
 	}
 	
 	if (ReceivedErrMsg)
@@ -686,17 +686,34 @@ int CKMotionDLL::LaunchServer()
 	strcat(cmd, "KMotionServer.exe");
 	
 	if (!CreateProcess (
-		NULL,
+		cmd,
 		cmd, 
 		NULL, NULL,
 		TRUE, 0,
-		NULL, NULL,
+		NULL, 
+		GetServerDir()[0] ? GetServerDir() : NULL,
 		&si, &pi))
 	{
+	    DWORD e = GetLastError();
+        LPVOID lpMsgBuf;
+
+        FormatMessage(
+            FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+            FORMAT_MESSAGE_FROM_SYSTEM |
+            FORMAT_MESSAGE_IGNORE_INSERTS,
+            NULL,
+            e,
+            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+            (LPTSTR) &lpMsgBuf,
+            0, NULL );
+        fprintf(stderr, "LaunchServer:\n%s\n", lpMsgBuf);
+        LocalFree(lpMsgBuf);
+        fprintf(stderr, "ServerDir:\n%s\n", GetServerDir());
+        fprintf(stderr, "Server:\n%s\n", cmd);
 		ServerMessDisplayed = true;
 		DoErrMsg("Unable to execute:\r\rKMotionServer.exe\r\r"
 			"Try re-installing software or copy this file to the same location as KMotion.exe");
-		Terminate(1);
+		Terminate(3);
 	}
 
 	
@@ -710,7 +727,7 @@ int CKMotionDLL::LaunchServer()
     //sprintf(command, "%s/%s", MainPath,"KMotionServer");
 	printf("%s:%d Launch KMotionServer first!\n",__FILE__,__LINE__);
 	PipeMutex->Unlock();
-	Terminate(1);
+	Terminate(3);
     #else
     sprintf(cmd, "%s/%s", GetServerDir(),"KMotionServer &");
     system(cmd);
