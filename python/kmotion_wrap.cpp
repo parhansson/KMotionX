@@ -45090,6 +45090,182 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_PutGatherInt(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  int arg2 ;
+  intvec *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int res3 = SWIG_OLDOBJ ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:GCodeInterpreter_PutGatherInt",&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_PutGatherInt" "', argument " "1"" of type '" "GCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GCodeInterpreter_PutGatherInt" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  {
+    std::vector<int,std::allocator< int > > *ptr = (std::vector<int,std::allocator< int > > *)0;
+    res3 = swig::asptr(obj2, &ptr);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "GCodeInterpreter_PutGatherInt" "', argument " "3"" of type '" "intvec const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "GCodeInterpreter_PutGatherInt" "', argument " "3"" of type '" "intvec const &""'"); 
+    }
+    arg3 = ptr;
+  }
+  (arg1)->PutGatherInt(arg2,(intvec const &)*arg3);
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_PutGatherFloat(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  int arg2 ;
+  floatvec *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int res3 = SWIG_OLDOBJ ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:GCodeInterpreter_PutGatherFloat",&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_PutGatherFloat" "', argument " "1"" of type '" "GCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GCodeInterpreter_PutGatherFloat" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  {
+    std::vector<double,std::allocator< double > > *ptr = (std::vector<double,std::allocator< double > > *)0;
+    res3 = swig::asptr(obj2, &ptr);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "GCodeInterpreter_PutGatherFloat" "', argument " "3"" of type '" "floatvec const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "GCodeInterpreter_PutGatherFloat" "', argument " "3"" of type '" "floatvec const &""'"); 
+    }
+    arg3 = ptr;
+  }
+  (arg1)->PutGatherFloat(arg2,(floatvec const &)*arg3);
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_PutGatherDouble(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  int arg2 ;
+  floatvec *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int res3 = SWIG_OLDOBJ ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:GCodeInterpreter_PutGatherDouble",&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_PutGatherDouble" "', argument " "1"" of type '" "GCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GCodeInterpreter_PutGatherDouble" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  {
+    std::vector<double,std::allocator< double > > *ptr = (std::vector<double,std::allocator< double > > *)0;
+    res3 = swig::asptr(obj2, &ptr);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "GCodeInterpreter_PutGatherDouble" "', argument " "3"" of type '" "floatvec const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "GCodeInterpreter_PutGatherDouble" "', argument " "3"" of type '" "floatvec const &""'"); 
+    }
+    arg3 = ptr;
+  }
+  (arg1)->PutGatherDouble(arg2,(floatvec const &)*arg3);
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_PutGatherString(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  int arg2 ;
+  char *arg3 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:GCodeInterpreter_PutGatherString",&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_PutGatherString" "', argument " "1"" of type '" "GCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GCodeInterpreter_PutGatherString" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "GCodeInterpreter_PutGatherString" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = reinterpret_cast< char * >(buf3);
+  (arg1)->PutGatherString(arg2,(char const *)arg3);
+  resultobj = SWIG_Py_Void();
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  return resultobj;
+fail:
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_GCodeInterpreter_GetInterpreterParams(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
@@ -49393,6 +49569,10 @@ SWIGINTERN PyMethodDef SwigPyBuiltin__GCodeInterpreter_methods[] = {
   { "GetGatherFloat", (PyCFunction) _wrap_GCodeInterpreter_GetGatherFloat, METH_VARARGS, (char*) "" },
   { "GetGatherDouble", (PyCFunction) _wrap_GCodeInterpreter_GetGatherDouble, METH_VARARGS, (char*) "" },
   { "GetGatherString", (PyCFunction) _wrap_GCodeInterpreter_GetGatherString, METH_VARARGS, (char*) "" },
+  { "PutGatherInt", (PyCFunction) _wrap_GCodeInterpreter_PutGatherInt, METH_VARARGS, (char*) "" },
+  { "PutGatherFloat", (PyCFunction) _wrap_GCodeInterpreter_PutGatherFloat, METH_VARARGS, (char*) "" },
+  { "PutGatherDouble", (PyCFunction) _wrap_GCodeInterpreter_PutGatherDouble, METH_VARARGS, (char*) "" },
+  { "PutGatherString", (PyCFunction) _wrap_GCodeInterpreter_PutGatherString, METH_VARARGS, (char*) "" },
   { "GetInterpreterParams", (PyCFunction) _wrap_GCodeInterpreter_GetInterpreterParams, METH_VARARGS, (char*) "" },
   { "SetInterpreterParams", (PyCFunction) _wrap_GCodeInterpreter_SetInterpreterParams, METH_VARARGS, (char*) "" },
   { "GetOffsets", (PyCFunction) _wrap_GCodeInterpreter_GetOffsets, METH_VARARGS, (char*) "" },

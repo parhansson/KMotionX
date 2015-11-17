@@ -389,7 +389,12 @@ public:
     floatvec GetGatherDouble(int byte_offset, int n_doubles);       // Get double-prec float data from gather buffer
     const char * GetGatherString(int char_offset, int max_chars);   // Get string data from gather buffer - terminates when null found, but not more than max_chars.
                                                                     // Currently, char_offset must be a multiple of 4 to avoid premature string termination.
-
+    void PutGatherInt(int byte_offset, const intvec & data);        // Put 32-bit int data to gather buffer
+    void PutGatherFloat(int byte_offset, const floatvec & data);    // Put single-prec float data to gather buffer
+    void PutGatherDouble(int byte_offset, const floatvec & data);   // Put double-prec float data to gather buffer
+    void PutGatherString(int char_offset, const char * str);        // Put string data to gather buffer.  Currently, dest buffer in gather should be the next
+                                                                    // higher multiple of 4 than the given string length (including the null termination).
+    
     // Helper functions for manipulating interpreter "setup" struct.
     // Use idiom (in e.g. Python) like:
     // s = my_gcode_interp.GetInterpreterParams()
@@ -443,6 +448,7 @@ protected:
     int SendOneDouble(int i, double d);
     int GetVar(int Var, int *value);
     int GetStringFromGather(int WordOffset, char *msg, int nWords, int look_for_null = 1);
+    int PutDataToGather(int WordOffset, const void * data, int nWords);
     int SetKFLOPCommandResult(int r);
 
 };
@@ -1670,11 +1676,13 @@ int GCodeInterpreter::GetVar(int Var, int *value)
 int GCodeInterpreter::GetStringFromGather(int WordOffset, char *msg, int nWords, int look_for_null)
 {
 	char s[MAX_LINE+1];
-	int j, w, w2r;
+	int j, w, w2r, rc;
 	int * out = (int *)msg;
 	
 	if (nWords < 1)
 	    nWords = 1;
+	    
+	rc = 0;
 
 	CoordMotion->KMotionDLL->WaitToken();
 	
@@ -1683,23 +1691,19 @@ int GCodeInterpreter::GetStringFromGather(int WordOffset, char *msg, int nWords,
 	    if (w2r > 32)
 	        w2r = 32;
 	    sprintf(s, "GetGatherHex %d %d",WordOffset,w2r);  
-	    CoordMotion->KMotionDLL->WriteLine(s);
+	    if (CoordMotion->KMotionDLL->WriteLine(s)) { rc = 1; goto _done; }
 
 	    for (int i=0;i<w2r;++i)  // convert hex to 32 bit words
 	    {
 		    if (!(i&7)) {  // every 8 hex get a new line
-			    if (CoordMotion->KMotionDLL->ReadLineTimeOut(s, 1000)) return 1;  
+			    if (CoordMotion->KMotionDLL->ReadLineTimeOut(s, 1000)) { rc = 2; goto _done; } 
 			    j = 0;
 	        }
 
 		    int result = sscanf(s + j,"%8X",out+i);
 		    j += 9;
 
-		    if (result!=1)
-		    {
-			    CoordMotion->KMotionDLL->ReleaseToken();
-			    return 1;
-		    }
+		    if (result!=1) { rc = 3; goto _done; }
 
 	    }
 	    if (look_for_null)
@@ -1710,11 +1714,44 @@ int GCodeInterpreter::GetStringFromGather(int WordOffset, char *msg, int nWords,
 _done:
 	CoordMotion->KMotionDLL->ReleaseToken();
 
-    if (look_for_null)
+    if (!rc && look_for_null)
     	msg[nWords*4-1] = 0;  // make sure it is terminated
-	//printf("GSFG: %p %s\n", msg, msg);
-	return 0;
+	//printf("GSFG: rc=%d %p %s\n", rc, msg, msg);
+	return rc;
 }
+
+int GCodeInterpreter::PutDataToGather(int WordOffset, const void * data, int nWords)
+{
+    if (!nWords)
+        return 0;
+        
+	char s[MAX_LINE+1];
+	int j=0, w2w;
+	int * in = (int *)data;
+	int rc = 0;
+        
+	CoordMotion->KMotionDLL->WaitToken();
+	
+    w2w = nWords;
+    sprintf(s, "SetGatherHex %d %d",WordOffset,w2w);  
+    if (CoordMotion->KMotionDLL->WriteLine(s)) { rc = 1; goto _done; }
+
+    for (int i=0;i<w2w;++i)  // convert hex to 32 bit words
+    {
+	    sprintf(s + j, "%X ", in[i]);
+	    j += strlen(s+j);
+
+	    if ((i&7)==7 || i+1==w2w) {
+		    if (CoordMotion->KMotionDLL->WriteLine(s)) { rc = 2; goto _done; }
+		    j = 0;
+        }
+    }
+_done:
+	CoordMotion->KMotionDLL->ReleaseToken();
+        
+    return rc;
+}
+
 
 int GCodeInterpreter::GetOnePersistInt(int index)
 {
@@ -1804,6 +1841,7 @@ floatvec GCodeInterpreter::GetPersistDouble(int index, int n_doubles)
 
 intvec GCodeInterpreter::GetGatherInt(int byte_offset, int n_ints)
 {
+    //printf("GGI: %d, %d\n", byte_offset, n_ints);
     if ((unsigned)n_ints > MAX_GATHER_DATA/sizeof(int))
         n_ints = MAX_GATHER_DATA/sizeof(int);
     int rc = GetStringFromGather(byte_offset/sizeof(int), pc_string, n_ints, 0);
@@ -1851,6 +1889,48 @@ const char * GCodeInterpreter::GetGatherString(int char_offset, int max_chars)
     if (rc)
         return "";
     return pc_string;
+}
+
+
+void GCodeInterpreter::PutGatherInt(int byte_offset, const intvec & data)
+{
+    size_t nWords = data.size();
+    if (nWords > MAX_GATHER_DATA/sizeof(int32_t))
+        nWords = MAX_GATHER_DATA/sizeof(int32_t);
+    char * buf = (char *)malloc(nWords*sizeof(int32_t));
+    for (size_t i = 0; i < nWords; ++i)
+        ((int32_t *)buf)[i] = data[i];
+    PutDataToGather(byte_offset/sizeof(int32_t), buf, (int)nWords);
+    free(buf);
+}
+
+void GCodeInterpreter::PutGatherFloat(int byte_offset, const floatvec & data)
+{
+    size_t nWords = data.size();
+    if (nWords > MAX_GATHER_DATA/sizeof(float))
+        nWords = MAX_GATHER_DATA/sizeof(float);
+    char * buf = (char *)malloc(nWords*sizeof(float));
+    for (size_t i = 0; i < nWords; ++i)
+        ((float *)buf)[i] = (float)data[i];
+    PutDataToGather(byte_offset/sizeof(float), buf, (int)nWords*sizeof(float)/sizeof(int));
+    free(buf);
+}
+
+void GCodeInterpreter::PutGatherDouble(int byte_offset, const floatvec & data)
+{
+    size_t nWords = data.size();
+    if (nWords > MAX_GATHER_DATA/sizeof(double))
+        nWords = MAX_GATHER_DATA/sizeof(double);
+    char * buf = (char *)malloc(nWords*sizeof(double));
+    for (size_t i = 0; i < nWords; ++i)
+        ((double *)buf)[i] = data[i];
+    PutDataToGather(byte_offset/sizeof(float), buf, (int)nWords*sizeof(double)/sizeof(int));
+    free(buf);
+}
+
+void GCodeInterpreter::PutGatherString(int char_offset, const char * str)
+{
+    PutDataToGather(char_offset/sizeof(int32_t), str, (strlen(str)+4)/4);
 }
 
 
