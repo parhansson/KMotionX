@@ -448,6 +448,7 @@ protected:
     int SendOneDouble(int i, double d);
     int GetVar(int Var, int *value);
     int GetStringFromGather(int WordOffset, char *msg, int nWords, int look_for_null = 1);
+    int GetDataFromGather(int WordOffset, void * data, int nWords);
     int PutDataToGather(int WordOffset, const void * data, int nWords);
     int SetKFLOPCommandResult(int r);
 
@@ -1720,9 +1721,50 @@ _done:
 	return rc;
 }
 
+int GCodeInterpreter::GetDataFromGather(int WordOffset, void * data, int nWords)
+{
+#if 0
+    return GetStringFromGather(WordOffset, (char *)data, nWords, 0);
+#else
+    // Faster version than GetStringFromGather, because it does not split into smaller chunks.
+	char s[MAX_LINE+1];
+	int j, w2r, rc;
+	int * out = (int *)data;
+	
+	if (nWords < 1)
+	    return 0;
+	    
+	rc = 0;
+	w2r = nWords;
+
+	CoordMotion->KMotionDLL->WaitToken();
+	
+    sprintf(s, "GetGatherHex %d %d",WordOffset,w2r);  
+    if (CoordMotion->KMotionDLL->WriteLine(s)) { rc = 1; goto _done; }
+
+    for (int i=0;i<w2r;++i)  // convert hex to 32 bit words
+    {
+	    if (!(i&7)) {  // every 8 hex get a new line
+		    if (CoordMotion->KMotionDLL->ReadLineTimeOut(s, 1000)) { rc = 2; goto _done; } 
+		    j = 0;
+        }
+
+	    int result = sscanf(s + j,"%8X",out+i);
+	    j += 9;
+
+	    if (result!=1) { rc = 3; goto _done; }
+
+    }
+_done:
+	CoordMotion->KMotionDLL->ReleaseToken();
+
+	return rc;
+#endif
+}
+
 int GCodeInterpreter::PutDataToGather(int WordOffset, const void * data, int nWords)
 {
-    if (!nWords)
+    if (nWords < 1)
         return 0;
         
 	char s[MAX_LINE+1];
@@ -1844,12 +1886,16 @@ intvec GCodeInterpreter::GetGatherInt(int byte_offset, int n_ints)
     //printf("GGI: %d, %d\n", byte_offset, n_ints);
     if ((unsigned)n_ints > MAX_GATHER_DATA/sizeof(int))
         n_ints = MAX_GATHER_DATA/sizeof(int);
-    int rc = GetStringFromGather(byte_offset/sizeof(int), pc_string, n_ints, 0);
-    if (rc)
+    char * buf = (char *)malloc(n_ints*sizeof(int));
+    int rc = GetDataFromGather(byte_offset/sizeof(int), buf, n_ints);
+    if (rc) {
+        free(buf);
         return intvec(0);
+    }
     intvec iv = intvec(n_ints);
     for (int i = 0; i < n_ints; ++i)
-        iv[i] = ((int *)pc_string)[i];
+        iv[i] = ((int *)buf)[i];
+    free(buf);
     return iv;
 }
 
@@ -1857,12 +1903,16 @@ floatvec GCodeInterpreter::GetGatherFloat(int byte_offset, int n_floats)
 {
     if ((unsigned)n_floats > MAX_GATHER_DATA/sizeof(float))
         n_floats = MAX_GATHER_DATA/sizeof(float);
-    int rc = GetStringFromGather(byte_offset/sizeof(int), pc_string, n_floats*sizeof(float)/sizeof(int), 0);
-    if (rc)
+    char * buf = (char *)malloc(n_floats*sizeof(float));
+    int rc = GetDataFromGather(byte_offset/sizeof(int), buf, n_floats*sizeof(float)/sizeof(int));
+    if (rc) {
+        free(buf);
         return floatvec(0);
+    }
     floatvec fv = floatvec(n_floats);
     for (int i = 0; i < n_floats; ++i)
-        fv[i] = ((float *)pc_string)[i];
+        fv[i] = ((float *)buf)[i];
+    free(buf);
     return fv;
 }
 
@@ -1871,20 +1921,24 @@ floatvec GCodeInterpreter::GetGatherDouble(int byte_offset, int n_doubles)
 {
     if ((unsigned)n_doubles > MAX_GATHER_DATA/sizeof(double))
         n_doubles = MAX_GATHER_DATA/sizeof(double);
-    int rc = GetStringFromGather(byte_offset/sizeof(int), pc_string, n_doubles*sizeof(double)/sizeof(int), 0);
-    if (rc)
+    char * buf = (char *)malloc(n_doubles*sizeof(double));
+    int rc = GetDataFromGather(byte_offset/sizeof(int), buf, n_doubles*sizeof(double)/sizeof(int));
+    if (rc) {
+        free(buf);
         return floatvec(0);
+    }
     floatvec fv = floatvec(n_doubles);
     for (int i = 0; i < n_doubles; ++i)
-        fv[i] = ((double *)pc_string)[i];
+        fv[i] = ((double *)buf)[i];
+    free(buf);
     return fv;
 }
 
 
 const char * GCodeInterpreter::GetGatherString(int char_offset, int max_chars)
 {
-    if ((unsigned)max_chars > MAX_GATHER_DATA)
-        max_chars = MAX_GATHER_DATA;
+    if ((unsigned)max_chars > sizeof(pc_string))
+        max_chars = sizeof(pc_string);
     int rc = GetStringFromGather(char_offset/sizeof(int), pc_string, max_chars/sizeof(int), 1);
     if (rc)
         return "";
@@ -1895,12 +1949,12 @@ const char * GCodeInterpreter::GetGatherString(int char_offset, int max_chars)
 void GCodeInterpreter::PutGatherInt(int byte_offset, const intvec & data)
 {
     size_t nWords = data.size();
-    if (nWords > MAX_GATHER_DATA/sizeof(int32_t))
-        nWords = MAX_GATHER_DATA/sizeof(int32_t);
-    char * buf = (char *)malloc(nWords*sizeof(int32_t));
+    if (nWords > MAX_GATHER_DATA/sizeof(int))
+        nWords = MAX_GATHER_DATA/sizeof(int);
+    char * buf = (char *)malloc(nWords*sizeof(int));
     for (size_t i = 0; i < nWords; ++i)
         ((int32_t *)buf)[i] = data[i];
-    PutDataToGather(byte_offset/sizeof(int32_t), buf, (int)nWords);
+    PutDataToGather(byte_offset/sizeof(int), buf, (int)nWords);
     free(buf);
 }
 
