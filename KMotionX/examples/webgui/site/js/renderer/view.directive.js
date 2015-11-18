@@ -29,17 +29,22 @@
           far    = 10000;
       var camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
       //camera.rotationAutoUpdate = true;
-      //camera.position.x = 0;
-      //camera.position.y = 500;
-      camera.position.z = 300;
-      //camera.lookAt(scene.position);
+      camera.position.x = 150;
+      camera.position.y = 100;
+      camera.position.z = 500;
+      var center = new THREE.Vector3( 150, 100, 0 )
+      camera.lookAt(center);
+      //camera.up = new THREE.Vector3( 0, 0, 0 );
       scene.add(camera);
       
       
       var controls = new THREE.TrackballControls(camera, element[0] );
       //controls.noPan = false;
+      controls.minDistance = 1;
+      controls.maxDistance = 10000;
       controls.dynamicDampingFactor = 0.15;
-
+      controls.target = center;
+      
       //Directive Exports
       viewer.scene = scene;
       viewer.camera = camera;
@@ -119,6 +124,7 @@
             sphereInter.visible = true;
             if(sphereInter !== currentIntersected){            
               sphereInter.position.copy( intersects[ 0 ].point );
+              //console.info(intersects[ 0 ].point);
             }
 
         } else {
