@@ -686,7 +686,7 @@ int CKMotionIO::WriteLineReadLine(const char *send, char *response)
 		Mutex->Unlock();
 		return 1;
 	}
-	
+	//TODO handle if response len < 2
 	response[strlen(response)-2]=0;  // remove the /r /n
 
 	Mutex->Unlock();
