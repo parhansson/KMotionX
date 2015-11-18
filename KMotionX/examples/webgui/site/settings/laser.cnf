@@ -41,7 +41,7 @@
     "breakangle": 5,
     "cornertolerance": 0.003,
     "lookahead": 3,
-    "collineartolerance": 0.0001,
+    "collineartolerance": 0.0005,
     "facetangle": 0.5
   },
   "actions": [
