@@ -79,7 +79,7 @@ Vec2.prototype = {
   // TODO: mark dirty for other calcs
   multiply : function(vec2, returnNew) {
     var x,y;
-    if (vec2.x !== undef) {
+    if (vec2.x !== undefined) {
       x = vec2.x;
       y = vec2.y;
 
@@ -188,15 +188,15 @@ Vec2.prototype = {
 
   // Determine if another `Vec2`'s components match this ones
   equal : function(v, w) {
-    if (w === undef) {
+    if (w === undefined) {  
       return (
-        this.x === v.x &&
-        this.y == v.y
-      );
+          this.x === v.x &&
+          this.y === v.y
+      ); 
     } else {
       return (
-        this.x === v &&
-        this.y === w
+          this.x === v &&
+          this.y === w
       )
     }
   },

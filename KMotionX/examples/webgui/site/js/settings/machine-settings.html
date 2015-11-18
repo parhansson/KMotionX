@@ -126,16 +126,44 @@
               <table>
                 <tr>
                   <th>Pdf import page number</th>
-                  <th>SVG scale</th>
-                  <th>SVG DPI</th>
+                  <td><input ng-model="transcoderSettings.pdf.page" min="1" type="number" step="any" /></td>
                 </tr>
-                <tbody>
-                  <tr>
-                    <td><input ng-model="transcoderSettings.pdf.page" min="1" type="number" step="any" /></td>
-                    <td><input ng-model="transcoderSettings.svg.scale" min="0" type="number" step="any" /></td>
-                    <td><input ng-model="transcoderSettings.svg.dpi" min="1" type="number" step="any" /></td>
-                  </tr>
-                </tbody>
+                <tr>
+                  <th>SVG scale</th>
+                  <td><input ng-model="transcoderSettings.svg.scale" min="0" type="number" step="any" /></td>
+                </tr>
+                <tr>
+                  <th>SVG DPI</th>
+                  <td><input ng-model="transcoderSettings.svg.dpi" min="1" type="number" step="any" /></td>
+                </tr>
+                <tr>
+                  <th>Fractional digits (resolution)</th>
+                  <td><input ng-model="transcoderSettings.svg.fractionalDigits" min="0" type="number" step="any" /></td>
+                </tr>
+                <tr>
+                  <th>Init code</th>
+                  <td><input ng-model="transcoderSettings.svg.initCode" type="text" /></td>
+                </tr>
+                <tr>
+                  <th>Feed rate</th>
+                  <td><input ng-model="transcoderSettings.svg.feedRate" min="1" type="number" step="any" /></td>
+                </tr>
+                <tr>
+                  <th>Remove outline (not complete)</th>
+                  <td><input type="checkbox" ng-checked="transcoderSettings.svg.removeOutline"/></td>
+                </tr>
+                <tr>
+                  <th>Remove duplicates (not complete, might remove too much)</th>
+                  <td><input type="checkbox" ng-checked="transcoderSettings.svg.removeDuplicates"/></td>
+                </tr>
+                <tr>
+                  <th>Remove single points</th>                  
+                  <td><input type="checkbox" ng-checked="transcoderSettings.svg.removeSingularites"/></td>
+                </tr>
+                <tr>
+                  <th>Move to origo</th>                  
+                  <td><input type="checkbox" ng-checked="transcoderSettings.svg.translateToOrigo"/></td>
+                </tr>
               </table>
             </div>
           </div>

@@ -83,7 +83,7 @@
               return pdf.getPage(pageNum).then(function (page) {
                 var viewport = page.getViewport(scale);
                 
-//                var container = document.createElement('div');
+                var container = document.createElement('div');
 //                container.id = 'pageContainer' + pageNum;
 //                container.className = 'pageContainer';
 //                container.style.width = viewport.width + 'px';
@@ -93,8 +93,8 @@
                 return page.getOperatorList().then(function (opList) {
                   var svgGfx = new PDFJS.SVGGraphics(page.commonObjs, page.objs);
                   return svgGfx.getSVG(opList, viewport).then(function (svg) {
-//                    container.appendChild(svg);
-//                    console.info(container.innerHTML);
+                    container.appendChild(svg);
+                    console.info(container.innerHTML);
                     if(resultAsText){
                       transformedDefer.resolve(svg.outerHTML);
                     } else {
