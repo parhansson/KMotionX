@@ -29,7 +29,7 @@
           } else if (isArrayBuffer(source)) {
             transformedDefer.resolve(ab2str(source));
           } else {
-            transformedDefer.reject("Unsupported source: " + (typeof src));
+            transformedDefer.reject("Unsupported source: " + (typeof source));
           }
           
           return transformedDefer.promise;
@@ -100,6 +100,7 @@
                     } else {
                       transformedDefer.resolve(svg);
                     }
+                    pdf.destroy(); //Destroy worker
                   });
                 });
               });
