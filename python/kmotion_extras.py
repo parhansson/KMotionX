@@ -906,7 +906,7 @@ class ThreadManager(object):
                             incldirs.append(val)
                         elif typ == 'd':
                             mm = val.split('=')
-                            macros.append((mm[0], mm[1])) 
+                            macros.append((mm[0], mm[1] if len(mm) else None)) 
         with open(depfile, "r") as f:
             return (cccmd, [s.strip() for s in f.readlines()], fv, incldirs, macros)
     def need_load(self, outfile, filename, thread):
@@ -956,7 +956,10 @@ class ThreadManager(object):
             for inc in self.incldirs:
                 f.write("i "+inc+'\n')
             for d, v in self.defines:
-                f.write("d "+d+"="+v+'\n')
+                if v is None:
+                    f.write("d "+d+'\n')
+                else:
+                    f.write("d "+d+"="+v+'\n')
             
     def gen_depend_cl6x(self, filename):
         depfilename = self.get_depfile_name(filename)
@@ -1012,7 +1015,7 @@ class ThreadManager(object):
         opts = "-mv6710 -ml3 -mu -O2 --opt_for_space"
         #opts = "-mv6710 -ml3 -O2"
         inclopts = ' '.join(['-i"'+x+'"' for x in self.incldirs])
-        defopts = ' '.join(['-D'+name+"="+value for name, value in self.defines])
+        defopts = ' '.join(['-D'+name if value is None else '-D'+name+"="+value for name, value in self.defines])
         cmd = r'''%s "%s" %s %s --output_file="%s" %s''' % (self.cl6x, filename, inclopts, defopts, objfilename, opts)
         rc, err = self.runcmd(cmd)
         if rc:
