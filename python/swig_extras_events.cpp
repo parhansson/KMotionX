@@ -85,7 +85,8 @@ enum GEvtCode {
     GEV(CHG_SPEED_FEED_MODE,speed_feed_mode,cb_int)
     GEV(CHG_SPEED_OVERRIDE,speed_override,cb_bool)
     GEV(CHG_SPINDLE_TURNING,spindle_turning,cb_int)
-    GEV(CHG_TOOL_LENGTH_OFFSET,tool_length_offset,cb_float)
+    //GEV(CHG_TOOL_LENGTH_OFFSET,tool_length_offset,cb_float)
+    GEVXX(CHG_TOOL_LENGTH_OFFSET,3,tool_length_offset,double,cb_float)   // was changed to XYZ offsets
     GEV(CHG_TOOL_TABLE_INDEX,tool_table_index,cb_int)
     GEV(CHG_TRAVERSE_RATE,traverse_rate,cb_float)
     GEV(CHG_BLOCK_DELETE,block_delete,cb_bool)

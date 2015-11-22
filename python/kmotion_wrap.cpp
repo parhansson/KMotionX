@@ -51366,6 +51366,7 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "CHG_SPEED_OVERRIDE",SWIG_From_int(static_cast< int >(CHG_SPEED_OVERRIDE)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "CHG_SPINDLE_TURNING",SWIG_From_int(static_cast< int >(CHG_SPINDLE_TURNING)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "CHG_TOOL_LENGTH_OFFSET",SWIG_From_int(static_cast< int >(CHG_TOOL_LENGTH_OFFSET)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "_LAST_CHG_TOOL_LENGTH_OFFSET",SWIG_From_int(static_cast< int >(_LAST_CHG_TOOL_LENGTH_OFFSET)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "CHG_TOOL_TABLE_INDEX",SWIG_From_int(static_cast< int >(CHG_TOOL_TABLE_INDEX)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "CHG_TRAVERSE_RATE",SWIG_From_int(static_cast< int >(CHG_TRAVERSE_RATE)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "CHG_BLOCK_DELETE",SWIG_From_int(static_cast< int >(CHG_BLOCK_DELETE)));
