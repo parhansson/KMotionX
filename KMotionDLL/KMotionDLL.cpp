@@ -734,10 +734,14 @@ int CKMotionDLL::LaunchServer()
     #endif
 
 #else
+    // -u parameter means Unix domain socket only; do not listen on TCP socket.
+    // If we are launching the server locally, currently we don't want it to
+    // also listen for remote connections.
+    //TODO: make startup args configurable via API.
     #ifdef _DEAMON
-    sprintf(cmd, "%s/%s", GetServerDir(),"KMotionServer");
+    sprintf(cmd, "%s/%s", GetServerDir(),"KMotionServer -u");
     #else
-    sprintf(cmd, "%s/%s", GetServerDir(),"KMotionServer &");
+    sprintf(cmd, "%s/%s", GetServerDir(),"KMotionServer -u &");
     #endif
     printf("%s:%d Launching KMotionServer %s\n",__FILE__,__LINE__, cmd);
     system(cmd);

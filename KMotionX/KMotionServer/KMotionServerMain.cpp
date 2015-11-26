@@ -37,6 +37,8 @@ either expressed or implied, of the FreeBSD Project.
     #define USE_SYSLOG 1
 #endif
 
+#define SYSLOG_DETAILS  0   // set 1 to log detailed traffic, else only errors and uncommon messages.
+
 
 #include <HiResTimer.h>
 #include <ftd2xx.h>
@@ -85,6 +87,12 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 int ConsoleHandler(int board, const char *buf);
 
 int nClients = 0;
+
+// Command line arg values
+int open_tcp = 1;
+int open_unix = 1;
+int tcp_port = KMOTION_PORT;
+
 
 /* struct to hold data to be passed to a thread
    this shows how multiple data items can be passed to a thread */
@@ -252,12 +260,30 @@ static void daemonize(){
 }
 #endif
 
-int main(void) 
+int main(int argc, char ** argv) 
 {
     /* SJH - modified to listen to a TCP socket in addition to the unix domain (local) socket.
-       Listens at port KMOTION_PORT (defined in KMotionDLL.h).
-       FIXME: need to make this an argc/argv parameter.
+       Listens at port KMOTION_PORT (defined in KMotionDLL.h) unless overridden with -p.
+       
+       Parameters:
+         -u   Open only Unix domain socket
+         -t   Open only TCP socket
+              - if neither -u or -t, opens both Unix and TCP socket.
+         -p<port>  TCP port to listen on.  No space between -p and port number thanks to our crude parser :-)
+       
     */
+    for (int i = 1; i < argc; ++i) {
+        if (!strcmp(argv[i],"-t"))
+            open_unix = 0;
+        else if (!strcmp(argv[i],"-u"))
+            open_tcp = 0;
+        else if (!memcmp(argv[i],"-p",2))
+            sscanf(argv[i]+2, "%d", &tcp_port); // syntax error will leave as default port
+        else {
+            fprintf(stderr, "Arg '%s' not recognized\n", argv[i]);
+            exit(1);
+        }
+    }
 #ifdef _DEAMON
 	//daemonize2();
 	daemonize();
@@ -274,8 +300,9 @@ int main(void)
 	syslog(LOG_ERR, "KMotionServer started ");
 
 
-    int tcp_socket;
-    int main_socket;
+    int tcp_socket = 0;     // Default to FD 0 since then don't get errors with FD_ISSET macros etc.
+    int main_socket = 0;
+    int maxfd = -1;
     int client_socket;
     unsigned int t;
     struct sockaddr_un local, remote;
@@ -285,50 +312,55 @@ int main(void)
     socklen_t len;
 
 
-    if ((main_socket = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
+    if (open_unix && (main_socket = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
     	perrorExit("socket");
     }
-    if ((tcp_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+    if (open_tcp && (tcp_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
     	perrorExit("tcp socket");
     }
 
-    if (strlen(SOCK_PATH) >= sizeof(local.sun_path)) {
-    	perrorExit("path too long!");
-    }
+    if (open_unix) {
+        if (strlen(SOCK_PATH) >= sizeof(local.sun_path)) {
+        	perrorExit("path too long!");
+        }
 
-    local.sun_family = AF_UNIX;
-    strcpy(local.sun_path, SOCK_PATH);
+        local.sun_family = AF_UNIX;
+        strcpy(local.sun_path, SOCK_PATH);
 
-    int unlink_err;
-    if((unlink_err = unlink(local.sun_path))){
-    	logError("unlink");
-    }
+        int unlink_err;
+        if((unlink_err = unlink(local.sun_path))){
+        	logError("unlink");
+        }
 
-    //http://idletechnology.blogspot.se/2011/12/unix-domain-sockets-on-osx.html
-#ifdef __APPLE__
-    local.sun_len = sizeof(local);
-    if (bind(main_socket, (struct sockaddr *)&local, SUN_LEN(&local)) == -1) {
-#else
-    len = strlen(local.sun_path) + sizeof(local.sun_family);
-    if (bind(main_socket, (struct sockaddr *)&local, len) == -1) {
-#endif
-    	perrorExit("bind");
-    }
-    
-    
-    tlocal.sin_family = AF_INET;
-    tlocal.sin_port = htons(KMOTION_PORT);
-    tlocal.sin_addr.s_addr = INADDR_ANY;
-    len = sizeof(tlocal);
-    if (bind(tcp_socket, (struct sockaddr *)&tlocal, len) == -1) {
-    	perrorExit("tcp bind");
+        //http://idletechnology.blogspot.se/2011/12/unix-domain-sockets-on-osx.html
+    #ifdef __APPLE__
+        local.sun_len = sizeof(local);
+        if (bind(main_socket, (struct sockaddr *)&local, SUN_LEN(&local)) == -1) {
+    #else
+        len = strlen(local.sun_path) + sizeof(local.sun_family);
+        if (bind(main_socket, (struct sockaddr *)&local, len) == -1) {
+    #endif
+        	perrorExit("bind");
+        }
+        maxfd = main_socket;
     }
     
+    if (open_tcp) {
+        tlocal.sin_family = AF_INET;
+        tlocal.sin_port = htons(tcp_port);
+        tlocal.sin_addr.s_addr = INADDR_ANY;
+        len = sizeof(tlocal);
+        if (bind(tcp_socket, (struct sockaddr *)&tlocal, len) == -1) {
+        	perrorExit("tcp bind");
+        }
+        maxfd = tcp_socket;
+    }
+        
 
-    if (listen(main_socket, 5) == -1) {
+    if (open_unix && listen(main_socket, 5) == -1) {
     	perrorExit("listen");
     }
-    if (listen(tcp_socket, 5) == -1) {
+    if (open_tcp && listen(tcp_socket, 5) == -1) {
     	perrorExit("tcp listen");
     }
 
@@ -346,17 +378,17 @@ int main(void)
        syslog(LOG_ERR,"Main Thread. Waiting for a connection...\n");
        
        FD_ZERO(&rfds);
-       FD_SET(main_socket, &rfds);
-       FD_SET(tcp_socket, &rfds);
+       if (open_unix) FD_SET(main_socket, &rfds);
+       if (open_tcp) FD_SET(tcp_socket, &rfds);
        
-       retval = select(tcp_socket+1, &rfds, NULL, NULL, NULL);
+       retval = select(maxfd+1, &rfds, NULL, NULL, NULL);
        if (retval < 0)
             perrorExit("select");
-       if (FD_ISSET(main_socket, &rfds)) {
+       if (open_unix && FD_ISSET(main_socket, &rfds)) {
             t = sizeof(remote);
             client_socket = accept(main_socket, (struct sockaddr *)&remote, &t);
        }
-       else if (FD_ISSET(tcp_socket, &rfds)) {
+       else if (open_tcp && FD_ISSET(tcp_socket, &rfds)) {
             t = sizeof(tremote);
             client_socket = accept(tcp_socket, (struct sockaddr *)&tremote, &t);
             if (client_socket >= 0) {
@@ -540,21 +572,27 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 
 	case ENUM_WriteLineReadLine:	// Send Code, board, string -- Get Dest byte, Result (int) and string
 		result = KMotionDLL.WriteLineReadLine(board, chRequest+8, chReply+1+4);
+		#if SYSLOG_DETAILS
 		syslog(LOG_ERR,"GetAnswerToRequest %s \n\trequest=%s \n\treply=%s \n",ENUM_NAMES[code],chRequest+8,chReply+1+4);
+		#endif
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes = 1+4+strlen(chReply+1+4)+1; // Dest byte, Result int, string, null char
 		break;
 
 	case ENUM_WriteLine:	
 		result = KMotionDLL.WriteLine(board, chRequest+8);
+		#if SYSLOG_DETAILS
 		syslog(LOG_ERR,"GetAnswerToRequest %s \n\trequest=%s \n\tresult=%d \n",ENUM_NAMES[code],chRequest+8,result);
+		#endif
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
 
 	case ENUM_WriteLineWithEcho:	
 		result = KMotionDLL.WriteLineWithEcho(board, chRequest+8);
+		#if SYSLOG_DETAILS
 		syslog(LOG_ERR,"GetAnswerToRequest %s \n\trequest=%s \n\tresult=%d \n",ENUM_NAMES[code],chRequest+8,result);
+		#endif
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
@@ -562,7 +600,9 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 	case ENUM_ReadLineTimeOut:	// Send Code, board, timeout -- Dest byte, Get Result (int), and string
 		memcpy(&TimeOutms, chRequest+8,4);
 		result = KMotionDLL.ReadLineTimeOut(board, chReply+1+4 ,TimeOutms);
+		#if SYSLOG_DETAILS
 		syslog(LOG_ERR,"GetAnswerToRequest %s \n\trequest=%d \n\treply=%s \n\tresult=%d \n",ENUM_NAMES[code],TimeOutms,chReply+1+4,result);
+		#endif
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes = 1+4+strlen(chReply+1+4)+1; // Dest byte, Result int, string, null char
 		break;
@@ -606,7 +646,9 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 
 	case ENUM_KMotionLock:	
 		result = KMotionDLL.KMotionLock(board);
+		#if SYSLOG_DETAILS
 		syslog(LOG_ERR,"GetAnswerToRequest %s %s\n",ENUM_NAMES[code],LOCK_CODES[result]);
+		#endif
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
@@ -626,7 +668,9 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 		break;
 
 	case ENUM_ReleaseToken:	
+		#if SYSLOG_DETAILS
 		syslog(LOG_ERR,"GetAnswerToRequest %s\n",ENUM_NAMES[code]);
+		#endif
 		KMotionDLL.ReleaseToken(board);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
@@ -634,7 +678,9 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 
 	case ENUM_ServiceConsole:	
 		result = KMotionDLL.ServiceConsole(board);
+		#if SYSLOG_DETAILS
 		syslog(LOG_ERR,"GetAnswerToRequest %s \n\tresult=%d \n",ENUM_NAMES[code],result);
+		#endif
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
@@ -770,7 +816,9 @@ int ConsoleHandler(int board, const char *buf)
 	if (ConsolePipeHandle[board])
 	{
 		// there is, add the message to the list
+		#if SYSLOG_DETAILS
 		syslog(LOG_ERR,"Console message: %s",buf2);
+		#endif
 		ConsoleList[board].push_back(buf2);
 	}
 	return 0;
