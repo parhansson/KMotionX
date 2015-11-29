@@ -1,7 +1,10 @@
 (function() {
   var app = angular.module('KMX-LaserPlugin', []);
   
-  app.controller('LaserCalculatorController', function($scope){
+  LaserCalculatorController.$inject = ['$scope'];
+  
+  app.controller('LaserCalculatorController', LaserCalculatorController);
+  function LaserCalculatorController($scope){
     
     
     
@@ -36,7 +39,8 @@
     }, true);
     
     
-  });
+  }
+  
 
   app.directive("laserPlugin", function() {
     return {

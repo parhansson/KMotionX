@@ -1,6 +1,12 @@
+'use strict';
 (function() {
+  
   angular.module('KMXRenderer')
-  .directive('threeViewer', function($timeout) {
+  .directive('threeViewer', threeViewer);
+  
+  threeViewer.$inject = ['$timeout','$window'];
+  
+  function threeViewer($timeout,$window) {
     return {
       restrict: 'A',
       scope: {
@@ -11,8 +17,14 @@
     
     function link(scope, element, attrs) {
       var viewer = scope.threeViewer;
-      var elem = $(element);
-
+      var windowElement = angular.element($window);
+      var elem = element[0];//$(element);
+      elem.width = function width(){
+        return elem.offsetWidth;
+      };
+      elem.height = function width(){
+        return elem.offsetHeight;
+      };
       // Renderer
       var renderer = new THREE.WebGLRenderer({antialias: true, clearColor:0x000000, alpha: true});
       renderer.setSize(elem.width(), elem.height());
@@ -88,8 +100,8 @@
       var currentIntersected;
       
       // Fix coordinates up if window is resized.
-      $(window).on('resize', onResize);
-      $(elem).on( 'mousemove', onElementMouseMove );
+      windowElement.on('resize', onResize);
+      element.on( 'mousemove', onElementMouseMove );
 
       
       function animate() {
@@ -168,7 +180,8 @@
       
     }
     
-  });
+  }
+  
    
   
 })();
