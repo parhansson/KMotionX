@@ -173,4 +173,14 @@ input[type='text'] {
     overflow-x: scroll;
 }
 
+.well {
+  background: #ffffff;
+}
+.settings-header {
+  font-family:Trebuchet MS;
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
 
