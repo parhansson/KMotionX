@@ -5,9 +5,9 @@
 
 //http://buildinternet.com/2013/08/drag-and-drop-file-upload-with-angularjs/
   //http://jsfiddle.net/lsiv568/fsfPe/10/
-  fileDropZone.$inject = ['transcoder'];
+  fileDropZone.$inject = ['transformer'];
   
-  function fileDropZone(transcoder) {
+  function fileDropZone(transformer) {
    
     return {
       restrict: 'A',
@@ -45,7 +45,7 @@
         reader.onload = function(evt) {
           if (checkSize(size) && isTypeValid(type)) {
             
-            var p = transcoder.transcode(type, evt.target.result); 
+            var p = transformer.transcode(type, evt.target.result); 
             p.then(function (text){
               scope.fileContent = text;
               if (angular.isString(scope.fileName)) {

@@ -1,3 +1,4 @@
+'use strict'
 /**
   SVG parser for the Lasersaur.
   Converts SVG DOM to a flat collection of paths.
@@ -32,10 +33,44 @@
     * check for out of bounds geometry
 */
 
+function createAnchor(name,url){
+  var anchor = document.createElement('a');
+  anchor.setAttribute('title', name);
+  anchor.setAttribute('href', url);
+  var newContent = document.createTextNode(name); 
+  anchor.appendChild(newContent);
+  document.body.appendChild(anchor);
+  return anchor;
+}
+function IGM(){
+  this.layers = {}; // sort by stroke color
+  this.textLayer = []; // textpaths
+  this.unsupported = [],  // Unsupported nodes
+  this.addToLayerObject = addToLayerObject;
+   
+  function addToLayerObject(layerKey, obj){
+    this.layers[layerKey] = this.layers[layerKey] || []; 
+    this.layers[layerKey].push(obj);
 
-SVGReader = {
+  }
+  Object.defineProperty(this, 'alllayers', {
+    get: function() {
+        var all = [];
+        for (var prop in this.layers) {
+          // important check that this is objects own property 
+          // not from prototype prop inherited
+          if(this.layers.hasOwnProperty(prop)){
+            all = all.concat(this.layers[prop]);
+          }
+        }
+        return all;
+    }
+  });
+}
 
-  boundarys : {},
+var SVGReader = {
+
+  boundarys : null,
     // output path flattened (world coords)
     // hash of path by color
     // each path is a list of subpaths
@@ -47,6 +82,7 @@ SVGReader = {
 
 
   parse : function(source, config) {
+    this.boundarys = new IGM();
     this.tolerance_squared = Math.pow(this.tolerance, 2);
 
     // parse xml
@@ -62,7 +98,7 @@ SVGReader = {
         svgRootElement = parser.parseFromString(svgstring, 'text/xml').documentElement;
       }
       else {
-        xml = xml.replace(/<!DOCTYPE svg[^>]*>/, '');
+        svgstring = svgstring.replace(/<!DOCTYPE svg[^>]*>/, '');
         var xmlDoc = new ActiveXObject('Microsoft.XMLDOM');
         xmlDoc.async = 'false';
         xmlDoc.loadXML(svgstring);
@@ -72,22 +108,39 @@ SVGReader = {
     
 
     // let the fun begin
-    var node = {}
-    this.boundarys.allcolors = []  // TODO: sort by color
+    var node = {}    
     node.stroke = [255,0,0];
     node.xformToWorld = [1,0,0,1,0,0]
-    this.parseChildren(svgRootElement, node)
+    var cssFilterAllowed = ['svg','g','defs','style'];
+    var cssFilter = function(tag){
+      return cssFilterAllowed.indexOf(tag.localName) > -1;
+    };
+    
+    this.parseChildren(svgRootElement, node, cssFilter)
+    
+    var contentFilterDissalowed = ['style','defs'];
+    var contentFilter = function(tag){
+      return contentFilterDissalowed.indexOf(tag.localName) < 0;
+    };
+    this.parseChildren(svgRootElement, node, contentFilter)
 
     return this.boundarys
   },
 
 
-  parseChildren : function(domNode, parentNode) {
+  parseChildren : function(domNode, parentNode, filter) {
+    if(!filter(domNode)){
+      return;
+    }
     var childNodes = []
     for (var i=0; i<domNode.childNodes.length; i++) {
       var tag = domNode.childNodes[i]
-      if (tag.childNodes) {
-        if (tag.localName) { // changed from tagName to localName to handle svg files with namespace prefix svg:svg, svg:path etc;
+      if (tag.childNodes) { 
+        
+        // exclude textnodes, might check for tag.nodeName ===  "#text" or tag.nodeType === 3 instead
+        // but that would include to check several types
+        if (tag.localName) {  
+          
           // we are looping here through
           // all nodes with child nodes
           // others are irrelevant
@@ -105,6 +158,7 @@ SVGReader = {
           node.color = parentNode.color;
           node.fillOpacity = parentNode.fillOpacity;
           node.strokeOpacity = parentNode.strokeOpacity;
+          node.unsupported = parentNode.unsupported;
 
           // 2.) parse own attributes and overwrite
           if (tag.attributes) {
@@ -121,28 +175,62 @@ SVGReader = {
 
           // 4.) parse tag
           // with current attributes and transformation
+          // changed from tagName to localName to handle svg files with namespace prefix svg:svg, svg:path etc;
           if (this.SVGTagMapping[tag.localName]) {
             //if (node.stroke[0] == 255 && node.stroke[1] == 0 && node.stroke[2] == 0) {
               this.SVGTagMapping[tag.localName](this, tag, node)
             //}
-          }
-
+          } 
+          
+          
+          // TODO det här funkar inte för att det sker asynkront.
+          
+          // if(node.fontBlob){
+          //   console.log('fontblob', node.fontBlob);
+          //   var tempParser = this;
+          //   opentype.load(node.fontBlob, function(err, font) {
+          //       if (err) {
+          //           alert('Could not load font: ' + err);
+          //       } else {
+          //           var glyph = font.charToGlyph('K');
+          //           var path = glyph.getPath(100, 100, 72);
+          //           var decimalPlaces = 3;
+          //           var d = path.toPathData(decimalPlaces);
+          //           console.log('path', d);
+          //           console.log('path svg', path.toSVG(decimalPlaces));
+          //           
+          //           tempParser.addPath(d, node);
+          //       }
+          //   });
+          // }
+          
           // 5.) compile boundarys
           // before adding all path data convert to world coordinates
           for (var k=0; k<node.path.length; k++) {
             var subpath = node.path[k];
             for (var l=0; l<node.path[k].length; l++) {
               var tmp =  this.matrixApply(node.xformToWorld, subpath[l]);
+              //TODO clip on clipPath here. this will be extremely difficult
               subpath[l] = new Vec2(tmp[0], tmp[1]);
             }
             subpath.node = node;
 
-            this.boundarys.allcolors.push(subpath);
+              if(node.unsupported === true){
+                this.boundarys.unsupported.push(subpath);
+              } else {                
+                //this.boundarys.allcolors.push(subpath);
+                this.boundarys.addToLayerObject(node.stroke, subpath);                
+              }
           }
+          if(node.href){
+            //createAnchor('bulle',node.href);
+            //console.log(node.href.length, node.href);
+          }
+
         }
 
         // recursive call
-        this.parseChildren(tag, node)
+        this.parseChildren(tag, node, filter)
       }
     }
   },
@@ -173,7 +261,7 @@ SVGReader = {
         // double check params
         for (var j=0; j<params.length; j++) {
           if ( isNaN(params[j]) ) {
-            $().uxmessage('warning', 'transform skipped; contains non-numbers');
+            console.warn('warning', 'transform skipped; contains non-numbers');
             continue  // skip this transform
           }
         }
@@ -185,7 +273,7 @@ SVGReader = {
           } else if (params.length == 2) {
             xforms.push([1, 0, 0, 1, params[0], params[1]])
           } else {
-            $().uxmessage('warning', 'translate skipped; invalid num of params');
+            console.warn('warning', 'translate skipped; invalid num of params');
           }
         // rotate
         } else if (xformKind == 'rotate') {
@@ -198,7 +286,7 @@ SVGReader = {
             var angle = params[0] * this.DEG_TO_RAD
             xforms.push([Math.cos(angle), Math.sin(angle), -Math.sin(angle), Math.cos(angle), 0, 0])
           } else {
-            $().uxmessage('warning', 'rotate skipped; invalid num of params');
+            console.warn('warning', 'rotate skipped; invalid num of params');
           }
         //scale
         } else if (xformKind == 'scale') {
@@ -207,7 +295,7 @@ SVGReader = {
           } else if (params.length == 2) {
             xforms.push([params[0], 0, 0, params[1], 0, 0])
           } else {
-            $().uxmessage('warning', 'scale skipped; invalid num of params');
+            console.warn('warning', 'scale skipped; invalid num of params');
           }
         // matrix
         } else if (xformKind == 'matrix') {
@@ -220,7 +308,7 @@ SVGReader = {
             var angle = params[0]*this.DEG_TO_RAD
             xforms.push([1, 0, Math.tan(angle), 1, 0, 0])
           } else {
-            $().uxmessage('warning', 'skewX skipped; invalid num of params');
+            console.warn('warning', 'skewX skipped; invalid num of params');
           }
         // skewY
         } else if (xformKind == 'skewY') {
@@ -228,13 +316,13 @@ SVGReader = {
             var angle = params[0]*this.DEG_TO_RAD
             xforms.push([1, Math.tan(angle), 0, 1, 0, 0])
           } else {
-            $().uxmessage('warning', 'skewY skipped; invalid num of params');
+            console.warn('warning', 'skewY skipped; invalid num of params');
           }
         }
       }
 
       //calculate combined transformation matrix
-      xform_combined = [1,0,0,1,0,0]
+      var xform_combined = [1,0,0,1,0,0]
       for (var i=0; i<xforms.length; i++) {
         xform_combined = parser.matrixMult(xform_combined, xforms[i])
       }
@@ -340,7 +428,7 @@ SVGReader = {
         return a
 
       } else if (val.search(/^url\(/) != -1) {
-        $().uxmessage('error', "defs are not supported at the moment");
+        console.error('error', "defs are not supported at the moment");
       } else if (val == 'currentColor') {
         return currentColor
       } else if (val == 'none') {
@@ -420,7 +508,7 @@ SVGReader = {
         }
         return d
       } else {
-        $().uxmessage('error', "in __getPolyPath: odd number of verteces");
+        console.error('error', "in __getPolyPath: odd number of verteces");
       }
     },
 
@@ -516,15 +604,50 @@ SVGReader = {
     image : function(parser, tag, node) {
       // not supported
       // has transform and style attributes
+      var ns = "http://www.w3.org/1999/xlink";
+      var href = tag.getAttributeNS(ns,"href");
+      node.href = href;
     },
 
     defs : function(parser, tag, node) {
+      node.unsupported = true;
       // not supported
       // http://www.w3.org/TR/SVG11/struct.html#Head
       // has transform and style attributes
     },
+    
+    clipPath : function(parser, tag, node) {
+      node.unsupported = true;
+      // not supported
+      // has transform and style attributes
+    },
+    
+    use : function(parser, tag, node) {
+      node.unsupported = true;
+      // not supported
+      // has transform and style attributes
+    },
 
     style : function(parser, tag, node) {
+      //node.unsupported = true;
+      
+      var doc = document.implementation.createHTMLDocument(""),
+      styleElement = document.createElement("style");
+    
+      styleElement.textContent = tag.textContent;
+      // the style will only be parsed once it is added to a document
+      doc.body.appendChild(styleElement);
+    
+      ;
+      
+      //@font-face
+      console.log('rules', styleElement.sheet.cssRules);
+      var style = tag.textContent;
+      var s = style.indexOf('url(') +4;
+      var e = style.indexOf(')',s);
+      node.fontBlob = tag.textContent.substring(s,e);
+      
+      //blob:
       // not supported: embedded style sheets
       // http://www.w3.org/TR/SVG11/styling.html#StyleElement
       // instead presentation attributes and the 'style' attribute
@@ -561,7 +684,7 @@ SVGReader = {
     if (totalMaxScale != 0) {
       // adjust for possible transforms
       tolerance2 /= Math.pow(totalMaxScale, 2);
-      // $().uxmessage('notice', "tolerance2: " + tolerance2.toString());
+      // console.info('notice', "tolerance2: " + tolerance2.toString());
     }
 
     if ( typeof d == 'string') {
@@ -574,7 +697,7 @@ SVGReader = {
         }
       }
     }
-    //$().uxmessage('notice', "d: " + d.toString());
+    //console.info('notice', "d: " + d.toString());
 
     function nextIsNum () {
       return (d.length > 0) && (typeof(d[0]) === 'number');
@@ -584,7 +707,7 @@ SVGReader = {
       if (d.length > 0) {
         return d.shift();  // pop first item
       } else {
-        $().uxmessage('error', "in addPath: not enough parameters");
+        console.error('error', "in addPath: not enough parameters");
         return null;
       }
     }

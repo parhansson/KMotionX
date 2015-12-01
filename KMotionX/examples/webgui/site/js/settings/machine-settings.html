@@ -194,46 +194,46 @@
               <div class="col-xs-12 col-sm-8 col-sm-offset-2">
                 <div class="form-group">
                   <label>Pdf import page number</label>
-                  <input class="form-control" ng-model="transcoderSettings.pdf.page" min="1" type="number" step="any" />
+                  <input class="form-control" ng-model="transformerSettings.pdf.page" min="1" type="number" step="any" />
                 </div>
                 <div class="form-group">
                   <label>SVG scale</label>
-                  <input class="form-control" ng-model="transcoderSettings.svg.scale" min="0" type="number" step="any" />
+                  <input class="form-control" ng-model="transformerSettings.svg.scale" min="0" type="number" step="any" />
                 </div>
                 <div class="form-group">
                   <label>SVG DPI</label>
-                  <input class="form-control" ng-model="transcoderSettings.svg.dpi" min="1" type="number" step="any" />
+                  <input class="form-control" ng-model="transformerSettings.svg.dpi" min="1" type="number" step="any" />
                 </div>
                 <div class="form-group">
                   <label>Fractional digits (resolution)</label>
-                  <input class="form-control" ng-model="transcoderSettings.svg.fractionalDigits" min="0" type="number" step="any" />
+                  <input class="form-control" ng-model="transformerSettings.svg.fractionalDigits" min="0" type="number" step="any" />
                 </div>
                 <div class="form-group">
                   <label>Init code</label>
-                  <input class="form-control" ng-model="transcoderSettings.svg.initCode" type="text" />
+                  <input class="form-control" ng-model="transformerSettings.svg.initCode" type="text" />
                 </div>
                 <div class="form-group">
                   <label>Feed rate</label>
-                  <input class="form-control" ng-model="transcoderSettings.svg.feedRate" min="1" type="number" step="any" />
+                  <input class="form-control" ng-model="transformerSettings.svg.feedRate" min="1" type="number" step="any" />
                 </div>
                 <div class="checkbox">
                   <label>
-                    <input type="checkbox" ng-model="transcoderSettings.svg.removeOutline"/> Remove outline (not complete)
+                    <input type="checkbox" ng-model="transformerSettings.svg.removeOutline"/> Remove outline (not complete)
                   </label>
                 </div>
                 <div class="checkbox">
                   <label>
-                    <input type="checkbox" ng-model="transcoderSettings.svg.removeDuplicates"/> Remove duplicates (not complete, might remove too much)
+                    <input type="checkbox" ng-model="transformerSettings.svg.removeDuplicates"/> Remove duplicates (not complete, might remove too much)
                   </label>
                 </div>
                 <div class="checkbox">
                   <label>
-                    <input type="checkbox" ng-model="transcoderSettings.svg.removeSingularites"/> Remove single points
+                    <input type="checkbox" ng-model="transformerSettings.svg.removeSingularites"/> Remove single points
                   </label>
                 </div>
                 <div class="checkbox">
                   <label>
-                    <input type="checkbox" ng-model="transcoderSettings.svg.translateToOrigo"/> Move to origo
+                    <input type="checkbox" ng-model="transformerSettings.svg.translateToOrigo"/> Move to origo
                   </label>
                 </div>                                            
             </div>

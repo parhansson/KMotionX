@@ -4,9 +4,9 @@
   angular.module('KmotionXApp')
     .controller('SettingsController', SettingsController);
   
-  SettingsController.$inject = ['$scope', 'settings', 'kmxBackend','transcoderSettings'];
+  SettingsController.$inject = ['$scope', 'settings', 'kmxBackend','transformerSettings'];
   
-  function SettingsController($scope, settings, kmxBackend,transcoderSettings){
+  function SettingsController($scope, settings, kmxBackend,transformerSettings){
     console.log("SettingsController");
     $scope.actionOptions = [
          //{action:-1,name:'Reserved', visible:[false,false,false,false,false,false],paramNames:['','','','','','']},
@@ -23,7 +23,7 @@
        ];
     
     $scope.machine = settings.machine;
-    $scope.transcoderSettings = transcoderSettings;
+    $scope.transformerSettings = transformerSettings;
     
     $scope.saveMachine = function() {
       settings.save();

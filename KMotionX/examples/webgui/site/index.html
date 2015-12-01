@@ -1,11 +1,11 @@
 <!DOCTYPE html> 
-<html lang="en" ng-app="KmotionXApp">
+<html lang="en" ng-app="KmotionXApp" ng-strict-di>
 <head>
   <meta charset="utf-8">
   <title>KMotionX CNC</title>
   <!--
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
   -->
   <link rel="stylesheet" href="vendor/bootstrap/3.3.4/css/bootstrap.min.css">
   <link rel="stylesheet" href="vendor/bootstrap/3.3.4/css/bootstrap-theme.min.css">
@@ -17,75 +17,81 @@
     there is some problem with jqlite in angular
     jquery needs to be loaded before angular to disable jqlite
   -->
-  <script type="text/javascript" src="vendor/jquery/jquery-2.1.4.min.js"></script>        
-  <script type="text/javascript" src="vendor/angularjs/1.4.0/angular.min.js"></script>
-  <script type="text/javascript" src="vendor/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="vendor/threejs/r71/three.min.js"></script>
+  <script src="vendor/jquery/jquery-2.1.4.min.js"></script>        
+  <script src="vendor/angularjs/1.4.0/angular.min.js"></script>
+  <script src="vendor/angular-typecheck/angular-typecheck.min.js"></script>
+  <script src="vendor/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+  <script src="vendor/threejs/r71/three.min.js"></script>
   
   <!--
-  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.min.js"></script>
-  <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.min.js"></script>
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r73/three.min.js"></script>
   -->
   
-  <script type="text/javascript" src="vendor/pdfjs/pdf.js"></script>
   <!--
-  <script type="text/javascript" src="vendor/mozilla/stringview.js"></script>
+  <script src="vendor/mozilla/stringview.js"></script>
   -->
-  <script type="text/javascript" src="vendor/three/TrackballControls.js"></script>
+  <script src="vendor/three/TrackballControls.js"></script>
+  
+  <script src="vendor/opentype/opentype.min.js"></script>
 
-  <script type="text/javascript" src="vendor/modernizr/modernizr.custom.93389.js"></script>
+  <script src="vendor/modernizr/modernizr.custom.93389.js"></script>
   
-  <script type="text/javascript" src="vendor/gcode-simulator/svg2gcode.js"></script>
-  <script type="text/javascript" src="vendor/gcode-simulator/SVGReader.js"></script>
-  <script type="text/javascript" src="vendor/gcode-simulator/vec2.js"></script>
-  <script type="text/javascript" src="vendor/ace/src-min-noconflict/ace.js" charset="utf-8"></script>
+  <script src="vendor/ace/src-min-noconflict/ace.js" charset="utf-8"></script>
   
   <!-- Custom code -->
-  <script type="text/javascript" src="js/KmotionXApp.js"></script>
+  <script src="js/KmotionXApp.js"></script>
   
-  <script type="text/javascript" src="js/editor/app.editor.js"></script>
-  <script type="text/javascript" src="js/editor/ace.directive.js"></script>
-  <script type="text/javascript" src="js/editor/editor.controller.js"></script>
-  <script type="text/javascript" src="js/editor/file-dropzone.directive.js"></script>  
-  <script type="text/javascript" src="js/module/editor.js"></script>
+  <script src="js/editor/app.editor.js"></script>
+  <script src="js/editor/ace.directive.js"></script>
+  <script src="js/editor/editor.controller.js"></script>
+  <script src="js/editor/file-dropzone.directive.js"></script>  
+  <script src="js/module/editor.js"></script>
   
-  <script type="text/javascript" src="js/settings/mcode-value.directive.js"></script>
-  <script type="text/javascript" src="js/settings/settings.controller.js"></script>
-  <script type="text/javascript" src="js/settings/settings.directive.js"></script>
-  <script type="text/javascript" src="js/settings/settings.service.js"></script>
-  <script type="text/javascript" src="js/settings/userButton.controller.js"></script>
+  <script src="js/settings/mcode-value.directive.js"></script>
+  <script src="js/settings/settings.controller.js"></script>
+  <script src="js/settings/settings.directive.js"></script>
+  <script src="js/settings/settings.service.js"></script>
+  <script src="js/settings/userButton.controller.js"></script>
   
-  <script type="text/javascript" src="js/log/log.directive.js"></script>
-  <script type="text/javascript" src="js/log/log.service.js"></script>
-  
-  
-  <script type="text/javascript" src="js/renderer/app.renderer.js"></script>
-  <script type="text/javascript" src="js/renderer/gcode-parser.js"></script>
-  <script type="text/javascript" src="js/renderer/gcodeRenderer.service.js"></script>
-  <script type="text/javascript" src="js/renderer/view.directive.js"></script>
-  <script type="text/javascript" src="js/renderer/view.service.js"></script>
-  
-  <script type="text/javascript" src="js/backend/app.backend.js"></script>
-  <script type="text/javascript" src="js/backend/socket.service.js"></script>
-  <script type="text/javascript" src="js/backend/shared-types.js"></script>
-  <script type="text/javascript" src="js/backend/kmxBackend.service.js"></script>  
+  <script src="js/log/log.directive.js"></script>
+  <script src="js/log/log.service.js"></script>
   
   
-  <script type="text/javascript" src="js/laser/laser-calc.js"></script>
-  <script type="text/javascript" src="js/laser/box.js"></script>
+  <script src="js/renderer/app.renderer.js"></script>
+  <script src="js/renderer/gcode-parser.js"></script>
+  <script src="js/renderer/gcodeRenderer.service.js"></script>
+  <script src="js/renderer/view.directive.js"></script>
+  <script src="js/renderer/view.service.js"></script>
+  
+  <script src="js/backend/app.backend.js"></script>
+  <script src="js/backend/socket.service.js"></script>
+  <script src="js/backend/shared-types.js"></script>
+  <script src="js/backend/kmxBackend.service.js"></script>  
+  
+  
+  <script src="js/laser/laser-calc.js"></script>
+  <script src="js/laser/box.js"></script>
 
-  <script type="text/javascript" src="js/gcode/gcode.js"></script>
-  <script type="text/javascript" src="js/gcode/gcode-editor.controller.js"></script>
-  <script type="text/javascript" src="js/gcode/dro-directive.js"></script>
+  <script src="js/gcode/gcode.js"></script>
+  <script src="js/gcode/vec2.js"></script>
+  <script src="js/gcode/gcode-editor.controller.js"></script>
+  <script src="js/gcode/dro-directive.js"></script>
   
-  <script type="text/javascript" src="js/import/app.import.js"></script>
-  <script type="text/javascript" src="js/import/transcoder.service.js"></script>
-  <script type="text/javascript" src="js/import/transcoder-settings.service.js"></script>
+  <script src="js/import/app.import.js"></script>
+  <script src="js/import/transformer.service.js"></script>
+  <script src="js/import/transformer-settings.service.js"></script>
+  <script src="js/import/igm2gcode/igm2gcode-transformer.js"></script>
+  <script src="js/import/igm2gcode/igm2gcode.js"></script>
+  <script src="js/import/svg2igm/svg2igm-transformer.js"></script>
+  <script src="js/import/svg2igm/SVGReader.js"></script>
+  <script src="js/import/pdf2svg/pdf2svg-transformer.js"></script>
+  <script src="js/import/pdf2svg/pdfjs/pdf.js"></script>
+  
     
-  <script type="text/javascript" src="js/module/other.js"></script>
+  <script src="js/module/other.js"></script>
   
   
 
@@ -180,14 +186,23 @@
             <file-modal></file-modal>
           </div>
           <div>
-            <!--
-            <label class="switch"><input type="checkbox" ng-model="interpreting"><i></i></label>Interpret
-            -->            
-            <span class="btn" ng-click="gcodeEditCtrl.onCycleStart()"><span class='glyphicon' ng-class="interpreting ? 'btn_down glyphicon-pause' : 'glyphicon-play'"></span>{{interpreting ? 'Halt' : 'Cycle Start'}}</span>
-            <span class="btn" ng-click="gcodeEditCtrl.onFeedhold()"><span class='glyphicon' ng-class="feedHold ? 'btn_down glyphicon-hourglass' : 'glyphicon-hourglass'"></span>Feed Hold</span>
-            <span class="btn" ng-click="gcodeEditCtrl.onAbort()"><span class='glyphicon glyphicon-remove'></span>Abort</span>
-            <span class="btn" ng-click="gcodeEditCtrl.onStep()"><span class='glyphicon glyphicon-remove'></span>Step</span>
-            <span class="btn" ng-click="gcodeEditCtrl.onReset()"><span class='glyphicon glyphicon-remove'></span>Reset</span>
+              <div class="btn-toolbar">
+                <div class="btn-group btn-group-sm btn-group-justified">
+              
+                  <!--
+                  <label class="switch"><input type="checkbox" ng-model="interpreting"><i></i></label>Interpret
+                  -->            
+                  <div class="btn" ng-click="gcodeEditCtrl.onCycleStart()"><span class='glyphicon' ng-class="interpreting ? 'btn_down glyphicon-pause' : 'glyphicon-play'"></span>{{interpreting ? 'Halt' : 'Cycle Start'}}</div>
+                  <div class="btn" ng-click="gcodeEditCtrl.onFeedhold()"><span class='glyphicon' ng-class="feedHold ? 'btn_down glyphicon-hourglass' : 'glyphicon-hourglass'"></span>Feed Hold</div>
+                </div>
+              </div>
+              <div class="btn-toolbar">
+                <div class="btn-group btn-group-sm btn-group-justified">                  
+                  <div class="btn btn-primary" ng-click="gcodeEditCtrl.onAbort()"><span class='glyphicon glyphicon-remove'></span>Abort</div>
+                  <div class="btn btn-primary" ng-click="gcodeEditCtrl.onStep()"><span class='glyphicon glyphicon-remove'></span>Step</div>
+                  <div class="btn btn-primary" ng-click="gcodeEditCtrl.onReset()"><span class='glyphicon glyphicon-remove'></span>Reset</div>
+                </div>
+              </div>
             <div ng-bind="gcodeEditCtrl.editorLine"></div>
             <div ng-bind="gcodeEditCtrl.currentLine"></div>
           </div>
@@ -195,7 +210,7 @@
             <div>
               <input ng-model="currentDir"/>
               <input ng-model="editorContentName"/>
-              <span  class="glyphButtonBar">
+              <span class="glyphButtonBar">
                 <span class="btn glyphicon glyphicon-folder-open" title="Open" ng-click="listFiles(currentDir)"></span>
                 <span class="btn glyphicon glyphicon-floppy-save" title="Save" ng-click="save()"></span>
               </span>
@@ -255,7 +270,7 @@
       <laser-plugin></laser-plugin>
   </div><!-- /NavDebug -->
   
-  <div class="tab-pane" id="NavSettings">
+  <div class="tab-pane container" id="NavSettings">
     <kmx-settings></kmx-settings>
   </div><!-- /NavSettings -->
 </div>

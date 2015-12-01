@@ -7278,8 +7278,8 @@ var SVGGraphics = (function SVGGraphicsClosure() {
     this.commonObjs = commonObjs;
     this.objs = objs;
     this.pendingEOFill = false;
-
-    this.embedFonts = false;
+    
+    this.embedFonts = true; //PÄR HANSSON change to true to include css blob urls
     this.embeddedFonts = {};
     this.cssStyle = null;
   }
@@ -7571,6 +7571,7 @@ var SVGGraphics = (function SVGGraphicsClosure() {
       this.current.lineMatrix = IDENTITY_MATRIX;
       this.current.tspan = document.createElementNS(NS, 'svg:tspan');
       this.current.txtElement = document.createElementNS(NS, 'svg:text');
+      //BUG report. Not used current.txtgrp
       this.current.txtgrp = document.createElementNS(NS, 'svg:g');
       this.current.xcoords = [];
     },
@@ -7652,7 +7653,8 @@ var SVGGraphics = (function SVGGraphicsClosure() {
                                         ' scale(1, -1)' );
       current.txtElement.setAttributeNS(XML_NS, 'xml:space', 'preserve');
       current.txtElement.appendChild(current.tspan);
-      current.txtgrp.appendChild(current.txtElement);
+      //BUG FIX Pär Hansson was
+      //current.txtgrp.appendChild(current.txtElement);
 
       this.tgrp.appendChild(current.txtElement);
 

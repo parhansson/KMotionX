@@ -1,10 +1,10 @@
 (function() {
   angular.module('KMXImport')
-    .factory('transcoderSettings', transcoderSettings); 
+    .factory('transformerSettings', transformerSettings); 
   
-  //transcoderSettings.$inject = ['$q'];
+  //transformerSettings.$inject = ['$q'];
   
-  function transcoderSettings() {
+  function transformerSettings() {
     
     var service = {
         svg: {

@@ -1,3 +1,4 @@
+'use strict';
 if (!Array.prototype.last){
     Array.prototype.last = function(){
         return this[this.length - 1];
@@ -8,7 +9,8 @@ if (!Array.prototype.first){
       return this[0];
   };
 };
-function svg2gcode(svg, settings) {
+
+function igm2gcode(igm, settings) {
   settings = settings || {};
   settings.passes = settings.passes || 1;
   settings.materialWidth = settings.materialWidth || 6;
@@ -21,10 +23,11 @@ function svg2gcode(svg, settings) {
   settings.bitWidth = settings.bitWidth || 1; // in mm
   settings.unit = settings.unit || "mm";
   settings.fractionalDigits = settings.fractionalDigits || 3; //Thousands will do 
-  settings.translateToOrigo = settings.translateToOrigo || true;
-  settings.removeOutline = settings.removeOutline || false;
-  settings.removeDuplicates = settings.removeDuplicates || true;
-  settings.removeSingularites = settings.removeSingularites || true;
+  //TODO cannot use this default value syntax for booleans
+  settings.translateToOrigo = angular.isBoolean(settings.translateToOrigo) ? settings.translateToOrigo: true;
+  settings.removeOutline = angular.isBoolean(settings.removeOutline) ? settings.removeOutline: false;
+  settings.removeDuplicates = angular.isBoolean(settings.removeDuplicates) ? settings.removeDuplicates: true;
+  settings.removeSingularites = angular.isBoolean(settings.removeSingularites) ?  settings.removeSingularites: true;
   //settings.initCode
   //settings.dpi = settings.dpi || null;
   
@@ -52,8 +55,8 @@ function svg2gcode(svg, settings) {
     // which means that it uses only as many digits as necessary.
     return numb;    
   }
-  var paths = SVGReader.parse(svg, {}).allcolors;
   
+  var paths = igm.alllayers;
   console.info("Nr of Shapes: ", paths.length);
   
   scaleVectors(paths, ratio);
@@ -343,6 +346,7 @@ function removeDuplicates(paths){
       var avec = a[0];
       var bvec = b[0];
       //TODO Experimental only, Need to compare whole path not just first point
+      //and reverse path
       result = avec.x - bvec.x;
       if(result == 0){
         result = avec.y - bvec.y;

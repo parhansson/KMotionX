@@ -1,0 +1,73 @@
+'use strict';
+(function() {
+  angular.module('KMXImport')
+    .factory('transformer', transformer); 
+  
+  transformer.$inject = ['$q','transformerSettings'];
+  
+  function transformer($q,transformerSettings) {
+      
+      var transformers = [];
+      var service = {
+          transcode: transcode,
+          register: register
+      };
+      
+      return service;
+      
+      function register(transformer){
+        transformers.push(transformer);
+      }
+      
+      function matchType(mime){
+        for(var i = 0; i < transformers.length;i++){
+          if(transformers[i].inputMime.indexOf(mime) > -1){
+            return transformers[i];
+          }
+        }
+        return null;
+      }
+      
+      function transcode(mime, source){
+        
+        var transformer = matchType(mime);
+        if(transformer !== null){
+          var resultPromise = transformer.execute(source);
+          if(transformer.outputMime !== "application/x-gcode"){
+            return resultPromise.then(
+              function(result){
+                return transcode(transformer.outputMime,result);
+              });
+          }
+          return resultPromise;
+        }
+
+        var transformedDefer = $q.defer();
+        if (typeof source === 'string') {
+          //gcode text do not transform
+          transformedDefer.resolve(source);
+        } else if (angular.isArrayBuffer(source)) {
+          //gcode file do not transform
+          transformedDefer.resolve(ab2str(source));
+        } else {
+          transformedDefer.reject("Unsupported source: " + (typeof source));
+        }
+        
+        return transformedDefer.promise;
+      }
+  }
+  
+    function ab2str(buf) {
+    var arr = new Uint8Array(buf)
+    var str = "";
+    for(var i=0,l=arr.length; i<l; i++)
+        str += String.fromCharCode(arr[i]);
+    return str;
+    //Call stack too deep on certain browsers
+    //return String.fromCharCode.apply(null, new Uint8Array(buf)); //Uint16Array
+  }
+  
+})();
+
+
+
