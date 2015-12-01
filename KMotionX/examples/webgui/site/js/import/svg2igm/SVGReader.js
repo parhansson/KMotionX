@@ -42,33 +42,9 @@ function createAnchor(name,url){
   document.body.appendChild(anchor);
   return anchor;
 }
-function IGM(){
-  this.layers = {}; // sort by stroke color
-  this.textLayer = []; // textpaths
-  this.unsupported = [],  // Unsupported nodes
-  this.addToLayerObject = addToLayerObject;
-   
-  function addToLayerObject(layerKey, obj){
-    this.layers[layerKey] = this.layers[layerKey] || []; 
-    this.layers[layerKey].push(obj);
-
-  }
-  Object.defineProperty(this, 'alllayers', {
-    get: function() {
-        var all = [];
-        for (var prop in this.layers) {
-          // important check that this is objects own property 
-          // not from prototype prop inherited
-          if(this.layers.hasOwnProperty(prop)){
-            all = all.concat(this.layers[prop]);
-          }
-        }
-        return all;
-    }
-  });
-}
 
 var SVGReader = {
+
 
   boundarys : null,
     // output path flattened (world coords)
@@ -81,31 +57,10 @@ var SVGReader = {
     // max tollerance when tesselating curvy shapes
 
 
-  parse : function(source, config) {
+  parse : function(svgRootElement, config) {
     this.boundarys = new IGM();
     this.tolerance_squared = Math.pow(this.tolerance, 2);
 
-    // parse xml
-    var svgRootElement;
-    
-    if (typeof source === 'object' && source.ownerSVGElement !== undefined){
-      svgRootElement = source;
-    } else {
-      // clean off any preceding whitespace
-      var svgstring = source.replace(/^[\n\r \t]/gm, '');
-      if (window.DOMParser) {
-        var parser = new DOMParser();
-        svgRootElement = parser.parseFromString(svgstring, 'text/xml').documentElement;
-      }
-      else {
-        svgstring = svgstring.replace(/<!DOCTYPE svg[^>]*>/, '');
-        var xmlDoc = new ActiveXObject('Microsoft.XMLDOM');
-        xmlDoc.async = 'false';
-        xmlDoc.loadXML(svgstring);
-        svgRootElement = xmlDoc.documentElement;
-      }      
-    }
-    
 
     // let the fun begin
     var node = {}    
@@ -132,7 +87,7 @@ var SVGReader = {
     if(!filter(domNode)){
       return;
     }
-    var childNodes = []
+
     for (var i=0; i<domNode.childNodes.length; i++) {
       var tag = domNode.childNodes[i]
       if (tag.childNodes) { 

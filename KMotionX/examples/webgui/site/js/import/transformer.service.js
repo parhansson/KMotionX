@@ -10,6 +10,7 @@
       var transformers = [];
       var service = {
           transcode: transcode,
+          transformNamed: transformNamed,
           register: register
       };
       
@@ -27,7 +28,24 @@
         }
         return null;
       }
-      
+      function matchName(name){
+        for(var i = 0; i < transformers.length;i++){
+          if(transformers[i].name === name){
+            return transformers[i];
+          }
+        }
+        return null;
+      }      
+      function transformNamed(transformerName, source){
+        
+        var transformer = matchName(transformerName);
+        if(transformer !== null){
+          return transformer.execute(source);
+        }
+        var transformedDefer = $q.defer();
+        transformedDefer.reject('Named transformer "' + transformerName + '" not found');
+        return transformedDefer.promise;
+      }      
       function transcode(mime, source){
         
         var transformer = matchType(mime);

@@ -1,41 +1,36 @@
+'use strict';
 (function() {
-  angular.module('KMXRenderer')
-    .factory('GCodeRenderer',GCodeRenderer);
+  angular.module('KMXImport').run(register);
   
-  GCodeRenderer.$inject = ['$q','kmxThreeView'];
+  register.$inject = ['$q', 'transformer', 'transformerSettings'];
   
-  function GCodeRenderer($q,kmxThreeView) {
-    var currentObject = null;
+  function register($q, transformer, transformerSettings){
+    var descriptor = { 
+      name: 'G-Code to Three',
+      inputMime: ["application/x-gcode"],
+      outputMime: "application/x-kmx-three",
+      execute: transcodeGCode
+    };
     
-    var instance = {
-        clearScene: clearScene,
-        renderGCode: renderGCode
-    }; 
+	  transformer.register(descriptor);
+    
     var gworker = null;
     var background = true;
     
-    return instance;
-    
-    
-    function clearScene(){
-      if (currentObject) {
-        kmxThreeView.scene.remove(currentObject);
+    function transcodeGCode(source){
+        var transformedDefer = $q.defer();
+        if (angular.isObject(source)) {
+          createObject(transformedDefer,source);     
+        } else {
+          transformedDefer.reject("Unsupported source: " + (typeof source));
+        }
+        return transformedDefer.promise; 
       }
-    }
-    
-    function renderGCode(gcode){
-      createObject(gcode).then(function (object) {
-          clearScene();
-          currentObject = object;
-          kmxThreeView.scene.add(currentObject);
-      });
-    }
-    
-    
-    
+      
+      
     //Copyright (c) 2012 Joe Walnes
     //Copyright (c) 2014 par.hansson@gmail.com
-    function createObject(gcode){
+    function createObject(transformedDefer, gcode){
       
        var group = new THREE.Group();
        group.name = 'GCODE';
@@ -164,16 +159,16 @@
        }
   
        if(background){
-         return parseWorker(gcode);
+         parseWorker(transformedDefer, gcode);
        } else {
-         return parse(gcode);
+         parse(transformedDefer, gcode);
        }
        
-       function parseWorker(gcode){
+       function parseWorker(transformedDefer, gcode){
          
-         var defer = $q.defer();
+         var defer = transformedDefer;
          if(!gworker){
-           gworker = new Worker("js/renderer/gcode-worker.js");
+           gworker = new Worker("js/import/gcode2three/gcode-worker.js");
          }
          gworker.onmessage = function(event) {
            
@@ -193,72 +188,68 @@
          };
          console.time("parsingAndTransfer");
          //console.profile();
-         var objData =
-         {
-             command: "parse",
-             ab: new ArrayBuffer(100)
-             ,i8: new Int8Array(200)
-         };
+        //  var objData =
+        //  {
+        //      command: "parse",
+        //      ab: new ArrayBuffer(100)
+        //      ,i8: new Int8Array(200)
+        //  };
          //objWorker.postMessage(objData, [objData.ab, objData.i8.buffer]);
          
          gworker.postMessage({command:'parse',gcode:gcode.lines});
-         return defer.promise;
        }
        
-       function parse(gcode){
-         var defer = $q.defer();
+       function parse(transformedDefer, gcode){
+         var defer = transformedDefer;
          var parser = new GCodeParser(gcodeHandlers,parameterHandler,defaultHandler);
          parser.parse(gcode.lines);
          addGeometry();
          defer.resolve(group);
-         return defer.promise;
        }  
-      }
-    
-    
     }
+      
+    //use for 3dprinter files
+    function createLinePrinter(cmd, args, lastVector, currentVector, geometry){
   
-  //use for 3dprinter files
-  function createLinePrinter(cmd, args, lastVector, currentVector, geometry){
-
-      currentVector.e = args.E !== undefined ? args.E : lastVector.e,
-      //TODO doesn't work as expected due to changing feedrate in the middle of line.
-      currentVector.extruding = (currentVector.e - lastVector.e) > 0;
-      if (currentVector.extruding) {
-        var color = new THREE.Color(currentVector.extruding ? 0xBBFFFF : 0xFF00FF);
-        geometry.vertices.push(new THREE.Vector3(lastVector.x, lastVector.y,lastVector.z));
-        geometry.vertices.push(new THREE.Vector3(currentVector.x, currentVector.y,currentVector.z));
-        geometry.colors.push(color);
-        geometry.colors.push(color);
-      }    
-    return currentVector;
-  }
+        currentVector.e = args.E !== undefined ? args.E : lastVector.e,
+        //TODO doesn't work as expected due to changing feedrate in the middle of line.
+        currentVector.extruding = (currentVector.e - lastVector.e) > 0;
+        if (currentVector.extruding) {
+          var color = new THREE.Color(currentVector.extruding ? 0xBBFFFF : 0xFF00FF);
+          geometry.vertices.push(new THREE.Vector3(lastVector.x, lastVector.y,lastVector.z));
+          geometry.vertices.push(new THREE.Vector3(currentVector.x, currentVector.y,currentVector.z));
+          geometry.colors.push(color);
+          geometry.colors.push(color);
+        }    
+      return currentVector;
+    }
+    
+    function createLine(cmd, args, lastVector, currentVector,geometry,color){
   
-  function createLine(cmd, args, lastVector, currentVector,geometry,color){
-
+      
+      geometry.vertices.push(new THREE.Vector3(lastVector.x, lastVector.y,lastVector.z));
+      geometry.vertices.push(new THREE.Vector3(currentVector.x, currentVector.y,currentVector.z));
+      geometry.colors.push(color);
+      geometry.colors.push(color);
+      
+      
+      return currentVector;
+    }
     
-    geometry.vertices.push(new THREE.Vector3(lastVector.x, lastVector.y,lastVector.z));
-    geometry.vertices.push(new THREE.Vector3(currentVector.x, currentVector.y,currentVector.z));
-    geometry.colors.push(color);
-    geometry.colors.push(color);
-    
-    
-    return currentVector;
-  }
+    function createArc(cmd, args, lastVector, currentVector,geometry, color,clockWise){
   
-  function createArc(cmd, args, lastVector, currentVector,geometry, color,clockWise){
- 
-    var curve = new GCode.Curve3(
-        lastVector,
-        currentVector,
-        args,
-        clockWise);    
-    //geometry.vertices.push(new THREE.Vector3(lastVector.x, lastVector.y,lastVector.z));
-    geometry.vertices.push.apply(geometry.vertices,curve.getPoints( 50 ));
-    
-    
-    return currentVector;
+      var curve = new GCode.Curve3(
+          lastVector,
+          currentVector,
+          args,
+          clockWise);    
+      //geometry.vertices.push(new THREE.Vector3(lastVector.x, lastVector.y,lastVector.z));
+      geometry.vertices.push.apply(geometry.vertices,curve.getPoints( 50 ));
+      
+      
+      return currentVector;
+    }          
+      
   }
-    
   
 })();

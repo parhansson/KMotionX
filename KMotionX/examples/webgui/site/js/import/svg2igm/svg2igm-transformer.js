@@ -15,26 +15,43 @@
     
 	  transformer.register(descriptor);
     
-    function transcodeSVG(src){
+    function transcodeSVG(source){
         var transformedDefer = $q.defer();
-        var source;
-        if (typeof src === 'string') {
-          source = src;
-        } else if (typeof src === 'object' && src.ownerSVGElement !== undefined) {
-          source = src;
-        } else if (angular.isArrayBuffer(src)) {
-          source = ab2str(src);
+        var svgRootElement;
+        if (typeof source === 'string') {
+          svgRootElement = parseXML(source);
+        } else if (typeof source === 'object' && source.ownerSVGElement !== undefined) {
+          svgRootElement = source;
+        } else if (angular.isArrayBuffer(source)) {
+          svgRootElement = parseXML(ab2str(source));
         } else {
-          transformedDefer.reject("Unsupported source: " + (typeof src));
+          transformedDefer.reject("Unsupported source: " + (typeof source));
         }
-        var igm = SVGReader.parse(source, {});
+            // parse xml        
+        if(svgRootElement == null){
+          transformedDefer.reject("SVG element not present");
+        }
+        var igm = SVGReader.parse(svgRootElement, {});
         
         
         transformedDefer.resolve(igm);
+        
         return transformedDefer.promise; 
       }
+      
+      function parseXML(source){
+          if (window.DOMParser) {
+            var parser = new DOMParser();
+            // clean off any preceding whitespace
+            //not sure if this is really needed
+            var svgstring = source.replace(/^[\n\r \t]/gm, '');
+            return parser.parseFromString(svgstring, 'image/svg+xml').documentElement;
+          } else {
+            console.error("DOMParser not supported. Update your browser");
+          } 
+          return null;     
+      }
   }
-  
   
   function ab2str(buf) {
     var arr = new Uint8Array(buf)

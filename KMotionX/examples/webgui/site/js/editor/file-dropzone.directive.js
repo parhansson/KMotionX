@@ -45,12 +45,13 @@
         reader.onload = function(evt) {
           if (checkSize(size) && isTypeValid(type)) {
             
-            var p = transformer.transcode(type, evt.target.result); 
-            p.then(function (text){
+            transformer.transcode(type, evt.target.result).then(function (text){
               scope.fileContent = text;
               if (angular.isString(scope.fileName)) {
                 scope.fileName = name;
               }              
+            },function (reason) {
+              console.error(reason);
             });
             
           }
