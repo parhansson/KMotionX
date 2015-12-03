@@ -129,6 +129,7 @@ public:
     virtual int PC_NBMsgBox();
     virtual int PC_NBMDI();
     virtual int PC_NBInputBox();
+    virtual int PC_CaptureData();
 
 /* Internal director utilities */
 public:
@@ -159,7 +160,7 @@ private:
       return method;
     }
 private:
-    mutable swig::SwigVar_PyObject vtable[46];
+    mutable swig::SwigVar_PyObject vtable[47];
 #endif
 
 };

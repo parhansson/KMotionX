@@ -3912,46 +3912,48 @@ namespace Swig {
 #define SWIGTYPE_p_FILE swig_types[15]
 #define SWIGTYPE_p_GCodeInterpreter swig_types[16]
 #define SWIGTYPE_p_KMotion swig_types[17]
-#define SWIGTYPE_p_MAIN_STATUS swig_types[18]
-#define SWIGTYPE_p_MCODE_ACTION swig_types[19]
-#define SWIGTYPE_p_MOTION_PARAMS swig_types[20]
-#define SWIGTYPE_p_RETRACT_MODE swig_types[21]
-#define SWIGTYPE_p_SEGMENT swig_types[22]
-#define SWIGTYPE_p_SwigPyObject swig_types[23]
-#define SWIGTYPE_p_a_80__char swig_types[24]
-#define SWIGTYPE_p_allocator_type swig_types[25]
-#define SWIGTYPE_p_block_struct swig_types[26]
-#define SWIGTYPE_p_char swig_types[27]
-#define SWIGTYPE_p_const_reference swig_types[28]
-#define SWIGTYPE_p_difference_type swig_types[29]
-#define SWIGTYPE_p_double swig_types[30]
-#define SWIGTYPE_p_f_bool_double_CANON_PLANE_double_double_double_double_int_double_double_double_double_double_double_double_int_int__void swig_types[31]
-#define SWIGTYPE_p_f_bool_double_CANON_PLANE_double_double_double_double_int_double_double_double_double_int_int__void swig_types[32]
-#define SWIGTYPE_p_f_double_double_double_double_double_double_double_int_int__void swig_types[33]
-#define SWIGTYPE_p_f_double_double_double_double_double_double_int__void swig_types[34]
-#define SWIGTYPE_p_f_double_double_double_double_int_int__void swig_types[35]
-#define SWIGTYPE_p_f_double_double_double_int__void swig_types[36]
-#define SWIGTYPE_p_f_p_q_const__char__int swig_types[37]
-#define SWIGTYPE_p_f_p_q_const__char__void swig_types[38]
-#define SWIGTYPE_p_float swig_types[39]
-#define SWIGTYPE_p_fpos_t swig_types[40]
-#define SWIGTYPE_p_int swig_types[41]
-#define SWIGTYPE_p_p_PyObject swig_types[42]
-#define SWIGTYPE_p_reference swig_types[43]
-#define SWIGTYPE_p_setup_struct swig_types[44]
-#define SWIGTYPE_p_size_type swig_types[45]
-#define SWIGTYPE_p_std__allocatorT_bool_t swig_types[46]
-#define SWIGTYPE_p_std__allocatorT_double_t swig_types[47]
-#define SWIGTYPE_p_std__allocatorT_int_t swig_types[48]
-#define SWIGTYPE_p_std__invalid_argument swig_types[49]
-#define SWIGTYPE_p_std__vectorT_bool_std__allocatorT_bool_t_t swig_types[50]
-#define SWIGTYPE_p_std__vectorT_double_std__allocatorT_double_t_t swig_types[51]
-#define SWIGTYPE_p_std__vectorT_int_std__allocatorT_int_t_t swig_types[52]
-#define SWIGTYPE_p_swig__SwigPyIterator swig_types[53]
-#define SWIGTYPE_p_unsigned_char swig_types[54]
-#define SWIGTYPE_p_value_type swig_types[55]
-static swig_type_info *swig_types[57];
-static swig_module_info swig_module = {swig_types, 56, 0, 0, 0, 0};
+#define SWIGTYPE_p_KapBuf swig_types[18]
+#define SWIGTYPE_p_KapHdr_t swig_types[19]
+#define SWIGTYPE_p_MAIN_STATUS swig_types[20]
+#define SWIGTYPE_p_MCODE_ACTION swig_types[21]
+#define SWIGTYPE_p_MOTION_PARAMS swig_types[22]
+#define SWIGTYPE_p_RETRACT_MODE swig_types[23]
+#define SWIGTYPE_p_SEGMENT swig_types[24]
+#define SWIGTYPE_p_SwigPyObject swig_types[25]
+#define SWIGTYPE_p_a_80__char swig_types[26]
+#define SWIGTYPE_p_allocator_type swig_types[27]
+#define SWIGTYPE_p_block_struct swig_types[28]
+#define SWIGTYPE_p_char swig_types[29]
+#define SWIGTYPE_p_const_reference swig_types[30]
+#define SWIGTYPE_p_difference_type swig_types[31]
+#define SWIGTYPE_p_double swig_types[32]
+#define SWIGTYPE_p_f_bool_double_CANON_PLANE_double_double_double_double_int_double_double_double_double_double_double_double_int_int__void swig_types[33]
+#define SWIGTYPE_p_f_bool_double_CANON_PLANE_double_double_double_double_int_double_double_double_double_int_int__void swig_types[34]
+#define SWIGTYPE_p_f_double_double_double_double_double_double_double_int_int__void swig_types[35]
+#define SWIGTYPE_p_f_double_double_double_double_double_double_int__void swig_types[36]
+#define SWIGTYPE_p_f_double_double_double_double_int_int__void swig_types[37]
+#define SWIGTYPE_p_f_double_double_double_int__void swig_types[38]
+#define SWIGTYPE_p_f_p_q_const__char__int swig_types[39]
+#define SWIGTYPE_p_f_p_q_const__char__void swig_types[40]
+#define SWIGTYPE_p_float swig_types[41]
+#define SWIGTYPE_p_fpos_t swig_types[42]
+#define SWIGTYPE_p_int swig_types[43]
+#define SWIGTYPE_p_p_PyObject swig_types[44]
+#define SWIGTYPE_p_reference swig_types[45]
+#define SWIGTYPE_p_setup_struct swig_types[46]
+#define SWIGTYPE_p_size_type swig_types[47]
+#define SWIGTYPE_p_std__allocatorT_bool_t swig_types[48]
+#define SWIGTYPE_p_std__allocatorT_double_t swig_types[49]
+#define SWIGTYPE_p_std__allocatorT_int_t swig_types[50]
+#define SWIGTYPE_p_std__invalid_argument swig_types[51]
+#define SWIGTYPE_p_std__vectorT_bool_std__allocatorT_bool_t_t swig_types[52]
+#define SWIGTYPE_p_std__vectorT_double_std__allocatorT_double_t_t swig_types[53]
+#define SWIGTYPE_p_std__vectorT_int_std__allocatorT_int_t_t swig_types[54]
+#define SWIGTYPE_p_swig__SwigPyIterator swig_types[55]
+#define SWIGTYPE_p_unsigned_char swig_types[56]
+#define SWIGTYPE_p_value_type swig_types[57]
+static swig_type_info *swig_types[59];
+static swig_module_info swig_module = {swig_types, 58, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -8169,6 +8171,37 @@ int SwigDirector_GCodeInterpreter::PC_NBInputBox() {
     PyObject *error = PyErr_Occurred();
     if (error) {
       Swig::DirectorMethodException::raise("Error detected when calling 'GCodeInterpreter.PC_NBInputBox'");
+    }
+  }
+  int swig_val;
+  int swig_res = SWIG_AsVal_int(result, &swig_val);
+  if (!SWIG_IsOK(swig_res)) {
+    Swig::DirectorTypeMismatchException::raise(SWIG_ErrorType(SWIG_ArgError(swig_res)), "in output value of type '""int""'");
+  }
+  c_result = static_cast< int >(swig_val);
+  return (int) c_result;
+}
+
+
+int SwigDirector_GCodeInterpreter::PC_CaptureData() {
+  int c_result;
+  PyObject *self = NULL;
+  (void)self;
+  if (!swig_get_self()) {
+    Swig::DirectorException::raise("'self' uninitialized, maybe you forgot to call GCodeInterpreter.__init__.");
+  }
+#if defined(SWIG_PYTHON_DIRECTOR_VTABLE)
+  const size_t swig_method_index = 46;
+  const char * const swig_method_name = "PC_CaptureData";
+  PyObject* method = swig_get_method(swig_method_index, swig_method_name);
+  swig::SwigVar_PyObject result = PyObject_CallFunction(method, NULL, NULL);
+#else
+  swig::SwigVar_PyObject result = PyObject_CallMethod(swig_get_self(), (char *) "PC_CaptureData", NULL);
+#endif
+  if (!result) {
+    PyObject *error = PyErr_Occurred();
+    if (error) {
+      Swig::DirectorMethodException::raise("Error detected when calling 'GCodeInterpreter.PC_CaptureData'");
     }
   }
   int swig_val;
@@ -40662,6 +40695,148 @@ fail:
 }
 
 
+SWIGINTERN int _wrap_new_KapBuf(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  KapHdr_t *arg1 = (KapHdr_t *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj1 = 0 ;
+  KapBuf *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:new_KapBuf",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj1, &argp1,SWIGTYPE_p_KapHdr_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_KapBuf" "', argument " "1"" of type '" "KapHdr_t *""'"); 
+  }
+  arg1 = reinterpret_cast< KapHdr_t * >(argp1);
+  result = (KapBuf *)new KapBuf(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_KapBuf, SWIG_BUILTIN_INIT |  0 );
+  return resultobj == Py_None ? -1 : 0;
+fail:
+  return -1;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_KapBuf(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  KapBuf *arg1 = (KapBuf *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_KapBuf, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_KapBuf" "', argument " "1"" of type '" "KapBuf *""'"); 
+  }
+  arg1 = reinterpret_cast< KapBuf * >(argp1);
+  delete arg1;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_KapBuf_kh_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  KapBuf *arg1 = (KapBuf *) 0 ;
+  KapHdr_t *arg2 = (KapHdr_t *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:KapBuf_kh_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_KapBuf, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "KapBuf_kh_set" "', argument " "1"" of type '" "KapBuf *""'"); 
+  }
+  arg1 = reinterpret_cast< KapBuf * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_KapHdr_t, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "KapBuf_kh_set" "', argument " "2"" of type '" "KapHdr_t *""'"); 
+  }
+  arg2 = reinterpret_cast< KapHdr_t * >(argp2);
+  if (arg1) (arg1)->kh = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_KapBuf_kh_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  KapBuf *arg1 = (KapBuf *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  KapHdr_t *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_KapBuf, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "KapBuf_kh_get" "', argument " "1"" of type '" "KapBuf *""'"); 
+  }
+  arg1 = reinterpret_cast< KapBuf * >(argp1);
+  result = (KapHdr_t *) ((arg1)->kh);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_KapHdr_t, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_KapBuf_base_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  KapBuf *arg1 = (KapBuf *) 0 ;
+  float *arg2 = (float *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:KapBuf_base_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_KapBuf, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "KapBuf_base_set" "', argument " "1"" of type '" "KapBuf *""'"); 
+  }
+  arg1 = reinterpret_cast< KapBuf * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_float, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "KapBuf_base_set" "', argument " "2"" of type '" "float *""'"); 
+  }
+  arg2 = reinterpret_cast< float * >(argp2);
+  if (arg1) (arg1)->base = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_KapBuf_base_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  KapBuf *arg1 = (KapBuf *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_KapBuf, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "KapBuf_base_get" "', argument " "1"" of type '" "KapBuf *""'"); 
+  }
+  arg1 = reinterpret_cast< KapBuf * >(argp1);
+  result = (float *) ((arg1)->base);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_float, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN int _wrap_new_GCodeInterpreter(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   PyObject *arg1 = (PyObject *) 0 ;
@@ -44481,6 +44656,39 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_PC_CaptureData(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  Swig::Director *director = 0;
+  bool upcall = false;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_PC_CaptureData" "', argument " "1"" of type '" "GCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  director = SWIG_DIRECTOR_CAST(arg1);
+  upcall = (director && (director->swig_get_self()==self));
+  try {
+    if (upcall) {
+      result = (int)(arg1)->GCodeInterpreter::PC_CaptureData();
+    } else {
+      result = (int)(arg1)->PC_CaptureData();
+    }
+  } catch (Swig::DirectorException&) {
+    SWIG_fail;
+  }
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_GCodeInterpreter_SendPQR(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
@@ -44627,7 +44835,7 @@ SWIGINTERN PyObject *_wrap_GCodeInterpreter_GetOnePersistInt(PyObject *self, PyO
   if (!PyArg_ParseTuple(args,(char *)"O:GCodeInterpreter_GetOnePersistInt",&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_GetOnePersistInt" "', argument " "1"" of type '" "GCodeInterpreter *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_GetOnePersistInt" "', argument " "1"" of type '" "GCodeInterpreter const *""'"); 
   }
   arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
@@ -44635,7 +44843,7 @@ SWIGINTERN PyObject *_wrap_GCodeInterpreter_GetOnePersistInt(PyObject *self, PyO
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GCodeInterpreter_GetOnePersistInt" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = static_cast< int >(val2);
-  result = (int)(arg1)->GetOnePersistInt(arg2);
+  result = (int)((GCodeInterpreter const *)arg1)->GetOnePersistInt(arg2);
   resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
@@ -44657,7 +44865,7 @@ SWIGINTERN PyObject *_wrap_GCodeInterpreter_GetOnePersistFloat(PyObject *self, P
   if (!PyArg_ParseTuple(args,(char *)"O:GCodeInterpreter_GetOnePersistFloat",&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_GetOnePersistFloat" "', argument " "1"" of type '" "GCodeInterpreter *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_GetOnePersistFloat" "', argument " "1"" of type '" "GCodeInterpreter const *""'"); 
   }
   arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
@@ -44665,7 +44873,7 @@ SWIGINTERN PyObject *_wrap_GCodeInterpreter_GetOnePersistFloat(PyObject *self, P
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GCodeInterpreter_GetOnePersistFloat" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = static_cast< int >(val2);
-  result = (float)(arg1)->GetOnePersistFloat(arg2);
+  result = (float)((GCodeInterpreter const *)arg1)->GetOnePersistFloat(arg2);
   resultobj = SWIG_From_float(static_cast< float >(result));
   return resultobj;
 fail:
@@ -44687,7 +44895,7 @@ SWIGINTERN PyObject *_wrap_GCodeInterpreter_GetOnePersistDouble(PyObject *self, 
   if (!PyArg_ParseTuple(args,(char *)"O:GCodeInterpreter_GetOnePersistDouble",&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_GetOnePersistDouble" "', argument " "1"" of type '" "GCodeInterpreter *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_GetOnePersistDouble" "', argument " "1"" of type '" "GCodeInterpreter const *""'"); 
   }
   arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
@@ -44695,7 +44903,7 @@ SWIGINTERN PyObject *_wrap_GCodeInterpreter_GetOnePersistDouble(PyObject *self, 
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GCodeInterpreter_GetOnePersistDouble" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = static_cast< int >(val2);
-  result = (double)(arg1)->GetOnePersistDouble(arg2);
+  result = (double)((GCodeInterpreter const *)arg1)->GetOnePersistDouble(arg2);
   resultobj = SWIG_From_double(static_cast< double >(result));
   return resultobj;
 fail:
@@ -44716,6 +44924,7 @@ SWIGINTERN PyObject *_wrap_GCodeInterpreter_SetOnePersistInt(PyObject *self, PyO
   int ecode3 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
+  int result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:GCodeInterpreter_SetOnePersistInt",&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
@@ -44733,8 +44942,8 @@ SWIGINTERN PyObject *_wrap_GCodeInterpreter_SetOnePersistInt(PyObject *self, PyO
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "GCodeInterpreter_SetOnePersistInt" "', argument " "3"" of type '" "int""'");
   } 
   arg3 = static_cast< int >(val3);
-  (arg1)->SetOnePersistInt(arg2,arg3);
-  resultobj = SWIG_Py_Void();
+  result = (int)(arg1)->SetOnePersistInt(arg2,arg3);
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -44754,6 +44963,7 @@ SWIGINTERN PyObject *_wrap_GCodeInterpreter_SetOnePersistFloat(PyObject *self, P
   int ecode3 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
+  int result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:GCodeInterpreter_SetOnePersistFloat",&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
@@ -44771,8 +44981,8 @@ SWIGINTERN PyObject *_wrap_GCodeInterpreter_SetOnePersistFloat(PyObject *self, P
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "GCodeInterpreter_SetOnePersistFloat" "', argument " "3"" of type '" "float""'");
   } 
   arg3 = static_cast< float >(val3);
-  (arg1)->SetOnePersistFloat(arg2,arg3);
-  resultobj = SWIG_Py_Void();
+  result = (int)(arg1)->SetOnePersistFloat(arg2,arg3);
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -44792,6 +45002,7 @@ SWIGINTERN PyObject *_wrap_GCodeInterpreter_SetOnePersistDouble(PyObject *self, 
   int ecode3 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
+  int result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:GCodeInterpreter_SetOnePersistDouble",&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
@@ -44809,8 +45020,8 @@ SWIGINTERN PyObject *_wrap_GCodeInterpreter_SetOnePersistDouble(PyObject *self, 
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "GCodeInterpreter_SetOnePersistDouble" "', argument " "3"" of type '" "double""'");
   } 
   arg3 = static_cast< double >(val3);
-  (arg1)->SetOnePersistDouble(arg2,arg3);
-  resultobj = SWIG_Py_Void();
+  result = (int)(arg1)->SetOnePersistDouble(arg2,arg3);
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -45492,6 +45703,585 @@ SWIGINTERN PyObject *_wrap_GCodeInterpreter_SetHashvars(PyObject *self, PyObject
   }
   (arg1)->SetHashvars(arg2,arg3);
   resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_ResetCapture(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_ResetCapture" "', argument " "1"" of type '" "GCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  (arg1)->ResetCapture();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_StartCapture__SWIG_0(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  int val4 ;
+  int ecode4 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:GCodeInterpreter_StartCapture",&obj1,&obj2,&obj3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_StartCapture" "', argument " "1"" of type '" "GCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GCodeInterpreter_StartCapture" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "GCodeInterpreter_StartCapture" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
+  ecode4 = SWIG_AsVal_int(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "GCodeInterpreter_StartCapture" "', argument " "4"" of type '" "int""'");
+  } 
+  arg4 = static_cast< int >(val4);
+  result = (int)(arg1)->StartCapture(arg2,arg3,arg4);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_StartCapture__SWIG_1(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:GCodeInterpreter_StartCapture",&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_StartCapture" "', argument " "1"" of type '" "GCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GCodeInterpreter_StartCapture" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "GCodeInterpreter_StartCapture" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
+  result = (int)(arg1)->StartCapture(arg2,arg3);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_StartCapture(PyObject *self, PyObject *args) {
+  int argc;
+  PyObject *argv[5];
+  int ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? (int)PyObject_Length(args) : 0;
+  argv[0] = self;
+  for (ii = 0; (ii < 3) && (ii < argc); ii++) {
+    argv[ii + 1] = PyTuple_GET_ITEM(args,ii);
+  }
+  argc++;
+  if (argc == 3) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_GCodeInterpreter, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_int(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_GCodeInterpreter_StartCapture__SWIG_1(self, args);
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_GCodeInterpreter, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_int(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          {
+            int res = SWIG_AsVal_int(argv[3], NULL);
+            _v = SWIG_CheckState(res);
+          }
+          if (_v) {
+            return _wrap_GCodeInterpreter_StartCapture__SWIG_0(self, args);
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'GCodeInterpreter_StartCapture'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    GCodeInterpreter::StartCapture(int,int,int)\n"
+    "    GCodeInterpreter::StartCapture(int,int)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_ExtendCapture(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GCodeInterpreter_ExtendCapture",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_ExtendCapture" "', argument " "1"" of type '" "GCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GCodeInterpreter_ExtendCapture" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  result = (int)(arg1)->ExtendCapture(arg2);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_StopCapture(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_StopCapture" "', argument " "1"" of type '" "GCodeInterpreter *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  result = (int)(arg1)->StopCapture();
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_GetNumBuffers(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_GetNumBuffers" "', argument " "1"" of type '" "GCodeInterpreter const *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  result = (int)((GCodeInterpreter const *)arg1)->GetNumBuffers();
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_GetCaptureRunning(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_GetCaptureRunning" "', argument " "1"" of type '" "GCodeInterpreter const *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  result = (int)((GCodeInterpreter const *)arg1)->GetCaptureRunning();
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_GetCaptureDone(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_GetCaptureDone" "', argument " "1"" of type '" "GCodeInterpreter const *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  result = (bool)((GCodeInterpreter const *)arg1)->GetCaptureDone();
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_GetCaptureVecSize(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GCodeInterpreter_GetCaptureVecSize",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_GetCaptureVecSize" "', argument " "1"" of type '" "GCodeInterpreter const *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GCodeInterpreter_GetCaptureVecSize" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  result = (int)((GCodeInterpreter const *)arg1)->GetCaptureVecSize(arg2);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_GetCaptureNumRecs(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GCodeInterpreter_GetCaptureNumRecs",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_GetCaptureNumRecs" "', argument " "1"" of type '" "GCodeInterpreter const *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GCodeInterpreter_GetCaptureNumRecs" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  result = (int)((GCodeInterpreter const *)arg1)->GetCaptureNumRecs(arg2);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_GetCapture(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  floatvec result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GCodeInterpreter_GetCapture",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_GetCapture" "', argument " "1"" of type '" "GCodeInterpreter const *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GCodeInterpreter_GetCapture" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  result = ((GCodeInterpreter const *)arg1)->GetCapture(arg2);
+  resultobj = swig::from(static_cast< std::vector<double,std::allocator< double > > >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_GetCaptureSequence(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GCodeInterpreter_GetCaptureSequence",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_GetCaptureSequence" "', argument " "1"" of type '" "GCodeInterpreter const *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GCodeInterpreter_GetCaptureSequence" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  result = (int)((GCodeInterpreter const *)arg1)->GetCaptureSequence(arg2);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_GetCaptureTimestamp(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GCodeInterpreter_GetCaptureTimestamp",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_GetCaptureTimestamp" "', argument " "1"" of type '" "GCodeInterpreter const *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GCodeInterpreter_GetCaptureTimestamp" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  result = (double)((GCodeInterpreter const *)arg1)->GetCaptureTimestamp(arg2);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_GetCaptureType(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GCodeInterpreter_GetCaptureType",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_GetCaptureType" "', argument " "1"" of type '" "GCodeInterpreter const *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GCodeInterpreter_GetCaptureType" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  result = (int)((GCodeInterpreter const *)arg1)->GetCaptureType(arg2);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_GetCaptureGuessInterval(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GCodeInterpreter_GetCaptureGuessInterval",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_GetCaptureGuessInterval" "', argument " "1"" of type '" "GCodeInterpreter const *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GCodeInterpreter_GetCaptureGuessInterval" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  result = (double)((GCodeInterpreter const *)arg1)->GetCaptureGuessInterval(arg2);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_GetCaptureComponentType(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:GCodeInterpreter_GetCaptureComponentType",&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_GetCaptureComponentType" "', argument " "1"" of type '" "GCodeInterpreter const *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GCodeInterpreter_GetCaptureComponentType" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "GCodeInterpreter_GetCaptureComponentType" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
+  result = (int)((GCodeInterpreter const *)arg1)->GetCaptureComponentType(arg2,arg3);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GCodeInterpreter_GetCaptureComponentAxis(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GCodeInterpreter *arg1 = (GCodeInterpreter *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:GCodeInterpreter_GetCaptureComponentAxis",&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_GCodeInterpreter, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GCodeInterpreter_GetCaptureComponentAxis" "', argument " "1"" of type '" "GCodeInterpreter const *""'"); 
+  }
+  arg1 = reinterpret_cast< GCodeInterpreter * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GCodeInterpreter_GetCaptureComponentAxis" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "GCodeInterpreter_GetCaptureComponentAxis" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
+  result = (int)((GCodeInterpreter const *)arg1)->GetCaptureComponentAxis(arg2,arg3);
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -49442,6 +50232,203 @@ static PyHeapTypeObject SwigPyBuiltin__KMotion_type = {
 
 SWIGINTERN SwigPyClientData SwigPyBuiltin__KMotion_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin__KMotion_type};
 
+SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_KapBuf)
+static SwigPyGetSet KapBuf_base_getset = { _wrap_KapBuf_base_get, _wrap_KapBuf_base_set };
+static SwigPyGetSet KapBuf_kh_getset = { _wrap_KapBuf_kh_get, _wrap_KapBuf_kh_set };
+SWIGINTERN PyGetSetDef SwigPyBuiltin__KapBuf_getset[] = {
+    { (char*) "base", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"KapBuf.base", (void*) &KapBuf_base_getset }
+,
+    { (char*) "kh", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"KapBuf.kh", (void*) &KapBuf_kh_getset }
+,
+    {NULL, NULL, NULL, NULL, NULL} /* Sentinel */
+};
+
+SWIGINTERN PyObject *
+SwigPyBuiltin__KapBuf_richcompare(PyObject *self, PyObject *other, int op) {
+  PyObject *result = NULL;
+  PyObject *tuple = PyTuple_New(1);
+  assert(tuple);
+  PyTuple_SET_ITEM(tuple, 0, other);
+  Py_XINCREF(other);
+  if (!result) {
+    if (SwigPyObject_Check(self) && SwigPyObject_Check(other)) {
+      result = SwigPyObject_richcompare((SwigPyObject *)self, (SwigPyObject *)other, op);
+    } else {
+      result = Py_NotImplemented;
+      Py_INCREF(result);
+    }
+  }
+  Py_DECREF(tuple);
+  return result;
+}
+
+SWIGINTERN PyMethodDef SwigPyBuiltin__KapBuf_methods[] = {
+  { NULL, NULL, 0, NULL } /* Sentinel */
+};
+
+static PyHeapTypeObject SwigPyBuiltin__KapBuf_type = {
+  {
+#if PY_VERSION_HEX >= 0x03000000
+    PyVarObject_HEAD_INIT(NULL, 0)
+#else
+    PyObject_HEAD_INIT(NULL)
+    0,                                        /* ob_size */
+#endif
+    "kmotion.KapBuf",                         /* tp_name */
+    sizeof(SwigPyObject),                     /* tp_basicsize */
+    0,                                        /* tp_itemsize */
+    (destructor) _wrap_delete_KapBuf_closure, /* tp_dealloc */
+    (printfunc) 0,                            /* tp_print */
+    (getattrfunc) 0,                          /* tp_getattr */
+    (setattrfunc) 0,                          /* tp_setattr */
+#if PY_VERSION_HEX >= 0x03000000
+    0,                                        /* tp_compare */
+#else
+    (cmpfunc) 0,                              /* tp_compare */
+#endif
+    (reprfunc) 0,                             /* tp_repr */
+    &SwigPyBuiltin__KapBuf_type.as_number,      /* tp_as_number */
+    &SwigPyBuiltin__KapBuf_type.as_sequence,    /* tp_as_sequence */
+    &SwigPyBuiltin__KapBuf_type.as_mapping,     /* tp_as_mapping */
+    (hashfunc) 0,                             /* tp_hash */
+    (ternaryfunc) 0,                          /* tp_call */
+    (reprfunc) 0,                             /* tp_str */
+    (getattrofunc) 0,                         /* tp_getattro */
+    (setattrofunc) 0,                         /* tp_setattro */
+    &SwigPyBuiltin__KapBuf_type.as_buffer,      /* tp_as_buffer */
+#if PY_VERSION_HEX >= 0x03000000
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,   /* tp_flags */
+#else
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+#endif
+    "::KapBuf",                               /* tp_doc */
+    (traverseproc) 0,                         /* tp_traverse */
+    (inquiry) 0,                              /* tp_clear */
+    (richcmpfunc) SwigPyBuiltin__KapBuf_richcompare, /* feature:python:tp_richcompare */
+    0,                                        /* tp_weaklistoffset */
+    (getiterfunc) 0,                          /* tp_iter */
+    (iternextfunc) 0,                         /* tp_iternext */
+    SwigPyBuiltin__KapBuf_methods,            /* tp_methods */
+    0,                                        /* tp_members */
+    SwigPyBuiltin__KapBuf_getset,             /* tp_getset */
+    0,                                        /* tp_base */
+    0,                                        /* tp_dict */
+    (descrgetfunc) 0,                         /* tp_descr_get */
+    (descrsetfunc) 0,                         /* tp_descr_set */
+    (Py_ssize_t)offsetof(SwigPyObject, dict), /* tp_dictoffset */
+    (initproc) _wrap_new_KapBuf,              /* tp_init */
+    (allocfunc) 0,                            /* tp_alloc */
+    (newfunc) 0,                              /* tp_new */
+    (freefunc) 0,                             /* tp_free */
+    (inquiry) 0,                              /* tp_is_gc */
+    (PyObject*) 0,                            /* tp_bases */
+    (PyObject*) 0,                            /* tp_mro */
+    (PyObject*) 0,                            /* tp_cache */
+    (PyObject*) 0,                            /* tp_subclasses */
+    (PyObject*) 0,                            /* tp_weaklist */
+    (destructor) 0,                           /* tp_del */
+#if PY_VERSION_HEX >= 0x02060000
+    (int) 0,                                  /* tp_version_tag */
+#endif
+  },
+  {
+    (binaryfunc) 0,                           /* nb_add */
+    (binaryfunc) 0,                           /* nb_subtract */
+    (binaryfunc) 0,                           /* nb_multiply */
+#if PY_VERSION_HEX < 0x03000000
+    (binaryfunc) 0,                           /* nb_divide */
+#endif
+    (binaryfunc) 0,                           /* nb_remainder */
+    (binaryfunc) 0,                           /* nb_divmod */
+    (ternaryfunc) 0,                          /* nb_power */
+    (unaryfunc) 0,                            /* nb_negative */
+    (unaryfunc) 0,                            /* nb_positive */
+    (unaryfunc) 0,                            /* nb_absolute */
+    (inquiry) 0,                              /* nb_nonzero */
+    (unaryfunc) 0,                            /* nb_invert */
+    (binaryfunc) 0,                           /* nb_lshift */
+    (binaryfunc) 0,                           /* nb_rshift */
+    (binaryfunc) 0,                           /* nb_and */
+    (binaryfunc) 0,                           /* nb_xor */
+    (binaryfunc) 0,                           /* nb_or */
+#if PY_VERSION_HEX < 0x03000000
+    (coercion) 0,                             /* nb_coerce */
+#endif
+    (unaryfunc) 0,                            /* nb_int */
+#if PY_VERSION_HEX >= 0x03000000
+    (void*) 0,                                /* nb_reserved */
+#else
+    (unaryfunc) 0,                            /* nb_long */
+#endif
+    (unaryfunc) 0,                            /* nb_float */
+#if PY_VERSION_HEX < 0x03000000
+    (unaryfunc) 0,                            /* nb_oct */
+    (unaryfunc) 0,                            /* nb_hex */
+#endif
+    (binaryfunc) 0,                           /* nb_inplace_add */
+    (binaryfunc) 0,                           /* nb_inplace_subtract */
+    (binaryfunc) 0,                           /* nb_inplace_multiply */
+#if PY_VERSION_HEX < 0x03000000
+    (binaryfunc) 0,                           /* nb_inplace_divide */
+#endif
+    (binaryfunc) 0,                           /* nb_inplace_remainder */
+    (ternaryfunc) 0,                          /* nb_inplace_power */
+    (binaryfunc) 0,                           /* nb_inplace_lshift */
+    (binaryfunc) 0,                           /* nb_inplace_rshift */
+    (binaryfunc) 0,                           /* nb_inplace_and */
+    (binaryfunc) 0,                           /* nb_inplace_xor */
+    (binaryfunc) 0,                           /* nb_inplace_or */
+    (binaryfunc) 0,                           /* nb_floor_divide */
+    (binaryfunc) 0,                           /* nb_true_divide */
+    (binaryfunc) 0,                           /* nb_inplace_floor_divide */
+    (binaryfunc) 0,                           /* nb_inplace_true_divide */
+#if PY_VERSION_HEX >= 0x02050000
+    (unaryfunc) 0,                            /* nb_index */
+#endif
+  },
+  {
+    (lenfunc) 0,                              /* mp_length */
+    (binaryfunc) 0,                           /* mp_subscript */
+    (objobjargproc) 0,                        /* mp_ass_subscript */
+  },
+  {
+    (lenfunc) 0,                              /* sq_length */
+    (binaryfunc) 0,                           /* sq_concat */
+    (ssizeargfunc) 0,                         /* sq_repeat */
+    (ssizeargfunc) 0,                         /* sq_item */
+#if PY_VERSION_HEX >= 0x03000000
+    (void*) 0,                                /* was_sq_slice */
+#else
+    (ssizessizeargfunc) 0,                    /* sq_slice */
+#endif
+    (ssizeobjargproc) 0,                      /* sq_ass_item */
+#if PY_VERSION_HEX >= 0x03000000
+    (void*) 0,                                /* was_sq_ass_slice */
+#else
+    (ssizessizeobjargproc) 0,                 /* sq_ass_slice */
+#endif
+    (objobjproc) 0,                           /* sq_contains */
+    (binaryfunc) 0,                           /* sq_inplace_concat */
+    (ssizeargfunc) 0,                         /* sq_inplace_repeat */
+  },
+  {
+#if PY_VERSION_HEX < 0x03000000
+    (readbufferproc) 0,                       /* bf_getreadbuffer */
+    (writebufferproc) 0,                      /* bf_getwritebuffer */
+    (segcountproc) 0,                         /* bf_getsegcount */
+    (charbufferproc) 0,                       /* bf_getcharbuffer */
+#endif
+#if PY_VERSION_HEX >= 0x02060000
+    (getbufferproc) 0,                        /* bf_getbuffer */
+    (releasebufferproc) 0,                    /* bf_releasebuffer */
+#endif
+  },
+    (PyObject*) 0,                            /* ht_name */
+    (PyObject*) 0,                            /* ht_slots */
+};
+
+SWIGINTERN SwigPyClientData SwigPyBuiltin__KapBuf_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin__KapBuf_type};
+
 SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_GCodeInterpreter)
 SWIGINTERN PyGetSetDef SwigPyBuiltin__GCodeInterpreter_getset[] = {
     {NULL, NULL, NULL, NULL, NULL} /* Sentinel */
@@ -49551,6 +50538,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin__GCodeInterpreter_methods[] = {
   { "PC_NBMsgBox", (PyCFunction) _wrap_GCodeInterpreter_PC_NBMsgBox, METH_VARARGS, (char*) "" },
   { "PC_NBMDI", (PyCFunction) _wrap_GCodeInterpreter_PC_NBMDI, METH_VARARGS, (char*) "" },
   { "PC_NBInputBox", (PyCFunction) _wrap_GCodeInterpreter_PC_NBInputBox, METH_VARARGS, (char*) "" },
+  { "PC_CaptureData", (PyCFunction) _wrap_GCodeInterpreter_PC_CaptureData, METH_VARARGS, (char*) "" },
   { "SendPQR", (PyCFunction) _wrap_GCodeInterpreter_SendPQR, METH_VARARGS, (char*) "" },
   { "SendToolSlot", (PyCFunction) _wrap_GCodeInterpreter_SendToolSlot, METH_VARARGS, (char*) "" },
   { "SyncPosition", (PyCFunction) _wrap_GCodeInterpreter_SyncPosition, METH_VARARGS, (char*) "" },
@@ -49580,6 +50568,22 @@ SWIGINTERN PyMethodDef SwigPyBuiltin__GCodeInterpreter_methods[] = {
   { "GetCurrent", (PyCFunction) _wrap_GCodeInterpreter_GetCurrent, METH_VARARGS, (char*) "" },
   { "GetHashvars", (PyCFunction) _wrap_GCodeInterpreter_GetHashvars, METH_VARARGS, (char*) "" },
   { "SetHashvars", (PyCFunction) _wrap_GCodeInterpreter_SetHashvars, METH_VARARGS, (char*) "" },
+  { "ResetCapture", (PyCFunction) _wrap_GCodeInterpreter_ResetCapture, METH_VARARGS, (char*) "" },
+  { "StartCapture", (PyCFunction) _wrap_GCodeInterpreter_StartCapture, METH_VARARGS, (char*) "" },
+  { "ExtendCapture", (PyCFunction) _wrap_GCodeInterpreter_ExtendCapture, METH_VARARGS, (char*) "" },
+  { "StopCapture", (PyCFunction) _wrap_GCodeInterpreter_StopCapture, METH_VARARGS, (char*) "" },
+  { "GetNumBuffers", (PyCFunction) _wrap_GCodeInterpreter_GetNumBuffers, METH_VARARGS, (char*) "" },
+  { "GetCaptureRunning", (PyCFunction) _wrap_GCodeInterpreter_GetCaptureRunning, METH_VARARGS, (char*) "" },
+  { "GetCaptureDone", (PyCFunction) _wrap_GCodeInterpreter_GetCaptureDone, METH_VARARGS, (char*) "" },
+  { "GetCaptureVecSize", (PyCFunction) _wrap_GCodeInterpreter_GetCaptureVecSize, METH_VARARGS, (char*) "" },
+  { "GetCaptureNumRecs", (PyCFunction) _wrap_GCodeInterpreter_GetCaptureNumRecs, METH_VARARGS, (char*) "" },
+  { "GetCapture", (PyCFunction) _wrap_GCodeInterpreter_GetCapture, METH_VARARGS, (char*) "" },
+  { "GetCaptureSequence", (PyCFunction) _wrap_GCodeInterpreter_GetCaptureSequence, METH_VARARGS, (char*) "" },
+  { "GetCaptureTimestamp", (PyCFunction) _wrap_GCodeInterpreter_GetCaptureTimestamp, METH_VARARGS, (char*) "" },
+  { "GetCaptureType", (PyCFunction) _wrap_GCodeInterpreter_GetCaptureType, METH_VARARGS, (char*) "" },
+  { "GetCaptureGuessInterval", (PyCFunction) _wrap_GCodeInterpreter_GetCaptureGuessInterval, METH_VARARGS, (char*) "" },
+  { "GetCaptureComponentType", (PyCFunction) _wrap_GCodeInterpreter_GetCaptureComponentType, METH_VARARGS, (char*) "" },
+  { "GetCaptureComponentAxis", (PyCFunction) _wrap_GCodeInterpreter_GetCaptureComponentAxis, METH_VARARGS, (char*) "" },
   { "__disown__", (PyCFunction) Swig::Director::swig_pyobj_disown< GCodeInterpreter >, METH_NOARGS, "" },
   { NULL, NULL, 0, NULL } /* Sentinel */
 };
@@ -49774,6 +50778,8 @@ static swig_type_info _swigt__p_DISTANCE_MODE = {"_p_DISTANCE_MODE", "enum DISTA
 static swig_type_info _swigt__p_FILE = {"_p_FILE", "FILE *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GCodeInterpreter = {"_p_GCodeInterpreter", "GCodeInterpreter *", 0, 0, (void*)&SwigPyBuiltin__GCodeInterpreter_clientdata, 0};
 static swig_type_info _swigt__p_KMotion = {"_p_KMotion", "KMotion *", 0, 0, (void*)&SwigPyBuiltin__KMotion_clientdata, 0};
+static swig_type_info _swigt__p_KapBuf = {"_p_KapBuf", "KapBuf *", 0, 0, (void*)&SwigPyBuiltin__KapBuf_clientdata, 0};
+static swig_type_info _swigt__p_KapHdr_t = {"_p_KapHdr_t", "KapHdr_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_MAIN_STATUS = {"_p_MAIN_STATUS", "MAIN_STATUS *", 0, 0, (void*)&SwigPyBuiltin__MAIN_STATUS_clientdata, 0};
 static swig_type_info _swigt__p_MCODE_ACTION = {"_p_MCODE_ACTION", "MCODE_ACTION *", 0, 0, (void*)&SwigPyBuiltin__MCODE_ACTION_clientdata, 0};
 static swig_type_info _swigt__p_MOTION_PARAMS = {"_p_MOTION_PARAMS", "MOTION_PARAMS *", 0, 0, (void*)&SwigPyBuiltin__MOTION_PARAMS_clientdata, 0};
@@ -49832,6 +50838,8 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_FILE,
   &_swigt__p_GCodeInterpreter,
   &_swigt__p_KMotion,
+  &_swigt__p_KapBuf,
+  &_swigt__p_KapHdr_t,
   &_swigt__p_MAIN_STATUS,
   &_swigt__p_MCODE_ACTION,
   &_swigt__p_MOTION_PARAMS,
@@ -49890,6 +50898,8 @@ static swig_cast_info _swigc__p_DISTANCE_MODE[] = {  {&_swigt__p_DISTANCE_MODE, 
 static swig_cast_info _swigc__p_FILE[] = {  {&_swigt__p_FILE, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_GCodeInterpreter[] = {  {&_swigt__p_GCodeInterpreter, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_KMotion[] = {  {&_swigt__p_KMotion, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_KapBuf[] = {  {&_swigt__p_KapBuf, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_KapHdr_t[] = {  {&_swigt__p_KapHdr_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_MAIN_STATUS[] = {  {&_swigt__p_MAIN_STATUS, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_MCODE_ACTION[] = {  {&_swigt__p_MCODE_ACTION, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_MOTION_PARAMS[] = {  {&_swigt__p_MOTION_PARAMS, 0, 0, 0},{0, 0, 0, 0}};
@@ -49948,6 +50958,8 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_FILE,
   _swigc__p_GCodeInterpreter,
   _swigc__p_KMotion,
+  _swigc__p_KapBuf,
+  _swigc__p_KapHdr_t,
   _swigc__p_MAIN_STATUS,
   _swigc__p_MCODE_ACTION,
   _swigc__p_MOTION_PARAMS,
@@ -50918,6 +51930,7 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_GET_VARS_G",SWIG_From_int(static_cast< int >(57)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_SET_VARS_G",SWIG_From_int(static_cast< int >(58)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_NB_MSG_DISMISS",SWIG_From_int(static_cast< int >(59)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_KAP_READY",SWIG_From_int(static_cast< int >(60)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_PERSIST",SWIG_From_int(static_cast< int >(100)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "N_PC_COMM_PERSIST",SWIG_From_int(static_cast< int >(8)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "PC_COMM_CSS_MODE",SWIG_From_int(static_cast< int >(110)));
@@ -51470,6 +52483,29 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "IDIGNORE",SWIG_From_int(static_cast< int >(5)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "IDYES",SWIG_From_int(static_cast< int >(6)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "IDNO",SWIG_From_int(static_cast< int >(7)));
+  
+  /* type '::KapBuf' */
+  builtin_pytype = (PyTypeObject *)&SwigPyBuiltin__KapBuf_type;
+  builtin_pytype->tp_dict = d = PyDict_New();
+  SwigPyBuiltin_SetMetaType(builtin_pytype, metatype);
+  builtin_pytype->tp_new = PyType_GenericNew;
+  builtin_base_count = 0;
+  builtin_bases[builtin_base_count] = NULL;
+  SwigPyBuiltin_InitBases(builtin_pytype, builtin_bases);
+  PyDict_SetItemString(d, "this", this_descr);
+  PyDict_SetItemString(d, "thisown", thisown_descr);
+  if (PyType_Ready(builtin_pytype) < 0) {
+    PyErr_SetString(PyExc_TypeError, "Could not create type 'KapBuf'.");
+#if PY_VERSION_HEX >= 0x03000000
+    return NULL;
+#else
+    return;
+#endif
+  }
+  Py_INCREF(builtin_pytype);
+  PyModule_AddObject(m, "KapBuf", (PyObject*) builtin_pytype);
+  SwigPyBuiltin_AddPublicSymbol(public_interface, "KapBuf");
+  d = md;
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "POLL_G_M_CODES",SWIG_From_int(static_cast< int >(POLL_G_M_CODES)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "POLL_OFFSETS",SWIG_From_int(static_cast< int >(POLL_OFFSETS)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "POLL_MISC_MODES",SWIG_From_int(static_cast< int >(POLL_MISC_MODES)));

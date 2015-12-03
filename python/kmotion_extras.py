@@ -65,6 +65,16 @@ class ConsoleMessage(Message):
     def get_severity(self):
         return "I"
 
+class CaptureMessage(Message):
+    def __init__(self):
+        super(CaptureMessage, self).__init__(-1, '', strip=False)
+    def get_type(self):
+        return "capture"
+    def get_log_prefix(self):
+        return "K"
+    def get_severity(self):
+        return "K"
+
 class StatusMessage(Message):   # from pc cmd 50
     clrmap = { '!' : "red", '$' : "black", '#' : "#AA6600", '?' : "#99bb33" }
     def __init__(self, msg, kflop_thread=None):
@@ -1462,6 +1472,11 @@ class Interpreter(kmotion.GCodeInterpreter):
             return 0
         except:
             return -1
+            
+    # Received a capture data buffer from kflop (running capture program).
+    def PC_CaptureData(self):
+        self.k.add_message(CaptureMessage())
+        return 0
         
     def HandleFloatEvt(self, evt_code, newval, oldval):
         """Invoked when Poll() is called (e.g. from main app idle processing).

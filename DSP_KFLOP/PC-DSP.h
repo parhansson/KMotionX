@@ -269,6 +269,10 @@
 #define PC_COMM_NB_MSG_DISMISS  59      // Dismiss non-blocking message box on host.  persist+1=equivalent
                                         // button response (e.g. IDOK or IDCANCEL; or 0 for an undetermined response)
 
+// Capture buffer status.  capture.c program (typ. in thread 6) notifies PC when either side of ping-pong buffer
+// is ready.  Use non-blocking protocol. 
+// Result data is at gather buffer word offset specified by persist+1.
+#define PC_COMM_KAP_READY       60      // Capture buffer ready
 
 #define PC_COMM_PERSIST 100  // First Persist Variable that is uploaded in status
 #define N_PC_COMM_PERSIST 8  // Number of Persist Variables that are uploaded in status
