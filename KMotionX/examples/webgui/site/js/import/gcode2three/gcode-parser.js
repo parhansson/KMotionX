@@ -9,18 +9,18 @@ var GCodeParserState = {
   PARAM_VAL: 2,
   SKIP_VAL: 3
 };
-function GCodeParser(codeHandlers, paramHandler, defaultHandler) {
+function GCodeParser(codeHandler, paramHandler) {
   
-  this.codeHandler = {
-    codeHandlers: codeHandlers || {},
-    handle: function(cmd,line) {
-      var handler = this.codeHandlers[cmd.name] || this.codeHandlers[cmd.code] || defaultHandler || function() {};
-      handler(cmd, line);
-    }
+  paramHandler = paramHandler || function() {};
+  codeHandler = codeHandler || function() {};
+
+  this.handleCode = function(cmd,line) {
+    codeHandler({cmd:cmd,line:line});
   }
+  this.handleParam = function(values, line){
+    paramHandler({params:values,line:line});
   
-  this.paramHandler = paramHandler || function() {
-  };
+  }
 
   // Search for codes without space between them
   this.skipCodes = {
@@ -66,7 +66,7 @@ GCodeParser.prototype.flush = function(line) {
   if (this.cmd !== undefined) {
     this.cmd.done();
     //this.handle();
-    this.codeHandler.handle(this.cmd,line);
+    this.handleCode(this.cmd,line);
     // console.info("handle", this.cmd.name);
     delete this.cmd;
   }
@@ -76,7 +76,7 @@ GCodeParser.prototype.flush = function(line) {
     }
     var values = this.values;
     
-    this.paramHandler(this.values, line);
+    this.handleParam(this.values, line);
     // console.info("params ", JSON.stringify(this.values));
     delete this.values;
   }

@@ -28,12 +28,17 @@
       if(socketWorker){
         return;
       }
-
-      socketWorker = new Worker("js/backend/socket-worker.js");
-      socketWorker.onmessage = workerMessage;
-      
       var url = 'ws://' + window.location.host + '/ws';
-      socketWorker.postMessage({command:'connect',url:url}) 
+      //socketWorker = new Worker("js/backend/socket-worker.js");
+      //socketWorker.onmessage = workerMessage;
+      KMX.Util.getSingletonWorker("js/backend/socket-worker.js", workerMessage)
+      .then(
+        function(socketWorker) {
+          socketWorker.postMessage({command:'connect',url:url}) 
+        },function(reason){
+          console.error(reason);
+        });
+      
       
       //does not seem to work, at least not in chrome
 //      window.onbeforeunload = function(){

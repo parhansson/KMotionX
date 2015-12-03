@@ -7279,7 +7279,7 @@ var SVGGraphics = (function SVGGraphicsClosure() {
     this.objs = objs;
     this.pendingEOFill = false;
     
-    this.embedFonts = true; //PÄR HANSSON change to true to include css blob urls
+    this.embedFonts = false; //PÄR HANSSON change to true to include css blob urls
     this.embeddedFonts = {};
     this.cssStyle = null;
   }

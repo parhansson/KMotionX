@@ -66,23 +66,13 @@
           transformedDefer.resolve(source);
         } else if (angular.isArrayBuffer(source)) {
           //gcode file do not transform
-          transformedDefer.resolve(ab2str(source));
+          transformedDefer.resolve(KMX.Util.ab2str(source));
         } else {
           transformedDefer.reject("Unsupported source: " + (typeof source));
         }
         
         return transformedDefer.promise;
       }
-  }
-  
-    function ab2str(buf) {
-    var arr = new Uint8Array(buf)
-    var str = "";
-    for(var i=0,l=arr.length; i<l; i++)
-        str += String.fromCharCode(arr[i]);
-    return str;
-    //Call stack too deep on certain browsers
-    //return String.fromCharCode.apply(null, new Uint8Array(buf)); //Uint16Array
   }
   
 })();

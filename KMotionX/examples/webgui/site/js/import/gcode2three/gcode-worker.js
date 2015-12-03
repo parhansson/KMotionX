@@ -1,14 +1,12 @@
 importScripts('gcode-parser.js');
 
-var parser = new GCodeParser();
-parser.codeHandler = {
-    handle: function(cmd,line) {
-      self.postMessage({cmd:cmd,line:line});
-    }
+var parser = new GCodeParser(codeHandler,paramHandler);
+
+function codeHandler(cmdObj) {
+  self.postMessage(cmdObj);
 }
-parser.paramHandler = function(values, line){
-  postMessage({params:values,line:line});
-  
+function paramHandler(paramObj){
+  postMessage(paramObj); 
 }
 function onMessage(event){
   if(event.data.command == 'parse'){

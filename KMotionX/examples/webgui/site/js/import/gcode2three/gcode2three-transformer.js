@@ -14,8 +14,7 @@
     
 	  transformer.register(descriptor);
     
-    var gworker = null;
-    var background = true;
+    var disableWorker = false;//document.URL.startsWith("file");
     
     function transcodeGCode(source){
         var transformedDefer = $q.defer();
@@ -158,53 +157,61 @@
          
        }
   
-       if(background){
-         parseWorker(transformedDefer, gcode);
+       if(disableWorker){
+         if(window.GCodeParser === undefined){
+           KMX.Util.injectScript("js/import/gcode2three/gcode-parser.js").then(function() {
+              parse(transformedDefer, gcode);
+            },function(reason){
+              transformedDefer.reject(reason);
+            });
+         } else {
+           parse(transformedDefer, gcode);
+         }    
        } else {
-         parse(transformedDefer, gcode);
+         parseWorker(transformedDefer, gcode);
        }
        
-       function parseWorker(transformedDefer, gcode){
-         
-         var defer = transformedDefer;
-         if(!gworker){
-           gworker = new Worker("js/import/gcode2three/gcode-worker.js");
-         }
-         gworker.onmessage = function(event) {
+       function parserDataHandler(data){
+            var cmd = data.cmd;
+            var params = data.params;
+            if(cmd){
+              var handler = gcodeHandlers[cmd.name] || gcodeHandlers[cmd.code] || defaultHandler;
+              handler(cmd, data.line);
+            } else if(params){
+              parameterHandler(params, data.line)
+            } else if(data == 'done'){
+              addGeometry();
+              console.timeEnd("parsingAndTransfer");
+              //console.profileEnd();
+              transformedDefer.resolve(group);
+            }
            
-           var cmd = event.data.cmd;
-           var params = event.data.params;
-           if(cmd){
-             var handler = gcodeHandlers[cmd.name] || gcodeHandlers[cmd.code] || defaultHandler;
-             handler(cmd, event.data.line);
-           } else if(params){
-             parameterHandler(params, event.data.line)
-           } else if(event.data == 'done'){
-             addGeometry();
-             console.timeEnd("parsingAndTransfer");
-             //console.profileEnd();
-             defer.resolve(group);
-           }
-         };
-         console.time("parsingAndTransfer");
-         //console.profile();
-        //  var objData =
-        //  {
-        //      command: "parse",
-        //      ab: new ArrayBuffer(100)
-        //      ,i8: new Int8Array(200)
-        //  };
-         //objWorker.postMessage(objData, [objData.ab, objData.i8.buffer]);
+         }
+
+       function parseWorker(defer, gcode){
          
-         gworker.postMessage({command:'parse',gcode:gcode.lines});
+         KMX.Util.getSingletonWorker("js/import/gcode2three/gcode-worker.js", workerEventHandler)
+         .then(
+            function(parserWorker) {
+              console.time("parsingAndTransfer");
+              parserWorker.postMessage({command:'parse',gcode:gcode.lines});
+            },function(reason){
+              transformedDefer.reject(reason);
+            });
+
+         function workerEventHandler(event) {
+           parserDataHandler(event.data);
+         };
+         //console.profile();
        }
        
-       function parse(transformedDefer, gcode){
-         var defer = transformedDefer;
-         var parser = new GCodeParser(gcodeHandlers,parameterHandler,defaultHandler);
-         parser.parse(gcode.lines);
-         addGeometry();
-         defer.resolve(group);
+       function parse(defer, gcode){
+          var handler = function codeHandler(obj) {
+            parserDataHandler(obj);
+          }
+          var parser = new GCodeParser(handler,handler);
+          parser.parse(gcode.lines);
+          parserDataHandler('done');
        }  
     }
       
