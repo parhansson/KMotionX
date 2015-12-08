@@ -22,19 +22,23 @@ KMX.Util = {
 		}
 		return buf;
   	},
-	injectScript: function injectScript(source){
+	injectScript: function injectScript(source, loadedCondition){
 		return new Promise(function(resolve, reject) {
-				
-              var script = document.createElement('script');
-              script.type = 'text/javascript';
-              script.async = true;
-              script.onload = function(){
-                  // remote script has loaded
-                  resolve("GCodeParser script loaded:" + source);
-              };
-			  script.onerror = function() { reject(Error("Load script failed: " + source)); }
-              script.src = source;
-              document.getElementsByTagName('head')[0].appendChild(script);
+			if(loadedCondition === true){
+				//TODO check if script tag is present instead of external loaded condition 
+				resolve("Script already loaded:" + source);
+			} else {
+				var script = document.createElement('script');
+				script.type = 'text/javascript';
+				script.async = true;
+				script.onload = function(){
+					// remote script has loaded
+					resolve("Script loaded:" + source);
+				};
+				script.onerror = function() { reject(Error("Load script failed: " + source)); }
+				script.src = source;
+				document.getElementsByTagName('head')[0].appendChild(script);
+			}				
 
 
 		});

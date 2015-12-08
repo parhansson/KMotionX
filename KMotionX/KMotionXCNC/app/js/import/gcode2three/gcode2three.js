@@ -1,14 +1,15 @@
+//Copyright (c) 2012 Joe Walnes
+//Copyright (c) 2014 par.hansson@gmail.com
 var KMX = KMX || {};
 KMX.Transformers = KMX.Transformers || {};
 KMX.Transformers.gcode2three = {
 
-	//Copyright (c) 2012 Joe Walnes
-    //Copyright (c) 2014 par.hansson@gmail.com
     transform:  function transform(transformedDefer, gcode, disableWorker){
-       var _this = this;
-       var group = new THREE.Group();
-       group.name = 'GCODE';
 
+       // Create the final Object3d to add to the scene
+       var group = new THREE.Group();
+       var lineGeometry = new THREE.Geometry();
+       
        var interpolateColor = new THREE.Color(0x080808);
        var positionColor = new THREE.Color(0xAAAAFF);
        var lineMaterial = new THREE.LineBasicMaterial({
@@ -18,23 +19,30 @@ KMX.Transformers.gcode2three = {
          vertexColors: THREE.FaceColors
        });
        
-       var lastVector = {
-         x: 0,
-         y: 0,
-         z: 0,
-         a: 0,
-         b: 0,
-         c: 0,
-         e: 0,
-         extruding: false
-       };
-       var lastCommand = {
-           code:'NONE',
-           val: -1
-       };
+       group.name = 'GCODE';
+       group.add(new THREE.Line( lineGeometry, lineMaterial ));
+
+       //Bind this since handler is called from worker context 
+       var thisParameterHandler = parameterHandler.bind(this); 
        
-       var scale = 1.0;
-       var absolute = true;
+       var state = {
+          lastVector: {
+            x: 0,
+            y: 0,
+            z: 0,
+            a: 0,
+            b: 0,
+            c: 0,
+            e: 0,
+            extruding: false
+          },
+          lastCommand: {
+              code:'NONE',
+              val: -1
+          },
+          scale: 1.0,
+          absolute: true         
+       };
        
        var gcodeHandlers = {
            M: function() {
@@ -42,35 +50,34 @@ KMX.Transformers.gcode2three = {
            F: function() {
            },
            G: function(cmd, line) {
-             lastCommand = cmd;
+             state.lastCommand = cmd;
            },
            S: function() {
            },
            G20: function(cmd, line) {
-             scale = 25.4; //Inches
+             state.scale = 25.4; //Inches
            },
            G21: function(cmd, line) {
-             scale = 1.0; //mm
+             state.scale = 1.0; //mm
            },
            G90: function(cmd, line) {
              //absolute
-             absolute = true;
+             state.absolute = true;
            },
            G91: function(cmd, line) {
              //relative
-             absolute = false;
+             state.absolute = false;
            }
-         };
-  
-       var lineGeometry = new THREE.Geometry();
+        };
        
-       // Create the final Object3d to add to the scene
-       group.add(new THREE.Line( lineGeometry, lineMaterial ));
-
-
        
+         
        
        function parameterHandler(args, line) {
+         var lastCommand = state.lastCommand;
+         var lastVector = state.lastVector;
+         var scale = state.scale;
+         var absolute = state.absolute;
          //Only handle G codes 1-3
          if(lastCommand.code != 'G' || lastCommand.val < 0 || lastCommand.val >  3) return;
          var currentVector;
@@ -83,7 +90,6 @@ KMX.Transformers.gcode2three = {
                b: args.B !== undefined ? args.B*scale : lastVector.b,
                c: args.C !== undefined ? args.C*scale : lastVector.c
            };
-           
          } else {
            currentVector = {
                x: args.X !== undefined ? args.X*scale+lastVector.x : lastVector.x,
@@ -97,54 +103,48 @@ KMX.Transformers.gcode2three = {
          }
   
          if(lastCommand.val == 0 ){
-           lastVector = _this.createLine(lastCommand, args, lastVector, currentVector,lineGeometry, positionColor);
+           lastVector = this.createLine(lastCommand, args, lastVector, currentVector,lineGeometry, positionColor);
          } else if(lastCommand.val == 1 ){
-           lastVector = _this.createLine(lastCommand, args, lastVector, currentVector,lineGeometry,interpolateColor);
+           lastVector = this.createLine(lastCommand, args, lastVector, currentVector,lineGeometry,interpolateColor);
            //lastVector = this.createLinePrinter(lastCommand, args, lastVector, currentVector,geometry);
          } else if(lastCommand.val == 2){
-           lastVector = _this.createArc(lastCommand, args, lastVector, currentVector,lineGeometry, interpolateColor,true);
+           lastVector = this.createArc(lastCommand, args, lastVector, currentVector,lineGeometry, interpolateColor,true);
          } else if(lastCommand.val == 3){
-           lastVector = _this.createArc(lastCommand, args, lastVector, currentVector,lineGeometry, interpolateColor,false);
+           lastVector = this.createArc(lastCommand, args, lastVector, currentVector,lineGeometry, interpolateColor,false);
          }
-         lastVector = currentVector;
+         state.lastVector = currentVector;
        };
-       
-       function defaultHandler(args, info) {
-         console.info('Unknown command:', args.name, args, info);
-       };
-      
-       function addGeometry(){
-         //console.info("Nr of vertices", ext);
-         //object.add(new THREE.Line(geometry, lineMaterial/*, THREE.LinePieces*/));
-         //object.add(new THREE.Line(moveGeometry, lineMaterial, THREE.LinePieces));
-         
-         //object.add(moveGeometry);
-         //object.add(geometry);
-         //object.add(arcs);
-         // Center
-         //geometry.computeBoundingBox();
-         //var center = new THREE.Vector3().addVectors(geometry.boundingBox.min,
-         //    geometry.boundingBox.max).divideScalar(2);
-         var scale = 3; // TODO: Auto size
-         //var scale = 10; // TODO: Auto size
-         //object.position = center.multiplyScalar(-scale);
-         //object.scale.multiplyScalar(scale);
-         
-       }
+     
   
        if(disableWorker){
-         if(window.GCodeParser === undefined){
-           KMX.Util.injectScript("js/import/gcode2three/gcode-parser.js").then(function() {
-              parse(transformedDefer, gcode);
-            },function(reason){
+          // parse without worker. Application will freeze during parsing
+          KMX.Util.injectScript("js/import/gcode2three/gcode-parser.js", window.GCodeParser !== undefined)
+          .then(
+            function() {
+              new GCodeParser(parserDataHandler,parserDataHandler).parse(gcode.lines);
+              parserDataHandler('done');
+            },
+            function(reason){
+              transformedDefer.reject(reason);
+            });  
+       } else {
+         //Parse with worker in background
+          KMX.Util.getSingletonWorker("js/import/gcode2three/gcode-worker.js", 
+            function workerEventHandler(event) {
+              parserDataHandler(event.data);
+            })
+          .then(
+            function(parserWorker) {
+              console.time("parsingAndTransfer");
+              parserWorker.postMessage({command:'parse',gcode:gcode.lines});
+            },
+            function(reason){
               transformedDefer.reject(reason);
             });
-         } else {
-           parse(transformedDefer, gcode);
-         }    
-       } else {
-         parseWorker(transformedDefer, gcode);
+         //console.profile();
        }
+       
+
        
        function parserDataHandler(data){
             var cmd = data.cmd;
@@ -153,41 +153,17 @@ KMX.Transformers.gcode2three = {
               var handler = gcodeHandlers[cmd.name] || gcodeHandlers[cmd.code] || defaultHandler;
               handler(cmd, data.line);
             } else if(params){
-              parameterHandler(params, data.line)
+              thisParameterHandler(params, data.line)
             } else if(data == 'done'){
-              addGeometry();
               console.timeEnd("parsingAndTransfer");
               //console.profileEnd();
               transformedDefer.resolve(group);
+            } 
+            
+            function defaultHandler(args, info) {
+                console.info('Unknown command:', args.name, args, info);
             }
-           
          }
-
-       function parseWorker(defer, gcode){
-         
-         KMX.Util.getSingletonWorker("js/import/gcode2three/gcode-worker.js", workerEventHandler)
-         .then(
-            function(parserWorker) {
-              console.time("parsingAndTransfer");
-              parserWorker.postMessage({command:'parse',gcode:gcode.lines});
-            },function(reason){
-              transformedDefer.reject(reason);
-            });
-
-         function workerEventHandler(event) {
-           parserDataHandler(event.data);
-         };
-         //console.profile();
-       }
-       
-       function parse(defer, gcode){
-          var handler = function codeHandler(obj) {
-            parserDataHandler(obj);
-          }
-          var parser = new GCodeParser(handler,handler);
-          parser.parse(gcode.lines);
-          parserDataHandler('done');
-       }  
     },
       
     //use for 3dprinter files
