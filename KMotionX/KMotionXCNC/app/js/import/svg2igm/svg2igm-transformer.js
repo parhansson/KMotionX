@@ -31,7 +31,7 @@
         if(svgRootElement == null){
           transformedDefer.reject("SVG element not present");
         }
-        var igm = SVGReader.parse(svgRootElement, {});
+        var igm = KMX.Transformers.svg2igm.transform(svgRootElement, {});
         
         
         transformedDefer.resolve(igm);

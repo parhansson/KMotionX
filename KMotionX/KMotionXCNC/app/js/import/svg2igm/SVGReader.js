@@ -1,3 +1,4 @@
+///<reference path="../../../typings/KMX.d.ts" />
 'use strict'
 /**
   SVG parser for the Lasersaur.
@@ -42,8 +43,9 @@ function createAnchor(name,url){
   document.body.appendChild(anchor);
   return anchor;
 }
-
-var SVGReader = {
+var KMX = KMX || {};
+KMX.Transformers = KMX.Transformers || {};
+KMX.Transformers.svg2igm = {
 
 
   boundarys : null,
@@ -57,8 +59,8 @@ var SVGReader = {
     // max tollerance when tesselating curvy shapes
 
 
-  parse : function(svgRootElement, config) {
-    this.boundarys = new IGM();
+  transform : function(svgRootElement, config) {
+    this.boundarys = new KMX.IGM();
     this.tolerance_squared = Math.pow(this.tolerance, 2);
 
 
@@ -592,8 +594,6 @@ var SVGReader = {
       styleElement.textContent = tag.textContent;
       // the style will only be parsed once it is added to a document
       doc.body.appendChild(styleElement);
-    
-      ;
       
       //@font-face
       console.log('rules', styleElement.sheet.cssRules);

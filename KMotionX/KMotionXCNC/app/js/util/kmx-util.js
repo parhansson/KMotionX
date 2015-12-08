@@ -1,3 +1,4 @@
+///<reference path="../../typings/KMX.d.ts" />
 var KMX = KMX || {};
 KMX.Util = {
 	createAnchor: {},

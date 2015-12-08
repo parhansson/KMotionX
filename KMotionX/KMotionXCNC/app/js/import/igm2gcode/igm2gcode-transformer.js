@@ -17,7 +17,7 @@
     function transcodeIGM(src){
         var transformedDefer = $q.defer();
         if (angular.isJSON(src)) {
-          var gcode = new GCode.Source(igm2gcode(src, transformerSettings.svg));          
+          var gcode = new GCode.Source(KMX.Transformers.igm2gcode.transform(src, transformerSettings.svg));          
           transformedDefer.resolve(gcode.text);
         } else {
           transformedDefer.reject("Unsupported source: " + (typeof src));

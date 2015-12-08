@@ -1,36 +1,11 @@
-'use strict';
-(function() {
-  angular.module('KMXImport').run(register);
-  
-  register.$inject = ['$q', 'transformer', 'transformerSettings'];
-  
-  function register($q, transformer, transformerSettings){
-    var descriptor = { 
-      name: 'G-Code to Three',
-      inputMime: ["application/x-gcode"],
-      outputMime: "application/x-kmx-three",
-      execute: transcodeGCode
-    };
-    
-	  transformer.register(descriptor);
-    
-    var disableWorker = false;//document.URL.startsWith("file");
-    
-    function transcodeGCode(source){
-        var transformedDefer = $q.defer();
-        if (angular.isObject(source)) {
-          createObject(transformedDefer,source);     
-        } else {
-          transformedDefer.reject("Unsupported source: " + (typeof source));
-        }
-        return transformedDefer.promise; 
-      }
-      
-      
-    //Copyright (c) 2012 Joe Walnes
+var KMX = KMX || {};
+KMX.Transformers = KMX.Transformers || {};
+KMX.Transformers.gcode2three = {
+
+	//Copyright (c) 2012 Joe Walnes
     //Copyright (c) 2014 par.hansson@gmail.com
-    function createObject(transformedDefer, gcode){
-      
+    transform:  function transform(transformedDefer, gcode, disableWorker){
+       var _this = this;
        var group = new THREE.Group();
        group.name = 'GCODE';
 
@@ -122,14 +97,14 @@
          }
   
          if(lastCommand.val == 0 ){
-           lastVector = createLine(lastCommand, args, lastVector, currentVector,lineGeometry, positionColor);
+           lastVector = _this.createLine(lastCommand, args, lastVector, currentVector,lineGeometry, positionColor);
          } else if(lastCommand.val == 1 ){
-           lastVector = createLine(lastCommand, args, lastVector, currentVector,lineGeometry,interpolateColor);
-           //lastVector = createLinePrinter(lastCommand, args, lastVector, currentVector,geometry);
+           lastVector = _this.createLine(lastCommand, args, lastVector, currentVector,lineGeometry,interpolateColor);
+           //lastVector = this.createLinePrinter(lastCommand, args, lastVector, currentVector,geometry);
          } else if(lastCommand.val == 2){
-           lastVector = createArc(lastCommand, args, lastVector, currentVector,lineGeometry, interpolateColor,true);
+           lastVector = _this.createArc(lastCommand, args, lastVector, currentVector,lineGeometry, interpolateColor,true);
          } else if(lastCommand.val == 3){
-           lastVector = createArc(lastCommand, args, lastVector, currentVector,lineGeometry, interpolateColor,false);
+           lastVector = _this.createArc(lastCommand, args, lastVector, currentVector,lineGeometry, interpolateColor,false);
          }
          lastVector = currentVector;
        };
@@ -213,10 +188,10 @@
           parser.parse(gcode.lines);
           parserDataHandler('done');
        }  
-    }
+    },
       
     //use for 3dprinter files
-    function createLinePrinter(cmd, args, lastVector, currentVector, geometry){
+    createLinePrinter: function createLinePrinter(cmd, args, lastVector, currentVector, geometry){
   
         currentVector.e = args.E !== undefined ? args.E : lastVector.e,
         //TODO doesn't work as expected due to changing feedrate in the middle of line.
@@ -229,9 +204,9 @@
           geometry.colors.push(color);
         }    
       return currentVector;
-    }
+    },
     
-    function createLine(cmd, args, lastVector, currentVector,geometry,color){
+    createLine: function createLine(cmd, args, lastVector, currentVector,geometry,color){
   
       
       geometry.vertices.push(new THREE.Vector3(lastVector.x, lastVector.y,lastVector.z));
@@ -241,9 +216,9 @@
       
       
       return currentVector;
-    }
+    },
     
-    function createArc(cmd, args, lastVector, currentVector,geometry, color,clockWise){
+    createArc: function createArc(cmd, args, lastVector, currentVector,geometry, color,clockWise){
   
       var curve = new GCode.Curve3(
           lastVector,
@@ -251,12 +226,13 @@
           args,
           clockWise);    
       //geometry.vertices.push(new THREE.Vector3(lastVector.x, lastVector.y,lastVector.z));
-      geometry.vertices.push.apply(geometry.vertices,curve.getPoints( 50 ));
+      var vectors = curve.getPoints( 50 );
+      geometry.vertices.push.apply(geometry.vertices,vectors);
+      for(var i = 0; i < vectors.length; i++){
+        geometry.colors.push(color);
+      }
       
       
       return currentVector;
-    }          
-      
-  }
-  
-})();
+    }
+}

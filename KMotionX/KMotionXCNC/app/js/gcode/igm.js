@@ -1,12 +1,15 @@
+///<reference path="../../typings/igm.d.ts" />
 // Intermediate Gcode Model
 'use strict'
-
-function IGM(){
+var KMX = KMX || {};
+KMX.IGM = function IGM(){
   this.layers = {}; // sort by stroke color
   this.layerKeys = []; // layerKey is a mapping to add unnamed layers, layer will get a generated name
   this.textLayer = []; // textpaths
   this.unsupported = [],  // Unsupported nodes
   this.addToLayerObject = addToLayerObject;
+  this.applyModifications = applyModifications;
+  this.getMaxBounds = getMaxBounds;
   
   function addToLayerObject(layerKey, obj, layerName){
     if(layerName === undefined){
@@ -40,6 +43,238 @@ function IGM(){
         return all;
     }
   });
+  
+  
+  function applyModifications(settings, ratio){
+      //cannot use this default value syntax for booleans
+      settings.translateToOrigo = angular.isBoolean(settings.translateToOrigo) ? settings.translateToOrigo: true;
+      settings.removeOutline = angular.isBoolean(settings.removeOutline) ? settings.removeOutline: false;
+      settings.removeDuplicates = angular.isBoolean(settings.removeDuplicates) ? settings.removeDuplicates: true;
+      settings.removeSingularites = angular.isBoolean(settings.removeSingularites) ?  settings.removeSingularites: true;
+
+      var paths = this.alllayers;
+      console.info("Nr of Shapes: ", paths.length);
+      
+      scaleVectors(paths, ratio);
+      
+      //Bounds are needed by removeDuplicates
+      setBounds(paths);
+      
+      if(settings.removeSingularites){
+        removeSingularites(paths);
+      }
+      
+      // cut the inside parts first
+      if(settings.removeDuplicates){
+        //This function will change the order of the paths
+        removeDuplicates(paths);
+      }
+    
+      
+      orderNearestNeighbour(paths);
+      joinAdjacent(paths,settings.fractionalDigits);
+      setBounds(paths);
+      
+      var maxBounds = getMaxBounds(paths);
+      
+      if(settings.removeOutline){
+        //Some files has an outline. remove it if requested
+        removeOutline(paths, maxBounds);
+      }
+      
+      var translateVec = settings.translateToOrigo ? new Vec2(-maxBounds.x,-maxBounds.y) : new Vec2(0,0);
+      translateVectors(paths, translateVec);
+      console.info("Nr of Shapes after: ", paths.length);
+
+      return paths;
+
+  }
+  
+  function translateVectors(paths, translateVec){
+    var idx = paths.length;
+    while(idx--) {
+      var vectors = paths[idx]; 
+      var subidx = vectors.length;
+      while(subidx--) {
+        var vec = vectors[subidx];
+        vec.add(translateVec);
+      }
+    }   
+  }  
+  
+  function scaleVectors(paths, ratio){
+    var idx = paths.length;
+    while(idx--) {
+      var vectors = paths[idx]; 
+      var subidx = vectors.length;
+      while(subidx--) {
+        var vec = vectors[subidx];
+        //scale
+        vec.scale(ratio);
+        //transpose coordinates
+        //vec.rotate(Math.PI/4);
+      }
+    }   
+  }
+  
+  function setBounds(paths){
+    var idx = paths.length;
+    while(idx--) {
+      var bounds = new BoundRect();
+      var vectors = paths[idx];
+      if(vectors === undefined){
+        console.info("what", idx);
+      }
+      var subidx = vectors.length;
+      while(subidx--) {
+        var vec = vectors[subidx];
+        bounds.include(vec);
+      }
+      vectors.bounds = bounds;
+    }   
+  }
+  
+  function getMaxBounds(paths){
+    var maxBounds = new BoundRect();
+    var idx = paths.length;
+    while(idx--) {
+      var vectors = paths[idx]; 
+      maxBounds.include(vectors.bounds.vec1());
+      maxBounds.include(vectors.bounds.vec2());
+    }
+    return maxBounds
+  }
+  
+  function removeDuplicates(paths){
+    
+    paths.sort(function(a, b) {
+      // sort by area
+      var aArea = a.bounds.area(); //TODO area needs to count zero with as 1
+      var bArea = b.bounds.area();
+      var result = aArea-bArea;
+      if(result == 0){
+        var avec = a[0];
+        var bvec = b[0];
+        //TODO Experimental only, Need to compare whole path not just first point
+        //and reverse path
+        result = avec.x - bvec.x;
+        if(result == 0){
+          result = avec.y - bvec.y;
+        }
+      }
+      return result;
+    });
+    
+    var idx = paths.length;
+    while(idx-- > 1) {
+      //TODO Experimental only, Need to compare whole path not just start and end point
+      var p1 = paths[idx];
+      var p2 = paths[idx-1];
+      if(p1.first().equal(p2.first()) && p1.last().equal(p2.last())){
+        paths.splice(idx,1);
+      }
+    }
+  }
+  
+  function removeSingularites(paths){
+    var idx = paths.length;
+    while(idx--) {
+      if(paths[idx].length == 1){
+        paths.splice(idx,1);
+      };
+    }
+  }
+  function removeOutline(paths, maxBounds){
+    //TODO Find object with the same size as maxbounds.
+    //currently this just asumes the largest object is first
+    paths.pop();      
+  }
+  
+  
+  function joinAdjacent(paths,fractionalDigits){
+    if(paths.length < 2){
+      return;
+    }
+    var idx = 0;
+    var last = paths[idx++];
+    while(idx < paths.length){
+      var next = paths[idx];
+      var lastEnd =last[last.length-1];
+      var nextStart = next[0];
+      //console.info(lastEnd, nextStart);
+      if(pointEquals(lastEnd, nextStart,fractionalDigits)){
+        last.push.apply(last, next);
+        paths.splice(idx,1);
+      } else {
+        last = next;
+        idx++
+      }
+    }
+  }
+  function pointEquals(v1,v2,fractionalDigits){
+    return (
+        v1.x.toFixed(fractionalDigits) === v2.x.toFixed(fractionalDigits) &&
+        v1.y.toFixed(fractionalDigits) === v2.y.toFixed(fractionalDigits)
+    );
+  }
+  function orderNearestNeighbour(paths){
+    
+  //These are the steps of the algorithm:
+  //
+  //  start on an arbitrary vertex as current vertex.
+  //  find out the shortest edge connecting current vertex and an unvisited vertex V.
+  //  set current vertex to V.
+  //  mark V as visited.
+  //  if all the vertices in domain are visited, then terminate.
+  //  Go to step 2.
+    var orderedPaths = [];
+    var next = nearest(new Vec2(0,0), paths);
+    orderedPaths.push(next);
+    while(paths.length > 0){
+      next = nearest(next[next.length-1], paths);
+      orderedPaths.push(next);      
+    }
+    
+    paths.push.apply(paths, orderedPaths);
+    return;
+    
+    function nearest(point, paths){
+      
+      var dist = Infinity;
+      var index = -1;
+      var checkReversePath = true;
+      
+      for (var pathIdx = 0, pathLength = paths.length; pathIdx < pathLength; pathIdx++) {
+        var path = paths[pathIdx];
+        var pathStartPoint = path[0];
+        var distanceSquared;
+        var startDS = pathStartPoint.distanceSquared(point);
+        if(checkReversePath){
+          //check endpoint as well and reverse path if endpoint is closer
+          var pathEndPoint = path[path.length-1];
+          var endDS = pathEndPoint.distanceSquared(point);
+          if(startDS < endDS){
+            distanceSquared = startDS;
+          } else {
+            distanceSquared = endDS;
+            path.reverse();
+          }
+          
+        } else {
+          distanceSquared = startDS;
+        }
+        
+        if(distanceSquared < dist){
+          dist = distanceSquared;
+          index = pathIdx;
+        }
+        
+      }
+      return paths.splice(index,1)[0];
+    }
+  }  
+  
+  
 }
 
 
@@ -158,6 +393,70 @@ GCode.Curve3.prototype.getPoints = function ( divisions ) {
 
 
 
+function BoundRect(){
+  this.x = Infinity;
+  this.y = Infinity;
+  this.x2 = -Infinity;
+  this.y2 = -Infinity
+  
+  this.area = area;
+  this.height = height;
+  this.width = width;
+  this.include = include;
+  this.scale = scale;
+  this.vec1 = vec1;
+  this.vec2 = vec2;
+  
+  function scale(ratio){
+    this.x = this.x*ratio;
+    this.y = this.y*ratio;
+    this.x2 = this.x2*ratio;
+    this.y2 = this.y2*ratio;
+    return this;      
+  }
+  
+  function vec1(){
+    return new Vec2(this.x,this.y);
+  }
+  function vec2(){
+    return new Vec2(this.x2,this.y2);
+  }
+  
+  function include(vec){
+    var x = vec.x;
+    var y = vec.y;
+    
+    if (x < this.x) {
+      this.x = x;
+    }
+
+    if (y < this.y) {
+      this.y = y;
+    }
+
+    if (x > this.x2) {
+      this.x2 = x;
+    }
+    if (y > this.y2) {
+      this.y2 = y;
+    }
+  }
+  
+  function area(){
+    return this.height() * this.width();
+  }
+  
+  function height(){
+    var height = this.y2-this.y;
+    return height;
+  }
+  
+  function width(){
+    var width = this.x2-this.x;      
+    return width;
+  }
+      
+}
 
 
 
