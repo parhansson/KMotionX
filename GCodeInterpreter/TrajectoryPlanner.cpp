@@ -205,8 +205,8 @@ int tp_insert_linear_seg(double x0, double y0, double z0, double a0, double b0, 
 				pm1->dx < MaxCombineLength*0.25 &&
 				pm1->type==SEG_LINEAR &&
 				pm2->type==SEG_LINEAR &&
-				fabs(pm2->OrigVel - pm1->OrigVel) <= SPEED_TOL * min(pm1->OrigVel,pm2->OrigVel) &&
-				fabs(pm2->OrigAccel - pm1->OrigAccel) <= SPEED_TOL * min(pm1->OrigAccel,pm2->OrigAccel))
+				fabs(pm2->OrigVel - pm1->OrigVel) <= SPEED_TOL * fmin(pm1->OrigVel,pm2->OrigVel) &&
+				fabs(pm2->OrigAccel - pm1->OrigAccel) <= SPEED_TOL * fmin(pm1->OrigAccel,pm2->OrigAccel))
 				DiscardTinySegment=true;
 		}
 
@@ -1020,13 +1020,13 @@ int CombineSegments(double MaxLength)
 
 	// max speeds must be very similar
 
-	if (fabs(pn->OrigVel - pm1->OrigVel) > SPEED_TOL * min(pn->OrigVel,pm1->OrigVel)) 
+	if (fabs(pn->OrigVel - pm1->OrigVel) > SPEED_TOL * fmin(pn->OrigVel,pm1->OrigVel)) 
 	{
 		nCombined = 0;
 		return 1;
 	}
 
-	if (fabs(pn->OrigAccel - pm1->OrigAccel) > SPEED_TOL * min(pn->OrigAccel,pm1->OrigAccel)) 
+	if (fabs(pn->OrigAccel - pm1->OrigAccel) > SPEED_TOL * fmin(pn->OrigAccel,pm1->OrigAccel)) 
 	{
 		nCombined = 0;
 		return 1;
