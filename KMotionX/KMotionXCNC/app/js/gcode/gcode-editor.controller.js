@@ -107,6 +107,8 @@
     //This is great but not working very well on large(MB) files 
     $scope.$watch('editorContent', function (newVal, oldVal) {
       if (!newVal) return;
+       //TODO this is executed twice. either postpone rendering with a timeout or do as describe in comment above
+       //I don't like the idea of watching an object this large anyway. 
       //view3d is inheritet from app controller
       GCodeRenderer.renderGCode(new GCode.Source($scope.editorContent));
     });
