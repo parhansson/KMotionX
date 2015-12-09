@@ -33,6 +33,11 @@ either expressed or implied, of the FreeBSD Project.
 #include <string.h>
 #include <stdio.h>
 #include "MessageBox.h"
+
+#ifdef __MACH__
+#include <mach/mach_time.h>
+static double conversionFactor;
+#endif
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -42,6 +47,11 @@ CHiResTimer::CHiResTimer()
 	Freq=0;
 	nSplit=0;
 	MessageDisplayed=false;
+#ifdef __MACH__
+	mach_timebase_info_data_t timebase;
+	mach_timebase_info(&timebase);
+	conversionFactor = (double)timebase.numer / (double)timebase.denom;
+#endif
 }
 
 CHiResTimer::~CHiResTimer()
@@ -72,7 +82,11 @@ double CHiResTimer::DiffSecs(int t1, int t0)
 	T1=Times[t1];
 	F=Freq;
 
-	result = (T1-T0) / ((double) F);
+#ifdef __MACH__
+	result = (T1-T0) * conversionFactor / ((double) F);
+#else
+  result = (T1-T0) / ((double) F);
+#endif
 
 	return result;
 }
@@ -117,9 +131,15 @@ double CHiResTimer::Elapsed_Seconds()
 	T1=t1;
 	F=Freq;
 
+#ifdef __MACH__
+	result = (T1-T0) * conversionFactor / ((double) F);
+#else
 	result = (T1-T0) / ((double) F);
+#endif
+
 	//debug("Result %lf\n",result);
 	//debug("Elapsed_Seconds \n\tusec=%lld\n\tdecimalusec%f\n", (long long)(T1-T0), result);
+	//printf("Elapsed_Time \n\tsec=%lf\n", result);
 	return result;
 
 }
@@ -159,12 +179,18 @@ void CHiResTimer::DisplaySplit()
 
 int CHiResTimer::QueryPerformanceCounter(int64_t *lpPerformanceCount){
 	//printf("%s:%d\n", __FILE__, __LINE__);
+#ifdef __MACH__
+    *lpPerformanceCount = mach_absolute_time();
+#else
 	struct timespec now;
 	clock_gettime(CLOCK_REALTIME, &now);
 	*lpPerformanceCount = (int64_t)now.tv_sec*1000000000 + now.tv_nsec;
 	//printf("QueryPerformanceCounter time=%u value=%lld\n", time, (long long)value);
+#endif
+
 	return 1;
 }
+
 int CHiResTimer::QueryPerformanceFrequency(int64_t *lpPerformanceCount){
 	//printf("%s:%d\n", __FILE__, __LINE__);
 	//printf("QueryPerformanceFrequency value=%lld\n", (long long)value);
