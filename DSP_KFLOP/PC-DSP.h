@@ -6,7 +6,7 @@
 #ifndef __PCDSP_H
 #define __PCDSP_H
 
-#define KMOTION_VER "4.32"  
+#define KMOTION_VER "4.33l"  
 
 #define ABORT_CHAR 0x03  // ctrl-c clears/aborts any command
 
@@ -137,17 +137,17 @@
 
 // Get GCode Tool Table Length	Persist+1 = Tool Index
 //								Persist+2 = where to set value to KFLOP persist (double offset) 
-//     (GCode #Vars -> KFLOP persist) note: vars are transferred as doubles 2 persists each
+//     (GCode Tool Table -> KFLOP persist) note: vars are transferred as doubles 2 persists each
 #define PC_COMM_GET_TOOLTABLE_LENGTH 23 // Persist+1=#ToolIndex,+2=Dest   
 
 // Set GCode Tool Table Length	Persist+1 = Tool Index
 //								Persist+2 = where to get value from KFLOP persist (double offset) 
-//     (KFLOP persist -> GCode #Vars) note: vars are transferred as doubles 2 persists each
+//     (KFLOP persist -> GCode Tool Table) note: vars are transferred as doubles 2 persists each
 #define PC_COMM_SET_TOOLTABLE_LENGTH 24 // Persist+1=#ToolIndex,+2=Source   
 
 
 // Get GCode Misc Settings	Persist+1 = where to set values to KFLOP persist (32-bit integers) 
-//     (GCode #Vars -> KFLOP persist)  4 values are sent to KFLOP,  
+//     (GCode -> KFLOP persist)  4 values are sent to KFLOP,  
 //											Inches(1)/Metric(2) Flag
 //											Tool Slot T number
 //											Tool Index H number (length index)
@@ -164,9 +164,115 @@
 
 #define PC_COMM_UPDATE_FIXTURE 28 // Update any change in currently selected Fixture offsets
 
+// InputBox Persist+1 = gather buffer offset (32-bit words) to message string
+//            Persist+2 = Value returned
+//            Persist+3 = MessageBox Result returned
+#define PC_COMM_INPUT 29   // MessageBox Persist+1=string,+2=Value,+3=result
+
+// Get GCode Tool Table Diameter Persist+1 = Tool Index
+//								 Persist+2 = where to set value to KFLOP persist (double offset) 
+//     (GCode Tool Table -> KFLOP persist) note: vars are transferred as doubles 2 persists each
+#define PC_COMM_GET_TOOLTABLE_DIAMETER 30 // Persist+1=#ToolIndex,+2=Dest   
+
+// Set GCode Tool Table Diameter Persist+1 = Tool Index
+//								 Persist+2 = where to get value from KFLOP persist (double offset) 
+//     (KFLOP persist -> GCode #Vars) note: vars are transferred as doubles 2 persists each
+#define PC_COMM_SET_TOOLTABLE_DIAMETER 31 // Persist+1=#ToolIndex,+2=Source   
+
+// Get GCode Tool Table Offset X  Persist+1 = Tool Index
+//								  Persist+2 = where to set value to KFLOP persist (double offset) 
+//     (GCode #Vars -> KFLOP persist) note: vars are transferred as doubles 2 persists each
+#define PC_COMM_GET_TOOLTABLE_OFFSETX 32 // Persist+1=#ToolIndex,+2=Dest   
+
+// Set GCode Tool Table Offset X  Persist+1 = Tool Index
+//								  Persist+2 = where to get value from KFLOP persist (double offset) 
+//     (KFLOP persist -> GCode #Vars) note: vars are transferred as doubles 2 persists each
+#define PC_COMM_SET_TOOLTABLE_OFFSETX 33 // Persist+1=#ToolIndex,+2=Source   
+
+// Get GCode Tool Table Offset Y  Persist+1 = Tool Index
+//								  Persist+2 = where to set value to KFLOP persist (double offset) 
+//     (GCode #Vars -> KFLOP persist) note: vars are transferred as doubles 2 persists each
+#define PC_COMM_GET_TOOLTABLE_OFFSETY 34 // Persist+1=#ToolIndex,+2=Dest   
+
+// Set GCode Tool Table Offset Y  Persist+1 = Tool Index
+//								  Persist+2 = where to get value from KFLOP persist (double offset) 
+//     (KFLOP persist -> GCode #Vars) note: vars are transferred as doubles 2 persists each
+#define PC_COMM_SET_TOOLTABLE_OFFSETY 35 // Persist+1=#ToolIndex,+2=Source   
+
+#define PC_COMM_HALT_NEXT_LINE 36  // Stop Application at the Next Line of code
+
+#define PC_COMM_ENABLE_JOG_KEYS 37   // Allow User to Push Jog Buttons while JOB is running
+#define PC_COMM_DISABLE_JOG_KEYS 38  // Disable allowing User to Push Jog Buttons while Job is Running
+
+
+//SJH - new protocol: allows "non-blocking" messages and other long-running things.
+// Runs in two phases:
+//  1. works like old-style protocol, except that PC immediately sets the command back to zero, to
+//     acknowledge receipt of the command.  This frees up the main command var for other threads.
+//  2. when PC finally has a result, it sets the specified result field persist variable to a
+//     non-zero value.
+// The kflop needs to initially wait with a short timeout for the command to be acknowledged.  It then
+// waits (with an arbitrary timeout) for the final result to come in the specified persist var.
+// PC command is divided into bitfields:
+#define PC_COMM_FIELD_COMMAND   0x000000FF  // Command number (start at 100 for new protocol commands)
+#define PC_COMM_SHIFT_COMMAND   0
+#define PC_COMM_FIELD_THREAD    0x00000F00  // Originating thread (1-7) or 0 if old protocol.  Can also use
+                                            // 8-15 for special purposes or if thread is unknown.
+#define PC_COMM_SHIFT_THREAD    8
+#define PC_COMM_FIELD_RESULT    0x000FF000  // A persist var number (0-199) which the PC sets non-zero when the
+                                            // command is finally complete.  Kflop must initialize
+                                            // this persist var to 0 before sending the command.  This field is not allowed
+                                            // to be 100-103, or >=200, otherwise the command is NAK'd.
+                                            // Also, if this is zero, the kflop does not wait for any final
+                                            // result; the command is only being used to specify a source thread.
+#define PC_COMM_SHIFT_RESULT    12
+
+// Put up status message.  Similar to message box, except no response required.  String can be multi-line
+// separated by \n chars.  By convention, each line is prefixed with a punctuation char which hints at
+// the type of message: !=error, #=warning, ?=operator action required (e.g. jogging), $=informational.
+// If a thread is specified (PC_COMM_FIELD_THREAD field non-zero) then the PC can have separate messages
+// per thread.
+#define PC_COMM_STATUS_MSG    50      // Persist+1=string (null terminated)
+#define PC_COMM_SLOT_TO_INDEX 51      // Convert slot number to tool table index. persist+1 is persist index
+                                         // for result, persist+2 is slot to look up.
+#define PC_COMM_STATUS_CLEAR  52      // Clear the status message.  This is better than sending a blank status
+                                      // message, since it allows the PC to manage a stack of messages.
+
+
+//SJH - new protocol commands
+#define PC_COMM_NB_MSG        53      // Non-blocking message box
+#define PC_COMM_NB_MDI        54      // Non-blocking MDI
+#define PC_COMM_NB_INPUT      55      // Non-blocking input box
+
+#define PC_COMM_QUERY_APP       56      // Query PC program for its identification.  Legacy PC application will
+                                        // respond with an error code since they won't understand this command.  
+                                        // New applications should place a result in the persist var indicated by
+                                        // the FIELD_RESULT field.  The result will be 4 8-bit fields.  MSB identifies
+                                        // the application according to the following table.  Other 3 fields indicate
+                                        // major, mid, minor versions e.g. 0x22010203 identifies application
+                                        // 0x22, version 1.2.3.  If necessary, define separate codes for each
+                                        // supported platform.
+    #define PC_APP_GENERIC_LINUX      0x00  // Linux/Posix on PC
+    #define PC_APP_GENERIC_WIN        0x01  // Windows PC
+    #define PC_APP_GENERIC_OSX        0x02  // Mac
+    #define PC_APP_GENERIC_RPI        0x03  // Raspberry Pi or similar - SBC with limited resources.
+    #define PC_APP_MENIGCNC_WIN       0x0A
+    
+
+// Following commands use gather buffer instead of persist vars as the buffer for transferring
+// g-code hashvars. persist+1 = first hashvar to transfer; +2 = consecutive hashvars to transfer;
+// +3 = gather buffer offset for kflop source/dest (as a 64-bit word offset, since hashvars
+// are all doubles).
+#define PC_COMM_GET_VARS_G      57      // Higher speed non-blocking version of GET_VARS.
+#define PC_COMM_SET_VARS_G      58      // Higher speed non-blocking version of SET_VARS.
+
+#define PC_COMM_NB_MSG_DISMISS  59      // Dismiss non-blocking message box on host.  persist+1=equivalent
+                                        // button response (e.g. IDOK or IDCANCEL; or 0 for an undetermined response)
+
 
 #define PC_COMM_PERSIST 100  // First Persist Variable that is uploaded in status
 #define N_PC_COMM_PERSIST 8  // Number of Persist Variables that are uploaded in status
+
 
 
 // Persist Variable used with CSS Constant Surface speed for Spindle

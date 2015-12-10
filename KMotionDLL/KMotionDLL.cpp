@@ -69,6 +69,12 @@ void CKMotionDLL::_init(int boardid)
 	ErrMsgHandler=NULL;
     use_tcp = false;
     remote_tcp = false;
+    first_status = true;
+    poll_interest = 0;
+    HostStatus = 0;
+    sprintf(DSPKFLOP, "%s%cDSP_KFLOP%cDSPKFLOP.out",MainPathRoot,PATH_SEPARATOR,PATH_SEPARATOR);
+    server_dir[0] = 0;
+    compiler_dir[0] = 0;
 
 }
 
@@ -77,7 +83,7 @@ CKMotionDLL::CKMotionDLL(int boardid)
 	_init(boardid);
 }
 
-
+#ifdef _KMOTIONX
 CKMotionDLL::CKMotionDLL(int boardid, unsigned int dfltport, const char * url)
 {
 	_init(boardid);
@@ -86,6 +92,7 @@ CKMotionDLL::CKMotionDLL(int boardid, unsigned int dfltport, const char * url)
 	strncpy(hostname, url, sizeof(hostname)-1);
 	hostname[sizeof(hostname)-1] = 0;
 }
+#endif
 
 
 CKMotionDLL::~CKMotionDLL()
@@ -242,12 +249,14 @@ int CKMotionDLL::WaitToken(bool display_msg, int TimeOut_ms)
 		
 		if (!PipeMutex->Lock(TimeOut_ms))
 		{
-		  return KMOTION_IN_USE;
+		    //printf("-1- %ld\n", getThreadId());
+			return KMOTION_IN_USE;
 		}
 
 		if (Timer.Elapsed_Seconds() > 2.0 * TimeOut_ms * 0.001)
 		{
-		  PipeMutex->Unlock();
+			PipeMutex->Unlock();
+		    //printf("-2- %ld\n", getThreadId());
 			return KMOTION_IN_USE;
 		}
 
@@ -258,8 +267,10 @@ int CKMotionDLL::WaitToken(bool display_msg, int TimeOut_ms)
 
 		result = KMotionLock();
 
-		if (result == KMOTION_IN_USE)
+		if (result == KMOTION_IN_USE) {
+		    //printf("-3- %ld\n", getThreadId());
 			PipeMutex->Unlock();
+		}
 	}
 	while (result == KMOTION_IN_USE);
 
@@ -481,21 +492,28 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 			}
 		}
 
+#ifdef _KMOTIONX	// Until we support tcp/ip under windows, use the old protocol (no length prefix)
         msglen = n;
 		PipeFile.Write(&msglen, sizeof(msglen));   // Send the request length prefix
+#endif
 		PipeFile.Write(s, n);           // Send the request
 		
 		for (;;)
 		{
+#ifndef _KMOTIONX
+			*m = PipeFile.Read(r, MAX_LINE + 1);     // Get the response
+#else
 		    len = 0;
 		    while (len < sizeof(msglen))
 		        len += PipeFile.Read((char *)(&msglen)+len, sizeof(msglen)-len);
-		    if (msglen > MAX_LINE+1)
+			if (msglen > MAX_LINE + 1)
 		        throw std::system_error(E2BIG, std::system_category(), "Read");
 		    len = 0;
 		    while (len < msglen)
 			    len += PipeFile.Read(r+len, msglen-len);     // Get the response
             *m = len;
+#endif
+
 			// the first byte of the response is the destination
 			// currently DEST_NORMAL, DEST_CONSOLE
 			
@@ -535,12 +553,21 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 		PipeMutex->Unlock();
 		
 	}
+
+#ifndef _KMOTIONX
+	catch (CFileException)
+#else
 	catch (std::system_error & serr)
+#endif
 	{
 		EntryCount--;
 		CFExcept = true;
 		PipeMutex->Unlock();
+#ifndef _KMOTIONX
+		serr_msg = "Unable to Connect to KMotion Server";
+#else
 		serr_msg = serr.what();
+#endif
 	}
 
 	for (unsigned i = 0; i < cons.size(); ++i) 
@@ -562,7 +589,6 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 		if (ServerMessDisplayed) return 1;
 		ServerMessDisplayed=TRUE;
 
-		//DoErrMsg("Unable to Connect to KMotion Server");
 		DoErrMsg(serr_msg);
 		exit(1);
 	}
@@ -577,8 +603,32 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 
 
 
+void CKMotionDLL::SetServerDir(const char * dir)
+{
+    if (dir) {
+        strncpy(server_dir, dir, sizeof(server_dir)-1);
+        server_dir[sizeof(server_dir)-1] = 0;
+    }
+    else
+        server_dir[0] = 0;
+}
+
+const char * CKMotionDLL::GetServerDir()
+{
+#ifndef _KMOTIONX
+    return server_dir;  // May be empty string, which means in the normal DOS search path.
+#else
+    // Not DOS, so use either override path (from SetServerDir) or MainPath obtained from environ variable.
+    if (server_dir[0])
+        return server_dir;
+    else
+        return MainPath;
+#endif
+}
+
 int CKMotionDLL::LaunchServer()
 {
+	char                cmd[sizeof(server_dir)+32];
 
 #ifndef _KMOTIONX
 	SECURITY_ATTRIBUTES sa          = {0};
@@ -621,13 +671,15 @@ int CKMotionDLL::LaunchServer()
 	si.hStdOutput  = hPipeOutputWrite;
 	si.hStdError   = hPipeOutputWrite;
 
-	CString cmd;  // build command line
+	strcpy(cmd, GetServerDir());
 
-	cmd = "KMotionServer.exe";
+    if (cmd[0])
+        strcat(cmd, "\\");
+	strcat(cmd, "KMotionServer.exe");
 	
 	if (!CreateProcess (
 		NULL,
-		cmd.GetBuffer(0), 
+		cmd, 
 		NULL, NULL,
 		TRUE, 0,
 		NULL, NULL,
@@ -646,26 +698,24 @@ int CKMotionDLL::LaunchServer()
 	CloseHandle(hPipeInputRead);
 #elif defined(__APPLE__)
 	//The daemon is currently not supported on Apple
-	char command[1024];
-#ifdef _DEAMON
+    #ifdef _DEAMON
     //sprintf(command, "%s/%s", MainPath,"KMotionServer");
-	printf("%s:%d Launch KMotionServer first: %s\n",__FILE__,__LINE__,command);
+	printf("%s:%d Launch KMotionServer first!\n",__FILE__,__LINE__);
 	PipeMutex->Unlock();
 	exit(1);
-#else
-    sprintf(command, "%s/%s", MainPath,"KMotionServer &");
-    system(command);
-#endif
+    #else
+    sprintf(cmd, "%s/%s", GetServerDir(),"KMotionServer &");
+    system(cmd);
+    #endif
 
 #else
-    char command[1024];
-#ifdef _DEAMON
-    sprintf(command, "%s/%s", MainPath,"KMotionServer");
-#else
-    sprintf(command, "%s/%s", MainPath,"KMotionServer &");
-#endif
-    printf("%s:%d Launching KMotionServer %s\n",__FILE__,__LINE__, command);
-    system(command);
+    #ifdef _DEAMON
+    sprintf(cmd, "%s/%s", GetServerDir(),"KMotionServer");
+    #else
+    sprintf(cmd, "%s/%s", GetServerDir(),"KMotionServer &");
+    #endif
+    printf("%s:%d Launching KMotionServer %s\n",__FILE__,__LINE__, cmd);
+    system(cmd);
 #endif
 
 	return 0;
@@ -724,6 +774,91 @@ void CKMotionDLL::SetCustomCompiler(const char * compiler, const char * options,
 }
 #endif
 
+
+void CKMotionDLL::SetCompilerDir(const char * dir)
+{
+    if (dir) {
+        strncpy(compiler_dir, dir, sizeof(compiler_dir)-1);
+        compiler_dir[sizeof(compiler_dir)-1] = 0;
+    }
+    else
+        compiler_dir[0] = 0;
+}
+
+const char * CKMotionDLL::GetCompilerDir()
+{
+    FILE *f;
+    
+    if (compiler_dir[0])
+        return compiler_dir;
+
+#ifndef _KMOTIONX
+    
+    // Find and cache the compiler location
+	CString Compiler = MainPathDLL + COMPILER;
+
+	f=fopen(Compiler,"r");  // try where the KMotionDLL was irst
+
+	if (f==NULL)
+	{
+		Compiler = MainPath + "\\Release" + COMPILER;
+	
+		f=fopen(Compiler,"r");  // try in the released directory next
+		if (f==NULL)
+		{
+			Compiler = MainPath + "\\Debug" + COMPILER;
+			f=fopen(Compiler,"r");  // try in the debug directory next
+			if (f!=NULL)
+		        strcpy(compiler_dir, MainPath + "\\Debug");
+		}
+		else
+		    strcpy(compiler_dir, MainPath + "\\Release");
+	}
+	else
+	    strcpy(compiler_dir, MainPath);
+#else
+	char Compiler[MAX_PATH +1];
+
+    strcpy(Compiler, customCompiler);
+	if (Compiler[0] == '/') {
+	    // Custom compiler is absolute, break it into dir and file
+	    strcpy(compiler_dir, Compiler);
+	    *strrchr(compiler_dir, '/') = 0;
+	    // Now custom compiler is file name part only...
+	    strcpy(customCompiler, Compiler + strlen(compiler_dir) + 1);
+	    // Have fixed path, so return it.
+	    return compiler_dir;
+	}
+
+    f=fopen(Compiler,"r");  // try if compiler is in pwd
+    if (f==NULL)
+    {
+	    sprintf(Compiler, "%s/%s", MainPath, customCompiler);
+	    f=fopen(Compiler,"r");  // try in the released directory next
+	    if (f==NULL)
+	    {
+	        if (tcc_vers < 26)
+		        sprintf(Compiler, "%s/TCC67/%s", MainPathRoot, customCompiler);
+		    else
+		        sprintf(Compiler, "%s/KMotionX/tcc-0.9.26/%s", MainPathRoot, customCompiler);
+		    f=fopen(Compiler,"r");  // try in the released directory next
+		    if (f!=NULL) {
+		        *strrchr(Compiler, '/') = 0;
+                strcpy(compiler_dir, Compiler);
+            }
+	    }
+	    else
+            strcpy(compiler_dir, MainPathRoot);
+    }
+    else
+        strcpy(compiler_dir, ".");  // It's in PWD
+#endif
+	if (f)
+	    fclose(f);
+	return compiler_dir;
+}
+
+
 int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardType, int Thread, char *Err, int MaxErrLen)
 {
 #ifndef _KMOTIONX
@@ -744,26 +879,15 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	// Try and locate the Compiler
 
 	CString Errors;
-	CString Compiler = MainPathDLL + COMPILER;
+	CString Compiler = CString(GetCompilerDir()) + COMPILER;
 	CString OFile=OutFile;
 
-	FILE *f=fopen(Compiler,"r");  // try where the KMotionDLL was irst
+	FILE *f=fopen(Compiler,"r");  // try where the KMotionDLL was first
 
 	if (f==NULL)
 	{
-		Compiler = MainPath + "\\Release" + COMPILER;
-	
-		f=fopen(Compiler,"r");  // try in the released directory next
-		if (f==NULL)
-		{
-			Compiler = MainPath + "\\Debug" + COMPILER;
-			f=fopen(Compiler,"r");  // try in the debug directory next
-			if (f==NULL)
-			{
-				DoErrMsg("Error Locating TCC67.exe Compiler");
-				return 1;
-			}
-		}
+		DoErrMsg("Error Locating TCC67.exe Compiler");
+		return 1;
 	}
 	fclose(f);
 
@@ -814,7 +938,8 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	if (BoardType == BOARD_TYPE_KMOTION)
 		BindTo = MainPathRoot + "\\DSP_KMotion\\DSPKMotion.out";
 	else 
-		BindTo = MainPathRoot + "\\DSP_KFLOP\\DSPKFLOP.out";
+		BindTo = DSPKFLOP;
+;
 
 
 	cmd.Format(" -text %08X -g -nostdinc " + IncSrcPath1 + IncSrcPath2 + " -o ",GetLoadAddress(Thread,BoardType));
@@ -898,6 +1023,7 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 
 	if (Thread==0) return 1;
 	char Compiler[MAX_PATH +1];
+	int add_dot = 0;
     strcpy(Compiler, customCompiler);
 	if (Compiler[0] == '/') {
 	    FILE *f=fopen(Compiler,"r");  // try if compiler is on path
@@ -908,7 +1034,8 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	    }
 	}
 	else {
-	    FILE *f=fopen(Compiler,"r");  // try if compiler is on path
+
+	    FILE *f=fopen(Compiler,"r");  // try if compiler is in pwd
 
 	    if (f==NULL)
 	    {
@@ -928,6 +1055,10 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 			    }
 		    }
 	    }
+	    else
+	        // In in pwd, then add './' so that shell command can find it here.
+	        add_dot = 1;
+			
 	    fclose(f);
     }
 
@@ -941,7 +1072,7 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 		sprintf(BindTo, "\"%s%cDSP_KMotion%cDSPKMotion.out\"", MainPathRoot,PATH_SEPARATOR,PATH_SEPARATOR);
 	} else {
 		sprintf(IncSrcPath1,"-I\"%s%cDSP_KFLOP\"", MainPathRoot, PATH_SEPARATOR) ;
-		sprintf(BindTo, "\"%s%cDSP_KFLOP%cDSPKFLOP.out\"", MainPathRoot, PATH_SEPARATOR, PATH_SEPARATOR);
+		strcpy(BindTo, DSPKFLOP);
 	}
 	ExtractPath(Name,path);
 	sprintf(IncSrcPath2,"-I\"%s\"", path) ;
@@ -950,7 +1081,8 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	char command[MAX_LINE +1];
 
     if (tcc_vers < 26)
- 	    snprintf(command, sizeof(command), "%s -text %08X %s -nostdinc %s %s -o \"%s\" \"%s\" %s 2>&1",
+ 	    snprintf(command, sizeof(command), "%s%s -text %08X %s -nostdinc %s %s -o \"%s\" \"%s\" %s 2>&1",
+ 	        add_dot ? "./" : "",
 			Compiler,
 			GetLoadAddress(Thread,BoardType),
 			customOptions,
@@ -960,7 +1092,8 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 			Name,
 			BindTo);
     else
-	    snprintf(command, sizeof(command), "%s -Wl,-Ttext,%08X %s -Wl,--oformat,coff -static -nostdinc -nostdlib %s %s -o \"%s\" \"%s\" %s 2>&1",
+	    snprintf(command, sizeof(command), "%s%s -Wl,-Ttext,%08X %s -Wl,--oformat,coff -static -nostdinc -nostdlib %s %s -o \"%s\" \"%s\" %s 2>&1",
+ 	        add_dot ? "./" : "",
 			Compiler,
 			GetLoadAddress(Thread,BoardType),
 			customOptions,
@@ -978,6 +1111,9 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	//compile with debug flag is currently not supported -g
 	//c67-tcc -Wl,-Ttext,80050000 -Wl,--oformat,coff -static -nostdinc -nostdlib -I./ -o ~/Desktop/Gecko3AxisOSX.out Gecko3Axis.c DSPKFLOP.out
 	debug("%s\n",command);
+
+	//int exitCode = system(command);
+
 	int exitCode = 0;
 
 	FILE * out = popen(command, "r");
@@ -1072,6 +1208,13 @@ unsigned int CKMotionDLL::GetLoadAddress(int thread, int BoardType)
 }
 
 
+void CKMotionDLL::SetDSPKFLOP(const char * filename)
+{
+    strncpy(DSPKFLOP, filename, sizeof(DSPKFLOP)-1);
+    DSPKFLOP[sizeof(DSPKFLOP)-1] = 0;
+}
+
+
 int CKMotionDLL::CheckKMotionVersion(int *type, bool GetBoardTypeOnly) 
 {
 	int result;
@@ -1098,7 +1241,7 @@ int CKMotionDLL::CheckKMotionVersion(int *type, bool GetBoardTypeOnly)
 		if(strstr(BoardVersion,"KFLOP") != NULL)
 		//if (BoardVersion.Find("KFLOP")==0)
 		{
-			sprintf(OutFile,"%s%cDSP_KFLOP%cDSPKFLOP.out",MainPathRoot,PATH_SEPARATOR,PATH_SEPARATOR);
+			strcpy(OutFile,DSPKFLOP);
 			if (type) *type = BOARD_TYPE_KFLOP;
 		}
 		else
@@ -1130,7 +1273,7 @@ int CKMotionDLL::CheckKMotionVersion(int *type, bool GetBoardTypeOnly)
 				" Download New Version.  This will install compatible Firmware with" LINE_BREAK
 				" this version of software" LINE_BREAK LINE_BREAK
 				" %s  KFLOP Firmware" LINE_BREAK
-				" %s  DSP_KFLOP.out file",
+				" %s  .out file",
 				BoardVersion,
 				CoffVersion);
 		else
@@ -1139,7 +1282,7 @@ int CKMotionDLL::CheckKMotionVersion(int *type, bool GetBoardTypeOnly)
 				" Download New Version.  This will install compatible Firmware with" LINE_BREAK
 				" this version of software" LINE_BREAK LINE_BREAK
 				" %s  KMotion Firmware" LINE_BREAK
-				" %s  DSP_KMotion.out file",
+				" %s  .out file",
 				BoardVersion,
 				CoffVersion);
 
@@ -1437,7 +1580,7 @@ int CKMotionDLL::GetStatus(MAIN_STATUS& status, bool lock)
 	}
 
 	// KMotion is available read the status
-	sprintf(s,"GetStatus");
+	sprintf(s,"GetStatus %x", HostStatus);
 	if (WriteLine(s))
 	{
 		if (lock) ReleaseToken();
@@ -1509,9 +1652,141 @@ int CKMotionDLL::GetStatus(MAIN_STATUS& status, bool lock)
 	return 0;
 
 }
+
+bool CKMotionDLL::GetLastStatus(MAIN_STATUS& status)
+{
+    if (first_status)
+        return false;   // Not yet available
+    status = last_status;
+    return true;
+}
+
+void CKMotionDLL::SetHostStatus(int host_status, bool poll)
+{
+    HostStatus = host_status;
+    if (poll)
+        Poll();
+}
+
+
+
+template<class T, class F = T>
+struct make_vec : public std::vector<T>
+{
+    make_vec(int n, F * values) : std::vector<T>(n)
+    { 
+        for (int i = 0; i < n; ++i)
+            (*this)[i] = values[i];
+    }
+    virtual ~make_vec() {}
+};
+
+
+void CKMotionDLL::Poll()
+{
+    // Poll (using GetStatus) and call virtual functions to handle any changes.  This is mainly
+    // intended for Python etc. bindings, since it is more efficient for the app to be notified
+    // when things change, rather than having the high-level code have to go through the entire
+    // status struct looking for changes.
+    MAIN_STATUS m; 
+    if (!GetStatus(m, true)) {
+        unsigned int changes = first_status ? 0xFFFFFFFF : 0;
+        if (!first_status) {
+            changes |= memcmp(m.ADC, last_status.ADC, sizeof(m.ADC)) ? POLL_ADC : 0;
+            changes |= memcmp(m.DAC, last_status.DAC, sizeof(m.DAC)) ? POLL_DAC : 0;
+            changes |= memcmp(m.PWM, last_status.PWM, sizeof(m.PWM)) ? POLL_PWM : 0;
+            changes |= memcmp(m.Position, last_status.Position, sizeof(m.Position)) ? POLL_POS : 0;
+            changes |= memcmp(m.Dest, last_status.Dest, sizeof(m.Dest)) ? POLL_DEST : 0;
+            changes |= memcmp(m.OutputChan0, last_status.OutputChan0, sizeof(m.OutputChan0)) ? POLL_OUTCHAN : 0;
+            changes |= memcmp(&m.InputModes, &last_status.InputModes, sizeof(m.InputModes)*4) ? POLL_MODES : 0;
+            changes |= m.Enables != last_status.Enables ? POLL_ENABLE : 0;
+            changes |= m.AxisDone != last_status.AxisDone ? POLL_DONE : 0;
+            changes |= memcmp(&m.BitsDirection[0], &last_status.BitsDirection[0], sizeof(m.BitsDirection[0])*10) ? POLL_IO : 0;
+            changes |= m.ThreadActive != last_status.ThreadActive ? POLL_THREAD : 0;
+            changes |= m.StopImmediateState != last_status.StopImmediateState ? POLL_STOP : 0;
+            changes |= m.PC_comm[0] != last_status.PC_comm[0] ? POLL_PCCOMM : 0;
+        }
+        changes &= poll_interest;
+        first_status = false;
+        if (changes & POLL_ADC)
+            ChangedADC(make_vec<int>(sizeof(m.ADC)/sizeof(m.ADC[0]), m.ADC));
+        if (changes & POLL_DAC)
+            ChangedDAC(make_vec<int>(sizeof(m.DAC)/sizeof(m.DAC[0]), m.DAC));
+        if (changes & POLL_PWM)
+            ChangedPWM(make_vec<int>(sizeof(m.PWM)/sizeof(m.PWM[0]), m.PWM));
+        if (changes & POLL_POS)
+            ChangedPos(make_vec<double>(sizeof(m.Position)/sizeof(m.Position[0]), m.Position));
+        if (changes & POLL_DEST)
+            ChangedDest(make_vec<double>(sizeof(m.Dest)/sizeof(m.Dest[0]), m.Dest));
+        if (changes & POLL_OUTCHAN)
+            ChangedOutChan(make_vec<int, unsigned char>(sizeof(m.OutputChan0)/sizeof(m.OutputChan0[0]), m.OutputChan0));
+        if (changes & POLL_MODES)
+            ChangedMode(m.InputModes, m.InputModes2, m.OutputModes, m.OutputModes2);
+        if (changes & POLL_ENABLE)
+            ChangedEnable(m.Enables);
+        if (changes & POLL_DONE)
+            ChangedDone(m.AxisDone);
+        if (changes & POLL_IO) {
+            // Populate bool vector so it is indexed by I/O bit number.
+            boolvec outdir(KSTEP_OPTO_IN_BITS, false);   // FIXME: not best choice of constant, but we do bits up to KAnalog.
+            boolvec state(KSTEP_OPTO_IN_BITS, false);
+            for (unsigned int i = 0; i < KSTEP_OPTO_IN_BITS; ++i) {
+                unsigned int j = 1u << (i & 0x1F);
+                if (i < 32) {
+                    outdir[i] = (m.BitsDirection[0] & j) != 0;
+                    state[i] = (m.BitsState[0] & j) != 0;
+                }
+                else if (i < 64) {
+                    outdir[i] = (m.BitsDirection[1] & j) != 0;
+                    state[i] = (m.BitsState[1] & j) != 0;
+                }
+                else if (i < 96) {
+                    outdir[i] = (m.SnapBitsDirection0 & j) != 0;
+                    state[i] = (m.SnapBitsState0 & j) != 0;
+                }
+                else if (i < 128) {
+                    outdir[i] = (m.SnapBitsDirection1 & j) != 0;
+                    state[i] = (m.SnapBitsState1 & j) != 0;
+                }
+                else if (i < 128+16) {
+                    state[i] = (m.KanalogBitsStateInputs & j) != 0;
+                }
+                else if (i < KSTEP_OPTO_IN_BITS) {
+                    outdir[i] = true;
+                    state[i] = (m.KanalogBitsStateOutputs & j) != 0;
+                }
+            }
+            ChangedIO(outdir, state);
+        }
+        if (changes & POLL_THREAD)
+            ChangedThread(m.ThreadActive);
+        if (changes & POLL_STOP)
+            ChangedStop(m.StopImmediateState);
+        if (changes & POLL_PCCOMM)
+            ChangedPCComm(make_vec<int>(sizeof(m.PC_comm)/sizeof(m.PC_comm[0]), m.PC_comm));
+        last_status = m;
+    }
+}
+
+
+void CKMotionDLL::SetPollCallback(unsigned int interest)
+{
+    poll_interest = interest;
+}
+
+void CKMotionDLL::SetMainPathRoot(const char * dir)
+{
 #ifdef _KMOTIONX
-const char* CKMotionDLL::getInstallRoot(){
+    strncpy(MainPathRoot, dir, sizeof(MainPathRoot)-1);
+    MainPathRoot[sizeof(MainPathRoot)-1] = 0;
+#else
+    MainPathRoot = dir;
+#endif
+}
+
+const char* CKMotionDLL::GetMainPathRoot() const
+{
 	return MainPathRoot;
 }
-#endif
+
 

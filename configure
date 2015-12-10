@@ -4,6 +4,7 @@
 use_libftdi="yes"
 use_ftd2xx="no"
 build_java_binding="yes"
+build_python_binding="yes"
 simulate_load_coff="no"
 cc="gcc"
 libsuf=""
@@ -70,6 +71,8 @@ for opt do
   ;;
   --disable-java) build_java_binding="no"
   ;;
+  --disable-python) build_python_binding="no"
+  ;;
   --coffload) simulate_load_coff="no"
   ;;
   --help|-h) show_help="yes"
@@ -87,6 +90,7 @@ Options: [defaults in brackets after descriptions]
 Standard options:
   --help                   print this message
   --disable-java           Disable java binding
+  --disable-python         Disable python binding
 Advanced options (experts only):
   --coffload               Enables coff loading (disabled by default due to non tested functionality)
   --ftd2xx                 Use ftd2xx driver instead of libftdi
@@ -127,15 +131,15 @@ fi
 
 #Configure architechture and os flags
 if test "$arch" = "armv6l" ; then
-#	Raspberry Pi
-  cc=gcc-4.8
-	ARCH_C_FLAGS="-march=armv6 -mfpu=vfp -mfloat-abi=hard"
+#	Old Raspberry Pi
+	ARCH_C_FLAGS="-mfpu=vfp -mfloat-abi=hard"
 	ARCH_LD_FLAGS="-pthread"
 elif test "$arch" = "armv7l" ; then
-# Raspberry Pi 2
-  cc=gcc-4.8
-  ARCH_C_FLAGS="-march=armv7-a -mtune=cortex-a7 -mfpu=neon"
-  ARCH_LD_FLAGS="-pthread"
+#	Raspberry Pi 2, BeagleBone etc.
+#  cc=gcc-4.8
+#  ARCH_C_FLAGS="-march=armv7-a -mtune=cortex-a7 -mfpu=neon"
+	ARCH_C_FLAGS="-mfpu=vfp -mfloat-abi=hard"
+	ARCH_LD_FLAGS="-pthread"
 elif test "$targetos" = "Linux" ; then
 	ARCH_LD_FLAGS="-march=$arch -pthread"
 elif test "$targetos" = "Darwin" ; then
@@ -194,6 +198,7 @@ Use libftdi      	$use_libftdi
 Use ftd2xx       	$use_ftd2xx
 FTDI driver      	$ftdi_lib
 Java binding     	$build_java_binding
+Python binding     	$build_python_binding
 Simulate load coff	$simulate_load_coff
 Java Home        	$java_home
 C compiler       	$cc
@@ -256,6 +261,10 @@ echo "#define GCC_MINOR $gcc_minor" >> $TMPH
 if test "$build_java_binding" = "yes" ; then
   echo "BUILD_JNI=true" >> config.mak
   echo "JAVA_HOME=$java_home" >> config.mak
+fi
+
+if test "$build_python_binding" = "yes" ; then
+  echo "BUILD_PYTHON=true" >> config.mak
 fi
 
 if test "$cpu" = "x86" ; then

@@ -926,7 +926,6 @@ int FindCoffSymbolIndex(const char *func_name)
 
 bool OutputTheSection(Section *sect)
 {
-
 	if (!strcmp(sect->name, ".text"))
 		return true;
 	else if (!strcmp(sect->name, ".data"))
@@ -960,8 +959,7 @@ Section* FindSection(TCCState *s1, const char *sname)
 	{
         s = s1->sections[i];
 
-    if (!strcmp(sname, s->name))
-			return s;
+        if (!strcmp(sname, s->name)) return s;
 	}
 
 	ALWAYS_ASSERT(FALSE);

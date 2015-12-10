@@ -145,6 +145,7 @@ typedef struct
 extern int nspecial_cmds;
 extern int special_cmds_initial_first;   // Special commands start index at the very beginning of path
 extern int special_cmds_initial_last;    // Special commands ending index at the very beginning of path
+extern int special_cmds_initial_sequence_no[2];    // Special commands initial sequence number
 extern SPECIAL_CMD special_cmds[MAX_SPECIAL_CMDS];
 extern int ispecial_cmd_downloaded;
 

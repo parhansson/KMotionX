@@ -41,6 +41,7 @@ SEGMENT segments1[MAX_TP_SEGMENTS];
 int nspecial_cmds;
 int special_cmds_initial_first;   // Special commands start index at the very beginning of path
 int special_cmds_initial_last;    // Special commands ending index at the very beginning of path
+int special_cmds_initial_sequence_no[2];    // Special commands initial sequence number
 SPECIAL_CMD special_cmds[MAX_SPECIAL_CMDS];
 int ispecial_cmd_downloaded;
 
@@ -124,6 +125,7 @@ void tp_init()
 
 	ispecial_cmd_downloaded=nsegs=nspecial_cmds=nCombined=0;
 	special_cmds_initial_first=special_cmds_initial_last=-1;
+	special_cmds_initial_sequence_no[SegBufToggle]=-1;    // Special commands initial sequence number invalid
 }
 
 
@@ -1018,13 +1020,13 @@ int CombineSegments(double MaxLength)
 
 	// max speeds must be very similar
 
-	if (fabs(pn->OrigVel - pm1->OrigVel) > SPEED_TOL * fmin(pn->OrigVel,pm1->OrigVel))
+	if (fabs(pn->OrigVel - pm1->OrigVel) > SPEED_TOL * fmin(pn->OrigVel,pm1->OrigVel)) 
 	{
 		nCombined = 0;
 		return 1;
 	}
 
-	if (fabs(pn->OrigAccel - pm1->OrigAccel) > SPEED_TOL * fmin(pn->OrigAccel,pm1->OrigAccel))
+	if (fabs(pn->OrigAccel - pm1->OrigAccel) > SPEED_TOL * fmin(pn->OrigAccel,pm1->OrigAccel)) 
 	{
 		nCombined = 0;
 		return 1;
@@ -1259,23 +1261,6 @@ void CalcFinalDirectionOfSegment(SEGMENT *p,double &dx, double &dy, double &dz,d
 		da = p->a1 - p->a0;
 		db = p->b1 - p->b0;
 		dc = p->c1 - p->c0;
-
-		bool AisDist = (!MP.DegreesA || MP.RadiusA!=0.0);
-		bool BisDist = (!MP.DegreesB || MP.RadiusB!=0.0);
-		bool CisDist = (!MP.DegreesC || MP.RadiusC!=0.0);
-
-		if (AisDist)
-		{
-			if (MP.DegreesA) da *= PI/180.0*MP.RadiusA;
-		}
-		if (BisDist)
-		{
-			if (MP.DegreesB) db *= PI/180.0*MP.RadiusB;
-		}
-		if (CisDist)
-		{
-			if (MP.DegreesC) dc *= PI/180.0*MP.RadiusC;
-		}
 	}
 	else
 	{
@@ -1348,23 +1333,6 @@ void CalcBegDirectionOfSegment(SEGMENT *p, double &dx, double &dy, double &dz, d
 		da = p->a1 - p->a0;
 		db = p->b1 - p->b0;
 		dc = p->c1 - p->c0;
-
-		bool AisDist = (!MP.DegreesA || MP.RadiusA!=0.0);
-		bool BisDist = (!MP.DegreesB || MP.RadiusB!=0.0);
-		bool CisDist = (!MP.DegreesC || MP.RadiusC!=0.0);
-
-		if (AisDist)
-		{
-			if (MP.DegreesA) da *= PI/180.0*MP.RadiusA;
-		}
-		if (BisDist)
-		{
-			if (MP.DegreesB) db *= PI/180.0*MP.RadiusB;
-		}
-		if (CisDist)
-		{
-			if (MP.DegreesC) dc *= PI/180.0*MP.RadiusC;
-		}
 	}
 	else
 	{
@@ -1464,9 +1432,38 @@ double CalcChangeInDirection(int i)
 			  (ady) * (bdy) +
 			  (adz) * (bdz);
 
-		if (AisDist) dot += (ada) * (bda);
-		if (BisDist) dot += (adb) * (bdb);
-		if (CisDist) dot += (adc) * (bdc);
+		
+		bool AisDist = (!MP.DegreesA || MP.RadiusA!=0.0);
+		bool BisDist = (!MP.DegreesB || MP.RadiusB!=0.0);
+		bool CisDist = (!MP.DegreesC || MP.RadiusC!=0.0);
+
+		if (AisDist)
+		{
+			if (MP.DegreesA)
+			{
+				ada *= PI/180.0*MP.RadiusA;
+				bda *= PI/180.0*MP.RadiusA;
+			}
+			dot += (ada) * (bda);
+		}
+		if (BisDist)
+		{
+			if (MP.DegreesB)
+			{
+				adb *= PI/180.0*MP.RadiusB;
+				bdb *= PI/180.0*MP.RadiusB;
+			}
+			dot += (adb) * (bdb);
+		}
+		if (CisDist)
+		{
+			if (MP.DegreesC)
+			{
+				adc *= PI/180.0*MP.RadiusC;
+				bdc *= PI/180.0*MP.RadiusC;
+			}
+			dot += (adc) * (bdc);
+		}
 	}
 
 	dot /= a->dx * b->dx;

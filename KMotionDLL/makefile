@@ -3,7 +3,9 @@ IDIR+=$(BUILD_ROOT)/KMotionX/include
 IDIR+=$(BUILD_ROOT)/KMotionX/KMotionSupport/include
 
 LD_LIBS+=KMotionSupport
-LD_LIBS+=$(FTDILIB)
+#not allowed on mac
+#LD_LIBS+=rt
+LD_LIBS+=$(FTDILIB) 
 
 
 SOURCES=COFFMAIN.cpp CLOAD.cpp KMotionDLL_Direct.cpp KMotionDLL.cpp KMotionLocal.cpp

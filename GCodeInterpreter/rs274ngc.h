@@ -151,6 +151,7 @@
 #define G_21   210
 #define G_28   280
 #define G_30   300
+#define G_32   320
 #define G_33   330
 #define G_38_2 382
 #define G_40   400
@@ -267,15 +268,6 @@ and is not represented here
 */
 
 typedef struct setup_struct {
-    double AA_axis_offset;	// A-axis g92 offset
-    double AA_current;		// current A-axis position
-    double AA_origin_offset;	// A-axis origin offset
-    double BB_axis_offset;	// B-axis g92offset
-    double BB_current;		// current B-axis position
-    double BB_origin_offset;	// B-axis origin offset
-    double CC_axis_offset;	// C-axis g92offset
-    double CC_current;		// current C-axis position
-    double CC_origin_offset;	// C-axis origin offset
     int active_g_codes[RS274NGC_ACTIVE_G_CODES];	// array of active G
     // codes
     int active_m_codes[RS274NGC_ACTIVE_M_CODES];	// array of active M
@@ -285,6 +277,9 @@ typedef struct setup_struct {
     double axis_offset_x;	// X-axis g92 offset
     double axis_offset_y;	// Y-axis g92 offset
     double axis_offset_z;	// Z-axis g92 offset
+    double AA_axis_offset;	// A-axis g92 offset
+    double BB_axis_offset;	// B-axis g92offset
+    double CC_axis_offset;	// C-axis g92offset
     // gone
     CANON_MOTION_MODE control_mode;	// exact path or cutting mode
     CANON_SPINDLE_MODE spindle_mode;	// exact path or cutting mode
@@ -292,6 +287,9 @@ typedef struct setup_struct {
     double current_x;		// current X-axis position
     double current_y;		// current Y-axis position
     double current_z;		// current Z-axis position
+    double AA_current;		// current A-axis position
+    double BB_current;		// current B-axis position
+    double CC_current;		// current C-axis position
     double cutter_comp_radius;	// current cutter compensation radius
     int cutter_comp_side;	// current cutter compensation side
     double cycle_cc;		// cc-value (normal) for canned cycles
@@ -315,6 +313,9 @@ typedef struct setup_struct {
     double origin_offset_x;	// origin offset x
     double origin_offset_y;	// origin offset y
     double origin_offset_z;	// origin offset z
+    double AA_origin_offset;	// A-axis origin offset
+    double BB_origin_offset;	// B-axis origin offset
+    double CC_origin_offset;	// C-axis origin offset
     ON_OFF percent_flag;	// ON means first line was percent sign
     CANON_PLANE plane;		// active plane, XY-, YZ-, or XZ-plane
     ON_OFF probe_flag;		// flag indicating probing done
@@ -328,12 +329,15 @@ typedef struct setup_struct {
     ON_OFF speed_override;	// whether speed override is enabled
     CANON_DIRECTION spindle_turning;	// direction spindle is turning
     double tool_length_offset;	// current tool length offset
+    double tool_xoffset;	// current tool x offset
+    double tool_yoffset;	// current tool y offset
     int tool_max;		// highest number tool slot in carousel
     // number
     int tool_table_index;	// tool index used with cutter comp
     double traverse_rate;	// rate for traverse motions
 	
 	ON_OFF block_delete;
+	ON_OFF DiameterMode;  // Radius vs Diameter Mode for Lathe
 	int cutter_radius_compensation;
 	double cycle_z;
 	int current_line;
@@ -483,6 +487,13 @@ static inline const char *rs274ngc_file()
 
 extern const int _gees[];  // maps GCode to groups
 
+#ifndef _KMOTIONX
+#ifdef GCODEINTERPRETER_EXPORTS
+__declspec(dllexport)
+#else
+__declspec(dllimport)
+#endif
+#endif
 extern setup _setup;
 
 
