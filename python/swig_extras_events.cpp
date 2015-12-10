@@ -38,6 +38,7 @@ enum GEvtCode {
     GEVXB(CHG_THREAD,8,1,ThreadActive)
     GEV(CHG_STOP,StopImmediateState,cb_int)
     GEVX(CHG_PCCOMM,0,1,PC_comm,cb_int)     // only looks for command var (persist[100]) changes
+    GEVX(CHG_PCCOMMMFB,4,5,PC_comm,cb_int)  // looks for MPG feedback vars (persist[104]) changes
     GEVX(CHG_PCCOMMSFB,5,6,PC_comm,cb_int)  // looks for spindle speed/load feedback vars (persist[105]) changes
     GEVX(CHG_PCCOMMIO,6,7,PC_comm,cb_int)   // looks for I/O status vars (persist[106]) changes
     GEVX(CHG_PCCOMMST,7,8,PC_comm,cb_int)   // looks for general status vars (persist[107]) changes

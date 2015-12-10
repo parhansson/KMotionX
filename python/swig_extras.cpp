@@ -47,6 +47,16 @@
                                                         // not currently at target speed +/- tolerance.
     #define VSP_SPEED_VALID     0x02000000          // Speed feedback is a measurement, else is an estimate.
     #define VSP_LOAD_VALID      0x04000000          // Load feedback is a measurement.
+#define VAR_MPG_FB              VAR(104)        // MPG and front panel control feedback
+    #define VMF_ENC_MASK        0x00000FFF          // Mask for MPG encoder count
+    #define VMF_AXIS_MASK       0x0003F000          // Bit set for each axis selected
+    #define VMF_X10             0x00040000          // Bit set for x10
+    #define VMF_X100            0x00080000          // Bit set for x100
+    #define VMF_START           0x00100000          // Front panel state
+    #define VMF_STOP            0x00200000
+    #define VMF_REVERSE         0x00400000
+    #define VMF_x               0x00800000
+    #define VMF_POT             0xFF000000          // Pot reading (0-255)
 
 // Persist variables (0-99):
 

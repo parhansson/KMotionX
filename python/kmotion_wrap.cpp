@@ -52328,6 +52328,8 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "CHG_STOP",SWIG_From_int(static_cast< int >(CHG_STOP)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "CHG_PCCOMM",SWIG_From_int(static_cast< int >(CHG_PCCOMM)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "_LAST_CHG_PCCOMM",SWIG_From_int(static_cast< int >(_LAST_CHG_PCCOMM)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "CHG_PCCOMMMFB",SWIG_From_int(static_cast< int >(CHG_PCCOMMMFB)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "_LAST_CHG_PCCOMMMFB",SWIG_From_int(static_cast< int >(_LAST_CHG_PCCOMMMFB)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "CHG_PCCOMMSFB",SWIG_From_int(static_cast< int >(CHG_PCCOMMSFB)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "_LAST_CHG_PCCOMMSFB",SWIG_From_int(static_cast< int >(_LAST_CHG_PCCOMMSFB)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "CHG_PCCOMMIO",SWIG_From_int(static_cast< int >(CHG_PCCOMMIO)));
@@ -52410,6 +52412,16 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "VSP_ACCEL",SWIG_From_int(static_cast< int >(0x01000000)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "VSP_SPEED_VALID",SWIG_From_int(static_cast< int >(0x02000000)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "VSP_LOAD_VALID",SWIG_From_int(static_cast< int >(0x04000000)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "VAR_MPG_FB",SWIG_From_int(static_cast< int >(104)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "VMF_ENC_MASK",SWIG_From_int(static_cast< int >(0x00000FFF)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "VMF_AXIS_MASK",SWIG_From_int(static_cast< int >(0x0003F000)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "VMF_X10",SWIG_From_int(static_cast< int >(0x00040000)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "VMF_X100",SWIG_From_int(static_cast< int >(0x00080000)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "VMF_START",SWIG_From_int(static_cast< int >(0x00100000)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "VMF_STOP",SWIG_From_int(static_cast< int >(0x00200000)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "VMF_REVERSE",SWIG_From_int(static_cast< int >(0x00400000)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "VMF_x",SWIG_From_int(static_cast< int >(0x00800000)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "VMF_POT",SWIG_From_int(static_cast< int >(0xFF000000)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "VAR_SPINDLE_SPEED",SWIG_From_int(static_cast< int >(99)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "VAR_SPINDLE_EFFORT",SWIG_From_int(static_cast< int >(98)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "VAR_TOOL_NUMBER",SWIG_From_int(static_cast< int >(97)));
