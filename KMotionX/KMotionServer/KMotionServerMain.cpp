@@ -29,15 +29,21 @@ either expressed or implied, of the FreeBSD Project.
 
 // KMotionServerMain.cpp 
 
-#ifdef __arm__
+#ifdef DEBUG
+  // DEBUG symbol forces syslogging with details
+  #define USE_SYSLOG  1
+  #define SYSLOG_DETAILS  1   // set 1 to log detailed traffic, else only errors and uncommon messages.
+#else
+  #ifdef __arm__
     // On embedded systems (e.g. Beaglebone, Raspberry Pi) we don't want the syslog to
     // fill up.  We generate a lot of logging so this can be a problem.
     #define USE_SYSLOG 0
-#else
+  #else
     #define USE_SYSLOG 1
-#endif
+  #endif
 
-#define SYSLOG_DETAILS  0   // set 1 to log detailed traffic, else only errors and uncommon messages.
+  #define SYSLOG_DETAILS  0   // set 1 to log detailed traffic, else only errors and uncommon messages.
+#endif
 
 
 #include <HiResTimer.h>
@@ -71,6 +77,7 @@ either expressed or implied, of the FreeBSD Project.
 #include <KMotionDLL.h>
 #include <KmotionIO.h>
 #include <KMotionDLL_Direct.h>
+
 
 #if !USE_SYSLOG
     // Compile out all syslog calls
@@ -320,42 +327,42 @@ int main(int argc, char ** argv)
     }
 
     if (open_unix) {
-        if (strlen(SOCK_PATH) >= sizeof(local.sun_path)) {
-        	perrorExit("path too long!");
-        }
+    if (strlen(SOCK_PATH) >= sizeof(local.sun_path)) {
+    	perrorExit("path too long!");
+    }
 
-        local.sun_family = AF_UNIX;
-        strcpy(local.sun_path, SOCK_PATH);
+    local.sun_family = AF_UNIX;
+    strcpy(local.sun_path, SOCK_PATH);
 
-        int unlink_err;
-        if((unlink_err = unlink(local.sun_path))){
-        	logError("unlink");
-        }
+    int unlink_err;
+    if((unlink_err = unlink(local.sun_path))){
+    	logError("unlink");
+    }
 
-        //http://idletechnology.blogspot.se/2011/12/unix-domain-sockets-on-osx.html
-    #ifdef __APPLE__
-        local.sun_len = sizeof(local);
-        if (bind(main_socket, (struct sockaddr *)&local, SUN_LEN(&local)) == -1) {
-    #else
-        len = strlen(local.sun_path) + sizeof(local.sun_family);
-        if (bind(main_socket, (struct sockaddr *)&local, len) == -1) {
-    #endif
-        	perrorExit("bind");
-        }
+    //http://idletechnology.blogspot.se/2011/12/unix-domain-sockets-on-osx.html
+#ifdef __APPLE__
+    local.sun_len = sizeof(local);
+    if (bind(main_socket, (struct sockaddr *)&local, SUN_LEN(&local)) == -1) {
+#else
+    len = strlen(local.sun_path) + sizeof(local.sun_family);
+    if (bind(main_socket, (struct sockaddr *)&local, len) == -1) {
+#endif
+    	perrorExit("bind");
+    }
         maxfd = main_socket;
     }
     
     if (open_tcp) {
-        tlocal.sin_family = AF_INET;
+    tlocal.sin_family = AF_INET;
         tlocal.sin_port = htons(tcp_port);
-        tlocal.sin_addr.s_addr = INADDR_ANY;
-        len = sizeof(tlocal);
-        if (bind(tcp_socket, (struct sockaddr *)&tlocal, len) == -1) {
-        	perrorExit("tcp bind");
+    tlocal.sin_addr.s_addr = INADDR_ANY;
+    len = sizeof(tlocal);
+    if (bind(tcp_socket, (struct sockaddr *)&tlocal, len) == -1) {
+    	perrorExit("tcp bind");
         }
         maxfd = tcp_socket;
     }
-        
+    
 
     if (open_unix && listen(main_socket, 5) == -1) {
     	perrorExit("listen");

@@ -363,6 +363,11 @@ extern TokenSym *ts_divd;
 extern TokenSym *ts_remi;
 extern TokenSym *ts_remu;
 
+#ifndef ASSERT
+  #include <assert.h>
+  #define ASSERT(f) assert((f))
+#endif
+
 #ifdef _DEBUG				
 #define ALWAYS_ASSERT(x) ASSERT(x)
 #elif defined(WIN32)				

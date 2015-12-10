@@ -11,4 +11,7 @@ config.mak
 *.hex
 *.pyc
 .pl_persist
-
+/**/*.prefs
+/**/*.project
+/**/*.cproject
+/**/.settings/

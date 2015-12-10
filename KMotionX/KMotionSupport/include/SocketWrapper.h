@@ -39,7 +39,7 @@ either expressed or implied, of the FreeBSD Project.
 #include <sys/un.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <string.h>
+#include <string>
 #include <exception>
 #include <system_error>
 #include <stdio.h>

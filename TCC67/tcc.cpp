@@ -51,6 +51,10 @@
 #include <sys/time.h>
 #include <sys/ucontext.h>
 #endif
+#if defined __LP64__ && defined __APPLE__
+// PH must be included before elf.h on OS X
+#include <vector>
+#endif
 #include "elf.h"
 #include "stab.h"
 #ifndef CONFIG_TCC_STATIC

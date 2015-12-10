@@ -18,6 +18,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <stddef.h>
-#define min(X,Y) fmin(X,Y)
+//Might be removed since code is changed to use fmin
+//#define min(X,Y) fmin(X,Y)
+
 
 #endif /* INCX_H_ */

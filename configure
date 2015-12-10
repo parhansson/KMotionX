@@ -124,7 +124,12 @@ case $targetos in
   *) ;;
 esac
 
-#Configure architechture flags
+#Configure os specific libraries
+if test "$targetos" = "Linux" ; then
+  LD_LIBS="$LD_LIBS rt"
+fi
+
+#Configure architechture and os flags
 if test "$arch" = "armv6l" ; then
 #	Old Raspberry Pi
 	ARCH_C_FLAGS="-mfpu=vfp -mfloat-abi=hard"
