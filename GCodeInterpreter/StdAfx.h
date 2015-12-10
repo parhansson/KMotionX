@@ -42,11 +42,25 @@
 #include <conio.h>
 #include <math.h>
 #include <mmsystem.h>
-#include "../KMotionX/include/KMotionX.h"
 #ifdef _KMOTIONX
+#include "../KMotionX/include/KMotionX.h"
 #include "incX.h"
 #endif
 #include <locale.h>
+
+#ifndef _KMOTIONX
+typedef unsigned long long uint64_t;
+typedef unsigned uint32_t;
+typedef unsigned short uint16_t;
+typedef unsigned char uint8_t;
+typedef long long int64_t;
+typedef int int32_t;
+typedef short int16_t;
+typedef signed char int8_t;
+#define PATH_SEPARATOR '\\'
+#define LINE_BREAK "\r\n"
+#endif
+
 #include "canon.h"
 #include "rs274ngc.h"
 #include "driver.h"

@@ -39,12 +39,9 @@
 #include <errno.h>
 #include <math.h>
 #ifndef WIN32
-// PH needed on osx and linux
 #include <unistd.h>
 #endif
-// tktk #include <unistd.h>
 #include <signal.h>
-// tktk #include <unistd.h>
 #include <fcntl.h>
 #include <setjmp.h>
 #ifdef WIN32

@@ -76,11 +76,16 @@ typedef struct
 	double	CountsPerInchC;
 	double	MaxLinearLength;
 
-	bool UseOnlyLinearSegments;
 	bool ArcsToSegs;
 	bool DegreesA;
 	bool DegreesB;
 	bool DegreesC;
+
+	bool UseOnlyLinearSegments;
+	bool DoRapidsAsFeeds;
+
+	double MaxRapidFRO;
+
 } MOTION_PARAMS; 
 
 
@@ -121,7 +126,8 @@ typedef struct
 	int special_cmds_last;    // Special commands ending index at the very beginning of path
 
 	BOOL DirIsCCW;		
-	BOOL StopRequired;	// Change in Direction requires a stop at the beg of this seg
+	BOOL StopRequired;			// Change in Direction (or other reason) requires a stop at the beg of this seg
+	BOOL StopRequiredNextSeg;	// Change in Direction (or other reason) requires a stop at the beg of next seg
 	double ChangeInDirection;  // angle from previous seg to this one
 } SEGMENT;
 
@@ -145,6 +151,7 @@ typedef struct
 extern int nspecial_cmds;
 extern int special_cmds_initial_first;   // Special commands start index at the very beginning of path
 extern int special_cmds_initial_last;    // Special commands ending index at the very beginning of path
+extern int special_cmds_initial_sequence_no[2];    // Special commands initial sequence number
 extern SPECIAL_CMD special_cmds[MAX_SPECIAL_CMDS];
 extern int ispecial_cmd_downloaded;
 
@@ -164,7 +171,7 @@ void SetTrajectoryPlannerParams(MOTION_PARAMS *m);
 
 int tp_insert_linear_seg(double x0, double y0, double z0, double a0, double b0, double c0, 
 						 double x1, double y1, double z1, double a1, double b1, double c1, 
-						 double MaxVel, double MaxAccel, double MaxCombineLength, int sequence_number, int ID);
+						 double MaxVel, double MaxAccel, double MaxCombineLength, int sequence_number, int ID, int NumLinearNotDrawn);
 
 int tp_insert_linear_seg_3rdOrder(double x0, double y0, double z0, double a0, double b0, double c0, 
 								  double x1, double y1, double z1, double a1, double b1, double c1, 

@@ -61,11 +61,17 @@
 #pragma warning ( disable : 4251 )
 
 
+
 #define MAX_LINE 2560
 
 #define MAX_BOARDS 16
 
 #define OLD_COMPILER 1              // Select default compiler: 1 to use 0.9.16 tcc, else 0 to use later version
+
+#ifdef COMPILER
+	#undef COMPILER
+#endif
+
 
 #ifdef _KMOTIONX
     #if OLD_COMPILER
@@ -102,9 +108,34 @@ enum // KMotionLocked Return Codes
 	KMOTION_NOT_CONNECTED=2, // if error or not able to connect
 };
 
+// Used by SetPollCallback to register change events of interest.  If the appropriate bit is set, and the
+// MAIN_STATUS value changes, then the appropriate (virtual) method will be invoked.  Default methods do
+// nothing.
+enum
+{
+    POLL_ADC    = 0x00000001,          // ADC value change
+    POLL_DAC    = 0x00000002,          // DAC
+    POLL_PWM    = 0x00000004,          // PWM
+    POLL_POS    = 0x00000008,          // Position
+    POLL_DEST   = 0x00000010,          // Destination
+    POLL_OUTCHAN= 0x00000020,          // Output Channel
+    POLL_MODES  = 0x00000040,          // Input or output modes
+    POLL_ENABLE = 0x00000080,          // Axis enables
+    POLL_DONE   = 0x00000100,          // Axis 'done'
+    POLL_IO     = 0x00000200,          // Digital I/O direction or state
+    POLL_THREAD = 0x00000400,          // Thread activity
+    POLL_STOP   = 0x00000800,          // Stop coord motion state
+    POLL_PCCOMM = 0x00001000,          // PC comms (from kflop)
+};
+
 typedef int CONSOLE_HANDLER(const char *buf);
 typedef void ERRMSG_HANDLER(const char *ErrMsg);
 
+
+// Some types to give nicer binding behavior than raw C arrays
+typedef std::vector<bool> boolvec;
+typedef std::vector<int> intvec;
+typedef std::vector<double> floatvec;
 
 
 
@@ -119,9 +150,9 @@ public:
 	int WriteLineReadLine(const char *s, char *response);
 	int WriteLine(const char *s);
 	int WriteLineWithEcho(const char *s);
-	int ReadLineTimeOut(char *buf, int TimeOutms=1000000);
+	int ReadLineTimeOut(char *buf, int TimeOut_ms=100);
 	int ListLocations(int *nlocations, int *list);
-	int WaitToken(bool display_msg=true, int TimeOut_ms=1000000);
+	int WaitToken(bool display_msg=true, int TimeOut_ms=100);
 	int KMotionLock();
 	int USBLocation();
 	int KMotionLockRecovery();
@@ -154,30 +185,75 @@ public:
 	int CheckKMotionVersion(int *type=NULL, bool GetBoardTypeOnly=false);
 	int ExtractCoffVersionString(const char *InFile, char *Version);
     int GetStatus(MAIN_STATUS& status, bool lock);
+    bool GetLastStatus(MAIN_STATUS& status);
+    void SetHostStatus(int host_status, bool poll=true);  // See PC-DSP.h for Global Host Status bit settings.
+    void Poll();
+    void SetPollCallback(unsigned int interest);  // Set status change interest according to OR'd combo of POLL_* enum above.
 	void DoErrMsg(const char *s);
 #ifdef _KMOTIONX
-	const char* getInstallRoot();
+    const char * getInstallRoot(void) const { return GetMainPathRoot(); }
+
 	// Use to override default compiler executable.  options controls whether -g (and other) option supplied.
 	// tcc_minor_version should be set to e.g. 26 for tcc version 0.9.26 (controls options), or 0 to
 	// not change the version.
 	// If compiler is absolute path, then that exact compiler is used.  Otherwise, it should just be the
-	// name of the compiler without any path, and it will be searched for in standard locations.
-	// If NULL, compiler is set back to default.
+
+	// name of the compiler without any path, and it will be searched for in standard locations.  If an abs
+	// path is provided, it is a short-cut to calling SetCompilerDir() with the directory component.
+	// If NULL, compiler is set back to default.  In this case, SetCompilerDir(NULL) should be called to
+	// reset the compiler location directory back to default as well.
 	void SetCustomCompiler(const char * compiler = NULL, const char * options = NULL, int tcc_minor_version = 0); 
 	
 	// Alternative ctor to connect via TCP.  If url is NULL, assumes localhost, else is a host name.
 	CKMotionDLL(int boardid, unsigned int dfltport, const char * url = NULL);
 	
 #endif
+    // Virtuals ('callbacks') for changed status.  Default implementations do nothing.  To use, derive from this
+    // class, call SetPollCallback() to register interest in one or more change events, then call Poll() as often
+    // as required to retrieve status and dispatch these functions.  Parameters give the new state (previous state
+    // can be obtained with GetLastStatus() if necessary).  Array parameters are vectorized, as are the I/O bits.
+    virtual void ChangedADC(const intvec & ADCVec) {}
+    virtual void ChangedDAC(const intvec & DACVec) {}
+    virtual void ChangedPWM(const intvec & PWMVec) {}
+    virtual void ChangedPos(const floatvec & PositionVec) {}
+    virtual void ChangedDest(const floatvec & DestVec) {}
+    virtual void ChangedOutChan(const intvec & OutputChanVec) {}
+    virtual void ChangedMode(int InputModes, int InputModes2, int OutputModes, int OutputModes2) {}
+    virtual void ChangedEnable(int Enables) {}
+    virtual void ChangedDone(int AxisDone) {}
+    virtual void ChangedIO(const boolvec & OutDirVec, const boolvec & StateVec) {}
+    virtual void ChangedThread(int ThreadActive) {}
+    virtual void ChangedStop(int StopImmediateState) {}
+    virtual void ChangedPCComm(const intvec & PC_comm) {}
+
+    // Support multiple DSPKFLOP.out files.  Default .out file is in <installdir>/DSP_KFLOP/DSPKFLOP.out
+    // but this function can change that.  Caller is responsible for pointing to a valid .out file,
+    // which must be an absolute path.
+    void SetDSPKFLOP(const char * filename);
+    const char * GetDSPKFLOP(void) const { return DSPKFLOP; }
+    
+    // For special applications, allow changing the locations of where things are found.
+    // The Get* members are not 'const' since they may do some caching.
+    void SetMainPathRoot(const char * dir);
+    const char * GetMainPathRoot(void) const;
+    void SetCompilerDir(const char * dir);
+    const char * GetCompilerDir(void);
+    void SetServerDir(const char * dir);
+    const char * GetServerDir(void);
+    
+    virtual void Terminate(int exit_code);
+
 private:
 
 	CMutex *PipeMutex;
 	bool PipeOpen;
 	bool ServerMessDisplayed;
 
+protected:
 	CONSOLE_HANDLER *ConsoleHandler;  
 	ERRMSG_HANDLER *ErrMsgHandler;  
 
+private:
 	int OpenPipe();
 	int PipeCmd(int code);
 	int PipeCmdStr(int code, const char *s);
@@ -202,6 +278,13 @@ private:
     bool remote_tcp;
     unsigned int tcp_port;
     char hostname[257];
+    unsigned int poll_interest;
+    bool first_status;
+    MAIN_STATUS last_status;
+    int HostStatus;
+    char DSPKFLOP[257];
+    char compiler_dir[257];
+    char server_dir[257];
 };
 
 #endif

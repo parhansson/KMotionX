@@ -53,10 +53,12 @@ CKinematics::CKinematics()
 	m_MotionParams.CountsPerInchY = 100.0;
 	m_MotionParams.CountsPerInchZ = 100.0;
 	m_MotionParams.MaxLinearLength = 1e30;  //Infinity for default case
+	m_MotionParams.MaxRapidFRO = 1;
 	m_MotionParams.CollinearTol = 0.0002;
 	m_MotionParams.CornerTol = 0.0002;
 	m_MotionParams.FacetAngle = 0.5;
 	m_MotionParams.UseOnlyLinearSegments=false;
+	m_MotionParams.DoRapidsAsFeeds=false;
 	m_MotionParams.DegreesA=false;
 	m_MotionParams.DegreesB=false;
 	m_MotionParams.DegreesC=false;
@@ -254,31 +256,16 @@ int CKinematics::MaxRateInDirection(double dx, double dy, double dz, double da, 
 		if (fda>0)
 		{
 			Max = m_MotionParams.MaxVelA;
-			if (m_MotionParams.DegreesA)
-			{
-				Max *= m_MotionParams.RadiusA * PI/180.0;  // transform max rotation speed to linear speed 
-				fda *= m_MotionParams.RadiusA * PI/180.0;   // transform rotational dist to linear distance 
-			}
 			if (Max < FeedRateToUse * fda/d) FeedRateToUse = Max * d/fda;
 		}
 		if (fdb>0)
 		{
 			Max = m_MotionParams.MaxVelB;
-			if (m_MotionParams.DegreesB)
-			{
-				Max *= m_MotionParams.RadiusB * PI/180.0;  // transform max rotation speed to linear speed 
-				fdb *= m_MotionParams.RadiusB * PI/180.0;   // transform rotational dist to linear distance 
-			}
 			if (Max < FeedRateToUse * fdb/d) FeedRateToUse = Max * d/fdb;
 		}
 		if (fdc>0)
 		{
 			Max = m_MotionParams.MaxVelC;
-			if (m_MotionParams.DegreesC)
-			{
-				Max *= m_MotionParams.RadiusC * PI/180.0;  // transform max rotation speed to linear speed 
-				fdc *= m_MotionParams.RadiusC * PI/180.0;   // transform rotational dist to linear distance 
-			}
 			if (Max < FeedRateToUse * fdc/d) FeedRateToUse = Max * d/fdc;
 		}
 	}
@@ -318,31 +305,16 @@ int CKinematics::MaxRapidRateInDirection(double dx, double dy, double dz, double
 		if (fda>0)
 		{
 			Max = m_MotionParams.MaxRapidVelA;
-			if (m_MotionParams.DegreesA)
-			{
-				Max *= m_MotionParams.RadiusA * PI/180.0;  // transform max rotation speed to linear speed 
-				fda *= m_MotionParams.RadiusA * PI/180.0;   // transform rotational dist to linear distance 
-			}
 			if (Max < FeedRateToUse * fda/d) FeedRateToUse = Max * d/fda;
 		}
 		if (fdb>0)
 		{
 			Max = m_MotionParams.MaxRapidVelB;
-			if (m_MotionParams.DegreesB)
-			{
-				Max *= m_MotionParams.RadiusB * PI/180.0;  // transform max rotation speed to linear speed 
-				fdb *= m_MotionParams.RadiusB * PI/180.0;   // transform rotational dist to linear distance 
-			}
 			if (Max < FeedRateToUse * fdb/d) FeedRateToUse = Max * d/fdb;
 		}
 		if (fdc>0)
 		{
 			Max = m_MotionParams.MaxRapidVelC;
-			if (m_MotionParams.DegreesC)
-			{
-				Max *= m_MotionParams.RadiusC * PI/180.0;  // transform max rotation speed to linear speed 
-				fdc *= m_MotionParams.RadiusC * PI/180.0;   // transform rotational dist to linear distance 
-			}
 			if (Max < FeedRateToUse * fdc/d) FeedRateToUse = Max * d/fdc;
 		}
 	}
@@ -384,31 +356,16 @@ int CKinematics::MaxAccelInDirection(double dx, double dy, double dz, double da,
 		if (fda>0)
 		{
 			Max = m_MotionParams.MaxAccelA;
-			if (m_MotionParams.DegreesA)
-			{
-				Max *= m_MotionParams.RadiusA * PI/180.0;   // transform max rotation speed to linear speed 
-				fda *= m_MotionParams.RadiusA * PI/180.0;   // transform rotational dist to linear distance 
-			}
 			if (Max < AccelToUse * fda/d) AccelToUse = Max * d/fda;
 		}
 		if (fdb>0)
 		{
 			Max = m_MotionParams.MaxAccelB;
-			if (m_MotionParams.DegreesB)
-			{
-				Max *= m_MotionParams.RadiusB * PI/180.0;   // transform max rotation speed to linear speed 
-				fdb *= m_MotionParams.RadiusB * PI/180.0;   // transform rotational dist to linear distance 
-			}
 			if (Max < AccelToUse * fdb/d) AccelToUse = Max * d/fdb;
 		}
 		if (fdc>0)
 		{
 			Max = m_MotionParams.MaxAccelC;
-			if (m_MotionParams.DegreesC)
-			{
-				Max *= m_MotionParams.RadiusC * PI/180.0;   // transform max rotation speed to linear speed 
-				fdc *= m_MotionParams.RadiusC * PI/180.0;   // transform rotational dist to linear distance 
-			}
 			if (Max < AccelToUse * fdc/d) AccelToUse = Max * d/fdc;
 		}
 	}
@@ -451,31 +408,16 @@ int CKinematics::MaxRapidAccelInDirection(double dx, double dy, double dz, doubl
 		if (fda>0)
 		{
 			Max = m_MotionParams.MaxRapidAccelA;
-			if (m_MotionParams.DegreesA)
-			{
-				Max *= m_MotionParams.RadiusA * PI/180.0;   // transform max rotation speed to linear speed 
-				fda *= m_MotionParams.RadiusA * PI/180.0;   // transform rotational dist to linear distance 
-			}
 			if (Max < AccelToUse * fda/d) AccelToUse = Max * d/fda;
 		}
 		if (fdb>0)
 		{
 			Max = m_MotionParams.MaxRapidAccelB;
-			if (m_MotionParams.DegreesB)
-			{
-				Max *= m_MotionParams.RadiusB * PI/180.0;   // transform max rotation speed to linear speed 
-				fdb *= m_MotionParams.RadiusB * PI/180.0;   // transform rotational dist to linear distance 
-			}
 			if (Max < AccelToUse * fdb/d) AccelToUse = Max * d/fdb;
 		}
 		if (fdc>0)
 		{
 			Max = m_MotionParams.MaxRapidAccelC;
-			if (m_MotionParams.DegreesC)
-			{
-				Max *= m_MotionParams.RadiusC * PI/180.0;   // transform max rotation speed to linear speed 
-				fdc *= m_MotionParams.RadiusC * PI/180.0;   // transform rotational dist to linear distance 
-			}
 			if (Max < AccelToUse * fdc/d) AccelToUse = Max * d/fdc;
 		}
 	}
@@ -517,31 +459,16 @@ int CKinematics::MaxRapidJerkInDirection(double dx, double dy, double dz, double
 		if (fda>0)
 		{
 			Max = m_MotionParams.MaxRapidJerkA;
-			if (m_MotionParams.DegreesA)
-			{
-				Max *= m_MotionParams.RadiusA * PI/180.0;   // transform max rotation speed to linear speed 
-				fda *= m_MotionParams.RadiusA * PI/180.0;   // transform rotational dist to linear distance 
-			}
 			if (Max < JerkToUse * fda/d) JerkToUse = Max * d/fda;
 		}
 		if (fdb>0)
 		{
 			Max = m_MotionParams.MaxRapidJerkB;
-			if (m_MotionParams.DegreesB)
-			{
-				Max *= m_MotionParams.RadiusB * PI/180.0;   // transform max rotation speed to linear speed 
-				fdb *= m_MotionParams.RadiusB * PI/180.0;   // transform rotational dist to linear distance 
-			}
 			if (Max < JerkToUse * fdb/d) JerkToUse = Max * d/fdb;
 		}
 		if (fdc>0)
 		{
 			Max = m_MotionParams.MaxRapidJerkC;
-			if (m_MotionParams.DegreesC)
-			{
-				Max *= m_MotionParams.RadiusC * PI/180.0;   // transform max rotation speed to linear speed 
-				fdc *= m_MotionParams.RadiusC * PI/180.0;   // transform rotational dist to linear distance 
-			}
 			if (Max < JerkToUse * fdc/d) JerkToUse = Max * d/fdc;
 		}
 	}
@@ -557,7 +484,7 @@ int CKinematics::MaxRapidJerkInDirection(double dx, double dy, double dz, double
 // from : http://mcraefamily.com/MathHelp/GeometryConicSectionCircleIntersection.htm
 
 
-int CKinematics::IntersectionTwoCircles(CPT2D c0, double r0, CPT2D c1, double r1, CPT2D *q)
+int CKinematics::IntersectionTwoCircles(const CPT2D & c0, double r0, const CPT2D & c1, double r1, CPT2D *q)
 {
 	double d2 = sqr(c1.x-c0.x) + sqr(c1.y-c0.y);  
 	double K = 0.25 * sqrt((sqr(r0+r1)-d2)*(d2-sqr(r0-r1)));

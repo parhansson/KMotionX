@@ -50,6 +50,8 @@ CCoordMotion::CCoordMotion(CKMotionDLL *KM)
 	current_x=current_y=current_z=current_a=current_b=current_c=0;
 
 	m_FeedRateOverride=1.0;
+	m_FeedRateRapidOverride=1.0;
+	m_HardwareFRORange=0.0;
 	m_SpindleRateOverride=1.0;
 	m_DisableSoftLimits=m_Simulate=false;
 	m_DefineCS_valid=false;
@@ -289,10 +291,24 @@ int CCoordMotion::StraightTraverse(double x, double y, double z, double a, doubl
 
 	if (m_Abort) return 1;
 
+	// check if we should treat rapids as 2nd order feeds as required on some non-linear systems
+	if (Kinematics->m_MotionParams.DoRapidsAsFeeds)
+	{
+		// commit any segments waiting to potentially be combined
+		if (CommitPendingSegments(false)) return 1;
+		if (nsegs>0)GetSegPtr(nsegs-1)->StopRequiredNextSeg=TRUE;  // stop in case FRO changes
+		if (DoKMotionBufCmd("BegRapidBuf",sequence_number)) return 1;
+		int result = StraightFeedAccelRapid(1e99, 1e99, true, NoCallback, x, y, z, a, b, c, sequence_number, ID);
+		// commit any segments waiting to potentially be combined
+		if (CommitPendingSegments(true)) return 1;
+		if (nsegs>0)GetSegPtr(nsegs-1)->StopRequiredNextSeg=TRUE;  // stop in case FRO changes
+		if (DoKMotionBufCmd("EndRapidBuf",sequence_number)) return 1;
+		return result;
+	}
+
 	// check if we should sync parameters with KFLOP
 	if (GetRapidSettings()) return 1;
 		
-
 	// if exceeding limits trigger Halt
 	char errmsg[10];
 	if (CheckSoftLimits(x,y,z,a,b,c,errmsg)) 
@@ -332,7 +348,7 @@ int CCoordMotion::StraightTraverse(double x, double y, double z, double a, doubl
 
 
 	// commit any segments waiting to potentially be combined
-	if (CommitPendingSegments()) return 1;
+	if (CommitPendingSegments(false)) return 1;
 
 	if (m_StraightTraverseCallback && !NoCallback) m_StraightTraverseCallback(x,y,z,_setup.sequence_number);
 	if (m_StraightTraverseSixAxisCallback && !NoCallback) m_StraightTraverseSixAxisCallback(x,y,z,a,b,c,_setup.sequence_number);
@@ -342,6 +358,8 @@ int CCoordMotion::StraightTraverse(double x, double y, double z, double a, doubl
 
 	if (!m_Simulate) // skip if we are simulating
 	{
+		if (DoKMotionBufCmd("BegRapidBuf",sequence_number)) return 1;
+
 		// add in the segment to the planner
 		int result = tp_insert_linear_seg_3rdOrder(current_x, 
 							 current_y, 
@@ -351,6 +369,8 @@ int CCoordMotion::StraightTraverse(double x, double y, double z, double a, doubl
 							 current_c, 
 							 x, y, z, a, b, c,
 							 sequence_number, ID);
+
+		if (DoKMotionBufCmd("EndRapidBuf",sequence_number)) return 1;
 
 		if (result==1) {SetAbort(); return 1;}
 
@@ -400,10 +420,13 @@ int CCoordMotion::ArcFeedAccel(double DesiredFeedRate_in_per_sec, double Desired
 		        double first_axis, double second_axis, int rotation,
 				double axis_end_point, double a, double b, double c, int sequence_number, int ID)
 {
-	double radius,theta0,dtheta,MaxLength, cur_first,cur_second,cur_third,dcircle;
-	double FeedRateToUse = DesiredFeedRate_in_per_sec * m_FeedRateOverride;
-	MOTION_PARAMS *MP=&Kinematics->m_MotionParams;
+	double HW,SW,radius,theta0,dtheta,MaxLength, cur_first,cur_second,cur_third,dcircle;
 
+	DetermineSoftwareHardwareFRO(HW,SW);
+
+	double FeedRateToUse = DesiredFeedRate_in_per_sec * SW;
+
+	MOTION_PARAMS *MP=&Kinematics->m_MotionParams;
 
 	if (FeedRateToUse <= 0.0)
 	{
@@ -526,7 +549,7 @@ int CCoordMotion::ArcFeedAccel(double DesiredFeedRate_in_per_sec, double Desired
 	}
 
 	// commit any segments waiting to potentially be combined
-	if (CommitPendingSegments()) return 1;
+	if (CommitPendingSegments(false)) return 1;
 
 	// Normal case: just draw the entire single simple arc
 	// from where we are now to the end of the arc
@@ -667,7 +690,7 @@ int CCoordMotion::ArcFeedAccel(double DesiredFeedRate_in_per_sec, double Desired
 
 // Commit those segments pending to be combined
 
-int CCoordMotion::CommitPendingSegments()
+int CCoordMotion::CommitPendingSegments(bool RapidMode)
 {
 	if (m_NumLinearNotDrawn>0)
 	{
@@ -678,6 +701,9 @@ int CCoordMotion::CommitPendingSegments()
 		// only call back and draw segments that were not combined
 		// also multiple segments might have been added to round the corner
 		
+		if (RapidMode)
+			DoSegmentCallbacksRapid(PrevNsegs-m_NumLinearNotDrawn,nsegs-1);
+		else
 		DoSegmentCallbacks(PrevNsegs-m_NumLinearNotDrawn,nsegs-1);
 
 		// limit speeds based on proportion in that direction
@@ -695,7 +721,7 @@ int CCoordMotion::CommitPendingSegments()
 	return 0;
 }
 
-// Straight Feed with specified Acceleration
+// Straight Feed (using Max possible Acceleration)
 
 int CCoordMotion::StraightFeed(double DesiredFeedRate_in_per_sec,
 							   double x, double y, double z, double a, double b, double c, int sequence_number, int ID)
@@ -703,14 +729,36 @@ int CCoordMotion::StraightFeed(double DesiredFeedRate_in_per_sec,
 	return StraightFeedAccel(DesiredFeedRate_in_per_sec, 1e99, x, y, z, a, b, c, sequence_number, ID);
 }
 	
-// Straight Feed (using Max possible Acceleration)
+// Straight Feed with specified Acceleration	
 	
 int CCoordMotion::StraightFeedAccel(double DesiredFeedRate_in_per_sec, double DesiredAccel,
 							   double x, double y, double z, double a, double b, double c, int sequence_number, int ID)
 {
-	double FeedRateToUse = DesiredFeedRate_in_per_sec * m_FeedRateOverride;
-	double MaxLength;
+	return StraightFeedAccelRapid(DesiredFeedRate_in_per_sec, 1e99, false, false, x, y, z, a, b, c, sequence_number, ID);
+}
+
+// Straight Feed with specified Acceleration and RapidMode	
+
+int CCoordMotion::StraightFeedAccelRapid(double DesiredFeedRate_in_per_sec, double DesiredAccel, bool RapidMode, bool NoCallback,
+							   double x, double y, double z, double a, double b, double c, int sequence_number, int ID)
+{
 	MOTION_PARAMS *MP=&Kinematics->m_MotionParams;
+	double HW,SW;
+
+	if (RapidMode)
+	{
+		SW = 1.0;  // for rapids use all HW
+		HW = m_FeedRateRapidOverride;
+
+		if (HW > MP->MaxRapidFRO) HW = MP->MaxRapidFRO;  // limit to max allowed regardless
+	}
+	else
+	{
+	DetermineSoftwareHardwareFRO(HW,SW);
+	}
+
+	double FeedRateToUse = DesiredFeedRate_in_per_sec * SW;
+	double MaxLength;
 
 	if (m_Abort) return 1;
 
@@ -730,10 +778,13 @@ int CCoordMotion::StraightFeedAccel(double DesiredFeedRate_in_per_sec, double De
 	if (CheckSoftLimits(x,y,z,a,b,c,errmsg)) 
 	{
 		char message[200];
+		const char * FunctionType;
+		if (RapidMode) FunctionType=" Straight Traverse";
+		else FunctionType=" Straight Feed";
 		if (m_Simulate)
 		{
-			sprintf(message, "Soft Limit %s Straight Feed\r\r"
-					"Soft Limits disabled for remainder of Simulation",errmsg);
+			sprintf(message, "Soft Limit %s%s\r\r"
+					"Soft Limits disabled for remainder of Simulation",errmsg,FunctionType);
 			KMotionDLL->DoErrMsg(message);
 			m_DisableSoftLimits=true;
 		}
@@ -742,7 +793,7 @@ int CCoordMotion::StraightFeedAccel(double DesiredFeedRate_in_per_sec, double De
 			SetHalt();
 			CheckMotionHalt(true);
 			SetAbort();
-			sprintf(message, "Soft Limit %s Straight Feed Job Halted",errmsg);
+			sprintf(message, "Soft Limit %s%s Job Halted",errmsg, FunctionType);
 			KMotionDLL->DoErrMsg(message);
 			return 1;
 		}
@@ -763,7 +814,7 @@ int CCoordMotion::StraightFeedAccel(double DesiredFeedRate_in_per_sec, double De
 
 	double d = FeedRateDistance(dx, dy, dz, da, db, dc, &pure_angle);
 
-	if (d==0.0) return 0;  // ignore zero length moves
+	if (d==0.0 && !RapidMode) return 0;  // ignore zero length moves
 
 	// if this move is expected to take more than 1/2th of the download time then break int0 2 parts (recursively)
 	// (or if greater than the Kinematics length (line might actually be curved in actuator space)
@@ -773,11 +824,11 @@ int CCoordMotion::StraightFeedAccel(double DesiredFeedRate_in_per_sec, double De
 
 	if (!m_Simulate && !pure_angle && d > MaxLength)
 	{
-		int result = StraightFeedAccel(DesiredFeedRate_in_per_sec, DesiredAccel, current_x+dx/2.0, current_y+dy/2.0, current_z+dz/2.0, 
+		int result = StraightFeedAccelRapid(DesiredFeedRate_in_per_sec, DesiredAccel, RapidMode, NoCallback,current_x+dx/2.0, current_y+dy/2.0, current_z+dz/2.0, 
 																				 current_a+da/2.0, current_b+db/2.0, current_c+dc/2.0, sequence_number, ID);
 		if (result) return result;
 		
-		return StraightFeedAccel(DesiredFeedRate_in_per_sec, DesiredAccel, x, y, z, a, b, c, sequence_number, ID);
+		return StraightFeedAccelRapid(DesiredFeedRate_in_per_sec, DesiredAccel, RapidMode, NoCallback, x, y, z, a, b, c, sequence_number, ID);
 	}
 
 
@@ -785,8 +836,16 @@ int CCoordMotion::StraightFeedAccel(double DesiredFeedRate_in_per_sec, double De
 	if (m_Simulate) 
 	{
 		// if simulating just draw it now
+		if (RapidMode)
+		{
+			if (m_StraightTraverseCallback && !NoCallback) m_StraightTraverseCallback(x,y,z,_setup.sequence_number);
+			if (m_StraightTraverseSixAxisCallback && !NoCallback) m_StraightTraverseSixAxisCallback(x,y,z,a,b,c,_setup.sequence_number);
+		}
+		else
+		{
 		if (m_StraightFeedCallback) m_StraightFeedCallback(DesiredFeedRate_in_per_sec,x,y,z,sequence_number, ID);
 		if (m_StraightFeedSixAxisCallback) m_StraightFeedSixAxisCallback(DesiredFeedRate_in_per_sec,x,y,z,a,b,c,sequence_number, ID);
+		}
 		current_x  = x;
 		current_y  = y;
 		current_z  = z;
@@ -810,7 +869,7 @@ int CCoordMotion::StraightFeedAccel(double DesiredFeedRate_in_per_sec, double De
 						 x, y, z, a, b, c,
 						 FeedRateToUse, 
 						 DesiredAccel,
-						 MaxLength, sequence_number, ID);
+						 MaxLength, sequence_number, ID, m_NumLinearNotDrawn);
 
 	if (result==1) {SetAbort(); return 1;}
 
@@ -824,7 +883,19 @@ int CCoordMotion::StraightFeedAccel(double DesiredFeedRate_in_per_sec, double De
 	// also multiple segments might have been added to round the corner
 	
 	if (result==0)
+	{
+		if (RapidMode)
+		{
+			if (!NoCallback)
+			{
+				DoSegmentCallbacksRapid(AlreadyDrawn+1,nsegs-1-m_NumLinearNotDrawn);
+			}
+		}
+		else
+		{
 		DoSegmentCallbacks(AlreadyDrawn+1,nsegs-1-m_NumLinearNotDrawn);
+		}
+	}
 
 	// limit speeds based on proportion in that direction
 	// since the segment might have been combined
@@ -866,6 +937,27 @@ void CCoordMotion::DoSegmentCallbacks(int i0, int i1)
 						m_StraightFeedCallback(p->OrigVel,p->x1,p->y1,p->z1,p->sequence_number,p->ID);
 					if (m_StraightFeedSixAxisCallback)
 						m_StraightFeedSixAxisCallback(p->OrigVel,p->x1,p->y1,p->z1,p->a1,p->b1,p->c1,p->sequence_number,p->ID);
+				}
+			}
+		}
+	}
+}
+
+void CCoordMotion::DoSegmentCallbacksRapid(int i0, int i1)
+{
+	if (nsegs >= 1 && (m_StraightTraverseCallback || m_StraightTraverseSixAxisCallback)) 
+	{
+		for (int i = i0; i<=i1; i++)
+		{
+			if (i>=0)
+			{
+				SEGMENT *p=GetSegPtr(i);
+				if (p->type == SEG_LINEAR)
+				{
+					if (m_StraightTraverseCallback)
+						if (m_StraightTraverseCallback) m_StraightTraverseCallback(p->x1,p->y1,p->z1,_setup.sequence_number);
+					if (m_StraightTraverseSixAxisCallback)
+						if (m_StraightTraverseSixAxisCallback) m_StraightTraverseSixAxisCallback(p->x1,p->y1,p->z1,p->a1,p->b1,p->c1,p->sequence_number);
 				}
 			}
 		}
@@ -1035,13 +1127,12 @@ int CCoordMotion::DoRateAdjustmentsArc(int i, double radius, double theta0, doub
 }
 
 
-
 int CCoordMotion::Dwell(double seconds, int sequence_number)
 {
 	if (m_Abort) return 1;
 
 	// commit any segments waiting to potentially be combined
-	if (CommitPendingSegments()) return 1;
+	if (CommitPendingSegments(false)) return 1;
 
 	// put something in the displayed path that can be found
 	if (m_StraightTraverseCallback) m_StraightTraverseCallback(current_x, current_y, current_z,_setup.sequence_number);
@@ -1089,7 +1180,7 @@ int CCoordMotion::DoKMotionCmd(const char *s, BOOL FlushBeforeUnbufferedOperatio
 // pending in the motion buffer before they are downloaded any number in a path can
 // exist.
 
-int CCoordMotion::DoKMotionBufCmd(const char *s)
+int CCoordMotion::DoKMotionBufCmd(const char *s,int sequence_number)
 {
 	strncpy(special_cmds[nspecial_cmds % MAX_SPECIAL_CMDS].cmd,s,MAX_LINE);
 
@@ -1097,8 +1188,10 @@ int CCoordMotion::DoKMotionBufCmd(const char *s)
 	{
 		// no, put in the special list to be set at the beginning
 		if (special_cmds_initial_first == -1) // none yet, put as first and last
+		{
 			special_cmds_initial_first = nspecial_cmds;
-
+			special_cmds_initial_sequence_no[SegBufToggle] = sequence_number;    // save sequence number that generated these
+		}
 		special_cmds_initial_last = nspecial_cmds++;
 	}
 	else
@@ -1128,21 +1221,31 @@ int CCoordMotion::DoKMotionBufCmd(const char *s)
 
 int CCoordMotion::WaitForSegmentsFinished(BOOL NoErrorOnDisable)
 {
-	char response[MAX_LINE];
+	char response[MAX_LINE], response2[MAX_LINE];
 
-	if (m_Simulate) return 0;
+	if (m_Simulate || !m_SegmentsStartedExecuting) return 0;
 
 	int count=0;
 
 	do
 	{
-		if (count++) Sleep(10);
+		if (count++)
+		{
+			if (KMotionDLL->WriteLineReadLine("ExecTime",response)){SetAbort(); return 1;}
+			if (sscanf(response, "%lf",&m_TimeAlreadyExecuted)!= 1){SetAbort(); return 1;}
+			UpdateRealTimeState(m_TimeAlreadyExecuted);
+			Sleep(10);
+		}
 		
 		if (KMotionDLL->WriteLineReadLine("CheckDoneBuf",response)) {SetAbort(); return 1;}
 
 
 		if (strcmp(response,"-1")==0)
 		{
+			if (KMotionDLL->WriteLineReadLine("ExecTime",response2)){SetAbort(); return 1;}
+			if (sscanf(response2, "%lf",&m_TimeAlreadyExecuted)!= 1){SetAbort(); return 1;}
+			UpdateRealTimeState(m_TimeAlreadyExecuted);
+
 			if (NoErrorOnDisable)
 			{
 				return 0;
@@ -1158,6 +1261,10 @@ int CCoordMotion::WaitForSegmentsFinished(BOOL NoErrorOnDisable)
 		if (m_Abort) return 1;
 	}
 	while (strcmp(response,"1")!=0);
+
+	if (KMotionDLL->WriteLineReadLine("ExecTime",response2)){SetAbort(); return 1;}
+	if (sscanf(response2, "%lf",&m_TimeAlreadyExecuted)!= 1){SetAbort(); return 1;}
+	UpdateRealTimeState(m_TimeAlreadyExecuted);
 
 	m_SegmentsStartedExecuting = false;
 
@@ -1198,7 +1305,7 @@ int CCoordMotion::CheckMotionHalt(bool Coord)
 	bool Finished=false, NotStarted=false;
 	SEGMENT *segs_to_check;
 
-	if (m_Halt && !m_Simulate)
+	if (!m_Abort && m_Halt && !m_Simulate)
 	{
 		// stop immediately
 		if (KMotionDLL->WriteLine("StopImmediate0"))  {SetAbort(); return 1;}
@@ -1232,6 +1339,9 @@ int CCoordMotion::CheckMotionHalt(bool Coord)
 		while (!Finished && (strcmp(response,"1")==0 || strcmp(response,"2")==0));
 
 		if (strcmp(response,"0")==0) NotStarted=true;
+
+		// default to current line in case somthing bad happens
+		m_PreviouslyStoppedSeqNo = _setup.sequence_number;
 
 		if (Coord)
 		{
@@ -1359,6 +1469,22 @@ int CCoordMotion::CheckMotionHalt(bool Coord)
 
 				BufTime=SegsDoneTime[index];
 
+				// if nothing done or downloaded yet don't search or worry if we
+				// can't find current segment in the motion buffer
+				if (SegsDone[index] == -1)
+				{
+					// if initial buffered commands are present with a valid
+					// sequence number than return that
+					if (special_cmds_initial_sequence_no[index] >= 0)
+					{
+						m_PreviouslyStoppedSeqNo = special_cmds_initial_sequence_no[index];
+					}
+					m_PreviouslyStoppedType = SEG_UNDEFINED;
+					m_PreviouslyStoppedID = -1;
+					SetAbort();
+					return 2;
+				}
+
 				for (i=SegsDone[index]; i>=0; i--)
 				{
 					for (k=segs_to_check[TPMOD(i)].nTrips-1; k>=0; k--)
@@ -1403,7 +1529,7 @@ void CCoordMotion::SetPreviouslyStoppedAtSeg(SEGMENT *segs_to_check,int i)
 {
 	m_PreviouslyStoppedType = segs_to_check[TPMOD(i)].type;
 	m_PreviouslyStoppedID = segs_to_check[TPMOD(i)].ID;
-	_setup.sequence_number = segs_to_check[TPMOD(i)].sequence_number;
+	m_PreviouslyStoppedSeqNo = segs_to_check[TPMOD(i)].sequence_number;
 
 	// check if we were in the middle of the second "double arc"
 	// if so, find and save the beginning of the arc
@@ -1479,6 +1605,7 @@ int CCoordMotion::FlushSegments()
 			if (WaitForSegmentsFinished()) {SetAbort(); return 1;}
 
 			if(KMotionDLL->WriteLine("OpenBuf")) {SetAbort(); return 1;}
+			m_TimeAlreadyExecuted=0;
 			ClearWriteLineBuffer();
 			
 			// see if there are any special commands that need to be inserted before path starts
@@ -1508,16 +1635,53 @@ int CCoordMotion::FlushSegments()
 
 			if (CheckMotionHalt(true)) return 2;
 
-			if(KMotionDLL->WriteLine("ExecBuf")){SetAbort(); return 1;}
+			if(LaunchCoordMotion()) return 1;
 			m_SegmentsStartedExecuting = true;
 			segments_executing=segments;
 		}
+		
+		// Tell KFLOP that the buffer is complete sp that it doesn't worry about starvation
+		if(KMotionDLL->WriteLine("FlushBuf")) {SetAbort(); return 1;}
 
 		tp_init();
 		DownloadInit();
 	}
 	return 0;
 }
+
+
+int CCoordMotion::LaunchCoordMotion()
+{
+	char s[MAX_LINE];
+
+	if (KMotionDLL->WriteLineReadLine("CheckDoneBuf",s)) {SetAbort(); return 1;}
+
+	if (!strcmp(s,"-1"))
+	{
+		m_AxisDisabled=true;
+		SetAbort();
+		return 1;
+	}
+
+	if (m_ThreadingMode)  // Launch coordinated motion in spindle sync mode ?
+	{
+		if (m_ThreadingBaseSpeedRPS < 1e-9)
+		{
+			AfxMessageBox("Error Threading with Zero Speed");
+			SetAbort();
+			return 1;
+		}
+
+		sprintf(s, "TrigThread %.6f",m_ThreadingBaseSpeedRPS);
+		if(KMotionDLL->WriteLine(s)){SetAbort(); return 1;}
+	}
+	else  // no normal coordinated motion
+	{
+		if(KMotionDLL->WriteLine("ExecBuf")){SetAbort(); return 1;}
+	}
+	return 0;
+}
+
 
 
 // intitalize everything related to downloading and look ahead times
@@ -1527,6 +1691,7 @@ void CCoordMotion::DownloadInit()
 {
 	m_nsegs_downloaded=0;
 	m_TotalDownloadedTime = m_TimeAlreadyExecuted = 0.0;
+	m_ThreadingMode=false;
 }
 
 
@@ -1545,7 +1710,7 @@ void CCoordMotion::DownloadInit()
 int CCoordMotion::ExecutionStop()
 {
 	// commit any segments waiting to potentially be combined
-	if (CommitPendingSegments()) return 1;
+	if (CommitPendingSegments(false)) return 1;
 
 	if (m_Abort) return 1;
 
@@ -1894,7 +2059,7 @@ int CCoordMotion::OutputSegment(int iseg)
 	{
 		if (FlushWriteLineBuffer()) return 1;  // flush any segments before starting
 		if (CheckMotionHalt(true)) return 2;
-		if (KMotionDLL->WriteLine("ExecBuf")) return 1;
+		if(LaunchCoordMotion()) return 1;
 		m_SegmentsStartedExecuting = true;
 		segments_executing=segments;
 	}
@@ -1936,7 +2101,7 @@ int CCoordMotion::OutputSegment(int iseg)
 				else
 				{
 					result = AfxMessageBox("Unexpected Coordinated Motion Buffer Underflow!\r"
-						"(Consider increasing the Trajectory Planner Lookahead time in the Tools Setup Configuration Screen)\r\r"
+						"(Consider increasing the Trajectory Planner Lookahead time in the Configuration Screen)\r\r"
 						"Press OK to attempt to continue motion\r"
 						"Press CANCEL to abort",
 						MB_ICONEXCLAMATION|MB_OKCANCEL);   
@@ -1955,9 +2120,9 @@ int CCoordMotion::OutputSegment(int iseg)
 			else
 			{
 				if (CheckMotionHalt(true)) return 2;
+				UpdateRealTimeState(m_TimeAlreadyExecuted);
 				
 				wait = (m_TotalDownloadedTime - m_TimeAlreadyExecuted) > MP->TPLookahead;
-
 				if (wait) 
 				{
 					Sleep(30);
@@ -1968,6 +2133,79 @@ int CCoordMotion::OutputSegment(int iseg)
 
 	}
 
+	return 0;
+}
+
+// Using the time of motion reported by KFLOP figure out
+// what state the Interpreter was in at that previous state
+int CCoordMotion::UpdateRealTimeState(double T)
+{
+	double BufTime=0;
+	bool Finished=false, NotStarted=false;
+	SEGMENT *segs_to_check;
+	int n,i,k;
+
+	if (!m_Simulate)
+	{
+		if (T < 0.0)  // Motion finish?
+		{
+			m_realtime_Sequence_number_valid = false;
+			return 0;
+		}
+
+		segs_to_check = segments_executing;
+
+		if (segments_executing==segments)
+			n=nsegs;
+		else
+			n=prev_nsegs;
+
+		// search backwards for where we were in the path based on time
+		int index;
+
+		if (segs_to_check==segments0)
+			index=0;
+		else
+			index=1;
+
+		BufTime=SegsDoneTime[index];
+
+		// if nothing done or downloaded yet don't search or worry if we
+		// can't find current segment in the motion buffer
+		if (SegsDone[index] == -1)
+		{
+			// if initial buffered commands are present with a valid
+			// sequence number than return that
+			if (special_cmds_initial_sequence_no[index] >= 0)
+			{
+				m_realtime_Sequence_number = special_cmds_initial_sequence_no[index];
+				m_realtime_Sequence_number_valid = true;
+			}
+			return 0;
+		}
+
+		// Search backwards starting at last done segment until we find
+		// the one that encompasses the executed time
+		for (i=SegsDone[index]; i>=0; i--)
+		{
+			for (k=segs_to_check[TPMOD(i)].nTrips-1; k>=0; k--)
+			{
+				if (BufTime <= T) break;
+				BufTime -= segs_to_check[TPMOD(i)].C[k].t;  
+			}
+			if (BufTime <= T || (T==0.0 && BufTime<1e-6)) break;
+		}
+
+		if (i==-1)
+		{
+			SetAbort();
+			KMotionDLL->DoErrMsg("Invalid buffer times in Trajectry Planner");
+			return 1;
+		}
+
+		m_realtime_Sequence_number = segs_to_check[TPMOD(i)].sequence_number;
+		m_realtime_Sequence_number_valid = true;
+	}
 	return 0;
 }
 
@@ -1999,6 +2237,7 @@ int CCoordMotion::DownloadDoneSegments()
 				if (WaitForSegmentsFinished()) {SetAbort(); return 1;}
 
 				if(KMotionDLL->WriteLine("OpenBuf")) {SetAbort(); return 1;}
+				m_TimeAlreadyExecuted=0;
 				ClearWriteLineBuffer();
 				m_SegmentsStartedExecuting = false;
 
@@ -2022,6 +2261,19 @@ int CCoordMotion::DownloadDoneSegments()
 #define FLOAT_TOL 1e-6 
 
 
+int CCoordMotion::SetAxisDefinitions(int x, int y, int z, int a, int b, int c)
+{
+	if (KMotionDLL->WriteLine("DefineCS %d %d %d %d %d %d")) return 1;
+	x_axis=x;
+	y_axis=y;
+	z_axis=z;
+	a_axis=a;
+	b_axis=b;
+	c_axis=c;
+
+	m_DefineCS_valid=true;
+	return 0;
+}
 
 int CCoordMotion::GetAxisDefinitions(int *x, int *y, int *z, int *a, int *b, int *c)
 {
@@ -2308,9 +2560,116 @@ int CCoordMotion::GetAxisDone(int axis, int *r)
 	return 0;
 }
 
+// Use a combination of Hardware and Software factors to 
+// achieve the desired FRO.  
+//
+// Start at a SW=1.0 and HW=1.0 and gradually change one or the other
+// to move the current FRO toward our goal.  Whenever the total FRO
+// is above the HW Limit adjust the SW factor.  Whenever below the FRO
+// then adjust the HW Limit. 
+
+void CCoordMotion::DetermineSoftwareHardwareFRO(double &HW, double &SW)
+{
+	HW=1.0,SW=1.0;
+
+	// check if current FRO is above the HW limit
+	if (1.0 > m_HardwareFRORange)
+	{
+		// yes it is above, SW should be used
+		
+		if (1.0 <= m_FeedRateOverride)  // need to increase?
+		{
+			// yes, go all the way with SW
+			SW = m_FeedRateOverride;
+		}
+		else
+		{
+			// need to decrease
+
+			// check if decreasing all the way to desired FRO
+			// will put us below the HW Limit 
+
+			if (m_FeedRateOverride < m_HardwareFRORange)
+			{
+				// yes it will, decrease SW to limit
+				SW = m_HardwareFRORange;
+				// then remainder with HW
+				HW = m_FeedRateOverride/SW;
+			}
+			else
+			{
+				// no, do all with SW
+				SW = m_FeedRateOverride;
+			}
+		}
+	}
+	else
+	{
+		// Starting FRO=1.0 is below HW limit, HW should be used
+		if (1.0 <= m_FeedRateOverride)  // need to increase (above 1.0)?
+		{
+			// yes, check if increasing all the way to desired FRO
+			// will put us above the HW Limit? 
+			if (m_FeedRateOverride > m_HardwareFRORange)
+			{
+				// yes it will, increase HW to limit
+				HW = m_HardwareFRORange;
+				// then remainder with SW
+				SW = m_FeedRateOverride/HW;
+			}
+			else
+			{
+				// no we will still be below HW limit.  Use HW entirely
+				HW = m_FeedRateOverride;
+			}
+		}
+		else
+		{
+			// need to decrease, do all with HW
+			HW = m_FeedRateOverride;
+		}
+	}
+}
+
+
 void CCoordMotion::SetFeedRateOverride(double v)
 {
-	m_FeedRateOverride=v;
+	char s[MAX_LINE];
+	double HW,SW;
+
+	m_FeedRateOverride=v;	
+	
+	if (!m_Simulate)
+	{
+		DetermineSoftwareHardwareFRO(HW,SW);
+		sprintf(s,"SetFRO %.4f",HW);
+		KMotionDLL->WriteLine(s);
+	}
+}
+
+void CCoordMotion::SetFeedRateRapidOverride(double v)
+{
+	char s[MAX_LINE];
+
+	if (v > Kinematics->m_MotionParams.MaxRapidFRO) v = Kinematics->m_MotionParams.MaxRapidFRO;
+
+	m_FeedRateRapidOverride=v;	
+
+	if (!m_Simulate)
+	{
+		sprintf(s,"SetRapidFRO %.4f",v);
+		KMotionDLL->WriteLine(s);
+	}
+}
+
+void CCoordMotion::SetHardwareFRORange(double v)
+{
+	m_HardwareFRORange=v;
+}
+
+double CCoordMotion::GetHardwareFRORange()
+{
+	return m_HardwareFRORange;
 }
 
 void CCoordMotion::SetSpindleRateOverride(double v)
@@ -2321,6 +2680,11 @@ void CCoordMotion::SetSpindleRateOverride(double v)
 double CCoordMotion::GetFeedRateOverride()
 {
 	return m_FeedRateOverride;
+}
+
+double CCoordMotion::GetFeedRateRapidOverride()
+{
+	return m_FeedRateRapidOverride;
 }
 
 double CCoordMotion::GetSpindleRateOverride()

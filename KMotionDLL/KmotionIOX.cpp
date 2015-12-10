@@ -876,6 +876,7 @@ int CKMotionIO::KMotionLock()
 			ErrorMessageBox(reason);
 			NonRespondingCount=0;
 			Mutex->Unlock();  // no such device available
+			Disconnect();       // Try disconnect (broken pipe in ftdi_usb_get_strings() requires this fix)
 			return KMOTION_NOT_CONNECTED; 
 		}
 		

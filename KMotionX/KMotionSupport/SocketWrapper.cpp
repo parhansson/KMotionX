@@ -38,6 +38,11 @@ either expressed or implied, of the FreeBSD Project.
 #include <netinet/ip.h>
 #include <netdb.h>
 
+//needed to build with clang
+#ifdef __MACH__
+#include <string>
+#endif
+
 SocketWrapper::SocketWrapper()
 {
 	socketDesc = -1;
