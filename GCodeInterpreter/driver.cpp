@@ -291,8 +291,12 @@ int read_setup_file(     /* ARGUMENT VALUES             */
 	{
 		if (fgets(buffer, 1000, setup_file_port) IS NULL)
 			DRIVER_ERROR_CF("Bad %s file format", "setup");
-		else if (buffer[0] IS '\n')
-			break;
+		else {
+		    char * p;
+		    for (p = buffer; isspace(*p); ++p);
+		    if (!*p)
+			    break;
+        }
 	}
 
 	for (;;)
@@ -535,6 +539,7 @@ int read_tool_file(      /* ARGUMENT VALUES             */
 	double xoffset=0;
 	double yoffset=0;
 	char buffer[1000];
+	char s[1000];
 	char *Comment, *Image, *p;
 
 	tool_file_port SET_TO fopen(tool_file, "r");
@@ -569,31 +574,31 @@ int read_tool_file(      /* ARGUMENT VALUES             */
 				&tool_id, &offset, &diameter, &xoffset, &yoffset, &n) IS 0)
 				DRIVER_ERROR_CF2("Bad input line \"%s\" in tool file", buffer);
 
-			char s[1000];
 			strcpy(s, buffer + n);
 
-			Image = s;
+			Comment = s;
 			BOOL bImageSuccess = FALSE;
 			BOOL bCommentSuccess = FALSE;
-			while (isspace(*Image)) ++Image;
-			if (*Image == '"') {
-			    while (isspace(*++Image));
-			    p = Image;
+			while (isspace(*Comment)) ++Comment;
+			if (*Comment == '"') {
+			    while (isspace(*++Comment));
+			    p = Comment;
 			    while (*p && *p != '"') ++p;
+			    
 			    if (*p == '"') {
-			        Comment = p+1;
+			        Image = p+1;
 			        while (isspace(*--p));
 			        *++p = 0;
-			        bImageSuccess = TRUE;
-			        while (isspace(*Comment)) ++Comment;
-			        if (*Comment == '"') {
-			            while (isspace(*++Comment));
-			            p = Comment;
+			        bCommentSuccess = TRUE;
+			        while (isspace(*Image)) ++Image;
+			        if (*Image == '"') {
+			            while (isspace(*++Image));
+			            p = Image;
 			            while (*p && *p != '"') ++p;
 			            if (*p == '"') {
 			                while (isspace(*--p));
 			                *++p = 0;
-			                bCommentSuccess = TRUE;
+			                bImageSuccess = TRUE;
 			            }
 			        }
 			    }
@@ -933,9 +938,9 @@ int main(int argc, char ** argv)
 	int result;
 
 	result = interpret_from_file( /* ARGUMENT VALUES                   */
-		"tk.ngc",       /* string: name of the rs274kt file  */
-		"tk.tbl",       /* name of tool file                 */
-		"",				/* name of setup file                */
+		(char *)"tk.ngc",       /* string: name of the rs274kt file  */
+		(char *)"tk.tbl",       /* name of tool file                 */
+		(char *)"",				/* name of setup file                */
 		OFF);           /* switch which is ON or OFF         */
 
 	exit(result);

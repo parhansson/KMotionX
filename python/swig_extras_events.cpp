@@ -38,6 +38,7 @@ enum GEvtCode {
     GEVXB(CHG_THREAD,8,1,ThreadActive)
     GEV(CHG_STOP,StopImmediateState,cb_int)
     GEVX(CHG_PCCOMM,0,1,PC_comm,cb_int)     // only looks for command var (persist[100]) changes
+    GEVX(CHG_PCCOMMMFB,4,5,PC_comm,cb_int)  // looks for MPG feedback vars (persist[104]) changes
     GEVX(CHG_PCCOMMSFB,5,6,PC_comm,cb_int)  // looks for spindle speed/load feedback vars (persist[105]) changes
     GEVX(CHG_PCCOMMIO,6,7,PC_comm,cb_int)   // looks for I/O status vars (persist[106]) changes
     GEVX(CHG_PCCOMMST,7,8,PC_comm,cb_int)   // looks for general status vars (persist[107]) changes
@@ -85,7 +86,8 @@ enum GEvtCode {
     GEV(CHG_SPEED_FEED_MODE,speed_feed_mode,cb_int)
     GEV(CHG_SPEED_OVERRIDE,speed_override,cb_bool)
     GEV(CHG_SPINDLE_TURNING,spindle_turning,cb_int)
-    GEV(CHG_TOOL_LENGTH_OFFSET,tool_length_offset,cb_float)
+    //GEV(CHG_TOOL_LENGTH_OFFSET,tool_length_offset,cb_float)
+    GEVXX(CHG_TOOL_LENGTH_OFFSET,3,tool_length_offset,double,cb_float)   // was changed to XYZ offsets
     GEV(CHG_TOOL_TABLE_INDEX,tool_table_index,cb_int)
     GEV(CHG_TRAVERSE_RATE,traverse_rate,cb_float)
     GEV(CHG_BLOCK_DELETE,block_delete,cb_bool)

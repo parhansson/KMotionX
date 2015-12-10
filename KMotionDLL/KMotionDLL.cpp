@@ -425,6 +425,12 @@ int CKMotionDLL::OpenPipe()
 }
 
 
+void CKMotionDLL::Terminate(int exit_code)
+{
+    // Default implementation just calls ::exit()
+    ::exit(exit_code);
+}
+
 
 int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 {
@@ -464,17 +470,18 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 			PipeOpen=true;  // only try once
 			if (!OpenPipe())
 			{
-			    #define OPEN_ATTEMPTS 100
-			    if (!remote_tcp) {
+			    #define OPEN_ATTEMPTS 10
+			    if (!use_tcp) {
 				    // pipe won't open try to launch server
 				    LaunchServer();
+					Sleep(100);
 				
 				    for (i=0; i<OPEN_ATTEMPTS; i++) // try for a few secs
 				    {
 					    if (OpenPipe())
 						    break;
 					
-					    Sleep(100);
+					    Sleep(500);
 				    }
 			    }
 			    else
@@ -487,7 +494,11 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 					ServerMessDisplayed=TRUE;
 					DoErrMsg("Unable to Connect to KMotion Server");
 					PipeMutex->Unlock();
-					exit(1);
+#ifdef _KMOTIONX
+		            throw std::system_error(ENXIO, std::system_category(), "Connect");
+#else
+                    Terminate(1);
+#endif
 				}
 			}
 		}
@@ -590,7 +601,7 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 		ServerMessDisplayed=TRUE;
 
 		DoErrMsg(serr_msg);
-		exit(1);
+		Terminate(2);
 	}
 	
 	if (ReceivedErrMsg)
@@ -678,17 +689,34 @@ int CKMotionDLL::LaunchServer()
 	strcat(cmd, "KMotionServer.exe");
 	
 	if (!CreateProcess (
-		NULL,
+		cmd,
 		cmd, 
 		NULL, NULL,
 		TRUE, 0,
-		NULL, NULL,
+		NULL, 
+		GetServerDir()[0] ? GetServerDir() : NULL,
 		&si, &pi))
 	{
+	    DWORD e = GetLastError();
+        LPVOID lpMsgBuf;
+
+        FormatMessage(
+            FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+            FORMAT_MESSAGE_FROM_SYSTEM |
+            FORMAT_MESSAGE_IGNORE_INSERTS,
+            NULL,
+            e,
+            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+            (LPTSTR) &lpMsgBuf,
+            0, NULL );
+        fprintf(stderr, "LaunchServer:\n%s\n", lpMsgBuf);
+        LocalFree(lpMsgBuf);
+        fprintf(stderr, "ServerDir:\n%s\n", GetServerDir());
+        fprintf(stderr, "Server:\n%s\n", cmd);
 		ServerMessDisplayed = true;
 		DoErrMsg("Unable to execute:\r\rKMotionServer.exe\r\r"
 			"Try re-installing software or copy this file to the same location as KMotion.exe");
-		exit(1);
+		Terminate(3);
 	}
 
 	
@@ -702,17 +730,21 @@ int CKMotionDLL::LaunchServer()
     //sprintf(command, "%s/%s", MainPath,"KMotionServer");
 	printf("%s:%d Launch KMotionServer first!\n",__FILE__,__LINE__);
 	PipeMutex->Unlock();
-	exit(1);
+	Terminate(3);
     #else
     sprintf(cmd, "%s/%s", GetServerDir(),"KMotionServer &");
     system(cmd);
     #endif
 
 #else
+    // -u parameter means Unix domain socket only; do not listen on TCP socket.
+    // If we are launching the server locally, currently we don't want it to
+    // also listen for remote connections.
+    //TODO: make startup args configurable via API.
     #ifdef _DEAMON
-    sprintf(cmd, "%s/%s", GetServerDir(),"KMotionServer");
+    sprintf(cmd, "%s/%s", GetServerDir(),"KMotionServer -u");
     #else
-    sprintf(cmd, "%s/%s", GetServerDir(),"KMotionServer &");
+    sprintf(cmd, "%s/%s", GetServerDir(),"KMotionServer -u &");
     #endif
     printf("%s:%d Launching KMotionServer %s\n",__FILE__,__LINE__, cmd);
     system(cmd);

@@ -29,6 +29,21 @@ either expressed or implied, of the FreeBSD Project.
 
 // KMotionServerMain.cpp 
 
+#ifdef DEBUG
+  // DEBUG symbol forces syslogging with details
+  #define USE_SYSLOG  1
+  #define SYSLOG_DETAILS  1   // set 1 to log detailed traffic, else only errors and uncommon messages.
+#else
+  #ifdef __arm__
+    // On embedded systems (e.g. Beaglebone, Raspberry Pi) we don't want the syslog to
+    // fill up.  We generate a lot of logging so this can be a problem.
+    #define USE_SYSLOG 0
+  #else
+    #define USE_SYSLOG 1
+  #endif
+
+  #define SYSLOG_DETAILS  0   // set 1 to log detailed traffic, else only errors and uncommon messages.
+#endif
 
 
 #include <HiResTimer.h>
@@ -43,12 +58,12 @@ either expressed or implied, of the FreeBSD Project.
 #include <stdlib.h>     /* General Utilities */
 #include <pthread.h>    /* POSIX Threads */
 #include <string.h>     /* String handling */
-#include <errno.h>
-#include <string.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/stat.h>
+#if USE_SYSLOG
 #include <syslog.h>
+#endif
 #include <fcntl.h>
 #include <list>
 #include <signal.h>
@@ -64,11 +79,11 @@ either expressed or implied, of the FreeBSD Project.
 #include <KMotionDLL_Direct.h>
 
 
-#ifdef DEBUG
-#define SYSLOGD(M, ...) syslog(LOG_ERR,M,##__VA_ARGS__);
-#else
-#define SYSLOGD(M, ...)
+#if !USE_SYSLOG
+    // Compile out all syslog calls
+    #define syslog(x,...)
 #endif
+
 
 #define BUFSIZE 4096
 #define PIPE_TIMEOUT 10000
@@ -79,6 +94,12 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 int ConsoleHandler(int board, const char *buf);
 
 int nClients = 0;
+
+// Command line arg values
+int open_tcp = 1;
+int open_unix = 1;
+int tcp_port = KMOTION_PORT;
+
 
 /* struct to hold data to be passed to a thread
    this shows how multiple data items can be passed to a thread */
@@ -123,7 +144,9 @@ void MyErrExit(const char *s)
 {
 
 	syslog(LOG_ERR, "%s", s);
+#if USE_SYSLOG
 	closelog();
+#endif
 	exit(1);
 }
 void logError(const char *s){
@@ -244,12 +267,30 @@ static void daemonize(){
 }
 #endif
 
-int main(void) 
+int main(int argc, char ** argv) 
 {
     /* SJH - modified to listen to a TCP socket in addition to the unix domain (local) socket.
-       Listens at port KMOTION_PORT (defined in KMotionDLL.h).
-       FIXME: need to make this an argc/argv parameter.
+       Listens at port KMOTION_PORT (defined in KMotionDLL.h) unless overridden with -p.
+       
+       Parameters:
+         -u   Open only Unix domain socket
+         -t   Open only TCP socket
+              - if neither -u or -t, opens both Unix and TCP socket.
+         -p<port>  TCP port to listen on.  No space between -p and port number thanks to our crude parser :-)
+       
     */
+    for (int i = 1; i < argc; ++i) {
+        if (!strcmp(argv[i],"-t"))
+            open_unix = 0;
+        else if (!strcmp(argv[i],"-u"))
+            open_tcp = 0;
+        else if (!memcmp(argv[i],"-p",2))
+            sscanf(argv[i]+2, "%d", &tcp_port); // syntax error will leave as default port
+        else {
+            fprintf(stderr, "Arg '%s' not recognized\n", argv[i]);
+            exit(1);
+        }
+    }
 #ifdef _DEAMON
 	//daemonize2();
 	daemonize();
@@ -260,13 +301,15 @@ int main(void)
     pthread_attr_setschedpolicy(&attr, SCHED_FIFO); // FIFO scheduling for threads
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED); // Don't want threads (particualrly main)
                                                                    // waiting on each other
-
+#if USE_SYSLOG
 	openlog("KMotionServer", LOG_PID|LOG_CONS, LOG_USER);
+#endif
 	syslog(LOG_ERR, "KMotionServer started ");
 
 
-    int tcp_socket;
-    int main_socket;
+    int tcp_socket = 0;     // Default to FD 0 since then don't get errors with FD_ISSET macros etc.
+    int main_socket = 0;
+    int maxfd = -1;
     int client_socket;
     unsigned int t;
     struct sockaddr_un local, remote;
@@ -276,13 +319,14 @@ int main(void)
     socklen_t len;
 
 
-    if ((main_socket = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
+    if (open_unix && (main_socket = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
     	perrorExit("socket");
     }
-    if ((tcp_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+    if (open_tcp && (tcp_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
     	perrorExit("tcp socket");
     }
 
+    if (open_unix) {
     if (strlen(SOCK_PATH) >= sizeof(local.sun_path)) {
     	perrorExit("path too long!");
     }
@@ -305,21 +349,25 @@ int main(void)
 #endif
     	perrorExit("bind");
     }
+        maxfd = main_socket;
+    }
     
-    
+    if (open_tcp) {
     tlocal.sin_family = AF_INET;
-    tlocal.sin_port = htons(KMOTION_PORT);
+        tlocal.sin_port = htons(tcp_port);
     tlocal.sin_addr.s_addr = INADDR_ANY;
     len = sizeof(tlocal);
     if (bind(tcp_socket, (struct sockaddr *)&tlocal, len) == -1) {
     	perrorExit("tcp bind");
+        }
+        maxfd = tcp_socket;
     }
     
 
-    if (listen(main_socket, 5) == -1) {
+    if (open_unix && listen(main_socket, 5) == -1) {
     	perrorExit("listen");
     }
-    if (listen(tcp_socket, 5) == -1) {
+    if (open_tcp && listen(tcp_socket, 5) == -1) {
     	perrorExit("tcp listen");
     }
 
@@ -337,17 +385,17 @@ int main(void)
        syslog(LOG_ERR,"Main Thread. Waiting for a connection...\n");
        
        FD_ZERO(&rfds);
-       FD_SET(main_socket, &rfds);
-       FD_SET(tcp_socket, &rfds);
+       if (open_unix) FD_SET(main_socket, &rfds);
+       if (open_tcp) FD_SET(tcp_socket, &rfds);
        
-       retval = select(tcp_socket+1, &rfds, NULL, NULL, NULL);
+       retval = select(maxfd+1, &rfds, NULL, NULL, NULL);
        if (retval < 0)
             perrorExit("select");
-       if (FD_ISSET(main_socket, &rfds)) {
+       if (open_unix && FD_ISSET(main_socket, &rfds)) {
             t = sizeof(remote);
             client_socket = accept(main_socket, (struct sockaddr *)&remote, &t);
        }
-       else if (FD_ISSET(tcp_socket, &rfds)) {
+       else if (open_tcp && FD_ISSET(tcp_socket, &rfds)) {
             t = sizeof(tremote);
             client_socket = accept(tcp_socket, (struct sockaddr *)&tremote, &t);
             if (client_socket >= 0) {
@@ -392,7 +440,9 @@ int main(void)
        }
 
    }
+#if USE_SYSLOG
    closelog();
+#endif
    exit(EXIT_SUCCESS);
 } 
 //http://www.amparo.net/ce155/thread-ex.html
@@ -529,21 +579,27 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 
 	case ENUM_WriteLineReadLine:	// Send Code, board, string -- Get Dest byte, Result (int) and string
 		result = KMotionDLL.WriteLineReadLine(board, chRequest+8, chReply+1+4);
-		SYSLOGD("GetAnswerToRequest %s \n\trequest=%s \n\treply=%s \n",ENUM_NAMES[code],chRequest+8,chReply+1+4);
+		#if SYSLOG_DETAILS
+		syslog(LOG_ERR,"GetAnswerToRequest %s \n\trequest=%s \n\treply=%s \n",ENUM_NAMES[code],chRequest+8,chReply+1+4);
+		#endif
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes = 1+4+strlen(chReply+1+4)+1; // Dest byte, Result int, string, null char
 		break;
 
 	case ENUM_WriteLine:	
 		result = KMotionDLL.WriteLine(board, chRequest+8);
-		SYSLOGD("GetAnswerToRequest %s \n\trequest=%s \n\tresult=%d \n",ENUM_NAMES[code],chRequest+8,result);
+		#if SYSLOG_DETAILS
+		syslog(LOG_ERR,"GetAnswerToRequest %s \n\trequest=%s \n\tresult=%d \n",ENUM_NAMES[code],chRequest+8,result);
+		#endif
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
 
 	case ENUM_WriteLineWithEcho:	
 		result = KMotionDLL.WriteLineWithEcho(board, chRequest+8);
-		SYSLOGD("GetAnswerToRequest %s \n\trequest=%s \n\tresult=%d \n",ENUM_NAMES[code],chRequest+8,result);
+		#if SYSLOG_DETAILS
+		syslog(LOG_ERR,"GetAnswerToRequest %s \n\trequest=%s \n\tresult=%d \n",ENUM_NAMES[code],chRequest+8,result);
+		#endif
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
@@ -551,13 +607,15 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 	case ENUM_ReadLineTimeOut:	// Send Code, board, timeout -- Dest byte, Get Result (int), and string
 		memcpy(&TimeOutms, chRequest+8,4);
 		result = KMotionDLL.ReadLineTimeOut(board, chReply+1+4 ,TimeOutms);
-		SYSLOGD("GetAnswerToRequest %s \n\trequest=%d \n\treply=%s \n\tresult=%d \n",ENUM_NAMES[code],TimeOutms,chReply+1+4,result);
+		#if SYSLOG_DETAILS
+		syslog(LOG_ERR,"GetAnswerToRequest %s \n\trequest=%d \n\treply=%s \n\tresult=%d \n",ENUM_NAMES[code],TimeOutms,chReply+1+4,result);
+		#endif
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes = 1+4+strlen(chReply+1+4)+1; // Dest byte, Result int, string, null char
 		break;
 
 	case ENUM_ListLocations:		// Send Code -- Get Dest, Result (int), nlocations (int), List (ints)
-	  SYSLOGD("GetAnswerToRequest %s\n",ENUM_NAMES[code]);
+		syslog(LOG_ERR,"GetAnswerToRequest %s\n",ENUM_NAMES[code]);
 		result = KMotionDLL.ListLocations(&nLocations, List);
 		memcpy(chReply+1, &result,4);
 		memcpy(chReply+1+4, &nLocations,4);
@@ -567,55 +625,59 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 
 	case ENUM_Failed:	
 		result = KMotionDLL.Failed(board);
-		SYSLOGD("GetAnswerToRequest %s %d\n",ENUM_NAMES[code],result);
+		syslog(LOG_ERR,"GetAnswerToRequest %s %d\n",ENUM_NAMES[code],result);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
 
 	case ENUM_Disconnect:	
 		result = KMotionDLL.Disconnect(board);
-		SYSLOGD("GetAnswerToRequest %s %d\n",ENUM_NAMES[code],result);
+		syslog(LOG_ERR,"GetAnswerToRequest %s %d\n",ENUM_NAMES[code],result);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
 
 	case ENUM_FirmwareVersion:	
 		result = KMotionDLL.FirmwareVersion(board);
-		SYSLOGD("GetAnswerToRequest %s %d\n",ENUM_NAMES[code],result);
+		syslog(LOG_ERR,"GetAnswerToRequest %s %d\n",ENUM_NAMES[code],result);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
 
 	case ENUM_CheckForReady:	
 		result = KMotionDLL.CheckForReady(board);
-		SYSLOGD("GetAnswerToRequest %s %d\n",ENUM_NAMES[code],result);
+		syslog(LOG_ERR,"GetAnswerToRequest %s %d\n",ENUM_NAMES[code],result);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
 
 	case ENUM_KMotionLock:	
 		result = KMotionDLL.KMotionLock(board);
-		SYSLOGD("GetAnswerToRequest %s %s\n",ENUM_NAMES[code],LOCK_CODES[result]);
+		#if SYSLOG_DETAILS
+		syslog(LOG_ERR,"GetAnswerToRequest %s %s\n",ENUM_NAMES[code],LOCK_CODES[result]);
+		#endif
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
 
 	case ENUM_USBLocation:	
 		result = KMotionDLL.USBLocation(board);
-		SYSLOGD("GetAnswerToRequest %s \n\tresult=%d \n",ENUM_NAMES[code],result);
+		syslog(LOG_ERR,"GetAnswerToRequest %s \n\tresult=%d \n",ENUM_NAMES[code],result);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
 
 	case ENUM_KMotionLockRecovery:	
 		result = KMotionDLL.KMotionLockRecovery(board);
-		SYSLOGD("GetAnswerToRequest %s \n\tresult=%d \n",ENUM_NAMES[code],result);
+		syslog(LOG_ERR,"GetAnswerToRequest %s \n\tresult=%d \n",ENUM_NAMES[code],result);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
 
 	case ENUM_ReleaseToken:	
-	  SYSLOGD("GetAnswerToRequest %s\n",ENUM_NAMES[code]);
+		#if SYSLOG_DETAILS
+		syslog(LOG_ERR,"GetAnswerToRequest %s\n",ENUM_NAMES[code]);
+		#endif
 		KMotionDLL.ReleaseToken(board);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
@@ -623,7 +685,9 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 
 	case ENUM_ServiceConsole:	
 		result = KMotionDLL.ServiceConsole(board);
-		SYSLOGD("GetAnswerToRequest %s \n\tresult=%d \n",ENUM_NAMES[code],result);
+		#if SYSLOG_DETAILS
+		syslog(LOG_ERR,"GetAnswerToRequest %s \n\tresult=%d \n",ENUM_NAMES[code],result);
+		#endif
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
@@ -631,7 +695,7 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 		// remember which pipe is associated with the console handler for the board
 		ConsolePipeHandle[board] = hPipe;
 		result = KMotionDLL.SetConsoleCallback(board,ConsoleHandler);
-		SYSLOGD("GetAnswerToRequest %s \n\tresult=%d \n\tboard=%d \n\thandle=%d \n",ENUM_NAMES[code],result,board,hPipe);
+		syslog(LOG_ERR,"GetAnswerToRequest %s \n\tresult=%d \n\tboard=%d \n\thandle=%d \n",ENUM_NAMES[code],result,board,hPipe);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
@@ -759,7 +823,9 @@ int ConsoleHandler(int board, const char *buf)
 	if (ConsolePipeHandle[board])
 	{
 		// there is, add the message to the list
-	  SYSLOGD("Console message: %s",buf2);
+		#if SYSLOG_DETAILS
+		syslog(LOG_ERR,"Console message: %s",buf2);
+		#endif
 		ConsoleList[board].push_back(buf2);
 	}
 	return 0;

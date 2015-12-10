@@ -745,6 +745,9 @@ class CKMotionDLL(_object):
     def GetServerDir(self):
         return _kmotion.CKMotionDLL_GetServerDir(self)
 
+    def Terminate(self, exit_code):
+        return _kmotion.CKMotionDLL_Terminate(self, exit_code)
+
     def ListLocations(self):
         return _kmotion.CKMotionDLL_ListLocations(self)
 
@@ -1059,12 +1062,6 @@ PC_COMM_SET_VARS_G = _kmotion.PC_COMM_SET_VARS_G
 
 _kmotion.PC_COMM_NB_MSG_DISMISS_swigconstant(_kmotion)
 PC_COMM_NB_MSG_DISMISS = _kmotion.PC_COMM_NB_MSG_DISMISS
-
-_kmotion.PC_COMM_TIMEOUT_swigconstant(_kmotion)
-PC_COMM_TIMEOUT = _kmotion.PC_COMM_TIMEOUT
-
-_kmotion.PC_COMM_TIMEOUT_SEC_swigconstant(_kmotion)
-PC_COMM_TIMEOUT_SEC = _kmotion.PC_COMM_TIMEOUT_SEC
 
 _kmotion.PC_COMM_PERSIST_swigconstant(_kmotion)
 PC_COMM_PERSIST = _kmotion.PC_COMM_PERSIST
@@ -1543,10 +1540,6 @@ class MotionParams(_object):
     __swig_getmethods__["MaxLinearLength"] = _kmotion.MotionParams_MaxLinearLength_get
     if _newclass:
         MaxLinearLength = _swig_property(_kmotion.MotionParams_MaxLinearLength_get, _kmotion.MotionParams_MaxLinearLength_set)
-    __swig_setmethods__["UseOnlyLinearSegments"] = _kmotion.MotionParams_UseOnlyLinearSegments_set
-    __swig_getmethods__["UseOnlyLinearSegments"] = _kmotion.MotionParams_UseOnlyLinearSegments_get
-    if _newclass:
-        UseOnlyLinearSegments = _swig_property(_kmotion.MotionParams_UseOnlyLinearSegments_get, _kmotion.MotionParams_UseOnlyLinearSegments_set)
     __swig_setmethods__["ArcsToSegs"] = _kmotion.MotionParams_ArcsToSegs_set
     __swig_getmethods__["ArcsToSegs"] = _kmotion.MotionParams_ArcsToSegs_get
     if _newclass:
@@ -1563,6 +1556,18 @@ class MotionParams(_object):
     __swig_getmethods__["DegreesC"] = _kmotion.MotionParams_DegreesC_get
     if _newclass:
         DegreesC = _swig_property(_kmotion.MotionParams_DegreesC_get, _kmotion.MotionParams_DegreesC_set)
+    __swig_setmethods__["UseOnlyLinearSegments"] = _kmotion.MotionParams_UseOnlyLinearSegments_set
+    __swig_getmethods__["UseOnlyLinearSegments"] = _kmotion.MotionParams_UseOnlyLinearSegments_get
+    if _newclass:
+        UseOnlyLinearSegments = _swig_property(_kmotion.MotionParams_UseOnlyLinearSegments_get, _kmotion.MotionParams_UseOnlyLinearSegments_set)
+    __swig_setmethods__["DoRapidsAsFeeds"] = _kmotion.MotionParams_DoRapidsAsFeeds_set
+    __swig_getmethods__["DoRapidsAsFeeds"] = _kmotion.MotionParams_DoRapidsAsFeeds_get
+    if _newclass:
+        DoRapidsAsFeeds = _swig_property(_kmotion.MotionParams_DoRapidsAsFeeds_get, _kmotion.MotionParams_DoRapidsAsFeeds_set)
+    __swig_setmethods__["MaxRapidFRO"] = _kmotion.MotionParams_MaxRapidFRO_set
+    __swig_getmethods__["MaxRapidFRO"] = _kmotion.MotionParams_MaxRapidFRO_get
+    if _newclass:
+        MaxRapidFRO = _swig_property(_kmotion.MotionParams_MaxRapidFRO_get, _kmotion.MotionParams_MaxRapidFRO_set)
 
     def __init__(self):
         this = _kmotion.new_MotionParams()
@@ -1799,6 +1804,9 @@ class CoordMotion(_object):
     def StraightFeedAccel(self, DesiredFeedRate_in_per_sec, DesiredAccel, x, y, z, a, b, c, sequence_number, ID):
         return _kmotion.CoordMotion_StraightFeedAccel(self, DesiredFeedRate_in_per_sec, DesiredAccel, x, y, z, a, b, c, sequence_number, ID)
 
+    def StraightFeedAccelRapid(self, DesiredFeedRate_in_per_sec, DesiredAccel, RapidMode, NoCallback, x, y, z, a, b, c, sequence_number, ID):
+        return _kmotion.CoordMotion_StraightFeedAccelRapid(self, DesiredFeedRate_in_per_sec, DesiredAccel, RapidMode, NoCallback, x, y, z, a, b, c, sequence_number, ID)
+
     def Dwell(self, seconds, sequence_number=0):
         return _kmotion.CoordMotion_Dwell(self, seconds, sequence_number)
 
@@ -1828,6 +1836,9 @@ class CoordMotion(_object):
 
     def DoSegmentCallbacks(self, i0, n):
         return _kmotion.CoordMotion_DoSegmentCallbacks(self, i0, n)
+
+    def DoSegmentCallbacksRapid(self, i0, i1):
+        return _kmotion.CoordMotion_DoSegmentCallbacksRapid(self, i0, i1)
 
     def DoRateAdjustments(self, i0, i1):
         return _kmotion.CoordMotion_DoRateAdjustments(self, i0, i1)

@@ -2,6 +2,7 @@
 config.h
 config.mak
 *~
+~*
 *.out
 *.nm
 *.suo
@@ -15,3 +16,13 @@ config.mak
 /**/*.project
 /**/*.cproject
 /**/.settings/
+KMotionX/examples/webgui/build
+python/win/Debug
+python/win/Release
+python/build
+KMotion*/Debug
+KMotion*/Release
+GCodeInterpreter/Debug
+GCodeInterpreter/Release
+KMotionX/KMotionXCNC/server/build
+

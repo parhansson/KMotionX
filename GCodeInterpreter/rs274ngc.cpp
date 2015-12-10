@@ -865,6 +865,54 @@ static int arc_data_ijk(	/* ARGUMENTS */
     CHK(((radius == 0.0) || (radius2 == 0.0)), NCE_ZERO_RADIUS_ARC);
     CHK((fabs(radius - radius2) > tolerance),
 	NCE_RADIUS_TO_END_OF_ARC_DIFFERS_FROM_RADIUS_TO_START);
+
+#if 0  // enable this to correct small discontinuities caused by GCode Radius different from beginning and end      
+	
+	double center_x2;		/* first coordinate of center of arc */
+    double center_y2;		/* second coordinate of center of arc */
+	int result_r,turn2;
+
+
+	if (current_x != end_x || current_y != end_y)  // radius fixup doesn't work or is necessary for full circles
+	{
+		result_r = arc_data_r(		/* ARGUMENTS */
+		move,			/* either G_2 (cw arc) or G_3 (ccw arc) */
+		current_x,		/* first coordinate of current point */
+		current_y,		/* second coordinate of current point */
+		end_x,		/* first coordinate of arc end point */
+		end_y,		/* second coordinate of arc end point */
+		(radius+radius2)/2,		/* radius of arc */
+		&center_x2,		/* pointer to first coordinate of center of arc */
+		&center_y2,		/* pointer to second coordinate of center of arc */
+		&turn2);
+
+		if (result_r!=RS274NGC_OK ||
+			fabs(center_x2 - *center_x) > tolerance ||
+			fabs(center_y2 - *center_y) > tolerance)
+		{
+			result_r = arc_data_r(		/* ARGUMENTS */
+			move,			/* either G_2 (cw arc) or G_3 (ccw arc) */
+			current_x,		/* first coordinate of current point */
+			current_y,		/* second coordinate of current point */
+			end_x,		/* first coordinate of arc end point */
+			end_y,		/* second coordinate of arc end point */
+			-(radius+radius2)/2,		/* radius of arc */
+			&center_x2,		/* pointer to first coordinate of center of arc */
+			&center_y2,		/* pointer to second coordinate of center of arc */
+			&turn2);
+
+			if (result_r!=RS274NGC_OK ||
+				fabs(center_x2 - *center_x) > tolerance ||
+				fabs(center_y2 - *center_y) > tolerance)
+			{
+				return NCE_RADIUS_TO_END_OF_ARC_DIFFERS_FROM_RADIUS_TO_START;
+			}
+		}
+		*center_x=center_x2;
+		*center_y=center_y2;
+	}
+#endif
+
     if (move == G_2)
 	*turn = -1;
     else if (move == G_3)
@@ -5674,6 +5722,7 @@ static int convert_tool_select(	/* ARGUMENTS */
 
 	if (result=ConvertToolToIndex(settings,block->t_number,&settings->selected_tool_slot)) return result;
 	SELECT_TOOL(settings->selected_tool_slot);
+	//printf("convert_tool_select: settings %p selected %d\n", settings, settings->selected_tool_slot);
     return RS274NGC_OK;
 }
 
@@ -6465,16 +6514,19 @@ static double find_straight_length(	/* ARGUMENTS */
     , double CC_1 /* C-coordinate of start point */ /*CC*/
     )
 {
-    if ((x1 != x2) || (y1 != y2) || (z1 != z2) || (1 && (AA_2 == AA_1) && (BB_2 == BB_1) && (CC_2 == CC_1)))	/* straight 
-														   line 
-														 */
-	return sqrt(pow((x2 - x1), 2) + pow((y2 - y1), 2) +
-	    pow((z2 - z1), 2));
-    else
-	return sqrt(0 +
-	    pow((AA_2 - AA_1), 2) + /*AA*/
-	    pow((BB_2 - BB_1), 2) + /*BB*/ pow((CC_2 - CC_1), 2) + /*CC*/ 0);
+	double dx = x2-x1;
+	double dy = y2-y1;
+	double dz = z2-z1;
+	double da = AA_2-AA_1;
+	double db = BB_2-BB_1;
+	double dc = CC_2-CC_1;
+	
+	BOOL pure_angle;
+
+	return GC->CoordMotion->FeedRateDistance(dx, dy, dz, da, db, dc, &pure_angle);
 }
+
+
 
 /****************************************************************************/
 
@@ -8454,6 +8506,7 @@ static int read_parameter_setting(	/* ARGUMENTS */
     _setup.parameter_numbers[_setup.parameter_occurrence] = index;
     _setup.parameter_values[_setup.parameter_occurrence] = value;
     _setup.parameter_occurrence++;
+	PChanged(index);
     return RS274NGC_OK;
 }
 
@@ -9359,6 +9412,7 @@ static int read_text(		/* ARGUMENTS */
 	     space at end of raw_line, especially CR & LF */
 	    raw_line[index] = 0;
 	}
+	
 	strcpy(line, raw_line);
 	CHP(close_and_downcase(line));
 	if ((line[0] == '%') && (line[1] == 0) && (_setup.percent_flag == ON))

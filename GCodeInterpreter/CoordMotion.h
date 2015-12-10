@@ -105,6 +105,10 @@ public:
 	int StraightFeedAccel(double DesiredFeedRate_in_per_sec, double DesiredAccel,
 				     double x, double y, double z, double a, double b, double c, int sequence_number, int ID);
 
+	int StraightFeedAccelRapid(double DesiredFeedRate_in_per_sec, double DesiredAccel, bool RapidMode, bool NoCallback,
+							   double x, double y, double z, double a, double b, double c, int sequence_number, int ID);
+
+
 	int /*CCoordMotion::*/Dwell(double seconds, int sequence_number=0);
 
 	int ReadCurAbsPosition(double *x, double *y, double *z, double *a, double *b, double *c, bool snap=false);
@@ -120,6 +124,7 @@ public:
 	int DoSpecialCommand(int iseg);
 	int DoSpecialInitialCommands();
 	void DoSegmentCallbacks(int i0, int n);
+	void DoSegmentCallbacksRapid(int i0, int i1);
 	int DoRateAdjustments(int i0, int i1);
 	int DoRateAdjustmentsArc(int i, double radius, double theta0, double dtheta, double dcircle);
 
@@ -204,7 +209,7 @@ private:
 	int PutWriteLineBuffer(const char *s, double Time);
 	int FlushWriteLineBuffer();
 	int ClearWriteLineBuffer();
-	int CommitPendingSegments();
+	int CommitPendingSegments(bool RapidMode);
 	int LaunchCoordMotion();
 	int UpdateRealTimeState(double T);
 	void DetermineSoftwareHardwareFRO(double &HW, double &SW);

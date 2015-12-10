@@ -35,6 +35,7 @@ public:
     virtual void ChangedThread(int ThreadActive);
     virtual void ChangedStop(int StopImmediateState);
     virtual void ChangedPCComm(intvec const &PC_comm);
+    virtual void Terminate(int exit_code);
     virtual void HandleConsole(char const *buf);
     virtual void HandleErrMsg(char const *buf);
     virtual int HandleMsgBox(char const *title, char const *msg, int options);
@@ -68,7 +69,7 @@ private:
       return method;
     }
 private:
-    mutable swig::SwigVar_PyObject vtable[16];
+    mutable swig::SwigVar_PyObject vtable[17];
 #endif
 
 };

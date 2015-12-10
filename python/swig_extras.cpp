@@ -47,6 +47,16 @@
                                                         // not currently at target speed +/- tolerance.
     #define VSP_SPEED_VALID     0x02000000          // Speed feedback is a measurement, else is an estimate.
     #define VSP_LOAD_VALID      0x04000000          // Load feedback is a measurement.
+#define VAR_MPG_FB              VAR(104)        // MPG and front panel control feedback
+    #define VMF_ENC_MASK        0x00000FFF          // Mask for MPG encoder count
+    #define VMF_AXIS_MASK       0x0003F000          // Bit set for each axis selected
+    #define VMF_X10             0x00040000          // Bit set for x10
+    #define VMF_X100            0x00080000          // Bit set for x100
+    #define VMF_START           0x00100000          // Front panel state
+    #define VMF_STOP            0x00200000
+    #define VMF_REVERSE         0x00400000
+    #define VMF_x               0x00800000
+    #define VMF_POT             0xFF000000          // Pot reading (0-255)
 
 // Persist variables (0-99):
 
@@ -187,6 +197,20 @@ typedef int G_M_USER_CALLBACK(int mCode);
 class GCodeInterpreter;
 struct Action;
 struct CHD;
+struct KapHdr_t;
+
+/* Capture buffer */
+class KapBuf
+{
+public:
+    KapBuf(KapHdr_t * _kh); // Construct by copying and uncompressing given data buffer
+    ~KapBuf();
+
+    KapHdr_t * kh;  // Construction header; headers only
+    float * base;   // First float (separate area from kh) of expanded data records.
+};
+
+
 
 GCodeInterpreter * _theInterpreter;
 
@@ -278,7 +302,7 @@ public:
     // mp = my_gcode_interp.GetMotionParams()
     // mp.BreakAngle = 0.02
     // my_gcode_interp.SetMotionParams(mp)
-    void SetMotionParams(const MOTION_PARAMS & m) { CoordMotion->Kinematics->m_MotionParams = m; }
+    void SetMotionParams(const MOTION_PARAMS & m);
     
     // Some helper functions for coordinate transforms
 	int SetOrigin(int index, const floatvec & vec);
@@ -363,6 +387,7 @@ public:
     virtual int PC_NBMsgBox();
     virtual int PC_NBMDI();
     virtual int PC_NBInputBox();
+    virtual int PC_CaptureData();
 
     // Helper functions for sending data to the kflop.
     int SendPQR(int persist, int mcode);// Send g-code P,Q,R parameters in the standard manner (used with most M-code handlers)
@@ -371,12 +396,12 @@ public:
     
     intvec GetPCComm() const;           // Get the 8 persist vars from the latest MAIN_STATUS (useful in PC_Other() virtual)
     floatvec GetPCCommFloat() const;    // Get the 8 persist vars from the latest MAIN_STATUS, as floating point
-    int GetOnePersistInt(int index);
-    float GetOnePersistFloat(int index);
-    double GetOnePersistDouble(int index);
-    void SetOnePersistInt(int index, int value);
-    void SetOnePersistFloat(int index, float value);
-    void SetOnePersistDouble(int index, double value);
+    int GetOnePersistInt(int index) const;
+    float GetOnePersistFloat(int index) const;
+    double GetOnePersistDouble(int index) const;
+    int SetOnePersistInt(int index, int value);
+    int SetOnePersistFloat(int index, float value);
+    int SetOnePersistDouble(int index, double value);
     intvec GetPersistInt(int index, int n_ints);                    // Get n_ints integeres from kflop persist variables, starting at persist[index].
     floatvec GetPersistFloat(int index, int n_floats);              // Get n_floats floats from kflop persist variables, starting at persist[index].
     floatvec GetPersistDouble(int index, int n_doubles);            // Get n_doubles doubles from kflop persist variables, starting at persist[index].
@@ -389,7 +414,12 @@ public:
     floatvec GetGatherDouble(int byte_offset, int n_doubles);       // Get double-prec float data from gather buffer
     const char * GetGatherString(int char_offset, int max_chars);   // Get string data from gather buffer - terminates when null found, but not more than max_chars.
                                                                     // Currently, char_offset must be a multiple of 4 to avoid premature string termination.
-
+    void PutGatherInt(int byte_offset, const intvec & data);        // Put 32-bit int data to gather buffer
+    void PutGatherFloat(int byte_offset, const floatvec & data);    // Put single-prec float data to gather buffer
+    void PutGatherDouble(int byte_offset, const floatvec & data);   // Put double-prec float data to gather buffer
+    void PutGatherString(int char_offset, const char * str);        // Put string data to gather buffer.  Currently, dest buffer in gather should be the next
+                                                                    // higher multiple of 4 than the given string length (including the null termination).
+    
     // Helper functions for manipulating interpreter "setup" struct.
     // Use idiom (in e.g. Python) like:
     // s = my_gcode_interp.GetInterpreterParams()
@@ -404,8 +434,27 @@ public:
     // from_cm is true if get from CoordMotion, else is interpreter position.  The latter is not necessarily the current
     // machine position except at the end of a programmed move.
     floatvec GetCurrent(bool from_cm);
-    
-    
+    // Get/set contiguous range of hashvars
+    floatvec GetHashvars(int first, int n) const;
+    void SetHashvars(int first, floatvec values);
+
+    // Functions for data capture
+    void ResetCapture();
+    int StartCapture(int type, int count, int delays=1);
+    int ExtendCapture(int count);
+    int StopCapture();
+    int GetNumBuffers() const;
+    int GetCaptureRunning() const;              // Returns remaining record count
+    bool GetCaptureDone() const;                // Return if last buffer has the 'DONE' flag set (false if no buffers)
+    int GetCaptureVecSize(int bufno) const;
+    int GetCaptureNumRecs(int bufno) const;
+    floatvec GetCapture(int bufno) const;
+    int GetCaptureSequence(int bufno) const;
+    double GetCaptureTimestamp(int bufno) const;
+    int GetCaptureType(int bufno) const; 
+    double GetCaptureGuessInterval(int bufno) const;
+    int GetCaptureComponentType(int bufno, int component) const;
+    int GetCaptureComponentAxis(int bufno, int component) const;
 
 protected:
     int setAction(int action_num, int type, double p1 = 0., double p2 = 0., double p3 = 0., double p4 = 0., double p5 = 0., const char * str = NULL);
@@ -441,8 +490,14 @@ protected:
     int SendOneDouble(int i, double d);
     int GetVar(int Var, int *value);
     int GetStringFromGather(int WordOffset, char *msg, int nWords, int look_for_null = 1);
+    int GetDataFromGather(int WordOffset, void * data, int nWords);
+    int PutDataToGather(int WordOffset, const void * data, int nWords);
     int SetKFLOPCommandResult(int r);
+    int SetKFLOPCommandResultNB(int r); // Set new-style protocol result
 
+    void get_kap(int word_offset);
+    bool kap_running;
+    std::vector<KapBuf *> kblist;
 };
 
 #ifndef SWIG    // SWIG doesn't need the implementation details...
@@ -633,6 +688,12 @@ int GCodeInterpreter::SetActionWaitbit(int action_num, int bit, int state)
 }
 
 
+void GCodeInterpreter::SetMotionParams(const MOTION_PARAMS & m)
+{
+    CoordMotion->Kinematics->m_MotionParams = m;
+    CoordMotion->SetTPParams();
+}
+
 /*
     Since the GCode interpreter runs as a separate thread, the following _gci_* callbacks
     will be invoked from a thread created outside the binding language.
@@ -699,6 +760,7 @@ GCodeInterpreter::GCodeInterpreter(CCoordMotion *CM): CGCodeInterpreter(CM)
     CGCodeInterpreter::SetUserCallback(_gci_user);
     CGCodeInterpreter::SetUserMCodeCallback(_gci_mcode);
     setup_t();
+    kap_running = false;
 
     printf("GCodeInterpreter::GCodeInterpreter\n");
 }
@@ -1145,6 +1207,10 @@ int GCodeInterpreter::PC_NBInputBox()
 {
     return -1;  // No default implementation
 }
+int GCodeInterpreter::PC_CaptureData()
+{
+    return -1;  // No default implementation
+}
 
 
 int GCodeInterpreter::PC_GetToolDiam()
@@ -1402,6 +1468,20 @@ void GCodeInterpreter::ServiceKFLOPCommands()
         }
 	    CALL_BINDING(PC_NBMDI);
 		break;
+		
+    case PC_COMM_KAP_READY:
+        // Capture data.  This is new protocol.  ACK immediately, extract capture data from
+        // gather buffer, then send final response.  After that, we can invoke binding to
+        // handle the data.
+        i = nm.PC_comm[1];  // GB word offset to header
+        SetKFLOPCommandResult(0);   // Initial ACK
+        get_kap(i);
+        {
+        _ENTER_BINDING;
+        PC_CaptureData();
+        _EXIT_BINDING;
+        }
+        break;
 
 	case PC_COMM_GETAXISRES:    // no callback
 		MP=&CM->Kinematics->m_MotionParams;
@@ -1668,11 +1748,13 @@ int GCodeInterpreter::GetVar(int Var, int *value)
 int GCodeInterpreter::GetStringFromGather(int WordOffset, char *msg, int nWords, int look_for_null)
 {
 	char s[MAX_LINE+1];
-	int j, w, w2r;
+	int j, w, w2r, rc;
 	int * out = (int *)msg;
 	
 	if (nWords < 1)
 	    nWords = 1;
+	    
+	rc = 0;
 
 	CoordMotion->KMotionDLL->WaitToken();
 	
@@ -1681,23 +1763,19 @@ int GCodeInterpreter::GetStringFromGather(int WordOffset, char *msg, int nWords,
 	    if (w2r > 32)
 	        w2r = 32;
 	    sprintf(s, "GetGatherHex %d %d",WordOffset,w2r);  
-	    CoordMotion->KMotionDLL->WriteLine(s);
+	    if (CoordMotion->KMotionDLL->WriteLine(s)) { rc = 1; goto _done; }
 
 	    for (int i=0;i<w2r;++i)  // convert hex to 32 bit words
 	    {
 		    if (!(i&7)) {  // every 8 hex get a new line
-			    if (CoordMotion->KMotionDLL->ReadLineTimeOut(s, 1000)) return 1;  
+			    if (CoordMotion->KMotionDLL->ReadLineTimeOut(s, 1000)) { rc = 2; goto _done; } 
 			    j = 0;
 	        }
 
 		    int result = sscanf(s + j,"%8X",out+i);
 		    j += 9;
 
-		    if (result!=1)
-		    {
-			    CoordMotion->KMotionDLL->ReleaseToken();
-			    return 1;
-		    }
+		    if (result!=1) { rc = 3; goto _done; }
 
 	    }
 	    if (look_for_null)
@@ -1708,13 +1786,87 @@ int GCodeInterpreter::GetStringFromGather(int WordOffset, char *msg, int nWords,
 _done:
 	CoordMotion->KMotionDLL->ReleaseToken();
 
-    if (look_for_null)
+    if (!rc && look_for_null)
     	msg[nWords*4-1] = 0;  // make sure it is terminated
-	//printf("GSFG: %p %s\n", msg, msg);
-	return 0;
+	//printf("GSFG: rc=%d %p %s\n", rc, msg, msg);
+	return rc;
 }
 
-int GCodeInterpreter::GetOnePersistInt(int index)
+int GCodeInterpreter::GetDataFromGather(int WordOffset, void * data, int nWords)
+{
+#if 0
+    return GetStringFromGather(WordOffset, (char *)data, nWords, 0);
+#else
+    // Faster version than GetStringFromGather, because it does not split into smaller chunks.
+	char s[MAX_LINE+1];
+	int j, w2r, rc;
+	int * out = (int *)data;
+	
+	if (nWords < 1)
+	    return 0;
+	    
+	rc = 0;
+	w2r = nWords;
+
+	CoordMotion->KMotionDLL->WaitToken();
+	
+    sprintf(s, "GetGatherHex %d %d",WordOffset,w2r);  
+    if (CoordMotion->KMotionDLL->WriteLine(s)) { rc = 1; goto _done; }
+
+    for (int i=0;i<w2r;++i)  // convert hex to 32 bit words
+    {
+	    if (!(i&7)) {  // every 8 hex get a new line
+		    if (CoordMotion->KMotionDLL->ReadLineTimeOut(s, 1000)) { rc = 2; goto _done; } 
+		    j = 0;
+        }
+
+	    int result = sscanf(s + j,"%8X",out+i);
+	    j += 9;
+
+	    if (result!=1) { rc = 3; goto _done; }
+
+    }
+_done:
+	CoordMotion->KMotionDLL->ReleaseToken();
+
+	return rc;
+#endif
+}
+
+int GCodeInterpreter::PutDataToGather(int WordOffset, const void * data, int nWords)
+{
+    if (nWords < 1)
+        return 0;
+        
+	char s[MAX_LINE+1];
+	int j=0, w2w;
+	int * in = (int *)data;
+	int rc = 0;
+        
+	CoordMotion->KMotionDLL->WaitToken();
+	
+    w2w = nWords;
+    sprintf(s, "SetGatherHex %d %d",WordOffset,w2w);  
+    if (CoordMotion->KMotionDLL->WriteLine(s)) { rc = 1; goto _done; }
+
+    for (int i=0;i<w2w;++i)  // convert hex to 32 bit words
+    {
+	    sprintf(s + j, "%X ", in[i]);
+	    j += strlen(s+j);
+
+	    if ((i&7)==7 || i+1==w2w) {
+		    if (CoordMotion->KMotionDLL->WriteLine(s)) { rc = 2; goto _done; }
+		    j = 0;
+        }
+    }
+_done:
+	CoordMotion->KMotionDLL->ReleaseToken();
+        
+    return rc;
+}
+
+
+int GCodeInterpreter::GetOnePersistInt(int index) const
 {
     char s[80];
     char r[100];
@@ -1727,13 +1879,13 @@ int GCodeInterpreter::GetOnePersistInt(int index)
     return v;
 }
 
-float GCodeInterpreter::GetOnePersistFloat(int index)
+float GCodeInterpreter::GetOnePersistFloat(int index) const
 {
     int v = GetOnePersistInt(index);
     return *(float *)&v;
 }
 
-double GCodeInterpreter::GetOnePersistDouble(int index)
+double GCodeInterpreter::GetOnePersistDouble(int index) const
 {
     double r;
     ((int *)&r)[0] = GetOnePersistInt(index);
@@ -1741,24 +1893,24 @@ double GCodeInterpreter::GetOnePersistDouble(int index)
     return r;
 }
 
-void GCodeInterpreter::SetOnePersistInt(int index, int value)
+int GCodeInterpreter::SetOnePersistInt(int index, int value)
 {
     char s[80];
     if ((unsigned)index >= 200)
-        return;
+        return 1;
     sprintf(s, "SetPersistHex %d %x", index, value);
-    CoordMotion->KMotionDLL->WriteLine(s);
+    return CoordMotion->KMotionDLL->WriteLine(s) != 0;
 }
 
-void GCodeInterpreter::SetOnePersistFloat(int index, float value)
+int GCodeInterpreter::SetOnePersistFloat(int index, float value)
 {
-    SetOnePersistInt(index, *(int *)&value);
+    return SetOnePersistInt(index, *(int *)&value);
 }
 
-void GCodeInterpreter::SetOnePersistDouble(int index, double value)
+int GCodeInterpreter::SetOnePersistDouble(int index, double value)
 {
-    SetOnePersistInt(index, ((int *)&value)[0]);
-    SetOnePersistInt(index+1, ((int *)&value)[1]);
+    return SetOnePersistInt(index, ((int *)&value)[0])
+           ||SetOnePersistInt(index+1, ((int *)&value)[1]);
 }
 
 
@@ -1802,14 +1954,19 @@ floatvec GCodeInterpreter::GetPersistDouble(int index, int n_doubles)
 
 intvec GCodeInterpreter::GetGatherInt(int byte_offset, int n_ints)
 {
+    //printf("GGI: %d, %d\n", byte_offset, n_ints);
     if ((unsigned)n_ints > MAX_GATHER_DATA/sizeof(int))
         n_ints = MAX_GATHER_DATA/sizeof(int);
-    int rc = GetStringFromGather(byte_offset/sizeof(int), pc_string, n_ints, 0);
-    if (rc)
+    char * buf = (char *)malloc(n_ints*sizeof(int));
+    int rc = GetDataFromGather(byte_offset/sizeof(int), buf, n_ints);
+    if (rc) {
+        free(buf);
         return intvec(0);
+    }
     intvec iv = intvec(n_ints);
     for (int i = 0; i < n_ints; ++i)
-        iv[i] = ((int *)pc_string)[i];
+        iv[i] = ((int *)buf)[i];
+    free(buf);
     return iv;
 }
 
@@ -1817,12 +1974,16 @@ floatvec GCodeInterpreter::GetGatherFloat(int byte_offset, int n_floats)
 {
     if ((unsigned)n_floats > MAX_GATHER_DATA/sizeof(float))
         n_floats = MAX_GATHER_DATA/sizeof(float);
-    int rc = GetStringFromGather(byte_offset/sizeof(int), pc_string, n_floats*sizeof(float)/sizeof(int), 0);
-    if (rc)
+    char * buf = (char *)malloc(n_floats*sizeof(float));
+    int rc = GetDataFromGather(byte_offset/sizeof(int), buf, n_floats*sizeof(float)/sizeof(int));
+    if (rc) {
+        free(buf);
         return floatvec(0);
+    }
     floatvec fv = floatvec(n_floats);
     for (int i = 0; i < n_floats; ++i)
-        fv[i] = ((float *)pc_string)[i];
+        fv[i] = ((float *)buf)[i];
+    free(buf);
     return fv;
 }
 
@@ -1831,24 +1992,369 @@ floatvec GCodeInterpreter::GetGatherDouble(int byte_offset, int n_doubles)
 {
     if ((unsigned)n_doubles > MAX_GATHER_DATA/sizeof(double))
         n_doubles = MAX_GATHER_DATA/sizeof(double);
-    int rc = GetStringFromGather(byte_offset/sizeof(int), pc_string, n_doubles*sizeof(double)/sizeof(int), 0);
-    if (rc)
+    char * buf = (char *)malloc(n_doubles*sizeof(double));
+    int rc = GetDataFromGather(byte_offset/sizeof(int), buf, n_doubles*sizeof(double)/sizeof(int));
+    if (rc) {
+        free(buf);
         return floatvec(0);
+    }
     floatvec fv = floatvec(n_doubles);
     for (int i = 0; i < n_doubles; ++i)
-        fv[i] = ((double *)pc_string)[i];
+        fv[i] = ((double *)buf)[i];
+    free(buf);
     return fv;
 }
 
 
 const char * GCodeInterpreter::GetGatherString(int char_offset, int max_chars)
 {
-    if ((unsigned)max_chars > MAX_GATHER_DATA)
-        max_chars = MAX_GATHER_DATA;
+    if ((unsigned)max_chars > sizeof(pc_string))
+        max_chars = sizeof(pc_string);
     int rc = GetStringFromGather(char_offset/sizeof(int), pc_string, max_chars/sizeof(int), 1);
     if (rc)
         return "";
     return pc_string;
+}
+
+//FIXME: the following include is specific to DM6 project.  Need to move to common place.
+#include "../../DM6/Source/DM6-SCL-capture.h"
+void GCodeInterpreter::get_kap(int word_offset)
+{
+    /* We don't do much processing here.  Just read in the data, convert to canonical float arrays,
+       and append to capture vector.  User program needs to operate capture as follows:
+       - binding calls ResetCapture() to clear any previous capture records.  Implicitly calls StopCapture().
+       - start DM6-SCL-capture.c in thread 6 on kflop
+       - set VAR_KAP_TYPE and VAR_KAP_COUNT as required.  This launches the capture process.
+         Binding calls StartCapture(type, count) to do this.
+       - binding can extend or stop capture using ExtendCapture(count) or StopCapture().
+         Capture can only be extended if it is still running, otherwise it needs to be restarted.
+       - kflop will send capture buffers, which are recorded here and decompressed.
+       - binding calls following to process:
+          - GetNumBuffers(): returns number of record buffers captured so far
+          - GetCaptureRunning(): returns remaining capture count, or 0 if done.
+          - GetCaptureVecSize(bufno): returns number of elements (float) in each record of buffer.
+          - GetCaptureNumRecs(bufno): returns number of records in buffer.
+          - GetCapture(bufno): returns floatvec of all data in buffer.  The vector
+              dimension component varies most rapidly i.e. all components of a single record
+              are contiguous.  bufno is the buffer number to get (0 for first).
+          - GetSequence(bufno): return sequence number of first record in buffer.
+    */
+    if (!kap_running) {
+        SetKFLOPCommandResultNB(-2);
+        return;
+    }
+    
+    #define GK_INIT 1024
+    KapHdr_t * kh = (KapHdr_t *)malloc(GK_INIT);   // extended later when we know how much data
+    int rc = GetDataFromGather(word_offset, kh, GK_INIT/4);
+    if (rc)
+        fprintf(stderr, "Capture receive word_offs=0x%X failed code %d\n", word_offset, rc);
+    else
+        fprintf(stderr, "Capture receive word_offs=0x%X seq=%u vecsize=%u nbytes=%u nrecs=%u\n", word_offset, kh->seq, kh->nk, kh->nbytes, kh->nrec);
+    if (rc || kh->nk < 1 || kh->nk > 32 || kh->nbytes > 4000000 || kh->nbytes < 1) {
+        // Not obtained, empty, or unreasonable.
+        fprintf(stderr, "...junking\n");
+        SetKFLOPCommandResultNB(-1);
+        free(kh);
+        return;
+    }
+    unsigned char * base = (unsigned char *)(kh->kc + kh->nk);
+    unsigned xbytes = (base - (unsigned char *)kh + kh->nbytes);
+    xbytes = ((xbytes-1)|3)+1; // round up to words
+    kh = (KapHdr_t *)realloc(kh, xbytes);
+    if (xbytes > GK_INIT) {
+        rc = GetDataFromGather(word_offset + GK_INIT/4, (unsigned char *)kh + GK_INIT, (xbytes - GK_INIT)/4);
+        if (rc) {
+            fprintf(stderr, "...junking on second chunk, failed code %d\n", rc);
+            SetKFLOPCommandResultNB(-1);
+            free(kh);
+            return;
+        }
+    }
+    // Now kh points to header and complete data.
+    SetKFLOPCommandResultNB(1); // Got all OK
+    // Decompress and turn into all canonical float array.
+    kblist.push_back(new KapBuf(kh));
+    free(kh);
+}
+
+void GCodeInterpreter::ResetCapture()
+{
+    StopCapture();
+    for (int i = (int)kblist.size()-1; i >= 0; --i) {
+        delete kblist[i];
+        kblist.erase(kblist.begin()+i);
+    }
+}
+
+//FIXME: need to match this up with DM6 pc-comm header.
+#define VAR_KAP_COUNT           93        // Host set capture counter.  Kflop decrements this until zero, for each captured record.
+#define VAR_KAP_TYPE            92        // Host set capture type.  Values specific to capture.c (cf.)
+
+int GCodeInterpreter::StartCapture(int type, int count, int delays)
+{
+    if (kap_running)
+        return -1;
+    kap_running = true;
+    SetOnePersistInt(VAR_KAP_TYPE, (type & 0xFF) | ((delays-1) & 0xFF)<<8);
+    return SetOnePersistInt(VAR_KAP_COUNT, count);
+}
+
+int GCodeInterpreter::ExtendCapture(int count)
+{
+    if (!kap_running)
+        return -1;
+    return SetOnePersistInt(VAR_KAP_COUNT, count);
+}
+
+int GCodeInterpreter::StopCapture()
+{
+    if (!kap_running)
+        return 0;
+    kap_running = false;
+    return SetOnePersistInt(VAR_KAP_COUNT, 0);
+}
+
+int GCodeInterpreter::GetNumBuffers() const
+{
+    return kblist.size();
+}
+
+int GCodeInterpreter::GetCaptureRunning() const
+{
+    return GetOnePersistInt(VAR_KAP_COUNT);
+}
+
+bool GCodeInterpreter::GetCaptureDone() const
+{
+    if (!kblist.size())
+        return false;
+    return 0 != (kblist[kblist.size()-1]->kh->flags & KHF_DONE);
+}
+
+int GCodeInterpreter::GetCaptureVecSize(int bufno) const
+{
+    if (bufno < 0 || bufno >= (int)kblist.size())
+        return -1;
+    return kblist[bufno]->kh->nk;
+}
+
+int GCodeInterpreter::GetCaptureNumRecs(int bufno) const
+{
+    if (bufno < 0 || bufno >= (int)kblist.size())
+        return -1;
+    return kblist[bufno]->kh->nrec;
+}
+
+floatvec GCodeInterpreter::GetCapture(int bufno) const
+{
+    if (bufno < 0 || bufno >= (int)kblist.size())
+        return floatvec(0);
+    KapHdr_t * kh = kblist[bufno]->kh;
+    int nfloat = kh->nk * kh->nrec;
+    floatvec fv = floatvec(nfloat);
+    float * d = kblist[bufno]->base;
+    for (int i = 0; i < nfloat; ++i)
+        fv[i] = d[i];
+    return fv;
+}
+
+int GCodeInterpreter::GetCaptureSequence(int bufno) const
+{
+    if (bufno < 0 || bufno >= (int)kblist.size())
+        return -1;
+    return kblist[bufno]->kh->seq;
+}
+
+double GCodeInterpreter::GetCaptureTimestamp(int bufno) const
+{
+    if (bufno < 0 || bufno >= (int)kblist.size())
+        return -1;
+    return kblist[bufno]->kh->stamp;
+}
+
+int GCodeInterpreter::GetCaptureType(int bufno) const
+{
+    if (bufno < 0 || bufno >= (int)kblist.size())
+        return -1;
+    return kblist[bufno]->kh->type;
+}
+
+double GCodeInterpreter::GetCaptureGuessInterval(int bufno) const
+{
+    if (bufno < 0 || bufno >= (int)kblist.size())
+        return -1.;
+    int d = kblist[bufno]->kh->delays;
+    if (!d) d = 256;
+    // Guess that only the supervisor and capture threads are running
+    // If there are other threads running, the true interval will be longer.
+    // A more accurate estimate is available if at least 2 buffers are captured,
+    // in which case the timestamps can be compared.
+    return (d+2)*0.00009;
+}
+
+int GCodeInterpreter::GetCaptureComponentType(int bufno, int component) const
+{
+    if (bufno < 0 || bufno >= (int)kblist.size())
+        return -1;
+    if (component < 0 || component >= (int)kblist[bufno]->kh->nk)
+        return -2;
+    return kblist[bufno]->kh->kc[component].id;
+}
+
+int GCodeInterpreter::GetCaptureComponentAxis(int bufno, int component) const
+{
+    if (bufno < 0 || bufno >= (int)kblist.size())
+        return -1;
+    if (component < 0 || component >= (int)kblist[bufno]->kh->nk)
+        return -2;
+    return kblist[bufno]->kh->kc[component].chan;
+}
+
+
+
+KapBuf::KapBuf(KapHdr_t * _kh)
+{
+    unsigned char * b = (unsigned char *)(_kh->kc + _kh->nk);
+    unsigned nfloat = _kh->nk * _kh->nrec;
+    kh = (KapHdr_t *)malloc(b - (unsigned char *)_kh);
+    base = (float *)malloc(nfloat*sizeof(float));
+    memcpy(kh, _kh, b - (unsigned char *)_kh);
+    
+    // Now b is (char) source, base is (float) dest.  Unpack all records...
+    int previ[32];
+    float * d = base;   // Dest for next value
+    int v; short s;
+    
+    //printf("New KapBuf\n");
+    
+    for (int r = 0; r < (int)_kh->nrec; ++r) {
+        for (int c = 0; c < _kh->nk; ++c, ++d) {
+            KapChan_t * ch = _kh->kc + c;
+            if (!r) {
+                // First record stored in full.
+                switch (ch->flags & KC_TYPE_MASK) {
+                case KC_FLOAT:
+                    memcpy(d, b, sizeof(float));
+                    b += sizeof(float);
+                    //printf(" r,c=%d,%d val=%g\n", r, c, *d);
+                    break;
+                default:
+                    memcpy(&v, b, 4);
+                    previ[c] = v;
+                    *d = v / ch->scale;
+                    b += 4;
+                    break;
+                case KC_16:
+                    memcpy(&s, b, 2);
+                    previ[c] = s;
+                    *d = s / ch->scale;
+                    b += 2;
+                    break;
+                case KC_8:
+                    previ[c] = (signed char)*b++;
+                    *d = previ[c] / ch->scale;
+                    break;
+                }
+            }
+            else {
+                if ((ch->flags & KC_TYPE_MASK) == KC_FLOAT) {
+                    memcpy(d, b, sizeof(float));
+                    b += sizeof(float);
+                    //printf(" r,c=%d,%d val=%g\n", r, c, *d);
+                }
+                else {
+                    switch (ch->flags & KC_TYPE_MASK) {
+                    case KC_COMPRESSED:
+                        if (*b >= 0xF0) {
+                            v = ((unsigned)b[1]<<24 | (unsigned)b[2]<<16 | (unsigned)b[3]<<8 | b[4]) - ((1u<<27) + (1u<<20) + (1u<<13) + (1u<<6));
+                            b += 5;
+                        }
+                        else if ((*b & 0xF0) == 0xE0) {
+                            v = ((unsigned)(b[0]&0x0F)<<24 | (unsigned)b[1]<<16 | (unsigned)b[2]<<8 | (unsigned)b[3]) - ((1u<<27) + (1u<<20) + (1u<<13) + (1u<<6));
+                            b += 4;
+                        }
+                        else if ((*b & 0xE0) == 0xC0) {
+                            v = ((unsigned)(b[0]&0x1F)<<16 | (unsigned)b[1]<<8 | (unsigned)b[2]) - ((1u<<20) + (1u<<13) + (1u<<6));
+                            b += 3;
+                        }
+                        else if ((*b & 0xC0) == 0x80) {
+                            v = ((unsigned)(b[0]&0x3F)<<8 | (unsigned)b[1]) - ((1u<<13) + (1u<<6));
+                            b += 2;
+                        }
+                        else {
+                            v = (int)*b++ - 64;
+                        }
+                        break;
+                    default:
+                        memcpy(&v, b, 4);
+                        b += 4;
+                        break;
+                    case KC_16:
+                        memcpy(&s, b, 2);
+                        v = s;
+                        b += 2;
+                        break;
+                    case KC_8:
+                        v = (signed char)*b++;
+                        break;
+                    }
+                    if (ch->flags & KC_DELTA) {
+                        v += previ[c];
+                        previ[c] = v;
+                    }
+                    *d = v / ch->scale;
+                }
+            }
+        }   // loop over components
+    }   // loop over records
+}
+
+KapBuf::~KapBuf()
+{
+    free(kh);
+    free(base);
+}
+
+void GCodeInterpreter::PutGatherInt(int byte_offset, const intvec & data)
+{
+    size_t nWords = data.size();
+    if (nWords > MAX_GATHER_DATA/sizeof(int))
+        nWords = MAX_GATHER_DATA/sizeof(int);
+    char * buf = (char *)malloc(nWords*sizeof(int));
+    for (size_t i = 0; i < nWords; ++i)
+        ((int32_t *)buf)[i] = data[i];
+    PutDataToGather(byte_offset/sizeof(int), buf, (int)nWords);
+    free(buf);
+}
+
+void GCodeInterpreter::PutGatherFloat(int byte_offset, const floatvec & data)
+{
+    size_t nWords = data.size();
+    if (nWords > MAX_GATHER_DATA/sizeof(float))
+        nWords = MAX_GATHER_DATA/sizeof(float);
+    char * buf = (char *)malloc(nWords*sizeof(float));
+    for (size_t i = 0; i < nWords; ++i)
+        ((float *)buf)[i] = (float)data[i];
+    PutDataToGather(byte_offset/sizeof(float), buf, (int)nWords*sizeof(float)/sizeof(int));
+    free(buf);
+}
+
+void GCodeInterpreter::PutGatherDouble(int byte_offset, const floatvec & data)
+{
+    size_t nWords = data.size();
+    if (nWords > MAX_GATHER_DATA/sizeof(double))
+        nWords = MAX_GATHER_DATA/sizeof(double);
+    char * buf = (char *)malloc(nWords*sizeof(double));
+    for (size_t i = 0; i < nWords; ++i)
+        ((double *)buf)[i] = data[i];
+    PutDataToGather(byte_offset/sizeof(float), buf, (int)nWords*sizeof(double)/sizeof(int));
+    free(buf);
+}
+
+void GCodeInterpreter::PutGatherString(int char_offset, const char * str)
+{
+    PutDataToGather(char_offset/sizeof(int32_t), str, (strlen(str)+4)/4);
 }
 
 
@@ -1862,6 +2368,15 @@ int GCodeInterpreter::SetKFLOPCommandResult(int r)
 	nm.PC_comm[0]=0;    // clear the command now that it has been executed
 	pc_pending = 0;     // No more pending command
 	sprintf(s, "SetPersistDec%d %d",PC_COMM_PERSIST, r);
+	if (CoordMotion->KMotionDLL->WriteLine(s)) return 1;
+	return 0;
+}
+
+int GCodeInterpreter::SetKFLOPCommandResultNB(int r)
+{
+	char s[80];
+
+	sprintf(s, "SetPersistDec%d %d",pc_result_persist, r);
 	if (CoordMotion->KMotionDLL->WriteLine(s)) return 1;
 	return 0;
 }
@@ -1920,6 +2435,7 @@ int GCodeInterpreter::SendToolSlot(int persist)
     int slot = p_setup->tool_table[p_setup->selected_tool_slot].slot;
 	//sprintf(s, "SetPersistHex %d %x", persist, p_setup->selected_tool_slot);
 	sprintf(s, "SetPersistHex %d %x", persist, slot);
+	printf("GCodeInterpreter::SendToolSlot setup=%p slot=%d\n", p_setup, slot);
 	if (CoordMotion->KMotionDLL->WriteLine(s)) {
 	    CoordMotion->SetAbort(); 
 	    return 1;
@@ -2015,6 +2531,24 @@ floatvec GCodeInterpreter::GetCurrent(bool from_cm)
             v[i] = ((double *)&p_setup->current_x)[i];
     return v;
 }
+
+
+floatvec GCodeInterpreter::GetHashvars(int first, int n) const
+{
+    floatvec v = floatvec(n);
+    for (int i = 0; i < n; ++i, ++first)
+        v[i] = first >= 0 && first < RS274NGC_MAX_PARAMETERS ? p_setup->parameters[first] : 0.;
+    return v;
+}
+
+void GCodeInterpreter::SetHashvars(int first, floatvec values)
+{
+    int n = values.size();
+    for (int i = 0; i < n; ++i, ++first)
+        if (first >= 0 && first < RS274NGC_MAX_PARAMETERS)
+            p_setup->parameters[first] = values[i];
+}
+
 
 
 #endif

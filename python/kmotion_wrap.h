@@ -36,6 +36,7 @@ public:
     virtual void ChangedThread(int ThreadActive);
     virtual void ChangedStop(int StopImmediateState);
     virtual void ChangedPCComm(intvec const &PC_comm);
+    virtual void Terminate(int exit_code);
     virtual void HandleConsole(char const *buf);
     virtual void HandleErrMsg(char const *buf);
     virtual int HandleMsgBox(char const *title, char const *msg, int options);
@@ -69,7 +70,7 @@ private:
       return method;
     }
 private:
-    mutable swig::SwigVar_PyObject vtable[16];
+    mutable swig::SwigVar_PyObject vtable[17];
 #endif
 
 };
@@ -128,6 +129,7 @@ public:
     virtual int PC_NBMsgBox();
     virtual int PC_NBMDI();
     virtual int PC_NBInputBox();
+    virtual int PC_CaptureData();
 
 /* Internal director utilities */
 public:
@@ -158,7 +160,7 @@ private:
       return method;
     }
 private:
-    mutable swig::SwigVar_PyObject vtable[46];
+    mutable swig::SwigVar_PyObject vtable[47];
 #endif
 
 };

@@ -136,9 +136,9 @@ if test "$arch" = "armv6l" ; then
 	ARCH_LD_FLAGS="-pthread"
 elif test "$arch" = "armv7l" ; then
 #	Raspberry Pi 2, BeagleBone etc.
-#  cc=gcc-4.8
-#  ARCH_C_FLAGS="-march=armv7-a -mtune=cortex-a7 -mfpu=neon"
-	ARCH_C_FLAGS="-mfpu=vfp -mfloat-abi=hard"
+#   File offset 64 bits is to be compatible with Python pyconfig.h which
+#   sets it thus.  We need to tell other compilation units.
+	ARCH_C_FLAGS="-mfpu=vfp -mfloat-abi=hard -D_FILE_OFFSET_BITS=64"
 	ARCH_LD_FLAGS="-pthread"
 elif test "$targetos" = "Linux" ; then
 	ARCH_LD_FLAGS="-march=$arch -pthread"
