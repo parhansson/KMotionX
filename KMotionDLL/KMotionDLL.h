@@ -72,6 +72,7 @@
 	#undef COMPILER
 #endif
 
+
 #ifdef _KMOTIONX
     #if OLD_COMPILER
     #define COMPILER "tcc67"        // For now, port of the old compiler (based on 0.9.16) works properly
@@ -191,10 +192,12 @@ public:
 	void DoErrMsg(const char *s);
 #ifdef _KMOTIONX
     const char * getInstallRoot(void) const { return GetMainPathRoot(); }
+
 	// Use to override default compiler executable.  options controls whether -g (and other) option supplied.
 	// tcc_minor_version should be set to e.g. 26 for tcc version 0.9.26 (controls options), or 0 to
 	// not change the version.
 	// If compiler is absolute path, then that exact compiler is used.  Otherwise, it should just be the
+
 	// name of the compiler without any path, and it will be searched for in standard locations.  If an abs
 	// path is provided, it is a short-cut to calling SetCompilerDir() with the directory component.
 	// If NULL, compiler is set back to default.  In this case, SetCompilerDir(NULL) should be called to
@@ -247,6 +250,7 @@ private:
 protected:
 	CONSOLE_HANDLER *ConsoleHandler;  
 	ERRMSG_HANDLER *ErrMsgHandler;  
+
 private:
 	int OpenPipe();
 	int PipeCmd(int code);

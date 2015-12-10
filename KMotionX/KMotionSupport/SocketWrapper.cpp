@@ -42,6 +42,7 @@ either expressed or implied, of the FreeBSD Project.
 #ifdef __MACH__
 #include <string>
 #endif
+
 SocketWrapper::SocketWrapper()
 {
 	socketDesc = -1;

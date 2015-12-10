@@ -10,15 +10,20 @@ KMotionX is more of a patch than a port of KMotion (Except for KMotionServer). T
 
 The master branch requires gcc-4.7, but this requirement has been relaxed by removing some code constructs that necessitated 4.7.  gcc-4.6 is more typically installed on embedded systems like the Raspberry Pi, so it is nice not to have to upgrade the compiler.
 
-See it in action
+
+See it in action on youtube
 https://www.youtube.com/watch?v=oPTJwcre0hA
 
-KMotionX also includes a JNI binding to use expose the GCodeInterpreter and KMotionDLL API to the Java world.
+
+KMotionX also includes a JNI binding to use expose the GCodeInterpreter and KMotionDLL API to the Java world. See advanced.
 
 The swig branch introduces a Python binding based on "swig".
 
 ####Who might be interested in this.
 Anyone that would like to operate their KFlop controlled machine from their phone, tablets or anything with a web browser. I have ported the KMotionServer, KMotionDLL and GCodeInterpreter. I had plans to create a Java GUI but have now dropped that idea and created a HTML5 web application for that purpose. Drag an svg file into browser window and it will instantly be converted into executable GCode. Although I must admit it is still in alpha. There are lots of missing features to just use it out of the box. Some things might be hard wired for my current machine setup. Hence in this stage you might have to do some changes yourself. Or just wait until I have fixed it.
+
+
+![Image of KMXWeb](KMotionX/doc/images/main.png)
 
 
 #####Changes from original source
@@ -38,10 +43,10 @@ TCC 0.9.26 does not yet completely work.  It is OK for simple code, but there ar
 
 #####Features to be implemented
 - (DONE) Add Compile and load coff program to init KFLOP
-- (DONE) Execute on PC 
+- (DONE) Execute on PC
 - (DONE) Concatenation of error message in CheckSoftLimitsArc
 - ListLocations KMotionDLL_Direct (should work but needs more testing)
-- (DONE) LoadCoff 
+- (DONE) LoadCoff
 
 
 Dependencies
@@ -72,6 +77,8 @@ Jump to section "Install KMotionX" or "Install Java" if you will use the Java bi
 
 ###Ubuntu
 
+This is only tested on 14.04.
+
 ######1. Install g++
 Most platforms will have this already.  Try entering `gcc --version` which, if it exists, will show the version, which should be at least 4.6.  If it does not exist, or is back-level:
 ```
@@ -82,7 +89,6 @@ Skip this step if you will be using ftd2xx driver. However libftdi works a lot b
 ```
 sudo apt-get install libftdi-dev
 ```
-Jump to section "Install KMotionX" or "Install Java" if you will use the Java binding.
 
 ######3. Install python2.7-dev
 Skip this step if you will not be using the Python binding
@@ -102,8 +108,9 @@ Update your installation executing following commands. Second and third command 
 ```
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-get dist-upgrade 
+sudo apt-get dist-upgrade
 ```
+
 
 For a later model Raspberry Pi (R.Pi 2 model B etc.) only `sudo apt-get update` should be necessary.
 
@@ -120,69 +127,11 @@ sudo apt-get install libftdi-dev
 ```
 Jump to section "Install KMotionX" or "Install Java" if you will use the Java binding.
 
-######3. Install python2.7-dev
+######4. Install python2.7-dev
 Skip this step if you will not be using the Python binding
 ```
 sudo apt-get install python2.7-dev
 ```
-
-###Install drivers from source (Optional)
-Installing packages with apt-get might not always result in the latest version depening on your system.
-Here is how you install USB drivers from source. Most people would be satisfied with the version supplied by the package manager on your system.
-
-######1. Install libusb
-
-Install dependencies
-```
-sudo apt-get install libudev-dev
-```
-
-```
-wget http://sourceforge.net/projects/libusb/files/libusb-1.0/libusb-1.0.18/libusb-1.0.18.tar.bz2
-tar -xvf libusb-1.0.18.tar.bz2
-cd libusb-1.0.18
-./configure --prefix=/usr --disable-static
-make
-sudo make install
-```
-
-######2. Install libftdi
-
-Skip this step if you will be using ftd2xx driver. However libftdi works a lot better on linux libftdi is an open source ftdi driver that might be used as replacement when running on Linux or MacOSX
-
-Install dependencies
-```
-sudo apt-get install cmake
-```
-```
-wget http://www.intra2net.com/en/developer/libftdi/download/libftdi1-1.1.tar.bz2
-tar -xvf libftdi1-1.1.tar.bz2
-cd libftdi1-1.1
-mkdir build
-cd build
-cmake  -DCMAKE_INSTALL_PREFIX="/usr" ../
-make
-sudo make install
-```
-
-######3. Update linker cache
-Im not sure if this is actually needed. But it can’t hurt.
-sudo ldconfig
-
-##Install Java (Optional)
-If you would like to build the java binding you need to install a JDK
-
-######Mac OS X
-If you are going to use the java binding you will sort this out yourself. I Would recommend version 1.7
-
-######Ubuntu 
-```
-sudo apt-get install openjdk-7-jdk
-```
-
-######Rasbian
-Preinstalled
-
 
 ##Install KMotionX
 
@@ -247,7 +196,7 @@ If you already had the Kflop plugged in, unplug it and replug, otherwise the rul
 
 ######3. Execute examples
 Plug in your KFlop to an available USB port.
-KMotionServer will start automatically in background when needed. 
+KMotionServer will start automatically in background when needed.
 When KMotionDLL is rebuilt make sure to kill running server 'killall KMotionServer'
 
 First, try using the console:
@@ -266,37 +215,7 @@ Start executeGCode example
 ```
 Or try the new web application. Start and surf to http://localhost:8080 in a modern web browser.
 ```
-./kmxWeb -document_root ../KMotionX/examples/webgui/site
-```
-
-####Troubleshooting
-executeGCode example says "Operation not permitted"
-  Check device permissions
-```
-ls -la /dev/kflop
-```
-should reveal something like this where 001/005 might be other values
-```  
-lrwxrwxrwx 1 root root 15 Sep 22 18:28 /dev/kflop -> bus/usb/001/005
-```
-then check permissions on target (replace 001/005 with values from previous output)
-```
-ls -la /dev/bus/usb/001/005
-```
-should reveal
-```
-crw-rw-r-T 1 root plugdev 189, 4 Sep 22 18:28 005
-```
-This means users in plugdev group have read and write access to the device
-
-If this is correct go on and check your users groups
-Check that your user is in group plugdev
-```
-groups
-```
-Check that plugdev is present
-```
-pi adm dialout cdrom sudo audio video plugdev games users netdev input spi gpio
+./kmxWeb -document_root ../KMotionX/KMotionXCNC/app
 ```
 
 ##SWIG branch
@@ -407,4 +326,10 @@ class.  Use of this class improves efficiency, since it tracks C code file depen
 to avoid unnecessary re-compilation (and even downloading).  It also supports alternative compilers
 such as the Texas instruments compiler (cl6x), however that support is still experimental.
 
+##Extra
+
+[It still doesn't work. Troubleshoot](KMotionX/doc/Troubleshooting.md)
+
+
+[Advanced stuff](KMotionX/doc/Advanced.md)
 

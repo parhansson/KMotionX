@@ -1,8 +1,10 @@
 include $(BUILD_ROOT)/config.mak
-IDIR+=$(BUILD_ROOT)/KMotionX/include
-IDIR+=$(BUILD_ROOT)/KMotionX/KMotionSupport/include
 
-LD_LIBS+=KMotionSupport
+#used for CString only?
+#IDIR+=$(BUILD_ROOT)/KMotionX/include
+#IDIR+=$(BUILD_ROOT)/KMotionX/KMotionSupport/include
+#LD_LIBS+=KMotionSupport
+
 #not allowed on mac
 #LD_LIBS+=rt
 LD_LIBS+=$(FTDILIB)

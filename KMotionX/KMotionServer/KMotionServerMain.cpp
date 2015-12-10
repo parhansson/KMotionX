@@ -64,6 +64,12 @@ either expressed or implied, of the FreeBSD Project.
 #include <KMotionDLL_Direct.h>
 
 
+#ifdef DEBUG
+#define SYSLOGD(M, ...) syslog(LOG_ERR,M,##__VA_ARGS__);
+#else
+#define SYSLOGD(M, ...)
+#endif
+
 #define BUFSIZE 4096
 #define PIPE_TIMEOUT 10000
 
@@ -523,21 +529,21 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 
 	case ENUM_WriteLineReadLine:	// Send Code, board, string -- Get Dest byte, Result (int) and string
 		result = KMotionDLL.WriteLineReadLine(board, chRequest+8, chReply+1+4);
-		syslog(LOG_ERR,"GetAnswerToRequest %s \n\trequest=%s \n\treply=%s \n",ENUM_NAMES[code],chRequest+8,chReply+1+4);
+		SYSLOGD("GetAnswerToRequest %s \n\trequest=%s \n\treply=%s \n",ENUM_NAMES[code],chRequest+8,chReply+1+4);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes = 1+4+strlen(chReply+1+4)+1; // Dest byte, Result int, string, null char
 		break;
 
 	case ENUM_WriteLine:	
 		result = KMotionDLL.WriteLine(board, chRequest+8);
-		syslog(LOG_ERR,"GetAnswerToRequest %s \n\trequest=%s \n\tresult=%d \n",ENUM_NAMES[code],chRequest+8,result);
+		SYSLOGD("GetAnswerToRequest %s \n\trequest=%s \n\tresult=%d \n",ENUM_NAMES[code],chRequest+8,result);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
 
 	case ENUM_WriteLineWithEcho:	
 		result = KMotionDLL.WriteLineWithEcho(board, chRequest+8);
-		syslog(LOG_ERR,"GetAnswerToRequest %s \n\trequest=%s \n\tresult=%d \n",ENUM_NAMES[code],chRequest+8,result);
+		SYSLOGD("GetAnswerToRequest %s \n\trequest=%s \n\tresult=%d \n",ENUM_NAMES[code],chRequest+8,result);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
@@ -545,13 +551,13 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 	case ENUM_ReadLineTimeOut:	// Send Code, board, timeout -- Dest byte, Get Result (int), and string
 		memcpy(&TimeOutms, chRequest+8,4);
 		result = KMotionDLL.ReadLineTimeOut(board, chReply+1+4 ,TimeOutms);
-		syslog(LOG_ERR,"GetAnswerToRequest %s \n\trequest=%d \n\treply=%s \n\tresult=%d \n",ENUM_NAMES[code],TimeOutms,chReply+1+4,result);
+		SYSLOGD("GetAnswerToRequest %s \n\trequest=%d \n\treply=%s \n\tresult=%d \n",ENUM_NAMES[code],TimeOutms,chReply+1+4,result);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes = 1+4+strlen(chReply+1+4)+1; // Dest byte, Result int, string, null char
 		break;
 
 	case ENUM_ListLocations:		// Send Code -- Get Dest, Result (int), nlocations (int), List (ints)
-		syslog(LOG_ERR,"GetAnswerToRequest %s\n",ENUM_NAMES[code]);
+	  SYSLOGD("GetAnswerToRequest %s\n",ENUM_NAMES[code]);
 		result = KMotionDLL.ListLocations(&nLocations, List);
 		memcpy(chReply+1, &result,4);
 		memcpy(chReply+1+4, &nLocations,4);
@@ -561,55 +567,55 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 
 	case ENUM_Failed:	
 		result = KMotionDLL.Failed(board);
-		syslog(LOG_ERR,"GetAnswerToRequest %s %d\n",ENUM_NAMES[code],result);
+		SYSLOGD("GetAnswerToRequest %s %d\n",ENUM_NAMES[code],result);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
 
 	case ENUM_Disconnect:	
 		result = KMotionDLL.Disconnect(board);
-		syslog(LOG_ERR,"GetAnswerToRequest %s %d\n",ENUM_NAMES[code],result);
+		SYSLOGD("GetAnswerToRequest %s %d\n",ENUM_NAMES[code],result);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
 
 	case ENUM_FirmwareVersion:	
 		result = KMotionDLL.FirmwareVersion(board);
-		syslog(LOG_ERR,"GetAnswerToRequest %s %d\n",ENUM_NAMES[code],result);
+		SYSLOGD("GetAnswerToRequest %s %d\n",ENUM_NAMES[code],result);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
 
 	case ENUM_CheckForReady:	
 		result = KMotionDLL.CheckForReady(board);
-		syslog(LOG_ERR,"GetAnswerToRequest %s %d\n",ENUM_NAMES[code],result);
+		SYSLOGD("GetAnswerToRequest %s %d\n",ENUM_NAMES[code],result);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
 
 	case ENUM_KMotionLock:	
 		result = KMotionDLL.KMotionLock(board);
-		syslog(LOG_ERR,"GetAnswerToRequest %s %s\n",ENUM_NAMES[code],LOCK_CODES[result]);
+		SYSLOGD("GetAnswerToRequest %s %s\n",ENUM_NAMES[code],LOCK_CODES[result]);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
 
 	case ENUM_USBLocation:	
 		result = KMotionDLL.USBLocation(board);
-		syslog(LOG_ERR,"GetAnswerToRequest %s \n\tresult=%d \n",ENUM_NAMES[code],result);
+		SYSLOGD("GetAnswerToRequest %s \n\tresult=%d \n",ENUM_NAMES[code],result);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
 
 	case ENUM_KMotionLockRecovery:	
 		result = KMotionDLL.KMotionLockRecovery(board);
-		syslog(LOG_ERR,"GetAnswerToRequest %s \n\tresult=%d \n",ENUM_NAMES[code],result);
+		SYSLOGD("GetAnswerToRequest %s \n\tresult=%d \n",ENUM_NAMES[code],result);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
 
 	case ENUM_ReleaseToken:	
-		syslog(LOG_ERR,"GetAnswerToRequest %s\n",ENUM_NAMES[code]);
+	  SYSLOGD("GetAnswerToRequest %s\n",ENUM_NAMES[code]);
 		KMotionDLL.ReleaseToken(board);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
@@ -617,7 +623,7 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 
 	case ENUM_ServiceConsole:	
 		result = KMotionDLL.ServiceConsole(board);
-		syslog(LOG_ERR,"GetAnswerToRequest %s \n\tresult=%d \n",ENUM_NAMES[code],result);
+		SYSLOGD("GetAnswerToRequest %s \n\tresult=%d \n",ENUM_NAMES[code],result);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
@@ -625,7 +631,7 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 		// remember which pipe is associated with the console handler for the board
 		ConsolePipeHandle[board] = hPipe;
 		result = KMotionDLL.SetConsoleCallback(board,ConsoleHandler);
-		syslog(LOG_ERR,"GetAnswerToRequest %s \n\tresult=%d \n\tboard=%d \n\thandle=%d \n",ENUM_NAMES[code],result,board,hPipe);
+		SYSLOGD("GetAnswerToRequest %s \n\tresult=%d \n\tboard=%d \n\thandle=%d \n",ENUM_NAMES[code],result,board,hPipe);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;
@@ -753,7 +759,7 @@ int ConsoleHandler(int board, const char *buf)
 	if (ConsolePipeHandle[board])
 	{
 		// there is, add the message to the list
-		syslog(LOG_ERR,"Console message: %s",buf2);
+	  SYSLOGD("Console message: %s",buf2);
 		ConsoleList[board].push_back(buf2);
 	}
 	return 0;

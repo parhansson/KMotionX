@@ -43,10 +43,6 @@
 #endif
 */
 
-//#ifndef __try
-//#define __try
-//#endif
-//#define __finally
 
 #include <locale.h>
 #include <HiResTimer.h>

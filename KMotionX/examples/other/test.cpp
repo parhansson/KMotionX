@@ -48,17 +48,18 @@ void testCheckForReady();
 int main(int argc, char* argv[])
 {
 	KM = new CKMotionDLL(0);  // create as board 0
-	//testCheckForReady();
+	testCheckForReady();
 
-	//testVersion();
-	//testListLocation();
-	//testBitDirection();
+	testVersion();
+	testListLocation();
+	testBitDirection(); // blinks leds
 
-	//testTypes();
+	testStatus();
+	//testTypes(); //platform only
 	//testMovement();
 
-//	testCompile();
-	/*
+	testCompile();
+
 	testConvertToOut(1,"/Users/bul.tp");
 	testConvertToOut(0, "/Users/bull.c");
 	testConvertToOut(1, "/Users/Home/bull.c");
@@ -67,30 +68,6 @@ int main(int argc, char* argv[])
 	testConvertToOut(1, "/Users/bulle.cpp");
 
 	testExtractCoffVersion();
-*/
-
-
-	/*
-	if(KM->ServiceConsole()){
-		printf("%s:%d ServiceConsole Failed\n",__FILE__,__LINE__);
-	}
-	if (KM->KMotionLock() == KMOTION_LOCKED)  // see if we can get access
-	{
-		// Get the firmware date from the KMotion Card which
-		// will be in PT (Pacific Time)
-		KM->ReleaseToken();
-		if(KM->WriteLineReadLine("Version",response)){
-			printf("%s:%d WriteLineReadLine Version failed\n",__FILE__,__LINE__);
-
-		} else {
-			printf("%s:%d Version: %s\n",__FILE__,__LINE__,response);
-
-		}
-	} else {
-		printf("%s:%d Simpleconsole Failed to get lock\n",__FILE__,__LINE__);
-	}
-	*/
-
 
 	return 0;
 }
@@ -114,20 +91,21 @@ int testCallback(){
 }
 
 void testBitDirection(){
-	printf("Status before:\n");
-	testStatus();
-	if (KM->WriteLine( "SetBitDirection0=1"))	MyError();
-	if (KM->WriteLine( "SetBitDirection1=1"))	MyError();
-	if (KM->WriteLine( "SetBitDirection2=0"))	MyError();
-	if (KM->WriteLine( "SetBitDirection3=0"))	MyError();
-	if (KM->WriteLine( "SetBit0"))	MyError();
-	if (KM->WriteLine( "SetBit1"))	MyError();
-	//if (KM->WriteLine( "SetStartupThread1 0"))	MyError();
+	int ms = 200;
+	printf("Blinking leds\n");
+	//testStatus();
+	if (KM->WriteLine( "SetBitDirection46=1"))	MyError();
+	if (KM->WriteLine( "SetBitDirection47=1"))	MyError();
 
+	if (KM->WriteLine( "ClearBit46;ClearBit47"))	MyError();
+	usleep(ms*1000);
+  if (KM->WriteLine( "SetBit46;SetBit47")) MyError();
+  usleep(ms*1000);
+  if (KM->WriteLine( "ClearBit46;ClearBit47"))  MyError();
+  usleep(ms*1000);
+  if (KM->WriteLine( "SetBit46;SetBit47")) MyError();
 
-	usleep(1000*1000);
-	printf("Status after:\n");
-	testStatus();
+	//testStatus();
 }
 
 void testMovement(){
@@ -171,25 +149,30 @@ void testConvertToOut(int thread,const char *file){
 	char path[256];
 	memset (path,'\0',256);
 	KM->ConvertToOut(thread, file,outfile,256);
+	printf("In: %s\nThread: %d\nOut: %s\n\n",file,thread,outfile);
 	//KM->ExtractPath(file,path); //Change to public before testing function
-	//CString p;
-	//p= KM->ExtractPath(file); //Change to public before testing function
+	//printf("Path: %s\n\n",path);
 
-	printf("In %s\nOut: %s\nPath: %s\n\n",file,outfile,path);
+
 }
 void testCheckForReady(){
 	if(KM->CheckForReady()){
-		printf("CheckForReady failed\n");
-	} else {
 		printf("CheckForReady succeded\n");
+	} else {
+		printf("CheckForReady failed\n");
 	}
 }
 void testCompile(){
 	char file[256];
 	strcpy(file,KM->getInstallRoot());
 	strcat(file,"/C Programs/FanOFF.c");
+	char err[1024];
+	//KM->CompileAndLoadCoff(file, 1, err, sizeof(err));
 	KM->CompileAndLoadCoff(file, 1);
-
+	if(err[0])
+	{
+    printf("%s", err);
+	}
 }
 void testExtractCoffVersion(){
 	char file[256];
@@ -233,12 +216,12 @@ void testListLocation(){
 
 	int nlocations;
 	int list[8];
-	KM->BoardID=2;
+	//KM->BoardID=-2;
 	KM->ListLocations(&nlocations,list);
 	for (int var = 0; var < nlocations; var++) {
 		printf("Location[%d] Board nr: %d\n",var, list[var]);
 	}
-	KM->USBLocation();
+  printf("USB Location: %d\n", KM->USBLocation());
 
 }
 void testStatus(){

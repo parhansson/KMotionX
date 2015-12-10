@@ -179,6 +179,7 @@ void CHiResTimer::DisplaySplit()
 
 int CHiResTimer::QueryPerformanceCounter(int64_t *lpPerformanceCount){
 	//printf("%s:%d\n", __FILE__, __LINE__);
+
 #ifdef __MACH__
     *lpPerformanceCount = mach_absolute_time();
 #else

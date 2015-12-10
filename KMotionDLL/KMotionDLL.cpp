@@ -94,6 +94,7 @@ CKMotionDLL::CKMotionDLL(int boardid, unsigned int dfltport, const char * url)
 }
 #endif
 
+
 CKMotionDLL::~CKMotionDLL()
 {
 	if (PipeOpen)
@@ -512,6 +513,7 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 			    len += PipeFile.Read(r+len, msglen-len);     // Get the response
             *m = len;
 #endif
+
 			// the first byte of the response is the destination
 			// currently DEST_NORMAL, DEST_CONSOLE
 			
@@ -551,6 +553,7 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 		PipeMutex->Unlock();
 		
 	}
+
 #ifndef _KMOTIONX
 	catch (CFileException)
 #else
@@ -730,8 +733,7 @@ int CKMotionDLL::CompileAndLoadCoff(const char *Name, int Thread, char *Err, int
 
 	if (Thread<=0 || Thread>7) 
 	{
-		//TODO MaxErrLen should be honored to avoid segementation fault.
-		if(Err) sprintf(Err,"Invalid Thread Number %d Valid Range (1-7)",Thread);
+		if(Err) snprintf(Err, MaxErrLen, "Invalid Thread Number %d Valid Range (1-7)",Thread);
 		return 1;
 	}
 	
@@ -739,7 +741,7 @@ int CKMotionDLL::CompileAndLoadCoff(const char *Name, int Thread, char *Err, int
 
 	if (CheckKMotionVersion(&BoardType)) 
 	{
-		if(Err) sprintf(Err,"Board type mismatch");
+		if(Err) snprintf(Err, MaxErrLen, "Board type mismatch");
 	    return 1;
 	}
 
@@ -1032,6 +1034,7 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	    }
 	}
 	else {
+
 	    FILE *f=fopen(Compiler,"r");  // try if compiler is in pwd
 
 	    if (f==NULL)
@@ -1055,6 +1058,7 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	    else
 	        // In in pwd, then add './' so that shell command can find it here.
 	        add_dot = 1;
+			
 	    fclose(f);
     }
 
@@ -1107,21 +1111,35 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	//compile with debug flag is currently not supported -g
 	//c67-tcc -Wl,-Ttext,80050000 -Wl,--oformat,coff -static -nostdinc -nostdlib -I./ -o ~/Desktop/Gecko3AxisOSX.out Gecko3Axis.c DSPKFLOP.out
 	debug("%s\n",command);
+
 	//int exitCode = system(command);
+
 	int exitCode = 0;
+
 	FILE * out = popen(command, "r");
 	if (!out) {
 	    exitCode = errno;
-	    strcpy(Err, strerror(exitCode));
+	    debug("popen failed: %s\n",strerror(exitCode));
+	    if (Err)
+	      strncpy(Err,strerror(exitCode),MaxErrLen);
 	    return exitCode;
 	}
-	size_t len = fread(Err, 1, MaxErrLen-1, out);
-	Err[len] = 0;
+	if (Err)
+	{
+	  size_t len = fread(Err, 1, MaxErrLen-1, out);
+	  Err[len] = 0;
+	  if(len > 0){
+	    debug("fread: %s\n",Err);
+	  }
+	}
 	exitCode = pclose(out);
 	if (exitCode < 0) {
 	    exitCode = errno;
-	    strcpy(Err, strerror(exitCode));
-    }
+	    debug("pclose failed: %s\n",strerror(exitCode));
+      if (Err)
+        strncpy(Err,strerror(exitCode),MaxErrLen);
+  }
+
 	return exitCode;
 #endif
 }
@@ -1138,7 +1156,7 @@ void CKMotionDLL::ConvertToOut(int thread, const char *InFile, char *OutFile, in
 	OFileMaxLength = strlen(InFile)+10;
 	OFile = new char[OFileMaxLength];
 
-	sprintf(ThreadString, "(%d).out",thread);
+	snprintf(ThreadString, 10, "(%d).out",thread);
 
 	memset (OFile,'\0',OFileMaxLength); //ensure empty string as well as null terminated when using strncpy
 

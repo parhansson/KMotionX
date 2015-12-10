@@ -124,13 +124,20 @@ case $targetos in
   *) ;;
 esac
 
-#Configure architechture flags
+#Configure os specific libraries
+if test "$targetos" = "Linux" ; then
+  LD_LIBS="$LD_LIBS rt"
+fi
+
+#Configure architechture and os flags
 if test "$arch" = "armv6l" ; then
 #	Old Raspberry Pi
 	ARCH_C_FLAGS="-mfpu=vfp -mfloat-abi=hard"
 	ARCH_LD_FLAGS="-pthread"
 elif test "$arch" = "armv7l" ; then
 #	Raspberry Pi 2, BeagleBone etc.
+#  cc=gcc-4.8
+#  ARCH_C_FLAGS="-march=armv7-a -mtune=cortex-a7 -mfpu=neon"
 	ARCH_C_FLAGS="-mfpu=vfp -mfloat-abi=hard"
 	ARCH_LD_FLAGS="-pthread"
 elif test "$targetos" = "Linux" ; then
