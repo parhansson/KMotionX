@@ -55,6 +55,7 @@ char Commands[][MAX_CMD_LENGTH] = {
 "SETGATHERHEX D0 1999999 D1 2000000", 		// SetGatherHex O N/Set values (as 32 bit Hex words)/into the Gather Buffer/beginning at decimal offset O/for decimal N words/ie. SetGatherHex 0 3/FFFFFFFF FFFFFFFF FFFFFFFF      
 "SETGATHERDEC D0 1999999 G",   				// SetGatherDec O D/Write a single 32-bit signed decimal word into the Gather Buffer/at decimal offset O/ie. SetGatherDec 1000 32767      
 "GETGATHERDEC D0 1999999",   				// GetGatherDec O/Read a single word from the Gather Buffer/at decimal offset O/a single 32-bit value displayed as a signed decimal number/ie. GetGatherDec 1000
+"READDISKDATA D0 3 D0 1024", 				// ReadDiskData S N/Set Disk Read Data in KFLOP (as 8 bit Hex words)/into the ReadDisk Buffer/Used internally in conjunction with fgets()/for decimal N words/ie. ReadDiskData 0 3 /41 42 43      
 "SETPERSISTDEC D0 199 G",   				// SetPersistDec O D/Write a single word into the Persist Array/at decimal offset O/a single 32-bit value specified as a signed decimal number/ie. SetPersistDec 10 32767      
 "SETPERSISTHEX D0 199 H",   				// SetPersistHex O D/Write a single word into the Persist Array/at decimal offset O/a single 32-bit value specified as an unsigned hex number/ie. SetPersistHex 10 FFFFFFFF      
 "GETPERSISTDEC D0 199",   					// GetPersistDec O/Read a single word from the Persist Array/at decimal offset O/a single 32-bit value displayed as a signed decimal number/ie. GetPersistDec 10      
@@ -64,19 +65,21 @@ char Commands[][MAX_CMD_LENGTH] = {
 "INJECT D0 7 GG",							// InjectN F A/Inject random stimulus into axis N/with cutoff frequency of F (Hz)/of amplitude A (Position units)/ie. InjectN 100.0 20.0      
 "SETBITDIRECTION D0 167 *D0 1",				// SetBitDirectionN D/define IO bit N (0..30)/as input (D=0) or output (D=1)/ie. SetBitDirection0=1
 "GETBITDIRECTION D0 167",					// GetBitDirectionN/Displays whether an IO bit N (0..30)/is defined as input (0) or output (1)/ie. GetBitDirection0
-"SETSTATEBITBUF D0 2047 =D0 1",				// SetStateBitBufN=B/Inserts into coordinated move buffer/to set an IO bit N (0..255) high or low/or Virtual IO bits 48-63/(actual IO bits must be defined as an output, see SetBitDirection)/ie. SetStateBitBuf0=1
-"SETBITBUF D0 2047",						// SetBitBufN/Inserts into coordinated move buffer/command to set an IO bit N(0..255)/or Virtual IO bits 48-63/(actual IO bits must be defined as an output, see SetBitDirection)/ie. SetBitBuf0
-"CLEARBITBUF D0 2047",						// ClearBitBufN/Inserts into coordinated move buffer/command to clear an IO bit N(0..255)/or a Virtual IO bit 48-63/(actual IO bits must be defined as an output, see SetBitDirection)/ie. ClearBitBuf0
+"SETSTATEBITBUF D0 2047 =D0 1",				// SetStateBitBufN=B/Inserts into coordinated move buffer/to set an IO bit N (0..255) high or low/or Virtual IO bits 48-63, 1024-2047/(actual IO bits must be defined as an output, see SetBitDirection)/ie. SetStateBitBuf0=1
+"SETBITBUF D0 2047",						// SetBitBufN/Inserts into coordinated move buffer/command to set an IO bit N(0..255)/or Virtual IO bits 48-63, 1024-2047/(actual IO bits must be defined as an output, see SetBitDirection)/ie. SetBitBuf0
+"CLEARBITBUF D0 2047",						// ClearBitBufN/Inserts into coordinated move buffer/command to clear an IO bit N(0..255)/or a Virtual IO bit 48-63, 1024-2047/(actual IO bits must be defined as an output, see SetBitDirection)/ie. ClearBitBuf0
 "SETBIT D0 2047",							// SetBitN/sets an IO bit N(0..2047)/or Virtual IO bit 48-63, Extended Virtual 1024-2047/(actual IO bits must be defined as an output, see SetBitDirection)/ie. SetBit0
 "CLEARBIT D0 2047",							// ClearBitN/clears an IO bit N(0..2047)/or Virtual IO bit 48-63, Extended Virtual 1024-2047/(actual IO bits must be defined as an output, see SetBitDirection)/ie. ClearBit0
 "SETSTATEBIT D0 2047 =D0 1",				// SetStateBitN=B/sets an IO bit N (0..2047) high or low/or Virtual IO bit 48-63, Extended Virtual 1024-2047/(actual I/O bits must be defined as an output, see SetBitDirection)/ie. SetStateBit0=1
 "READBIT D0 2047",							// ReadBitN/Displays whether an IO bit N (0..2047)/or Virtual IO bit 48-63, Extended Virtual 1024-2047/is high (1) or low (0)/ie. ReadBit0
 "OPENBUF ",									// OpenBuf/Clear and open the buffer for/coordinated linear and circular segments/ie. OpenBuf
 "EXECBUF ",									// ExecBuf/Execute the buffer of coordinated/linear and circular segments/ie. ExecBuf
+"FLUSHBUF ",								// FlushBuf/Marks the Coord Motion Buffer as complete/turns off buffer starvation protection/ie. FlushBuf
 "EXECTIME ",								// ExecTime/Display Total Time (seconds) of segments in the buffer that have already been completed/Negative if buffer halted (starved)/ie. ExecTime
 "LINEARHEXEX HHHHHHHHHHHHHHHHHHHHH",		// LinearHexEx x0 y0 z0 a0 b0 c0 u0 v0 x1 y1 z1 a1 b1 c1 u1 v1 a b c d t/place linear interpolated move into buffer/start point, end point, and parametric eq/values are hex floats/ie. LinearHexEx 0 0 0 0 0 0 0 0 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 0 0 3f800000 0 3f800000
 "LINEARHEX HHHHHHHHHHHHHHHHH",				// LinearHex x0 y0 z0 a0 b0 c0 x1 y1 z1 a1 b1 c1 a b c d t/place linear interpolated move into buffer/start point, end point, and parametric eq/values are hex floats/ie. LinearHex 0 0 0 0 0 0 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 0 0 3f800000 0 3f800000
 "LHEX1 HHHHHHHHHHH",						// LHex1 x1 y1 z1 a1 b1 c1 a b c d t/place linear interpolated move into buffer/start point(from last), end point, and parametric eq/values are hex floats/ie. LHex1 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 0 0 3f800000 0 3f800000
+"LHEXEX1 HHHHHHHHHHHHH",					// LHexEx1 x1 y1 z1 a1 b1 c1 u1 v1 a b c d t/place 8 axes linear interpolated move into buffer/start point(from last), end point, and parametric eq/values are hex floats/ie. LHexEx1 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 0 0 3f800000 0 3f800000
 "LHEX2 HHHHH",								// LHex2 a b c d t/place linear interpolated move into buffer/uses start point, end point from previous command, and parametric eq/values are hex floats/ie. LHex2 0 0 3f800000 0 3f800000
 "LINEAREX GGGGGGGGGGGGGGGGGGGGG", 			// LinearEx x0 y0 z0 a0 b0 c0 u0 v0 x1 y1 z1 a1 b1 c1 u1 v1 a b c d t/place linear interpolated move into buffer/3D start point, end point, and parametric eq/ie. Linear 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 0.0 0.0 1.0 0.0 1.0
 "LINEAR GGGGGGGGGGGGGGGGG", 				// Linear x0 y0 z0 a0 b0 c0 x1 y1 z1 a1 b1 c1 a b c d t/place linear interpolated move into buffer/3D start point, end point, and parametric eq/ie. Linear 0.0 0.0 0.0 0.0 0.0 0.0 1.0 1.0 1.0 1.0 1.0 1.0 0.0 0.0 1.0 0.0 1.0
@@ -89,6 +92,12 @@ char Commands[][MAX_CMD_LENGTH] = {
 "VERSION ",									// Version/Display DSP Firmware Version and Build date and time/ie. Version
 "REBOOT! ",									// Reboot!/Reboot from FLASH (Power Up Reset) KMotion Board/ie. Reboot! 
 "STOPIMMEDIATE D0 2",						// StopImmediateN/N=0 Stop, N=1 Resume, N=2 Clear/all motion of any Coordinated Motion Axes Immediately/ie. StopImmediate0 
+"SETFRO G",									// SetFRO F/Set Feed Rate Override (1.0 = Normal Feed Rate)/ie. SetFRO 0.9
+"SETRAPIDFRO G",							// SetRapidFRO F/Set Rapid Feed Rate Override (1.0 = Normal Feed Rate)/ie. SetRapidFRO 0.9
+"SETFROTEMP G",								// SetFROTemp F/Temporarily Set Feed Rate Override (1.0 = Normal Feed Rate)/Force regardless of FeedHold, don't save as last FRO/ie. SetFRO 0.9
+"SETFROWRATE G G",							// SetFROwRate F R/Set Feed Rate Override (1.0 = Normal Feed Rate) with rate/based on caller specified time (in seconds)/to change from FRO 1.0 to 0.0/ie. SetFRO 0.9 0.25
+"SETRAPIDFROWRATE G G",						// SetRapidFROwRate F R/Set Rapid Feed Rate Override (1.0 = Normal Feed Rate) with rate/based on caller specified time (in seconds)/to change from FRO 1.0 to 0.0/ie. SetRapidFROwRate 0.9 0.25
+"SETFROWRATETEMP G G",						// SetFROwRateTemp F R/Temporarily Set Feed Rate Override (1.0 = Normal Feed Rate) with rate/based on caller specified time (in seconds)/to change from FRO 1.0 to 0.0/Force regardless of FeedHold, don't save as last FRO/ie. FRO 0.9 0.25
 "GETSTOPSTATE ",							// GetStopState/Get State of StopImmediate/0=none,1=stopping indep,2=stopping coord, 3=stopped indep, 4=stopped coord/ie. GetStopState 
 "GETSPINDLERPS ",							// GetSpindleRPS/Get measured Spindle RPM in Revs per second/i.e. GetSpindleRPS
 "CONFIGSPINDLE D0 1 D0 7 GGG",				// ConfigSpindle T A U W C/Configure Spindle Settings/Type 0=none 1=encoder/Axis used for encoder/UpdateTimeSecs - delta time for measurement/Tau - low pass filter time constant (threading)/CountsPerRev - encoder counts per rev/i.e. ConfigureSpindle 1 0 0.2 0.1 4096.0
@@ -99,8 +108,10 @@ char Commands[][MAX_CMD_LENGTH] = {
 "RS232 D9600 115200",						// Commands from RS232 Baud/i.e. RS232 57600
 "FPGA D0 1024 D0 255",						// Write 8 bit value directly to FPGA/i.e. FPGA 6 191
 "FPGAW D0 1024 D0 65535",					// Write 16 bit value directly to FPGA/i.e. FPGAW 6 191
-"WAITBITBUF D0 255",						// WaitBitBufN/Inserts into coordinated move buffer/command to wait for an IO bit N(0..255)/or Virtual IO bits 48-63/to become high/ie. WaitBitBuf0
-"WAITNOTBITBUF D0 255",						// WaitNotBitBufN/Inserts into coordinated move buffer/command to wait for an IO bit N(0..255)/or Virtual IO bits 48-63/to become low/ie. WaitNotBitBuf0
+"BEGRAPIDBUF ",								// BegRapidBuf/Inserts into coordinated move buffer/command to indicate Rapid is in progress and to use Rapid FRO/ie. BegRapidBuf
+"ENDRAPIDBUF ",								// EndRapidBuf/Inserts into coordinated move buffer/command to indicate Rapid is no longer in progress and to resume use normal FRO/ie. EndRapidBuf
+"WAITBITBUF D0 2047",						// WaitBitBufN/Inserts into coordinated move buffer/command to wait for an IO bit N(0..255)/or Virtual IO bits 48-63, 1024-2047/to become high/ie. WaitBitBuf0
+"WAITNOTBITBUF D0 2047",					// WaitNotBitBufN/Inserts into coordinated move buffer/command to wait for an IO bit N(0..255)/or Virtual IO bits 48-63, 1024-2047/to become low/ie. WaitNotBitBuf0
 #endif
 "DEFINECS ?6=ddddddc",						// DefineCS = X Y Z A B C/Define the 6 Axes that make up/the xyzabc Coordinate System/set unused Axes to -1/ie. DefineCS = 0 1 -1 -1 -1 -1
 "DEFINECSEX ?8=ddddddddm",					// DefineCSEx = X Y Z A B C U V/Define the 8 Axes that make up/the xyzabcuv Coordinate System/set unused Axes to -1/ie. DefineCSEx = 0 1 -1 -1 -1 -1 -1 -1
@@ -129,7 +140,7 @@ char Commands[][MAX_CMD_LENGTH] = {
 "LEAD D0 7 ?2=F0 1e4 f",					// LeadN=L/Get or Set axis N Lead Compensation to L/ie. Lead0=10.0 
 "INPUTCHAN0 D0 7 ?1=D0 15 i",				// InputChan0N=C/Get or Set first Input Channel of axis N to C/ie. InputChan03=3 
 "INPUTCHAN1 D0 7 ?1=D0 15 i",				// InputChan1N=C/Get or Set 2nd Input Channel of axis N to C/ie. InputChan13=4 
-"OUTPUTCHAN0 D0 7 ?1=D0 31 i",				// OutputChan0N=C/Get or Set first Output Channel of axis N to C/ie. OutputChan03=3 
+"OUTPUTCHAN0 D0 7 ?1=D0 63 i",				// OutputChan0N=C/Get or Set first Output Channel of axis N to C/ie. OutputChan03=3 
 "OUTPUTCHAN1 D0 7 ?1=D0 15 i",				// OutputChan1N=C/Get or Set 2nd Output Channel of axis N to C/ie. OutputChan13=3 
 "INPUTGAIN0 D0 7 ?2=Gf",					// InputGain0N=G/Get or Set first Input Gain of axis N to G/ie. InputGain03=1.0 
 "INPUTGAIN1 D0 7 ?2=Gf",					// InputGain1N=G/Get or Set 2nd Input Gain of axis N to G/ie. InputGain13=1.0 

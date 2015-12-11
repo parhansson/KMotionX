@@ -204,5 +204,10 @@ const char * _rs274ngc_errors[] = {
 /* 202 */ "Q value not an integer with M98",
 /* 203 */ "L value not an integer with M98",
 /* 204 */ "Bug code not g96 or g97",
+/* 205 */ "Cannot do g32 with zero feed rate", // convert_thread
+/* 206 */ "Cannot use g32 with cutter radius comp", // convert_thread
+/* 207 */ "Tool ID not found in Tool Table", // convert_tool_select
+/* 208 */ "Tool Slot not found in Tool Table", // convert_tool_select
 "The End"};
+
 

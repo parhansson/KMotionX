@@ -34,10 +34,10 @@
 
 #define KMotionBd 1
 
-#include "PARAMS.H"
-#include "VERSION.H"
-#include "COFF.H"
-#include "CLOAD.H"
+#include "PARAMS.h"
+#include "VERSION.h"
+#include "COFF.h"
+#include "CLOAD.h"
 
 
 #define MIN(a,b) ((a)<(b)?(a):(b))

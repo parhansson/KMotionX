@@ -6,7 +6,7 @@
 #ifndef __PCDSP_H
 #define __PCDSP_H
 
-#define KMOTION_VER "4.32"  
+#define KMOTION_VER "4.33"  
 
 #define ABORT_CHAR 0x03  // ctrl-c clears/aborts any command
 
@@ -137,17 +137,17 @@
 
 // Get GCode Tool Table Length	Persist+1 = Tool Index
 //								Persist+2 = where to set value to KFLOP persist (double offset) 
-//     (GCode #Vars -> KFLOP persist) note: vars are transferred as doubles 2 persists each
+//     (GCode Tool Table -> KFLOP persist) note: vars are transferred as doubles 2 persists each
 #define PC_COMM_GET_TOOLTABLE_LENGTH 23 // Persist+1=#ToolIndex,+2=Dest   
 
 // Set GCode Tool Table Length	Persist+1 = Tool Index
 //								Persist+2 = where to get value from KFLOP persist (double offset) 
-//     (KFLOP persist -> GCode #Vars) note: vars are transferred as doubles 2 persists each
+//     (KFLOP persist -> GCode Tool Table) note: vars are transferred as doubles 2 persists each
 #define PC_COMM_SET_TOOLTABLE_LENGTH 24 // Persist+1=#ToolIndex,+2=Source   
 
 
 // Get GCode Misc Settings	Persist+1 = where to set values to KFLOP persist (32-bit integers) 
-//     (GCode #Vars -> KFLOP persist)  4 values are sent to KFLOP,  
+//     (GCode -> KFLOP persist)  4 values are sent to KFLOP,  
 //											Inches(1)/Metric(2) Flag
 //											Tool Slot T number
 //											Tool Index H number (length index)
@@ -163,6 +163,47 @@
 #define PC_COMM_GET_DROS 27 // Persist+1=Dest  
 
 #define PC_COMM_UPDATE_FIXTURE 28 // Update any change in currently selected Fixture offsets
+
+// InputBox Persist+1 = gather buffer offset (32-bit words) to message string
+//            Persist+2 = Value returned
+//            Persist+3 = MessageBox Result returned
+#define PC_COMM_INPUT 29   // MessageBox Persist+1=string,+2=Value,+3=result
+
+// Get GCode Tool Table Diameter Persist+1 = Tool Index
+//								 Persist+2 = where to set value to KFLOP persist (double offset) 
+//     (GCode Tool Table -> KFLOP persist) note: vars are transferred as doubles 2 persists each
+#define PC_COMM_GET_TOOLTABLE_DIAMETER 30 // Persist+1=#ToolIndex,+2=Dest   
+
+// Set GCode Tool Table Diameter Persist+1 = Tool Index
+//								 Persist+2 = where to get value from KFLOP persist (double offset) 
+//     (KFLOP persist -> GCode #Vars) note: vars are transferred as doubles 2 persists each
+#define PC_COMM_SET_TOOLTABLE_DIAMETER 31 // Persist+1=#ToolIndex,+2=Source   
+
+// Get GCode Tool Table Offset X  Persist+1 = Tool Index
+//								  Persist+2 = where to set value to KFLOP persist (double offset) 
+//     (GCode #Vars -> KFLOP persist) note: vars are transferred as doubles 2 persists each
+#define PC_COMM_GET_TOOLTABLE_OFFSETX 32 // Persist+1=#ToolIndex,+2=Dest   
+
+// Set GCode Tool Table Offset X  Persist+1 = Tool Index
+//								  Persist+2 = where to get value from KFLOP persist (double offset) 
+//     (KFLOP persist -> GCode #Vars) note: vars are transferred as doubles 2 persists each
+#define PC_COMM_SET_TOOLTABLE_OFFSETX 33 // Persist+1=#ToolIndex,+2=Source   
+
+// Get GCode Tool Table Offset Y  Persist+1 = Tool Index
+//								  Persist+2 = where to set value to KFLOP persist (double offset) 
+//     (GCode #Vars -> KFLOP persist) note: vars are transferred as doubles 2 persists each
+#define PC_COMM_GET_TOOLTABLE_OFFSETY 34 // Persist+1=#ToolIndex,+2=Dest   
+
+// Set GCode Tool Table Offset Y  Persist+1 = Tool Index
+//								  Persist+2 = where to get value from KFLOP persist (double offset) 
+//     (KFLOP persist -> GCode #Vars) note: vars are transferred as doubles 2 persists each
+#define PC_COMM_SET_TOOLTABLE_OFFSETY 35 // Persist+1=#ToolIndex,+2=Source   
+
+#define PC_COMM_HALT_NEXT_LINE 36  // Stop Application at the Next Line of code
+
+#define PC_COMM_ENABLE_JOG_KEYS 37   // Allow User to Push Jog Buttons while JOB is running
+#define PC_COMM_DISABLE_JOG_KEYS 38  // Disable allowing User to Push Jog Buttons while Job is Running
+
 
 
 #define PC_COMM_PERSIST 100  // First Persist Variable that is uploaded in status

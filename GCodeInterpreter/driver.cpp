@@ -26,7 +26,7 @@
 #define OR               ||
 #define SET_TO           =
 
-
+extern int ConvertToolToIndex(setup_pointer settings,int number,int *index);
 
 /* note that the message must be a string with a %s in it */
 #define DRIVER_ERROR(message,item) if(1)		\
@@ -424,7 +424,10 @@ int read_setup_file(     /* ARGUMENT VALUES             */
 		else if (strcmp(attribute, "slot_in_use") IS 0)
 			settings->current_slot SET_TO atoi(value);
 		else if (strcmp(attribute, "slot_selected") IS 0)
-			settings->selected_tool_slot SET_TO atoi(value);
+		{
+			if (ConvertToolToIndex(settings,atoi(value),&settings->selected_tool_slot))
+				settings->selected_tool_slot SET_TO 0;
+		}
 		else if (strcmp(attribute, "spindle_speed") IS 0)
 			settings->speed SET_TO atof(value);
 		else if (strcmp(attribute, "speed_feed_mode") IS 0)
@@ -451,6 +454,10 @@ int read_setup_file(     /* ARGUMENT VALUES             */
 		}
 		else if (strcmp(attribute, "tool_length_offset") IS 0)
 			settings->tool_length_offset SET_TO atof(value);
+		else if (strcmp(attribute, "tool_xoffset") IS 0)
+			settings->tool_xoffset SET_TO atof(value);
+		else if (strcmp(attribute, "tool_yoffset") IS 0)
+			settings->tool_yoffset SET_TO atof(value);
 		else if (strcmp(attribute, "traverse_rate") IS 0)
 			settings->traverse_rate SET_TO atof(value);
 		else
@@ -516,40 +523,96 @@ valid slot number.
 */
 
 int read_tool_file(      /* ARGUMENT VALUES             */
- char * tool_file,       /* name of tool file           */
- setup_pointer settings) /* pointer to machine settings */
+				   char * tool_file,       /* name of tool file           */
+				   setup_pointer settings) /* pointer to machine settings */
 {
-  FILE * tool_file_port;
-  int slot;
-  int tool_id;
-  double offset;
-  double diameter;
-  char buffer[1000];
+	FILE * tool_file_port;
+	int slot,i,n,index;
+	int Revision=0;
+	int tool_id;
+	double offset;
+	double diameter;
+	double xoffset=0;
+	double yoffset=0;
+	char buffer[1000];
+  char Comment[256];
+  char Image[MAX_PATH];
 
-  tool_file_port SET_TO fopen(tool_file, "r");
-  if (tool_file_port IS NULL)
-    DRIVER_ERROR("Cannot open tool file: %s", tool_file);
-  for(;;)    /* read and discard header, checking for blank line */
-    {
-      if (fgets(buffer, 1000, tool_file_port) IS NULL)
-        DRIVER_ERROR_CF2("Bad %s file format", "tool");
-      else if (buffer[0] IS '\n')
-        break;
-    }
+	tool_file_port SET_TO fopen(tool_file, "r");
+	if (tool_file_port IS NULL)
+		DRIVER_ERROR("Cannot open tool file: %s", tool_file);
+	for(;;)    /* read and discard header, checking for blank line */
+	{
+		if (fgets(buffer, 1000, tool_file_port) IS NULL)
+			DRIVER_ERROR_CF2("Bad %s file format", "tool");
+		else if (buffer[0] IS '\n' || buffer[0] IS '\r') //PH test for /r as well
+			break;
 
-  for (;;)
-    {
-      if (fgets(buffer, 1000, tool_file_port) IS NULL)
-        break;
-      if (sscanf(buffer, "%d %d %lf %lf", &slot,
-                 &tool_id, &offset, &diameter) IS 0)
-        DRIVER_ERROR_CF2("Bad input line \"%s\" in tool file", buffer);
-      settings->tool_table[slot].id SET_TO tool_id;
-      settings->tool_table[slot].length SET_TO offset;
-      settings->tool_table[slot].diameter SET_TO diameter;
-    }
-  fclose(tool_file_port);
-  return RS274NGC_OK;
+		if (strstr(buffer, "IMAGE") != NULL) Revision=1;  // new format has xy offset 
+	}
+
+	index=0;
+	for (;;)
+	{
+		if (fgets(buffer, 1000, tool_file_port) IS NULL)
+			break;
+
+		if (Revision==0)
+		{
+			if (sscanf(buffer, "%d %d %lf %lf", &slot,
+				&tool_id, &offset, &diameter) IS 0)
+				DRIVER_ERROR_CF2("Bad input line \"%s\" in tool file", buffer);
+
+		}
+		else
+		{
+			if (sscanf(buffer, "%d %d %lf %lf %lf %lf%n", &slot,
+				&tool_id, &offset, &diameter, &xoffset, &yoffset, &n) IS 0)
+				DRIVER_ERROR_CF2("Bad input line \"%s\" in tool file", buffer);
+
+      char s[256+60];
+      strcpy(s,buffer+n);
+      Image[0] = 0;
+      Comment[0] = 0;
+      BOOL bImageSuccess = TRUE;
+      BOOL bCommentSuccess = TRUE;
+      if(strstr(s," \"\"") != s){
+        if(sscanf(s, " \"%[^\"]\"%n", Comment,&n) != 1){
+          bCommentSuccess = FALSE;
+        }
+      } else {
+        n = 3;
+      }
+
+      if(strstr(s+n," \"\"") != s+n){
+        if(sscanf(s+n, " \"%[^\"]\"", Image) != 1){
+          bCommentSuccess = FALSE;
+        }
+      }
+
+			if(!bImageSuccess)
+			{
+				DRIVER_ERROR_CF2("Bad input line \"%s\" in tool file, no quotation marks for comment", buffer);
+			}
+
+			if (!bCommentSuccess)
+			{
+				DRIVER_ERROR_CF2("Bad input line \"%s\" in tool file, no matching quotation marks for tool image filename", buffer);
+			}
+		}
+
+		settings->tool_table[index].slot SET_TO slot;
+		settings->tool_table[index].id SET_TO tool_id;
+		settings->tool_table[index].length SET_TO offset;
+		settings->tool_table[index].diameter SET_TO diameter;
+		settings->tool_table[index].xoffset SET_TO xoffset;
+		settings->tool_table[index].yoffset SET_TO yoffset;
+		strcpy(settings->tool_table[index].Comment,Comment);
+		strcpy(settings->tool_table[index].ToolImage,Image);
+		index++;
+	}
+	fclose(tool_file_port);
+	return RS274NGC_OK;
 }
 
 /*********************************************************************/

@@ -1,7 +1,9 @@
-POC     FMS     LEN     DIAM    COMMENT
+SLOT    ID        LENGTH         DIAMETER        XOFFSET        YOFFSET   COMMENT     IMAGE
 
-1       1       0.0     0.0     first tool
-2       2       0.0     0.0
-3       3       1.0     0.5
-4       4       2.0     1.0
-32      32      0.0     0.0     last tool
+  1   1001        1.000000        0.125000        0.000000        0.000000 "first tool" "EndMill-z 1in .125.wrl"
+  2   1002        2.000000        0.500000        0.000000        0.000000 "" "EndMill-z 2in .500.wrl"
+  0   1003        3.000000        0.500000        0.000000        0.000000 "" "EndMill-z.wrl"
+  7   1006        6.000000        0.000000        0.000000        0.000000 "" ""
+ 25   1025       25.000000        0.000000        0.000000        0.000000 "" ""
+  0   2000        0.000000        0.000000        1.000000        0.000000 "Front NPTF Lathe tool" "NPTF Front.wrl"
+  0   2001        0.000000        0.000000        0.000000        0.000000 "Back VNMG Lathe Tool" "VNMG-1 back.wrl"

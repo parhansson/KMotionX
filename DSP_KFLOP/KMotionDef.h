@@ -118,7 +118,6 @@ extern PERSIST persist;
 
 extern int StatusRequestCounter;  // increments each time host requests status
 
-
 // data gathering variables
 
 #define MAX_GATHER_VALUES 32
@@ -164,17 +163,6 @@ void SetupGatherAllOnAxis(int c, int n_Samples);  // Prepares to gather info for
 void TriggerGather();                             // starts gathering defined items into gather buffer
 
 
-// MOTION TRAJECTORY STRUCTURES
-    
-extern double CS0_TimeBase;      	// how much coordinated motion is advanced each tick
-extern double CS0_TimeBaseDelta;  	// how much coordinated motion time rate is changed per tick
-extern float CS0_DecelTime;			// how long to take to stop the coordinated motion (computed by StopMotion)
-extern int CS0_StoppingState; 		// emergency stop in progress, 0 = not stopping, 1=stopping coord motion, 2=stopping indep, 3=fully stopped, 4=ind stopped
-void StopCoordinatedMotion(void);  	// bring any coordinated motion to a emergency stop ASAP
-void ResumeCoordinatedMotion(void);	// resume coordinated/Indep motion after an emergency stop
-void ClearStopImmediately(void);	// Clear Stop Condition without resuming
-void UpdateStoppingState(void);		// Update Stopping Status (only required for indep stopping)
-
 
 
 #define TRAJECTORY_OFF 0          // no trajectory generation
@@ -182,8 +170,19 @@ void UpdateStoppingState(void);		// Update Stopping Status (only required for in
 #define TRAJECTORY_LINEAR 2       // linear interpolated from coord system 0    (x = c*p+d)
 #define TRAJECTORY_CIRCULAR 3     // circular interpolated from coord system 0  (x = c*sin(p*a+b)+d)
 #define TRAJECTORY_SPECIAL 4      // Special Command to clear/set IO bit
-								  // 	command 0 = ClearBit command 1 = SetBit
+								  // do the operation
+								  // 0 = clearbit
+								  // 1 = setbit
+								  // 2 = wait for bit low
+								  // 3 = wait for bit high
+								  // 4 = beginning of Rapid
+								  // 5 = end of Rapid
+								  
 								  //    param 0 = bit number
+
+
+
+
 #define TRAJECTORY_EXPONENTIAL 5  // independent axis (exponentially approach Dest a=Ratio per tick, b=Dest)
 
 #define LAST_MOTION_JOG 0		  // type of last independent motion was a jog
@@ -260,7 +259,53 @@ typedef struct  // 2nd order IIR Filter
     float d0,d1; // delay values
 } IIR;
 
-            
+// MOTION TRAJECTORY STRUCTURES
+    
+extern double CS0_t;				// Current Coordinated Motion Segment Times
+extern double CS0_TimeExecuted;		// Sum of all previous Coordinated Motion Segments Executed
+extern double CS0_TimeDownloaded;	// Sum of all Coord Motion Segments downloaded from Host
+extern double CS0_TimeLost;			// Sum of all Coord Motion Segments downloaded from Host that have been discarded (buffer wrap)
+extern double CS0_TimeBase;      	// how much coordinated motion is advanced each tick
+extern double CS0_TimeBaseDelta;  	// max amount coordinated motion time base is changed per tick
+extern float CS0_DecelTime;			// how long to take to stop the coordinated motion (computed by StopMotion)
+extern double CS0_TimeBaseDesired;	// Last Desired rate-of-time (TIMEBASE = real time)
+
+extern BOOL CS0_DoingRapid;				// Flag indicating Rapid in Progress so use normal Time Base ignoring FRO (except for FeedHold)      
+extern BOOL CS0_Flushed;				// Coordinated motion Terminated so no longer necessary to worry about starvation       
+extern BOOL CS0_HoldAtEnd;				// Coordinated motion to not Terminate but rather Hold when reaching end of buffer       
+
+extern float CS0_NomDecel2TB2;			// Nominal Decel Time/(2 TIMEBASE^2) = Factor to relate buffer time to TimeBase to be able to stop
+
+extern int CS0_StoppingState; 			// emergency stop in progress, 0 = not stopping, 1=stopping coord motion, 2=stopping indep, 3=fully stopped, 4=ind stopped
+extern PARAMETRIC_COEFF *CoordSystem0;  // current pointer into Coordinated Motion
+extern PARAMETRIC_COEFF *LastCoordSystem0;
+extern int ParametricIndex;				// Index of where to put next downloaded Coord Motion Segment or command
+extern BOOL ParametricIndexWrapped;		// Indicates that Coord Motion Buffer has wrapped and additional segments will cause segments to be lost
+extern PARAMETRIC_COEFF *ParametricCoeffs;  // Points to beginning of Coord Motion Buffer
+extern PARAMETRIC_COEFF *ParametricCoeffsEnd;  // Points to End+1 of Allocated Coord Motion Buffer (MAX_SEGMENTS)
+extern PARAMETRIC_COEFF *LastCoordSystem0;  // Pointer to last Segment executed when finished
+extern PARAMETRIC_COEFF *LastValidTrajSegment; // Last Segment actually Executed
+
+void StopCoordinatedMotion(void);  	// bring any coordinated motion to a emergency stop ASAP
+void ResumeCoordinatedMotion(void);	// resume coordinated/Indep motion after an emergency stop
+void ClearStopImmediately(void);	// Clear Stop Condition without resuming
+void UpdateStoppingState(void);		// Update Stopping Status (only required for indep stopping)
+float GetNominalFROChangeTime(void);// computed time to change from FRO 1.0 to 0.0 for all defined CoordSystem Axes and their specified Vel, Accel, jerk
+void SetFRO(float FRO); // change from current to the specified FRO (FRO=1.0=Realtime)using a nominal rate based on computed time to change from 1.0 to 0.0
+void SetRapidFRO(float FRO); // change from current to the specified Rapid FRO (FRO=1.0=Realtime)using a nominal rate based on computed time to change from 1.0 to 0.0
+void SetFROTemp(float FRO); // Temporarily change from current to the specified FRO using a nominal rate, override FeedHold, don't save as LastFRO 
+void SetFROwRate(float FRO, float DecelTime); // change from current to the specified FRO (FRO=1.0=Realtime)using a rate based on caller specified time to change from 1.0 to 0.0
+void SetRapidFROwRate(float FRO, float DecelTime); // change from current to the specified Rapid FRO (FRO=1.0=Realtime)using a rate based on caller specified time to change from 1.0 to 0.0
+void SetFROwRateTemp(float FRO, float DecelTime); //  Temporarily change from current to the specified FRO using a rate based on caller specified time, override FeedHold, don't save as LastFRO
+extern float CS0_LastFRO;	        // Last Desired FRO (used for Resume after FeedHold or for changes in FRO while in FeedHold) 
+extern float CS0_LastRapidFRO;      // Last Desired FRO (used for Resume after FeedHold during Rapid) 
+
+// Called after adding something to the Cood Motion Buffer.  Increments the Coord Motion Buffer pointer 
+// while keeping track of how much time is currently in the buffer (CS0_TimeDownloaded), also how much 
+// was over written due to buffer wrapping (CS0_TimeLost) to be able to determine the extent that it is 
+// possible to reverse, and keep the buffer terminated with TRAJECTORY_OFF
+void IncParametricIndex(void);
+
 
 #define MAX_TRIP 20  // max trip states for individual axis moves
 extern TRIP_COEFF TripCoeffs[N_CHANNELS][MAX_TRIP];  // Trip Coeff lists for each channel
@@ -321,7 +366,9 @@ typedef struct
     double last_position;           // last measured error
     double last_dest;               // last destination from beginning of prev servo interrupt
 	double prev_dest;				// prev destination from end of prev servo interrupt (will incl User changes to Dest)
-    float last_vel;                 // last destination velocity
+	int LastNonZeroDir;				// Last direction we actually moved some amount(+1=Positive, 0=undefined, -1=negative)
+	int DirectionOfMotion;			// Dest change was in this direction (+1=Positive, 0=none, -1=negative)
+	float last_vel;                 // last destination velocity
     float x1last,x2last;            // used with lead compensation 
     int   OutputChan0,OutputChan1;  // pwm or DAC channels to use     
     int   InputChan0,InputChan1;    // Encoder or ADC channels to use 
@@ -380,6 +427,7 @@ void WritePWM(int ch, int v);   // Write to PWM - locked anti-phase mode (+ powe
 void WritePWMC(int ch, int v);  // Write to PWM - Current Loop mode - Always optimal decay
 
 extern int SnapAmpPresent;     				// 1 = SnapAmp Present 0= Not Present
+extern int DisableSnapAmpDetectOnBoot;  // disables using Bits 12,13, and 15 on JP7 detect AutoDetect SnapAmps
 void WriteSnapAmp(int add, int data);		// write a 16-bit word directly to SnapAmp FPGA 
 int ReadSnapAmp(int add);					// read a 16-bit word directly from SnapAmp FPGA
 
@@ -432,6 +480,8 @@ int ReadSnapAmp(int add);					// read a 16-bit word directly from SnapAmp FPGA
 
 
 extern int KanalogPresent;     // 1=Kanalog Present
+extern int DisableKanalogDetectOnBoot;  // disables using Bits 16-20 and 23 on JP4 to detect AutoDetect Kanalog
+
 extern int KStepPresent;       // 1=KStep Present - set this to mux inputs into virtual bits 48-63
 
 // Kanalog FPGA Registers for internal use only
@@ -577,7 +627,8 @@ void StartMove(int ch);
 void SetupForMove(double From, double To, float MaxVel, CHAN *ch, int CoeffOffset,
                                                   int NoJerkControlAtStart, 
                                                   int NoJerkControlAtEnd,
-                                                  int Start);
+                                                  int Start,
+												  int *Nstates);
                                                   
 void SetupForMotionPause(double x,CHAN *ch,int CoeffOffset, double time);  // stay still                                                   
 
@@ -650,6 +701,18 @@ void SetStateBit(int bit, int state);   // set a bit high or low (bit must be de
 int ReadBit(int bit);                   // read the state of an I/O bit
 
 
+// Non volatile Flash functions
+
+#define FLASH ((volatile char *)0x90000000)  // beginning of FLASH - first 1MByte is for System Use
+#define FLASH_USER ((volatile char *)0x90100000)  // 2nd MegByte is for User use
+#define FLASH_BLOCK_SIZE (0x10000)  // FLASH erases in 64KByte Blocks 
+#define IRAM  ((volatile char *)0x10000000)
+#define SDRAM ((volatile char *)0x80000000)
+int ProgramFlash(volatile char *src, int Length, volatile char *dest, char *message);  //Programs Flash source address of data, length in 16-bit words, dest add must be on 64KByte block, optional \n terminated message
+void SetFlashBank(volatile unsigned short *add);  // sets the currently addressable flash bank (address bits 14-19)
+
+
+
 // KONNECT AUX PORT FUNCTIONS
 // 
 // Example:
@@ -698,7 +761,7 @@ int printf(const char *format, ...);     		// Print formatted string to console
 int sprintf(char *s, const char *format, ...); 	// Print formatted string to string
 
 typedef int FILE;
-FILE *fopen(const char*, const char*);		   // Open a text file for writing on the PC (2nd param is ignored) 
+FILE *fopen(const char*, const char*);		   // Open a text file for writing on the PC (2nd param = "rt" or "wt") 
 int fprintf(FILE *f, const char * format, ...);		   // Print formatted string to the PC's Disk File
 int fclose(FILE *f);                           // Close the disk file on the PC
 
@@ -707,6 +770,13 @@ int PrintFloat(char *Format, double v);  		// Print a double using printf format
 int PrintInt(char *Format, int v);       		// Print an integer using printf format, ex "result=%4d\n"
                                 
 int sscanf(const char *_str, const char *_fmt, ...); //scan string and convert to values 
+
+#define MAX_READ_DISK_LENGTH 1024 // max allowed length of disk file line length
+extern volatile int read_disk_buffer_status; //status of read disk buffer 1=line available, 2=error, 3=eof 
+extern char read_disk_buffer[MAX_READ_DISK_LENGTH+1];
+char *fgets(char *str, int n, FILE *file); //read string from PC disk file, str=buffer, n=buffer length, f=FILE pointer, returns NULL on error
+int fscanf(FILE *f, const char *format, ...); //read sting from PC Disk file, convert values, returns number of items converted
+int feof(FILE *f);   // End of file status for disk reading
 
 /*
  * MessageBox() Flags thes can be passed to the PC to invoke MessageBoxes
@@ -762,6 +832,8 @@ void StartThread(int thread);  // starts a downloaded program at it's entry poin
 void PauseThread(int thread);  // stops a thread from executing
 int ResumeThread(int thread);  // resumes a tread after a pause 
 void ThreadDone(void);         // call to terminate current thread
+extern int CurrentThread;      // current thread that is/was executing  0 = Pri 1-7 = User Threads
+
 
 
 // A User Program Call Back can be defined to be called every Servo Sample
@@ -771,8 +843,8 @@ typedef void USERCALLBACK(void);
 extern USERCALLBACK *UserCallBack;
 
 
-// used to allow mutual exclusive access to a resourse
-// (waits until resourse is available, then locks it)
+// used to allow mutual exclusive access to a resource
+// (waits until resource is available, then locks it)
 // if the thread that locked it is no longer active,
 // release the lock
 

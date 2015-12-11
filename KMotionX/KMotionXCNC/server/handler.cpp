@@ -126,6 +126,11 @@ const char ACTION_NAMES[][32] = { "M_Action_None", "M_Action_Setbit", "M_Action_
 
 void initHandler() {
   km = new CKMotionDLL(0);
+  int type = BOARD_TYPE_UNKNOWN;
+  if(km->CheckKMotionVersion(&type,false)){
+    //enter simulation mode?
+    exit(1);
+  }
   CM = new CCoordMotion(km);
   Interpreter = new CGCodeInterpreter(CM);
   readSetup();
@@ -146,6 +151,7 @@ void initHandler() {
   Interpreter->SetUserCallback(UserCallback);
   km->SetErrMsgCallback(ErrMsgHandler);
   km->SetConsoleCallback(ConsoleHandler);
+
   readStatus();
 }
 

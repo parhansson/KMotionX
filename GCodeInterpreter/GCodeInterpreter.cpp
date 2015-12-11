@@ -20,6 +20,7 @@ CGCodeInterpreter::CGCodeInterpreter(CCoordMotion *CoordM)
 
 	p_setup = &_setup;
 	m_Resume=false;
+	CoordMotion->m_realtime_Sequence_number_valid=ExecutionInProgress=false;
 
 	for (int i=0; i<MAX_MCODE_ACTIONS; i++)
 	{
@@ -66,7 +67,7 @@ int CGCodeInterpreter::Interpret(
 	m_CompleteFn=CompleteFn;
 	m_StatusFn=StatusFn;
 	strcpy(m_InFile,fname);
-	m_Halt=false;
+	m_Halt=m_HaltNextLine=false;
 	CoordMotion->ClearHalt();
 
 	LaunchExecution();	
@@ -107,6 +108,16 @@ void CGCodeInterpreter::Halt()
 bool CGCodeInterpreter::GetHalt()
 {
 	return m_Halt;
+}
+
+void CGCodeInterpreter::HaltNextLine()
+{
+	m_HaltNextLine=true;
+}
+
+bool CGCodeInterpreter::GetHaltNextLine()
+{
+	return m_HaltNextLine;
 }
 
 void CGCodeInterpreter::Abort()
@@ -299,12 +310,17 @@ int CGCodeInterpreter::DoExecute()
 		}
 	}
 
+	CoordMotion->m_realtime_Sequence_number_valid=false;
+	ExecutionInProgress=true;
 
 	SetupTracker.ClearHistory();
 	
+	_setup.current_line=m_GCodeReads;
+
 	for(  ; ; m_GCodeReads++)
 	{
 		// record what line we are doing in the GCode
+
 		_setup.current_line = m_CurrentLine = m_GCodeReads;
 
 		SetupTracker.InsertState(&_setup);  // save the interpreter state
@@ -321,7 +337,7 @@ int CGCodeInterpreter::DoExecute()
 		Output[0]='\0';  // clear it
 
 
-		if (((m_end!=-1)&&(m_CurrentLine>m_end)) || (CoordMotion->m_Simulate && m_Halt) || CoordMotion->GetAbort())
+		if (((m_end!=-1)&&(m_CurrentLine>m_end)) || (CoordMotion->m_Simulate && m_Halt) || CoordMotion->GetAbort() || m_HaltNextLine)
 		{
 			rs274ngc_close();
 			return 0;
@@ -337,6 +353,8 @@ int CGCodeInterpreter::DoExecute()
 		if (status != RS274NGC_OK)	return rs274ErrorExit(status);
 
 		status = rs274ngc_execute(NULL);
+
+		SaveStateOnceOnly();  // if it wasn't saved before first motion then save it now
 
 		if (m_CurrentLine != _setup.current_line)
 		{
@@ -368,6 +386,15 @@ int CGCodeInterpreter::DoExecute()
 	return 0;
 }
 
+// Save the Interpreter State once per line just before first motion is created
+void CGCodeInterpreter::SaveStateOnceOnly()
+{
+	if (!StateSaved)
+	{
+		StateSaved=true;
+		SetupTracker.InsertState(&_setup);  // save the interpreter state
+	}
+}
 
 int CGCodeInterpreter::DoExecuteComplete()
 {
@@ -378,14 +405,14 @@ int CGCodeInterpreter::DoExecuteComplete()
 		// if we were previously stopped then restore the state
 		if (CoordMotion->m_PreviouslyStopped)
 		{
-			SetupTracker.RestoreState(_setup.sequence_number-1,&_setup);
+			SetupTracker.RestoreState(CoordMotion->m_PreviouslyStoppedSeqNo,&_setup);
 			SET_FEED_RATE(_setup.feed_rate);
 			m_StoppedInterpState = _setup;
 
 			// convert stopped absolute coordinates to GCode interpreter coordinates
 
 			ConvertAbsoluteToInterpreterCoord(CoordMotion->m_StoppedMachinex, CoordMotion->m_StoppedMachiney, CoordMotion->m_StoppedMachinez, CoordMotion->m_StoppedMachinea, CoordMotion->m_StoppedMachineb, CoordMotion->m_StoppedMachinec,
-												 &CoordMotion->m_Stoppedx,       &CoordMotion->m_Stoppedy, &CoordMotion->m_Stoppedz, &CoordMotion->m_Stoppeda, &CoordMotion->m_Stoppedb, &CoordMotion->m_Stoppedc);
+												 &CoordMotion->m_Stoppedx, &CoordMotion->m_Stoppedy, &CoordMotion->m_Stoppedz, &CoordMotion->m_Stoppeda, &CoordMotion->m_Stoppedb, &CoordMotion->m_Stoppedc);
 
 			_setup.file_pointer=NULL;
 		}
@@ -393,8 +420,9 @@ int CGCodeInterpreter::DoExecuteComplete()
 		m_exitcode=1005;
 	}
 	
-	m_CompleteFn(m_exitcode,_setup.current_line,_setup.sequence_number+1,ErrorOutput);
+	m_CompleteFn(m_exitcode,_setup.current_line,_setup.sequence_number,ErrorOutput);
 
+	ExecutionInProgress=false;
 	return 0;
 }
 
@@ -461,14 +489,19 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 
 	if (FlushBeforeUnbufferedOperation && CoordMotion->m_Simulate) return 0;
 
-	// If we were called from a button and we had been previously aborted then clear the Abort
+	// If we were called from a button and we had been previously aborted then clear the Abort and any Halt
 	if (!FlushBeforeUnbufferedOperation && CoordMotion->GetAbort())
+	{
 		CoordMotion->ClearAbort();
+		CoordMotion->ClearHalt();
+	}
 	
-	if (i>=MAX_MCODE_ACTIONS_M1+MAX_MCODE_ACTIONS_BUTTONS)
-		p=&McodeActions[i-100+MAX_MCODE_ACTIONS_M1+MAX_MCODE_ACTIONS_BUTTONS];
-	else
+	if (i<MAX_MCODE_ACTIONS_M1+MAX_MCODE_ACTIONS_BUTTONS)
 		p=&McodeActions[i];
+	else if (i>=100)
+		p=&McodeActions[i-100+MCODE_ACTIONS_M100_OFFSET];
+	else
+		p=&McodeActions[i-24+MCODE_ACTIONS_SPECIAL_OFFSET];
 
 	switch (p->Action)
 	{
@@ -479,7 +512,7 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 		if (FlushBeforeUnbufferedOperation)  // false for User button
 		{
 			sprintf(s, "SetStateBitBuf%d=%d",(int)p->dParams[0],(int)p->dParams[1]);
-			if (CoordMotion->DoKMotionBufCmd(s)) return 1;
+			if (CoordMotion->DoKMotionBufCmd(s,p_setup->sequence_number)) return 1;
 		}
 		else
 		{
@@ -504,9 +537,9 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 		if (FlushBeforeUnbufferedOperation)  // false for User button
 		{
 			sprintf(s, "SetStateBitBuf%d=%d",(int)p->dParams[0],(int)p->dParams[1]);
-			if (CoordMotion->DoKMotionBufCmd(s)) return 1;
+			if (CoordMotion->DoKMotionBufCmd(s,p_setup->sequence_number)) return 1;
 			sprintf(s, "SetStateBitBuf%d=%d",(int)p->dParams[2],(int)p->dParams[3]);
-			if (CoordMotion->DoKMotionBufCmd(s)) return 1;
+			if (CoordMotion->DoKMotionBufCmd(s,p_setup->sequence_number)) return 1;
 		}
 		else
 		{
@@ -532,7 +565,7 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 		if (FlushBeforeUnbufferedOperation)
 		{
 			if (CoordMotion->FlushSegments()) {CoordMotion->SetAbort(); return 1;}  
-			if (CoordMotion->WaitForSegmentsFinished(TRUE)) {CoordMotion->SetAbort(); return 1;}
+			if (CoordMotion->WaitForSegmentsFinished()) {CoordMotion->SetAbort(); return 1;}
 		}
 
 		s[0] = '\0';
@@ -578,7 +611,9 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 			{
 				if (i==6)  // tool change
 				{
-					sprintf(s, "SetPersistHex %d %x",ipersist, p_setup->selected_tool_slot);
+					sprintf(s, "SetPersistHex %d %x",ipersist, p_setup->tool_table[p_setup->selected_tool_slot].slot);
+					if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
+					sprintf(s, "SetPersistHex %d %x",ipersist+1, p_setup->tool_table[p_setup->selected_tool_slot].id);
 					if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 				}
 				else if (i==10)  // set speed
@@ -779,6 +814,10 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 
 		break;
 	}
+
+	// if not called from a button check for Halt
+	if (FlushBeforeUnbufferedOperation && CoordMotion->CheckMotionHalt(true)) return 2;
+
 	return 0;
 }
 
@@ -875,12 +914,12 @@ int CGCodeInterpreter::ExecutePC(const char *Name)
 
 double CGCodeInterpreter::ConvertAbsToUserUnitsX(double x)
 {
-	return InchesToUserUnits(x - p_setup->axis_offset_x  - p_setup->origin_offset_x);
+	return InchesToUserUnitsX(x - p_setup->axis_offset_x  - p_setup->origin_offset_x - p_setup->tool_xoffset);
 }
 
 double CGCodeInterpreter::ConvertAbsToUserUnitsY(double y)
 {
-	return InchesToUserUnits(y - p_setup->axis_offset_y  - p_setup->origin_offset_y);
+	return InchesToUserUnits(y - p_setup->axis_offset_y  - p_setup->origin_offset_y - p_setup->tool_yoffset);
 }
 
 double CGCodeInterpreter::ConvertAbsToUserUnitsZ(double z)
@@ -906,6 +945,14 @@ double CGCodeInterpreter::ConvertAbsToUserUnitsC(double c)
 double CGCodeInterpreter::InchesToUserUnits(double inches)
 {
 	return p_setup->length_units==CANON_UNITS_INCHES ? inches : inches * 25.4;
+}
+
+double CGCodeInterpreter::InchesToUserUnitsX(double inches)
+{
+	if (p_setup->DiameterMode)
+		return p_setup->length_units==CANON_UNITS_INCHES ? inches * 2.0 : inches * 25.4 * 2.0;
+	else
+		return p_setup->length_units==CANON_UNITS_INCHES ? inches : inches * 25.4;
 }
 
 
@@ -939,6 +986,14 @@ double CGCodeInterpreter::UserUnitsToInches(double inches)
 	return p_setup->length_units==CANON_UNITS_INCHES ? inches : inches / 25.4;
 }
 
+double CGCodeInterpreter::UserUnitsToInchesX(double inches)
+{
+	if (p_setup->DiameterMode)
+		return p_setup->length_units==CANON_UNITS_INCHES ? inches * 0.5 : inches / 25.4 * 0.5;
+	else
+		return p_setup->length_units==CANON_UNITS_INCHES ? inches : inches / 25.4;
+}
+
 double CGCodeInterpreter::UserUnitsToInchesOrDegA(double input)
 {
 	if (CoordMotion->Kinematics->m_MotionParams.DegreesA)
@@ -967,20 +1022,22 @@ double CGCodeInterpreter::UserUnitsToInchesOrDegC(double input)
 
 	
 void CGCodeInterpreter::ConvertAbsoluteToInterpreterCoord(double x,double y,double z,double a,double b,double c, 
-													double *gx,double *gy,double *gz,double *ga,double *gb,double *gc)
+													double *gx,double *gy,double *gz,double *ga,double *gb,double *gc,setup_pointer psetup)
 {
-	*gx  = InchesToUserUnits(x) - _setup.axis_offset_x  - _setup.origin_offset_x;
-	*gy  = InchesToUserUnits(y) - _setup.axis_offset_y  - _setup.origin_offset_y;
-	*gz  = InchesToUserUnits(z) - _setup.axis_offset_z  - _setup.origin_offset_z - _setup.tool_length_offset;
-	*ga  = InchesOrDegToUserUnitsA(a) - _setup.AA_axis_offset - _setup.AA_origin_offset;
-	*gb  = InchesOrDegToUserUnitsB(b) - _setup.BB_axis_offset - _setup.BB_origin_offset;
-	*gc  = InchesOrDegToUserUnitsC(c) - _setup.CC_axis_offset - _setup.CC_origin_offset;
+	if (!psetup) psetup = p_setup;
+
+	*gx  = InchesToUserUnitsX(x) - psetup->axis_offset_x  - psetup->origin_offset_x - psetup->tool_xoffset;
+	*gy  = InchesToUserUnits(y) - psetup->axis_offset_y  - psetup->origin_offset_y - psetup->tool_yoffset;
+	*gz  = InchesToUserUnits(z) - psetup->axis_offset_z  - psetup->origin_offset_z - psetup->tool_length_offset;
+	*ga  = InchesOrDegToUserUnitsA(a) - psetup->AA_axis_offset - psetup->AA_origin_offset;
+	*gb  = InchesOrDegToUserUnitsB(b) - psetup->BB_axis_offset - psetup->BB_origin_offset;
+	*gc  = InchesOrDegToUserUnitsC(c) - psetup->CC_axis_offset - psetup->CC_origin_offset;
 }
 
 void CGCodeInterpreter::ConvertAbsoluteToMachine(double x,double y,double z,double a,double b,double c, 
 											double *gx,double *gy,double *gz,double *ga,double *gb,double *gc)
 {
-	*gx  = InchesToUserUnits(x);
+	*gx  = InchesToUserUnitsX(x);
 	*gy  = InchesToUserUnits(y);
 	*gz  = InchesToUserUnits(z);
 	*ga  = InchesOrDegToUserUnitsA(a);
@@ -1111,8 +1168,8 @@ int CGCodeInterpreter::DoResumeSafe()
 	if (m_ResumeTraverseXY)
 	{
 		// keep everything where it is, except move xy (and abc)
-		Machinex = UserUnitsToInches(m_ResumeTraverseSafeX+_setup.axis_offset_x+_setup.origin_offset_x);
-		Machiney = UserUnitsToInches(m_ResumeTraverseSafeY+_setup.axis_offset_y+_setup.origin_offset_y);
+		Machinex = UserUnitsToInchesX(m_ResumeTraverseSafeX+_setup.axis_offset_x+_setup.origin_offset_x+_setup.tool_xoffset);
+		Machiney = UserUnitsToInches(m_ResumeTraverseSafeY+_setup.axis_offset_y+_setup.origin_offset_y+_setup.tool_yoffset);
 		Machinea = CoordMotion->m_StoppedMachinea;
 		Machineb = CoordMotion->m_StoppedMachineb;
 		Machinec = CoordMotion->m_StoppedMachinec;
@@ -1419,14 +1476,11 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 			sprintf(s, "New Line does not contain a Feedrate F command.  Backward scan found:\r\rF%g\r\rUse this feedrate?",f);
 			if (AfxMessageBox(s,MB_YESNO)==IDYES)
 			{
-				if (FoundF)
-				{
-					p_setup->feed_rate=m_StoppedInterpState.feed_rate=f;
-				}
-				else if (block0.f_number!=-1)
-				{
-					p_setup->feed_rate=m_StoppedInterpState.feed_rate=block0.f_number;
-				}
+				p_setup->feed_rate=m_StoppedInterpState.feed_rate=f;
+			}
+			else
+			{
+				m_StoppedInterpState.feed_rate=p_setup->feed_rate;
 			}
 		}
 		else
@@ -1434,6 +1488,11 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 			AfxMessageBox("New Line does not contain a Feedrate F command.  Unable to determine previous feedrate");
 		}
 	}
+	else
+	{
+		p_setup->feed_rate=m_StoppedInterpState.feed_rate=block0.f_number;
+	}
+
 
 	if (!FoundX0 || !FoundY0 ||!FoundZ0 ||!FoundA0 ||!FoundB0 ||!FoundC0)
 	{
@@ -1471,8 +1530,8 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 	if (FoundB) {CoordMotion->m_Stoppedb=b; p_setup->BB_current=b;}
 	if (FoundC) {CoordMotion->m_Stoppedc=c; p_setup->CC_current=c;}
 
-	CoordMotion->m_StoppedMachinex = UserUnitsToInches(CoordMotion->m_Stoppedx+_setup.axis_offset_x+_setup.origin_offset_x);
-	CoordMotion->m_StoppedMachiney = UserUnitsToInches(CoordMotion->m_Stoppedy+_setup.axis_offset_y+_setup.origin_offset_y);
+	CoordMotion->m_StoppedMachinex = UserUnitsToInchesX(CoordMotion->m_Stoppedx+_setup.axis_offset_x+_setup.origin_offset_x+_setup.tool_xoffset);
+	CoordMotion->m_StoppedMachiney = UserUnitsToInches(CoordMotion->m_Stoppedy+_setup.axis_offset_y+_setup.origin_offset_y+_setup.tool_yoffset);
 	CoordMotion->m_StoppedMachinez = UserUnitsToInches(CoordMotion->m_Stoppedz+_setup.axis_offset_z+_setup.origin_offset_z+_setup.tool_length_offset);
 	CoordMotion->m_StoppedMachinea  = InchesOrDegToUserUnitsA(CoordMotion->m_Stoppeda) - _setup.AA_axis_offset - _setup.AA_origin_offset;
 	CoordMotion->m_StoppedMachineb  = InchesOrDegToUserUnitsB(CoordMotion->m_Stoppedb) - _setup.BB_axis_offset - _setup.BB_origin_offset;
@@ -1497,7 +1556,7 @@ int CGCodeInterpreter::SetCSS(int mode)  // set CSS mode
 		if (x_res != 0.0)
 			x_factor = (float)(1.0 / x_res);
 
-		float xoffset = (float)(UserUnitsToInches(_setup.axis_offset_x+_setup.origin_offset_x)*x_res);
+		float xoffset = (float)(UserUnitsToInchesX(_setup.axis_offset_x+_setup.origin_offset_x+_setup.tool_xoffset)*x_res);
 
 		float fspeed = (float)(p_setup->speed * CoordMotion->GetSpindleRateOverride());
 

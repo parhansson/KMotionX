@@ -172,7 +172,8 @@ static int arc_data_comp_r(int move, int side, double tool_radius,
     double current_x, double current_y, double end_x,
     double end_y, double big_radius, double *center_x,
     double *center_y, int *turn);
-static int arc_data_ijk(int move, double current_x, double current_y,
+static int arc_data_ijk(setup_pointer settings,
+	int move, double current_x, double current_y,
     double end_x, double end_y, double i_number,
     double j_number, double *center_x, double *center_y,
     int *turn, double tolerance);
@@ -208,6 +209,8 @@ static int convert_cutter_compensation_off(setup_pointer settings);
 static int convert_cutter_compensation_on(int side, block_pointer block,
     setup_pointer settings);
 static int convert_cycle(int motion, block_pointer block,
+    setup_pointer settings);
+static int convert_thread(int motion, block_pointer block,
     setup_pointer settings);
 static int convert_cycle_g81(CANON_PLANE plane, double x, double y,
     double clear_z, double bottom_z);
@@ -387,6 +390,10 @@ static int search_label(int label, BOOL *pfound, int *lineno);
 
 static int PChanged(int index);
 
+// convert GCode Tool number to tool table index based on 
+// numbers 99 or less as slot numbers and higher numbers as IDs
+int ConvertToolToIndex(setup_pointer settings,int number,int *index);
+
 
 /* Interpreter global arrays for g_codes and m_codes. The nth entry
 in each array is the modal group number corresponding to the nth
@@ -420,7 +427,7 @@ The groups are:
 group  0 = {g4,g10,g28,g30,g53,g92,g92.1,g92.2,g92.3,G52} - NON-MODAL
             dwell, setup, return to ref1, return to ref2,
             motion in machine coordinates, set and unset axis offsets
-group  1 = {g0,g1,g2,g3,g33,g38.2,
+group  1 = {g0,g1,g2,g3,g32,g38.2,
             g80,g81,g82,g83,g84,g85,g86,g87,g88,g89} - motion
 group  2 = {g17,g18,g19}   - plane selection
 group  3 = {g90,g91}       - distance mode
@@ -452,7 +459,7 @@ const int _gees[] = {
 /* 260 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 /* 280 */   0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 /* 300 */   0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-/* 320 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+/* 320 */   1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 /* 340 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 /* 360 */  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 /* 380 */  -1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
@@ -809,6 +816,7 @@ are handled similarly.
 */
 
 static int arc_data_ijk(	/* ARGUMENTS */
+	setup_pointer settings,
     int move,			/* either G_2 (cw arc) or G_3 (ccw arc) */
     double current_x,		/* first coordinate of current point */
     double current_y,		/* second coordinate of current point */
@@ -831,11 +839,80 @@ static int arc_data_ijk(	/* ARGUMENTS */
     double radius2;		/* radius to end point */
     *center_x = (current_x + i_number);
     *center_y = (current_y + j_number);
-    radius = _hypot((*center_x - current_x), (*center_y - current_y));
-    radius2 = _hypot((*center_x - end_x), (*center_y - end_y));
+
+	double dx_cur = *center_x - current_x;
+	double dy_cur = *center_y - current_y;
+	double dx_end = *center_x - end_x;
+	double dy_end = *center_y - end_y;
+
+	// if in diameter mode scale what is the X axis by 0.5
+	if (settings->DiameterMode)
+	{
+		if (settings->plane == CANON_PLANE_XY)
+		{
+			dx_cur *= 0.5;
+			dx_end *= 0.5;
+		}
+		else if (settings->plane == CANON_PLANE_XZ)
+		{
+			dy_cur *= 0.5;
+			dy_end *= 0.5;
+		}
+	}
+
+    radius = _hypot(dx_cur, dy_cur);
+    radius2 = _hypot(dx_end, dy_end);
     CHK(((radius == 0.0) || (radius2 == 0.0)), NCE_ZERO_RADIUS_ARC);
     CHK((fabs(radius - radius2) > tolerance),
 	NCE_RADIUS_TO_END_OF_ARC_DIFFERS_FROM_RADIUS_TO_START);
+
+#if 0  // enable this to correct small discontinuities caused by GCode Radius different from beginning and end      
+	
+	double center_x2;		/* first coordinate of center of arc */
+    double center_y2;		/* second coordinate of center of arc */
+	int result_r,turn2;
+
+
+	if (current_x != end_x || current_y != end_y)  // radius fixup doesn't work or is necessary for full circles
+	{
+		result_r = arc_data_r(		/* ARGUMENTS */
+		move,			/* either G_2 (cw arc) or G_3 (ccw arc) */
+		current_x,		/* first coordinate of current point */
+		current_y,		/* second coordinate of current point */
+		end_x,		/* first coordinate of arc end point */
+		end_y,		/* second coordinate of arc end point */
+		(radius+radius2)/2,		/* radius of arc */
+		&center_x2,		/* pointer to first coordinate of center of arc */
+		&center_y2,		/* pointer to second coordinate of center of arc */
+		&turn2);
+
+		if (result_r!=RS274NGC_OK ||
+			fabs(center_x2 - *center_x) > tolerance ||
+			fabs(center_y2 - *center_y) > tolerance)
+		{
+			result_r = arc_data_r(		/* ARGUMENTS */
+			move,			/* either G_2 (cw arc) or G_3 (ccw arc) */
+			current_x,		/* first coordinate of current point */
+			current_y,		/* second coordinate of current point */
+			end_x,		/* first coordinate of arc end point */
+			end_y,		/* second coordinate of arc end point */
+			-(radius+radius2)/2,		/* radius of arc */
+			&center_x2,		/* pointer to first coordinate of center of arc */
+			&center_y2,		/* pointer to second coordinate of center of arc */
+			&turn2);
+
+			if (result_r!=RS274NGC_OK ||
+				fabs(center_x2 - *center_x) > tolerance ||
+				fabs(center_y2 - *center_y) > tolerance)
+			{
+				return NCE_RADIUS_TO_END_OF_ARC_DIFFERS_FROM_RADIUS_TO_START;
+			}
+		}
+		*center_x=center_x2;
+		*center_y=center_y2;
+	}
+#endif
+
     if (move == G_2)
 	*turn = -1;
     else if (move == G_3)
@@ -1525,7 +1602,7 @@ static int convert_arc2(	/* ARGUMENTS */
 	CHP(arc_data_r(move, *current1, *current2, end1, end2,
 		block->r_number, &center1, &center2, &turn));
     } else {
-	CHP(arc_data_ijk(move, *current1, *current2, end1, end2, offset1,
+	CHP(arc_data_ijk(settings,move, *current1, *current2, end1, end2, offset1,
 		offset2, &center1, &center2, &turn, tolerance));
     }
 
@@ -1730,7 +1807,7 @@ static int convert_arc_comp2(	/* ARGUMENTS */
 	CHP(arc_data_r(move, start_x, start_y, end_x, end_y,
 		block->r_number, &center_x, &center_y, &turn));
     } else {
-	CHP(arc_data_ijk(move, start_x, start_y, end_x, end_y,
+	CHP(arc_data_ijk(settings, move, start_x, start_y, end_x, end_y,
 		block->i_number, block->j_number,
 		&center_x, &center_y, &turn, tolerance));
     }
@@ -2525,15 +2602,23 @@ static int convert_cutter_compensation_on(	/* ARGUMENTS */
 {				/* pointer to machine settings */
     static char name[] = "convert_cutter_compensation_on";
     double radius;
-    int index;
+    int index,result;
 
     CHK((settings->plane != CANON_PLANE_XY),
 	NCE_CANNOT_TURN_CUTTER_RADIUS_COMP_ON_OUT_OF_XY_PLANE);
     CHK((settings->cutter_comp_side != OFF),
 	NCE_CANNOT_TURN_CUTTER_RADIUS_COMP_ON_WHEN_ON);
-    index =
-	(block->d_number != -1) ? block->d_number : settings->current_slot;
-    radius = ((settings->tool_table[index].diameter) / 2.0);
+	
+	if (block->d_number != -1)
+	{
+		if (result=ConvertToolToIndex(settings,block->d_number,&index)) return result;
+	}
+	else
+	{
+		index = settings->current_slot;
+	}
+
+	radius = ((settings->tool_table[index].diameter) / 2.0);
 
     if (radius < 0.0) {		/* switch side & make radius positive if
 				   radius negative */
@@ -2555,6 +2640,35 @@ static int convert_cutter_compensation_on(	/* ARGUMENTS */
     settings->cutter_comp_side = side;
     return RS274NGC_OK;
 }
+
+// convert GCode Tool number to tool table index based on 
+// numbers 99 or less as slot numbers and higher numbers as IDs
+
+int ConvertToolToIndex(setup_pointer settings,int number,int *index)
+{
+    static char name[] = "ConvertToolToIndex";
+	int i;
+	if (number > 99)
+	{
+		for (i=0; i<settings->tool_max; i++)
+		{
+			if (settings->tool_table[i].id == number) break; 
+		}
+		CHK((i >= settings->tool_max),NCE_TOOL_ID_NOT_FOUND_IN_TOOL_TABLE);
+	}
+	else
+	{
+		for (i=0; i<settings->tool_max; i++)
+		{
+			if (settings->tool_table[i].slot == number) break; 
+		}
+		CHK((i >= settings->tool_max),NCE_TOOL_SLOT_NOT_FOUND_IN_TOOL_TABLE);
+	}
+	*index=i;
+    return RS274NGC_OK;
+}
+
+
 
 /****************************************************************************/
 
@@ -4412,6 +4526,9 @@ static int convert_motion(	/* ARGUMENTS */
     } else if (motion == G_33) {
 	CHP(convert_thread(motion, block, settings));
     */
+    // G32 Threading Cycle
+    } else if (motion == G_32) {
+	CHP(convert_thread(motion, block, settings));
     } else
 	ERM(NCE_BUG_UNKNOWN_MOTION_CODE);
 
@@ -4935,7 +5052,7 @@ static int convert_stop(	/* ARGUMENTS */
 		
 		if (block->m_modes[4] == 30)
 			PALLET_SHUTTLE();
-		PROGRAM_END();
+		PROGRAM_END(block->m_modes[4]);
 		if (_setup.percent_flag == ON) {
 			CHK((_setup.file_pointer == NULL), NCE_UNABLE_TO_OPEN_FILE);
 			line = _setup.linetext;
@@ -5351,6 +5468,73 @@ static int convert_straight_comp2(	/* ARGUMENTS */
     return RS274NGC_OK;
 }
 
+
+
+
+/****************************************************************************/
+
+/* convert_thread
+
+Returned Value: int
+   If any of the following errors occur, this returns the error shown.
+   Otherwise, it returns RS274NGC_OK.
+   1. A Thread Feed (g32) move is called with feed rate set to 0:
+      NCE_CANNOT_DO_G1_WITH_ZERO_FEED_RATE
+   2. A Thread Feed (g32) move is called with inverse time feed in effect
+
+      NCE_F_WORD_MISSING_WITH_INVERSE_TIME_G1_MOVE
+
+Side effects:
+   This executes a STRAIGHT_FEED command at cutting feed rate
+   It also updates the setting of the position of the tool point to the
+   end point of the move. 
+
+Called by: convert_motion.
+
+The approach to operating in incremental distance mode (g91) is to
+put the the absolute position values into the block before using the
+block to generate a move.
+
+
+*/
+
+static int convert_thread(	/* ARGUMENTS */
+    int move,			/* G_32 */
+    block_pointer block,	/* pointer to a block of RS274 instructions */
+    setup_pointer settings)
+{				/* pointer to machine settings */
+    static char name[] = "convert_thread";
+    double end_x;
+    double end_y;
+    double end_z;
+    double AA_end;
+    double BB_end;
+    double CC_end;
+
+	CHK((settings->feed_rate == 0.0),NCE_CANNOT_DO_G32_WITH_ZERO_FEED_RATE);
+	CHK((settings->cutter_comp_side != OFF),NCE_CANNOT_USE_G32_WITH_CUTTER_RADIUS_COMP);
+
+    settings->motion_mode = move;
+	find_ends(block, settings, &end_x, &end_y, &end_z, &AA_end, &BB_end,&CC_end);
+
+	STRAIGHT_FEED(end_x, end_y, end_z, AA_end, BB_end, CC_end);
+
+	settings->current_x = end_x;
+	settings->current_y = end_y;
+	settings->current_z = end_z;
+	settings->AA_current = AA_end;
+	settings->BB_current = BB_end;
+	settings->CC_current = CC_end;
+    return RS274NGC_OK;
+}
+
+
+
+
+
+
+
+
 /****************************************************************************/
 
 /* convert_tool_change
@@ -5461,23 +5645,42 @@ static int convert_tool_length_offset(	/* ARGUMENTS */
     setup_pointer settings)
 {				/* pointer to machine settings */
     static char name[] = "convert_tool_length_offset";
-    int index;
+    int index,result;
     double offset;
 
     if (g_code == G_49) {
 	USE_TOOL_LENGTH_OFFSET(0.0);
+	settings->current_x = (settings->current_x +
+	    settings->tool_xoffset);
+	settings->current_y = (settings->current_y +
+	    settings->tool_yoffset);
 	settings->current_z = (settings->current_z +
 	    settings->tool_length_offset);
+	settings->tool_xoffset = 0.0;
+	settings->tool_yoffset = 0.0;
 	settings->tool_length_offset = 0.0;
-	settings->length_offset_index = 0;
+	settings->length_offset_index = -1;
     } else if (g_code == G_43) {
 	index = block->h_number;
 	CHK((index == -1), NCE_OFFSET_INDEX_MISSING);
+	if (result=ConvertToolToIndex(settings,index,&index)) return result;
+
+	offset = settings->tool_table[index].xoffset;
+	settings->current_x =
+	    (settings->current_x + settings->tool_xoffset - offset);
+	settings->tool_xoffset = offset;
+
+	offset = settings->tool_table[index].yoffset;
+	settings->current_y =
+	    (settings->current_y + settings->tool_yoffset - offset);
+	settings->tool_yoffset = offset;
+
 	offset = settings->tool_table[index].length;
 	USE_TOOL_LENGTH_OFFSET(offset);
 	settings->current_z =
 	    (settings->current_z + settings->tool_length_offset - offset);
 	settings->tool_length_offset = offset;
+
 	settings->length_offset_index = index;
     } else
 	ERM(NCE_BUG_CODE_NOT_G43_OR_G49);
@@ -5515,11 +5718,10 @@ static int convert_tool_select(	/* ARGUMENTS */
     setup_pointer settings)
 {				/* pointer to machine settings */
     static char name[] = "convert_tool_select";
+	int result;
 
-    CHK((block->t_number > settings->tool_max),
-	NCE_SELECTED_TOOL_SLOT_NUMBER_TOO_LARGE);
-    SELECT_TOOL(block->t_number);
-    settings->selected_tool_slot = block->t_number;
+	if (result=ConvertToolToIndex(settings,block->t_number,&settings->selected_tool_slot)) return result;
+	SELECT_TOOL(settings->selected_tool_slot);
     return RS274NGC_OK;
 }
 
@@ -6100,6 +6302,7 @@ Called by:
    convert_home
    convert_probe
    convert_straight
+   convert_thread
 
 This finds the coordinates of a point, "end", in the currently
 active coordinate system, and sets the values of the pointers to the
@@ -6152,10 +6355,12 @@ static int find_ends(		/* ARGUMENTS */
 	COMMENT("interpreter: offsets temporarily suspended");
 #endif
 	*px = (block->x_flag == ON) ? (block->x_number -
-	    (settings->origin_offset_x +
+	    (settings->tool_xoffset +
+	    settings->origin_offset_x +
 		settings->axis_offset_x)) : settings->current_x;
 	*py = (block->y_flag == ON) ? (block->y_number -
-	    (settings->origin_offset_y +
+	    (settings->tool_yoffset +
+	    settings->origin_offset_y +
 		settings->axis_offset_y)) : settings->current_y;
 	*pz = (block->z_flag == ON) ? (block->z_number -
 	    (settings->tool_length_offset +
@@ -6248,10 +6453,9 @@ static int find_relative(	/* ARGUMENTS */
     double *CC_2, /* pointer to relative c */ /*CC*/
     setup_pointer settings)
 {				/* pointer to machine settings */
-    *x2 = (x1 - (settings->origin_offset_x + settings->axis_offset_x));
-    *y2 = (y1 - (settings->origin_offset_y + settings->axis_offset_y));
-    *z2 = (z1 - (settings->tool_length_offset +
-	    settings->origin_offset_z + settings->axis_offset_z));
+    *x2 = (x1 - (settings->tool_xoffset + settings->origin_offset_x + settings->axis_offset_x));
+    *y2 = (y1 - (settings->tool_yoffset + settings->origin_offset_y + settings->axis_offset_y));
+    *z2 = (z1 - (settings->tool_length_offset + settings->origin_offset_z + settings->axis_offset_z));
     *AA_2 = (AA_1 - (settings->AA_origin_offset + /*AA*/
 	    settings->AA_axis_offset));
     *BB_2 = (BB_1 - (settings->BB_origin_offset + /*BB*/
@@ -6309,16 +6513,19 @@ static double find_straight_length(	/* ARGUMENTS */
     , double CC_1 /* C-coordinate of start point */ /*CC*/
     )
 {
-    if ((x1 != x2) || (y1 != y2) || (z1 != z2) || (1 && (AA_2 == AA_1) && (BB_2 == BB_1) && (CC_2 == CC_1)))	/* straight 
-														   line 
-														 */
-	return sqrt(pow((x2 - x1), 2) + pow((y2 - y1), 2) +
-	    pow((z2 - z1), 2));
-    else
-	return sqrt(0 +
-	    pow((AA_2 - AA_1), 2) + /*AA*/
-	    pow((BB_2 - BB_1), 2) + /*BB*/ pow((CC_2 - CC_1), 2) + /*CC*/ 0);
+	double dx = x2-x1;
+	double dy = y2-y1;
+	double dz = z2-z1;
+	double da = AA_2-AA_1;
+	double db = BB_2-BB_1;
+	double dc = CC_2-CC_1;
+	
+	BOOL pure_angle;
+
+	return GC->CoordMotion->FeedRateDistance(dx, dy, dz, da, db, dc, &pure_angle);
 }
+
+
 
 /****************************************************************************/
 
@@ -7045,7 +7252,7 @@ Returned Value: int
    2. A d_number has already been inserted in the block:
       NCE_MULTIPLE_D_WORDS_ON_ONE_LINE
    3. The d_number is negative: NCE_NEGATIVE_D_WORD_TOOL_RADIUS_INDEX_USED
-   4. The d_number is more than _setup.tool_max: NCE_TOOL_RADIUS_INDEX_TOO_BIG
+   4. The d_number is more than 99999: NCE_TOOL_RADIUS_INDEX_TOO_BIG
 
 Side effects:
    counter is reset to the character following the tool number.
@@ -7084,7 +7291,7 @@ static int read_d(		/* ARGUMENTS */
     CHK((block->d_number > -1), NCE_MULTIPLE_D_WORDS_ON_ONE_LINE);
     CHP(read_integer_value(line, counter, &value, parameters));
     CHK((value < 0), NCE_NEGATIVE_D_WORD_TOOL_RADIUS_INDEX_USED);
-	CHK((value > _setup.tool_max && block->g_modes[14] != G_96), NCE_TOOL_RADIUS_INDEX_TOO_BIG);
+	CHK((value > 99999 && block->g_modes[14] != G_96), NCE_TOOL_RADIUS_INDEX_TOO_BIG);
     block->d_number = value;
     return RS274NGC_OK;
 }
@@ -7288,7 +7495,7 @@ static int read_h(		/* ARGUMENTS */
     CHK((block->h_number > -1), NCE_MULTIPLE_H_WORDS_ON_ONE_LINE);
     CHP(read_integer_value(line, counter, &value, parameters));
     CHK((value < 0), NCE_NEGATIVE_H_WORD_TOOL_LENGTH_OFFSET_INDEX_USED);
-    CHK((value > _setup.tool_max), NCE_TOOL_LENGTH_OFFSET_INDEX_TOO_BIG);
+    CHK((value > 99999), NCE_TOOL_LENGTH_OFFSET_INDEX_TOO_BIG);
     block->h_number = value;
     return RS274NGC_OK;
 }
@@ -8298,6 +8505,7 @@ static int read_parameter_setting(	/* ARGUMENTS */
     _setup.parameter_numbers[_setup.parameter_occurrence] = index;
     _setup.parameter_values[_setup.parameter_occurrence] = value;
     _setup.parameter_occurrence++;
+	PChanged(index);
     return RS274NGC_OK;
 }
 
@@ -9203,6 +9411,7 @@ static int read_text(		/* ARGUMENTS */
 	     space at end of raw_line, especially CR & LF */
 	    raw_line[index] = 0;
 	}
+	
 	strcpy(line, raw_line);
 	CHP(close_and_downcase(line));
 	if ((line[0] == '%') && (line[1] == 0) && (_setup.percent_flag == ON))
@@ -9549,7 +9758,7 @@ static int write_g_codes(	/* ARGUMENTS */
     gez[8] =
 	(settings->origin_index < 7) ? (530 + (10 * settings->origin_index)) :
 	(584 + settings->origin_index);
-    gez[9] = (settings->tool_length_offset == 0.0) ? G_49 : G_43;
+    gez[9] = (settings->tool_length_offset == 0.0 && settings->tool_xoffset == 0.0 && settings->tool_yoffset == 0.0) ? G_49 : G_43;
     gez[10] = (settings->retract_mode == OLD_Z) ? G_98 : G_99;
     gez[11] =
 	(settings->control_mode == CANON_CONTINUOUS) ? G_64 :
@@ -9836,7 +10045,7 @@ int rs274ngc_init()
     _setup.filename[0] = 0;
     _setup.file_pointer = NULL;
 //_setup.flood set in rs274ngc_synch
-    _setup.length_offset_index = 1;
+    _setup.length_offset_index = -1;
 //_setup.length_units set in rs274ngc_synch
     _setup.line_length = 0;
     _setup.linetext[0] = 0;
@@ -9865,6 +10074,8 @@ int rs274ngc_init()
 //_setup.stack does not need initialization
 //_setup.stack_index does not need initialization
     _setup.tool_length_offset = 0.0;
+    _setup.tool_xoffset = 0.0;
+    _setup.tool_yoffset = 0.0;
 //_setup.tool_max set in rs274ngc_synch
 //_setup.tool_table set in rs274ngc_synch
     _setup.tool_table_index = 1;
@@ -9980,13 +10191,13 @@ int rs274ngc_open(		/* ARGUMENTS */
     CHK((_setup.file_pointer != NULL), NCE_A_FILE_IS_ALREADY_OPEN);
     CHK((strlen(filename) > (RS274NGC_TEXT_SIZE - 1)),
 	NCE_FILE_NAME_TOO_LONG);
-	_setup.file_pointer = fopen(filename, "r");
+	_setup.file_pointer = fopen(filename, "rb");
 	
 	if (_setup.file_pointer==NULL)
 	{
 		char s[500];
 
-		sprintf(s,"Unable to open input file %s",filename);
+		sprintf(s,"Unable to open input file %s\r\r code=%d",filename, errno);
 		AfxMessageBox(s);
 	}
 	CHK((_setup.file_pointer == NULL), NCE_UNABLE_TO_OPEN_FILE);
@@ -10767,7 +10978,7 @@ int search_label(int label, BOOL *pfound, int *lineno)
 
 					// skip spaces and tabs
 					for (i=i+1+nc; i<n; i++)
-						if (s[i] != ' ' && s[i] != '\t' &&  s[i] != '\n') break;
+						if (s[i] != ' ' && s[i] != '\t' &&  s[i] != '\n' &&  s[i] != '\r') break;
 
 
 					if (i<n)  // anything left ?
@@ -10788,7 +10999,7 @@ int search_label(int label, BOOL *pfound, int *lineno)
 	
 						// skip spaces and tabs
 						for (i=i+1; i<n; i++)
-							if (s[i] != ' ' && s[i] != '\t' &&  s[i] != '\n') break;
+							if (s[i] != ' ' && s[i] != '\t' &&  s[i] != '\n' &&  s[i] != '\r') break;
 	
 						if (i != n)  return NCE_INVALID_LABEL;
 					}

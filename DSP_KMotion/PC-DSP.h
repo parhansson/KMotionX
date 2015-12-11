@@ -6,7 +6,7 @@
 #ifndef __PCDSP_H
 #define __PCDSP_H
 
-#define KMOTION_VER "4.32"  
+#define KMOTION_VER "4.33k"  
 
 #define ABORT_CHAR 0x03  // ctrl-c clears/aborts any command
 

@@ -9,10 +9,10 @@
 
 #define KMotionBd 1  // used within coff loader
 
-#include "PARAMS.H"
-#include "VERSION.H"
-#include "COFF.H"
-#include "CLOAD.H"
+#include "PARAMS.h"
+#include "VERSION.h"
+#include "COFF.h"
+#include "CLOAD.h"
 
 //#undef debug
 //#define debug(M, ...) fprintf(stderr, "DEBUG %s.%s:%d: " M "\n", __FILE__, __func__, __LINE__, ##__VA_ARGS__)
@@ -22,8 +22,8 @@
 
 CKMotionDLL_Direct::CKMotionDLL_Direct()
 { 
-
 }
+
 
 // Maps a specified Board Identifiers to a KMotionIO Index (or object)
 //
