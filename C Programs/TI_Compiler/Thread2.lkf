@@ -1,0 +1,4 @@
+-z -q -c -m"Thread1.map" -o"BlinkFast.out" -x -e _main 
+"c:\KMotionSrc\C Programs\TI_Compiler\BlinkFast.obj" 
+"c:\KMotionSrc\C Programs\TI_Compiler\lnkThread2.cmd"
+

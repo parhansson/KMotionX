@@ -17,6 +17,7 @@ public:
 	double m_Value;
 	CList<CString, CString> Recent;
 	CSetValue(CWnd* pParent = NULL);   // standard constructor
+	CString m_Label;
 
 // Dialog Data
 	//{{AFX_DATA(CSetValue)

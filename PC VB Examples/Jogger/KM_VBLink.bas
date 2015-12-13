@@ -18,7 +18,7 @@ Private Declare Function KMViaVB_USBLocation Lib "KMViaVB" (ByVal handle As Long
 Private Declare Sub KMViaVB_ReleaseToken Lib "KMViaVB" (ByVal handle As Long)
 Private Declare Function KMViaVB_Failed Lib "KMViaVB" (ByVal handle As Long) As Long
 Private Declare Function KMViaVB_CheckForReady Lib "KMViaVB" (ByVal handle As Long) As Long
-Private Declare Function KMViaVB_LoadCoff Lib "KMViaVB" (ByVal handle As Long, ByVal Thread As Long, ByVal Name As String) As Long
+Private Declare Function KMViaVB_LoadCoff Lib "KMViaVB" (ByVal handle As Long, ByVal Thread As Long, ByVal Name As String, ByVal PackToFlash As Long) As Long
 Private Declare Function KMViaVB_CompileAndLoadCoff Lib "KMViaVB" (ByVal handle As Long, ByVal Thread As Long, ByVal Name As String, ByRef Err As String, ByVal MaxErrLen As Long) As Long
 Private Declare Function KMViaVB_ServiceConsole Lib "KMViaVB" (ByVal handle As Long) As Long
 Private Declare Function KMViaVB_ListLocations Lib "KMViaVB" (ByVal handle As Long, ByRef nlocations As Long, ByRef List As Long) As Long
@@ -176,7 +176,7 @@ Public Function KM_ListLocations(ByRef nList As Long, ByRef List() As Long) As L
     End If
     KM_ListLocations = KMViaVB_ListLocations(global_KM_handle, nList, List(0))
 End Function
-Public Function KM_LoadCoff(ByVal Thread As Long, ByVal Name As String) As Long
+Public Function KM_LoadCoff(ByVal Thread As Long, ByVal Name As String, ByVal PackToFlash As Long) As Long
     If global_KM_handle = 0 Then
         result = KM_Open()
         If global_KM_handle = 0 Then
@@ -184,7 +184,7 @@ Public Function KM_LoadCoff(ByVal Thread As Long, ByVal Name As String) As Long
             Exit Function
         End If
     End If
-    KM_LoadCoff = KMViaVB_LoadCoff(global_KM_handle, Thread, Name)
+    KM_LoadCoff = KMViaVB_LoadCoff(global_KM_handle, Thread, Name, PackToFlash)
 End Function
 Public Function KM_CompileAndLoadCoff(ByVal Thread As Long, ByVal Name As String, ByRef Err As String, ByVal MaxErrLen As Long) As Long
     If global_KM_handle = 0 Then

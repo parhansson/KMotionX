@@ -238,6 +238,16 @@ Public Class DynoMotionVBnetProvider
 
 
 
+    Private _RealtimeLine As Integer
+    Public Property RealtimeLine() As Integer
+        Get
+            _RealtimeLine = _Controller.CoordMotion.Interpreter.SetupParams.CurrentLine
+            Return _RealtimeLine
+        End Get
+        Set(ByVal value As Integer)
+            _RealtimeLine = value
+        End Set
+    End Property
 
 
 
@@ -326,6 +336,10 @@ Public Class DynoMotionVBnetProvider
         _Controller.CoordMotion.MotionParams.CountsPerInchX = 1000
         _Controller.CoordMotion.MotionParams.CountsPerInchY = 1000
         _Controller.CoordMotion.MotionParams.CountsPerInchZ = 1000
+        _Controller.CoordMotion.MotionParams.DegreesA = False
+        _Controller.CoordMotion.MotionParams.DegreesB = False
+        _Controller.CoordMotion.MotionParams.DegreesC = False
+
         AddHandler _Controller.CoordMotion.CoordMotionStraightTraverse, AddressOf OnCoordMotionStraightTranverse
         AddHandler _Controller.CoordMotion.CoordMotionStraightFeed, AddressOf OnCoordMotionStraightFeed
         AddHandler _Controller.CoordMotion.CoordMotionArcFeed, AddressOf OnCoordMotionArcFeed
@@ -463,7 +477,7 @@ Public Class DynoMotionVBnetProvider
         Dim a As Double
         Dim b As Double
         Dim c As Double
-        _Controller.CoordMotion.UpdateCurrentPositionsABS(x, y, z, a, b, c, False)
+        _Controller.CoordMotion.ReadAndSyncCurPositions(x, y, z, a, b, c)
     End Sub
     Private Delegate Sub DoFlushExecuteDelegate()
     Public Sub DoFlushExecute()

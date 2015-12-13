@@ -76,8 +76,6 @@ main()
 	ch0->iir[2].A2=0.00000;
     
 	
-	EnableAxisDest(0,0);		
-
 	EnableAxisDest(0,ch0->Position);
 	DefineCoordSystem(0,-1,-1,-1);
 	
@@ -89,7 +87,7 @@ main()
 		Change1 = NewPos - Pos;
 		Pos = NewPos;
 
-		if (ReadBit(ENABLE_MPG)) // if button pressed ignore the encoder.
+		if (!ReadBit(ENABLE_MPG) || JOB_ACTIVE) // if not button pressed or Job Active ignore the encoder.
 			Change1 = 0;
 		else if (ReadBit(FACTOR1))  // is X1 selected?
 			Factor = 2;

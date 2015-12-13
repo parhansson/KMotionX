@@ -92,6 +92,9 @@ BOOL CSetValue::OnInitDialog()
 
 	m_ValueCombo.ResetContent();
 
+	if (!m_Label.IsEmpty())
+		SetDlgItemText(IDC_Label,m_Label);
+
 	if (Recent.GetCount() > 0)
 		m_ValueString = Recent.GetHead();
 	else

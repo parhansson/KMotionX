@@ -112,7 +112,7 @@ void CToolSetupFilesPage::OnBnClickedEdittoolfile()
 	if (EditToolFile.DoModal() == IDOK)
 	{
 		EditToolFile.SaveFile(m_ToolFile);
-		TheFrame->GCodeDlg.Interpreter->m_ReadToolFile=true;
+		TheFrame->GCodeDlg.HandleToolTableClose();
 	}
 }
 

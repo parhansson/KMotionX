@@ -11,8 +11,6 @@
 
 #include "Base3d.h"
 
-// Rounding
-int round(double x);
 
 // Angle between faces
 double SinAngle(CFace3d *pFace1,CFace3d *pFace2);

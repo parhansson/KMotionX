@@ -20,7 +20,7 @@ main()
 	// Adjust Origin Offset to make DRO zero
 	NewOriginOffset = OriginOffsetZ + DROz;
 
-	pD[TMP]=NewOriginOffset;
+	SetUserDataDouble(TMP,NewOriginOffset);
 	SetVars(5201+FixtureIndex*20+Zaxis, 1, TMP);
 
 	DoPC(PC_COMM_UPDATE_FIXTURE);

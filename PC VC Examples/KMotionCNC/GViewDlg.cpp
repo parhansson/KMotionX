@@ -17,6 +17,11 @@ static char THIS_FILE[] = __FILE__;
 #define FLAG_COLOR 0x808000
 
 
+static void StaticRender(void *Parent)
+{
+	((CGViewDlg *)Parent)->ChangeToolPosition();
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // CGViewDlg dialog
 
@@ -48,6 +53,7 @@ CGViewDlg::CGViewDlg(CWnd* pParent /*=NULL*/)
 
 
 	m_SceneIsInitialized=false;
+	m_SceneIsDirty=true;
 	m_FirstScreenDisplay=true;
 	
 	StartIndexAxis=EndIndexAxis=StartIndexTool=EndIndexTool=0;
@@ -62,6 +68,9 @@ CGViewDlg::CGViewDlg(CWnd* pParent /*=NULL*/)
 	m_IncludeA=FALSE;
 	m_IncludeB=FALSE;
 	m_IncludeC=FALSE;
+
+	m_view.RenderCallback = StaticRender;
+	m_view.Parent=this;
 
 	//{{AFX_DATA_INIT(CGViewDlg)
 	//}}AFX_DATA_INIT
@@ -91,6 +100,7 @@ void CGViewDlg::InitializeScene()
 		AddToolToScene();
 
 		m_SceneIsInitialized=true;
+		m_SceneIsDirty=false;
 	}
 }
 
@@ -119,7 +129,15 @@ void CGViewDlg::AddAxisToScene()
 	CParserVrml parser;
 	CColor color(255,255,00);
 
-	m_AxisShapeFile = TheFrame->MainPathRoot + "\\KMotion\\Data\\Axis.wrl";
+	if (TheFrame->GCodeDlg.m_Lathe)
+	{
+		if (TheFrame->GCodeDlg.m_XPosFront)
+			m_AxisShapeFile = TheFrame->MainPathRoot + "\\KMotion\\Data\\AxisLatheXFront.wrl";
+		else
+			m_AxisShapeFile = TheFrame->MainPathRoot + "\\KMotion\\Data\\AxisLathe.wrl";
+	}
+	else
+		m_AxisShapeFile = TheFrame->MainPathRoot + "\\KMotion\\Data\\Axis.wrl";
 
 	StartIndexAxis = m_view.m_SceneGraph.NbObject();
 	
@@ -166,28 +184,48 @@ void CGViewDlg::AddAxisToScene()
 }
 
 
-void CGViewDlg::AddToolToScene()
+CString CGViewDlg::GetToolFileToDisplay(bool *UsingDefault)
 {
-	CParserVrml parser;
 	CString file;
+	// check if an image is specified in the Tool Table for the tool
 
-	CColor color(100,100,100);
+	setup_pointer p = TheFrame->GCodeDlg.m_RealTimeSetup;
+	file = p->tool_table[p->selected_tool_slot].ToolImage;
 
-	if (m_ToolShapeFile.IsEmpty()) return;
-
-	// check if there is no path specified, then add in default
-
-	if (m_ToolShapeFile.Find('\\') == -1)
+	if (file.IsEmpty()) //if none specified use default
 	{
-		file = TheFrame->MainPathRoot + "\\KMotion\\Data\\" + m_ToolShapeFile;
+		*UsingDefault=true;
+		file = m_ToolShapeFile;
+		if (file.IsEmpty()) return "";
 	}
 	else
 	{
-		file = m_ToolShapeFile;
+		*UsingDefault=false;
 	}
+	// check if there is no path specified, then add in default
 
-	StartIndexTool = m_view.m_SceneGraph.NbObject();
-	
+	if (file.Find('\\') == -1)
+	{
+		file = TheFrame->MainPathRoot + "\\KMotion\\Data\\ToolImages\\" + file;
+	}
+	return file;
+}
+
+
+void CGViewDlg::AddToolToScene()
+{
+	CParserVrml parser;
+	bool UsingDefault;
+	CColor color(100,100,100);
+
+	CString file=GetToolFileToDisplay(&UsingDefault);
+
+	EndIndexTool = StartIndexTool = m_view.m_SceneGraph.NbObject();
+
+	if (file.IsEmpty()) return;
+
+	m_ToolFileDisplayed = file;
+
 	if(parser.Run(file.GetBuffer(0),&m_view.m_SceneGraph))
 	{
 		if(m_view.m_Smooth)
@@ -213,12 +251,17 @@ void CGViewDlg::AddToolToScene()
 			mesh->SetColor(color);
 			mesh->SetTransformOriginal(*mesh->GetTransform());
 		}
-
-		ChangeToolPosition();
 	}
 	else
 	{
-		AfxMessageBox("Unable to load GCode Tool Image file:"+file);
+		static bool MessDisplayed=false;
+
+		if (!MessDisplayed)
+		{
+			MessDisplayed=true;
+			AfxMessageBox("Unable to load GCode Tool Image file:"+file);
+			MessDisplayed=false;
+		}
 	}
 }
 
@@ -394,7 +437,10 @@ BOOL CGViewDlg::OnInitDialog()
 	if (m_FirstScreenDisplay)
 	{
 		m_FirstScreenDisplay=false;
-		SetViewDistance();
+		if (TheFrame->GCodeDlg.m_Lathe)
+			OnXz();
+		else
+			OnXy();
 	}
 
 	m_GViewTools = new CDlgToolBar;
@@ -489,7 +535,7 @@ void CGViewDlg::OnMove(int x, int y)
 // set's the view distance based on extents
 // or Box whichever is bigger
 
-void CGViewDlg::SetViewDistance() 
+void CGViewDlg::SetViewDistance(ViewDir View) 
 {
 	FindExtents();
 
@@ -512,10 +558,25 @@ void CGViewDlg::SetViewDistance()
 	if (sizey > max_size) max_size = sizey; 
 	if (sizez > max_size) max_size = sizez; 
 
-	m_view.m_xTranslation = -midx;
-	m_view.m_yTranslation = -midy;
-	m_view.m_zTranslation = -midz -1.75 * max_size;
-
+	if (View==VIEWXY)
+	{
+		m_view.m_xTranslation = -midx;
+		m_view.m_yTranslation = -midy;
+		m_view.m_zTranslation = -midz -1.75 * max_size;
+	}
+	else if (View==VIEWYZ)
+	{
+		m_view.m_xTranslation = -midz;
+		m_view.m_yTranslation = -midy;
+		m_view.m_zTranslation = -midx -1.75 * max_size;
+	}
+	else if (View==VIEWXZ)
+	{
+		m_view.m_xTranslation = -midz;
+		m_view.m_yTranslation = -midx;
+		m_view.m_zTranslation = -midy -1.75 * max_size;
+	}
+ 
 	m_view.m_SpeedTranslation = max_size / 500.0f;
 }
 
@@ -525,23 +586,32 @@ void CGViewDlg::OnXy()
 	m_view.m_xRotation = 0.0f;
 	m_view.m_yRotation = 0.0f;
 	m_view.m_zRotation = 0.0f;
-	SetViewDistance();
+	SetViewDistance(VIEWXY);
 }
 
 void CGViewDlg::OnXz() 
 {
-	m_view.m_xRotation = -90.0f;
-	m_view.m_yRotation = 0.0f;
-	m_view.m_zRotation = 0.0f;
-	SetViewDistance();
+	if (TheFrame->GCodeDlg.m_XPosFront)
+	{
+		m_view.m_xRotation = 0.0f;
+		m_view.m_yRotation = 90.0f;
+		m_view.m_zRotation = -90.0f;
+	}
+	else
+	{
+		m_view.m_xRotation = 0.0f;
+		m_view.m_yRotation = 90.0f;
+		m_view.m_zRotation = 90.0f;
+	}
+	SetViewDistance(VIEWXZ);
 }
 
 void CGViewDlg::OnYz() 
 {
 	m_view.m_xRotation = 0.0f;
-	m_view.m_yRotation = -90.0f;
+	m_view.m_yRotation = 90.0f;
 	m_view.m_zRotation = 0.0f;
-	SetViewDistance();
+	SetViewDistance(VIEWYZ);
 }
 
 void CGViewDlg::OnClearPaths() 
@@ -567,30 +637,31 @@ void CGViewDlg::AddBox()
 	m_PathBox[2]->Show(m_ShowBox);
 	m_PathBox[3]->Show(m_ShowBox);
 
-	m_PathBox[0]->AddVertex(new CVertex3d(m_BoxOffsetX-m_BoxX/2,m_BoxOffsetY-m_BoxY/2,m_BoxOffsetZ-m_BoxZ/2,m_ColorBox));
-	m_PathBox[0]->AddVertex(new CVertex3d(m_BoxOffsetX+m_BoxX/2,m_BoxOffsetY-m_BoxY/2,m_BoxOffsetZ-m_BoxZ/2,m_ColorBox));
-	m_PathBox[0]->AddVertex(new CVertex3d(m_BoxOffsetX+m_BoxX/2,m_BoxOffsetY+m_BoxY/2,m_BoxOffsetZ-m_BoxZ/2,m_ColorBox));
-	m_PathBox[0]->AddVertex(new CVertex3d(m_BoxOffsetX-m_BoxX/2,m_BoxOffsetY+m_BoxY/2,m_BoxOffsetZ-m_BoxZ/2,m_ColorBox));
-	m_PathBox[0]->AddVertex(new CVertex3d(m_BoxOffsetX-m_BoxX/2,m_BoxOffsetY-m_BoxY/2,m_BoxOffsetZ-m_BoxZ/2,m_ColorBox));
-	m_PathBox[0]->AddVertex(new CVertex3d(m_BoxOffsetX-m_BoxX/2,m_BoxOffsetY-m_BoxY/2,m_BoxOffsetZ+m_BoxZ/2,m_ColorBox));
-	m_PathBox[0]->AddVertex(new CVertex3d(m_BoxOffsetX+m_BoxX/2,m_BoxOffsetY-m_BoxY/2,m_BoxOffsetZ+m_BoxZ/2,m_ColorBox));
-	m_PathBox[0]->AddVertex(new CVertex3d(m_BoxOffsetX+m_BoxX/2,m_BoxOffsetY+m_BoxY/2,m_BoxOffsetZ+m_BoxZ/2,m_ColorBox));
-	m_PathBox[0]->AddVertex(new CVertex3d(m_BoxOffsetX-m_BoxX/2,m_BoxOffsetY+m_BoxY/2,m_BoxOffsetZ+m_BoxZ/2,m_ColorBox));
-	m_PathBox[0]->AddVertex(new CVertex3d(m_BoxOffsetX-m_BoxX/2,m_BoxOffsetY-m_BoxY/2,m_BoxOffsetZ+m_BoxZ/2,m_ColorBox));
+	m_PathBox[0]->AddVertex(new CVertex3dFast(m_BoxOffsetX-m_BoxX/2,m_BoxOffsetY-m_BoxY/2,m_BoxOffsetZ-m_BoxZ/2,m_ColorBox));
+	m_PathBox[0]->AddVertex(new CVertex3dFast(m_BoxOffsetX+m_BoxX/2,m_BoxOffsetY-m_BoxY/2,m_BoxOffsetZ-m_BoxZ/2,m_ColorBox));
+	m_PathBox[0]->AddVertex(new CVertex3dFast(m_BoxOffsetX+m_BoxX/2,m_BoxOffsetY+m_BoxY/2,m_BoxOffsetZ-m_BoxZ/2,m_ColorBox));
+	m_PathBox[0]->AddVertex(new CVertex3dFast(m_BoxOffsetX-m_BoxX/2,m_BoxOffsetY+m_BoxY/2,m_BoxOffsetZ-m_BoxZ/2,m_ColorBox));
+	m_PathBox[0]->AddVertex(new CVertex3dFast(m_BoxOffsetX-m_BoxX/2,m_BoxOffsetY-m_BoxY/2,m_BoxOffsetZ-m_BoxZ/2,m_ColorBox));
+	m_PathBox[0]->AddVertex(new CVertex3dFast(m_BoxOffsetX-m_BoxX/2,m_BoxOffsetY-m_BoxY/2,m_BoxOffsetZ+m_BoxZ/2,m_ColorBox));
+	m_PathBox[0]->AddVertex(new CVertex3dFast(m_BoxOffsetX+m_BoxX/2,m_BoxOffsetY-m_BoxY/2,m_BoxOffsetZ+m_BoxZ/2,m_ColorBox));
+	m_PathBox[0]->AddVertex(new CVertex3dFast(m_BoxOffsetX+m_BoxX/2,m_BoxOffsetY+m_BoxY/2,m_BoxOffsetZ+m_BoxZ/2,m_ColorBox));
+	m_PathBox[0]->AddVertex(new CVertex3dFast(m_BoxOffsetX-m_BoxX/2,m_BoxOffsetY+m_BoxY/2,m_BoxOffsetZ+m_BoxZ/2,m_ColorBox));
+	m_PathBox[0]->AddVertex(new CVertex3dFast(m_BoxOffsetX-m_BoxX/2,m_BoxOffsetY-m_BoxY/2,m_BoxOffsetZ+m_BoxZ/2,m_ColorBox));
 
-	m_PathBox[1]->AddVertex(new CVertex3d(m_BoxOffsetX-m_BoxX/2,m_BoxOffsetY+m_BoxY/2,m_BoxOffsetZ-m_BoxZ/2,m_ColorBox));
-	m_PathBox[1]->AddVertex(new CVertex3d(m_BoxOffsetX-m_BoxX/2,m_BoxOffsetY+m_BoxY/2,m_BoxOffsetZ+m_BoxZ/2,m_ColorBox));
+	m_PathBox[1]->AddVertex(new CVertex3dFast(m_BoxOffsetX-m_BoxX/2,m_BoxOffsetY+m_BoxY/2,m_BoxOffsetZ-m_BoxZ/2,m_ColorBox));
+	m_PathBox[1]->AddVertex(new CVertex3dFast(m_BoxOffsetX-m_BoxX/2,m_BoxOffsetY+m_BoxY/2,m_BoxOffsetZ+m_BoxZ/2,m_ColorBox));
 
-	m_PathBox[2]->AddVertex(new CVertex3d(m_BoxOffsetX+m_BoxX/2,m_BoxOffsetY+m_BoxY/2,m_BoxOffsetZ-m_BoxZ/2,m_ColorBox));
-	m_PathBox[2]->AddVertex(new CVertex3d(m_BoxOffsetX+m_BoxX/2,m_BoxOffsetY+m_BoxY/2,m_BoxOffsetZ+m_BoxZ/2,m_ColorBox));
+	m_PathBox[2]->AddVertex(new CVertex3dFast(m_BoxOffsetX+m_BoxX/2,m_BoxOffsetY+m_BoxY/2,m_BoxOffsetZ-m_BoxZ/2,m_ColorBox));
+	m_PathBox[2]->AddVertex(new CVertex3dFast(m_BoxOffsetX+m_BoxX/2,m_BoxOffsetY+m_BoxY/2,m_BoxOffsetZ+m_BoxZ/2,m_ColorBox));
 
-	m_PathBox[3]->AddVertex(new CVertex3d(m_BoxOffsetX+m_BoxX/2,m_BoxOffsetY-m_BoxY/2,m_BoxOffsetZ-m_BoxZ/2,m_ColorBox));
-	m_PathBox[3]->AddVertex(new CVertex3d(m_BoxOffsetX+m_BoxX/2,m_BoxOffsetY-m_BoxY/2,m_BoxOffsetZ+m_BoxZ/2,m_ColorBox));
+	m_PathBox[3]->AddVertex(new CVertex3dFast(m_BoxOffsetX+m_BoxX/2,m_BoxOffsetY-m_BoxY/2,m_BoxOffsetZ-m_BoxZ/2,m_ColorBox));
+	m_PathBox[3]->AddVertex(new CVertex3dFast(m_BoxOffsetX+m_BoxX/2,m_BoxOffsetY-m_BoxY/2,m_BoxOffsetZ+m_BoxZ/2,m_ColorBox));
 }
 
 
 void CGViewDlg::ClearPaths() 
 {
+	m_Path->m_ToolOffsetValid=false;
 	((CPath3d *)m_view.m_SceneGraph.GetAt(0))->Free();
 }
 
@@ -649,10 +720,12 @@ int CGViewDlg::FindExtents()
 	m_maxy = m_BoxOffsetY + m_BoxY/2;
 	m_minz = m_BoxOffsetZ - m_BoxZ/2;
 	m_maxz = m_BoxOffsetZ + m_BoxZ/2;
-	
+
+	m_view.OpenGLMutex->Lock();
 	m_Path->Range(0,&m_minx,&m_maxx);
 	m_Path->Range(1,&m_miny,&m_maxy);
 	m_Path->Range(2,&m_minz,&m_maxz);
+	m_view.OpenGLMutex->Unlock();
 
 	return 0;
 }
@@ -714,7 +787,18 @@ void CGViewDlg::OnGViewerSetup()
 
 void CGViewDlg::ChangeToolPosition()
 {
-	CCoordMotion *CM = TheFrame->GCodeDlg.Interpreter->CoordMotion;
+	// check if tool changed
+
+	bool UsingDefault;
+
+	if (GetToolFileToDisplay(&UsingDefault).CompareNoCase(m_ToolFileDisplayed) || m_SceneIsDirty)
+	{
+		DeleteAllScene();
+		InitializeScene();
+	}
+
+	CGCodeInterpreter *GC = TheFrame->GCodeDlg.Interpreter;
+	CCoordMotion *CM = GC->CoordMotion;
 	double x=CM->current_x;
 	double y=CM->current_y;
 	double z=CM->current_z;
@@ -724,20 +808,32 @@ void CGViewDlg::ChangeToolPosition()
 	
 	if (!TheFrame->GCodeDlg.m_Simulate)
 	{
-		if (TheFrame->KMotionDLL->WaitToken(FALSE)==KMOTION_LOCKED)
+		if (TheFrame->GCodeDlg.m_ConnectedForStatus)
 		{
-			TheFrame->KMotionDLL->ReleaseToken();
-
-			if (CM->ReadCurAbsPosition(&x,&y,&z,&a,&b,&c)) return;
+			if (CM->ReadCurAbsPosition(&x,&y,&z,&a,&b,&c))
+			{
+				return;
+			}
 		}
 	}
 
+	setup_pointer p = TheFrame->GCodeDlg.m_RealTimeSetup;
+
+	// Tool Table is in User Units so do any necessary conversion
+	x -= GC->UserUnitsToInchesX(p->tool_table[p->selected_tool_slot].xoffset);  // X is special because it handles Diam/Radius mode
+	y -= GC->UserUnitsToInches(p->tool_table[p->selected_tool_slot].yoffset);
+	z -= GC->UserUnitsToInches(p->tool_table[p->selected_tool_slot].length);
 
 	CTransform transform;
 	CVector3d OriginalOffset,RotOffset;
-	CVector3d ToolOffset(m_ToolOffX*m_ToolSize,m_ToolOffY*m_ToolSize,m_ToolOffZ*m_ToolSize);
-	CVector3d scale(m_ToolSize,m_ToolSize,m_ToolSize);
+	CVector3d ToolOffset;
+	CVector3d scale(1.0f,1.0f,1.0f);
 
+	if (UsingDefault)
+	{
+		ToolOffset.Set(m_ToolOffX*m_ToolSize,m_ToolOffY*m_ToolSize,m_ToolOffZ*m_ToolSize);
+		scale.Set(m_ToolSize,m_ToolSize,m_ToolSize);
+	}
 
 	MOTION_PARAMS *MP=&CM->Kinematics->m_MotionParams;
 
@@ -785,7 +881,8 @@ void CGViewDlg::ChangeToolPosition()
 	{
 		mesh = (CMesh3d *)m_view.m_SceneGraph.GetAt(i);
 		OriginalOffset.Copy(mesh->GetTransformOriginal()->GetTranslation());
-		OriginalOffset *= m_ToolSize;
+		if (UsingDefault) OriginalOffset *= m_ToolSize;
+		
 		OriginalOffset += &ToolOffset;
 
 		if (doA) OriginalOffset.RotateYZ(a*PI/180.0);

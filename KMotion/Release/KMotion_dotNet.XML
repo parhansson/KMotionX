@@ -375,6 +375,31 @@
             if no board connected
             </summary>
         </member>
+        <member name="T:KMotion_dotNet.KMOTION_CHECK_READY">
+            <summary>
+            KMotion CheckReady  Return Codes
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KMOTION_CHECK_READY.OK">
+            <summary>
+            All OK but ready not received
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KMOTION_CHECK_READY.TIMEOUT">
+            <summary>
+            if timed out waiting to receive Ready
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KMOTION_CHECK_READY.READY">
+            <summary>
+            Ready has been successfully received
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KMOTION_CHECK_READY.ERROR">
+            <summary>
+            if no board connected or other error
+            </summary>
+        </member>
         <member name="T:KMotion_dotNet.MCODE_TYPE">
             <summary>
             Possible M Code Action Types 
@@ -773,6 +798,21 @@
             </summary>
             <param name="threads">threads to kill</param>
         </member>
+        <member name="M:KMotion_dotNet.KM_Controller.Feedhold">
+            <summary>
+            Initiates Feedhold (Performs Console Command StopImmediate0)
+            </summary>
+        </member>
+        <member name="M:KMotion_dotNet.KM_Controller.ResumeFeedhold">
+            <summary>
+            Resumes Feedhold (Performs Console Command StopImmediate1)
+            </summary>
+        </member>
+        <member name="M:KMotion_dotNet.KM_Controller.ClearFeedhold">
+            <summary>
+            Clears Feedhold without Resuming(Performs Console Command StopImmediate2)
+            </summary>
+        </member>
         <member name="M:KMotion_dotNet.KM_Controller.SetUserData(System.Int32,System.Int32)">
             <summary>
             Sets a 32 bit word of integer user data
@@ -1113,6 +1153,13 @@
             </summary>
             <param name="pos">new value for the current position</param>
         </member>
+        <member name="M:KMotion_dotNet.KM_Axis.SetCommandedDest(System.Double)">
+            <summary>
+            Sets the axis node's commanded Destination
+            Caution: changing this may result in a sudden jump in the axis position
+            </summary>
+            <param name="dest">new value for the commanded destination</param>
+        </member>
         <member name="M:KMotion_dotNet.KM_Axis.MoveTo(System.Double)">
             <summary>
             Calls a move to a given absolute position and blocks the calling thread until the position has been acheived
@@ -1174,7 +1221,13 @@
         </member>
         <member name="M:KMotion_dotNet.KM_Axis.Enable">
             <summary> 
-            Power the axis and bring it to an enabled state
+            Bring an axis to an enabled state
+            </summary>
+        </member>
+        <member name="M:KMotion_dotNet.KM_Axis.EnableDest(System.Double)">
+            <summary> 
+            Bring an axis to an enabled state and specify the commanded destination for the axis
+            dest is multiplied by CPU and sent to KFLOP
             </summary>
         </member>
         <member name="M:KMotion_dotNet.KM_Axis.Disable">
@@ -1276,7 +1329,7 @@
         </member>
         <member name="P:KMotion_dotNet.KM_Axis.Acceleration">
             <summary>
-            Velocity to use during positioning
+            Acceleration to use during positioning
             Jogging uses its own velocity passed in
             </summary>
         </member>
@@ -1506,6 +1559,16 @@
              Set or get the maximum allowed following error before disabling the axis. 
             </summary>
         </member>
+        <member name="P:KMotion_dotNet.KM_Axis.KM_Axis_TuningParams.SoftLimitNeg">
+            <summary>
+             Set or get the Soft Limit Setting for the Negative direction in Counts. 
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_Axis.KM_Axis_TuningParams.SoftLimitPos">
+            <summary>
+             Set or get the Soft Limit Setting for the Positive direction in Counts. 
+            </summary>
+        </member>
         <member name="P:KMotion_dotNet.KM_Axis.KM_Axis_TuningParams.MaxI">
             <summary>
              Set or get Maximum Integrator "wind up" for axis.  Integrator saturates 
@@ -1668,6 +1731,13 @@
         <member name="P:KMotion_dotNet.KM_Axis.KM_Axis_HomingParams.Homing_c_Program">
             <summary>
             C Program Filename for Homing
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_Axis.KM_Axis_HomingParams.Homing_c_Program_Dir">
+            <summary>
+            C Program Filename Directory for Homing
+            if unspecified the Directory of the DLL assembly will be used
+            for writing and reading the auto created C Program
             </summary>
         </member>
         <member name="T:KMotion_dotNet.KM_Interpreter">
@@ -2021,7 +2091,7 @@
             <param name="fname">Full path of the file to interpret</param>
             <param name="start">first line to execute</param>
             <param name="end">Last line to execute</param>
-            <param name="restart">Need Clarification</param>
+            <param name="restart">Reinitializes Interpreter Settings</param>
             <returns>Error Code</returns>
         </member>
         <member name="M:KMotion_dotNet.KM_Interpreter.Interpret(System.String)">
@@ -2408,21 +2478,29 @@
             Constructor for GCode interpreter internal setup parameters interface
             </summary>
         </member>
-        <member name="M:KMotion_dotNet.KM_Interpreter.KM_Interpreter_SetupParams.SetTool(System.Int32,System.Double,System.Double)">
+        <member name="M:KMotion_dotNet.KM_Interpreter.KM_Interpreter_SetupParams.SetTool(System.Int32,System.Int32,System.Int32,System.Double,System.Double,System.Double,System.Double)">
             <summary>
             Updates the given tool table location
             </summary>
-            <param name="id">Slot position</param>
+            <param name="index">Table Index</param>
+            <param name="slot">Tool changer slot referenced in GCode as 2 digit number</param>
+            <param name="id">Tool ID referenced in GCode as 4 digit number</param>
             <param name="length">Tool Length Offset</param>
             <param name="diameter">Tool Diameter Offset</param>
+            <param name="xoffset">Tool X Offset</param>
+            <param name="yoffset">Tool Y Offset</param>
         </member>
-        <member name="M:KMotion_dotNet.KM_Interpreter.KM_Interpreter_SetupParams.GetTool(System.Int32,System.Double@,System.Double@)">
+        <member name="M:KMotion_dotNet.KM_Interpreter.KM_Interpreter_SetupParams.GetTool(System.Int32,System.Int32@,System.Int32@,System.Double@,System.Double@,System.Double@,System.Double@)">
             <summary>
             Get info on specific tool
             </summary>
-            <param name="id">Slot position</param>
+            <param name="index">Table Index</param>
+            <param name="slot">Tool changer slot referenced in GCode as 2 digit number</param>
+            <param name="ID">Tool ID referenced in GCode as 4 digit number</param>
             <param name="length">Tool Length Offset</param>
             <param name="diameter">Tool Diameter Offset</param>
+            <param name="xoffset">Tool X Offset</param>
+            <param name="yoffset">Tool Y Offset</param>
         </member>
         <member name="P:KMotion_dotNet.KM_Interpreter.KM_Interpreter_SetupParams.A_AxisOffset">
             <summary>
@@ -2656,6 +2734,16 @@
             Current tool length offset
             </summary>
         </member>
+        <member name="P:KMotion_dotNet.KM_Interpreter.KM_Interpreter_SetupParams.ToolXOffset">
+            <summary>
+            Current tool X offset
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_Interpreter.KM_Interpreter_SetupParams.ToolYOffset">
+            <summary>
+            Current tool Y offset
+            </summary>
+        </member>
         <member name="P:KMotion_dotNet.KM_Interpreter.KM_Interpreter_SetupParams.ToolLengthOffsetIndex">
             <summary>
             Row in tool table for current Length Offset
@@ -2686,7 +2774,12 @@
         </member>
         <member name="P:KMotion_dotNet.KM_Interpreter.KM_Interpreter_SetupParams.SpindleSpeed">
             <summary>
-            Current Speed override
+            Current Spindle Speed
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_Interpreter.KM_Interpreter_SetupParams.FeedRate">
+            <summary>
+            Current FeedRate
             </summary>
         </member>
         <member name="P:KMotion_dotNet.KM_Interpreter.KM_Interpreter_SetupParams.SpindleDirection">
@@ -2747,6 +2840,36 @@
             Gets/sets canned Retract Mode
             R_PLANE = 0,
             OLD_Z = 1
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_Interpreter.KM_Interpreter_SetupParams.block_p_flag">
+            <summary>
+            Gets p flag (p word present) in current GCode Block
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_Interpreter.KM_Interpreter_SetupParams.block_p_number">
+            <summary>
+            Gets p number (p word) in current GCode Block
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_Interpreter.KM_Interpreter_SetupParams.block_q_flag">
+            <summary>
+            Gets q flag (q word present) in current GCode Block
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_Interpreter.KM_Interpreter_SetupParams.block_q_number">
+            <summary>
+            Gets q number (q word) in current GCode Block
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_Interpreter.KM_Interpreter_SetupParams.block_r_flag">
+            <summary>
+            Gets r flag (r word present) in current GCode Block
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_Interpreter.KM_Interpreter_SetupParams.block_r_number">
+            <summary>
+            Gets r number (r word) in current GCode Block
             </summary>
         </member>
         <member name="T:KMotion_dotNet.HOMING_ROUTINE_SOURCE_TYPE">
@@ -3207,9 +3330,49 @@
             </summary>
             <returns>override percentage</returns>
         </member>
+        <member name="M:KMotion_dotNet.KM_CoordMotion.GetFeedRateRapidOverride">
+            <summary>
+            Gets the current Feedrate Rapidoverride
+            </summary>
+            <returns>override percentage</returns>
+        </member>
         <member name="M:KMotion_dotNet.KM_CoordMotion.SetFeedRateOverride(System.Double)">
             <summary>
             Sets the current Feedrate override
+            </summary>
+            <param name="value">override percentage</param>
+        </member>
+        <member name="M:KMotion_dotNet.KM_CoordMotion.SetFeedRateRapidOverride(System.Double)">
+            <summary>
+            Sets the current Rapid Feedrate override
+            </summary>
+            <param name="value">override percentage</param>
+        </member>
+        <member name="M:KMotion_dotNet.KM_CoordMotion.GetSpindleRateOverride">
+            <summary>
+            Gets the current Spindlerate override
+            </summary>
+            <returns>override percentage</returns>
+        </member>
+        <member name="M:KMotion_dotNet.KM_CoordMotion.SetSpindleRateOverride(System.Double)">
+            <summary>
+            Sets the current Spindlerate override
+            </summary>
+            <param name="value">override percentage</param>
+        </member>
+        <member name="M:KMotion_dotNet.KM_CoordMotion.GetHardwareFRORange">
+            <summary>
+            Gets the Hardware FRO Range for all axes
+            Below this value FRO is handled by hardware (no delay)
+            Above this value FRO is handle by the Trajectory Planner (proper accelerations)
+            </summary>
+            <returns>override percentage</returns>
+        </member>
+        <member name="M:KMotion_dotNet.KM_CoordMotion.SetHardwareFRORange(System.Double)">
+            <summary>
+            Sets the Hardware FRO Range for all axes
+            Below this value FRO is handled by hardware (no delay)
+            Above this value FRO is handle by the Trajectory Planner (proper accelerations)
             </summary>
             <param name="value">override percentage</param>
         </member>
@@ -3419,9 +3582,20 @@
             <param name="i1"></param>
             <param name="feedrate"></param>
         </member>
+        <member name="M:KMotion_dotNet.KM_CoordMotion.SetAxisDefinitions(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Set the assignment of KFLOP axis Channels to GCode Axes XYZABC, -1 indicates unused/unassigned axis
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="a"></param>
+            <param name="b"></param>
+            <param name="c"></param>
+        </member>
         <member name="M:KMotion_dotNet.KM_CoordMotion.GetAxisDefinitions(System.Int32@,System.Int32@,System.Int32@,System.Int32@,System.Int32@,System.Int32@)">
             <summary>
-            Waiting for additional info....
+            Get the assignment of KFLOP axis Channels to GCode Axes XYZABC, -1 indicates unused/unassigned axis
             </summary>
             <param name="x"></param>
             <param name="y"></param>
@@ -3453,6 +3627,18 @@
             <param name="b">B axis value</param>
             <param name="c">C axis value</param>
             <param name="snap">snap to exact previously commanded postion (if close) to avoid rounding errors</param>
+        </member>
+        <member name="M:KMotion_dotNet.KM_CoordMotion.ReadAndSyncCurPositions(System.Double@,System.Double@,System.Double@,System.Double@,System.Double@,System.Double@)">
+            <summary>
+            First Syncs the Coor Motion Library to the current axis destinations then 
+            sets the passed variables to the CoordMotion's Absolute positions
+            </summary>
+            <param name="x">X axis value</param>
+            <param name="y">Y axis value</param>
+            <param name="z">Z axis value</param>
+            <param name="a">A axis value</param>
+            <param name="b">B axis value</param>
+            <param name="c">C axis value</param>
         </member>
         <member name="M:KMotion_dotNet.KM_CoordMotion.SetStraightTraverseCallback">
             <summary>
@@ -3616,6 +3802,23 @@
         <member name="P:KMotion_dotNet.KM_CoordMotion.FeedRateOverride">
             <summary>
             Gets/Sets the Feedrate override for all axes
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_CoordMotion.FeedRateRapidOverride">
+            <summary>
+            Gets/Sets the Feedrate Rapid override for all axes
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_CoordMotion.SpindleRateOverride">
+            <summary>
+            Gets/Sets the Spindlerate override for all axes
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_CoordMotion.HardwareFRORange">
+            <summary>
+            Gets/Sets the Hardware FRO Range for all axes
+            Below this value FRO is handled by hardware (no delay)
+            Above this value FRO is handle by the Trajectory Planner (proper accelerations)
             </summary>
         </member>
         <member name="P:KMotion_dotNet.KM_CoordMotion.IsAbort">
@@ -3837,9 +4040,19 @@
             (long linear segments can cause cord errors in non-linear systems)
             </summary>
         </member>
-        <member name="F:KMotion_dotNet.KM_AxisGroup._DegreesA">
+        <member name="F:KMotion_dotNet.KM_AxisGroup._UseOnlyLinearSegments">
             <summary>
             Axis Group Number
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_AxisGroup._ArcsToSegs">
+            <summary>
+            Causes Arcs to be converted to segments (Kinematic Setting)
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_AxisGroup._DegreesA">
+            <summary>
+            Causes Arcs to be converted to segments (User Setting)
             </summary>
         </member>
         <member name="F:KMotion_dotNet.KM_AxisGroup._DegreesB">
@@ -3974,13 +4187,17 @@
             </summary>
             <param name="paramsfile">Params File Path String</param>
         </member>
-        <member name="M:KMotion_dotNet.KM_AxisGroup.SetToolTableEntry(System.Int32,System.Double,System.Double)">
+        <member name="M:KMotion_dotNet.KM_AxisGroup.SetToolTableEntry(System.Int32,System.Int32,System.Int32,System.Double,System.Double,System.Double,System.Double)">
             <summary>
             Set Tool Table Entry to be used by the GCode Interpreter
             </summary>
-            <param name="num">Tool Number</param>
+            <param name="index">Tool Table Index Number</param>
+            <param name="slot">Tool changer 2 digit slot Number</param>
+            <param name="ID">Tool 4 digit ID Number</param>
             <param name="length">Tool length offset</param>
             <param name="diameter">Tool diameter used in radius compensation</param>
+            <param name="xoffset">Tool X Offset</param>
+            <param name="yoffset">Tool Y Offset</param>
         </member>
         <member name="M:KMotion_dotNet.KM_AxisGroup.SetOffsetData(System.Int32,System.Double,System.Double,System.Double,System.Double,System.Double,System.Double)">
             <summary>
@@ -4581,6 +4798,30 @@
             </summary>
             <param name="value">MaxLinearLength to set</param>
         </member>
+        <member name="M:KMotion_dotNet.KM_MotionParams.Get_UseOnlyLinearSegments">
+            <summary>
+            Property getter Accessor for UseOnlyLinearSegments (Converts Arcs to Linear Segments based on Kinematic Setting)
+            </summary>
+            <returns>Current UseOnlyLinearSegments</returns>
+        </member>
+        <member name="M:KMotion_dotNet.KM_MotionParams.Set_UseOnlyLinearSegments(System.Boolean)">
+            <summary>
+            Property setter Accessor for UseOnlyLinearSegments (Converts Arcs to Linear Segments based on Kinematic Setting)
+            </summary>
+            <param name="value">UseOnlyLinearSegments to set (Converts Arcs to Linear Segments based on Kinematic Setting)</param>
+        </member>
+        <member name="M:KMotion_dotNet.KM_MotionParams.Get_ArcsToSegs">
+            <summary>
+            Property getter Accessor for ArcsToSegs (Converts Arcs to Linear Segments based on User Setting)
+            </summary>
+            <returns>Current ArcsToSegs</returns>
+        </member>
+        <member name="M:KMotion_dotNet.KM_MotionParams.Set_ArcsToSegs(System.Boolean)">
+            <summary>
+            Property setter Accessor for ArcsToSegs (Converts Arcs to Linear Segments based on User Setting)
+            </summary>
+            <param name="value">ArcsToSegs to set (Converts Arcs to Linear Segments based on User Setting)</param>
+        </member>
         <member name="M:KMotion_dotNet.KM_MotionParams.Get_DegreesA">
             <summary>
             Property getter Accessor for DegreesA (whether axis is in units of degrees)
@@ -4755,6 +4996,16 @@
         <member name="P:KMotion_dotNet.KM_MotionParams.MaxLinearLength">
             <summary>
             Longest allowable segment length before dividing into smaller segments
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_MotionParams.UseOnlyLinearSegments">
+            <summary>
+            Converts Arcs to linear segments (Kinematic Setting)
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_MotionParams.ArcsToSegs">
+            <summary>
+            Converts Arcs to linear segments (User Setting)
             </summary>
         </member>
         <member name="P:KMotion_dotNet.KM_MotionParams.DegreesA">

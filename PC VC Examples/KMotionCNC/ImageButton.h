@@ -12,7 +12,7 @@ class CImageButton : public CButton
 public:
 	CImageButton(UINT up, UINT down = 0, UINT disabled = 0, BOOL fill = FALSE);
 	// Default constructor (required for MFC compatibility)
-	CImageButton() {up = 0; down = 0; disabled = 0; m_fill = FALSE; ToggleType=false; Toggled=false;}
+	CImageButton() {m_up = 0; m_down = 0; m_disabled = 0; m_fill = FALSE; ToggleType=false; Toggled=DrawPushed=ForceDisableFocus=false;}
 	BOOL m_fill; // We want to fill the image
 	DWORD SetHPos(DWORD style); // Set the horizonatal alignment style
 	DWORD SetVPos(DWORD style); // Set the vertical alignment style
@@ -24,12 +24,13 @@ public:
 	//	UINT disabled: Resource ID of image to use for disabled
 	//			if NULL, the up image is halftoned gray
 	void LoadBitmaps(UINT up, UINT down, UINT disabled)
-	      { this->up = up; this->down = down; this->disabled = disabled; } 
+	      { m_up = up; m_down = down; m_disabled = disabled; } 
 	void GetBitmaps(UINT &up, UINT &down, UINT &disabled)
-	      { up = this->up; down = this->down; disabled = this->disabled; }
+	      { up = m_up; down = m_down; disabled = m_disabled; }
 
 	bool ToggleType;
 	bool Toggled;
+	bool DrawPushed;
 // Attributes
 public:
 
@@ -44,15 +45,17 @@ public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	//}}AFX_VIRTUAL
 
+	bool ForceDisableFocus;
+
 // Implementation
 public:
 	virtual ~CImageButton();
 
 	// Generated message map functions
 protected:
-        UINT up;
-	UINT down;
-	UINT disabled;
+    UINT m_up;
+	UINT m_down;
+	UINT m_disabled;
 	//{{AFX_MSG(CImageButton)
 	//}}AFX_MSG
 

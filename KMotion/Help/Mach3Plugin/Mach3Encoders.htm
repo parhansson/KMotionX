@@ -199,6 +199,11 @@ Position and the Commanded Destination should be zeroed.&nbsp;&nbsp; Prior to
 Zeroing if any homing motion (to a switch for example - See: SimpleHome3Axis.c 
 in the C Programs directory) may also be added into the program.</font></p>
 <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Note: if Homing 
+Inputs are enabled in Mach3 | Config | Ports and Pins | Input Signals | X Home, 
+Y Home, Z Home, A Home, B Home, C Home then Mach 3 will NOT call the Plugin to 
+do Homing.&nbsp; Please make sure these Inputs are NOT enabled.</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
 <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
 <p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
 <img border="0" src="ConfigHomeProgram.PNG" width="560" height="83"></font></p>

@@ -30,9 +30,6 @@
 #include <afxtempl.h>
 #include <gl\gl.h>
 #include <gl\glu.h>
-//#include <GL\glaux.h>
-
-#include "Lib3d\Base3d.h"
 
 
 //Pull in support for Scintilla
@@ -50,6 +47,9 @@
 #include <sys\stat.h>
 
 #include "resource.h"
+
+#include "Lib3d\Base3d.h"
+
 
 #include <io.h>
 #include <stdio.h>

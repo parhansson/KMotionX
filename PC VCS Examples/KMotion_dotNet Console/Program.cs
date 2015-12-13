@@ -71,7 +71,7 @@ namespace sandbox
             //RunHomingRoutineExample();
             RunIOExample();
             //RunAxisExample();
-            //RunCoordinatedMotionExample();
+            RunCoordinatedMotionExample();
             //RunInterpreterExample(); 
             
             _Controller.Dispose();
@@ -217,7 +217,7 @@ namespace sandbox
             _Controller.CoordMotion.MotionParams.DegreesA = false;
             _Controller.CoordMotion.MotionParams.DegreesB = false;
             _Controller.CoordMotion.MotionParams.DegreesC = false;
-            double speed = 85;
+            double speed = 15;
 
             _Controller.CoordMotion.StraightTraverse(6.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, false);
             int isCCW = 1;
@@ -228,6 +228,11 @@ namespace sandbox
 
             _Controller.CoordMotion.Dwell(2,0);
             _Controller.CoordMotion.FlushSegments();
+
+//            _Controller.Feedhold();  //test feedhold
+//            Thread.Sleep(2000);
+//            _Controller.ResumeFeedhold();
+//            _Controller.ClearFeedhold();
         }
 
         static void CoordMotion_CoordMotionStraightTranverse(double x, double y, double z, int sequence_number)

@@ -286,10 +286,22 @@ Friend Class frmMain
     End Sub
 
     Private Sub CompileLoadCoff_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CompileLoadCoff.Click
-        Dim Err As String = ""
+        Dim Err As String = "Bad File"
         Dim result As Integer
 
-        result = KM_CompileAndLoadCoff(CThread.Text, CFile.Text, Err, 250)
+        If CThread.Text = -1 Then
+            result = KM_LoadCoff(CThread.Text, CFile.Text, 1)
+            If (result = 0) Then
+                result = KM_WriteLineWithEcho("ProgFlashImage")
+            End If
+            Do
+                result = KM_CheckForReady(0)
+            Loop While (result <> 2)
+            result = 0
+        Else
+            result = KM_CompileAndLoadCoff(CThread.Text, CFile.Text, Err, 250)
+        End If
+
 
         If (result = 0) Then
             CompilerOutput.Text = "No Errors"

@@ -19,10 +19,18 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // CMotionButton
 
+CList <LPCMotionButton,LPCMotionButton> CMotionButton::AxisGroup;
+
+
 CMotionButton::CMotionButton()
 {
 	m_Moving=false;
 	m_RawVel=0.0;
+	m_HasMouseCapture=false;
+	// make a global list of all Motion Buttons
+	// so we can allow mutiple buttons down but not
+	// more than one with the same axis
+	CMotionButton::AxisGroup.AddTail(this); 
 }
 
 CMotionButton::~CMotionButton()
@@ -34,6 +42,12 @@ BEGIN_MESSAGE_MAP(CMotionButton, CImageButton)
 	//{{AFX_MSG_MAP(CMotionButton)
 	ON_WM_TIMER()
 	ON_WM_MOUSEMOVE()
+	ON_WM_KILLFOCUS()
+	ON_WM_CAPTURECHANGED()
+	ON_WM_LBUTTONUP()
+	ON_WM_LBUTTONDOWN()
+
+
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -59,12 +73,16 @@ void CMotionButton::OnTimer(UINT nIDEvent)
 {
 	CString s;
 
+	static bool prev=false;
+
 	if (Dlg->m_Simulate)
 	{
 		if (m_SimulateMotion)
 		{
 			*m_pSimulatePos += m_SimulateDelta; 
 		}
+
+		prev = m_SimulateMotion;
 	}
 	else
 	{
@@ -76,13 +94,6 @@ void CMotionButton::OnTimer(UINT nIDEvent)
 
 void CMotionButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
-	if (lpDrawItemStruct->itemAction & ODA_DRAWENTIRE)
-	{
-		if (lpDrawItemStruct->itemState & ODS_SELECTED)
-				HandleButtonDown();
-		else
-				HandleButtonUp();
-	}
 	CImageButton::DrawItem(lpDrawItemStruct);
 }
 
@@ -91,6 +102,21 @@ void CMotionButton::HandleButtonDown(void)
 	CString s;
 	CCoordMotion *CM= Dlg->Interpreter->CoordMotion;
 	double delta=0,x,y,z,a,b,c;
+
+	POSITION position=CMotionButton::AxisGroup.GetHeadPosition();
+	LPCMotionButton p;
+	for (int i=0; i<CMotionButton::AxisGroup.GetCount(); i++)
+	{
+		p=CMotionButton::AxisGroup.GetNext(position);
+
+		// not me and same axis and moving?
+		if (p!=this && p->m_axis==m_axis && (p->m_Moving || p->m_SimulateMotion))
+		{
+			// stop it
+			p->PostMessageA(WM_LBUTTONUP,0,0); 
+		}
+	}
+
 
 
 	switch (m_axis)
@@ -207,12 +233,12 @@ void CMotionButton::HandleButtonDown(void)
 			}
 		}
 	}
+	DrawPushed=true;
+	InvalidateRect(NULL);
 }
 
 void CMotionButton::HandleButtonUp(void)
 {
-	CString s;
-
 	m_SimulateMotion=false;
 
 	if (m_Moving)
@@ -222,6 +248,8 @@ void CMotionButton::HandleButtonUp(void)
 		Dlg->ProcessChangeInJogVelocity();
 		KillTimer(1);
 	}
+	DrawPushed=false;
+	InvalidateRect(NULL);
 }
 
 void CMotionButton::PutRawV(double *v)
@@ -229,3 +257,32 @@ void CMotionButton::PutRawV(double *v)
 	if (m_axis < 6)
 		if (v[m_axis] == 0.0) v[m_axis] = m_RawVel;
 }
+
+void CMotionButton::OnKillFocus(CWnd* pNewWnd)
+{
+	// don't do much to allow multiple motion buttons
+	HandleButtonUp();
+	ForceDisableFocus=true;
+	InvalidateRect(NULL);
+}
+
+void CMotionButton::OnCaptureChanged(CWnd* Wnd)
+{
+	HandleButtonUp();
+	CImageButton::OnCaptureChanged(Wnd);
+}
+
+void CMotionButton::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	HandleButtonUp();
+
+	CImageButton::OnLButtonUp(nFlags, point);
+}
+
+void CMotionButton::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	ForceDisableFocus=false;
+	HandleButtonDown();
+	CButton::OnLButtonDown(nFlags, point);
+}
+

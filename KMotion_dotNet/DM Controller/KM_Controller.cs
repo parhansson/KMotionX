@@ -988,12 +988,12 @@ namespace KMotion_dotNet
         /// if it is "Ready" send it to the console and return KMOTION_READY;
         /// otherwise send it to the console        /// </summary>
         /// <returns>true if board has received "Ready"</returns>
-        public bool CheckIsReady()
-        { 
-            int ready = -1;
+        public KMOTION_CHECK_READY CheckIsReady()
+        {
+            KMOTION_CHECK_READY ready = KMOTION_CHECK_READY.ERROR;
             try
             {
-                ready = KM_dotnet_Interop_CheckForReady(_InstanceHandle);
+                ready = (KMOTION_CHECK_READY)KM_dotnet_Interop_CheckForReady(_InstanceHandle);
             }
             catch (DllNotFoundException e)
             {
@@ -1010,7 +1010,7 @@ namespace KMotion_dotNet
                 throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
                   this.ToString(), "CheckIsReady"));
             }
-            return ready == 0;
+            return ready;
         }
         /// <summary>
         /// Query device for the loaded firmware version
@@ -1421,8 +1421,8 @@ namespace KMotion_dotNet
         /// </summary>
         /// <param name="thread">program thread in the kflop to run</param>
         public void ExecuteProgram(int thread)
-        { 
-            WriteLine(String.Format("Execute{0}", thread));  
+        {
+            WriteLine(String.Format("Execute{0}", thread));
         }
 
         /// <summary>
@@ -1457,6 +1457,34 @@ namespace KMotion_dotNet
                 }
             }
         }
+        #endregion
+
+        #region Feedhold
+
+        /// <summary>
+        /// Initiates Feedhold (Performs Console Command StopImmediate0)
+        /// </summary>
+        public void Feedhold()
+        {
+            WriteLine(String.Format("StopImmediate0"));
+        }
+
+        /// <summary>
+        /// Resumes Feedhold (Performs Console Command StopImmediate1)
+        /// </summary>
+        public void ResumeFeedhold()
+        {
+            WriteLine(String.Format("StopImmediate1"));
+        }
+
+        /// <summary>
+        /// Clears Feedhold without Resuming(Performs Console Command StopImmediate2)
+        /// </summary>
+        public void ClearFeedhold()
+        {
+            WriteLine(String.Format("StopImmediate0"));
+        }
+
         #endregion
 
         #region UserData

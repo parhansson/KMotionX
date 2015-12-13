@@ -375,15 +375,38 @@ namespace KMotion_dotNet
         /// <summary>
         /// (token is locked) if KMotion is available for use
         /// </summary>
-        KMOTION_LOCKED = 0, 
+        KMOTION_LOCKED = 0,
         /// <summary>
         /// if already in use
         /// </summary>
-        KMOTION_IN_USE = 1, 
+        KMOTION_IN_USE = 1,
         /// <summary>
         /// if no board connected
         /// </summary>
-        KMOTION_NOT_CONNECTED = 2 
+        KMOTION_NOT_CONNECTED = 2
+    }
+
+    /// <summary>
+    /// KMotion CheckReady  Return Codes
+    /// </summary>
+    public enum KMOTION_CHECK_READY : int// KMotion CheckReady Return Codes
+    {
+        /// <summary>
+        /// All OK but ready not received
+        /// </summary>
+        OK=0,
+        /// <summary>
+        /// if timed out waiting to receive Ready
+        /// </summary>
+        TIMEOUT=1,
+        /// <summary>
+        /// Ready has been successfully received
+        /// </summary>
+        READY=2,
+        /// <summary>
+        /// if no board connected or other error
+        /// </summary>
+        ERROR=3,
     }
 
     /// <summary>

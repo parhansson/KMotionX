@@ -19,17 +19,19 @@ static char THIS_FILE[] = __FILE__;
 
 CImageButton::CImageButton(UINT up, UINT down, UINT disabled, BOOL fill)
 {
- this->up = up;
- this->down = down;
- this->disabled = disabled;
- this->m_fill = fill;
+	m_up = up;
+	m_down = down;
+	m_fill = fill;
+	m_disabled = disabled;
+	DrawPushed=ForceDisableFocus=false;
 }
+
 
 CImageButton::~CImageButton()
 {
 }
 
-
+
 BEGIN_MESSAGE_MAP(CImageButton, CButton)
 	//{{AFX_MSG_MAP(CImageButton)
 	//}}AFX_MSG_MAP
@@ -120,29 +122,31 @@ void CImageButton::DrawItem(LPDRAWITEMSTRUCT dis)
 	//	   A	0	0		A	A	gray(A)
 	
 	UINT id = 0;
-	if(dis->itemState & ODS_SELECTED || (ToggleType && Toggled))
+	bool DrawItDown = (dis->itemState & ODS_SELECTED || (ToggleType && Toggled) || DrawPushed);
+	
+	if(DrawItDown)
 	{ /* selected */
 		// If the down image is given, use that, else use the
 		// up image
-		id = down != 0 ? down : up;
+		id = m_down != 0 ? m_down : m_up;
 	} /* selected */
 	else
 	{ /* unselected */
 		if(dis->itemState & (ODS_DISABLED | ODS_GRAYED))
 		{ /* grayed */
-			if(disabled == 0)
+			if(m_disabled == 0)
 			{ /* no disabled image */
-				id = up;
+				id = m_up;
 				grayout = TRUE; // gray out manually
 			} /* no disabled image */
 			else
 			{ /* use disabled image */
-				id = disabled;
+				id = m_disabled;
 			} /* use disabled image */
 		} /* grayed */
 		else
 		{ /* enabled */
-			id = up;
+			id = m_up;
 		} /* enabled */
 	} /* unselected */
 	
@@ -151,9 +155,12 @@ void CImageButton::DrawItem(LPDRAWITEMSTRUCT dis)
 		IMAGE_BITMAP,
 		0, 0,
 		LR_SHARED | LR_LOADMAP3DCOLORS);
+
 	
 	// Get the bitmap parameters, because we will need width and height
 	::GetObject(bitmap, sizeof(BITMAP), &bmpval);
+
+
 	
 	// We compute the desired image size. Because we could offset
 	// the image on a button-down, we take that potential into
@@ -255,13 +262,13 @@ void CImageButton::DrawItem(LPDRAWITEMSTRUCT dis)
 	// For visual effect, if the button is down, shift the image over and
 	// down to make it look "pushed".
 	CPoint useOffset(0, 0);
-	if(dis->itemState & ODS_SELECTED || (ToggleType && Toggled))
+	if(DrawItDown)
 	{ /* down */
 		useOffset = baseOffset;
 	} /* down */
 	
 	// Draw the traditional pushbutton edge using DrawEdge
-	if(dis->itemState & ODS_SELECTED || (ToggleType && Toggled))
+	if(DrawItDown)
 	{ /* down */
 		dc->DrawEdge(&dis->rcItem, EDGE_SUNKEN, BF_RECT | BF_MIDDLE | BF_SOFT);
 	} /* down */
@@ -274,24 +281,41 @@ void CImageButton::DrawItem(LPDRAWITEMSTRUCT dis)
 	// right-and-down by the desired offset
 	focus += useOffset;
 	ipos += useOffset;
+
 	
 	// Select the bitmap into a DC
 	CDC memDC;
 	memDC.CreateCompatibleDC(dc);
 	int savemem = memDC.SaveDC();
 	memDC.SelectObject(bitmap);
+	CBitmap *Bit = memDC.GetCurrentBitmap();
+	BYTE *bits = new BYTE[bmpval.bmWidthBytes*bmpval.bmHeight];
+	if (!bits) return;
+	int result = Bit->GetBitmapBits(bmpval.bmWidthBytes*bmpval.bmHeight,bits);
 
 
 	// replace background color (0xece9d8) with 3D face color
 
-	COLORREF gray = ::GetSysColor(COLOR_3DFACE);
-	COLORREF background = 0xd8e9ec;
-	for(int x = 0; x < bmpval.bmWidth; x++)
-		for(int y = 0; y < bmpval.bmHeight; y++)
+	if (bmpval.bmBitsPixel==24 || bmpval.bmBitsPixel==32)
+	{
+		COLORREF gray = ::GetSysColor(COLOR_3DFACE);
+		COLORREF background = 0xd8e9ec;
+		for(int c = 0; c < bmpval.bmWidth; c++)
 		{
-			if (memDC.GetPixel(x,y) == background)
-				memDC.SetPixelV(x, y, gray);
+			for(int r = 0; r < bmpval.bmHeight; r++)
+			{
+				int i = r*bmpval.bmWidthBytes + c*(bmpval.bmBitsPixel/8);
+				int v = (bits[i]<<16) | (bits[i+1]<<8) | bits[i+2];
+
+				if (v == background)
+				{
+					bits[i]=gray>>16;
+					bits[i+1]=(gray>>8)&0xff;
+					bits[i+2]=(gray)&0xff;
+				}
+			}
 		}
+	}
 	
 	// If the button was disabled but we don't have a disabled image, gray out
 	// the image by replacing every other pixel with a gray pixel
@@ -299,11 +323,28 @@ void CImageButton::DrawItem(LPDRAWITEMSTRUCT dis)
 	if(grayout)
 	{ /* gray out */
 		COLORREF gray = ::GetSysColor(COLOR_3DFACE);
-		for(int x = 0; x < bmpval.bmWidth; x+=2)
-			for(int y = 0; y < bmpval.bmHeight; y++)
-				memDC.SetPixelV(x + (y & 1), y, gray);
+		for(int c0 = 0; c0 < bmpval.bmWidth-1; c0+=2)
+			for(int r = 0; r < bmpval.bmHeight; r++)
+			{
+				int c = c0 + (r & 1);
+				int i = r*bmpval.bmWidthBytes + c*(bmpval.bmBitsPixel/8);
+				if (bmpval.bmBitsPixel==32 || bmpval.bmBitsPixel==32)
+				{
+					bits[i]=gray>>16;
+					bits[i+1]=(gray>>8)&0xff;
+					bits[i+2]=(gray)&0xff;
+				}
+				else
+				{
+					bits[i]  =((6<<10)|(6<<5)|6)>>8;
+					bits[i+1]=((6<<10)|(6<<5)|6)&0xff;
+				}
+			}
 	} /* gray out */
-	
+
+
+	result = Bit->SetBitmapBits(bmpval.bmWidthBytes*bmpval.bmHeight,bits);
+
 	if(m_fill)
 		dc->StretchBlt(ipos.x, ipos.y,		// target x, y
 		image.cx, image.cy,	// target width, height
@@ -319,14 +360,15 @@ void CImageButton::DrawItem(LPDRAWITEMSTRUCT dis)
 		&memDC,			// source DC
 		bltStart.x, bltStart.y,	// source x, y
 		SRCCOPY);
-	
-	if(dis->itemState & ODS_FOCUS)
+
+	if(dis->itemState & ODS_FOCUS && !ForceDisableFocus)
 		::DrawFocusRect(dis->hDC, &focus);
 	
 	memDC.RestoreDC(savemem);
 	
 	dc->RestoreDC(saved);
 	::DeleteObject(bitmap);
+	delete bits;
 }
 
 
@@ -345,6 +387,7 @@ BOOL CImageButton::PreTranslateMessage(MSG* pMsg)
 
 void CImageButton::OnLButtonDown(UINT nFlags, CPoint point)
 {
+	ForceDisableFocus=false;
 	CButton::OnLButtonDown(nFlags, point);
 }
 

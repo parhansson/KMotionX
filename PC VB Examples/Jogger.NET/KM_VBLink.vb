@@ -20,8 +20,8 @@ Module Module1
     Private Declare Sub KMViaVB_ReleaseToken Lib "KMViaVB" (ByVal handle As Integer)
     Private Declare Function KMViaVB_Failed Lib "KMViaVB" (ByVal handle As Integer) As Integer
     Private Declare Function KMViaVB_CheckForReady Lib "KMViaVB" (ByVal handle As Integer) As Integer
-    Private Declare Function KMViaVB_LoadCoff Lib "KMViaVB" (ByVal handle As Long, ByVal Thread As Short, ByVal Name As String) As Integer
-    Private Declare Function KMViaVB_CompileAndLoadCoff Lib "KMViaVB" (ByVal handle As Integer, ByVal Thread As Short, ByVal Name As String, ByRef Err As String, ByVal MaxErrLen As Short) As Integer
+    Private Declare Function KMViaVB_LoadCoff Lib "KMViaVB" (ByVal handle As Integer, ByVal Thread As Integer, ByVal Name As String, ByVal Thread As Integer) As Integer
+    Private Declare Function KMViaVB_CompileAndLoadCoff Lib "KMViaVB" (ByVal handle As Integer, ByVal Thread As Integer, ByVal Name As String, ByRef Err As String, ByVal MaxErrLen As Integer) As Integer
     Private Declare Function KMViaVB_ServiceConsole Lib "KMViaVB" (ByVal handle As Integer) As Integer
     Private Declare Function KMViaVB_ListLocations Lib "KMViaVB" (ByVal handle As Integer, ByRef nlocations As Integer, ByRef List As Integer) As Integer
 	
@@ -182,7 +182,7 @@ Module Module1
         End If
         KM_ListLocations = KMViaVB_ListLocations(global_KM_Handle, nList, List(0))
     End Function
-    Public Function KM_LoadCoff(ByVal Thread As Integer, ByVal Name As String) As Integer
+    Public Function KM_LoadCoff(ByVal Thread As Integer, ByVal Name As String, ByVal PackToFlash As Integer) As Integer
         If global_KM_Handle = 0 Then
             KM_Open()
             If global_KM_Handle = 0 Then
@@ -190,7 +190,7 @@ Module Module1
                 Exit Function
             End If
         End If
-        KM_LoadCoff = KMViaVB_LoadCoff(global_KM_Handle, Thread, Name)
+        KM_LoadCoff = KMViaVB_LoadCoff(global_KM_Handle, Thread, Name, PackToFlash)
     End Function
     Public Function KM_CompileAndLoadCoff(ByVal Thread As Integer, ByVal Name As String, ByRef Err As String, ByVal MaxErrLen As Integer) As Integer
         If global_KM_Handle = 0 Then

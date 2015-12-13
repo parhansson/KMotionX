@@ -469,21 +469,49 @@ namespace KMotion_dotNet
                     _Controller.WriteLine(String.Format("MaxErr{0}={1}", _ID, value));
                 }
             }
-            /// <summary>
-            ///  Set or get the maximum allowed following error before disabling the axis. 
-            /// </summary>
-            public double MaxFollowingError
-            {
-                get
-                {
-                    return GetConsoleDoubleValue(String.Format("MaxFollowingError{0}", _ID));
-                }
-                set
-                {
-                    _Controller.WriteLine(String.Format("MaxFollowingError{0}={1}", _ID, value));
-                }
-            }
-            /// <summary>
+             /// <summary>
+             ///  Set or get the maximum allowed following error before disabling the axis. 
+             /// </summary>
+             public double MaxFollowingError
+             {
+                 get
+                 {
+                     return GetConsoleDoubleValue(String.Format("MaxFollowingError{0}", _ID));
+                 }
+                 set
+                 {
+                     _Controller.WriteLine(String.Format("MaxFollowingError{0}={1}", _ID, value));
+                 }
+             }
+             /// <summary>
+             ///  Set or get the Soft Limit Setting for the Negative direction in Counts. 
+             /// </summary>
+             public double SoftLimitNeg
+             {
+                 get
+                 {
+                     return GetConsoleDoubleValue(String.Format("SoftLimitNeg{0}", _ID));
+                 }
+                 set
+                 {
+                     _Controller.WriteLine(String.Format("SoftLimitNeg{0}={1}", _ID, value));
+                 }
+             }
+             /// <summary>
+             ///  Set or get the Soft Limit Setting for the Positive direction in Counts. 
+             /// </summary>
+             public double SoftLimitPos
+             {
+                 get
+                 {
+                     return GetConsoleDoubleValue(String.Format("SoftLimitPos{0}", _ID));
+                 }
+                 set
+                 {
+                     _Controller.WriteLine(String.Format("SoftLimitPos{0}={1}", _ID, value));
+                 }
+             }
+             /// <summary>
             ///  Set or get Maximum Integrator "wind up" for axis.  Integrator saturates 
             ///  at the specified value.   See also Servo Flow Diagram and Step Response 
             ///  Screen for further information.

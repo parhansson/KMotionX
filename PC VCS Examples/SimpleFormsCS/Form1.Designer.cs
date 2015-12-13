@@ -49,6 +49,9 @@
             this.TestUSB = new System.Windows.Forms.Button();
             this.TestResults2 = new System.Windows.Forms.TextBox();
             this.TestResults1 = new System.Windows.Forms.TextBox();
+            this.MoveTo = new System.Windows.Forms.Button();
+            this.MoveToValue = new System.Windows.Forms.TextBox();
+            this.TestBoard2 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -224,7 +227,7 @@
             // 
             // TestUSB
             // 
-            this.TestUSB.Location = new System.Drawing.Point(18, 513);
+            this.TestUSB.Location = new System.Drawing.Point(18, 498);
             this.TestUSB.Name = "TestUSB";
             this.TestUSB.Size = new System.Drawing.Size(65, 21);
             this.TestUSB.TabIndex = 5;
@@ -256,19 +259,51 @@
             this.TestResults1.Text = "Not Tested";
             this.TestResults1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
+            // MoveTo
+            // 
+            this.MoveTo.Location = new System.Drawing.Point(481, 72);
+            this.MoveTo.Name = "MoveTo";
+            this.MoveTo.Size = new System.Drawing.Size(65, 51);
+            this.MoveTo.TabIndex = 5;
+            this.MoveTo.Text = "Move To";
+            this.MoveTo.UseVisualStyleBackColor = true;
+            this.MoveTo.Click += new System.EventHandler(this.MoveTo_Click);
+            // 
+            // MoveToValue
+            // 
+            this.MoveToValue.Location = new System.Drawing.Point(462, 129);
+            this.MoveToValue.Name = "MoveToValue";
+            this.MoveToValue.Size = new System.Drawing.Size(105, 20);
+            this.MoveToValue.TabIndex = 0;
+            this.MoveToValue.Text = "0";
+            this.MoveToValue.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // TestBoard2
+            // 
+            this.TestBoard2.Location = new System.Drawing.Point(493, 12);
+            this.TestBoard2.Name = "TestBoard2";
+            this.TestBoard2.Size = new System.Drawing.Size(74, 21);
+            this.TestBoard2.TabIndex = 12;
+            this.TestBoard2.Text = "TestBoard2";
+            this.TestBoard2.UseVisualStyleBackColor = true;
+            this.TestBoard2.Click += new System.EventHandler(this.TestBoard2_click);
+            // 
             // Form1
             // 
             this.AcceptButton = this.SendCommand;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(579, 549);
+            this.Controls.Add(this.TestBoard2);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.TestResults1);
+            this.Controls.Add(this.MoveToValue);
             this.Controls.Add(this.TestResults2);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.JogXNeg);
             this.Controls.Add(this.TestUSB);
+            this.Controls.Add(this.MoveTo);
             this.Controls.Add(this.JogXPos);
             this.Controls.Add(this.groupBox1);
             this.Name = "Form1";
@@ -306,6 +341,9 @@
         private System.Windows.Forms.Button TestUSB;
         private System.Windows.Forms.TextBox TestResults2;
         private System.Windows.Forms.TextBox TestResults1;
+        private System.Windows.Forms.Button MoveTo;
+        private System.Windows.Forms.TextBox MoveToValue;
+        private System.Windows.Forms.Button TestBoard2;
     }
 }
 

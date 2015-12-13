@@ -8,7 +8,7 @@
 // Modified : 23/02/98
 //********************************************
 
-#include "..\stdafx.h"
+#include "stdafx.h"
 
 
 //********************************************
@@ -65,7 +65,49 @@ void CTransform::Copy(CTransform *pTransform)
 	SetValueRotationZX(pTransform->GetValueRotationZX());
 }
 
+// opengl type  of matrix transformation
+// Vector b * Matrix a = Vector c
 
+void CTransform::matrix_mul_vector(float *c,float *a,float *b)
+{
+	c[0]=(a[ 0]*b[0])+(a[ 4]*b[1])+(a[ 8]*b[2])+(a[12]);
+	c[1]=(a[ 1]*b[0])+(a[ 5]*b[1])+(a[ 9]*b[2])+(a[13]);
+	c[2]=(a[ 2]*b[0])+(a[ 6]*b[1])+(a[10]*b[2])+(a[14]);
+	c[3]=(a[ 3]*b[0])+(a[ 7]*b[1])+(a[11]*b[2])+(a[15]);
+}
+
+
+void CTransform::make_matrix(float *a)
+{
+	glMatrixMode(GL_MODELVIEW);
+	::glPushMatrix();
+	glLoadIdentity();
+	::glGetFloatv(GL_MODELVIEW_MATRIX,a);
+
+
+	// Position / translation / scaling
+	glTranslatef(GetTranslation()->x(),
+				 GetTranslation()->y(),
+				 GetTranslation()->z());
+
+	glScalef(GetScale()->x(),
+				 GetScale()->y(),
+				 GetScale()->z());
+
+	if (GetValueRotation()!=0.0f)
+		glRotatef(GetValueRotation(),
+				  GetRotation()->x(),
+				  GetRotation()->y(),
+				  GetRotation()->z());
+
+	if (GetValueRotationXY()!=0.0f) glRotatef(GetValueRotationXY(),0.0f,0.0f,1.0f);
+	if (GetValueRotationYZ()!=0.0f) glRotatef(GetValueRotationYZ(),1.0f,0.0f,0.0f);
+	if (GetValueRotationZX()!=0.0f) glRotatef(GetValueRotationZX(),0.0f,1.0f,0.0f);
+
+
+	::glGetFloatv(GL_MODELVIEW_MATRIX,a);
+	::glPopMatrix();
+}
 
 
 //////////////////////////////////////////////

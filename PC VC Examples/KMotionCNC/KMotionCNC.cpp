@@ -45,6 +45,24 @@ CKMotionCNCApp theApp;
 
 BOOL CKMotionCNCApp::InitInstance()
 {
+	///////////////////////////////////////////////////////////////////////// 
+	///////////////////////////////////////////////////////////////////////// 
+	WNDCLASS wc;
+
+	// Get the info for this class.
+         // #32770 is the default class name for dialogs boxes.
+	::GetClassInfo(AfxGetInstanceHandle(), "#32770", &wc);
+
+	// Change the name of the class.
+	wc.lpszClassName = "KMotionCNC";
+
+	// Register this class so that MFC can use it.
+	AfxRegisterClass(&wc);	
+	///////////////////////////////////////////////////////////////////////// 
+	///////////////////////////////////////////////////////////////////////// 
+
+
+
 	//Set up date and time defaults so they're the same as system defaults
 	setlocale(LC_ALL, "");
 	setlocale( LC_NUMERIC, "English" );

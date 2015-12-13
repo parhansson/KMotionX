@@ -22,6 +22,8 @@ static char THIS_FILE[] = __FILE__;
 
 #define FLAG_COLOR 0x808000
 
+#define MAGIC_CHECKWORD 12345678
+
 #define GCODE_FILES		"\\Data\\GFilesCNC.txt"
 
 #define SLIDER_RANGE 100
@@ -31,6 +33,14 @@ static char THIS_FILE[] = __FILE__;
 #define STATUS_TIME 0.1 //sec
 
 #define sqr(x) ((x)*(x))
+
+#define ACTION_CYCLE_START 25
+#define ACTION_HALT 26
+#define ACTION_STOP 27
+#define ACTION_FEEDHOLD 28
+#define ACTION_RESUME 29
+#define ACTION_PROG_START 30
+#define ACTION_PROG_EXIT 31
 
 
 //static callbacks
@@ -101,7 +111,7 @@ END_MESSAGE_MAP()
 
 void CKMotionCNCDlg::SaveOnExit(FILE * f)
 {
-	fprintf(f,"%d\n",m_Thread);
+	fprintf(f,"%d %d\n",m_Thread,m_Rapid);
 	fprintf(f,"%d\n",m_Simulate);
 	fprintf(f,"%d\n",m_ShowMach);
 	fprintf(f,"%d\n",m_StepSize);
@@ -115,7 +125,17 @@ void CKMotionCNCDlg::RestoreOnStart(FILE * f)
 {
 	CString s;
 
-	fscanf(f,"%d",&m_Thread);
+	fgets(s.GetBufferSetLength(100),99,f);
+	s.ReleaseBuffer();
+
+	if (s.IsEmpty() || s=="\n")  // skip over a blank line
+	{
+		fgets(s.GetBufferSetLength(100),99,f);
+		s.ReleaseBuffer();
+	}
+	int result = sscanf(s,"%d%d",&m_Thread, &m_Rapid);
+	if (result < 2) m_Rapid=1;
+
 	fscanf(f,"%d",&m_Simulate);
 	fscanf(f,"%d",&m_ShowMach);
 	fscanf(f,"%d",&m_StepSize);
@@ -218,6 +238,8 @@ int CKMotionCNCDlg::SaveLoadConfig(FILE *f, char *s, bool save)
 	DOUBLE(m_JogSpeed[4]);
 	DOUBLE(m_JogSpeed[5]);
 	DOUBLE(m_JogSlowPercent);
+	DOUBLE(m_HardwareFRORange);
+	DOUBLE(m_MaxRapidFRO);
 	DOUBLE(m_TPLookahead);
 	DOUBLE(m_RadiusC);
 	DOUBLE(m_RadiusB);
@@ -251,9 +273,14 @@ int CKMotionCNCDlg::SaveLoadConfig(FILE *f, char *s, bool save)
 	INT(m_ReverseRZ);
 	INT(m_EnableGamePad);
 	INT(m_ZeroUsingFixtures);
+	INT(m_ToolLengthImmediately);
+	INT(m_ToolTableDoM6);
 	INT(m_ArcsToSegs);
 	INT(m_DisplayEncoder);
 	INT(m_Lathe);
+	INT(m_DoRapidsAsFeeds);
+	INT(m_DiameterMode);
+	INT(m_XPosFront);
 
 	INT(m_SpindleType);
 	INT(m_SpindleAxis);
@@ -302,6 +329,14 @@ int CKMotionCNCDlg::SaveLoadConfig(FILE *f, char *s, bool save)
 	PERSIST_MCODE(38);
 	PERSIST_MCODE(39);
 	PERSIST_MCODE(40);
+	PERSIST_MCODE(41);
+	PERSIST_MCODE(42);
+	PERSIST_MCODE(43);
+	PERSIST_MCODE(44);
+	PERSIST_MCODE(45);
+	PERSIST_MCODE(46);
+	PERSIST_MCODE(47);
+	PERSIST_MCODE(48);
 
 	INT(m_DialogFace);
 	DOUBLE(m_SafeZ);
@@ -323,6 +358,10 @@ int CKMotionCNCDlg::SaveLoadConfig(FILE *f, char *s, bool save)
 	
 	CSTRING_PATH(m_VarsFile,DefaultPath);
 
+	INT (m_DisplayGViewer);
+
+	INT(m_ConfigCheckWord);  // do this last as a checksum and indication all is well
+
 	return 0;
 }
 
@@ -330,21 +369,36 @@ int CKMotionCNCDlg::SaveLoadConfig(FILE *f, char *s, bool save)
 int CKMotionCNCDlg::SaveConfig()
 {
 	char s[81];
-	CString Name = TheFrame->MainPath + "\\data\\GCodeConfigCNC.txt";
+	CString Name;
+	FILE *f;
 
-	FILE *f=fopen(Name.GetBuffer(0),"wb");
-	
-	if (!f)
+	for (int iTry=0; iTry<2; iTry++)
 	{
-		CString cs;
-		cs.Format("Error Opening Configuration File %s", Name.GetBuffer(0));
-		TheFrame->MessageBox(cs,"Error",MB_ICONSTOP|MB_OK);
-		return 1;
+		if (iTry==0)
+			Name = TheFrame->MainPathRoot + CONFIG_FILE;
+		else
+			Name = TheFrame->MainPathRoot + CONFIG_FILE_BACKUP;
+
+		f=fopen(Name.GetBuffer(0),"wb");
+		
+		if (!f)
+		{
+			CString cs;
+			cs.Format("Error Opening Configuration File %s", Name.GetBuffer(0));
+			TheFrame->MessageBox(cs,"Error",MB_ICONSTOP|MB_OK);
+		}
+		else
+		{
+			// if GViewer window is open when saving configuration then 
+			// set flag to restore it on next startup
+			m_DisplayGViewer = TheFrame->GViewDlg.m_hWnd!=NULL;
+
+			m_ConfigCheckWord=MAGIC_CHECKWORD;
+			SaveLoadConfig(f, s, true);
+
+			fclose(f);
+		}
 	}
-
-	SaveLoadConfig(f, s, true);
-
-	fclose(f);
 
 	return 0;
 }
@@ -354,28 +408,68 @@ int CKMotionCNCDlg::SaveConfig()
 int CKMotionCNCDlg::LoadConfig()
 {
 	char s[301];
-	CString Name = TheFrame->MainPath + "\\data\\GCodeConfigCNC.txt";
+	CString Name;
+	FILE *f;
+	int success=false;
 
-	FILE *f=fopen(Name.GetBuffer(0),"rb");
-	
-	if (!f)
+	for (int iTry=0; iTry<2; iTry++)
 	{
-		CString cs;
-		cs.Format("Error Opening Configuration File %s", Name.GetBuffer(0));
-		TheFrame->MessageBox(cs,"Error",MB_ICONSTOP|MB_OK);
-		return 1;
-	}
+		if (iTry==0)
+			Name = TheFrame->MainPathRoot + CONFIG_FILE;
+		else
+			Name = TheFrame->MainPathRoot + CONFIG_FILE_BACKUP;
 
-	while (!feof(f))
-	{
-		fgets(s,300,f);
-		if (!feof(f))
+		m_ConfigCheckWord=0;
+
+		f=fopen(Name.GetBuffer(0),"rb");
+		
+		if (f)
 		{
-			SaveLoadConfig(f, s, false);
+			while (!feof(f))
+			{
+				fgets(s,300,f);
+				if (!feof(f))
+				{
+					SaveLoadConfig(f, s, false);
+				}
+			}
+			fclose(f);
+		}
+
+
+		if (!m_ConfigCheckWordVersion || m_ConfigCheckWord==MAGIC_CHECKWORD)
+		{
+			iTry=1;
+			PersistRestored=true;
+		}
+		else
+		{
+			if (iTry==0)
+			{
+				if (AfxMessageBox("Previous Configuration File:\r\r" + Name +
+							  "\r\rcould not be read.  Attempt to recover settings from Backup file?\r"
+							  ,MB_YESNO|MB_ICONSTOP)
+							  != IDYES)
+				{
+					if (AfxMessageBox("Previous Configuration File:\r\r" + Name +
+								  "\r\rcould not be read.  Continuing will cause a loss of all\r"
+								  "settings.  Are you sure you would like to continue?",MB_YESNO|MB_ICONSTOP)
+								  != IDYES)
+						exit(0);
+					
+					iTry=1; // exit tries
+				}
+			}
+			else
+			{
+				if (AfxMessageBox("Backup Configuration File:\r\r" + Name +
+							  "\r\rcould not be read.  Continuing will cause a loss of all\r"
+							  "settings.  Are you sure you would like to continue?",MB_YESNO|MB_ICONSTOP)
+							  != IDYES)
+					exit(0);
+			}
 		}
 	}
-
-	fclose(f);
 
 	return 0;
 }
@@ -539,12 +633,30 @@ int CKMotionCNCDlg::SaveFile(int thread, bool ForceSave)
 void CKMotionCNCDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDlgX::DoDataExchange(pDX);
+
+	// if saving to variables save feed rate to old setting
+	if (pDX->m_bSaveAndValidate)
+	{
+		if (m_Rapid==0)
+		{
+			DDX_Text(pDX, IDC_FeedRateEdit, m_FeedRateRapidValue);
+			DDV_MinMaxDouble(pDX, m_FeedRateRapidValue, 0.1, 2.);
+		}
+		else
+		{
+			DDX_Text(pDX, IDC_FeedRateEdit, m_FeedRateValue);
+			DDV_MinMaxDouble(pDX, m_FeedRateValue, 0.1, 2.);
+		}
+	}
+
+
 	//{{AFX_DATA_MAP(CKMotionCNCDlg)
 	DDX_Control(pDX, IDC_Command, m_Command);
 	DDX_Control(pDX, IDC_tool, m_tool);
 	DDX_Control(pDX, IDC_fixture, m_FixtureOffset);
 	DDX_Control(pDX, IDC_Editor, m_Editor);
 	DDX_Radio(pDX, IDC_Thread1, m_Thread);
+	DDX_Radio(pDX, IDC_Rapid, m_Rapid);
 	DDX_Check(pDX, IDC_Simulate, m_Simulate);
 	DDX_Check(pDX, IDC_BlockDelete, Interpreter->p_setup->block_delete);
 	DDX_Check(pDX, IDC_ShowMach, m_ShowMach);
@@ -599,9 +711,7 @@ void CKMotionCNCDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_Left2, m_Left2);
 	DDX_Control(pDX, IDC_Left, m_Left);
 	DDX_Control(pDX, IDC_LeftStep, m_LeftStep);
-	DDX_Text(pDX, IDC_FeedRateEdit, m_FeedRateValue);
 	DDX_Text(pDX, IDC_SpindleRateEdit, m_SpindleRateValue);
-	DDV_MinMaxDouble(pDX, m_FeedRateValue, 0.1, 2.);
 	DDX_Text(pDX, IDC_SpindleRateEdit, m_SpindleRateValue);
 	DDV_MinMaxDouble(pDX, m_SpindleRateValue, 0.1, 2.);
 	DDX_CBString(pDX, IDC_Command, m_CommandString);
@@ -610,8 +720,25 @@ void CKMotionCNCDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_GO, m_GO);
 	DDX_Control(pDX, IDC_KeyJogMode, m_KeyJogMode);
 	DDX_Control(pDX, IDC_FeedHold, m_FeedHold);
+	DDX_Control(pDX, IDC_Forward, m_Forward);
+	DDX_Control(pDX, IDC_Reverse, m_Reverse);
 	DDX_Radio(pDX, IDC_Step0, m_StepSize);
 	//}}AFX_DATA_MAP
+
+	// if restoring from variables get feed rate from new setting
+	if (!pDX->m_bSaveAndValidate)
+	{
+		if (m_Rapid==0)
+		{
+			DDX_Text(pDX, IDC_FeedRateEdit, m_FeedRateRapidValue);
+			DDV_MinMaxDouble(pDX, m_FeedRateRapidValue, 0.1, 2.);
+		}
+		else
+		{
+			DDX_Text(pDX, IDC_FeedRateEdit, m_FeedRateValue);
+			DDV_MinMaxDouble(pDX, m_FeedRateValue, 0.1, 2.);
+		}
+	}
 }
 
 BEGIN_MESSAGE_MAP(CKMotionCNCDlg, CDlgX)
@@ -638,6 +765,8 @@ BEGIN_MESSAGE_MAP(CKMotionCNCDlg, CDlgX)
 	ON_BN_CLICKED(IDC_ZeroB, OnZeroB)
 	ON_BN_CLICKED(IDC_ZeroC, OnZeroC)
 	ON_BN_CLICKED(IDC_KMotion_HELP, OnIhelp)
+	ON_BN_CLICKED(IDC_Rapid, OnRapid)
+	ON_BN_CLICKED(IDC_Feed,  OnFeed)
 	ON_BN_CLICKED(IDC_Thread1, OnThread1)
 	ON_BN_CLICKED(IDC_Thread2, OnThread2)
 	ON_BN_CLICKED(IDC_Thread3, OnThread3)
@@ -721,6 +850,8 @@ BEGIN_MESSAGE_MAP(CKMotionCNCDlg, CDlgX)
 	ON_COMMAND(ID_F10, OnBnClickedSpindleonccw)	
 	ON_BN_CLICKED(IDC_SpindleOff, &CKMotionCNCDlg::OnBnClickedSpindleoff)
 	ON_COMMAND(ID_F11, OnBnClickedSpindleoff)	
+	ON_WM_NCACTIVATE()
+	ON_COMMAND(ID_ReloadGeoCorrection, OnReloadGeoCorrection)
 	END_MESSAGE_MAP()
 
 
@@ -766,6 +897,8 @@ BEGIN_EASYSIZE_MAP(CKMotionCNCDlg)
 
 //                                left          top    right     bottom
 	EASYSIZE(IDC_FeedHold,      ES_BORDER,IDC_Zminus,ES_KEEPSIZE,IDC_But0,ES_VCENTER)
+	EASYSIZE(IDC_Forward,		ES_KEEPSIZE,ES_KEEPSIZE,IDC_FeedHold,IDC_FeedHold,0)
+	EASYSIZE(IDC_Reverse,		ES_KEEPSIZE,ES_KEEPSIZE,IDC_FeedHold,IDC_FeedHold,0)
 	EASYSIZE(IDC_EmergencyStop, ES_BORDER,IDC_Zminus,ES_KEEPSIZE,IDC_But0,ES_VCENTER)
 	
 	}
@@ -785,6 +918,21 @@ void CKMotionCNCDlg::OnIhelp()
 	TheFrame->HelpDlg.Show("KMotionCNC\\KMotionCNC.htm");
 }
 
+void CKMotionCNCDlg::OnRapid() 
+{
+	if (!UpdateData(TRUE)) return;  // Update integer
+	UpdateData(FALSE);
+	m_FeedSlider.SetPos(m_FeedRateRapidValue);
+	Interpreter->CoordMotion->SetFeedRateRapidOverride(m_FeedRateRapidValue);
+}
+
+void CKMotionCNCDlg::OnFeed() 
+{
+	if (!UpdateData(TRUE)) return;  // Update integer
+	UpdateData(FALSE);
+	m_FeedSlider.SetPos(m_FeedRateValue);
+	Interpreter->CoordMotion->SetFeedRateOverride(m_FeedRateValue);
+}
 
 
 void CKMotionCNCDlg::OnThread1() 
@@ -950,10 +1098,26 @@ void CKMotionCNCDlg::OnExecuteComplete()
 		UpdateData(FALSE);
 		m_DoingSimulationRun=false;
 	}
+	else
+	{
+		if (JobEndTimeValid && JobStartTimeValid)
+			LogJobEndTime(JobEndTimeSecs-JobStartTimeSecs);
+	}
 
 	if (m_exitcode)
 	{
-		GetDlgItem(IDC_Editor)->SetFocus();
+		CWnd *Focus=GetFocus();
+		if (Focus)
+		{
+			CWnd *Parent=Focus->GetParent();
+			// Switch focus to Editor unless the MDI has Focus 
+			if (Parent && Parent->GetDlgCtrlID() != IDC_Command)
+				GetDlgItem(IDC_Editor)->SetFocus();
+		}
+		else
+		{
+			GetDlgItem(IDC_Editor)->SetFocus();
+		}
 	}
 }
 
@@ -986,8 +1150,6 @@ void CompleteCallback(int status, int lineno, int sequence_number, const char *e
 
 		{
 			p->CurrentLine[p->m_ThreadThatWasLaunched]=lineno;
-
-			TheFrame->GViewDlg.m_view.OpenGLMutex->Lock();
 
 			// if we stopped on the first of two things
 			//    Arc(ID=1) Arc(ID=2)
@@ -1031,7 +1193,6 @@ void CompleteCallback(int status, int lineno, int sequence_number, const char *e
 				TheFrame->GViewDlg.m_Path->RemovePathEnd(sequence_number,1,x,y,z);
 
 			TheFrame->GViewDlg.m_Path->SetModified();
-			TheFrame->GViewDlg.m_view.OpenGLMutex->Unlock();
 		}
 
 		if (p->m_ThreadThatWasLaunched>=0)
@@ -1062,10 +1223,25 @@ void CompleteCallback(int status, int lineno, int sequence_number, const char *e
 		CM->m_PreviouslyStopped = p->m_SaveStoppedState;
 		p->m_RestoreStoppedState=false;
 	}
+	else
+	{
+		// keep track of which Thread was running when the Interpreter 
+		// stopped so we don't try to resume those conditions in a different file
+		p->m_ThreadThatWasOriginallyStopped=p->m_ThreadThatWasLaunched;
+	}
+
+
 	// post message so GUI thread updates screens
 
 	if (p->m_hWnd)
 		p->PostMessage(WM_COMMAND,IDC_ExecuteComplete,0);
+
+
+	if (p->m_PerformPostHaltCommand)
+	{
+		p->m_PerformPostHaltCommand=false;
+		p->Interpreter->InvokeAction(ACTION_HALT,FALSE);  // Do Special Action
+	}
 }
 
 void StatusCallback(int line_no, const char *msg)
@@ -1092,6 +1268,8 @@ void CKMotionCNCDlg::OnExecute()
 {
 	if (!ThreadIsExecuting)
 	{
+		Interpreter->InvokeAction(ACTION_CYCLE_START,FALSE);  // Do Special Action
+
 		if (SaveFile(m_Thread,false)) return;  // don't force the save
 		m_ThreadThatWasLaunched=m_Thread;
 		m_RestoreStoppedState=false;
@@ -1159,9 +1337,14 @@ int CKMotionCNCDlg::LaunchExecution(CString InFile,int begin, int end)
 	Interpreter->CoordMotion->m_AxisDisabled=false;
 	Interpreter->CoordMotion->ClearHalt();
 
+	Interpreter->CoordMotion->SetFeedRateOverride(m_FeedRateValue);
+	Interpreter->CoordMotion->SetFeedRateRapidOverride(m_FeedRateRapidValue);
+
+
 	if (!m_Simulate && CheckForResumeCircumstances()) return 1; // check if we should move back to where we stopped
 
 	ThreadIsExecuting=true;
+	EnableJogKeys=false;
 
 	if (begin==0 && m_ThreadThatWasLaunched!=-1)
 	{
@@ -1186,7 +1369,7 @@ int CKMotionCNCDlg::CheckForResumeCircumstances()
 	CCoordMotion *CM = Interpreter->CoordMotion;
 	setup_pointer ps = Interpreter->p_setup;
 
-	if (!CM->m_PreviouslyStopped)
+	if (!CM->m_PreviouslyStopped || m_ThreadThatWasOriginallyStopped != m_ThreadThatWasLaunched)
 	{
 		return Interpreter->ReadAndSyncCurPositions(&ps->current_x,&ps->current_y,&ps->current_z,&ps->AA_current,&ps->BB_current,&ps->CC_current);
 	}
@@ -1307,36 +1490,33 @@ void CKMotionCNCDlg::SetMotionParams()
 	p->DegreesB = m_DegreesB!=0;
 	p->DegreesC = m_DegreesC!=0;
 	p->ArcsToSegs = m_ArcsToSegs!=0;
+	p->MaxRapidFRO=m_MaxRapidFRO;
+	p->DoRapidsAsFeeds=m_DoRapidsAsFeeds!=0;
 
 	Interpreter->CoordMotion->SetTPParams();
 }
 
 
-int DoCheckShiftAndKey(int Key,WPARAM wParam, LPARAM lParam, bool &Down, bool &Down2, 
-						CMotionButton &Button, CMotionButton &Button2, CMotionButton &ButtonStep)
+int DoCheckShiftAndKey(int Key,WPARAM wParam, LPARAM lParam, CMotionButton &Button, CMotionButton &Button2, CMotionButton &ButtonStep)
 {
 	if (wParam == VK_SHIFT)
 	{
 		if (lParam & 0x80000000)
 		{
 			// shift went up
-			if (Down2)
+			if (Button2.DrawPushed)
 			{
-				Down2=false;
-				PostMessage(Button.m_hWnd,WM_LBUTTONDOWN,MK_LBUTTON,0); 
-				PostMessage(Button2.m_hWnd,WM_LBUTTONUP,0,0); 
-				Down=true;
+				Button.HandleButtonDown();
+				Button2.HandleButtonUp();
 			}
 		}
 		else
 		{
 			// shift went down
-			if (Down)
+			if (Button.DrawPushed)
 			{
-				Down=false;
-				PostMessage(Button2.m_hWnd,WM_LBUTTONDOWN,MK_LBUTTON,0); 
-				PostMessage(Button.m_hWnd,WM_LBUTTONUP,0,0); 
-				Down2=true;
+				Button2.HandleButtonDown();
+				Button.HandleButtonUp();
 			}
 		}
 	}
@@ -1344,15 +1524,21 @@ int DoCheckShiftAndKey(int Key,WPARAM wParam, LPARAM lParam, bool &Down, bool &D
 	if (GetKeyState(VK_CONTROL)&0x80000000)
 	{
 		// control key kills any motion
-		if (Down)
+		if (Button.DrawPushed)
 		{
-			PostMessage(Button.m_hWnd,WM_LBUTTONUP,0,0); 
-			Down=false;
+			Button.HandleButtonUp();
 		}
-		if (Down2)
+		if (Button2.DrawPushed)
 		{
-			PostMessage(Button2.m_hWnd,WM_LBUTTONUP,0,0); 
-			Down2=false;
+			Button2.HandleButtonUp();
+		}
+	}
+	else
+	{
+		// if control key not pressed then if step button is down, release it
+		if (ButtonStep.DrawPushed)
+		{
+			ButtonStep.HandleButtonUp();
 		}
 	}
 
@@ -1363,30 +1549,28 @@ int DoCheckShiftAndKey(int Key,WPARAM wParam, LPARAM lParam, bool &Down, bool &D
 			if ((lParam & 0x80000000)==0)
 			{
 				// arrow key was pressed while control was down
-				PostMessage(ButtonStep.m_hWnd,WM_LBUTTONDOWN,MK_LBUTTON,0); 
+				ButtonStep.HandleButtonDown();
 			}
 			else
 			{
 				// arrow key was released while control was down
-				PostMessage(ButtonStep.m_hWnd,WM_LBUTTONUP,0,0); 
-			}
+				ButtonStep.HandleButtonUp();
+		}
 		}
 		else if (GetKeyState(VK_SHIFT)&0x80000000)
 		{
 			if (lParam & 0x80000000)
 			{
-				if (Down2)
+				if (Button2.DrawPushed)
 				{
-					PostMessage(Button2.m_hWnd,WM_LBUTTONUP,0,0); 
-					Down2=false;
+					Button2.HandleButtonUp();
 				}
 			}
 			else
 			{
-				if (!Down2)
+				if (!Button2.DrawPushed)
 				{
-					PostMessage(Button2.m_hWnd,WM_LBUTTONDOWN,MK_LBUTTON,0); 
-					Down2=true;
+					Button2.HandleButtonDown();
 				}
 			}
 		}
@@ -1394,18 +1578,16 @@ int DoCheckShiftAndKey(int Key,WPARAM wParam, LPARAM lParam, bool &Down, bool &D
 		{
 			if (lParam & 0x80000000)
 			{
-				if (Down)
+				if (Button.DrawPushed)
 				{
-					PostMessage(Button.m_hWnd,WM_LBUTTONUP,0,0); 
-					Down=false;
+					Button.HandleButtonUp();
 				}
 			}
 			else
 			{
-				if (!Down)
+				if (!Button.DrawPushed)
 				{
-					PostMessage(Button.m_hWnd,WM_LBUTTONDOWN,MK_LBUTTON,0); 
-					Down=true;
+					Button.HandleButtonDown();
 				}
 			}
 		}
@@ -1423,90 +1605,96 @@ LRESULT CALLBACK KbdProc    (   int     nCode,  // hook code
 
                             )
 {
+	CKMotionCNCDlg *p=&TheFrame->GCodeDlg;
 
-	static bool LeftDown=false;
-	static bool Left2Down=false;
-	static bool RightDown=false;
-	static bool Right2Down=false;
-	static bool UpDown=false;
-	static bool Up2Down=false;
-	static bool DownDown=false;
-	static bool Down2Down=false;
-	static bool ZplusDown=false;
-	static bool Zplus2Down=false;
-	static bool ZminusDown=false;
-	static bool Zminus2Down=false;
-	static bool AplusDown=false;
-	static bool Aplus2Down=false;
-	static bool AminusDown=false;
-	static bool Aminus2Down=false;
+	if (wParam == p->m_UserButtonKeys[0])
+	{
+		p->SendMessageA(WM_COMMAND,IDC_But0);
+	}
+	else if (wParam == p->m_UserButtonKeys[1])
+	{
+		p->SendMessageA(WM_COMMAND,IDC_But1);
+	}
+	else if (wParam == p->m_UserButtonKeys[2])
+	{
+		p->SendMessageA(WM_COMMAND,IDC_But2);
+	}
+	else if (wParam == p->m_UserButtonKeys[3])
+	{
+		p->SendMessageA(WM_COMMAND,IDC_But3);
+	}
+	else if (wParam == p->m_UserButtonKeys[4])
+	{
+		p->SendMessageA(WM_COMMAND,IDC_But4);
+	}
+	else if (wParam == p->m_UserButtonKeys[5])
+	{
+		p->SendMessageA(WM_COMMAND,IDC_But5);
+	}
+	else if (wParam == p->m_UserButtonKeys[6])
+	{
+		p->SendMessageA(WM_COMMAND,IDC_But6);
+	}
+	else if (wParam == p->m_UserButtonKeys[7])
+	{
+		p->SendMessageA(WM_COMMAND,IDC_But7);
+	}
+	else if (wParam == p->m_UserButtonKeys[8])
+	{
+		p->SendMessageA(WM_COMMAND,IDC_But8);
+	}
+	else if (wParam == p->m_UserButtonKeys[9])
+	{
+		p->SendMessageA(WM_COMMAND,IDC_But9);
+	}
+	else if (p->m_KeyJogMode.Toggled && 
+		(!p->ThreadIsExecuting || p->EnableJogKeys))	
+	{
+		if (p->m_Lathe)
+		{
+			if (DoCheckShiftAndKey(VK_LEFT,wParam,lParam,
+				p->m_Left,p->m_Left2,p->m_LeftStep)) return 1;
 
-	if (wParam == TheFrame->GCodeDlg.m_UserButtonKeys[0])
-	{
-		TheFrame->GCodeDlg.SendMessageA(WM_COMMAND,IDC_But0);
-	}
-	else if (wParam == TheFrame->GCodeDlg.m_UserButtonKeys[1])
-	{
-		TheFrame->GCodeDlg.SendMessageA(WM_COMMAND,IDC_But1);
-	}
-	else if (wParam == TheFrame->GCodeDlg.m_UserButtonKeys[2])
-	{
-		TheFrame->GCodeDlg.SendMessageA(WM_COMMAND,IDC_But2);
-	}
-	else if (wParam == TheFrame->GCodeDlg.m_UserButtonKeys[3])
-	{
-		TheFrame->GCodeDlg.SendMessageA(WM_COMMAND,IDC_But3);
-	}
-	else if (wParam == TheFrame->GCodeDlg.m_UserButtonKeys[4])
-	{
-		TheFrame->GCodeDlg.SendMessageA(WM_COMMAND,IDC_But4);
-	}
-	else if (wParam == TheFrame->GCodeDlg.m_UserButtonKeys[5])
-	{
-		TheFrame->GCodeDlg.SendMessageA(WM_COMMAND,IDC_But5);
-	}
-	else if (wParam == TheFrame->GCodeDlg.m_UserButtonKeys[6])
-	{
-		TheFrame->GCodeDlg.SendMessageA(WM_COMMAND,IDC_But6);
-	}
-	else if (wParam == TheFrame->GCodeDlg.m_UserButtonKeys[7])
-	{
-		TheFrame->GCodeDlg.SendMessageA(WM_COMMAND,IDC_But7);
-	}
-	else if (wParam == TheFrame->GCodeDlg.m_UserButtonKeys[8])
-	{
-		TheFrame->GCodeDlg.SendMessageA(WM_COMMAND,IDC_But8);
-	}
-	else if (wParam == TheFrame->GCodeDlg.m_UserButtonKeys[9])
-	{
-		TheFrame->GCodeDlg.SendMessageA(WM_COMMAND,IDC_But9);
-	}
-	else if (TheFrame->GCodeDlg.m_KeyJogMode.Toggled && 
-		!TheFrame->GCodeDlg.ThreadIsExecuting)	
-	{
-		if (DoCheckShiftAndKey(VK_LEFT,wParam,lParam,LeftDown,Left2Down,
-			TheFrame->GCodeDlg.m_Left,TheFrame->GCodeDlg.m_Left2,TheFrame->GCodeDlg.m_LeftStep)) return 1;
+			if (DoCheckShiftAndKey(VK_RIGHT,wParam,lParam,
+				p->m_Right,p->m_Right2,p->m_RightStep)) return 1;
 
-		if (DoCheckShiftAndKey(VK_RIGHT,wParam,lParam,RightDown,Right2Down,
-			TheFrame->GCodeDlg.m_Right,TheFrame->GCodeDlg.m_Right2,TheFrame->GCodeDlg.m_RightStep)) return 1;
+			if (DoCheckShiftAndKey(VK_PRIOR,wParam,lParam,
+				p->m_Up,p->m_Up2,p->m_UpStep)) return 1;
 
-		if (DoCheckShiftAndKey(VK_UP,wParam,lParam,UpDown,Up2Down,
-			TheFrame->GCodeDlg.m_Up,TheFrame->GCodeDlg.m_Up2,TheFrame->GCodeDlg.m_UpStep)) return 1;
+			if (DoCheckShiftAndKey(VK_NEXT,wParam,lParam,
+				p->m_Down,p->m_Down2,p->m_DownStep)) return 1;
 
-		if (DoCheckShiftAndKey(VK_DOWN,wParam,lParam,DownDown,Down2Down,
-			TheFrame->GCodeDlg.m_Down,TheFrame->GCodeDlg.m_Down2,TheFrame->GCodeDlg.m_DownStep)) return 1;
+			if (DoCheckShiftAndKey(VK_UP,wParam,lParam,
+				p->m_Zplus,p->m_Zplus2,p->m_ZplusStep)) return 1;
 
-		if (DoCheckShiftAndKey(VK_PRIOR,wParam,lParam,ZplusDown,Zplus2Down,
-			TheFrame->GCodeDlg.m_Zplus,TheFrame->GCodeDlg.m_Zplus2,TheFrame->GCodeDlg.m_ZplusStep)) return 1;
+			if (DoCheckShiftAndKey(VK_DOWN,wParam,lParam,
+				p->m_Zminus,p->m_Zminus2,p->m_ZminusStep)) return 1;
+		}
+		else
+		{
+			if (DoCheckShiftAndKey(VK_LEFT,wParam,lParam,
+				p->m_Left,p->m_Left2,p->m_LeftStep)) return 1;
 
-		if (DoCheckShiftAndKey(VK_NEXT,wParam,lParam,ZminusDown,Zminus2Down,
-			TheFrame->GCodeDlg.m_Zminus,TheFrame->GCodeDlg.m_Zminus2,TheFrame->GCodeDlg.m_ZminusStep)) return 1;
+			if (DoCheckShiftAndKey(VK_RIGHT,wParam,lParam,
+				p->m_Right,p->m_Right2,p->m_RightStep)) return 1;
 
-		if (DoCheckShiftAndKey(VK_ADD,wParam,lParam,AplusDown,Aplus2Down,
-			TheFrame->GCodeDlg.m_Aplus,TheFrame->GCodeDlg.m_Aplus2,TheFrame->GCodeDlg.m_AplusStep)) return 1;
+			if (DoCheckShiftAndKey(VK_UP,wParam,lParam,
+				p->m_Up,p->m_Up2,p->m_UpStep)) return 1;
 
-		if (DoCheckShiftAndKey(VK_SUBTRACT,wParam,lParam,AminusDown,Aminus2Down,
-			TheFrame->GCodeDlg.m_Aminus,TheFrame->GCodeDlg.m_Aminus2,TheFrame->GCodeDlg.m_AminusStep)) return 1;
+			if (DoCheckShiftAndKey(VK_DOWN,wParam,lParam,
+				p->m_Down,p->m_Down2,p->m_DownStep)) return 1;
+
+			if (DoCheckShiftAndKey(VK_PRIOR,wParam,lParam,
+				p->m_Zplus,p->m_Zplus2,p->m_ZplusStep)) return 1;
+
+			if (DoCheckShiftAndKey(VK_NEXT,wParam,lParam,
+				p->m_Zminus,p->m_Zminus2,p->m_ZminusStep)) return 1;
+		}
+		if (DoCheckShiftAndKey(VK_ADD,wParam,lParam,
+			p->m_Aplus,p->m_Aplus2,p->m_AplusStep)) return 1;
+
+		if (DoCheckShiftAndKey(VK_SUBTRACT,wParam,lParam,
+			p->m_Aminus,p->m_Aminus2,p->m_AminusStep)) return 1;
 	}
     return  (CallNextHookEx(g_hhk,nCode,wParam,lParam));
 }
@@ -1521,9 +1709,13 @@ BOOL CKMotionCNCDlg::OnInitDialog()
 
 	CDialog::OnInitDialog(); // bypass CDlgX Init Dialog for Modal Dialogs like this
 
-	m_Editor.SetupForGCode();
+	m_RealTimeSetup = Interpreter->p_setup;  // set to something valid
 
 	Interpreter->CoordMotion->m_Simulate=(m_Simulate!=0);  // make sure the libraries match
+
+	Interpreter->p_setup->DiameterMode=m_DiameterMode;
+
+	m_Editor.SetupForGCode();
 
 	for (i=0; i<N_USER_GCODE_FILES; i++)
 	{
@@ -1563,6 +1755,8 @@ BOOL CKMotionCNCDlg::OnInitDialog()
 	m_GO.LoadBitmaps(IDB_GO,0,0);
 	m_KeyJogMode.LoadBitmaps(IDB_ToggleKeyModeUp,IDB_ToggleKeyModeDown,0);
 	m_KeyJogMode.ToggleType=true;
+	m_Reverse.LoadBitmaps(IDB_Rew,0,0);
+	m_Forward.LoadBitmaps(IDB_For,0,0);
 	m_FeedHold.LoadBitmaps(IDB_FeedHold,0,0);
 	m_LeftStep.LoadBitmaps(IDB_LeftStep,0,0);
 	m_Left.LoadBitmaps(IDB_Left,0,0);
@@ -1617,12 +1811,24 @@ BOOL CKMotionCNCDlg::OnInitDialog()
 		m_Left.Init			(this, 2,-1,m_JogSlowPercent*0.01,false);
 		m_Left2.Init		(this, 2,-1,1.0,false);
 
-		m_ZplusStep.Init	(this, 0, 1,m_JogSlowPercent*0.01,true);
-		m_Zplus.Init		(this, 0, 1,m_JogSlowPercent*0.01,false);
-		m_Zplus2.Init		(this, 0, 1,1.0,false);
-		m_ZminusStep.Init	(this, 0,-1,m_JogSlowPercent*0.01,true);
-		m_Zminus.Init		(this, 0,-1,m_JogSlowPercent*0.01,false);
-		m_Zminus2.Init		(this, 0,-1,1.0,false);
+		if (m_XPosFront)
+		{
+			m_ZplusStep.Init	(this, 0,-1,m_JogSlowPercent*0.01,true);
+			m_Zplus.Init		(this, 0,-1,m_JogSlowPercent*0.01,false);
+			m_Zplus2.Init		(this, 0,-1,1.0,false);
+			m_ZminusStep.Init	(this, 0, 1,m_JogSlowPercent*0.01,true);
+			m_Zminus.Init		(this, 0, 1,m_JogSlowPercent*0.01,false);
+			m_Zminus2.Init		(this, 0, 1,1.0,false);
+		}
+		else
+		{
+			m_ZplusStep.Init	(this, 0, 1,m_JogSlowPercent*0.01,true);
+			m_Zplus.Init		(this, 0, 1,m_JogSlowPercent*0.01,false);
+			m_Zplus2.Init		(this, 0, 1,1.0,false);
+			m_ZminusStep.Init	(this, 0,-1,m_JogSlowPercent*0.01,true);
+			m_Zminus.Init		(this, 0,-1,m_JogSlowPercent*0.01,false);
+			m_Zminus2.Init		(this, 0,-1,1.0,false);
+		}
 	}
 	else
 	{
@@ -1648,7 +1854,6 @@ BOOL CKMotionCNCDlg::OnInitDialog()
 	m_Down.Init			(this, 1,-1,m_JogSlowPercent*0.01,false);
 	m_Down2.Init		(this, 1,-1,1.0,false);
 
-
 	m_AplusStep.Init	(this, 3, 1,m_JogSlowPercent*0.01,true);
 	m_Aplus.Init		(this, 3, 1,m_JogSlowPercent*0.01,false);
 	m_Aplus2.Init		(this, 3, 1,1.0,false);
@@ -1670,6 +1875,11 @@ BOOL CKMotionCNCDlg::OnInitDialog()
 	m_Cminus.Init		(this, 5,-1,m_JogSlowPercent*0.01,false);
 	m_Cminus2.Init		(this, 5,-1,1.0,false);
 
+	m_Forward.Init		(this,  1,0.2);
+	m_Reverse.Init		(this, -1,0.2);
+
+	m_Forward.ShowWindow(SW_HIDE);
+	m_Reverse.ShowWindow(SW_HIDE);
 
 
 	// Add "About..." menu item to system menu.
@@ -1761,7 +1971,7 @@ BOOL CKMotionCNCDlg::OnInitDialog()
 	
 	m_Editor.SetupForGCode();
 
-	FillComboWithCount(1,99,&m_tool);
+	FillComboWithTools(&m_tool);
 	FillComboWithCountFixture(1,9,&m_FixtureOffset);
 
 	SetUserButtons();
@@ -1769,7 +1979,7 @@ BOOL CKMotionCNCDlg::OnInitDialog()
 	SetMotionParams();
 
 	Interpreter->CoordMotion->SetSpindleRateOverride(m_SpindleRateValue);
-	Interpreter->CoordMotion->SetFeedRateOverride(m_FeedRateValue);
+	Interpreter->CoordMotion->SetHardwareFRORange(m_HardwareFRORange);
 
 	Interpreter->ReadSetupFile();
 
@@ -1777,10 +1987,14 @@ BOOL CKMotionCNCDlg::OnInitDialog()
 
 	Interpreter->CoordMotion->Kinematics->ReadGeoTable(m_GeoFile);
 
+	m_RealTimeSetup=Interpreter->GetRealTimeState();
+
 	SetStepSizes();
 
 	CSS_BitmapValid=false;
 	CSS_BitmapDisplayed=false;
+	G32_BitmapValid=false;
+	G32_BitmapDisplayed=false;
 
     g_hhk   =   SetWindowsHookEx    (   WH_KEYBOARD,
                                         ( HOOKPROC) KbdProc,
@@ -1790,6 +2004,27 @@ BOOL CKMotionCNCDlg::OnInitDialog()
 
 	INIT_EASYSIZE;
 	
+	// Restore GViewer Window if it was open when shut down
+	if (m_DisplayGViewer) OnGView();
+
+	// for tool length immediately mode make sure Interpreter matches initial tool
+	if (m_ToolLengthImmediately && m_ToolTableDoM6)
+	{
+		int tool;
+		CString s;
+		m_tool.GetLBText(m_RealTimeSetup->selected_tool_slot,s);
+
+		if (s.GetAt(0) == 'I')
+			s.Delete(0,3);
+		else
+			s.Delete(0,5);
+
+		sscanf(s,"%d",&tool);
+
+		s.Format("H%dG43",tool);
+		DoGCodeLine(s);
+	}
+
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 	
@@ -1824,10 +2059,8 @@ void StraightTraverseCallback(double x, double y, double z, double a, double b, 
 		y = x0 * sin(Theta) + y * cos(Theta);
 	}
 
-	TheFrame->GViewDlg.m_view.OpenGLMutex->Lock();
-	TheFrame->GViewDlg.m_Path->AddVertex(new CVertex3d(x,y,z,TheFrame->GCodeDlg.m_ColorTraverse,sequence_number,0));
+	TheFrame->GViewDlg.m_Path->AddVertexTool(new CVertex3dFast(x,y,z,TheFrame->GCodeDlg.m_ColorTraverse,sequence_number,0));
 	TheFrame->GViewDlg.m_Path->SetModified();
-	TheFrame->GViewDlg.m_view.OpenGLMutex->Unlock();
 }
 	
 void StraightFeedCallback(double DesiredFeedRate_in_per_sec,
@@ -1863,13 +2096,11 @@ void StraightFeedCallback(double DesiredFeedRate_in_per_sec,
 		y = x0 * sin(Theta) + y * cos(Theta);
 	}
 
-	TheFrame->GViewDlg.m_view.OpenGLMutex->Lock();
-	TheFrame->GViewDlg.m_Path->AddVertex(new CVertex3d(x,y,z,TheFrame->GCodeDlg.m_ColorFeed,sequence_number,ID));
+	TheFrame->GViewDlg.m_Path->AddVertexTool(new CVertex3dFast(x,y,z,TheFrame->GCodeDlg.m_ColorFeed,sequence_number,ID));
 	TheFrame->GViewDlg.m_Path->SetModified();
-	TheFrame->GViewDlg.m_view.OpenGLMutex->Unlock();
 }
 
-#define N_SEG 50.0
+#define N_SEG 100.0
 
 void ArcFeedCallback(bool ZeroLenAsFullCircles, double DesiredFeedRate_in_per_sec, 
 			    CANON_PLANE plane,
@@ -1934,11 +2165,10 @@ void ArcFeedCallback(bool ZeroLenAsFullCircles, double DesiredFeedRate_in_per_se
 	// given tolerance T and Radius R the largest angle of a segment is:
 	//
 	// max_theta = acos(1 - T/radius)
-	// but actually for now just do 50 sided circles
+	// but actually for now just do N_SEG sided circles
 
 	n_segs = (int)fabs(N_SEG * d_theta/TWO_PI) + 1;
 
-	TheFrame->GViewDlg.m_view.OpenGLMutex->Lock();
 	for (i=1; i<=n_segs; i++)
 	{
 		double xp,yp,zp;
@@ -1996,14 +2226,14 @@ void ArcFeedCallback(bool ZeroLenAsFullCircles, double DesiredFeedRate_in_per_se
 			y = x0 * sin(Theta) + y * cos(Theta);
 		}
 
-		TheFrame->GViewDlg.m_Path->AddVertex(new CVertex3d(x,y,z,TheFrame->GCodeDlg.m_ColorFeed,sequence_number,ID));
+		TheFrame->GViewDlg.m_Path->AddVertexTool(new CVertex3dFast(x,y,z,TheFrame->GCodeDlg.m_ColorFeed,sequence_number,ID));
 	}
 	TheFrame->GViewDlg.m_Path->SetModified();
-	TheFrame->GViewDlg.m_view.OpenGLMutex->Unlock();
 }
 	
 void CKMotionCNCDlg::OnHalt() 
 {
+	m_PerformPostHaltCommand=true;
 	Interpreter->Halt();
 }
 
@@ -2076,13 +2306,15 @@ void CKMotionCNCDlg::OnTimer(UINT nIDEvent)
 
 					// error reading status
 					TheFrame->KMotionDLL->Failed();
+					m_ConnectedForStatus=false;
 				}
 				
 				TheFrame->KMotionDLL->ReleaseToken();
 
-				UpdateScreen(true);
+				UpdateScreen(m_ConnectedForStatus);
 
-				ServiceKFLOPCommands();
+				if (m_ConnectedForStatus)
+					ServiceKFLOPCommands();
 			}
 			else
 			{
@@ -2136,8 +2368,13 @@ void CKMotionCNCDlg::OnTimer(UINT nIDEvent)
 
 		
 		GCodeMutex->Lock();
+		
+		if (GCodeThreadActive[m_Thread])
+			CurrentLine[m_Thread] = m_RealTimeSetup->current_line;
+		
+		int Line = CurrentLine[m_Thread];
 
-		if (CurrentLine[m_Thread]    != DisplayedCurrentLine ||
+		if (Line != DisplayedCurrentLine ||
 			ThreadHadError[m_Thread] != DisplayedThreadHadError)
 		{
 			m_Editor.MarkerDeleteAll(0);
@@ -2154,16 +2391,16 @@ void CKMotionCNCDlg::OnTimer(UINT nIDEvent)
 			}
 			
 			m_Editor.MarkerDefine(0,SC_MARK_ARROW);
-			m_Editor.MarkerAdd(CurrentLine[m_Thread], 0);
+			m_Editor.MarkerAdd(Line, 0);
 
 			int LinesInView = m_Editor.LinesOnScreen();
-			m_Editor.GotoLine(CurrentLine[m_Thread]);
+			m_Editor.GotoLine(Line);
 			m_Editor.SetVisiblePolicy(CARET_STRICT+CARET_EVEN,0);
-			m_Editor.EnsureVisibleEnforcePolicy(CurrentLine[m_Thread]);
+			m_Editor.EnsureVisibleEnforcePolicy(Line);
 
-			m_Editor.GotoLine(CurrentLine[m_Thread]);
+			m_Editor.GotoLine(Line);
 
-			DisplayedCurrentLine=CurrentLine[m_Thread];
+			DisplayedCurrentLine=Line;
 			DisplayedThreadHadError=ThreadHadError[m_Thread];
 		}
 		else
@@ -2201,6 +2438,15 @@ void CKMotionCNCDlg::OnTimer(UINT nIDEvent)
 			}
 		}
 		GCodeMutex->Unlock();
+
+		if (FirstStartup)
+		{
+			FirstStartup=false;
+			if (Interpreter->InvokeAction(ACTION_PROG_START,FALSE))  // Special Command
+			{
+				AfxMessageBox("Unable to perform Startup Action");
+			}
+		}
 	}
 
 	CDlgX::OnTimer(nIDEvent);
@@ -2246,6 +2492,21 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 		SetKFLOPCommandResult(0);
 		break;
 
+	case PC_COMM_HALT_NEXT_LINE:
+		Interpreter->HaltNextLine();
+		SetKFLOPCommandResult(0);
+		break;
+
+	case PC_COMM_ENABLE_JOG_KEYS:
+		EnableJogKeys=true;
+		SetKFLOPCommandResult(0);
+		break;
+
+	case PC_COMM_DISABLE_JOG_KEYS:
+		EnableJogKeys=false;
+		SetKFLOPCommandResult(0);
+		break;
+
 	case PC_COMM_EXECUTE:
 		if (!ThreadIsExecuting)
 		{
@@ -2275,10 +2536,13 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 		if (NewValue > 0.001 && NewValue < 1000.0)   // ignore if crazy number
 		{
 			m_FeedRateValue = NewValue;
-			s.Format("%.2f",m_FeedRateValue);
-			SetDlgItemText(IDC_FeedRateEdit,s);
 			Interpreter->CoordMotion->SetFeedRateOverride(m_FeedRateValue);
-			m_FeedSlider.SetPos(m_FeedRateValue);
+			if (m_Rapid==1)
+			{
+				s.Format("%.2f",m_FeedRateValue);
+				SetDlgItemText(IDC_FeedRateEdit,s);
+				m_FeedSlider.SetPos(m_FeedRateValue);
+			}
 			SetKFLOPCommandResult(0);
 		}
 		else
@@ -2296,6 +2560,7 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 			SetDlgItemText(IDC_SpindleRateEdit,s);
 			Interpreter->CoordMotion->SetSpindleRateOverride(m_SpindleRateValue);
 			m_SpindleSlider.SetPos(m_SpindleRateValue);
+			Interpreter->InvokeAction(10,FALSE);  // resend new Speed
 			SetKFLOPCommandResult(0);
 		}
 		else
@@ -2309,10 +2574,13 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 		if (NewValue > 0.001 && NewValue < 1000.0)   // ignore if crazy number
 		{
 			m_FeedRateValue = NewValue;
-			s.Format("%.2f",m_FeedRateValue);
-			SetDlgItemText(IDC_FeedRateEdit,s);
 			Interpreter->CoordMotion->SetFeedRateOverride(m_FeedRateValue);
-			m_FeedSlider.SetPos(m_FeedRateValue);
+			if (m_Rapid==1)
+			{
+				s.Format("%.2f",m_FeedRateValue);
+				SetDlgItemText(IDC_FeedRateEdit,s);
+				m_FeedSlider.SetPos(m_FeedRateValue);
+			}
 			SetKFLOPCommandResult(0);
 		}
 		else
@@ -2330,6 +2598,7 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 			SetDlgItemText(IDC_SpindleRateEdit,s);
 			Interpreter->CoordMotion->SetSpindleRateOverride(m_SpindleRateValue);
 			m_SpindleSlider.SetPos(m_SpindleRateValue);
+			Interpreter->InvokeAction(10,FALSE);  // resend new Speed
 			SetKFLOPCommandResult(0);
 		}
 		else
@@ -2460,6 +2729,30 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 		}
 		break;
 
+
+	case PC_COMM_INPUT:
+		if (!MsgDisplayed)
+		{	
+			static CSetValue SetDlg;
+			float fvalue;
+			DisableKeyJog();
+			if (GetStringFromGather(MainStatus.PC_comm[1],&SetDlg.m_Label,50)) break;
+			MainStatus.PC_comm[0]=0;  // clear the command now that it has been executed
+			MsgDisplayed=true;
+			if (SetDlg.DoModal() == IDOK)
+				result = 0;
+			else
+				result = 1;
+			MsgDisplayed=false;
+			fvalue = SetDlg.m_Value;
+			s.Format("SetPersistHex%d %x",PC_COMM_PERSIST+2,*(int *)&fvalue);
+			if (TheFrame->KMotionDLL->WriteLine(s)) break;
+			s.Format("SetPersistDec%d %d",PC_COMM_PERSIST+3,result);
+			if (TheFrame->KMotionDLL->WriteLine(s)) break;
+			SetKFLOPCommandResult(0);
+		}
+		break;
+
 	case PC_COMM_GET_VARS:
 		for (i=0; i<MainStatus.PC_comm[2]; i++)  // loop through how many to transfer
 		{
@@ -2469,7 +2762,7 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 		if (i==MainStatus.PC_comm[2])
 			SetKFLOPCommandResult(0);
 		else
-			SetKFLOPCommandResult(1);
+			SetKFLOPCommandResult(-1);
 
 		break;
 
@@ -2547,14 +2840,15 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 			// first read the Tool Table File
 			if (EditToolFile.LoadFile(m_ToolFile))
 			{
-				SetKFLOPCommandResult(1);
+				SetKFLOPCommandResult(-1);
 				break;
 			}
 
 			index=MainStatus.PC_comm[1];
-			if (index>=0 && index <128)
+
+			if (index>=0 && index <100)
 			{
-				dp = &Interpreter->p_setup->tool_table[index+1].length;
+				dp = &Interpreter->p_setup->tool_table[index].length;
 				if (GetVar((MainStatus.PC_comm[2])*2,    (int*)dp   )) break;
 				if (GetVar((MainStatus.PC_comm[2])*2+1, ((int*)dp)+1)) break;
 
@@ -2576,7 +2870,7 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 			}
 			else
 			{
-				SetKFLOPCommandResult(2);
+				SetKFLOPCommandResult(-2);
 			}
 		}
 		break;
@@ -2587,19 +2881,206 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 			// first read the Tool Table File
 			if (EditToolFile.LoadFile(m_ToolFile))
 			{
-				SetKFLOPCommandResult(1);
+				SetKFLOPCommandResult(-1);
 				break;
 			}
 			index=MainStatus.PC_comm[1];
-			if (index>=0 && index <20)
+
+			if (index>=0 && index <100)
 			{
-				double d = Interpreter->p_setup->tool_table[index+1].length;
+				double d = Interpreter->p_setup->tool_table[index].length;
 				if (SendOneDouble(MainStatus.PC_comm[2], d)) break;
 				SetKFLOPCommandResult(0);
 			}
 			else
 			{
-				SetKFLOPCommandResult(2);
+				SetKFLOPCommandResult(-2);
+			}
+		}
+		break;
+
+	case PC_COMM_SET_TOOLTABLE_DIAMETER:
+		{
+			CEditToolFile EditToolFile;
+			// first read the Tool Table File
+			if (EditToolFile.LoadFile(m_ToolFile))
+			{
+				SetKFLOPCommandResult(-1);
+				break;
+			}
+
+			index=MainStatus.PC_comm[1];
+
+			if (index>=0 && index <100)
+			{
+				dp = &Interpreter->p_setup->tool_table[index].diameter;
+				if (GetVar((MainStatus.PC_comm[2])*2,    (int*)dp   )) break;
+				if (GetVar((MainStatus.PC_comm[2])*2+1, ((int*)dp)+1)) break;
+
+				EditToolFile.ChangeDiameter(index,*dp);
+
+				EditToolFile.SaveFile(m_ToolFile);
+				TheFrame->GCodeDlg.Interpreter->m_ReadToolFile=true;
+
+				SetKFLOPCommandResult(0);
+			}
+			else
+			{
+				SetKFLOPCommandResult(-2);
+			}
+		}
+		break;
+
+	case PC_COMM_GET_TOOLTABLE_DIAMETER:
+		{
+			CEditToolFile EditToolFile;
+			// first read the Tool Table File
+			if (EditToolFile.LoadFile(m_ToolFile))
+			{
+				SetKFLOPCommandResult(-1);
+				break;
+			}
+			index=MainStatus.PC_comm[1];
+
+			if (index>=0 && index <100)
+			{
+				double d = Interpreter->p_setup->tool_table[index].diameter;
+				if (SendOneDouble(MainStatus.PC_comm[2], d)) break;
+				SetKFLOPCommandResult(0);
+			}
+			else
+			{
+				SetKFLOPCommandResult(-2);
+			}
+		}
+		break;
+
+	case PC_COMM_SET_TOOLTABLE_OFFSETX:
+		{
+			CEditToolFile EditToolFile;
+			// first read the Tool Table File
+			if (EditToolFile.LoadFile(m_ToolFile))
+			{
+				SetKFLOPCommandResult(-1);
+				break;
+			}
+
+			index=MainStatus.PC_comm[1];
+
+			if (index>=0 && index <100)
+			{
+				dp = &Interpreter->p_setup->tool_table[index].xoffset;
+				if (GetVar((MainStatus.PC_comm[2])*2,    (int*)dp   )) break;
+				if (GetVar((MainStatus.PC_comm[2])*2+1, ((int*)dp)+1)) break;
+
+				EditToolFile.ChangeOffsetX(index,*dp);
+
+				EditToolFile.SaveFile(m_ToolFile);
+				TheFrame->GCodeDlg.Interpreter->m_ReadToolFile=true;
+
+				// check if this tool is selected and in use.  If so,
+				// update the tool length in use
+				setup_pointer p=TheFrame->GCodeDlg.Interpreter->p_setup;
+				if (p->active_g_codes[9]==G_43 && index == p->length_offset_index)  //active and
+				{
+					p->current_x = (p->current_x + p->tool_xoffset - *dp);
+					p->tool_xoffset = *dp;
+				}
+
+				SetKFLOPCommandResult(0);
+			}
+			else
+			{
+				SetKFLOPCommandResult(-2);
+			}
+		}
+		break;
+
+	case PC_COMM_GET_TOOLTABLE_OFFSETX:
+		{
+			CEditToolFile EditToolFile;
+			// first read the Tool Table File
+			if (EditToolFile.LoadFile(m_ToolFile))
+			{
+				SetKFLOPCommandResult(-1);
+				break;
+			}
+			index=MainStatus.PC_comm[1];
+
+			if (index>=0 && index <100)
+			{
+				double d = Interpreter->p_setup->tool_table[index].xoffset;
+				if (SendOneDouble(MainStatus.PC_comm[2], d)) break;
+				SetKFLOPCommandResult(0);
+			}
+			else
+			{
+				SetKFLOPCommandResult(-2);
+			}
+		}
+		break;
+
+	case PC_COMM_SET_TOOLTABLE_OFFSETY:
+		{
+			CEditToolFile EditToolFile;
+			// first read the Tool Table File
+			if (EditToolFile.LoadFile(m_ToolFile))
+			{
+				SetKFLOPCommandResult(-1);
+				break;
+			}
+
+			index=MainStatus.PC_comm[1];
+
+			if (index>=0 && index <100)
+			{
+				dp = &Interpreter->p_setup->tool_table[index].yoffset;
+				if (GetVar((MainStatus.PC_comm[2])*2,    (int*)dp   )) break;
+				if (GetVar((MainStatus.PC_comm[2])*2+1, ((int*)dp)+1)) break;
+
+				EditToolFile.ChangeOffsetY(index,*dp);
+
+				EditToolFile.SaveFile(m_ToolFile);
+				TheFrame->GCodeDlg.Interpreter->m_ReadToolFile=true;
+
+				// check if this tool is selected and in use.  If so,
+				// update the tool length in use
+				setup_pointer p=TheFrame->GCodeDlg.Interpreter->p_setup;
+				if (p->active_g_codes[9]==G_43 && index == p->length_offset_index)  //active and
+				{
+					p->current_y = (p->current_y + p->tool_yoffset - *dp);
+					p->tool_yoffset = *dp;
+				}
+
+				SetKFLOPCommandResult(0);
+			}
+			else
+			{
+				SetKFLOPCommandResult(-2);
+			}
+		}
+		break;
+
+	case PC_COMM_GET_TOOLTABLE_OFFSETY:
+		{
+			CEditToolFile EditToolFile;
+			// first read the Tool Table File
+			if (EditToolFile.LoadFile(m_ToolFile))
+			{
+				SetKFLOPCommandResult(-1);
+				break;
+			}
+			index=MainStatus.PC_comm[1];
+
+			if (index>=0 && index <100)
+			{
+				double d = Interpreter->p_setup->tool_table[index].yoffset;
+				if (SendOneDouble(MainStatus.PC_comm[2], d)) break;
+				SetKFLOPCommandResult(0);
+			}
+			else
+			{
+				SetKFLOPCommandResult(-2);
 			}
 		}
 		break;
@@ -2669,6 +3150,42 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 	MainStatus.PC_comm[0]=0;  // clear the command now that it has been executed
 }
 
+// convert GCode Tool number to tool table index based on 
+// numbers 99 or less as slot numbers and higher numbers as IDs
+
+int CKMotionCNCDlg::ConvertToolToIndex(int number,int *index)
+{
+	setup_pointer p=TheFrame->GCodeDlg.Interpreter->p_setup;
+	int i;
+
+	if (number > 99)
+	{
+		for (i=0; i<p->tool_max; i++)
+		{
+			if (p->tool_table[i].id == number) break; 
+		}
+		if (i >= p->tool_max)
+		{
+			return 1;
+		}
+	}
+	else
+	{
+		for (i=0; i<p->tool_max; i++)
+		{
+			if (p->tool_table[i].slot == number) break; 
+		}
+		if (i >= p->tool_max)
+		{
+			return 1;
+		}
+	}
+	*index=i;
+    return 0;
+}
+
+
+
 
 int CKMotionCNCDlg::SendCoordinates(int n, bool MachineCoords)
 {
@@ -2677,12 +3194,12 @@ int CKMotionCNCDlg::SendCoordinates(int n, bool MachineCoords)
 
 	for (int i=0; i<MAX_ACTUATORS; i++) ActsDest[i]=0.0;
 
-	if (CM->x_axis >=0)	ActsDest[CM->x_axis] = MainStatus.Dest[CM->x_axis];
-	if (CM->y_axis >=0)	ActsDest[CM->y_axis] = MainStatus.Dest[CM->y_axis];
-	if (CM->z_axis >=0)	ActsDest[CM->z_axis] = MainStatus.Dest[CM->z_axis];
-	if (CM->a_axis >=0)	ActsDest[CM->a_axis] = MainStatus.Dest[CM->a_axis];
-	if (CM->b_axis >=0)	ActsDest[CM->b_axis] = MainStatus.Dest[CM->b_axis];
-	if (CM->c_axis >=0)	ActsDest[CM->c_axis] = MainStatus.Dest[CM->c_axis];
+	if (CM->x_axis >=0)	ActsDest[0] = MainStatus.Dest[CM->x_axis];
+	if (CM->y_axis >=0)	ActsDest[1] = MainStatus.Dest[CM->y_axis];
+	if (CM->z_axis >=0)	ActsDest[2] = MainStatus.Dest[CM->z_axis];
+	if (CM->a_axis >=0)	ActsDest[3] = MainStatus.Dest[CM->a_axis];
+	if (CM->b_axis >=0)	ActsDest[4] = MainStatus.Dest[CM->b_axis];
+	if (CM->c_axis >=0)	ActsDest[5] = MainStatus.Dest[CM->c_axis];
 
 	CM->Kinematics->TransformActuatorstoCAD(ActsDest,&x,&y,&z,&a,&b,&c);
 
@@ -2700,6 +3217,8 @@ int CKMotionCNCDlg::SendCoordinates(int n, bool MachineCoords)
 	return 0;
 }
 
+
+// Send one double to KFLOP as two 32-bit binary images
 int CKMotionCNCDlg::SendOneDouble(int i, double d)
 {
 	CString s,r;
@@ -2792,11 +3311,13 @@ int CKMotionCNCDlg::NumberToThreadID(int i)
 	return 0;
 }
 
+
 void CKMotionCNCDlg::OnToolSetup() 
 {
 	bool lathe_changed,slow_jog_changed;
 
 	CAllToolSetupSheet Dlg("Tool Setup Screen",this);
+
 	DisableKeyJog();
 
 	Dlg.m_ToolSetupFilesPage.m_ToolFile = m_ToolFile;
@@ -2810,13 +3331,20 @@ void CKMotionCNCDlg::OnToolSetup()
 	Dlg.m_ToolSetupTPPage.m_ReverseRZ = m_ReverseRZ;
 	Dlg.m_ToolSetupTPPage.m_EnableGamePad = m_EnableGamePad;
 	Dlg.m_ToolSetupTPPage.m_ZeroUsingFixtures = m_ZeroUsingFixtures;
+	Dlg.m_ToolSetupTPPage.m_ToolLengthImmediately = m_ToolLengthImmediately;
+	Dlg.m_ToolSetupTPPage.m_ToolTableDoM6 = m_ToolTableDoM6;
 	Dlg.m_ToolSetupTPPage.m_ArcsToSegs = m_ArcsToSegs;
 	Dlg.m_ToolSetupTPPage.m_DisplayEncoder = m_DisplayEncoder;
 	Dlg.m_ToolSetupTPPage.m_DegreesA = m_DegreesA;
 	Dlg.m_ToolSetupTPPage.m_DegreesB = m_DegreesB;
 	Dlg.m_ToolSetupTPPage.m_DegreesC = m_DegreesC;
 	Dlg.m_ToolSetupTPPage.m_Lathe = m_Lathe;
+	Dlg.m_ToolSetupTPPage.m_DoRapidsAsFeeds = m_DoRapidsAsFeeds;
+	Dlg.m_ToolSetupTPPage.m_DiameterMode = m_DiameterMode;
+	Dlg.m_ToolSetupTPPage.m_XPosFront = m_XPosFront;
 	Dlg.m_ToolSetupTPPage.m_JogSlowPercent = m_JogSlowPercent;
+	Dlg.m_ToolSetupTPPage.m_HardwareFRORange = m_HardwareFRORange;
+	Dlg.m_ToolSetupTPPage.m_MaxRapidFRO = m_MaxRapidFRO;
 	Dlg.m_ToolSetupTPPage.m_JogSpeedX = m_JogSpeed[0];
 	Dlg.m_ToolSetupTPPage.m_JogSpeedY = m_JogSpeed[1];
 	Dlg.m_ToolSetupTPPage.m_JogSpeedZ = m_JogSpeed[2];
@@ -2870,11 +3398,18 @@ void CKMotionCNCDlg::OnToolSetup()
 	Dlg.m_ToolSetupButtonsPage.m_Button8 = m_Button8;
 	Dlg.m_ToolSetupButtonsPage.m_Button9 = m_Button9;
 	Dlg.m_ToolSetupFilesPage.m_DialogFace=m_DialogFace;
-	memcpy(&Dlg.m_ToolSetupM1Page.McodeActions[0],&Interpreter->McodeActions[0],MAX_MCODE_ACTIONS_M1*sizeof(MCODE_ACTION));
-	memcpy(&Dlg.m_ToolSetupButtonsPage.McodeActions[MAX_MCODE_ACTIONS_M1],&Interpreter->McodeActions[MAX_MCODE_ACTIONS_M1],MAX_MCODE_ACTIONS_BUTTONS*sizeof(MCODE_ACTION));
-	memcpy(&Dlg.m_ToolSetupM100Page.McodeActions[0],&Interpreter->McodeActions[MAX_MCODE_ACTIONS_M1+MAX_MCODE_ACTIONS_BUTTONS],MAX_MCODE_ACTIONS_M100*sizeof(MCODE_ACTION));
-	memcpy(Dlg.m_ToolSetupButtonsPage.UserButtonKeys,m_UserButtonKeys,NUSERBUTTONS*sizeof(int));
 
+	// M1 page handles M0-11 and Specials
+	MCODE_ACTION *src=Interpreter->McodeActions;
+	MCODE_ACTION *dst=Dlg.m_ToolSetupM1Page.McodeActions;
+	memcpy(&dst[0],&src[0],MAX_MCODE_ACTIONS_M1*sizeof(MCODE_ACTION));
+	memcpy(&dst[MAX_MCODE_ACTIONS_M1],&src[MCODE_ACTIONS_SPECIAL_OFFSET],MAX_MCODE_ACTIONS_SPECIAL*sizeof(MCODE_ACTION));
+	dst=Dlg.m_ToolSetupButtonsPage.McodeActions;
+	memcpy(&dst[MAX_MCODE_ACTIONS_M1],&src[MAX_MCODE_ACTIONS_M1],MAX_MCODE_ACTIONS_BUTTONS*sizeof(MCODE_ACTION));
+	dst=Dlg.m_ToolSetupM100Page.McodeActions;
+	memcpy(&dst[0],&src[MAX_MCODE_ACTIONS_M1+MAX_MCODE_ACTIONS_BUTTONS],MAX_MCODE_ACTIONS_M100*sizeof(MCODE_ACTION));
+	
+	memcpy(Dlg.m_ToolSetupButtonsPage.UserButtonKeys,m_UserButtonKeys,NUSERBUTTONS*sizeof(int));
 
 	if (Dlg.DoModal() == IDOK)
 	{
@@ -2889,15 +3424,22 @@ void CKMotionCNCDlg::OnToolSetup()
 		m_ReverseRZ = Dlg.m_ToolSetupTPPage.m_ReverseRZ;
 		m_EnableGamePad = Dlg.m_ToolSetupTPPage.m_EnableGamePad;
 		m_ZeroUsingFixtures = Dlg.m_ToolSetupTPPage.m_ZeroUsingFixtures;
+		m_ToolLengthImmediately = Dlg.m_ToolSetupTPPage.m_ToolLengthImmediately;
+		m_ToolTableDoM6 = Dlg.m_ToolSetupTPPage.m_ToolTableDoM6;
 		m_ArcsToSegs = Dlg.m_ToolSetupTPPage.m_ArcsToSegs;
 		m_DisplayEncoder = Dlg.m_ToolSetupTPPage.m_DisplayEncoder;
 		m_DegreesA = Dlg.m_ToolSetupTPPage.m_DegreesA;
 		m_DegreesB = Dlg.m_ToolSetupTPPage.m_DegreesB;
 		m_DegreesC = Dlg.m_ToolSetupTPPage.m_DegreesC;
-		lathe_changed = (m_Lathe != Dlg.m_ToolSetupTPPage.m_Lathe);
+		lathe_changed = (m_Lathe != Dlg.m_ToolSetupTPPage.m_Lathe) || (m_XPosFront != Dlg.m_ToolSetupTPPage.m_XPosFront);
 		m_Lathe = Dlg.m_ToolSetupTPPage.m_Lathe;
+		m_DoRapidsAsFeeds = Dlg.m_ToolSetupTPPage.m_DoRapidsAsFeeds;
+		m_DiameterMode = Dlg.m_ToolSetupTPPage.m_DiameterMode;
+		m_XPosFront = Dlg.m_ToolSetupTPPage.m_XPosFront;
 		slow_jog_changed = (m_JogSlowPercent != Dlg.m_ToolSetupTPPage.m_JogSlowPercent);
 		m_JogSlowPercent = Dlg.m_ToolSetupTPPage.m_JogSlowPercent;
+		m_HardwareFRORange = Dlg.m_ToolSetupTPPage.m_HardwareFRORange;
+		m_MaxRapidFRO = Dlg.m_ToolSetupTPPage.m_MaxRapidFRO;
 		m_JogSpeed[0] = Dlg.m_ToolSetupTPPage.m_JogSpeedX;
 		m_JogSpeed[1] = Dlg.m_ToolSetupTPPage.m_JogSpeedY;
 		m_JogSpeed[2] = Dlg.m_ToolSetupTPPage.m_JogSpeedZ;
@@ -2950,15 +3492,24 @@ void CKMotionCNCDlg::OnToolSetup()
 		m_Button8 = Dlg.m_ToolSetupButtonsPage.m_Button8;
 		m_Button9 = Dlg.m_ToolSetupButtonsPage.m_Button9;
 
-		memcpy(&Interpreter->McodeActions[0],&Dlg.m_ToolSetupM1Page.McodeActions[0],MAX_MCODE_ACTIONS_M1*sizeof(MCODE_ACTION));
-		memcpy(&Interpreter->McodeActions[MAX_MCODE_ACTIONS_M1],&Dlg.m_ToolSetupButtonsPage.McodeActions[MAX_MCODE_ACTIONS_M1],MAX_MCODE_ACTIONS_BUTTONS*sizeof(MCODE_ACTION));
-		memcpy(&Interpreter->McodeActions[MAX_MCODE_ACTIONS_M1+MAX_MCODE_ACTIONS_BUTTONS],&Dlg.m_ToolSetupM100Page.McodeActions[0],MAX_MCODE_ACTIONS_M100*sizeof(MCODE_ACTION));
+		// M1 page handles M0-11 and Specials
+		src=Dlg.m_ToolSetupM1Page.McodeActions;
+		dst=Interpreter->McodeActions;
+		memcpy(&dst[0],&src[0],MAX_MCODE_ACTIONS_M1*sizeof(MCODE_ACTION));
+		memcpy(&dst[MCODE_ACTIONS_SPECIAL_OFFSET],&src[MAX_MCODE_ACTIONS_M1],MAX_MCODE_ACTIONS_SPECIAL*sizeof(MCODE_ACTION));
+		src=Dlg.m_ToolSetupButtonsPage.McodeActions;
+		memcpy(&dst[MAX_MCODE_ACTIONS_M1],&src[MAX_MCODE_ACTIONS_M1],MAX_MCODE_ACTIONS_BUTTONS*sizeof(MCODE_ACTION));
+		src=Dlg.m_ToolSetupM100Page.McodeActions;
+		memcpy(&dst[MAX_MCODE_ACTIONS_M1+MAX_MCODE_ACTIONS_BUTTONS],&src[0],MAX_MCODE_ACTIONS_M100*sizeof(MCODE_ACTION));
+
 		memcpy(m_UserButtonKeys,Dlg.m_ToolSetupButtonsPage.UserButtonKeys,NUSERBUTTONS*sizeof(int));
 	
 		SetMotionParams();
 
 		Interpreter->CoordMotion->Kinematics->ReadGeoTable(m_GeoFile);
-		
+		Interpreter->p_setup->DiameterMode=m_DiameterMode;
+		Interpreter->CoordMotion->SetHardwareFRORange(m_HardwareFRORange);
+
 		SetUserButtons();
 		SetStepSizes();
 		SaveConfig();
@@ -2967,6 +3518,7 @@ void CKMotionCNCDlg::OnToolSetup()
 
 		if (m_DialogFace != Dlg.m_ToolSetupFilesPage.m_DialogFace || lathe_changed || slow_jog_changed)
 		{
+			TheFrame->GViewDlg.m_SceneIsDirty=true;
 			m_DialogFace = Dlg.m_ToolSetupFilesPage.m_DialogFace;
 			DestroyWindow();
 			Create(IDD_KMOTIONCNC_0_ORIGINAL+m_DialogFace);  // put up the real main window
@@ -2981,46 +3533,73 @@ void CKMotionCNCDlg::OnToolSetup()
 void CKMotionCNCDlg::OnUpdateRestart(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable(CurrentLine[m_Thread]!=0 && !ThreadIsExecuting);
-	m_Zplus2.EnableWindow(!ThreadIsExecuting);
-	m_Zplus.EnableWindow(!ThreadIsExecuting);
-	m_ZplusStep.EnableWindow(!ThreadIsExecuting);
-	m_Zminus2.EnableWindow(!ThreadIsExecuting);
-	m_Zminus.EnableWindow(!ThreadIsExecuting);
-	m_ZminusStep.EnableWindow(!ThreadIsExecuting);
-	m_Aplus2.EnableWindow(!ThreadIsExecuting);
-	m_Aplus.EnableWindow(!ThreadIsExecuting);
-	m_AplusStep.EnableWindow(!ThreadIsExecuting);
-	m_Aminus2.EnableWindow(!ThreadIsExecuting);
-	m_Aminus.EnableWindow(!ThreadIsExecuting);
-	m_AminusStep.EnableWindow(!ThreadIsExecuting);
+	m_Zplus2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_Zplus.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_ZplusStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_Zminus2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_Zminus.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_ZminusStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_Aplus2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_Aplus.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_AplusStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_Aminus2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_Aminus.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_AminusStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
 
-	m_Bplus2.EnableWindow(!ThreadIsExecuting);
-	m_Bplus.EnableWindow(!ThreadIsExecuting);
-	m_BplusStep.EnableWindow(!ThreadIsExecuting);
-	m_Bminus2.EnableWindow(!ThreadIsExecuting);
-	m_Bminus.EnableWindow(!ThreadIsExecuting);
-	m_BminusStep.EnableWindow(!ThreadIsExecuting);
+	m_Bplus2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_Bplus.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_BplusStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_Bminus2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_Bminus.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_BminusStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
 
-	m_Cplus2.EnableWindow(!ThreadIsExecuting);
-	m_Cplus.EnableWindow(!ThreadIsExecuting);
-	m_CplusStep.EnableWindow(!ThreadIsExecuting);
-	m_Cminus2.EnableWindow(!ThreadIsExecuting);
-	m_Cminus.EnableWindow(!ThreadIsExecuting);
-	m_CminusStep.EnableWindow(!ThreadIsExecuting);
+	m_Cplus2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_Cplus.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_CplusStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_Cminus2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_Cminus.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_CminusStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
 
-	m_Right2.EnableWindow(!ThreadIsExecuting);
-	m_Right.EnableWindow(!ThreadIsExecuting);
-	m_RightStep.EnableWindow(!ThreadIsExecuting);
-	m_Down2.EnableWindow(!ThreadIsExecuting);
-	m_Down.EnableWindow(!ThreadIsExecuting);
-	m_DownStep.EnableWindow(!ThreadIsExecuting);
-	m_Up2.EnableWindow(!ThreadIsExecuting);
-	m_Up.EnableWindow(!ThreadIsExecuting);
-	m_UpStep.EnableWindow(!ThreadIsExecuting);
-	m_Left2.EnableWindow(!ThreadIsExecuting);
-	m_Left.EnableWindow(!ThreadIsExecuting);
-	m_LeftStep.EnableWindow(!ThreadIsExecuting);
-	m_StopStep.EnableWindow(!ThreadIsExecuting);
+	m_Right2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_Right.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_RightStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_Down2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_Down.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_DownStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_Up2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_Up.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_UpStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_Left2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_Left.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_LeftStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	m_StopStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+
+	GetDlgItem(IDC_EditToolFile)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_tool)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_fixture)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_EditFixtures)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_SetFixture)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_ZeroX)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_ZeroY)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_ZeroZ)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_ZeroA)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_ZeroB)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_ZeroC)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_SetX)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_SetY)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_SetZ)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_SetA)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_SetB)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_SetC)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_SetC)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_ZeroAll)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_mm)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_inch)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_Rel)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_Abs)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_Simulate)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_RunSimulate)->EnableWindow(!ThreadIsExecuting);
+	GetDlgItem(IDC_Send)->EnableWindow(!ThreadIsExecuting);
 }
 
 void CKMotionCNCDlg::OnUpdateSingleStep(CCmdUI* pCmdUI) 
@@ -3061,6 +3640,7 @@ void CKMotionCNCDlg::OnShowMach()
 void CKMotionCNCDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 {
 	CString s;
+	CCoordMotion *CM=Interpreter->CoordMotion;
 	
 	CDlgX::OnVScroll(nSBCode, nPos, pScrollBar);
 
@@ -3068,16 +3648,35 @@ void CKMotionCNCDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 
 	if (Dlg==IDC_FeedSlider)
 	{
-		m_FeedRateValue = m_FeedSlider.GetPos();
+		if (m_Rapid==0)  // 0=rapid
+		{
+			m_FeedRateRapidValue = m_FeedSlider.GetPos();
 
-		// round to 2 digits so fits in display
-		m_FeedRateValue = ((int)(m_FeedRateValue*100.0 + 0.5))/100.0;
+			if (m_FeedRateRapidValue > m_MaxRapidFRO)
+				m_FeedRateRapidValue = m_MaxRapidFRO;
 
-		s.Format("%.2f",m_FeedRateValue);
+			// round to 2 digits so fits in display
+			m_FeedRateRapidValue = ((int)(m_FeedRateRapidValue*100.0 + 0.5))/100.0;
 
-		SetDlgItemText(IDC_FeedRateEdit,s);
-		
-		Interpreter->CoordMotion->SetFeedRateOverride(m_FeedRateValue);
+			s.Format("%.2f",m_FeedRateRapidValue);
+
+			SetDlgItemText(IDC_FeedRateEdit,s);
+			m_FeedSlider.SetPos(m_FeedRateRapidValue);
+			CM->SetFeedRateRapidOverride(m_FeedRateRapidValue);
+		}
+		else
+		{
+			m_FeedRateValue = m_FeedSlider.GetPos();
+
+			// round to 2 digits so fits in display
+			m_FeedRateValue = ((int)(m_FeedRateValue*100.0 + 0.5))/100.0;
+
+			s.Format("%.2f",m_FeedRateValue);
+
+			SetDlgItemText(IDC_FeedRateEdit,s);
+			
+			CM->SetFeedRateOverride(m_FeedRateValue);
+		}
 	}
 	else if (Dlg==IDC_SpindleSlider)
 	{
@@ -3090,7 +3689,7 @@ void CKMotionCNCDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 
 		SetDlgItemText(IDC_SpindleRateEdit,s);
 		
-		Interpreter->CoordMotion->SetSpindleRateOverride(m_SpindleRateValue);
+		CM->SetSpindleRateOverride(m_SpindleRateValue);
 		Interpreter->InvokeAction(10,FALSE);  // resend new Speed
 	}
 }
@@ -3100,9 +3699,21 @@ void CKMotionCNCDlg::OnFeedRateApply()
 {
 	if (!UpdateData()) return;
 
-	m_FeedSlider.SetPos(m_FeedRateValue);
+	if (m_Rapid==0)
+	{
+		if (m_FeedRateRapidValue > m_MaxRapidFRO)
+			m_FeedRateRapidValue = m_MaxRapidFRO;
 
-	Interpreter->CoordMotion->SetFeedRateOverride(m_FeedRateValue);
+		if (!UpdateData(FALSE)) return;
+
+		m_FeedSlider.SetPos(m_FeedRateRapidValue);
+		Interpreter->CoordMotion->SetFeedRateRapidOverride(m_FeedRateRapidValue);
+	}
+	else
+	{
+		m_FeedSlider.SetPos(m_FeedRateValue);
+		Interpreter->CoordMotion->SetFeedRateOverride(m_FeedRateValue);
+	}
 }
 
 void CKMotionCNCDlg::OnSpindleRateApply() 
@@ -3122,9 +3733,12 @@ CKMotionCNCDlg::CKMotionCNCDlg(CWnd* pParent /*=NULL*/)
 	ShuttingDownApplication=FALSE;
 	m_ColorTraverse.Set(255,0,0);
 	m_ColorFeed.Set(0,255,0);
+	m_ColorJump.Set(0,0,0);
 
 	GreenBrush=NULL;
 
+	FirstStartup=true;
+	m_PerformPostHaltCommand=false;
 
 	GCodeMutex = new CMutex(FALSE,"GCodeInterpreter",NULL);
 	
@@ -3149,12 +3763,17 @@ CKMotionCNCDlg::CKMotionCNCDlg(CWnd* pParent /*=NULL*/)
 	m_ReverseRZ = false;
 	m_EnableGamePad = true;
 	m_ZeroUsingFixtures = false;
+	m_ToolLengthImmediately = false;
+	m_ToolTableDoM6 = false;
 	m_ArcsToSegs = true;
 	m_DisplayEncoder = false;
 	m_DegreesA = false;
 	m_DegreesB = false;
 	m_DegreesC = false;
 	m_Lathe = false;
+	m_DoRapidsAsFeeds = false;
+	m_DiameterMode = false;
+	m_XPosFront = false;
 	m_TPLookahead = 3.0;
 	m_RadiusC = 1;
 	m_RadiusB = 1;
@@ -3184,6 +3803,8 @@ CKMotionCNCDlg::CKMotionCNCDlg(CWnd* pParent /*=NULL*/)
 	m_Step4 = 1;
 	m_Step5 = 10;
 	m_DialogFace = 0;
+	m_ConfigCheckWord = 0;
+	m_ConfigCheckWordVersion=false;
 	m_SpindleType = 0;
 	m_SpindleAxis = 4;
 	m_SpindleUpdateTime=0.1;
@@ -3195,10 +3816,12 @@ CKMotionCNCDlg::CKMotionCNCDlg(CWnd* pParent /*=NULL*/)
 
 	//{{AFX_DATA_INIT(CKMotionCNCDlg)
 	m_Thread = -1;
+	m_Rapid = 1;
 	m_Simulate = FALSE;
 	m_ShowLineNumbers = FALSE;
 	m_ShowMach = FALSE;
 	m_FeedRateValue = 1.0;
+	m_FeedRateRapidValue = 1.0;
 	m_SpindleRateValue = 1.0;
 	m_CommandString = _T("");
 	m_StepSize = 0;
@@ -3212,6 +3835,8 @@ CKMotionCNCDlg::CKMotionCNCDlg(CWnd* pParent /*=NULL*/)
 	}
 
 	m_JogSlowPercent=25.0;
+	m_HardwareFRORange=0.0;
+	m_MaxRapidFRO=1.0;
 
 
 	if (LoadLibrary("SciLexer.DLL")==NULL)
@@ -3246,6 +3871,8 @@ CKMotionCNCDlg::CKMotionCNCDlg(CWnd* pParent /*=NULL*/)
 
 	for (int i=0; i<NUSERBUTTONS; i++)
 		m_UserButtonKeys[i]=-1;
+
+	m_DisplayGViewer=FALSE;
 }
 
 CKMotionCNCDlg::~CKMotionCNCDlg()
@@ -3463,9 +4090,29 @@ int CKMotionCNCDlg::DoJoyStick()
 			ZtoUse = ji.dwZpos;
 		}
 
-		m_Joyvx = DoJoyAxis(0,       ji.dwXpos);
-		m_Joyvy = DoJoyAxis(1,0xffff-ji.dwYpos);
-		m_Joyvz = DoJoyAxis(2,0xffff-RtoUse   );
+		// rearrange joystick for lathe modes
+		if (m_Lathe)
+		{
+			m_Joyvy = DoJoyAxis(1,0xffff-RtoUse   );  // Y maps to Z Joy
+			m_Joyvz = DoJoyAxis(2,       ji.dwXpos);  // Z maps to X Joy
+
+			if (m_XPosFront)
+			{
+				m_Joyvx = DoJoyAxis(0,ji.dwYpos);   // X Maps to Y Joy Opposite
+			}
+			else
+			{
+				m_Joyvx = DoJoyAxis(0,0xffff-ji.dwYpos);  // X Maps to Y Joy Opposite
+			}
+		}
+		else
+		{
+			// normal case
+			m_Joyvx = DoJoyAxis(0,       ji.dwXpos);
+			m_Joyvy = DoJoyAxis(1,0xffff-ji.dwYpos);
+			m_Joyvz = DoJoyAxis(2,0xffff-RtoUse   );
+		}
+		
 		m_Joyva = DoJoyAxis(3,       ZtoUse   );
 	}
 	else
@@ -3915,29 +4562,29 @@ int CKMotionCNCDlg::UpdateScreen(bool KMotionPresent)
 		m_ConfigSpindleDirty=true;  // remember we were disconnected
 	}
 	
+	m_RealTimeSetup = Interpreter->GetRealTimeState();
+	
 	SetBigValues(&m_PosX, &m_PosY, &m_PosZ, &m_PosA, &m_PosB, &m_PosC, KMotionPresent);
 
-
-	
-	if (Interpreter->p_setup->distance_mode==MODE_ABSOLUTE)
+	if (m_RealTimeSetup->distance_mode==MODE_ABSOLUTE)
 		CheckRadioButton(IDC_Rel,IDC_Abs,IDC_Abs);
 	else
 		CheckRadioButton(IDC_Rel,IDC_Abs,IDC_Rel);
 
-	if (Interpreter->p_setup->length_units==CANON_UNITS_INCHES)
+	if (m_RealTimeSetup->length_units==CANON_UNITS_INCHES)
 		CheckRadioButton(IDC_mm,IDC_inch,IDC_inch);
-	else if (Interpreter->p_setup->length_units==CANON_UNITS_MM)
+	else if (m_RealTimeSetup->length_units==CANON_UNITS_MM)
 		CheckRadioButton(IDC_mm,IDC_inch,IDC_mm);
 
-	if (m_LastToolDisplayed != Interpreter->p_setup->selected_tool_slot)
+	if (m_LastToolDisplayed != m_RealTimeSetup->selected_tool_slot)
 	{
-		m_LastToolDisplayed=Interpreter->p_setup->selected_tool_slot;
-		m_tool.SetCurSel(m_LastToolDisplayed-1);
+		m_LastToolDisplayed=m_RealTimeSetup->selected_tool_slot;
+		m_tool.SetCurSel(m_LastToolDisplayed);
 	}
 
-	if (m_LastFixtureDisplayed != Interpreter->p_setup->origin_index)
+	if (m_LastFixtureDisplayed != m_RealTimeSetup->origin_index)
 	{
-		m_LastFixtureDisplayed=Interpreter->p_setup->origin_index;
+		m_LastFixtureDisplayed=m_RealTimeSetup->origin_index;
 		m_FixtureOffset.SetCurSel(m_LastFixtureDisplayed-1);
 	}
 
@@ -3948,11 +4595,16 @@ int CKMotionCNCDlg::UpdateScreen(bool KMotionPresent)
 	{
 		m_FeedHold.LoadBitmaps(IDB_FeedHoldPause,0,0);
 		m_FeedHold.Invalidate(0);
+		m_Forward.ShowWindow(SW_SHOW);
+		m_Reverse.ShowWindow(SW_SHOW);
+		Interpreter->InvokeAction(ACTION_FEEDHOLD,FALSE);  // Do Special Action
 	}
 	else if (MainStatus.StopImmediateState==0 && up!=IDB_FeedHold)
 	{
 		m_FeedHold.LoadBitmaps(IDB_FeedHold,0,0);
 		m_FeedHold.Invalidate(0);
+		m_Forward.ShowWindow(SW_HIDE);
+		m_Reverse.ShowWindow(SW_HIDE);
 	}
 
 	m_GO.GetBitmaps(up,down,disabled);
@@ -4042,80 +4694,42 @@ void CKMotionCNCDlg::SetBigValues(CDisplay *Disp0, CDisplay *Disp1, CDisplay *Di
 	SetBigValueColor(Disp4,4,KMotionPresent,DisplayedEnc4);
 	SetBigValueColor(Disp5,5,KMotionPresent,DisplayedEnc5);
 
-	// display current feed rate
+	// display current spindle rate /feed rate
 
-	if (m_BulkStatusCount>1 && Interpreter->p_setup->length_units == prev_length_units)
+	if (m_BulkStatusCount>1 && m_RealTimeSetup->length_units == prev_length_units)
 	{
 		double dt = (MainStatus.TimeStamp - PrevMainStatusTimeStamp);
 
 		if (dt>0.0)
 		{
-			double dx = (CM->x_axis >=0) ? x-PrevDROx : 0.0;
-			double dy = (CM->y_axis >=0) ? y-PrevDROy : 0.0;
-			double dz = (CM->z_axis >=0) ? z-PrevDROz : 0.0;
-			double da = (CM->a_axis >=0) ? a-PrevDROa : 0.0;
-			double db = (CM->b_axis >=0) ? b-PrevDROb : 0.0;
-			double dc = (CM->c_axis >=0) ? c-PrevDROc : 0.0;
-
-			BOOL pure_angle;
-			double Dist=CM->FeedRateDistance(dx, dy, dz, da, db, dc, &pure_angle);
-
 			CString s,sF;
-			double SpeedToShow;
-			double DesiredFeedRate = Interpreter->p_setup->feed_rate;
-
-			if (prev_length_units == CANON_UNITS_MM)
-			{
-				SpeedToShow=Dist/dt*60.0*25.4;
-				s.Format("%7.0f",SpeedToShow);
-				sF.Format("%7.0f",DesiredFeedRate);
-			}
-			else
-			{
-				SpeedToShow=Dist/dt*60.0;
-				s.Format("%7.1f",SpeedToShow);
-				sF.Format("%7.1f",DesiredFeedRate);
-			}
-
-			if (m_prevFeedRateLabel != s)
-			{
-				m_prevFeedRateLabel=s;
-				SetDlgItemText(IDC_FeedRateLabel,s);
-			}
-
-			if (m_prevFeedRateLabelF != sF)
-			{
-				m_prevFeedRateLabelF=sF;
-				SetDlgItemText(IDC_FeedRateCmd,sF);
-			}
-
-			if(DesiredFeedRate!=0)
-				m_FeedSlider.PlotInstant(SpeedToShow/DesiredFeedRate);
+			double SpindleSpeedToShow,SpeedToShow;
+			double DesiredFeedRate = m_RealTimeSetup->feed_rate;
 
 			// Do Spindle Control Updates
-			double DesiredSpindleRate = Interpreter->p_setup->speed;
+			double DesiredSpindleRate = m_RealTimeSetup->speed;
 
-			if (m_ConfigSpindleDirty)
+			if (KMotionPresent && m_ConfigSpindleDirty)
 			{
 				if (Interpreter->CoordMotion->ConfigSpindle(m_SpindleType, m_SpindleAxis,m_SpindleUpdateTime, m_SpindleTau, m_SpindleCntsPerRev)) return;
 				m_ConfigSpindleDirty=false;
 			}
 
 			float speed_rps=0;
-			if (Interpreter->CoordMotion->GetSpindleRPS(speed_rps)) return;
+			if (KMotionPresent && Interpreter->CoordMotion->GetSpindleRPS(speed_rps)) return;
 
-			SpeedToShow=speed_rps*60.0;  
+			SpindleSpeedToShow=speed_rps*60.0;  
 
-			// if in CSS convert RPM to feet/min or Meters/min depending on units
-			if (Interpreter->p_setup->spindle_mode == CANON_SPINDLE_CSS)
+			// if in G32 convert RPM to feet/min or Meters/min depending on units
+			if (m_RealTimeSetup->spindle_mode == CANON_SPINDLE_CSS)
 			{
 				double xp,yp,zp,ap,bp,cp;
-				Interpreter->ConvertAbsoluteToInterpreterCoord(x,y,z,a,b,c,&xp,&yp,&zp,&ap,&bp,&cp);
+				Interpreter->ConvertAbsoluteToInterpreterCoord(x,y,z,a,b,c,&xp,&yp,&zp,&ap,&bp,&cp,m_RealTimeSetup);
 
-				if (Interpreter->p_setup->length_units==CANON_UNITS_MM)
-					SpeedToShow *= TWO_PI * fabs(xp) * 0.001; // convert x (radius) to meters and multiply RPM by 2 PI R
+				if (m_RealTimeSetup->length_units==CANON_UNITS_MM)
+					SpindleSpeedToShow *= TWO_PI * fabs(xp) * 0.001; // convert x (radius) to meters and multiply RPM by 2 PI R
 				else
-					SpeedToShow *= TWO_PI * fabs(xp) / 12.0; // convert x (radius) to feet and multiply RPM by 2 PI R
+					SpindleSpeedToShow *= TWO_PI * fabs(xp) / 12.0; // convert x (radius) to feet and multiply RPM by 2 PI R
 
 				if (!CSS_BitmapValid || !CSS_BitmapDisplayed)
 				{
@@ -4137,7 +4751,7 @@ void CKMotionCNCDlg::SetBigValues(CDisplay *Disp0, CDisplay *Disp1, CDisplay *Di
 				}
 			}
 
-			s.Format("%7.1f",SpeedToShow);
+			s.Format("%7.1f",SpindleSpeedToShow);
 			sF.Format("%7.1f",DesiredSpindleRate);
 
 			if (m_prevSpindleRateLabel != s)
@@ -4153,13 +4767,104 @@ void CKMotionCNCDlg::SetBigValues(CDisplay *Disp0, CDisplay *Disp1, CDisplay *Di
 			}
 
 			if(DesiredSpindleRate!=0)
-				m_SpindleSlider.PlotInstant(SpeedToShow/DesiredSpindleRate);
+				m_SpindleSlider.PlotInstant(SpindleSpeedToShow/DesiredSpindleRate);
 
+
+			// display current feed rate
+
+
+			double dx = (CM->x_axis >=0) ? x-PrevDROx : 0.0;
+			double dy = (CM->y_axis >=0) ? y-PrevDROy : 0.0;
+			double dz = (CM->z_axis >=0) ? z-PrevDROz : 0.0;
+			double da = (CM->a_axis >=0) ? a-PrevDROa : 0.0;
+			double db = (CM->b_axis >=0) ? b-PrevDROb : 0.0;
+			double dc = (CM->c_axis >=0) ? c-PrevDROc : 0.0;
+
+			BOOL pure_angle;
+			double Dist=CM->FeedRateDistance(dx, dy, dz, da, db, dc, &pure_angle);
+
+			if (SpindleSpeedToShow <= 0.0) // make sure things are reasonable
+				SpindleSpeedToShow=DesiredSpindleRate;
+			if (SpindleSpeedToShow <= 0.0)
+				SpindleSpeedToShow=1.0;
+
+			if (prev_length_units == CANON_UNITS_MM)
+			{
+				if (m_RealTimeSetup->motion_mode == G_32)
+				{
+					SpeedToShow=Dist/dt*60.0*25.4/SpindleSpeedToShow;
+					s.Format("%7.3f",SpeedToShow);
+					sF.Format("%7.3f",DesiredFeedRate);
+				}
+				else
+				{
+					if (pure_angle)
+						SpeedToShow=Dist/dt*60.0;  //units of degrees don't convert to mm
+					else
+						SpeedToShow=Dist/dt*60.0*25.4;
+
+					s.Format("%7.0f",SpeedToShow);
+					sF.Format("%7.0f",DesiredFeedRate);
+				}
+			}
+			else
+			{
+				if (m_RealTimeSetup->motion_mode == G_32)
+				{
+					SpeedToShow=Dist/dt*60.0/SpindleSpeedToShow;
+					s.Format("%7.4f",SpeedToShow);
+					sF.Format("%7.4f",DesiredFeedRate);
+				}
+				else
+				{
+					SpeedToShow=Dist/dt*60.0;
+					s.Format("%7.1f",SpeedToShow);
+					sF.Format("%7.1f",DesiredFeedRate);
+				}
+			}
+
+			if (m_prevFeedRateLabel != s)
+			{
+				m_prevFeedRateLabel=s;
+				SetDlgItemText(IDC_FeedRateLabel,s);
+			}
+
+			if (m_prevFeedRateLabelF != sF)
+			{
+				m_prevFeedRateLabelF=sF;
+				SetDlgItemText(IDC_FeedRateCmd,sF);
+			}
+
+			if(DesiredFeedRate!=0)
+				m_FeedSlider.PlotInstant(SpeedToShow/DesiredFeedRate);
+
+
+			if (m_RealTimeSetup->motion_mode == G_32)
+			{
+				if (!G32_BitmapValid || !G32_BitmapDisplayed)
+				{
+					G32_BitmapValid=G32_BitmapDisplayed=true;
+					CStatic*  m_picture=(CStatic *)GetDlgItem(IDC_Cust3);    // pointer to a picture control
+					HBITMAP hb = (HBITMAP)::LoadImage(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDB_FR32), IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_SHARED);
+					m_picture->SetBitmap(hb);
+				}
+			}
+			else
+			{
+				if (!G32_BitmapValid || G32_BitmapDisplayed)
+				{
+					G32_BitmapValid=true;
+					G32_BitmapDisplayed=false;
+					CStatic*  m_picture=(CStatic *)GetDlgItem(IDC_Cust3);    // pointer to a picture control
+					HBITMAP hb = (HBITMAP)::LoadImage(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDB_FR), IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_SHARED);
+					m_picture->SetBitmap(hb);
+				}
+			}
 		}
 	}
 
 	PrevMainStatusTimeStamp=MainStatus.TimeStamp;
-	prev_length_units = Interpreter->p_setup->length_units; 
+	prev_length_units = m_RealTimeSetup->length_units; 
 	PrevDROx=x;
 	PrevDROy=y;
 	PrevDROz=z;
@@ -4176,7 +4881,7 @@ void CKMotionCNCDlg::SetBigValues(CDisplay *Disp0, CDisplay *Disp1, CDisplay *Di
 	if (m_ShowMach)
 		Interpreter->ConvertAbsoluteToMachine(x,y,z,a,b,c,&x,&y,&z,&a,&b,&c);
 	else
-		Interpreter->ConvertAbsoluteToInterpreterCoord(x,y,z,a,b,c,&x,&y,&z,&a,&b,&c);
+		Interpreter->ConvertAbsoluteToInterpreterCoord(x,y,z,a,b,c,&x,&y,&z,&a,&b,&c,m_RealTimeSetup);
 
 	s.Format(" X:%10.4f ",x);
 	KillMinusZero(s);
@@ -4289,6 +4994,8 @@ void CKMotionCNCDlg::OnEmergencyStop()
 		s.Format("DISABLEAXIS%d",i);
 		if (TheFrame->KMotionDLL->WriteLine(s)) return;
 	}
+
+	Interpreter->InvokeAction(ACTION_STOP,FALSE);  // Do Special Action
 }
 
 
@@ -4444,11 +5151,23 @@ void CKMotionCNCDlg::OnCloseupfixture()
 
 void CKMotionCNCDlg::OnCloseuptool() 
 {
-	int tool = m_tool.GetCurSel()+1;
-	m_LastToolDisplayed = tool;
-
+	int tool = m_tool.GetCurSel();
 	CString s;
-	s.Format("T%dM6",tool);
+
+	m_LastToolDisplayed = tool;
+	m_tool.GetLBText(tool,s);
+
+	if (s.GetAt(0) == 'I')
+		s.Delete(0,3);
+	else
+		s.Delete(0,5);
+
+	sscanf(s,"%d",&tool);
+
+	if (m_ToolLengthImmediately)
+		s.Format("T%dM6H%dG43",tool,tool);
+	else
+		s.Format("T%dM6",tool);
 	DoGCodeLine(s);
 }
 
@@ -4470,7 +5189,6 @@ void CKMotionCNCDlg::OnClose()
 			AfxMessageBox("Configuration File was not properly loaded on startup.\r\r"
 			              "Would you like to save the current configuration?",MB_YESNO|MB_ICONINFORMATION)
 					  == IDYES)
-
 	{
 		CString File = TheFrame->MainPathRoot + PERSISTANT_FILE;
 		
@@ -4478,7 +5196,7 @@ void CKMotionCNCDlg::OnClose()
 		
 		if (f)
 		{
-			fprintf(f,"Version 4\n");
+			fprintf(f,"Version 5\n");
 
 			// be nice and remember what directory we were last time
 
@@ -4501,16 +5219,32 @@ void CKMotionCNCDlg::OnClose()
 	AfxGetApp()->GetMainWnd()->PostMessage(WM_CLOSE);
 }
 
-void CKMotionCNCDlg::FillComboWithCount(int i0, int i1, CComboBox *Box)
+void CKMotionCNCDlg::FillComboWithTools(CComboBox *Box)
 {
+	CEditToolFile EditToolFile;
 	CString s;
+
+	if (EditToolFile.LoadFile(m_ToolFile)) return;
 
 	Box->ResetContent();
 
-	for (int i=i0; i<=i1; i++)
+	CString Comment,Image;
+	int ID,Pocket;
+	double Diameter,Length,Xoffset,Yoffset;
+
+	for (int i=0; i<MAX_TOOLS-1; i++)
 	{
-		s.Format("%d",i);
-		Box->AddString(s);
+		EditToolFile.GetTool(i,Pocket,ID,Length,Diameter,Xoffset,Yoffset,Comment,Image);
+		if (ID>0)
+		{
+			s.Format("ID %d",ID);
+			Box->AddString(s);
+		}
+		else if (Pocket)
+		{
+			s.Format("Slot %d",Pocket);
+			Box->AddString(s);
+		}
 	}
 }
 
@@ -4535,6 +5269,15 @@ void CKMotionCNCDlg::OnSend()
 {
 	if (!UpdateData()) return;
 
+
+	if (GetFocus()->GetDlgCtrlID() != IDC_Send &&
+		GetFocus()->GetParent()->GetDlgCtrlID() != IDC_Command)
+		return;
+
+	// select the text in the MDI so Typing will erase it
+	((CComboBox *)GetDlgItem(IDC_Command))->SetFocus();
+	((CComboBox *)GetDlgItem(IDC_Command))->SetEditSel(0,-1);
+
 	if (DoGCodeLine(m_CommandString)) return;
 
 	// Save last few enterd commands
@@ -4551,6 +5294,7 @@ void CKMotionCNCDlg::OnSend()
 		CommandHistory[k] = CommandHistory[k-1];
 
 	CommandHistory[0] = m_CommandString;
+
 }
 
 int CKMotionCNCDlg::DoGCodeLine(CString G) 
@@ -4644,6 +5388,8 @@ int CKMotionCNCDlg::ExternalRestore(void)
 	}
 	GlobalFree(CL);
 
+	PersistRestored=false;
+
 
 	TheFrame->MainPath.Replace("\"","");  // remove quotes
 	TheFrame->MainPath.TrimRight();
@@ -4686,7 +5432,7 @@ int CKMotionCNCDlg::ExternalRestore(void)
 	// it was last time, also all the window positions 
 
 	CString File = TheFrame->MainPathRoot + PERSISTANT_FILE;
-	
+
 	FILE *f=fopen(File,"rt");
 	
 	if (f)
@@ -4695,18 +5441,23 @@ int CKMotionCNCDlg::ExternalRestore(void)
 		fgets(Version.GetBufferSetLength(100),100,f);
 		Version.ReleaseBuffer();
 
-		if (Version=="Version 3\n" || Version=="Version 4\n")  // don't attempt to read if incompatable
+		if (Version=="Version 3\n" || Version=="Version 4\n" || Version=="Version 5\n")  // don't attempt to read if incompatable
 		{
 			fgets(CurrentDirectory.GetBufferSetLength(MAX_PATH),MAX_PATH,f);
 			CurrentDirectory.ReleaseBuffer();
 			SetCurrentDirectory(CurrentDirectory);
 
-			if (Version=="Version 4\n")  // Version 4 adds Line number option
+			if (Version=="Version 4\n" || Version=="Version 5\n")  // Version 4 adds Line number option
 			{
 				fscanf(f,"%d",&m_ShowLineNumbers);
 				//restore the state
 			}
 
+			if (Version=="Version 5\n")  // Version 5 adds Checkword in Config file
+			{
+				m_ConfigCheckWordVersion=true;
+			}
+				
 			if (m_ShowLineNumbers!=0 && m_ShowLineNumbers!=1) m_ShowLineNumbers=0;
 
 			RestoreOnStart(f);
@@ -4715,7 +5466,6 @@ int CKMotionCNCDlg::ExternalRestore(void)
 		}
 
 		fclose(f);
-		PersistRestored=true;
 	}
 	else
 	{
@@ -4723,8 +5473,7 @@ int CKMotionCNCDlg::ExternalRestore(void)
 			          "\r\rcould not be read.  Continuing will cause a loss of all\r"
 					  "settings.  Are you sure you would like to continue?",MB_YESNO|MB_ICONSTOP)
 					  != IDYES)
-		exit(0);
-		PersistRestored=false;
+			exit(0);
 	}
 
 	// now that all the parameters are loaded - Initialize the Interpreter
@@ -4894,7 +5643,7 @@ int CKMotionCNCDlg::ReadInterpPos(double *x, double *y, double *z, double *a, do
 	// the Interpreter's position that may include offsets
 	// and metric units
 
-	Interpreter->ConvertAbsoluteToInterpreterCoord(*x,*y,*z,*a,*b,*c,x,y,z,a,b,c);
+	Interpreter->ConvertAbsoluteToInterpreterCoord(*x,*y,*z,*a,*b,*c,x,y,z,a,b,c,m_RealTimeSetup);
 
 	return 0;
 }
@@ -5133,6 +5882,7 @@ void CKMotionCNCDlg::OnBnClickedFeedhold()
 	}
 	else
 	{
+		Interpreter->InvokeAction(ACTION_RESUME,FALSE);  // Do Special Action
 		TheFrame->KMotionDLL->WriteLine("StopImmediate1");
 	}
 }
@@ -5141,16 +5891,62 @@ void CKMotionCNCDlg::OnBnClickedEdittoolfile()
 {
 	CEditToolFile EditToolFile;
 
-	DisableKeyJog();
-
-	if (EditToolFile.LoadFile(m_ToolFile)) return;
-
-	if (EditToolFile.DoModal() == IDOK)
+	if (!ThreadIsExecuting)
 	{
-		EditToolFile.SaveFile(m_ToolFile);
-		TheFrame->GCodeDlg.Interpreter->m_ReadToolFile=true;
+		DisableKeyJog();
+
+		if (EditToolFile.LoadFile(m_ToolFile)) return;
+
+
+		if (EditToolFile.DoModal() == IDOK)
+		{
+			EditToolFile.SaveFile(m_ToolFile);
+			HandleToolTableClose();
+		}
 	}
 }
+
+
+void CKMotionCNCDlg::HandleToolTableClose()
+{
+	FillComboWithTools(&m_tool);
+	Interpreter->ReadToolFile();
+	TheFrame->GViewDlg.m_ToolFileDisplayed="";
+
+	// check if a tool offset is currently selected
+	if (Interpreter->p_setup->length_offset_index !=-1)
+	{
+		// yes one is selected, re-select it in case something changed
+
+		CString s;
+		int tool = m_LastToolDisplayed;
+		if (tool >=0)
+		{
+			m_tool.GetLBText(tool,s);
+
+			if (s.GetAt(0) == 'I')
+				s.Delete(0,3);
+			else
+				s.Delete(0,5);
+
+			sscanf(s,"%d",&tool);
+
+			if (m_ToolTableDoM6)
+			{
+				if (m_ToolLengthImmediately)
+					s.Format("T%dM6H%dG43",tool,tool);
+				else
+					s.Format("T%dM6",tool);
+
+				DoGCodeLine(s);
+			}
+
+		}
+	}
+	m_LastToolDisplayed=-1;
+	Interpreter->m_ReadToolFile=true;
+}
+
 
 void CKMotionCNCDlg::OnBnClickedEditfixtures()
 {
@@ -5328,3 +6124,137 @@ void CKMotionCNCDlg::OnBnClickedSpindleoff()
 {
 	Interpreter->InvokeAction(5,FALSE);  // do the defined action for M Code
 }
+
+BOOL CKMotionCNCDlg::OnToolTipNotify( UINT id, NMHDR * pNMHDR, LRESULT * pResult )
+{    
+	TOOLTIPTEXT *pTTT = (TOOLTIPTEXT *)pNMHDR;    UINT nID =pNMHDR->idFrom;
+    
+	if (pTTT->uFlags & TTF_IDISHWND)    
+	{
+        // idFrom is actually the HWND of the tool
+        nID = ::GetDlgCtrlID((HWND)nID);        
+		
+		if(nID)        
+		{
+			if (nID == IDC_tool)
+			{
+				CANON_TOOL_TABLE *T = &m_RealTimeSetup->tool_table[m_RealTimeSetup->selected_tool_slot];
+
+				CString s;
+				
+				if (T->Comment.IsEmpty()) {ToolTipText = "Tool";}
+				else {ToolTipText = T->Comment;}
+				
+				if (T->slot > 0) {s.Format(" Slot:%d",T->slot); ToolTipText+=s;}
+				if (T->id > 0) {s.Format(" ID:%d",T->id); ToolTipText+=s;}
+				if (T->length > 0) {s.Format(" Length:%.4f",T->length); ToolTipText+=s;}
+				if (T->diameter > 0) {s.Format(" Diam:%.4f",T->diameter); ToolTipText+=s;}
+				if (T->xoffset != 0) {s.Format(" X offset:%.4f",T->xoffset); ToolTipText+=s;}
+				if (T->yoffset != 0) {s.Format(" Y offset:%.4f",T->yoffset); ToolTipText+=s;}
+				
+                pTTT->lpszText = ToolTipText.GetBuffer(500); 
+			    return TRUE;
+			}
+			if (nID == IDC_fixture)
+			{
+				CString s;
+				double *d=&m_RealTimeSetup->parameters[5200 + (m_RealTimeSetup->origin_index * 20)];
+				ToolTipText.Format("Offsets X:%.4f Y:%.4f Z:%.4f",d[1],d[2],d[3]); 
+				if (d[4] != 0) {s.Format(" A:%.4f",d[4]); ToolTipText+=s;}
+				if (d[5] != 0) {s.Format(" B:%.4f",d[5]); ToolTipText+=s;}
+				if (d[6] != 0) {s.Format(" C:%.4f",d[6]); ToolTipText+=s;}
+		
+                pTTT->lpszText = ToolTipText.GetBuffer(500); 
+			    return TRUE;
+			}
+			if (m_Lathe)
+			{
+				if (nID == IDC_RightStep) {pTTT->lpszText = ToolTipText.GetBuffer(500); ToolTipText="Step Right (+Z)"; return TRUE;} 
+				if (nID == IDC_Right)     {pTTT->lpszText = ToolTipText.GetBuffer(500); ToolTipText="Right (+Z)";      return TRUE;} 
+				if (nID == IDC_Right2)    {pTTT->lpszText = ToolTipText.GetBuffer(500); ToolTipText="Fast Right (+Z)"; return TRUE;} 
+				if (nID == IDC_LeftStep)  {pTTT->lpszText = ToolTipText.GetBuffer(500); ToolTipText="Step Left (-Z)";  return TRUE;} 
+				if (nID == IDC_Left)      {pTTT->lpszText = ToolTipText.GetBuffer(500); ToolTipText="Left (-Z)";       return TRUE;} 
+				if (nID == IDC_Left2)     {pTTT->lpszText = ToolTipText.GetBuffer(500); ToolTipText="Fast Left (-Z)";  return TRUE;} 
+
+				if (m_XPosFront)
+				{
+					if (nID == IDC_ZplusStep)   {pTTT->lpszText = ToolTipText.GetBuffer(500); ToolTipText="Step Up (-X)";    return TRUE;} 
+					if (nID == IDC_Zplus)       {pTTT->lpszText = ToolTipText.GetBuffer(500); ToolTipText="Up (-X)";         return TRUE;} 
+					if (nID == IDC_Zplus2)      {pTTT->lpszText = ToolTipText.GetBuffer(500); ToolTipText="Fast Up (-X)";    return TRUE;} 
+					if (nID == IDC_ZminusStep)  {pTTT->lpszText = ToolTipText.GetBuffer(500); ToolTipText="Step Down (+X)";  return TRUE;} 
+					if (nID == IDC_Zminus)      {pTTT->lpszText = ToolTipText.GetBuffer(500); ToolTipText="Down (+X)";       return TRUE;} 
+					if (nID == IDC_Zminus2)     {pTTT->lpszText = ToolTipText.GetBuffer(500); ToolTipText="Fast Down (+X)";  return TRUE;} 
+				}
+				else
+				{
+					if (nID == IDC_ZplusStep)   {pTTT->lpszText = ToolTipText.GetBuffer(500); ToolTipText="Step Up (+X)";    return TRUE;} 
+					if (nID == IDC_Zplus)       {pTTT->lpszText = ToolTipText.GetBuffer(500); ToolTipText="Up (+X)";         return TRUE;} 
+					if (nID == IDC_Zplus2)      {pTTT->lpszText = ToolTipText.GetBuffer(500); ToolTipText="Fast Up (+X)";    return TRUE;} 
+					if (nID == IDC_ZminusStep)  {pTTT->lpszText = ToolTipText.GetBuffer(500); ToolTipText="Step Down (-X)";  return TRUE;} 
+					if (nID == IDC_Zminus)      {pTTT->lpszText = ToolTipText.GetBuffer(500); ToolTipText="Down (-X)";       return TRUE;} 
+					if (nID == IDC_Zminus2)     {pTTT->lpszText = ToolTipText.GetBuffer(500); ToolTipText="Fast Down (-X)";  return TRUE;} 
+				}
+			}
+			if (ToolTipText.LoadString(nID))
+			{
+                pTTT->lpszText = ToolTipText.GetBuffer(500);
+			    return TRUE;
+			}
+        }   
+	}    
+	return FALSE;
+}
+
+
+void CKMotionCNCDlg::LogJobEndTime(double seconds)
+{
+	CString File=TheFrame->MainPathRoot+LOG_RUNTIME_FILE,s;
+	CStdioFile f;
+
+	if (m_ThreadThatWasLaunched>=0 && m_ThreadThatWasLaunched<N_USER_GCODE_FILES)
+	{
+		if(!f.Open(File, CFile::modeCreate|CFile::modeWrite|CFile::modeNoTruncate))
+		{
+			AfxMessageBox("Unable to open Runtime Log File\r\r" + File);
+			return;
+		}
+
+		f.SeekToEnd();
+
+		CTime t = CTime::GetCurrentTime();
+		CString time = t.Format( "%a, %b %d, %Y, %I:%M:%S  " );	
+
+		s.Format("Elapsed Job Time:%12.1f sec ",seconds); 
+		s=time + s + FileNames[m_ThreadThatWasLaunched] + "\n";
+		f.Write(s,s.GetLength());
+		f.Close();
+	}
+}
+
+
+afx_msg BOOL CKMotionCNCDlg::OnNcActivate(BOOL bActive)
+{
+	if (!bActive)
+	{
+		POSITION position=CMotionButton::AxisGroup.GetHeadPosition();
+		LPCMotionButton p;
+		for (int i=0; i<CMotionButton::AxisGroup.GetCount(); i++)
+		{
+			p=CMotionButton::AxisGroup.GetNext(position);
+
+			// moving?
+			if (p->m_Moving || p->m_SimulateMotion || p->DrawPushed)
+			{
+				// stop it
+				p->PostMessageA(WM_LBUTTONUP,0,0); 
+			}
+		}
+	}
+	return TRUE;
+}
+
+void CKMotionCNCDlg::OnReloadGeoCorrection()
+{
+	Interpreter->CoordMotion->Kinematics->ReadGeoTable(m_GeoFile);
+}
+

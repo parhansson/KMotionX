@@ -1,0 +1,130 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>KMotionCNC Fiducial Alignment</title>
+</head>
+
+<body>
+
+<p><b><i><font face="Arial" size="5">KMotionCNC Fiducial Alignment</font></i></b></p>
+<p><font face="Arial" size="2">Fiducial Alignment using the external example C# 
+program&nbsp; &lt;Install&gt;\PC VCS Example\MeasureFiducials</font></p>
+<p><font face="Arial">
+<img border="0" src="KMotionCNCfiles/FiducialAlignScreen.png" width="565" height="381"></font></p>
+<p><font face="Arial">See video:</font></p>
+<font face="Arial">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/a_p38zktIZI" frameborder="0" allowfullscreen></iframe>
+</font>
+<p>&nbsp;</p>
+<p><font face="Arial">Measure Fiducials creates and overwrites the
+<a href="GeoCorrection.htm">Geometric Correction</a> file named:</font></p>
+
+<p><font face="Arial">&lt;Install Directory&gt;\KMotion\Data\FiducialsMap.txt</font></p>
+<p><font face="Arial">This should be configured for KMotionCNC to use in the
+<a href="ToolSetupScreenFiles.htm">KMotionCNC | Tool Setup | Tool Setup Files 
+configuration page</a> as shown here:</font></p>
+<p><font face="Arial">
+<img border="0" src="KMotionCNCfiles/ToolSetupGeo.png" width="1099" height="504"></font></p>
+<p><font face="Arial">The created Geometric Correction File of 2x2 grid points 
+in the form shown below.&nbsp; The table maps the corrected locations of a 
+simple 1x1 inch square centered on the origin.&nbsp; Note that because the the 
+Geo Correction Transformation extends outside the Grid using the closest Grid's 
+Transformation the size and location of the square is not important.</font></p>
+<font SIZE="2">
+<p style="margin-top: 0; margin-bottom: 0"><b><font face="Arial">2,2</font></b></p>
+<p style="margin-top: 0; margin-bottom: 0"><b><font face="Arial">1,1</font></b></p>
+<p style="margin-top: 0; margin-bottom: 0"><b><font face="Arial">-0.5,-0.5</font></b></p>
+<p style="margin-top: 0; margin-bottom: 0"><b><font face="Arial">
+0,0,-0.411272,-0.508541,0</font></b></p>
+<p style="margin-top: 0; margin-bottom: 0"><b><font face="Arial">
+0,1,0.598128,-0.507930,0</font></b></p>
+<p style="margin-top: 0; margin-bottom: 0"><b><font face="Arial">
+1,0,-0.411883,0.500859,0</font></b></p>
+<p style="margin-top: 0; margin-bottom: 0"><b><font face="Arial">
+1,1,0.597517,0.501470,0</font></b></p>
+</font>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The Measure 
+Fiducials App loads Settings from a file named :</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial"><b>&lt;Install&gt;\\PC 
+VCS Examples\\MeasureFiducials\\MeasureFiducialSettings.txt</b></font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Which has this 
+fixed format (avoid extra spaces or tabs).&nbsp; JogSpeed controls the Jog 
+button speeds in counts/inch for both x and y.&nbsp; Resolution should be set to 
+the same value as in KMotionCNC in counts/inch.&nbsp; If your system has more 
+than one Video Capture Device you can control which is selected with the 
+VideoDevice parameter. Zero would be the first detected.&nbsp;&nbsp; MouseMag 
+adjusts the scale factor between Mouse movement and Axes movement.&nbsp; </font>
+</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<font SIZE="2">
+<p style="margin-top: 0; margin-bottom: 0"><b><font face="Arial">JogSpeed 600</font></b></p>
+<p style="margin-top: 0; margin-bottom: 0"><b><font face="Arial">Resolution 
+10000 10000</font></b></p>
+<p style="margin-top: 0; margin-bottom: 0"><b><font face="Arial">VideoDevice 0</font></b></p>
+<p style="margin-top: 0; margin-bottom: 0"><b><font face="Arial">MouseMag 0.25</font></b></p>
+</font>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">KMotionCNC accepts 
+a Window Event to Re-load the current Geometric Correction File.&nbsp; The C# 
+Measure Fiducials Example finds any open KMotionCNC Window with:</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<font SIZE="2">
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">[</font></font><font face="Arial"><font SIZE="2" COLOR="#2b91af">DllImport</font><font SIZE="2">(</font><font SIZE="2" COLOR="#a31515">&quot;User32.dll&quot;</font><font SIZE="2">, 
+SetLastError = </font><font SIZE="2" COLOR="#0000ff">true</font></font><font SIZE="2"><font face="Arial">)]</font></p>
+<p style="margin-top: 0; margin-bottom: 0"></font><font face="Arial">
+<font SIZE="2" COLOR="#0000ff">public</font><font SIZE="2"> </font>
+<font SIZE="2" COLOR="#0000ff">static</font><font SIZE="2"> </font>
+<font SIZE="2" COLOR="#0000ff">extern</font><font SIZE="2"> </font>
+<font SIZE="2" COLOR="#2b91af">IntPtr</font><font SIZE="2"> FindWindow(</font><font SIZE="2" COLOR="#2b91af">String</font><font SIZE="2"> 
+lpClassName, </font><font SIZE="2" COLOR="#2b91af">String</font></font><font SIZE="2"><font face="Arial"> 
+lpWindowName);</font></p>
+<p><font face="Arial"><font SIZE="2" COLOR="#2b91af">IntPtr</font> 
+KMotionCNCWindow = FindWindow(<font SIZE="2" COLOR="#a31515">&quot;KMotionCNC&quot;</font>,
+<font SIZE="2" COLOR="#0000ff">null</font>);</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">and sends the 
+Window Event to KMotionCNC with:</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">[</font></font><font face="Arial"><font SIZE="2" COLOR="#0000ff">return</font><font SIZE="2">:
+</font><font SIZE="2" COLOR="#2b91af">MarshalAs</font><font SIZE="2">(</font><font SIZE="2" COLOR="#2b91af">UnmanagedType</font></font><font SIZE="2"><font face="Arial">.Bool)]</font></p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">[</font></font><font face="Arial"><font SIZE="2" COLOR="#2b91af">DllImport</font><font SIZE="2">(</font><font SIZE="2" COLOR="#a31515">&quot;user32.dll&quot;</font><font SIZE="2">, 
+SetLastError = </font><font SIZE="2" COLOR="#0000ff">true</font></font><font SIZE="2"><font face="Arial">)]</font></p>
+<p style="margin-top: 0; margin-bottom: 0"></font><font face="Arial">
+<font SIZE="2" COLOR="#0000ff">public</font><font SIZE="2"> </font>
+<font SIZE="2" COLOR="#0000ff">static</font><font SIZE="2"> </font>
+<font SIZE="2" COLOR="#0000ff">extern</font><font SIZE="2"> </font>
+<font SIZE="2" COLOR="#0000ff">bool</font><font SIZE="2"> PostMessage(</font><font SIZE="2" COLOR="#2b91af">IntPtr</font><font SIZE="2"> 
+hWnd, </font><font SIZE="2" COLOR="#0000ff">uint</font><font SIZE="2"> Msg,
+</font><font SIZE="2" COLOR="#0000ff">int</font><font SIZE="2"> wParam, </font>
+<font SIZE="2" COLOR="#0000ff">int</font></font><font SIZE="2"><font face="Arial"> 
+lParam);</font></p>
+</font>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">
+<font SIZE="2" COLOR="#0000ff" face="Arial">uint</font><font SIZE="2"><font face="Arial"> 
+WM_COMMAND = 0x0111;</font></p>
+<p style="margin-top: 0; margin-bottom: 0"></font>
+<font SIZE="2" COLOR="#0000ff" face="Arial">int</font><font SIZE="2"><font face="Arial"> 
+ID_ReloadGeoCorrection = 33016;</font></p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+PostMessage(KMotionCNCWindow, WM_COMMAND, ID_ReloadGeoCorrection, 0);</font></p>
+</font>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

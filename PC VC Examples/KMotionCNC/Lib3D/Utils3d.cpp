@@ -6,18 +6,9 @@
 // Modified : 14/09/98
 //********************************************
 
-#include "..\stdafx.h"
+#include "stdafx.h"
 
 
-int round(double x)
-{
-	int _ceil = (int)ceil(x);
-	int _floor = (int)floor(x);
-	if((_ceil-x) < (x-_floor))
-		return _ceil;
-	else
-		return _floor;
-}
 
 //**************************************
 // SinAngle between two faces

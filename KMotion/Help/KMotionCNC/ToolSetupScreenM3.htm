@@ -7,7 +7,7 @@
 
 <body>
 
-<p><i><b><font size="5" face="Arial">Tool Setup Screen - M3 - M9</font></b></i></p>
+<p><i><b><font size="5" face="Arial">Tool Setup Screen - M0 - M</font></b></i><b><i><font face="Arial" size="5">30</font></i></b></p>
 <p>
 <map name="FPMap0">
 <area href="#G_Code_Actions_-_M3_-_M9" shape="rect" coords="10, 42, 687, 449">
@@ -28,7 +28,7 @@ Additionally&nbsp; a machine may have different initialization and homing
 requirements.&nbsp; <i>KMotionCNC</i> has a flexible mechanism for defining what 
 type of action is to be performed for various M Codes and Custom Buttons. </font> </p>
 <p><i><b><font size="4" face="Arial"><a name="G_Code_Actions_-_M3_-_M9">G Code Actions 
-- M3 - M9</a></font></b></i></p>
+- M0 - M</a></font></b></i><a name="G_Code_Actions_-_M3_-_M9"><b><i><font face="Arial" size="4">30</font></i></b></a></p>
 <p>
 <font face="Arial">
 <img border="2" src="KMotionCNCfiles/GCodeActions.png" align="left" hspace="15"></font></p>
@@ -40,28 +40,55 @@ type of action is to be performed for various M Codes and Custom Buttons. </font
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
-<p>The M Codes 3 through 9 have functionality commonly used by most machine 
+<p><font face="Arial">The M Codes 0 through 9 have functionality commonly used by most machine 
 tools.&nbsp; These can also be used as custom or general purpose M codes in the 
 same manner as the M100-M119 M codes with the exception of M5 and M9 which are 
-automatically executed on Program Stop or Rewind.&nbsp;&nbsp;&nbsp; </p>
+automatically executed on Program Stop or Rewind.&nbsp;&nbsp;&nbsp; </font> </p>
+<p><font face="Arial"><b>M0</b> - Program Stop</font></p>
+<p><font face="Arial"><b>M1</b> - Optional Program Stop</font></p>
+<p><font face="Arial"><b>M2</b> - Program Stop, Rewind, Reset Interpreter Settings</font></p>
+<p><font face="Arial"><b>M3</b> - Spindle On CW</font></p>
+<p><font face="Arial"><b>M4</b> - Spindle On CCW</font></p>
+<p><font face="Arial"><b>M5</b> - Spindle Off - Note Automatically called on Program Stop/Rewind</font></p>
+<p><font face="Arial"><b>M6</b> - Tool Change (T variable is passed to the C program in the persist 
+variable specified)</font></p>
+<p><font face="Arial"><b>M7</b> - Mist On</font></p>
+<p><font face="Arial"><b>M8</b> - Flood On</font></p>
+<p><font face="Arial"><b>M9</b> - Mist and Flood Off</font></p>
+<p><font face="Arial"><b>S</b> - Spindle Speed Setting.&nbsp; If C Program is 
+specified Speed in RPM is passed to the specified KFLOP Var as a 32-bit floating 
+point number</font></p>
+<p><font face="Arial"><b>M30</b> - Program Stop and Rewind</font></p>
+<p><font face="Arial">The Actions section of the Tool Setup Screen defines what action is to 
+be performed when a particular G Code Command (Mostly M Codes) is encountered.&nbsp; </font></p>
 <p>&nbsp;</p>
-<p>M3 - Spindle On CW</p>
-<p>M4 - Spindle On CCW</p>
-<p>M5 - Spindle Off - Note Automatically called on Program Stop/Rewind</p>
-<p>M6 - Tool Change (T variable is passed to the C program in the persist 
-variable specified)</p>
-<p>M3 - Spindle On CW</p>
-<p>M4 - Spindle On CCW</p>
-<p>M5 - Spindle Off - Note Automatically called on Program Stop/Rewind</p>
+<p><font face="Arial">Additionally Actions can be performed when certain 
+KMotionCNC functions occur.&nbsp; These include:</font></p>
+<p><font face="Arial"><b>Cycle Start</b> - Action performed when the Cycle Start 
+Button is pressed and before GCode begins execution</font></p>
+<p><font face="Arial"><b>Halt</b> - Action performed when the Halt Button is 
+pressed after GCode stops execution.&nbsp; Commonly used to execute a C Program 
+to move the Z axis to a safe height and turn off the Spindle.&nbsp; See the 
+SafeZ_SpindleOff.c as an example.</font></p>
+<p><font face="Arial"><b>Stop</b> - Action performed after Stop Button is 
+pressed</font></p>
+<p><font face="Arial"><b>FeedHold</b> - Action performed after Stop Button is 
+pressed</font></p>
+<p><font face="Arial"><b>Resume</b>&nbsp; - Action performed after FeedHold is 
+released</font></p>
+<p><font face="Arial"><b>Program Start</b> -&nbsp; Action performed at 
+KMotionCNC Program Startup</font></p>
+<p><font face="Arial"><b>Program Exit</b> - Action before KMotionCNC Program 
+Exits</font></p>
 <p>&nbsp;</p>
-<p><font face="Arial">The G Code Actions section of the Tool Setup Screen defines what action is to 
-be performed when a particular G Code Command (Mostly M Codes) is encountered.&nbsp; 
-The Action that can be performed can be one of several things:</font></p>
+<p><font face="Arial">The Action that can be performed can be one of several things:</font></p>
 <ul>
 	<li><font face="Arial">None</font></li>
 	<li><font face="Arial">Set or Reset one I/O Bit</font></li>
 	<li><font face="Arial">Set or Reset two I/O Bits</font></li>
 	<li><font face="Arial">Set a DAC to a variable's value (S parameter)</font></li>
+	<li><font face="Arial">Wait (stall motion) until an Input to be in the 
+	specified state</font></li>
 	<li><font face="Arial">Execute a C Program in the KMotion Control Board 
 	</font> </li>
 	<li><font face="Arial">Execute a C Program in the KMotion Control Board + 

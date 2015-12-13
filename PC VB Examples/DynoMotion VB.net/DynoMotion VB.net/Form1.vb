@@ -43,6 +43,8 @@
             device.CoordMotionStatus = ""
         End If
 
+        RealtimeLine.Text = "Real Time Line = " + String.Format("{0}", device.RealtimeLine)
+
         device.MessageMutex.ReleaseMutex()
 
         updating = False

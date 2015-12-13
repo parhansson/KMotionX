@@ -18,7 +18,7 @@
 objects, namely a Tool, a Box, and an Axis Symbol.&nbsp; The Tool Object and 
 Axis Symbol are 3D VRML files that may be changed if desired.&nbsp;&nbsp; 
 KMotionCNC comes with default files shown below.&nbsp; </font> </p>
-<p><i><b><font size="4" face="Arial">Tool Shape</font></b></i></p>
+<p><i><b><font size="4" face="Arial"><a name="Tool_Shape">Tool Shape</a></font></b></i></p>
 <p><font face="Arial"><img border="0" src="KMotionCNCfiles/Tool.png" align="left" hspace="15"></font></p>
 <p><font face="Arial">The default Tool Shape is located at: <b>&lt;Install Dir&gt;\KMotion\Data\Tool.wrl</b>, 
 but maybe easily changed by entering or browsing to a new file<b>.&nbsp;&nbsp;
@@ -30,7 +30,8 @@ diameter cylinder which is 3 inches long.&nbsp; In the VRML file the origin
 allow the Tool Shape to be shifted and scaled as desired.&nbsp; As shown above 
 an offset of (0,0,0.5) shifts the tool such that the origin is at the very tip 
 of the tool.&nbsp; The scale of 0.10 then reduces the tool &quot;size&quot; from 1 inch to 
-0.10 inch.</font></p>
+0.10 inch.&nbsp; Specific Tool Shapes can be assigned to specific tools using 
+the <a href="KMotionCNC.htm#Tool_Image_file">Tool Table</a>.&nbsp; </font></p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 <p><i><b><font size="4" face="Arial">Axis Scale</font></b></i></p>
@@ -38,7 +39,10 @@ of the tool.&nbsp; The scale of 0.10 then reduces the tool &quot;size&quot; from
 <p><font face="Arial">The Axis file name and location is hard coded as: <b>&lt;Install Dir&gt;\KMotion\Data\Axis.wrl.&nbsp;
 </b>The Axis shape is always drawn at the origin.&nbsp; It's size may be changed 
 by changing the Axis Scale value.&nbsp; If a different Axis Shape is desired the 
-Axis.wrl file must be overwritten with a new file.</font></p>
+Axis.wrl file must be overwritten with a new file.&nbsp; When Lathe Mode is 
+selected a different Axis Style will be used based on the X Positive Front 
+Setting as either<b> &lt;Install Dir&gt;\KMotion\Data\AxisLathe.wrl
+</b>or<b> &lt;Install Dir&gt;\KMotion\Data\AxisLatheXFront.wrl</b>.</font></p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>

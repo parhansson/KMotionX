@@ -123,6 +123,8 @@
       <p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
       <i><strong>M Codes:</strong></i></font><font size="2" face="Arial"><br>
       <b>M0</b> (Program Stop)</font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
+		<b>M1</b> (Opt Program Stop)</font></p>
       <p style="margin-top: 0; margin-bottom: 0"><font size="2" face="Arial">
       <b>M2</b> (Program End+Reset)</font></p>
       <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2"><b>
@@ -234,7 +236,8 @@
 		<area href="#Zero/Set_Origin" shape="rect" coords="189, 21, 270, 188">
 		<area href="#Jog_Buttons" shape="polygon" coords="87, 189, 197, 189, 194, 404, 220, 404, 217, 515, 11, 513, 10, 410, 89, 411, 88, 321, 8, 321, 9, 285, 94, 285">
 		<area href="#Block_Delete" shape="rect" coords="773, 367, 816, 422">
-		<area href="#Feed_Rate_Override" shape="rect" coords="226, 309, 367, 524">
+		<area href="#Feed_Rate_Override" shape="rect" coords="226, 309, 367, 539">
+		<area href="ToolSetupScreenM3.htm" shape="rect" coords="623, 23, 670, 49">
 		</map>
       <img border="0" src="KMotionCNCfiles/KMotionCNC.png" usemap="#FPMap0"></font></p>
 		<p style="margin-top: 0; margin-bottom: 0">
@@ -374,7 +377,7 @@
 		&nbsp;<p>
 		<i><b><font face="Arial" size="4"><a name="Tool">Tool</a></font></b></i><p>
 		<font face="Arial">
-		<img border="0" src="KMotionCNCfiles/ToolSelector.PNG" align="left" hspace="15" width="79" height="202" vspace="11"></font><p>
+		<img border="0" src="KMotionCNCfiles/ToolSelector.PNG" align="left" hspace="15" vspace="11"></font><p>
 		<font face="Arial">Displays and allows changing of the currently 
 		selected Tool.&nbsp; <i>KMotionCNC</i> supports up to 99 tool definitions.&nbsp; 
 		GCode selects tools using several different commands for different 
@@ -383,39 +386,92 @@
 		automatic tool changer.&nbsp; The T command is normally followed by a M6 
 		command that receives the tool number and physically loads the tool.&nbsp; 
 		Selecting a tool in the the dropdown list will effectively cause a T#M6 
-		command to be executed, where # is the selected tool number.&nbsp; </font>
-		<p>
+		command to be executed, where # is the selected tool number.&nbsp; Tools 
+		can be selected by either 4 digit ID or 2 digit Slot numbers.&nbsp; The 
+		Dropdown displays the available Tools defined in the tool table.&nbsp; 
+		If an ID is defined it will be displayed otherwise the slot number will 
+		be displayed.</font><p>
+		&nbsp;<p>
+		<img border="0" src="KMotionCNCfiles/ToolToolTip.png" width="334" height="76" align="left"><p>
+		<font face="Arial">Hovering the Mouse over the tool selector will 
+		display a tool tip with information regarding the tool.&nbsp; Comment, 
+		Slot, ID, etc...</font><p>
+		&nbsp;<p>
 		<font face="Arial">Besides changing tools with the T command, D and H 
 		commands are used to apply tool properties from the tool table.&nbsp; 
-		The tool definitions are specified in a text file that is selected on 
-		the <a href="ToolSetupScreenFiles.htm">ToolSetup Screen</a>.</font><p>
-		<font face="Arial">A tool definition consists of the tool number (FMS), 
-		the pocket where it is located if there is a tool changer available (POC), 
-		the length of the tool (LEN), the diameter of the tool (DIAM), and an 
-		optional comment.</font></p>
+		</font>
+		<p>
+		<font face="Arial">Tool Numbers can be referenced either by Tool ID as a 
+		4 digit (or higher) number or by Tool Slot as a 2 digit number&nbsp;
+		</font><p>
+		<font face="Arial">A tool definition consists of a Tool Slot, Tool ID, 
+		the Length of the tool,&nbsp; the Diameter of the tool, XY Offsets, a 
+		descriptive Comment, and a VRML Image File.&nbsp; All parameters are 
+		optional as long as either a Slot or ID is specified for each tool.</font></p>
+		<p>
+		<font face="Arial">Note that the Tool Length can also be considered as a 
+		Z offset (Lathes often use this terminaology).</font></p>
 		<p>
 		<font face="Arial">Executing the <b>D#</b> command will select which 
 		Tool parameters are to be used for radius compensation (<b>G40,G41,G42</b>).&nbsp; </font>
 		<p>
 		<font face="Arial">Executing the <b>H#</b> command will select which 
-		Tool parameters are to be used for length compensation (<b>G43,G49</b>).&nbsp; </font>
+		Tool parameters are to be used for length and XY compensation (<b>G43,G49</b>).&nbsp; </font>
 		<p>
-		<font face="Arial">See below for an example Tool Table</font><font SIZE="2"><p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">POC 
-		FMS&nbsp; LEN&nbsp;&nbsp; DIAM&nbsp; COMMENT</font></p>
-		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">1&nbsp;&nbsp;&nbsp; 
-		1&nbsp;&nbsp; 0.0&nbsp;&nbsp; 0.0&nbsp;&nbsp; first tool</font></p>
-		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">2&nbsp;&nbsp;&nbsp; 
-		2&nbsp;&nbsp; 0.0&nbsp;&nbsp; 0.0</font></p>
-		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">3&nbsp;&nbsp;&nbsp; 
-		3&nbsp;&nbsp; 1.0&nbsp;&nbsp; 0.5</font></p>
-		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">4&nbsp;&nbsp;&nbsp; 
-		4&nbsp;&nbsp; 2.0&nbsp;&nbsp; 1.0</font></p>
-		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">32&nbsp; 
-		32&nbsp;&nbsp; 0.0&nbsp;&nbsp; 0.0&nbsp;&nbsp; last tool</font></p>
+		<font face="Arial">The tool definitions are saved in a text file that is 
+		selected on the <a href="ToolSetupScreenFiles.htm">ToolSetup Screen</a>.&nbsp; See below for an example Tool Table.&nbsp; 
+		There are 6 numeric values and 2 alphanumeric strings.&nbsp; The 
+		strings, including empty strings,&nbsp; must be enclosed in quotes:</font><font SIZE="2"><p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Courier New">SLOT 
+		ID LENGTH DIAMETER XOFFSET YOFFSET COMMENT IMAGE</font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Courier New">1 
+		1001 6.000000 0.125000 0.000000 0.000000 &quot;Long Endmill&quot; &quot;EndMill-z 1in 
+		.125.wrl&quot;</font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Courier New">2 
+		1002 2.000000 0.500000 0.000000 0.000000 &quot;&quot; &quot;EndMill-z 2in .500.wrl&quot;</font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Courier New">0 
+		1003 3.000000 0.500000 0.000000 0.000000 &quot;&quot; &quot;EndMill-z.wrl&quot;</font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Courier New">7 
+		1006 6.000000 0.000000 0.000000 0.000000 &quot;&quot; &quot;&quot;</font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Courier New">25 
+		1025 0.000000 0.000000 0.000000 0.000000 &quot;&quot; &quot;&quot;</font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Courier New">0 
+		2000 0.000000 0.000000 0.000000 0.000000 &quot;Front NPTF Lathe tool&quot; &quot;NPTF 
+		Front.wrl&quot;</font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Courier New">0 
+		2001 0.000000 0.000000 0.000000 0.000000 &quot;Back VNMG Lathe Tool&quot; &quot;VNMG-1 
+		back.wrl&quot;</font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Courier New">26 0 
+		1.000000 0.250000 0.000000 0.000000 &quot;&quot; &quot;&quot;</font></p>
 		</font>
 		<p>
-		The Tool Table may also be edited in a window using the <b>edit</b> button. <p>
+		<font face="Arial">The Tool Table may also be edited in a window using the <b>edit</b> 
+		button.</font><p>
+		<font face="Arial">
+		<img border="0" src="KMotionCNCfiles/ToolTable600.png" width="600" height="424"></font><p>
+		<font face="Arial">The Tool Edit Screen displays 20 tools per page over 
+		5 pages for a total of 99 possible tools.</font><p>
+		<font face="Arial">The normal idea is that all information regarding a tool is 
+		linked to a Tool ID.&nbsp; For a particular GCode Job specific Tools can be loaded into specific 
+		Tool Changer Slots and the corresponding slot numbers can 
+		be edited to reflect which tools are currently loaded.</font><p>
+		<font face="Arial">A &quot;Sort&quot; button is available that will sort the Tool 
+		Table order first by Tool ID and then by Slot number.</font><p>
+		<font face="Arial">The <a name="Tool_Image_file">Tool Image file</a> 
+		refers to a VRML 3D model of the Tool that will be used to display the 
+		tool when shown in the GViewer Screen.&nbsp; All image files are 
+		normally located into the &lt;Install&gt;\KMotion\Data\ToolImages Folder.&nbsp; 
+		VRML (<span class="st"><em style="font-style: normal">Virtual Reality 
+		Modeling Language)</em></span>&nbsp;files normally have a .wrl file type 
+		extension.&nbsp; If located in the standard location no path is required 
+		to be specified.&nbsp; Pushing the Browse Button
+		<img border="0" src="KMotionCNCfiles/Browse.png" width="34" height="28">will 
+		bring up a File Selector Dialog with Preview that will display the 
+		available Tool Images as well as the Tool Image origin.&nbsp; Note that 
+		Mouse Click Right, Left, Both can be used to manipulate the View in the 
+		same manner as in the GViewer Screen.&nbsp; For creating your own Tool 
+		Image files see information <a href="GViewerSetup.htm#Tool_Shape">here</a>.</font><p>
+		<img border="0" src="KMotionCNCfiles/ToolImagePreview.png" width="620" height="290"><p>
 		&nbsp;<p>
 		<b><i><font face="Arial" size="4"><a name="File_New_/_Open/_Save">File 
 		New / Open/ Save</a></font></i></b><p>
@@ -440,12 +496,13 @@
 		line of G code&nbsp; where the current instruction pointer is currently 
 		pointing.&nbsp; Note that the instruction pointer may be moved to any 
 		line by right clicking on the line within the edit window and selecting 
-		Set Next Statement.</font><p>
-		<font face="Arial"><font color="#990000"><i><b>Halt</b></i> (available 
-		when GCode is running) </font>will cause a feedhold to be 
+		Set Next Statement.&nbsp; The Keyboard F5 Key can be used to toggle 
+		Cycle Start/Halt.</font><p>
+		<font face="Arial"><font color="#990000"><i><b>Halt</b></i> </font>(available 
+		when GCode is running) will cause a feedhold to be 
 		initiated so that any coordinated tool motion will decelerate along the 
 		intended path.&nbsp; Once motion comes to a complete stop, the GCode 
-		Interpreter will abort and back up to the state of the line of GCode 
+		Interpreter will abort and remain on the line of GCode 
 		that created the current Tool motion.</font><p>
 		&nbsp;<p>
 		<b><i><font face="Arial" size="4">
@@ -555,18 +612,18 @@
 		&nbsp;<p>
 		<b><i><font face="Arial" size="4"><a name="Feed_Hold">Feed Hold</a></font></i></b><p>
 		<font face="Arial">
-		<img border="0" src="KMotionCNCfiles/FeedHold.PNG" align="left" hspace="15"></font><p>
-		<font face="Arial">Feed Hold may be used to immediately decelerate all 
-		axes to a controlled stop.&nbsp; Any coordinated motion in progress will 
-		decelerate along the defined buffered path.&nbsp; When stopped in feed 
-		hold, the button will be shown in a toggled state.&nbsp; To resume 
-		motion toggle the feed hold button off.&nbsp; Note that while stopped 
-		that the current GCode line may be advanced one or more lines past the 
-		current tool position because the Interpreter and Trajectory planner 
-		works ahead to allow motion to be buffered.&nbsp;
+		<img border="0" src="KMotionCNCfiles/FeedHold.PNG" align="left" hspace="15" vspace="5"></font><p>
+		<img border="0" src="KMotionCNCfiles/ForRev.png" width="172" height="85" align="left" hspace="10" vspace="5"><font face="Arial">Feed 
+		Hold may be used to immediately decelerate all axes to a controlled 
+		stop.&nbsp; Any coordinated motion in progress will decelerate along the 
+		defined buffered path.&nbsp; When stopped in feed hold, the button will 
+		be shown in a toggled state.&nbsp; Forward and Reverse buttons will also 
+		be available to advance slowly in forward or reverse along the current 
+		path.&nbsp; To resume motion toggle the Feed Hold button off.&nbsp;
 		<a href="#Execute_Controls">Halt</a> may also be selected to exit the 
-		feedhold state.&nbsp; Halt will cause the Interpreter to abort and back 
-		up to the GCode line that generated the current tool position.</font><p>
+		Feed Hold state.&nbsp; Halt will cause the Interpreter to abort and 
+		remain on the GCode line that generated the current tool position.&nbsp; 
+		The F3 function Key can be used to Toggle Feed Hold.</font><p>
 		&nbsp;<p>
 		<i><b><font face="Arial" size="4"><a name="Emergency_Stop">Emergency Stop</a></font></b></i><p>
 		<font face="Arial">
@@ -575,8 +632,7 @@
 		motion.&nbsp; Any commands in motion will be aborted and all axes will 
 		be disabled.&nbsp; After depressing Emergency Stop the system must be 
 		re-initialized and the G Code Interpreter state will be lost.&nbsp;&nbsp; 
-		Use Halt to stop in a controlled manner after the next line of GCode has 
-		been completed.</font><p>
+		Use Halt to stop in a controlled manner.</font><p>
 		<font face="Arial">The ESC key may also be use to initiate an Emergency 
 		Stop whenever the KMotionCNC Screen has the focus.</font><p>
 		&nbsp;<p>
@@ -637,13 +693,13 @@
 		<b><i><font face="Arial" size="4"><a name="Feed_Rate_Override">Feed/Spindle Rate Override</a></font></i></b><p>
 		<font face="Arial">
 		<img border="0" src="KMotionCNCfiles/FeedRate.PNG" align="left" hspace="15"></font><p>
-		<font face="Arial">Feed Rate Override provides a means to adjust the feedrate while the 
+		<font face="Arial">Feed Rate Override (FRO) provides a means to adjust the feedrate while the 
 		machine is in operation without having to modify the G Code.&nbsp; The 
 		Feed Rate is specified within the G Code using the F command and the 
-		Feed Rate Override is a multiplicative factor that is applied to that 
-		value.&nbsp; For example F100 would specify a Feed rate of 100 
+		FRO is a multiplicative factor that is applied to that 
+		value.&nbsp; For example F100 would specify a Feed Rate of 100 
 		inches/minute (or 100 mm/minute if the interpreter is in metric mm 
-		mode), with a feed rate override of 1.5 the actual attempted feed rate 
+		mode), with a FRO of 1.5 the actual attempted feed rate 
 		would be 150 inches/minute (or 150 mm/minute in mm mode).&nbsp; 
 		</font> 
 		<p>
@@ -652,32 +708,63 @@
 		<a href="ToolSetupScreenTP.htm">Tool Setup Screen</a>.&nbsp;&nbsp; 
 		Additionally, short vectors with sharp corners (greater than the 
 		specified break angle) that require stopping may be limited due to 
-		acceleration limits.&nbsp;&nbsp; KMotionCNC uses complex algorithms to 
+		acceleration limits.&nbsp;&nbsp; KMotionCNC uses complex Trajectory 
+		Planning algorithms to 
 		ensure that velocities and accelerations remain below user specified 
-		limits.&nbsp; So if the Feed Rate Override or (Specified Feed rate 
+		limits.&nbsp; If the FRO or (Specified Feed Rate 
 		itself) doesn't seem to be having the expected result, check if the 
 		maximum velocities and accelerations are limiting.</font><p>
-		<font face="Arial">The Feed Rate Override may be changed either by using the slider or by 
+		<font face="Arial">The FRO may be changed either by using the slider or by 
 		typing a value and pressing the apply button.</font><p>
 		<font face="Arial">Note that because motions are planned ahead and downloaded to the Motion 
-		Controller ahead of time, that the feed rate override will take a short 
+		Controller ahead of time the FRO may take some 
 		amount of time to have an effect.&nbsp; The amount of time that the 
-		trajectory planner looks ahead is specified on the Tool Setup Screen and 
+		Trajectory Planner looks ahead is specified on the
+		<a href="ToolSetupScreenTP.htm#lookahead">Tool Setup Screen</a> and 
 		is normally set at from 1 to 3 seconds.&nbsp; The main limitation to 
 		making this value very short is the worst case response time of 
 		Microsoft Windows™ and the PC 
-		hardware being used.&nbsp;&nbsp; </font> <p>
+		hardware being used.</font><p>
+		<font face="Arial">Hardware Feed Rate Override (within KFLOP) can also 
+		be used for a more instant response.&nbsp; However Hardware FRO may 
+		result in distorted accelerations.&nbsp; Users can control how FRO is 
+		performed using the <a href="ToolSetupScreenTP.htm#Feed_Rate_Override">
+		Feed Rate Override Hardware Range</a> Parameter.&nbsp;&nbsp; </font>
+		<p>
 		<font face="Arial">Two numbers at the top of the screen show the last 
-		commanded F (feedrate) setting and the actual instantaneous feedrate.&nbsp; 
+		commanded F (Feedrate) setting and the actual instantaneous Feedrate.&nbsp; 
 		The actual Feedrate is also plotted as a bar graph as a ratio of actual 
-		feed rate/last programmed feed rate.</font><p>
-		<font face="Arial">Similar controls and displays are made for Spindle 
+		feed rate to last programmed feed rate.</font><p>
+		<font face="Arial">There is also an independently adjustable Rapid Rate 
+		Override.&nbsp; This can be displayed and adjusted by selecting the 
+		&quot;rapid&quot; selection.&nbsp; Rapid motions are performed in G Code for G0 
+		type of motion.&nbsp; Rapid Rate Override always uses Hardware Override 
+		and has an instantaneous effect.</font><p>
+		<font face="Arial">Feed Rate can be unsynchronized as distance per time 
+		for G1,G2, G3 types of motion, or may be Spindle synchronized as 
+		distance per revolution for G32 types of Syncronized Threading Motions.&nbsp; 
+		When synchronized threading operation is in progress the Feed Rate Icon 
+		will be displayed as:
+		<img border="0" src="KMotionCNCfiles/fr32.bmp" width="20" height="28">&nbsp; 
+		instead of simply as
+		<img border="0" src="KMotionCNCfiles/FR.bmp" width="20" height="28"> for 
+		normal operations.</font><p>
+		<font face="Arial">Similar controls and displays exist for Spindle 
 		Control and correspond to the last specified S value in the GCode.</font><p>
+		<font face="Arial">Constant Surface Speed (CSS) is also supported which 
+		automatically varies the Spindle Speed as a function of cutting Radius 
+		in order to maintain a constant surface speed of the cutting tool across 
+		the material.&nbsp; G96/G97 Codes turn on and off this mode.&nbsp; When 
+		operating in CSS mode the Spindle Icon will be displayed as:
+		<img border="0" src="KMotionCNCfiles/SRCSS.bmp" width="20" height="28"> 
+		instead of simply as
+		<img border="0" src="KMotionCNCfiles/SR.bmp" width="20" height="28"> for 
+		normal operations.</font><p>
 		<font face="Arial">3 buttons allow the spindle to be turned on CW, on 
-		CCW, or off to the last specified S setting and Override.&nbsp; If 
-		Spindle Speed feedback is available in the system the current spindle 
+		CCW, to the last specified S setting and SSO.&nbsp; If 
+		Spindle Speed feedback is available in the system, the current spindle 
 		speed (in RPM) and bar graph will display the ratio of actual Spindle 
-		Speed/last programmed Spindle Speed.</font><p>
+		Speed to last programmed Spindle Speed.</font><p>
 		&nbsp;<p>
 		<i><b><font face="Arial" size="4"><a name="Custom_Buttons">Custom Buttons</a></font></b></i><p>
 		<font face="Arial">

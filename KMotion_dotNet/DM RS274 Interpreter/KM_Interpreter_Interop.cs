@@ -74,11 +74,13 @@ namespace KMotion_dotNet
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern void KM_dotnet_Interop_GCodeInterpreter_InitializeInterpreter(IntPtr handle);
 
+        [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern bool KM_dotnet_Interop_GCodeInterpreter_GetInitializeOnExecute(IntPtr handle);
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern void KM_dotnet_Interop_GCodeInterpreter_SetInitializeOnExecute(IntPtr handle, bool value);
 
+        [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern bool KM_dotnet_Interop_GCodeInterpreter_GetReadToolFile(IntPtr handle);
         [DllImport("KMotion_dotNet_Interop.dll")]
@@ -97,6 +99,7 @@ namespace KMotion_dotNet
         //Resume Parameters
 
 
+        [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern bool KM_dotnet_Interop_GCodeInterpreter_Get_CanResume(IntPtr handle);
         [DllImport("KMotion_dotNet_Interop.dll")]
@@ -112,11 +115,13 @@ namespace KMotion_dotNet
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern void KM_dotnet_Interop_GCodeInterpreter_Set_ResumeSafeRelAbs(IntPtr handle, int value);
 
+        [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern bool KM_dotnet_Interop_GCodeInterpreter_Get_ResumeMoveToSafeZ(IntPtr handle);
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern void KM_dotnet_Interop_GCodeInterpreter_Set_ResumeMoveToSafeZ(IntPtr handle, bool value);
 
+        [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern bool KM_dotnet_Interop_GCodeInterpreter_Get_ResumeTraverseXY(IntPtr handle);
         [DllImport("KMotion_dotNet_Interop.dll")]
@@ -132,6 +137,7 @@ namespace KMotion_dotNet
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern void KM_dotnet_Interop_GCodeInterpreter_Set_ResumeTraverseSafeY(IntPtr handle, double value);
 
+        [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern bool KM_dotnet_Interop_GCodeInterpreter_Get_ResumeSafeStartSpindle(IntPtr handle);
         [DllImport("KMotion_dotNet_Interop.dll")]
@@ -142,6 +148,7 @@ namespace KMotion_dotNet
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern void KM_dotnet_Interop_GCodeInterpreter_Set_ResumeSafeSpindleCWCCW(IntPtr handle, int value);
 
+        [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern bool KM_dotnet_Interop_GCodeInterpreter_Get_ResumeDoSafeFeedZ(IntPtr handle);
         [DllImport("KMotion_dotNet_Interop.dll")]
@@ -162,6 +169,7 @@ namespace KMotion_dotNet
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern void KM_dotnet_Interop_GCodeInterpreter_Set_ResumeZFeedRate(IntPtr handle, double value);
 
+        [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern bool KM_dotnet_Interop_GCodeInterpreter_Get_ResumeRestoreFeedRate(IntPtr handle);
         [DllImport("KMotion_dotNet_Interop.dll")]
@@ -234,11 +242,13 @@ namespace KMotion_dotNet
 
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern void KM_dotnet_Interop_GCodeInterpreter_SetHalt(IntPtr handle);
+        [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern bool KM_dotnet_Interop_GCodeInterpreter_GetHalt(IntPtr handle);
 
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern void KM_dotnet_Interop_GCodeInterpreter_SetAbort(IntPtr handle);
+        [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern bool KM_dotnet_Interop_GCodeInterpreter_GetAbort(IntPtr handle);
 

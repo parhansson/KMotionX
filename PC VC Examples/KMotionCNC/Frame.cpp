@@ -40,6 +40,7 @@ CFrame::~CFrame()
 	delete GCodeDlg.Interpreter->CoordMotion;
 	delete GCodeDlg.Interpreter;
 	delete KMotionDLL;
+	TheFrame=NULL;
 }
 
 

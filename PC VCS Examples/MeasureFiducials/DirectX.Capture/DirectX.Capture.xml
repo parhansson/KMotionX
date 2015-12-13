@@ -1,0 +1,2495 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DirectX.Capture</name>
+    </assembly>
+    <members>
+        <member name="T:DirectX.Capture.WMProfileData">
+            <summary>
+            Summary description for WMProfileData
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMProfileData.name">
+            <summary>
+            Name of the profile
+            Must be valid and an unique name
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMProfileData.guid">
+            <summary>
+            Guid of the profile
+            Must be valid and an unique guid
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMProfileData.description">
+            <summary>
+            Description of the profile
+            Might be interesting to know when selecting a format
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMProfileData.audioBitrate">
+            <summary>
+            Audio bit rate
+            Might be interesting to know when selecting a format
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMProfileData.videoBitrate">
+            <summary>
+            Video bit rate
+            Might be interesting to know when selecting a format
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMProfileData.filename">
+            <summary>
+            Profile filename, a profile must have a guid or a filename
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMProfileData.audio">
+            <summary>
+            Indicates whether this profile supports an audio stream
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMProfileData.video">
+            <summary>
+            Indicates whether this profile supports an video stream
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMProfileData.enabled">
+            <summary>
+            Indicates whether this profile is the one currently in use
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.WMProfileData.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.WMProfileData.#ctor(System.Guid,System.String,System.String,System.Int32,System.Int32,System.Boolean,System.Boolean)">
+            <summary>
+            Initialize profile data
+            </summary>
+            <param name="guid"></param>
+            <param name="name"></param>
+            <param name="description"></param>
+            <param name="audioBitrate"></param>
+            <param name="videoBitrate"></param>
+            <param name="audio"></param>
+            <param name="video"></param>
+        </member>
+        <member name="M:DirectX.Capture.WMProfileData.Finalize">
+            <summary> Release resources. </summary>
+        </member>
+        <member name="M:DirectX.Capture.WMProfileData.Dispose">
+            <summary> Release resources. </summary>
+        </member>
+        <member name="P:DirectX.Capture.WMProfileData.Name">
+            <summary>
+            Name of profile
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.WMProfileData.Guid">
+            <summary>
+            Guid of profile (might be a null value)
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.WMProfileData.Description">
+            <summary>
+            Description of profile
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.WMProfileData.VideoBitrate">
+            <summary>
+            Video bit rate value
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.WMProfileData.AudioBitrate">
+            <summary>
+            Audio bit rate value
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.WMProfileData.Audio">
+            <summary>
+            Indicates whether profile supports audio
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.WMProfileData.Video">
+            <summary>
+            Indicates whether profile supports video
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.WMProfileData.Enabled">
+            <summary>
+            Enabled flag
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.WMProfileData.Filename">
+            <summary>
+            Filename profile
+            </summary>
+        </member>
+        <member name="T:DirectX.Capture.SourceCollection">
+            <summary>
+             A collection of sources (or physical connectors) on an 
+             audio or video device. This is used by the <see cref="T:DirectX.Capture.Capture"/>
+             class to provide a list of available sources on the currently
+             selected audio and video devices. This class cannot be created
+             directly.  This class assumes there is only 1 video and 1 audio
+             crossbar and all input pins route to a single output pin on each 
+             crossbar.
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.SourceCollection.#ctor">
+            <summary> Initialize collection with no sources. </summary>
+        </member>
+        <member name="M:DirectX.Capture.SourceCollection.#ctor(DShowNET.ICaptureGraphBuilder2,DShowNET.IBaseFilter,System.Boolean)">
+            <summary> Initialize collection with sources from graph. </summary>
+        </member>
+        <member name="M:DirectX.Capture.SourceCollection.Finalize">
+            <summary> Destructor. Release unmanaged resources. </summary>
+        </member>
+        <member name="M:DirectX.Capture.SourceCollection.Clear">
+            <summary> Empty the collection. </summary>
+        </member>
+        <member name="M:DirectX.Capture.SourceCollection.Dispose">
+            <summary> Release unmanaged resources. </summary>
+        </member>
+        <member name="M:DirectX.Capture.SourceCollection.addFromGraph(DShowNET.ICaptureGraphBuilder2,DShowNET.IBaseFilter,System.Boolean)">
+            <summary> Populate the collection from a filter graph. </summary>
+        </member>
+        <member name="M:DirectX.Capture.SourceCollection.findCrossbars(DShowNET.ICaptureGraphBuilder2,DShowNET.IBaseFilter)">
+            <summary>
+             Retrieve a list of crossbar filters in the graph.
+             Most hardware devices should have a maximum of 2 crossbars, 
+             one for video and another for audio.
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.SourceCollection.findCrossbarSources(DShowNET.ICaptureGraphBuilder2,DShowNET.IAMCrossbar,System.Boolean)">
+            <summary>
+             Populate the internal InnerList with sources/physical connectors
+             found on the crossbars. Each instance of this class is limited
+             to video only or audio only sources ( specified by the isVideoDevice
+             parameter on the constructor) so we check each source before adding
+             it to the list.
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.SourceCollection.Item(System.Int32)">
+            <summary> Get the source at the specified index. </summary>
+        </member>
+        <member name="P:DirectX.Capture.SourceCollection.CurrentSource">
+            <summary>
+             Gets or sets the source/physical connector currently in use.
+             This is marked internal so that the Capture class can control
+             how and when the source is changed.
+            </summary>
+        </member>
+        <member name="T:DirectX.Capture.Source">
+            <summary>
+             Represents a physical connector or source on an audio/video device.
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.Source.name">
+            <summary>
+            Name of the source
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.Source.ToString">
+            <summary> Obtains the String representation of this instance. </summary>
+        </member>
+        <member name="M:DirectX.Capture.Source.Finalize">
+            <summary> Release unmanaged resources. </summary>
+        </member>
+        <member name="M:DirectX.Capture.Source.Dispose">
+            <summary> Release unmanaged resources. </summary>
+        </member>
+        <member name="P:DirectX.Capture.Source.Name">
+            <summary> The name of the source. Read-only. </summary>
+        </member>
+        <member name="P:DirectX.Capture.Source.Enabled">
+            <summary> Is this source enabled. </summary>
+        </member>
+        <member name="T:DirectX.Capture.DeviceInUseException">
+            <summary>
+             Exception thrown when the device cannot be rendered or started.
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.DeviceInUseException.#ctor(System.String,System.Int32)">
+            <summary>
+            Initializes a new instance with the specified HRESULT
+            </summary>
+            <param name="deviceName"></param>
+            <param name="hResult"></param>
+        </member>
+        <member name="T:DirectX.Capture.AudioCapabilities">
+            <summary>
+             Capabilities of the audio device such as 
+             min/max sampling rate and number of channels available.
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.AudioCapabilities.MinimumChannels">
+            <summary> Minimum number of audio channels. </summary>
+        </member>
+        <member name="F:DirectX.Capture.AudioCapabilities.MaximumChannels">
+            <summary> Maximum number of audio channels. </summary>
+        </member>
+        <member name="F:DirectX.Capture.AudioCapabilities.ChannelsGranularity">
+            <summary> Granularity of the channels. For example, channels 2 through 4, in steps of 2. </summary>
+        </member>
+        <member name="F:DirectX.Capture.AudioCapabilities.MinimumSampleSize">
+            <summary> Minimum number of bits per sample. </summary>
+        </member>
+        <member name="F:DirectX.Capture.AudioCapabilities.MaximumSampleSize">
+            <summary> Maximum number of bits per sample. </summary>
+        </member>
+        <member name="F:DirectX.Capture.AudioCapabilities.SampleSizeGranularity">
+            <summary> Granularity of the bits per sample. For example, 8 bits per sample through 32 bits per sample, in steps of 8. </summary>
+        </member>
+        <member name="F:DirectX.Capture.AudioCapabilities.MinimumSamplingRate">
+            <summary> Minimum sample frequency. </summary>
+        </member>
+        <member name="F:DirectX.Capture.AudioCapabilities.MaximumSamplingRate">
+            <summary> Maximum sample frequency. </summary>
+        </member>
+        <member name="F:DirectX.Capture.AudioCapabilities.SamplingRateGranularity">
+            <summary> Granularity of the frequency. For example, 11025 Hz to 44100 Hz, in steps of 11025 Hz. </summary>
+        </member>
+        <member name="M:DirectX.Capture.AudioCapabilities.#ctor(DShowNET.IAMStreamConfig)">
+            <summary> Retrieve capabilities of an audio device </summary>
+        </member>
+        <member name="T:DirectX.Capture.DirectShowPropertyPage">
+            <summary>
+             Property pages for a DirectShow filter (e.g. hardware device). These
+             property pages do not support persisting their settings. 
+            </summary>
+        </member>
+        <member name="T:DirectX.Capture.PropertyPage">
+            <summary>
+             A base class for representing property pages exposed by filters. 
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.PropertyPage.Name">
+            <summary> Name of property page. This name may not be unique </summary>
+        </member>
+        <member name="F:DirectX.Capture.PropertyPage.SupportsPersisting">
+            <summary> Does this property page support saving and loading the user's choices. </summary>
+        </member>
+        <member name="M:DirectX.Capture.PropertyPage.#ctor">
+            <summary> Constructor </summary>
+        </member>
+        <member name="M:DirectX.Capture.PropertyPage.Show(System.Windows.Forms.Control)">
+            <summary> 
+             Show the property page. Some property pages cannot be displayed 
+             while previewing and/or capturing. This method will block until
+             the property page is closed by the user.
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.PropertyPage.Dispose">
+            <summary> Release unmanaged resources </summary>
+        </member>
+        <member name="P:DirectX.Capture.PropertyPage.State">
+            <summary> 
+             Get or set the state of the property page. This is used to save
+             and restore the user's choices without redisplaying the property page. 
+            </summary>
+            <remarks>
+             After showing this property page, read and store the value of 
+             this property. At a later time, the user's choices can be 
+             reloaded by setting this property with the value stored earlier. 
+             Note that some property pages, after setting this property, 
+             will not reflect the new state. However, the filter will use the
+             new settings. 
+             
+            <para>
+             When reading this property, copy the entire array at once then manipulate
+             your local copy (e..g byte[] myState = propertyPage.State). When
+             setting this property set the entire array at once (e.g. propertyPage = myState).
+            </para>
+             
+            <para>
+             Not all property pages support saving/loading state. Check the 
+             <see cref="F:DirectX.Capture.PropertyPage.SupportsPersisting"/> property to determine if this 
+             property page supports it.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:DirectX.Capture.DirectShowPropertyPage.specifyPropertyPages">
+            <summary> COM ISpecifyPropertyPages interface </summary>
+        </member>
+        <member name="M:DirectX.Capture.DirectShowPropertyPage.#ctor(System.String,DShowNET.ISpecifyPropertyPages)">
+            <summary> Constructor </summary>
+        </member>
+        <member name="M:DirectX.Capture.DirectShowPropertyPage.Show(System.Windows.Forms.Control)">
+            <summary> 
+             Show the property page. Some property pages cannot be displayed 
+             while previewing and/or capturing. 
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.DirectShowPropertyPage.Dispose">
+            <summary> Release unmanaged resources </summary>
+        </member>
+        <member name="T:DirectX.Capture.Filter">
+            <summary>
+             Represents a DirectShow filter (e.g. video capture device, 
+             compression codec).
+            </summary>
+            <remarks>
+             To save a chosen filer for later recall
+             save the MonikerString property on the filter: 
+             <code><div style="background-color:whitesmoke;">
+              string savedMonikerString = myFilter.MonikerString;
+             </div></code>
+             
+             To recall the filter create a new Filter class and pass the 
+             string to the constructor: 
+             <code><div style="background-color:whitesmoke;">
+              Filter mySelectedFilter = new Filter( savedMonikerString );
+             </div></code>
+            </remarks>
+        </member>
+        <member name="F:DirectX.Capture.Filter.Name">
+            <summary> Human-readable name of the filter </summary>
+        </member>
+        <member name="F:DirectX.Capture.Filter.MonikerString">
+            <summary> Unique string referencing this filter. This string can be used to recreate this filter. </summary>
+        </member>
+        <member name="M:DirectX.Capture.Filter.#ctor(System.String)">
+            <summary> Create a new filter from its moniker string. </summary>
+        </member>
+        <member name="M:DirectX.Capture.Filter.#ctor(System.Runtime.InteropServices.ComTypes.IMoniker)">
+            <summary> Create a new filter from its moniker </summary>
+        </member>
+        <member name="M:DirectX.Capture.Filter.getMonikerString(System.Runtime.InteropServices.ComTypes.IMoniker)">
+            <summary> Retrieve the a moniker's display name (i.e. it's unique string) </summary>
+        </member>
+        <member name="M:DirectX.Capture.Filter.getName(System.Runtime.InteropServices.ComTypes.IMoniker)">
+            <summary> Retrieve the human-readable name of the filter </summary>
+        </member>
+        <member name="M:DirectX.Capture.Filter.getName(System.String)">
+            <summary> Get a moniker's human-readable name based on a moniker string. </summary>
+        </member>
+        <member name="M:DirectX.Capture.Filter.getAnyMoniker">
+            <summary>
+             This method gets a UCOMIMoniker object.
+            
+             HACK: The only way to create a UCOMIMoniker from a moniker 
+             string is to use UCOMIMoniker.ParseDisplayName(). So I 
+             need ANY UCOMIMoniker object so that I can call 
+             ParseDisplayName(). Does anyone have a better solution?
+            
+             This assumes there is at least one video compressor filter
+             installed on the system.
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.Filter.CompareTo(System.Object)">
+            <summary>
+             Compares the current instance with another object of 
+             the same type.
+            </summary>
+        </member>
+        <member name="T:DirectX.Capture.Filters">
+            <summary>
+             Provides collections of devices and compression codecs
+             installed on the system. 
+            </summary>
+            <example>
+             Devices and compression codecs are implemented in DirectShow 
+             as filters, see the <see cref="T:DirectX.Capture.Filter"/> class for more 
+             information. To list the available video devices:
+             <code><div style="background-color:whitesmoke;">
+              Filters filters = new Filters();
+              foreach ( Filter f in filters.VideoInputDevices )
+              {
+            	Debug.WriteLine( f.Name );
+              }
+             </div></code>
+             <seealso cref="T:DirectX.Capture.Filter"/>
+            </example>
+        </member>
+        <member name="F:DirectX.Capture.Filters.VideoInputDevices">
+            <summary> Collection of available video capture devices. </summary>
+        </member>
+        <member name="F:DirectX.Capture.Filters.AudioInputDevices">
+            <summary> Collection of available audio capture devices. </summary>
+        </member>
+        <member name="F:DirectX.Capture.Filters.VideoCompressors">
+            <summary> Collection of available video compressors. </summary>
+        </member>
+        <member name="F:DirectX.Capture.Filters.AudioCompressors">
+            <summary> Collection of available audio compressors. </summary>
+        </member>
+        <member name="F:DirectX.Capture.Filters.LegacyFilters">
+            <summary> Collection of available audio compressors. </summary>
+        </member>
+        <member name="T:DirectX.Capture.FilterCollection">
+            <summary>
+             A collection of Filter objects (DirectShow filters).
+             This is used by the <see cref="T:DirectX.Capture.Capture"/> class to provide
+             lists of capture devices and compression filters. This class
+             cannot be created directly.
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.FilterCollection.#ctor(System.Guid)">
+            <summary> Populate the collection with a list of filters from a particular category. </summary>
+        </member>
+        <member name="M:DirectX.Capture.FilterCollection.getFilters(System.Guid)">
+            <summary> Populate the InnerList with a list of filters from a particular category </summary>
+        </member>
+        <member name="P:DirectX.Capture.FilterCollection.Item(System.Int32)">
+            <summary> Get the filter at the specified index. </summary>
+        </member>
+        <member name="T:DirectX.Capture.DxUtils">
+            <summary>
+            Summary description for Class1.
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.videoDecoder">
+            <summary> Video Decoder </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.subTypeList">
+            <summary> Array List </summary>
+        </member>
+        <member name="M:DirectX.Capture.DxUtils.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.DxUtils.Dispose">
+            <summary>
+            Dispose DxUtils
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.DxUtils.InitDxUtils(DShowNET.IBaseFilter)">
+            <summary>
+            Initialize the video control utilities
+            </summary>
+            <param name="videoDeviceFilter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DirectX.Capture.DxUtils.MakeFourCC(System.Guid,System.String@)">
+            <summary>
+            Make FourCC from media subtype
+            </summary>
+            <param name="guid"></param>
+            <param name="mediaSubType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DirectX.Capture.DxUtils.getMediaSubType(DShowNET.IAMStreamConfig)">
+            <summary>
+            Get the video type for the specified pin interface
+            </summary>
+            <param name="streamConfig"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DirectX.Capture.DxUtils.setMediaSubType(DShowNET.IAMStreamConfig,DirectX.Capture.DxUtils.ColorSpaceEnum)">
+            <summary>
+            Set video type for the specified pin interface
+            </summary>
+            <param name="streamConfig"></param>
+            <param name="newValue"></param>
+        </member>
+        <member name="M:DirectX.Capture.DxUtils.setMediaSubType(DShowNET.IAMStreamConfig,System.Guid)">
+            <summary>
+            Set video type for the specified pin interface
+            </summary>
+            <param name="streamConfig"></param>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DirectX.Capture.DxUtils.FindMediaData(DShowNET.IAMStreamConfig)">
+            <summary>
+            Find media data by trial and error, just try every media type
+            in the list, the ones that do not return an error, are accepted.
+            This function might be handy if DShowNET is used as library
+            instead of DirectShowLib.
+            This function should be called with a derendered graph only,
+            so with capture device only and no rendering of audio, video or
+            VBI.
+            </summary>
+            <param name="streamConfig"></param>
+            <returns></returns>
+        </member>
+        <member name="P:DirectX.Capture.DxUtils.VideoDecoderAvail">
+            <summary>
+            Check if the Video Decoder interface is available
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.DxUtils.VideoStandard">
+            <summary>
+             Gets and sets the video standard (NTSC, PAL, etc...)
+             Added check on videoDecoder pointer, if value is null,
+             then do nothing. An uninitialized pointer might be an
+             error but might also indicate that the capture device
+             does not support the Video Decoder interface (and that
+             is not an error).
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.DxUtils.AvailableVideoStandards">
+            <summary>
+            Provide available Video Standards
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.DxUtils.SubTypeList">
+            <summary>
+            Media subtype list
+            </summary>
+        </member>
+        <member name="T:DirectX.Capture.DxUtils.ColorSpaceEnum">
+            <summary>  Possible color spaces. </summary>
+            <remarks> Note to developers: when adding new color spaces enums ensure you
+            add the associated Guids in the ColorSpace property.</remarks>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.ColorSpaceEnum.AYUV">
+            <summary> 4:4:4 YUV format </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.ColorSpaceEnum.UYVY">
+            <summary> UYVY (packed 4:2:2) </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.ColorSpaceEnum.Y411">
+            <summary> Same as Y41P </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.ColorSpaceEnum.Y41P">
+            <summary> Y41P (packed 4:1:1) </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.ColorSpaceEnum.Y211">
+            <summary> Y211 </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.ColorSpaceEnum.YUV2">
+            <summary> YUV2 (packed 4:2:2) </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.ColorSpaceEnum.YVYU">
+            <summary> YVYU (packed 4:2:2) </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.ColorSpaceEnum.YUYV">
+            <summary> YVYU (packed 4:2:2) </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.ColorSpaceEnum.YVU9">
+            <summary> YVU9 </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.ColorSpaceEnum.YV12">
+            <summary> YV12 </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.ColorSpaceEnum.RGB1">
+            <summary> RGB, 1 bpp, palettized </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.ColorSpaceEnum.RGB4">
+            <summary> RGB, 4 bpp, palettized </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.ColorSpaceEnum.RGB8">
+            <summary> RGB, 8 bpp </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.ColorSpaceEnum.RGB565">
+            <summary> RGB 565, 16 bpp </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.ColorSpaceEnum.RGB555">
+            <summary> RGB 555, 16 bpp </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.ColorSpaceEnum.RGB24">
+            <summary> RGB, 24 bpp </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.ColorSpaceEnum.RGB32">
+            <summary> RGB 32 bpp, no alpha channel </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.ColorSpaceEnum.ARGB32">
+            <summary> RGB, 32 bpp, alpha channel </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.ColorSpaceEnum.I420">
+            <summary> Trust webcam, I420 </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.ColorSpaceEnum.IYUV">
+            <summary> IYUV </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.ColorSpaceEnum.HCW2">
+            <summary>
+            HCW2 format for the Capture as well as the 656 pin
+            Hauppauge PVR150 (I420 , IYUV??? 4:2:0 Intel Indeo)
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.DxUtils.ColorSpaceEnum.YUY2">
+            <summary>
+            YUY2 (packed 4:2:2), Pinnacle 330eV
+            </summary>
+        </member>
+        <member name="T:DirectX.Capture.Capture">
+             <summary>
+              Use the Capture class to capture audio and video to AVI files.
+             </summary>
+             <remarks>
+              This is the core class of the Capture Class Library. The following 
+              sections introduce the Capture class and how to use this library.
+              
+             <br/><br/>
+             <para><b>Basic Usage</b></para>
+             
+             <para>
+              The Capture class only requires a video device and/or audio device
+              to begin capturing. The <see cref="T:DirectX.Capture.Filters"/> class provides
+              lists of the installed video and audio devices. 
+             </para>
+             <code><div style="background-color:whitesmoke;">
+              // Remember to add a reference to DirectX.Capture.dll
+              using DirectX.Capture
+              ...
+              Capture capture = new Capture( Filters.VideoInputDevices[0], 
+                                             Filters.AudioInputDevices[0] );
+              capture.Start();
+              ...
+              capture.Stop();
+             </div></code>
+             <para>
+              This will capture video and audio using the first video and audio devices
+              installed on the system. To capture video only, pass a null as the second
+              parameter of the constructor.
+             </para>
+             <para> 
+              The class is initialized to a valid temporary file in the Windows temp
+              folder. To capture to a different file, set the 
+              <see cref="P:DirectX.Capture.Capture.Filename"/> property before you begin
+              capturing. Remember to add DirectX.Capture.dll to 
+              your project references.
+             </para>
+            
+             <br/>
+             <para><b>Setting Common Properties</b></para>
+             
+             <para>
+              The example below shows how to change video and audio settings. 
+              Properties such as <see cref="P:DirectX.Capture.Capture.FrameRate"/> and 
+              <see cref="P:DirectX.Capture.Capture.AudioSampleSize"/> allow you to programmatically adjust
+              the capture. Use <see cref="P:DirectX.Capture.Capture.VideoCaps"/> and 
+              <see cref="P:DirectX.Capture.Capture.AudioCaps"/> to determine valid values for these
+              properties.
+             </para>
+             <code><div style="background-color:whitesmoke;">
+              Capture capture = new Capture( Filters.VideoInputDevices[0], 
+                                             Filters.AudioInputDevices[1] );
+              capture.VideoCompressor = Filters.VideoCompressors[0];
+              capture.AudioCompressor = Filters.AudioCompressors[0];
+              capture.FrameRate = 29.997;
+              capture.FrameSize = new Size( 640, 480 );
+              capture.AudioSamplingRate = 44100;
+              capture.AudioSampleSize = 16;
+              capture.Filename = "C:\MyVideo.avi";
+              capture.Start();
+              ...
+              capture.Stop();
+             </div></code>
+             <para>
+              The example above also shows the use of video and audio compressors. In most 
+              cases you will want to use compressors. Uncompressed video can easily
+              consume over a 1GB of disk space per minute. Whenever possible, set 
+              the <see cref="P:DirectX.Capture.Capture.VideoCompressor"/> and <see cref="P:DirectX.Capture.Capture.AudioCompressor"/>
+              properties as early as possible. Changing them requires the internal filter
+              graph to be rebuilt which often causes most of the other properties to
+              be reset to default values.
+             </para>
+            
+             <br/>
+             <para><b>Listing Devices</b></para>
+             
+             <para>
+              Use the <see cref="F:DirectX.Capture.Filters.VideoInputDevices"/> collection to list
+              video capture devices installed on the system.
+             </para>
+             <code><div style="background-color:whitesmoke;">
+              foreach ( Filter f in Filters.VideoInputDevices )
+              {
+            		Debug.WriteLine( f.Name );
+              }
+             </div></code>
+             The <see cref="T:DirectX.Capture.Filters"/> class also provides collections for audio 
+             capture devices, video compressors and audio compressors.
+            
+             <br/>
+             <para><b>Preview</b></para>
+             
+             <para>
+              Video preview is controled with the <see cref="P:DirectX.Capture.Capture.PreviewWindow"/>
+              property. Setting this property to a visible control will immediately 
+              begin preview. Set to null to stop the preview. 
+             </para>
+             <code><div style="background-color:whitesmoke;">
+              // Enable preview
+              capture.PreviewWindow = myPanel;
+              // Disable preview
+              capture.PreviewWindow = null;
+             </div></code>
+             <para>
+              The control used must have a window handle (HWND), good controls to 
+              use are the Panel or the form itself.
+             </para>
+             <para>
+              Retrieving or changing video/audio settings such as FrameRate, 
+              FrameSize, AudioSamplingRate, and AudioSampleSize will cause
+              the preview window to flash. This is beacuse the preview must be
+              temporarily stopped. Disable the preview if you need to access
+              several properties at the same time.
+             </para>
+             
+             <br/>
+             <para><b>Property Pages</b></para>
+              
+             <para>
+              Property pages exposed by the devices and compressors are
+              available through the <see cref="P:DirectX.Capture.Capture.PropertyPages"/> 
+              collection.
+             </para>
+             <code><div style="background-color:whitesmoke;">
+              // Display the first property page
+              capture.PropertyPages[0].Show();
+             </div></code>
+             <para>
+              The property pages will often expose more settings than
+              the Capture class does directly. Some examples are brightness, 
+              color space, audio balance and bass boost. The disadvantage
+              to using the property pages is the user's choices cannot be
+              saved and later restored. The exception to this is the video
+              and audio compressor property pages. Most compressors support
+              the saving and restoring state, see the 
+              <see cref="P:DirectX.Capture.PropertyPage.State"/> property for more information.
+             </para>
+             <para>
+              Changes made in the property page will be reflected 
+              immediately in the Capture class properties (e.g. Capture.FrameSize).
+              However, the reverse is not always true. A change made directly to
+              FrameSize, for example, may not be reflected in the associated
+              property page. Fortunately, the filter will use requested FrameSize
+              even though the property page shows otherwise.
+             </para>
+             
+             <br/>
+             <para><b>Saving and Restoring Settings</b></para>
+              
+             <para>
+              To save the user's choice of devices and compressors, 
+              save <see cref="F:DirectX.Capture.Filter.MonikerString"/> and user it later
+              to recreate the Filter object.
+             </para>
+             <para>
+              To save a user's choices from a property page use
+              <see cref="P:DirectX.Capture.PropertyPage.State"/>. However, only the audio
+              and video compressor property pages support this.
+             </para>
+             <para>
+              The last items to save are the video and audio settings such
+              as FrameSize and AudioSamplingRate. When restoring, remember
+              to restore these properties after setting the video and audio
+              compressors.
+             </para>
+             <code><div style="background-color:whitesmoke;">
+              // Disable preview
+              capture.PreviewWindow = null;
+              
+              // Save settings
+              string videoDevice = capture.VideoDevice.MonikerString;
+              string audioDevice = capture.AudioDevice.MonikerString;
+              string videoCompressor = capture.VideoCompressor.MonikerString;
+              string audioCompressor = capture.AudioCompressor.MonikerString;
+              double frameRate = capture.FrameRate;
+              Size frameSize = capture.FrameSize;
+              short audioChannels = capture.AudioChannels;
+              short audioSampleSize = capture.AudioSampleSize;
+              int audioSamplingRate = capture.AudioSamplingRate;
+              ArrayList pages = new ArrayList();
+              foreach ( PropertyPage p in capture.PropertyPages )
+              {
+            		if ( p.SupportsPersisting )
+            			pages.Add( p.State );
+            	}
+            			
+              
+              // Restore settings
+              Capture capture = new Capture( new Filter( videoDevice), 
+            				new Filter( audioDevice) );
+              capture.VideoCompressor = new Filter( videoCompressor );
+              capture.AudioCompressor = new Filter( audioCompressor );
+              capture.FrameRate = frameRate;
+              capture.FrameSize = frameSize;
+              capture.AudioChannels = audioChannels;
+              capture.AudioSampleSize = audioSampleSize;
+              capture.AudioSamplingRate = audioSamplingRate;
+              foreach ( PropertyPage p in capture.PropertyPages )
+              {
+            		if ( p.SupportsPersisting )
+            		{
+            			p.State = (byte[]) pages[0]
+            			pages.RemoveAt( 0 );
+            		}
+            	 }
+              // Enable preview
+              capture.PreviewWindow = myPanel;
+             </div></code>
+              
+             <br/>
+             <para><b>TV Tuner</b></para>
+             
+             <para>
+              To access the TV Tuner, use the <see cref="P:DirectX.Capture.Capture.Tuner"/> property.
+              If the device does not have a TV tuner, this property will be null.
+              See <see cref="P:DirectX.Capture.Tuner.Channel"/>, 
+              <see cref="P:DirectX.Capture.Tuner.InputType"/> and 
+              <see cref="P:DirectX.Capture.Tuner.SignalPresent"/> 
+              for more information.
+             </para>
+             <code><div style="background-color:whitesmoke;">
+              // Change to channel 5
+              capture.Tuner.Channel = 5;
+             </div></code>
+             
+             <br/>
+             <para><b>Troubleshooting</b></para>
+             
+             <para>
+              This class library uses COM Interop to access the full
+              capabilities of DirectShow, so if there is another
+              application that can successfully use a hardware device
+              then it should be possible to modify this class library
+              to use the device.
+             </para>
+             <para>
+              Try the <b>AMCap</b> sample from the DirectX SDK 
+              (DX9\Samples\C++\DirectShow\Bin\AMCap.exe) or 
+              <b>Virtual VCR</b> from http://www.DigTV.ws 
+             </para>
+             
+             <br/>
+             <para><b>Credits</b></para>
+             
+             <para>
+              This class library would not be possible without the
+              DirectShowLib project by NETMaster: 
+              http://www.codeproject.com/useritems/directshownet.asp
+             </para>
+             <para>
+              Documentation is generated by nDoc available at
+              http://ndoc.sourceforge.net
+             </para>
+             
+             <br/>
+             <para><b>Feedback</b></para>
+             
+              Feel free to send comments and questions to me at
+              mportobello@hotmail.com. If the the topic may be of interest
+              to others, post your question on the www.codeproject.com
+              page for DirectX.Capture.
+             </remarks>
+        </member>
+        <member name="F:DirectX.Capture.Capture.recFileMode">
+            <summary> Recording file mode (e.g. Windows Media Audio) </summary>		 
+        </member>
+        <member name="M:DirectX.Capture.Capture.#ctor(DirectX.Capture.Filter,DirectX.Capture.Filter,System.Boolean)">
+            <summary> 
+             Create a new Capture object. 
+             videoDevice and audioDevice can be null if you do not 
+             wish to capture both audio and video. However at least
+             one must be a valid device. Use the <see cref="T:DirectX.Capture.Filters"/> 
+             class to list available devices.
+             </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.Finalize">
+            <summary> Destructor. Dispose of resources. </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.Cue">
+            <summary>
+             Prepare for capturing. Use this method when capturing 
+             must begin as quickly as possible. 
+            </summary>
+            <remarks>
+             This will create/overwrite a zero byte file with 
+             the name set in the Filename property. 
+             
+            <para>
+             This will disable preview. Preview will resume
+             once capture begins. This problem can be fixed
+             if someone is willing to make the change. </para>
+             
+            <para>
+             This method is optional. If Cue() is not called, 
+             Start() will call it before capturing. This method
+             cannot be called while capturing. </para>
+            </remarks>
+        </member>
+        <member name="M:DirectX.Capture.Capture.Start">
+            <summary> Begin capturing. </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.Stop">
+            <summary> 
+             Stop the current capture capture. If there is no
+             current capture, this method will succeed.
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.Dispose">
+            <summary> 
+             Calls Stop, releases all references. If a capture is in progress
+             it will be stopped, but the CaptureComplete event will NOT fire.
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.createGraph">
+            <summary> 
+             Create a new filter graph and add filters (devices, compressors, 
+             misc), but leave the filters unconnected. Call renderGraph()
+             to connect the filters.
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.renderGraph">
+            <summary>
+             Connects the filters of a previously created graph 
+             (created by createGraph()). Once rendered the graph
+             is ready to be used. This method may also destroy
+             streams if we have streams we no longer want.
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.startPreviewIfNeeded">
+            <summary>
+             Setup and start the preview window if the user has
+             requested it (by setting PreviewWindow).
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.derenderGraph">
+            <summary>
+             Disconnect and remove all filters except the device
+             and compressor filters. This is the opposite of
+             renderGraph(). Soem properties such as FrameRate
+             can only be set when the device output pins are not
+             connected. 
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.removeDownstream(DShowNET.IBaseFilter,System.Boolean)">
+            <summary>
+             Removes all filters downstream from a filter from the graph.
+             This is called only by derenderGraph() to remove everything
+             from the graph except the devices and compressors. The parameter
+             "removeFirstFilter" is used to keep a compressor (that should
+             be immediately downstream of the device) if one is begin used.
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.destroyGraph">
+            <summary>
+             Completely tear down a filter graph and 
+             release all associated resources.
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.onPreviewWindowResize(System.Object,System.EventArgs)">
+            <summary> Resize the preview when the PreviewWindow is resized </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.getTempFilename">
+            <summary> 
+             Get a valid temporary filename (with path). We aren't using 
+             Path.GetTempFileName() because it creates a 0-byte file 
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.getStreamConfigSetting(DShowNET.IAMStreamConfig,System.String)">
+            <summary>
+             Retrieves the value of one member of the IAMStreamConfig format block.
+             Helper function for several properties that expose
+             video/audio settings from IAMStreamConfig.GetFormat().
+             IAMStreamConfig.GetFormat() returns a AMMediaType struct.
+             AMMediaType.formatPtr points to a format block structure.
+             This format block structure may be one of several 
+             types, the type being determined by AMMediaType.formatType.
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.setStreamConfigSetting(DShowNET.IAMStreamConfig,System.String,System.Object)">
+            <summary>
+             Set the value of one member of the IAMStreamConfig format block.
+             Helper function for several properties that expose
+             video/audio settings from IAMStreamConfig.GetFormat().
+             IAMStreamConfig.GetFormat() returns a AMMediaType struct.
+             AMMediaType.formatPtr points to a format block structure.
+             This format block structure may be one of several 
+             types, the type being determined by AMMediaType.formatType.
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.assertStopped">
+            <summary>
+             Assert that the class is in a Stopped state.
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.Capture.useVMR9">
+            <summary>
+            Use VMR9 flag, if false use the video renderer instead
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.Capture.tvAudio">
+            <summary>
+            IAMTVAudio property
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.Capture.allowSampleGrabber">
+            <summary>
+            SampleGrabber flag, if false do not insert SampleGrabber in graph
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.Capture.baseGrabFlt">
+            <summary> grabber filter interface. </summary>
+        </member>
+        <member name="F:DirectX.Capture.Capture.sampGrabber">
+            <summary>
+            Sample Grabber interface
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.DisableEvent">
+            <summary>
+            Disable grabbing next frame
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.GrapImg">
+            <summary> Allocate memory space and set SetCallBack </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.DisposeSampleGrabber">
+            <summary>
+            Dispose Sample Grabber specific data
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.ShowPropertyPage(System.Int32,System.Windows.Forms.Control)">
+            <summary>
+            Show property page of object 
+            </summary>
+            <param name="filter"></param>
+            <param name="o"></param>
+            <returns></returns>
+        </member>
+        <member name="F:DirectX.Capture.Capture.previewStreamConfig">
+            <summary>
+            IAMStreamConfig interface of preview pin. It is not really
+            common that the preview has such interface, but if it has
+            such interface it can be used "independent" from the capture
+            pin interface.
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.Capture.previewCaps">
+            <summary>
+            Property Backer: preview capabilities of video device
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.Capture.dxUtils">
+            <summary>
+            Interface to DirectShow utilities for controlling video
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.Capture.Capturing">
+            <summary> Is the class currently capturing. Read-only. </summary>
+        </member>
+        <member name="P:DirectX.Capture.Capture.Cued">
+            <summary> Has the class been cued to begin capturing. Read-only. </summary>
+        </member>
+        <member name="P:DirectX.Capture.Capture.Stopped">
+            <summary> Is the class currently stopped. Read-only. </summary>
+        </member>
+        <member name="P:DirectX.Capture.Capture.Filename">
+            <summary> 
+             Name of file to capture to. Initially set to
+             a valid temporary file.
+            </summary>		
+            <remarks>
+             If the file does not exist, it will be created. If it does 
+             exist, it will be overwritten. An overwritten file will 
+             not be shortened if the captured data is smaller than the 
+             original file. The file will be valid, it will just contain 
+             extra, unused, data after the audio/video data. 
+            
+            <para>
+             A future version of this class will provide a method to copy 
+             only the valid audio/video data to a new file. </para>
+            
+            <para>
+             This property cannot be changed while capturing or cued. </para>
+            </remarks> 
+        </member>
+        <member name="P:DirectX.Capture.Capture.RecFileMode">
+            <summary>
+            Recording file modes
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.Capture.AsfFormat">
+            <summary>
+            Access to AsfFormat interface
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.Capture.PreviewWindow">
+            <summary>
+             The control that will host the preview window. 
+            </summary>
+            <remarks>
+             Setting this property will begin video preview
+             immediately. Set this property after setting all
+             other properties to avoid unnecessary changes
+             to the internal filter graph (some properties like
+             FrameSize require the internal filter graph to be 
+             stopped and disconnected before the property
+             can be retrieved or set).
+             
+            <para>
+             To stop video preview, set this property to null. </para>
+            </remarks>
+        </member>
+        <member name="P:DirectX.Capture.Capture.VideoCaps">
+            <summary>
+             The capabilities of the video device.
+            </summary>
+            <remarks>
+             It may be required to cue the capture (see <see cref="M:DirectX.Capture.Capture.Cue"/>) 
+             before all capabilities are correctly reported. If you 
+             have such a device, the developer would be interested to
+             hear from you.
+            
+            <para>
+             The information contained in this property is retrieved and
+             cached the first time this property is accessed. Future
+             calls to this property use the cached results. This was done 
+             for performance. </para>
+             
+            <para>
+             However, this means <b>you may get different results depending 
+             on when you access this property first</b>. If you are experiencing 
+             problems, try accessing the property immediately after creating 
+             the Capture class or immediately after setting the video and 
+             audio compressors. Also, inform the developer. </para>
+            </remarks>
+        </member>
+        <member name="P:DirectX.Capture.Capture.AudioCaps">
+            <summary>
+             The capabilities of the audio device.
+            </summary>
+            <remarks>
+             It may be required to cue the capture (see <see cref="M:DirectX.Capture.Capture.Cue"/>) 
+             before all capabilities are correctly reported. If you 
+             have such a device, the developer would be interested to
+             hear from you.
+            
+            <para>
+             The information contained in this property is retrieved and
+             cached the first time this property is accessed. Future
+             calls to this property use the cached results. This was done 
+             for performance. </para>
+             
+            <para>
+             However, this means <b>you may get different results depending 
+             on when you access this property first</b>. If you are experiencing 
+             problems, try accessing the property immediately after creating 
+             the Capture class or immediately after setting the video and 
+             audio compressors. Also, inform the developer. </para>
+            </remarks>
+        </member>
+        <member name="P:DirectX.Capture.Capture.VideoDevice">
+            <summary> 
+             The video capture device filter. Read-only. To use a different 
+             device, dispose of the current Capture instance and create a new 
+             instance with the desired device. 
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.Capture.AudioDevice">
+            <summary> 
+             The audio capture device filter. Read-only. To use a different 
+             device, dispose of the current Capture instance and create a new 
+             instance with the desired device. 
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.Capture.VideoCompressor">
+            <summary> 
+             The video compression filter. When this property is changed 
+             the internal filter graph is rebuilt. This means that some properties
+             will be reset. Set this property as early as possible to avoid losing 
+             changes. This property cannot be changed while capturing.
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.Capture.AudioCompressor">
+            <summary> 
+             The audio compression filter. 
+            </summary>
+            <remarks>
+             When this property is changed 
+             the internal filter graph is rebuilt. This means that some properties
+             will be reset. Set this property as early as possible to avoid losing 
+             changes. This property cannot be changed while capturing.
+            </remarks>
+        </member>
+        <member name="P:DirectX.Capture.Capture.VideoSource">
+            <summary> 
+             The current video source. Use Capture.VideoSources to 
+             list available sources. Set to null to disable all 
+             sources (mute).
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.Capture.AudioSource">
+            <summary> 
+             The current audio source. Use Capture.AudioSources to 
+             list available sources. Set to null to disable all 
+             sources (mute).
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.Capture.VideoSources">
+            <summary> 
+             Collection of available video sources/physical connectors 
+             on the current video device. 
+            </summary>
+            <remarks>
+             In most cases, if the device has only one source, 
+             this collection will be empty. 
+            
+            <para>
+             The information contained in this property is retrieved and
+             cached the first time this property is accessed. Future
+             calls to this property use the cached results. This was done 
+             for performance. </para>
+             
+            <para>
+             However, this means <b>you may get different results depending 
+             on when you access this property first</b>. If you are experiencing 
+             problems, try accessing the property immediately after creating 
+             the Capture class or immediately after setting the video and 
+             audio compressors. Also, inform the developer. </para>
+            </remarks>
+        </member>
+        <member name="P:DirectX.Capture.Capture.AudioSources">
+            <summary> 
+             Collection of available audio sources/physical connectors 
+             on the current audio device. 
+            </summary>
+            <remarks>
+             In most cases, if the device has only one source, 
+             this collection will be empty. For audio
+             there are 2 different methods for enumerating audio sources
+             an audio crossbar (usually TV tuners?) or an audio mixer 
+             (usually sound cards?). This class will first look for an 
+             audio crossbar. If no sources or only one source is available
+             on the crossbar, this class will then look for an audio mixer.
+             This class does not support both methods.
+            
+            <para>
+             The information contained in this property is retrieved and
+             cached the first time this property is accessed. Future
+             calls to this property use the cached results. This was done 
+             for performance. </para>
+             
+            <para>
+             However, this means <b>you may get different results depending 
+             on when you access this property first</b>. If you are experiencing 
+             problems, try accessing the property immediately after creating 
+             the Capture class or immediately after setting the video and 
+             audio compressors. Also, inform the developer. </para>
+             </remarks>
+        </member>
+        <member name="P:DirectX.Capture.Capture.PropertyPages">
+            <summary>
+             Available property pages. 
+            </summary>
+            <remarks>
+             These are property pages exposed by the DirectShow filters. 
+             These property pages allow users modify settings on the 
+             filters directly. 
+            
+            <para>
+             The information contained in this property is retrieved and
+             cached the first time this property is accessed. Future
+             calls to this property use the cached results. This was done 
+             for performance. </para>
+             
+            <para>
+             However, this means <b>you may get different results depending 
+             on when you access this property first</b>. If you are experiencing 
+             problems, try accessing the property immediately after creating 
+             the Capture class or immediately after setting the video and 
+             audio compressors. Also, inform the developer. </para>
+            </remarks>
+        </member>
+        <member name="P:DirectX.Capture.Capture.Tuner">
+            <summary>
+             The TV Tuner or null if the current video device 
+             does not have a TV Tuner.
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.Capture.FrameRate">
+            <summary>
+             Gets and sets the frame rate used to capture video.
+            </summary>
+            <remarks>
+             Common frame rates: 24 fps for film, 25 for PAL, 29.997
+             for NTSC. Not all NTSC capture cards can capture at 
+             exactly 29.997 fps. Not all frame rates are supported. 
+             When changing the frame rate, the closest supported 
+             frame rate will be used. 
+             
+            <para>
+             Not all devices support getting/setting this property.
+             If this property is not supported, accessing it will
+             throw and exception. </para>
+             
+            <para>
+             This property cannot be changed while capturing. Changing 
+             this property while preview is enabled will cause some 
+             fickering while the internal filter graph is partially
+             rebuilt. Changing this property while cued will cancel the
+             cue. Call Cue() again to re-cue the capture. </para>
+            </remarks>
+        </member>
+        <member name="P:DirectX.Capture.Capture.FrameSize">
+            <summary>
+             Gets and sets the frame size used to capture video.
+            </summary>
+            <remarks>
+             To change the frame size, assign a new Size object 
+             to this property <code>capture.Size = new Size( w, h );</code>
+             rather than modifying the size in place 
+             (capture.Size.Width = w;). Not all frame
+             rates are supported.
+             
+            <para>
+             Not all devices support getting/setting this property.
+             If this property is not supported, accessing it will
+             throw and exception. </para>
+            
+            <para> 
+             This property cannot be changed while capturing. Changing 
+             this property while preview is enabled will cause some 
+             fickering while the internal filter graph is partially
+             rebuilt. Changing this property while cued will cancel the
+             cue. Call Cue() again to re-cue the capture. </para>
+            </remarks>
+        </member>
+        <member name="P:DirectX.Capture.Capture.AudioChannels">
+            <summary>
+             Get or set the number of channels in the waveform-audio data. 
+            </summary>
+            <remarks>
+             Monaural data uses one channel and stereo data uses two channels. 
+             
+            <para>
+             Not all devices support getting/setting this property.
+             If this property is not supported, accessing it will
+             throw and exception. </para>
+             
+            <para>
+             This property cannot be changed while capturing. Changing 
+             this property while preview is enabled will cause some 
+             fickering while the internal filter graph is partially
+             rebuilt. Changing this property while cued will cancel the
+             cue. Call Cue() again to re-cue the capture. </para>
+            </remarks>
+        </member>
+        <member name="P:DirectX.Capture.Capture.AudioSamplingRate">
+            <summary>
+             Get or set the number of audio samples taken per second.
+            </summary>
+            <remarks>
+             Common sampling rates are 8.0 kHz, 11.025 kHz, 22.05 kHz, and 
+             44.1 kHz. Not all sampling rates are supported.
+             
+            <para>
+             Not all devices support getting/setting this property.
+             If this property is not supported, accessing it will
+             throw and exception. </para>
+             
+            <para>
+             This property cannot be changed while capturing. Changing 
+             this property while preview is enabled will cause some 
+             fickering while the internal filter graph is partially
+             rebuilt. Changing this property while cued will cancel the
+             cue. Call Cue() again to re-cue the capture. </para>
+            </remarks>
+        </member>
+        <member name="P:DirectX.Capture.Capture.AudioSampleSize">
+            <summary>
+             Get or set the number of bits recorded per sample. 
+            </summary>
+            <remarks>
+             Common sample sizes are 8 bit and 16 bit. Not all
+             samples sizes are supported.
+             
+            <para>
+             Not all devices support getting/setting this property.
+             If this property is not supported, accessing it will
+             throw and exception. </para>
+             
+            <para>
+             This property cannot be changed while capturing. Changing 
+             this property while preview is enabled will cause some 
+             fickering while the internal filter graph is partially
+             rebuilt. Changing this property while cued will cancel the
+             cue. Call Cue() again to re-cue the capture. </para>
+            </remarks>
+        </member>
+        <member name="E:DirectX.Capture.Capture.CaptureComplete">
+            <summary> Fired when a capture is completed (manually or automatically). </summary>
+        </member>
+        <member name="P:DirectX.Capture.Capture.AudioAvailable">
+            <summary>
+            Check if there is an Audio Device
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.Capture.UseVMR9">
+            <summary>
+            Check if VMR9 should be used
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.Capture.TvAudio">
+            <summary>
+            Access to TV audio property
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.Capture.DeInterlace">
+            <summary>
+            Store De-Interlace filter reference, is used upon adding
+            de-interlace filter to graph
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.Capture.AllowSampleGrabber">
+            <summary>
+            Check if usage SampleGrabber is allowed
+            </summary>
+        </member>
+        <member name="E:DirectX.Capture.Capture.FrameEvent2">
+            <summary> Frame event </summary>
+        </member>
+        <member name="P:DirectX.Capture.Capture.SnapShotWidth">
+            <summary>
+            SampleGrabber video width
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.Capture.SnapShotHeight">
+            <summary>
+            SampleGrabber video height
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.Capture.PreviewFrameSize">
+             <summary>
+              Gets and sets the frame size used to preview video.
+             </summary>
+             <remarks>
+              To change the frame size, assign a new Size object 
+              to this property <code>capture.Size = new Size( w, h );</code>
+              rather than modifying the size in place 
+              (capture.Size.Width = w;). Not all frame
+              rates are supported.
+              
+             <para>
+              Not all devices support getting/setting this property.
+              If this property is not supported, accessing it will
+              throw and exception. </para>
+             
+              <para>
+              The frame size used to capture video can be different
+              than the frame size used in preview.</para>
+            
+             <para> 
+              This property cannot be changed while capturing. Changing 
+              this property while preview is enabled will cause some 
+              fickering while the internal filter graph is partially
+              rebuilt. Changing this property while cued will cancel the
+              cue. Call Cue() again to re-cue the capture. </para>
+             </remarks>
+        </member>
+        <member name="P:DirectX.Capture.Capture.ColorSpace">
+            <summary>
+             Gets and sets the color space (and pixel format) used for capture.
+            </summary>
+            <remarks>
+             Retrieving this propert will temporarily stop the preview. 
+             This property cannot be changed while capturing or cued. 
+            </remarks> 
+        </member>
+        <member name="P:DirectX.Capture.Capture.PreviewColorSpace">
+            <summary>
+             Gets and sets the color space (and pixel format) used for preview.
+            </summary>
+            <remarks>
+             Retrieving this propert will temporarily stop the preview. 
+             This property cannot be changed while capturing or cued. 
+            </remarks> 
+        </member>
+        <member name="P:DirectX.Capture.Capture.PreviewCaps">
+            <summary>
+             The preview capabilities of the video device.
+            </summary>
+            <remarks>
+             It may be required to cue the capture (see <see cref="M:DirectX.Capture.Capture.Cue"/>) 
+             before all capabilities are correctly reported. If you 
+             have such a device, the developer would be interested to
+             hear from you.
+            
+            <para>
+             The information contained in this property is retrieved and
+             cached the first time this property is accessed. Future
+             calls to this property use the cached results. This was done 
+             for performance. </para>
+             
+            <para>
+             However, this means <b>you may get different results depending 
+             on when you access this property first</b>. If you are experiencing 
+             problems, try accessing the property immediately after creating 
+             the Capture class or immediately after setting the video and 
+             audio compressors. Also, inform the developer. </para>
+            </remarks>
+        </member>
+        <member name="T:DirectX.Capture.Capture.GraphState">
+            <summary> Possible states of the interal filter graph </summary>
+        </member>
+        <member name="T:DirectX.Capture.Capture.RecFileModeType">
+            <summary>
+            Recording file mode type enumerations
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.Capture.RecFileModeType.Avi">
+            <summary> Avi video (+audio) </summary>
+        </member>
+        <member name="F:DirectX.Capture.Capture.RecFileModeType.Wmv">
+            <summary> Asf video (+audio), Wmv </summary>
+        </member>
+        <member name="F:DirectX.Capture.Capture.RecFileModeType.Wma">
+            <summary> Asf audio, Wma </summary>
+        </member>
+        <member name="T:DirectX.Capture.Capture.VideoRenderer">
+            <summary>
+            CLSID_VideoRenderer
+            </summary>
+        </member>
+        <member name="T:DirectX.Capture.Capture.AMTVAudioEventType">
+            <summary>
+            From AMTVAudioEventType
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.Capture.AMTVAudioEventType.Changed">
+            <summary> TV Audio changed event </summary>
+        </member>
+        <member name="T:DirectX.Capture.Capture.IAMTVAudio">
+            <summary>
+            IAMTVAudio interface
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.IAMTVAudio.GetHardwareSupportedTVAudioModes(DirectX.Capture.Capture.TVAudioMode@)">
+            <summary> </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.IAMTVAudio.GetAvailableTVAudioModes(DirectX.Capture.Capture.TVAudioMode@)">
+            <summary> </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.IAMTVAudio.get_TVAudioMode(DirectX.Capture.Capture.TVAudioMode@)">
+            <summary> </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.IAMTVAudio.put_TVAudioMode(DirectX.Capture.Capture.TVAudioMode)">
+            <summary> </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.IAMTVAudio.RegisterNotificationCallBack(DShowNET.IAMTunerNotification,DirectX.Capture.Capture.AMTVAudioEventType)">
+            <summary> </summary>
+        </member>
+        <member name="M:DirectX.Capture.Capture.IAMTVAudio.UnRegisterNotificationCallBack(DShowNET.IAMTunerNotification)">
+            <summary> </summary>
+        </member>
+        <member name="T:DirectX.Capture.Capture.TVAudioMode">
+            <summary>
+            From TVAudioMode
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.Capture.TVAudioMode.Mono">
+            <summary> Mono </summary>
+        </member>
+        <member name="F:DirectX.Capture.Capture.TVAudioMode.Stereo">
+            <summary> Stereo </summary>
+        </member>
+        <member name="F:DirectX.Capture.Capture.TVAudioMode.LangA">
+            <summary> Language A </summary>
+        </member>
+        <member name="F:DirectX.Capture.Capture.TVAudioMode.LangB">
+            <summary> Language B </summary>
+        </member>
+        <member name="F:DirectX.Capture.Capture.TVAudioMode.LangC">
+            <summary> Language C </summary>
+        </member>
+        <member name="T:DirectX.Capture.Capture.SampleGrabber">
+            <summary>
+            CLSID_SampleGrabber
+            </summary>
+        </member>
+        <member name="T:DirectX.Capture.Capture.HeFrame">
+            <summary> Interface frame event </summary>
+        </member>
+        <member name="T:DirectX.Capture.Tuner">
+            <summary>
+             Control and query a hardware TV Tuner.
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.Tuner.tvTuner">
+            <summary>
+            Access to IAMTVTuner interface functions
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.Tuner.#ctor(DShowNET.IAMTVTuner)">
+            <summary> Initialize this object with a DirectShow tuner </summary>
+        </member>
+        <member name="M:DirectX.Capture.Tuner.#ctor">
+            <summary>
+            Added for TVFineTune.cs
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.Tuner.Dispose">
+            <summary>
+            Dispose components
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.Tuner.SetFrequencyOverride(System.Int32,System.Int32,System.Int32,DShowNET.TunerInputType)">
+            <summary>
+            Frequency Overrides are stored in the registry, in a key labeled
+            TS[CountryCode]-[TunerInputType ], so for cable tv in Portugal it
+            would be TS351-1
+            </summary>
+            <param name="channel"></param>
+            <param name="Frequency"></param>
+            <param name="TuningSpace"></param>
+            <param name="InputType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DirectX.Capture.Tuner.ChannelAvailable(System.Int32)">
+            <summary>
+             Determines if the tuner can tune to a particular channel.
+            </summary>
+            <remarks>
+             <para>
+             An automated scan to find available channels:
+             <list type="number">
+              <item>Use <see cref="P:DirectX.Capture.Tuner.ChanelMinMax"/> to determine 
+            		the range of available channels.</item>
+              <item>For each channel, call ChannelAvailable. If this method returns false, do not 
+            		display the channel to the user. If this method returns true, it 
+            		will have found the exact frequency for the channel.</item>
+              <item>If ChannelAvailable is finding too many channels with just noise then 
+            		check the <see cref="P:DirectX.Capture.Tuner.SignalPresent"/> property after calling ChannelAvailable. 
+            		If SignalPresent is true, then the channel is most likely a valid, viewable
+            		channel. However this risks missing viewable channels with moderate noise.
+            		See <see cref="P:DirectX.Capture.Tuner.SignalPresent"/> for more information on locking on to 
+            		a channel.</item>
+             </list>
+             </para>
+             
+             <para>
+             It is no longer required to perform a scan for each chanel's exact 
+             frequency. The tuner automatically finds the exact frequency each 
+             time the channel is changed. </para>
+             
+             <para>
+             This method correctly uses frequency-overrides. As described in
+             the DirectX SDK topic "Collecting Fine-Tuning Information", this method
+             does not use the IAMTVTuner.AutoTune() method. Instead it uses the
+             suggested put_Channel() method. </para>
+            </remarks>
+            <param name="channel">TV channel number</param>
+            <returns>True if the channel's frequence was found, false otherwise.</returns>
+        </member>
+        <member name="P:DirectX.Capture.Tuner.Channel">
+            <summary>
+             Get or set the TV Tuner channel.
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.Tuner.InputType">
+            <summary>
+             Get or set the tuner frequency (cable or antenna).
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.Tuner.SignalPresent">
+            <summary>
+             Indicates whether a signal is present on the current channel.
+             If the signal strength cannot be determined, a NotSupportedException
+             is thrown.
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.Tuner.ChanelMinMax">
+            <summary>
+            get minimum and maximum channels
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.Tuner.GetVideoFrequency">
+            <summary>
+            useful for checking purposes
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.Tuner.GetAudioFrequency">
+            <summary>
+            not that useful, but...
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.Tuner.TuningSpace">
+            <summary>
+            set this to your country code. Frequency Overrides should be set to this code
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.Tuner.AudioMode">
+            
+            Retrieves or sets the current mode on a multifunction tuner.
+            
+        </member>
+        <member name="P:DirectX.Capture.Tuner.AvailableAudioModes">
+            
+            Retrieves the tuner's supported modes.
+            
+        </member>
+        <member name="P:DirectX.Capture.Tuner.CountryCode">
+            <summary>
+             Get or set the country code. Use the country code to set default frequency mappings.
+            </summary>
+            <remarks>
+            Below is a sample of available country codes:
+            <list type="bullet">
+              <item>1 - US</item>
+            </list>
+            For a full list of country codes, see the DirectX 9.0 
+            documentation topic "Country/Region Assignments"
+            </remarks>
+        </member>
+        <member name="T:DirectX.Capture.Tuner.AvAudioModes">
+            <summary>
+            Audio mode structure
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.Tuner.AvAudioModes.Default">
+            <summary> Default audio mode available flag </summary>
+        </member>
+        <member name="F:DirectX.Capture.Tuner.AvAudioModes.TV">
+            <summary> TV audio mode available flag </summary>
+        </member>
+        <member name="F:DirectX.Capture.Tuner.AvAudioModes.FMRadio">
+            <summary> FMRadio audio mode available flag </summary>
+        </member>
+        <member name="F:DirectX.Capture.Tuner.AvAudioModes.AMRadio">
+            <summary> AMRadio audio mode available flag </summary>
+        </member>
+        <member name="F:DirectX.Capture.Tuner.AvAudioModes.Dss">
+            <summary> Dss audio mode available flag </summary>
+        </member>
+        <member name="M:DirectX.Capture.Tuner.AvAudioModes.#ctor(System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+            <summary> Scan audio modes and set appropriate flags </summary>
+        </member>
+        <member name="T:DirectX.Capture.AudioSource">
+            <summary>
+             Represents a physical connector or source on an 
+             audio device. This class is used on filters that
+             support the IAMAudioInputMixer interface such as 
+             source cards.
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.AudioSource.#ctor(DShowNET.IPin)">
+            <summary> Constructor. This class cannot be created directly. </summary>
+        </member>
+        <member name="M:DirectX.Capture.AudioSource.getName(DShowNET.IPin)">
+            <summary> Retrieve the friendly name of a connectorType. </summary>
+        </member>
+        <member name="M:DirectX.Capture.AudioSource.Dispose">
+            <summary> Release unmanaged resources. </summary>
+        </member>
+        <member name="P:DirectX.Capture.AudioSource.Enabled">
+            <summary> Enable or disable this source. For audio sources it is 
+            usually possible to enable several sources. When setting Enabled=true,
+            set Enabled=false on all other audio sources. </summary>
+        </member>
+        <member name="T:DirectX.Capture.AsfFormat">
+            <summary>
+            Summary description for AsfFormat.
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.AsfFormat.#ctor">
+            <summary> Initialize collection with no profiles. </summary>
+        </member>
+        <member name="M:DirectX.Capture.AsfFormat.#ctor(DirectX.Capture.AsfFormat.AsfFormatSelection)">
+            <summary>
+            Initialize collection with the specified type of profiles.
+            </summary>
+            <param name="avformat"></param>
+        </member>
+        <member name="M:DirectX.Capture.AsfFormat.Finalize">
+            <summary>
+            Dispose components
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.AsfFormat.GetCurrentAsfItem">
+            <summary>
+            Get current Asf item
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.AsfFormat.GetCurrentAsfAVInfo(System.Boolean@,System.Boolean@)">
+            <summary>
+            Get information of current Asf item
+            </summary>
+            <param name="captureAudio"></param>
+            <param name="captureVideo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DirectX.Capture.AsfFormat.GetAsfAVInfo(System.Guid,System.Boolean@,System.Boolean@)">
+            <summary>
+            Get Asf audio/video capture information
+            </summary>
+            <param name="guid"></param>
+            <param name="captureAudio"></param>
+            <param name="captureVideo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DirectX.Capture.AsfFormat.NbrAsfItems">
+            <summary>
+            Return number of stored Asf items
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:DirectX.Capture.AsfFormat.GetAsfItemGuid(System.Int32)">
+            <summary>
+            Return Guid of stored item
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DirectX.Capture.AsfFormat.GetProfileFormatInfo(DirectX.Capture.AsfFormat.AsfFormatSelection)">
+            <summary>
+            Get asf profile information
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:DirectX.Capture.AsfFormat.AddProfileItem(DirectX.Capture.AsfFormat.AsfFormatSelection,DirectX.Capture.IWMProfile,System.Guid,System.String)">
+            <summary>
+            Add profile item to the list
+            </summary>
+            <param name="avformat"></param>
+            <param name="profile"></param>
+            <param name="guid"></param>
+            <param name="filename"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DirectX.Capture.AsfFormat.ConfigProfileFromFile(DShowNET.IBaseFilter,System.String)">
+            <summary>
+            Configure profile from file to Asf file writer
+            </summary>
+            <param name="asfWriter"></param>
+            <param name="filename"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DirectX.Capture.AsfFormat.UpdateAsfAVFormat(DShowNET.IBaseFilter)">
+            <summary>
+            Update current Asf audio/video item information
+            </summary>
+            <param name="asfWriter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DirectX.Capture.AsfFormat.UpdateAsfAVFormat(DShowNET.IBaseFilter,System.Int32)">
+            <summary>
+            Update Asf audio/video item information
+            </summary>
+            <param name="asfWriter"></param>
+            <param name="asfItem"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DirectX.Capture.AsfFormat.Clear">
+            <summary> Empty the collection. </summary>
+        </member>
+        <member name="M:DirectX.Capture.AsfFormat.Dispose">
+            <summary> Release (unmanaged) resources. </summary>
+        </member>
+        <member name="P:DirectX.Capture.AsfFormat.UseIndex">
+            <summary>
+            Index value 
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.AsfFormat.CurrentAsfItem">
+            <summary>
+            Return index of current Asf item
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.AsfFormat.Item(System.Int32)">
+            <summary> Get the profile at the specified index. </summary>
+        </member>
+        <member name="P:DirectX.Capture.AsfFormat.CurrentProfile">
+            <summary>
+             Gets or sets the profile currently in use.
+             This is marked internal so it is possible to control
+             how and when the profile is changed.
+            </summary>
+        </member>
+        <member name="T:DirectX.Capture.AsfFormat.AsfFormatSelection">
+            <summary>
+            Allowed Asf audio/video selection choices 
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.AsfFormat.AsfFormatSelection.AllFormats">
+            <summary> All Asf audio/video formats </summary>
+        </member>
+        <member name="F:DirectX.Capture.AsfFormat.AsfFormatSelection.VideoOnly">
+            <summary> Video only asf formats </summary>
+        </member>
+        <member name="F:DirectX.Capture.AsfFormat.AsfFormatSelection.AudioOnly">
+            <summary> Audio only asf formats </summary>
+        </member>
+        <member name="F:DirectX.Capture.AsfFormat.AsfFormatSelection.Video">
+            <summary> All Asf formats with at least video </summary>
+        </member>
+        <member name="T:DirectX.Capture.WMLib">
+            <summary>
+            Sealed class for Windows Media file interface
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.WMLib.WMCreateProfileManager(DirectX.Capture.IWMProfileManager@)">
+            <summary>
+            Windows Media create profile manager
+            </summary>
+            <param name="ppProfileManager"></param>
+            <returns></returns>
+        </member>
+        <member name="T:DirectX.Capture.WMVersion">
+            <summary>
+            Windows media version number
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMVersion.V4_0">
+            <summary> Version 4 </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMVersion.V7_0">
+            <summary> Version 7 </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMVersion.V8_0">
+            <summary> Version 8 </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMVersion.V9_0">
+            <summary> Version 9 </summary>
+        </member>
+        <member name="T:DirectX.Capture.WriteFlags">
+            <summary>
+            From unnamed enum
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.WriteFlags.None">
+            <summary> </summary>
+        </member>
+        <member name="F:DirectX.Capture.WriteFlags.CleanPoint">
+            <summary> </summary>
+        </member>
+        <member name="F:DirectX.Capture.WriteFlags.DisContinuity">
+            <summary> </summary>
+        </member>
+        <member name="F:DirectX.Capture.WriteFlags.DataLoss">
+            <summary> </summary>
+        </member>
+        <member name="T:DirectX.Capture.AttrDataType">
+            <summary>
+            From WMT_ATTR_DATATYPE
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.AttrDataType.DWORD">
+            <summary> </summary>
+        </member>
+        <member name="F:DirectX.Capture.AttrDataType.STRING">
+            <summary> </summary>
+        </member>
+        <member name="F:DirectX.Capture.AttrDataType.BINARY">
+            <summary> </summary>
+        </member>
+        <member name="F:DirectX.Capture.AttrDataType.BOOL">
+            <summary> </summary>
+        </member>
+        <member name="F:DirectX.Capture.AttrDataType.QWORD">
+            <summary> </summary>
+        </member>
+        <member name="F:DirectX.Capture.AttrDataType.WORD">
+            <summary> </summary>
+        </member>
+        <member name="F:DirectX.Capture.AttrDataType.GUID">
+            <summary> </summary>
+        </member>
+        <member name="T:DirectX.Capture.WriterStatistics">
+            <summary>
+            From WM_WRITER_STATISTICS
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.WriterStatistics.qwSampleCount">
+            <summary> </summary>
+        </member>
+        <member name="F:DirectX.Capture.WriterStatistics.qwByteCount">
+            <summary> </summary>
+        </member>
+        <member name="F:DirectX.Capture.WriterStatistics.qwDroppedSampleCount">
+            <summary> </summary>
+        </member>
+        <member name="F:DirectX.Capture.WriterStatistics.qwDroppedByteCount">
+            <summary> </summary>
+        </member>
+        <member name="F:DirectX.Capture.WriterStatistics.dwCurrentBitrate">
+            <summary> </summary>
+        </member>
+        <member name="F:DirectX.Capture.WriterStatistics.dwAverageBitrate">
+            <summary> </summary>
+        </member>
+        <member name="F:DirectX.Capture.WriterStatistics.dwExpectedBitrate">
+            <summary> </summary>
+        </member>
+        <member name="F:DirectX.Capture.WriterStatistics.dwCurrentSampleRate">
+            <summary> </summary>
+        </member>
+        <member name="F:DirectX.Capture.WriterStatistics.dwAverageSampleRate">
+            <summary> </summary>
+        </member>
+        <member name="F:DirectX.Capture.WriterStatistics.dwExpectedSampleRate">
+            <summary> </summary>
+        </member>
+        <member name="T:DirectX.Capture.IConfigAsfWriter">
+            <summary>
+            IConfigAsfWriter (needed for DShowNET version)
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.IConfigAsfWriter.ConfigureFilterUsingProfileId(System.Int32)">
+            Obsolete?
+        </member>
+        <member name="M:DirectX.Capture.IConfigAsfWriter.GetCurrentProfileId(System.Int32@)">
+            Obsolete?
+        </member>
+        <member name="M:DirectX.Capture.IConfigAsfWriter.ConfigureFilterUsingProfileGuid(System.Guid)">
+            <summary>
+             Configure filter using profile guid
+            </summary>
+            <param name="guidProfile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DirectX.Capture.IConfigAsfWriter.GetCurrentProfileGuid(System.Guid@)">
+            <summary>
+            Get current profile guid
+            </summary>
+            <param name="pProfileGuid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DirectX.Capture.IConfigAsfWriter.ConfigureFilterUsingProfile(DirectX.Capture.IWMProfile)">
+            <summary>
+            Configure filter using profile
+            </summary>
+            <param name="pProfile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DirectX.Capture.IConfigAsfWriter.GetCurrentProfile(DirectX.Capture.IWMProfile@)">
+            <summary>
+            Get current profile
+            </summary>
+            <param name="ppProfile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DirectX.Capture.IConfigAsfWriter.SetIndexMode(System.Boolean)">
+            <summary>
+            Set index mode
+            </summary>
+            <param name="bIndexFile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DirectX.Capture.IConfigAsfWriter.GetIndexMode(System.Boolean@)">
+            <summary>
+            Get index mode
+            </summary>
+            <param name="pbIndexFile"></param>
+            <returns></returns>
+        </member>
+        <member name="T:DirectX.Capture.IWMProfileManager">
+            <summary>
+            IWMProfileManager interface
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfileManager.CreateEmptyProfile(DirectX.Capture.WMVersion,DirectX.Capture.IWMProfile@)">
+            <summary> CreateEmptyProfile </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfileManager.LoadProfileByID(System.Guid,DirectX.Capture.IWMProfile@)">
+            <summary> Load profile by ID </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfileManager.LoadProfileByData(System.String,DirectX.Capture.IWMProfile@)">
+            <summary> Load profile by data </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfileManager.SaveProfile(DirectX.Capture.IWMProfile,System.String,System.Int32@)">
+            <summary> save profile </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfileManager.GetSystemProfileCount(System.Int32@)">
+            <summary> Get system profile count </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfileManager.LoadSystemProfile(System.Int32,DirectX.Capture.IWMProfile@)">
+            <summary> Load system profile </summary>
+        </member>
+        <member name="T:DirectX.Capture.IWMProfileManager2">
+            <summary>
+            IWMProfileManager2 interface
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfileManager2.CreateEmptyProfile(DirectX.Capture.WMVersion,DirectX.Capture.IWMProfile@)">
+            <summary> Create empty profile </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfileManager2.LoadProfileByID(System.Guid,DirectX.Capture.IWMProfile@)">
+            <summary> Load profile by ID </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfileManager2.LoadProfileByData(System.String,DirectX.Capture.IWMProfile@)">
+            <summary> Load profile by data </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfileManager2.SaveProfile(DirectX.Capture.IWMProfile,System.String,System.Int32@)">
+            <summary> Save profile </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfileManager2.GetSystemProfileCount(System.Int32@)">
+            <summary> Get system profile count </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfileManager2.LoadSystemProfile(System.Int32,DirectX.Capture.IWMProfile@)">
+            <summary> Load system profile </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfileManager2.GetSystemProfileVersion(DirectX.Capture.WMVersion@)">
+            <summary> Get system profile version </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfileManager2.SetSystemProfileVersion(DirectX.Capture.WMVersion)">
+            <summary> Set system profile version </summary>
+        </member>
+        <member name="T:DirectX.Capture.IWMProfileManagerLanguage">
+            <summary>
+            IWMProfileManagerLanguage interface
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfileManagerLanguage.GetUserLanguageID(System.Int16@)">
+            <summary> Get user language ID, 0x409 = US, 0x413 = NL </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfileManagerLanguage.SetUserLanguageID(System.Int16)">
+            <summary> Set user language ID </summary>
+        </member>
+        <member name="T:DirectX.Capture.IWMStreamConfig">
+            <summary>
+            IWMStreamConfig interface
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMStreamConfig.GetStreamType(System.Guid@)">
+            <summary> Get stream type </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMStreamConfig.GetStreamNumber(System.Int16@)">
+            <summary> Get stream number </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMStreamConfig.SetStreamNumber(System.Int16)">
+            <summary> Set stream number </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMStreamConfig.GetStreamName(System.Text.StringBuilder,System.Int16@)">
+            <summary> Get stream name </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMStreamConfig.SetStreamName(System.String)">
+            <summary> Set stream name </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMStreamConfig.GetConnectionName(System.Text.StringBuilder,System.Int16@)">
+            <summary> Get connection name </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMStreamConfig.SetConnectionName(System.String)">
+            <summary> Set connection name </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMStreamConfig.GetBitrate(System.Int32@)">
+            <summary> Get bitrate </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMStreamConfig.SetBitrate(System.Int32)">
+            <summary> Set bitrate </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMStreamConfig.GetBufferWindow(System.Int32@)">
+            <summary> Get buffer window </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMStreamConfig.SetBufferWindow(System.Int32)">
+            <summary> Set buffer window </summary>
+        </member>
+        <member name="T:DirectX.Capture.IWMProfile">
+            <summary>
+            IWMProfile interface
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile.GetVersion(DirectX.Capture.WMVersion@)">
+            <summary> Get version </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile.GetName(System.Text.StringBuilder,System.Int32@)">
+            <summary> Get name </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile.SetName(System.String)">
+            <summary> Set name </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile.GetDescription(System.Text.StringBuilder,System.Int32@)">
+            <summary> Get description </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile.SetDescription(System.String)">
+            <summary> Set description </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile.GetStreamCount(System.Int32@)">
+            <summary> Get stream count </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile.GetStream(System.Int32,DirectX.Capture.IWMStreamConfig@)">
+            <summary> Get stream </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile.GetStreamByNumber(System.Int16,DirectX.Capture.IWMStreamConfig@)">
+            <summary> Get stream by number </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile.RemoveStream(DirectX.Capture.IWMStreamConfig)">
+            <summary> Remove stream </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile.RemoveStreamByNumber(System.Int16)">
+            <summary> Remove stream by number </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile.AddStream(DirectX.Capture.IWMStreamConfig)">
+            <summary> Add stream </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile.ReconfigStream(DirectX.Capture.IWMStreamConfig)">
+            <summary> Reconfigure stream </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile.CreateNewStream(System.Guid,DirectX.Capture.IWMStreamConfig@)">
+            <summary> Create new stream </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile.GetMutualExclusionCount(System.Int32@)">
+            <summary> Get mutual exclusion count </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile.GetMutualExclusion(System.Int32,DirectX.Capture.IWMMutualExclusion@)">
+            <summary> Get mutual exclusion </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile.RemoveMutualExclusion(DirectX.Capture.IWMMutualExclusion)">
+            <summary> Remove mutual exclusion </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile.AddMutualExclusion(DirectX.Capture.IWMMutualExclusion)">
+            <summary> Add mutual exclusion </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile.CreateNewMutualExclusion(DirectX.Capture.IWMMutualExclusion@)">
+            <summary> Create new mutual exclusion </summary>
+        </member>
+        <member name="T:DirectX.Capture.IWMProfile2">
+            <summary>
+            IWMProfile2 interface
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile2.GetVersion(DirectX.Capture.WMVersion@)">
+            <summary>  </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile2.GetName(System.Text.StringBuilder,System.Int32@)">
+            <summary>  </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile2.SetName(System.String)">
+            <summary>  </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile2.GetDescription(System.Text.StringBuilder,System.Int32@)">
+            <summary>  </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile2.SetDescription(System.String)">
+            <summary>  </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile2.GetStreamCount(System.Int32@)">
+            <summary>  </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile2.GetStream(System.Int32,DirectX.Capture.IWMStreamConfig@)">
+            <summary>  </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile2.GetStreamByNumber(System.Int16,DirectX.Capture.IWMStreamConfig@)">
+            <summary>  </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile2.RemoveStream(DirectX.Capture.IWMStreamConfig)">
+            <summary>  </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile2.RemoveStreamByNumber(System.Int16)">
+            <summary>  </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile2.AddStream(DirectX.Capture.IWMStreamConfig)">
+            <summary>  </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile2.ReconfigStream(DirectX.Capture.IWMStreamConfig)">
+            <summary>  </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile2.CreateNewStream(System.Guid,DirectX.Capture.IWMStreamConfig@)">
+            <summary>  </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile2.GetMutualExclusionCount(System.Int32@)">
+            <summary>  </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile2.GetMutualExclusion(System.Int32,DirectX.Capture.IWMMutualExclusion@)">
+            <summary>  </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile2.RemoveMutualExclusion(DirectX.Capture.IWMMutualExclusion)">
+            <summary>  </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile2.AddMutualExclusion(DirectX.Capture.IWMMutualExclusion)">
+            <summary>  </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile2.CreateNewMutualExclusion(DirectX.Capture.IWMMutualExclusion@)">
+            <summary>  </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMProfile2.GetProfileID(System.Guid@)">
+            <summary> Get profile ID </summary>
+        </member>
+        <member name="T:DirectX.Capture.IWMMutualExclusion">
+            <summary>
+            IWMMutualExclusion interface
+            </summary>
+        </member>
+        <member name="T:DirectX.Capture.IWMStreamList">
+            <summary>
+            IWMStreamList interface
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMStreamList.GetStreams(System.Int16[]@,System.Int16@)">
+            <summary> Get streams </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMStreamList.AddStream(System.Int16)">
+            <summary> Add stream </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMStreamList.RemoveStream(System.Int16)">
+            <summary> Remove stream </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMMutualExclusion.GetStreams(System.Int16[]@,System.Int16@)">
+            <summary>  </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMMutualExclusion.AddStream(System.Int16)">
+            <summary>  </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMMutualExclusion.RemoveStream(System.Int16)">
+            <summary>  </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMMutualExclusion.GetType(System.Guid@)">
+            <summary> Get type </summary>
+        </member>
+        <member name="M:DirectX.Capture.IWMMutualExclusion.SetType(System.Guid)">
+            <summary> Set type </summary>
+        </member>
+        <member name="T:DirectX.Capture.WMData">
+            <summary>
+            Sealed class for Windows Media Profile Guids
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMData.WMProfile_V80_700PALVideo">
+            <summary> Windows Media Video 8 for Broadband (PAL, 700 Kbps) </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMData.WMProfile_V80_288MonoAudio">
+            <summary>  Windows Media Audio 8 for Dial-up Modem (Mono, 28.8 Kbps) </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMData.WMProfile_V80_288StereoAudio">
+            <summary>  Windows Media Audio 8 for Dial-up Modem (FM Radio Stereo, 28.8 Kbps) </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMData.WMProfile_V80_32StereoAudio">
+            <summary>  Windows Media Audio 8 for Dial-up Modem (32 Kbps) </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMData.WMProfile_V80_48StereoAudio">
+            <summary>  Windows Media Audio 8 for Dial-up Modem (Near CD quality, 48 Kbps) </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMData.WMProfile_V80_64StereoAudio">
+            <summary> Windows Media Audio 8 for Dial-up Modem (CD quality, 64 Kbps) </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMData.WMProfile_V80_96StereoAudio">
+            <summary>  Windows Media Audio 8 for Dial-up Modem (CD quality, 64 Kbps) </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMData.WMProfile_V80_128StereoAudio">
+            <summary> Windows Media Audio 8 for ISDN (Better than CD quality, 96 Kbps) </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMData.WMProfile_V80_56VideoOnly">
+            <summary> Windows Media Video 8 for Dial-up Modem (No audio, 56 Kbps) </summary>
+        </member>
+        <member name="F:DirectX.Capture.WMData.WMProfile_V80_BESTVBRVideo">
+            <summary> Windows Media Video 8 for Broadband (PAL, 700 Kbps) </summary>
+        </member>
+        <member name="T:DirectX.Capture.VfwCompressorPropertyPage">
+            <summary>
+             The property page to configure a Video for Windows compliant
+             compression codec. Most compressors support this property page
+             rather than a DirectShow property page. Also, most compressors
+             do not support the IAMVideoCompression interface so this
+             property page is the only method to configure a compressor. 
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.VfwCompressorPropertyPage.vfwCompressDialogs">
+            <summary> Video for Windows compression dialog interface </summary>
+        </member>
+        <member name="M:DirectX.Capture.VfwCompressorPropertyPage.#ctor(System.String,DShowNET.IAMVfwCompressDialogs)">
+            <summary> Constructor </summary>
+        </member>
+        <member name="M:DirectX.Capture.VfwCompressorPropertyPage.Show(System.Windows.Forms.Control)">
+            <summary> 
+             Show the property page. Some property pages cannot be displayed 
+             while previewing and/or capturing. 
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.VfwCompressorPropertyPage.State">
+            <summary> 
+             Get or set the state of the property page. This is used to save
+             and restore the user's choices without redisplaying the property page.
+             This property will be null if unable to retrieve the property page's
+             state.
+            </summary>
+            <remarks>
+             After showing this property page, read and store the value of 
+             this property. At a later time, the user's choices can be 
+             reloaded by setting this property with the value stored earlier. 
+             Note that some property pages, after setting this property, 
+             will not reflect the new state. However, the filter will use the
+             new settings.
+            </remarks>
+        </member>
+        <member name="T:DirectX.Capture.VideoCapabilities">
+            <summary>
+             Capabilities of the video device such as 
+             min/max frame size and frame rate.
+            </summary>
+        </member>
+        <member name="F:DirectX.Capture.VideoCapabilities.AnalogVideoStandard">
+            <summary> Analog video standard(s) </summary>
+        </member>
+        <member name="F:DirectX.Capture.VideoCapabilities.InputSize">
+            <summary> Native size of the incoming video signal. This is the largest signal the filter can digitize with every pixel remaining unique. Read-only. </summary>
+        </member>
+        <member name="F:DirectX.Capture.VideoCapabilities.MinFrameSize">
+            <summary> Minimum supported frame size. Read-only. </summary>
+        </member>
+        <member name="F:DirectX.Capture.VideoCapabilities.MaxFrameSize">
+            <summary> Maximum supported frame size. Read-only. </summary>
+        </member>
+        <member name="F:DirectX.Capture.VideoCapabilities.FrameSizeGranularityX">
+            <summary> Granularity of the output width. This value specifies the increments that are valid between MinFrameSize and MaxFrameSize. Read-only. </summary>
+        </member>
+        <member name="F:DirectX.Capture.VideoCapabilities.FrameSizeGranularityY">
+            <summary> Granularity of the output height. This value specifies the increments that are valid between MinFrameSize and MaxFrameSize. Read-only. </summary>
+        </member>
+        <member name="F:DirectX.Capture.VideoCapabilities.MinFrameRate">
+            <summary> Minimum supported frame rate. Read-only. </summary>
+        </member>
+        <member name="F:DirectX.Capture.VideoCapabilities.MaxFrameRate">
+            <summary> Maximum supported frame rate. Read-only. </summary>
+        </member>
+        <member name="M:DirectX.Capture.VideoCapabilities.#ctor(DShowNET.IAMStreamConfig)">
+            <summary> Retrieve capabilities of a video device </summary>
+        </member>
+        <member name="T:DirectX.Capture.PropertyPageCollection">
+            <summary>
+             A collection of available PropertyPages in a DirectShow
+             filter graph. It is up to the driver manufacturer to implement
+             a property pages on their drivers. The list of supported 
+             property pages will vary from driver to driver.
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.PropertyPageCollection.#ctor">
+            <summary> Initialize collection with no property pages. </summary>
+        </member>
+        <member name="M:DirectX.Capture.PropertyPageCollection.#ctor(DShowNET.ICaptureGraphBuilder2,DShowNET.IBaseFilter,DShowNET.IBaseFilter,DShowNET.IBaseFilter,DShowNET.IBaseFilter,DirectX.Capture.SourceCollection,DirectX.Capture.SourceCollection)">
+            <summary> Initialize collection with property pages from existing graph. </summary>
+        </member>
+        <member name="M:DirectX.Capture.PropertyPageCollection.Finalize">
+            <summary> Destructor. Release unmanaged resources. </summary>
+        </member>
+        <member name="M:DirectX.Capture.PropertyPageCollection.Clear">
+            <summary> Empty the collection. </summary>
+        </member>
+        <member name="M:DirectX.Capture.PropertyPageCollection.Dispose">
+            <summary> Release unmanaged resources </summary>
+        </member>
+        <member name="M:DirectX.Capture.PropertyPageCollection.addFromGraph(DShowNET.ICaptureGraphBuilder2,DShowNET.IBaseFilter,DShowNET.IBaseFilter,DShowNET.IBaseFilter,DShowNET.IBaseFilter,DirectX.Capture.SourceCollection,DirectX.Capture.SourceCollection)">
+            <summary> Populate the collection by looking for commonly implemented property pages. </summary>
+        </member>
+        <member name="M:DirectX.Capture.PropertyPageCollection.addIfSupported(System.Object,System.String)">
+            <summary> 
+             Returns the object as an ISpecificPropertyPage
+             if the object supports the ISpecificPropertyPage
+             interface and has at least one property page.
+            </summary>
+        </member>
+        <member name="P:DirectX.Capture.PropertyPageCollection.Item(System.Int32)">
+            <summary> Get the filter at the specified index. </summary>
+        </member>
+        <member name="T:DirectX.Capture.CrossbarSource">
+            <summary>
+             Represents a physical connector or source on an 
+             audio/video device. This class is used on filters that
+             support the IAMCrossbar interface such as TV Tuners.
+            </summary>
+        </member>
+        <member name="M:DirectX.Capture.CrossbarSource.#ctor(DShowNET.IAMCrossbar,System.Int32,System.Int32,DShowNET.PhysicalConnectorType)">
+            <summary> Constructor. This class cannot be created directly. </summary>
+        </member>
+        <member name="M:DirectX.Capture.CrossbarSource.#ctor(DShowNET.IAMCrossbar,System.Int32,System.Int32,System.Int32,DShowNET.PhysicalConnectorType)">
+            <summary> Constructor. This class cannot be created directly. </summary>
+        </member>
+        <member name="M:DirectX.Capture.CrossbarSource.getName(DShowNET.PhysicalConnectorType)">
+            <summary> Retrieve the friendly name of a connectorType. </summary>
+        </member>
+        <member name="M:DirectX.Capture.CrossbarSource.Dispose">
+            <summary> Release unmanaged resources. </summary>
+        </member>
+        <member name="P:DirectX.Capture.CrossbarSource.Enabled">
+            <summary> Enabled or disable this source. </summary>
+        </member>
+    </members>
+</doc>

@@ -1125,9 +1125,11 @@ namespace KFlopWebNC.Model
                             }
                             _GuiHost.SetAttribute(String.Format("toolname{0}", i), Attribs.Value, tool.ToolName);
                             _GuiHost.SetAttribute(String.Format("toolslot{0}", i), Attribs.Value, tool.SlotNumber);
-                            _GuiHost.SetAttribute(String.Format("toolid{0}", i), Attribs.Value, tool.ToolNumber);
+                            _GuiHost.SetAttribute(String.Format("ID{0}", i), Attribs.Value, tool.ID);
                             _GuiHost.SetAttribute(String.Format("toollength{0}", i), Attribs.Value, tool.LengthOffset);
                             _GuiHost.SetAttribute(String.Format("tooldiameter{0}", i), Attribs.Value, tool.DiameterOffset);
+                            _GuiHost.SetAttribute(String.Format("XOffset{0}", i), Attribs.Value, tool.XOffset);
+                            _GuiHost.SetAttribute(String.Format("YOffset{0}", i), Attribs.Value, tool.YOffset);
                         }
                     }
                 }));
@@ -1168,11 +1170,11 @@ namespace KFlopWebNC.Model
                                 tool.SlotNumber = indexvalue;
                             }
                         }
-                        if (_GuiHost.Document.GetElementById(String.Format("toolid{0}", i)) != null)
+                        if (_GuiHost.Document.GetElementById(String.Format("ID{0}", i)) != null)
                         {
-                            if (Int32.TryParse(_GuiHost.GetAttribute(String.Format("toolid{0}", i), Attribs.Value), out indexvalue))
+                            if (Int32.TryParse(_GuiHost.GetAttribute(String.Format("ID{0}", i), Attribs.Value), out indexvalue))
                             {
-                                tool.ToolNumber = indexvalue;
+                                tool.ID = indexvalue;
                             }
                         }
                         if (_GuiHost.Document.GetElementById(String.Format("toollength{0}", i)) != null)
@@ -1188,7 +1190,21 @@ namespace KFlopWebNC.Model
                             {
                                 tool.DiameterOffset = offsetvalue;
                             }
-                        }  
+                        }
+                        if (_GuiHost.Document.GetElementById(String.Format("XOffset{0}", i)) != null)
+                        {
+                            if (Double.TryParse(_GuiHost.GetAttribute(String.Format("XOffset{0}", i), Attribs.Value), out offsetvalue))
+                            {
+                                tool.XOffset = offsetvalue;
+                            }
+                        }
+                        if (_GuiHost.Document.GetElementById(String.Format("YOffset{0}", i)) != null)
+                        {
+                            if (Double.TryParse(_GuiHost.GetAttribute(String.Format("YOffset{0}", i), Attribs.Value), out offsetvalue))
+                            {
+                                tool.YOffset = offsetvalue;
+                            }
+                        }
                     }
                 }
             })); 
@@ -1406,7 +1422,7 @@ namespace KFlopWebNC.Model
             }
             foreach (var tool in InterpreterDataFile.Tools)
             {
-                _Controller.CoordMotion.Interpreter.SetupParams.SetTool(tool.ToolNumber, tool.LengthOffset, tool.DiameterOffset);
+                _Controller.CoordMotion.Interpreter.SetupParams.SetTool(tool.Index, tool.SlotNumber, tool.ID, tool.LengthOffset, tool.DiameterOffset, tool.XOffset, tool.YOffset);
             }
             foreach (var command in InterpreterDataFile.Commands)
             {
@@ -1465,8 +1481,11 @@ namespace KFlopWebNC.Model
                 }
                 if (init)
                 {
+                    int MCODE_ACTIONS_M100_OFFSET = 21;  // start of M100 Actions Packed into Array
+                    int ArrayIndex = command.Index;
+                    if (ArrayIndex >= 100 && ArrayIndex <= 119) ArrayIndex += MCODE_ACTIONS_M100_OFFSET - 100; 
                     _Controller.CoordMotion.Interpreter.SetMcodeAction(
-                        command.Index, command.Type, p0, p1, p2, p3, p4, sdata);
+                        ArrayIndex, command.Type, p0, p1, p2, p3, p4, sdata);
                 }
             }
         }

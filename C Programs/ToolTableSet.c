@@ -27,7 +27,7 @@ main()
 	//
 	// Set DRO = 0 and solve for ToolOffset
 	//
-	NewToolLength = Machinez - OriginOffsetZ - AxisOffsetZ;
+	NewToolLength = RoundToReasonable(Machinez - OriginOffsetZ - AxisOffsetZ,Units);
 
 	// Change Currently Selected Tool Length
 	SetToolLength(TWORD,NewToolLength);

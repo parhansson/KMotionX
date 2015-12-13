@@ -27,7 +27,7 @@ main()
 	//
 	NewOriginOffset = Machinex -  AxisOffsetX;
 
-	pD[TMP]=NewOriginOffset;
+	SetUserDataDouble(TMP,NewOriginOffset);
 	SetVars(5201+FixtureIndex*20+0, 1, TMP);
 
 	DoPC(PC_COMM_UPDATE_FIXTURE);

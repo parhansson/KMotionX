@@ -71,6 +71,7 @@ BEGIN_MESSAGE_MAP(CRichEditCtrlEx, CScintillaCtrl)
 	ON_COMMAND(ID_Replace, OnReplace)
 	ON_COMMAND(ID_SpecialContext, OnSpecialContext)
 	ON_COMMAND(ID_TransformSel, OnTransformSel)
+	ON_COMMAND(ID_ToggleBlock, OnToggleBlock)
 	ON_COMMAND(ID_ShowLineNumbers, OnShowLineNumbers)
     ON_REGISTERED_MESSAGE( WM_FINDREPLACE, OnFindReplaceCmd )
 	//}}AFX_MSG_MAP
@@ -102,7 +103,8 @@ CString GlobalList="ENCODER_MODE ADC_MODE RESOLVER_MODE USER_INPUT_MODE BACKLASH
 "SetBit ClearBit SetStateBit ReadBit printf sprintf InitAux AddKonnect AddKonnect_Aux0 "
 "StartThread PauseThread ResumeThread ThreadDone MutexLock MutexUnlock "
 "VersionAndBuildTime WriteSnapAmp ReadSnapAmp StopCoordinatedMotion "
-"ResumeCoordinatedMotion ClearStopImmediately StatusRequestCounter ";
+"ResumeCoordinatedMotion ClearStopImmediately StatusRequestCounter "
+"DisableKanalogDetectOnBoot DisableSnapAmpDetectOnBoot KanalogPresent SnapAmpPresent ";
 
 
 void CRichEditCtrlEx::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
@@ -449,6 +451,7 @@ void CRichEditCtrlEx::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	if (CtrlIsDown && nChar=='F')
 	{
 		OnFind();
+		CtrlIsDown=false;
 	}
 
 	if (m_SingleLineOnly && nChar == VK_RETURN)
@@ -559,6 +562,7 @@ void CRichEditCtrlEx::OnContextMenu(CWnd* pWnd, CPoint point)
 	if (ModeCode==MODE_G)
 	{
 		Menu.AppendMenu(0,ID_TransformSel,"Transform Sel");
+		Menu.AppendMenu(0,ID_ToggleBlock,"Toggle Block Delete \'\\\'");
 		if (TheFrame->GCodeDlg.m_ShowLineNumbers)
 		{
 			Menu.AppendMenu(0,ID_ShowLineNumbers,"Hide Line Numbers");
@@ -1300,3 +1304,34 @@ void CRichEditCtrlEx::OnSetFocus(CWnd* pOldWnd)
 		TheFrame->GCodeDlg.DisableKeyJog();
 #endif
 }
+
+
+void CRichEditCtrlEx::OnToggleBlock() 
+{
+	CString s = GetSelText();
+
+	if (s.GetLength() == 0)
+	{
+		AfxMessageBox("Nothing Selected to Toggle");
+		return;
+	}
+
+	int oldStart = 0;
+	int newLine  = -1;
+	while((newLine = s.Find("\n", newLine+1)) != -1)
+	{
+		if(s.GetAt(oldStart) == '/')
+		{
+			s.Delete(oldStart,1);
+			newLine--;		
+		}
+		else
+		{
+			s.Insert(oldStart, '/');
+			newLine++;
+		}
+		oldStart = newLine+1;
+	}
+	ReplaceSel(s);
+}
+

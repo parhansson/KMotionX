@@ -134,10 +134,10 @@ long __stdcall KMViaVB_CheckForReady(void *handle)
 	return rslt;
 }
 
-long __stdcall KMViaVB_LoadCoff(void *handle,long Thread, char *Name)
+long __stdcall KMViaVB_LoadCoff(void *handle,long Thread, char *Name, long PackToFlash)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
-	long rslt=KM_dll->LoadCoff(Thread,Name,false);
+	long rslt=KM_dll->LoadCoff(Thread,Name,PackToFlash);
 	return rslt;
 }
 

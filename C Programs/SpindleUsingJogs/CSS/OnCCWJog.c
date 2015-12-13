@@ -30,7 +30,11 @@ main()
 	if (*css_mode != 2)
 	{
 		// spindle is already on, so ramp to new speed
-		Jog(SPINDLEAXIS,speed * FACTOR);
+		if (USE_POS_NEG_VOLTAGE)
+			Jog(SPINDLEAXIS,speed * FACTOR * LastState);
+		else
+			Jog(SPINDLEAXIS,speed * FACTOR);
+		
 		printf("Jogging Spindle %f counts/sec\n",speed * FACTOR);
 	}	
 	persist.UserData[STATEVAR] = -1;  // remember we are CCW

@@ -417,6 +417,34 @@ namespace KMotion_dotNet
             }
         }
         /// <summary>
+        /// Converts Arcs to linear segments (Kinematic Setting)
+        /// </summary>
+        public bool UseOnlyLinearSegments
+        {
+            get
+            {
+                return Get_UseOnlyLinearSegments();
+            }
+            set
+            {
+                Set_UseOnlyLinearSegments(value);
+            }
+        }
+        /// <summary>
+        /// Converts Arcs to linear segments (User Setting)
+        /// </summary>
+        public bool ArcsToSegs
+        {
+            get
+            {
+                return Get_ArcsToSegs();
+            }
+            set
+            {
+                Set_ArcsToSegs(value);
+            }
+        }
+        /// <summary>
         /// Whether Axis A is in units of Degrees
         /// </summary>
         public bool DegreesA
@@ -1959,7 +1987,119 @@ namespace KMotion_dotNet
             }
         }
 
+        /// <summary>
+        /// Property getter Accessor for UseOnlyLinearSegments (Converts Arcs to Linear Segments based on Kinematic Setting)
+        /// </summary>
+        /// <returns>Current UseOnlyLinearSegments</returns>
+        private bool Get_UseOnlyLinearSegments()
+        {
+            try
+            {
+                return KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_UseOnlyLinearSegments(_InstanceHandle);
+            }
+            catch (DllNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                    this.ToString(), "Get_UseOnlyLinearSegments"));
+            }
+            catch (EntryPointNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                   this.ToString(), "Get_UseOnlyLinearSegments"));
+            }
+            catch (Exception e)
+            {
+                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                  this.ToString(), "Get_UseOnlyLinearSegments"));
+            }
+        }
 
+
+
+        /// <summary>
+        /// Property setter Accessor for UseOnlyLinearSegments (Converts Arcs to Linear Segments based on Kinematic Setting)
+        /// </summary>
+        /// <param name="value">UseOnlyLinearSegments to set (Converts Arcs to Linear Segments based on Kinematic Setting)</param>
+        private void Set_UseOnlyLinearSegments(bool value)
+        {
+            try
+            {
+                KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_UseOnlyLinearSegments(_InstanceHandle, value);
+                SetTPParams();
+            }
+            catch (DllNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                    this.ToString(), "Set_UseOnlyLinearSegments"));
+            }
+            catch (EntryPointNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                   this.ToString(), "Set_UseOnlyLinearSegments"));
+            }
+            catch (Exception e)
+            {
+                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                  this.ToString(), "Set_UseOnlyLinearSegments"));
+            }
+        }
+
+
+        /// <summary>
+        /// Property getter Accessor for ArcsToSegs (Converts Arcs to Linear Segments based on User Setting)
+        /// </summary>
+        /// <returns>Current ArcsToSegs</returns>
+        private bool Get_ArcsToSegs()
+        {
+            try
+            {
+                return KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_ArcsToSegs(_InstanceHandle);
+            }
+            catch (DllNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                    this.ToString(), "Get_ArcsToSegs"));
+            }
+            catch (EntryPointNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                   this.ToString(), "Get_ArcsToSegs"));
+            }
+            catch (Exception e)
+            {
+                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                  this.ToString(), "Get_ArcsToSegs"));
+            }
+        }
+
+        
+        /// <summary>
+        /// Property setter Accessor for ArcsToSegs (Converts Arcs to Linear Segments based on User Setting)
+        /// </summary>
+        /// <param name="value">ArcsToSegs to set (Converts Arcs to Linear Segments based on User Setting)</param>
+        private void Set_ArcsToSegs(bool value)
+        {
+            try
+            {
+                KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_ArcsToSegs(_InstanceHandle, value);
+                SetTPParams();
+            }
+            catch (DllNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                    this.ToString(), "Set_ArcsToSegs"));
+            }
+            catch (EntryPointNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                   this.ToString(), "Set_ArcsToSegs"));
+            }
+            catch (Exception e)
+            {
+                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                  this.ToString(), "Set_ArcsToSegs"));
+            }
+        }
 
         /// <summary>
         /// Property getter Accessor for DegreesA (whether axis is in units of degrees)

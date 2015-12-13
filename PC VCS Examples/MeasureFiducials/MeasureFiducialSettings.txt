@@ -1,0 +1,5 @@
+Unitsmm 0
+JogSpeed 600
+Resolution 10000 10000
+VideoDevice 0
+MouseMag 0.25

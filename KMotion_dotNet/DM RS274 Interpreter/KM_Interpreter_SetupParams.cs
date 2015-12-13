@@ -646,6 +646,34 @@ namespace KMotion_dotNet
                 }
             }
             /// <summary>
+            /// Current tool X offset
+            /// </summary>
+            public double ToolXOffset
+            {
+                get
+                {
+                    return Get_ToolXOffset();
+                }
+                set
+                {
+                    Set_ToolXOffset(value);
+                }
+            }
+            /// <summary>
+            /// Current tool Y offset
+            /// </summary>
+            public double ToolYOffset
+            {
+                get
+                {
+                    return Get_ToolYOffset();
+                }
+                set
+                {
+                    Set_ToolYOffset(value);
+                }
+            }
+            /// <summary>
             /// Row in tool table for current Length Offset
             /// </summary>
             public int ToolLengthOffsetIndex
@@ -719,7 +747,7 @@ namespace KMotion_dotNet
                 }
             }
             /// <summary>
-            /// Current Speed override
+            /// Current Spindle Speed
             /// </summary>
             public double SpindleSpeed
             {
@@ -732,6 +760,22 @@ namespace KMotion_dotNet
                     Set_SpindleSpeed(value);
                 }
             }
+
+            /// <summary>
+            /// Current FeedRate
+            /// </summary>
+            public double FeedRate
+            {
+                get
+                {
+                    return Get_FeedRate();
+                }
+                set
+                {
+                    Set_FeedRate(value);
+                }
+            }
+
             /// <summary>
             /// Spindle rotation direction
             /// CANON_STOPPED = 1,
@@ -891,6 +935,74 @@ namespace KMotion_dotNet
                     Set_Cycle_RetractMode((int)value);
                 }
             }
+
+            /// <summary>
+            /// Gets p flag (p word present) in current GCode Block
+            /// </summary>
+            public bool block_p_flag
+            {
+                get
+                {
+                    return Get_block_p_flag();
+                }
+            }
+
+            /// <summary>
+            /// Gets p number (p word) in current GCode Block
+            /// </summary>
+            public double block_p_number
+            {
+                get
+                {
+                    return Get_block_p_number();
+                }
+            }
+
+            /// <summary>
+            /// Gets q flag (q word present) in current GCode Block
+            /// </summary>
+            public bool block_q_flag
+            {
+                get
+                {
+                    return Get_block_q_flag();
+                }
+            }
+
+            /// <summary>
+            /// Gets q number (q word) in current GCode Block
+            /// </summary>
+            public double block_q_number
+            {
+                get
+                {
+                    return Get_block_q_number();
+                }
+            }
+
+            /// <summary>
+            /// Gets r flag (r word present) in current GCode Block
+            /// </summary>
+            public bool block_r_flag
+            {
+                get
+                {
+                    return Get_block_r_flag();
+                }
+            }
+
+            /// <summary>
+            /// Gets r number (r word) in current GCode Block
+            /// </summary>
+            public double block_r_number
+            {
+                get
+                {
+                    return Get_block_r_number();
+                }
+            }
+
+            
             #endregion
 
             #region Property Dispatchers
@@ -2880,6 +2992,7 @@ namespace KMotion_dotNet
                       this.ToString(), "Get_ToolLengthOffset"));
                 }
             }
+
             private void Set_ToolLengthOffset(double value)
             {
                 try
@@ -2900,6 +3013,98 @@ namespace KMotion_dotNet
                 {
                     throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
                       this.ToString(), "Set_ToolLengthOffset"));
+                }
+            }
+
+            private double Get_ToolXOffset()
+            {
+                try
+                {
+                    return KM_dotnet_Interop_GCodeInterpreter_Get_ToolXOffset(_InstanceHandle);
+                }
+                catch (DllNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                        this.ToString(), "Get_ToolXOffset"));
+                }
+                catch (EntryPointNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                       this.ToString(), "Get_ToolXOffset"));
+                }
+                catch (Exception e)
+                {
+                    throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                      this.ToString(), "Get_ToolXOffset"));
+                }
+            }
+
+            private void Set_ToolXOffset(double value)
+            {
+                try
+                {
+                    KM_dotnet_Interop_GCodeInterpreter_Set_ToolXOffset(_InstanceHandle, value);
+                }
+                catch (DllNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                        this.ToString(), "Set_ToolXOffset"));
+                }
+                catch (EntryPointNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                       this.ToString(), "Set_ToolXOffset"));
+                }
+                catch (Exception e)
+                {
+                    throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                      this.ToString(), "Set_ToolXOffset"));
+                }
+            }
+
+            private double Get_ToolYOffset()
+            {
+                try
+                {
+                    return KM_dotnet_Interop_GCodeInterpreter_Get_ToolYOffset(_InstanceHandle);
+                }
+                catch (DllNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                        this.ToString(), "Get_ToolYOffset"));
+                }
+                catch (EntryPointNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                       this.ToString(), "Get_ToolYOffset"));
+                }
+                catch (Exception e)
+                {
+                    throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                      this.ToString(), "Get_ToolYOffset"));
+                }
+            }
+
+            private void Set_ToolYOffset(double value)
+            {
+                try
+                {
+                    KM_dotnet_Interop_GCodeInterpreter_Set_ToolYOffset(_InstanceHandle, value);
+                }
+                catch (DllNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                        this.ToString(), "Set_ToolYOffset"));
+                }
+                catch (EntryPointNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                       this.ToString(), "Set_ToolYOffset"));
+                }
+                catch (Exception e)
+                {
+                    throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                      this.ToString(), "Set_ToolYOffset"));
                 }
             }
 
@@ -2925,6 +3130,7 @@ namespace KMotion_dotNet
                       this.ToString(), "ToolLengthOffsetIndex"));
                 }
             }
+
             private void Set_ToolLengthOffsetIndex(int value)
             {
                 try
@@ -3172,6 +3378,53 @@ namespace KMotion_dotNet
                       this.ToString(), "Set_SpindleSpeed"));
                 }
             }
+
+            private double Get_FeedRate()
+            {
+                try
+                {
+                    return KM_dotnet_Interop_GCodeInterpreter_Get_FeedRate(_InstanceHandle);
+                }
+                catch (DllNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                        this.ToString(), "Get_FeedRate"));
+                }
+                catch (EntryPointNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                       this.ToString(), "Get_FeedRate"));
+                }
+                catch (Exception e)
+                {
+                    throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                      this.ToString(), "Get_FeedRate"));
+                }
+            }
+            private void Set_FeedRate(double value)
+            {
+                try
+                {
+                    KM_dotnet_Interop_GCodeInterpreter_Set_FeedRate(_InstanceHandle, value);
+                }
+                catch (DllNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                        this.ToString(), "Set_FeedRate"));
+                }
+                catch (EntryPointNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                       this.ToString(), "Set_FeedRate"));
+                }
+                catch (Exception e)
+                {
+                    throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                      this.ToString(), "Set_FeedRate"));
+                }
+            }
+
+
 
             private int Get_SpindleDirection()
             {
@@ -3646,6 +3899,157 @@ namespace KMotion_dotNet
                       this.ToString(), "Get_Cycle_RetractMode"));
                 }
             }
+
+            private bool Get_block_p_flag()
+            {
+                try
+                {
+                    return KM_dotnet_Interop_GCodeInterpreter_Get_block_p_flag(_InstanceHandle);
+                }
+                catch (DllNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                        this.ToString(), "Get_block_p_flag"));
+                }
+                catch (EntryPointNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                       this.ToString(), "Get_block_p_flag"));
+                }
+                catch (Exception e)
+                {
+                    throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                      this.ToString(), "Get_block_p_flag"));
+                }
+            }
+
+
+            private double Get_block_p_number()
+            {
+                try
+                {
+                    return KM_dotnet_Interop_GCodeInterpreter_Get_block_p_number(_InstanceHandle);
+                }
+                catch (DllNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                        this.ToString(), "Get_block_p_number"));
+                }
+                catch (EntryPointNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                       this.ToString(), "Get_block_p_number"));
+                }
+                catch (Exception e)
+                {
+                    throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                      this.ToString(), "Get_block_p_number"));
+                }
+            }
+
+
+
+            private bool Get_block_q_flag()
+            {
+                try
+                {
+                    return KM_dotnet_Interop_GCodeInterpreter_Get_block_q_flag(_InstanceHandle);
+                }
+                catch (DllNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                        this.ToString(), "Get_block_q_flag"));
+                }
+                catch (EntryPointNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                       this.ToString(), "Get_block_q_flag"));
+                }
+                catch (Exception e)
+                {
+                    throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                      this.ToString(), "Get_block_q_flag"));
+                }
+            }
+
+
+            private double Get_block_q_number()
+            {
+                try
+                {
+                    return KM_dotnet_Interop_GCodeInterpreter_Get_block_q_number(_InstanceHandle);
+                }
+                catch (DllNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                        this.ToString(), "Get_block_q_number"));
+                }
+                catch (EntryPointNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                       this.ToString(), "Get_block_q_number"));
+                }
+                catch (Exception e)
+                {
+                    throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                      this.ToString(), "Get_block_q_number"));
+                }
+            }
+
+
+
+            private bool Get_block_r_flag()
+            {
+                try
+                {
+                    return KM_dotnet_Interop_GCodeInterpreter_Get_block_r_flag(_InstanceHandle);
+                }
+                catch (DllNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                        this.ToString(), "Get_block_r_flag"));
+                }
+                catch (EntryPointNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                       this.ToString(), "Get_block_r_flag"));
+                }
+                catch (Exception e)
+                {
+                    throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                      this.ToString(), "Get_block_r_flag"));
+                }
+            }
+
+
+            private double Get_block_r_number()
+            {
+                try
+                {
+                    return KM_dotnet_Interop_GCodeInterpreter_Get_block_r_number(_InstanceHandle);
+                }
+                catch (DllNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                        this.ToString(), "Get_block_r_number"));
+                }
+                catch (EntryPointNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                       this.ToString(), "Get_block_r_number"));
+                }
+                catch (Exception e)
+                {
+                    throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                      this.ToString(), "Get_block_r_number"));
+                }
+            }
+
+            
+            
+            
+            
+            
             private void Set_Cycle_RetractMode(int value)
             {
                 try
@@ -3673,14 +4077,18 @@ namespace KMotion_dotNet
             /// <summary>
             /// Updates the given tool table location
             /// </summary>
-            /// <param name="id">Slot position</param>
+            /// <param name="index">Table Index</param>
+            /// <param name="slot">Tool changer slot referenced in GCode as 2 digit number</param>
+            /// <param name="id">Tool ID referenced in GCode as 4 digit number</param>
             /// <param name="length">Tool Length Offset</param>
             /// <param name="diameter">Tool Diameter Offset</param>
-            public void SetTool(int id, double length, double diameter)
+            /// <param name="xoffset">Tool X Offset</param>
+            /// <param name="yoffset">Tool Y Offset</param>
+            public void SetTool(int index, int slot, int id, double length, double diameter, double xoffset, double yoffset)
             {
                 try
                 {
-                    KM_dotnet_Interop_GCodeInterpreter_SetTool(_InstanceHandle, id, length, diameter);
+                    KM_dotnet_Interop_GCodeInterpreter_SetTool(_InstanceHandle, index, slot, id, length, diameter, xoffset, yoffset);
                 }
                 catch (DllNotFoundException e)
                 {
@@ -3703,14 +4111,18 @@ namespace KMotion_dotNet
             /// <summary>
             /// Get info on specific tool
             /// </summary>
-            /// <param name="id">Slot position</param>
+            /// <param name="index">Table Index</param>
+            /// <param name="slot">Tool changer slot referenced in GCode as 2 digit number</param>
+            /// <param name="ID">Tool ID referenced in GCode as 4 digit number</param>
             /// <param name="length">Tool Length Offset</param>
             /// <param name="diameter">Tool Diameter Offset</param>
-            public void GetTool(int id, ref double length, ref double diameter)
+            /// <param name="xoffset">Tool X Offset</param>
+            /// <param name="yoffset">Tool Y Offset</param>
+            public void GetTool(int index, ref int slot, ref int ID, ref double length, ref double diameter, ref double xoffset, ref double yoffset)
             {
                 try
                 {
-                    KM_dotnet_Interop_GCodeInterpreter_GetTool(_InstanceHandle, id, ref length, ref diameter);
+                    KM_dotnet_Interop_GCodeInterpreter_GetTool(_InstanceHandle, index, ref slot, ref ID, ref length, ref diameter, ref xoffset, ref yoffset);
                 }
                 catch (DllNotFoundException e)
                 {

@@ -15,6 +15,7 @@
 #ifndef _ARRAY_3D_
 #define _ARRAY_3D_
 
+
 template<class T>
 class CArray3d
 {
@@ -183,19 +184,23 @@ public:
 		// shrink to nothing
 		if(nNewSize == 0)
 		{
+			if (TheFrame) TheFrame->GViewDlg.m_view.OpenGLMutex->Lock();
 			delete[] (BYTE*)m_pData;
 			m_pData = NULL;
 			m_nSize = 0;
 			m_nMaxSize = 0;
+			if (TheFrame) TheFrame->GViewDlg.m_view.OpenGLMutex->Unlock();
 		}
 		else 
 			// create one with exact size
 			if(m_pData == NULL)
 			{
+				if (TheFrame) TheFrame->GViewDlg.m_view.OpenGLMutex->Lock();
 				m_pData = (T**) new BYTE[nNewSize * sizeof(T*)];
 				memset(m_pData, 0, nNewSize * sizeof(T*));  // zero fill
 				m_nSize = nNewSize;
 				m_nMaxSize = nNewSize;
+				if (TheFrame) TheFrame->GViewDlg.m_view.OpenGLMutex->Unlock();
 			}
 			else 
 				if(nNewSize <= m_nMaxSize)
@@ -240,10 +245,12 @@ public:
 					memset(&pNewData[m_nSize], 0, (nNewSize-m_nSize) * sizeof(T*));
 					
 					// get rid of old stuff (note: no destructors called)
+					if (TheFrame) TheFrame->GViewDlg.m_view.OpenGLMutex->Lock();
 					delete[] (BYTE*)m_pData;
 					m_pData = pNewData;
 					m_nSize = nNewSize;
 					m_nMaxSize = nNewMax;
+					if (TheFrame) TheFrame->GViewDlg.m_view.OpenGLMutex->Unlock();
 				}
 	}
 

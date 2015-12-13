@@ -190,11 +190,55 @@ namespace KMotion_dotNet
         {
             get
             {
-                return GetFeedRateOverride(); ;
+                return GetFeedRateOverride();
             }
             set
             {
                 SetFeedRateOverride(value);
+            }
+        }
+        /// <summary>
+        /// Gets/Sets the Feedrate Rapid override for all axes
+        /// </summary>
+        public double FeedRateRapidOverride
+        {
+            get
+            {
+                return GetFeedRateRapidOverride();
+            }
+            set
+            {
+                SetFeedRateRapidOverride(value);
+            }
+        }
+        /// <summary>
+        /// Gets/Sets the Spindlerate override for all axes
+        /// </summary>
+        public double SpindleRateOverride
+        {
+            get
+            {
+                return GetSpindleRateOverride(); ;
+            }
+            set
+            {
+                SetSpindleRateOverride(value);
+            }
+        }
+        /// <summary>
+        /// Gets/Sets the Hardware FRO Range for all axes
+        /// Below this value FRO is handled by hardware (no delay)
+        /// Above this value FRO is handle by the Trajectory Planner (proper accelerations)
+        /// </summary>
+        public double HardwareFRORange
+        {
+            get
+            {
+                return GetHardwareFRORange(); ;
+            }
+            set
+            {
+                SetHardwareFRORange(value);
             }
         }
         /// <summary>
@@ -543,6 +587,34 @@ namespace KMotion_dotNet
             }
             return feedoverride;
         }
+        /// <summary>
+        /// Gets the current Feedrate Rapidoverride
+        /// </summary>
+        /// <returns>override percentage</returns>
+        private double GetFeedRateRapidOverride()
+        {
+            double feedoverride = 1;
+            try
+            {
+                feedoverride = KM_dotnet_Interop_CoordMotion_Get_FeedRateRapidOverride(_InstanceHandle);
+            }
+            catch (DllNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                    this.ToString(), "GetFeedRateCOverride"));
+            }
+            catch (EntryPointNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                   this.ToString(), "GetFeedRateRapidOverride"));
+            }
+            catch (Exception e)
+            {
+                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                  this.ToString(), "GetFeedRateRapidOverride"));
+            }
+            return feedoverride;
+        }
 
         /// <summary>
         /// Sets the current Feedrate override
@@ -568,6 +640,145 @@ namespace KMotion_dotNet
             {
                 throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
                   this.ToString(), "SetFeedRateOverride"));
+            }
+        }
+        /// <summary>
+        /// Sets the current Rapid Feedrate override
+        /// </summary>
+        /// <param name="value">override percentage</param>
+        private void SetFeedRateRapidOverride(double value)
+        {
+            try
+            {
+                KM_dotnet_Interop_CoordMotion_Set_FeedRateRapidOverride(_InstanceHandle, value);
+            }
+            catch (DllNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                    this.ToString(), "SetFeedRateRapidOverride"));
+            }
+            catch (EntryPointNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                   this.ToString(), "SetFeedRateRapidOverride"));
+            }
+            catch (Exception e)
+            {
+                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                  this.ToString(), "SetFeedRateRapidOverride"));
+            }
+        }
+        /// <summary>
+        /// Gets the current Spindlerate override
+        /// </summary>
+        /// <returns>override percentage</returns>
+        private double GetSpindleRateOverride()
+        {
+            double Spindleoverride = 1;
+            try
+            {
+                Spindleoverride = KM_dotnet_Interop_CoordMotion_Get_SpindleRateOverride(_InstanceHandle);
+            }
+            catch (DllNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                    this.ToString(), "GetSpindleRateOverride"));
+            }
+            catch (EntryPointNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                   this.ToString(), "GetSpindleRateOverride"));
+            }
+            catch (Exception e)
+            {
+                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                  this.ToString(), "GetSpindleRateOverride"));
+            }
+            return Spindleoverride;
+        }
+
+        /// <summary>
+        /// Sets the current Spindlerate override
+        /// </summary>
+        /// <param name="value">override percentage</param>
+        private void SetSpindleRateOverride(double value)
+        {
+            try
+            {
+                KM_dotnet_Interop_CoordMotion_Set_SpindleRateOverride(_InstanceHandle, value);
+            }
+            catch (DllNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                    this.ToString(), "SetSpindleRateOverride"));
+            }
+            catch (EntryPointNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                   this.ToString(), "SetSpindleRateOverride"));
+            }
+            catch (Exception e)
+            {
+                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                  this.ToString(), "SetSpindleRateOverride"));
+            }
+        }
+        /// <summary>
+        /// Gets the Hardware FRO Range for all axes
+        /// Below this value FRO is handled by hardware (no delay)
+        /// Above this value FRO is handle by the Trajectory Planner (proper accelerations)
+        /// </summary>
+        /// <returns>override percentage</returns>
+        private double GetHardwareFRORange()
+        {
+            double HardwareFRORange = 1;
+            try
+            {
+                HardwareFRORange = KM_dotnet_Interop_CoordMotion_Get_HardwareFRORange(_InstanceHandle);
+            }
+            catch (DllNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                    this.ToString(), "GetHardwareFRORange"));
+            }
+            catch (EntryPointNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                   this.ToString(), "GetHardwareFRORange"));
+            }
+            catch (Exception e)
+            {
+                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                  this.ToString(), "GetHardwareFRORange"));
+            }
+            return HardwareFRORange;
+        }
+        /// <summary>
+        /// Sets the Hardware FRO Range for all axes
+        /// Below this value FRO is handled by hardware (no delay)
+        /// Above this value FRO is handle by the Trajectory Planner (proper accelerations)
+        /// </summary>
+        /// <param name="value">override percentage</param>
+        private void SetHardwareFRORange(double value)
+        {
+            try
+            {
+                KM_dotnet_Interop_CoordMotion_Set_HardwareFRORange(_InstanceHandle, value);
+            }
+            catch (DllNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                    this.ToString(), "SetHardwareFRORange"));
+            }
+            catch (EntryPointNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                   this.ToString(), "SetHardwareFRORange"));
+            }
+            catch (Exception e)
+            {
+                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                  this.ToString(), "SetHardwareFRORange"));
             }
         }
         /// <summary>
@@ -1285,7 +1496,38 @@ namespace KMotion_dotNet
             }
         }
         /// <summary>
-        /// Waiting for additional info....
+        /// Set the assignment of KFLOP axis Channels to GCode Axes XYZABC, -1 indicates unused/unassigned axis
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="c"></param>
+        public void SetAxisDefinitions(int x, int y, int z, int a, int b, int c)
+        {
+            try
+            {
+                var returnvalue = KM_dotnet_Interop_CoordMotion_SetAxisDefinitions(_InstanceHandle, x, y, z, a, b, c);
+            }
+            catch (DllNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                    this.ToString(), "SetAxisDefinitions"));
+            }
+            catch (EntryPointNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                   this.ToString(), "SetAxisDefinitions"));
+            }
+            catch (Exception e)
+            {
+                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                  this.ToString(), "SetAxisDefinitions"));
+            }
+        }
+        /// <summary>
+        /// Get the assignment of KFLOP axis Channels to GCode Axes XYZABC, -1 indicates unused/unassigned axis
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>

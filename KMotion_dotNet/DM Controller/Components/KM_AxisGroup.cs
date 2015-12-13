@@ -70,6 +70,14 @@ namespace KMotion_dotNet
         /// <summary>
         /// Axis Group Number
         /// </summary>
+        protected bool _UseOnlyLinearSegments = false;
+        /// <summary>
+        /// Causes Arcs to be converted to segments (Kinematic Setting)
+        /// </summary>
+        protected bool _ArcsToSegs = false;
+        /// <summary>
+        /// Causes Arcs to be converted to segments (User Setting)
+        /// </summary>
         protected bool _DegreesA = false;
         /// <summary>
         /// Axis A is in Degrees
@@ -409,6 +417,8 @@ namespace KMotion_dotNet
                 _Controller.CoordMotion.MotionParams.FacetAngle = _FacetAngle;
                 _Controller.CoordMotion.MotionParams.MaxLinearLength = _MaxLength;
                 _Controller.CoordMotion.MotionParams.TPLookahead = _LookAhead;
+                _Controller.CoordMotion.MotionParams.UseOnlyLinearSegments = _UseOnlyLinearSegments;
+                _Controller.CoordMotion.MotionParams.ArcsToSegs = _ArcsToSegs;
                 _Controller.CoordMotion.MotionParams.DegreesA = _DegreesA;
                 _Controller.CoordMotion.MotionParams.DegreesB = _DegreesB;
                 _Controller.CoordMotion.MotionParams.DegreesC = _DegreesC;
@@ -651,12 +661,16 @@ namespace KMotion_dotNet
         /// <summary>
         /// Set Tool Table Entry to be used by the GCode Interpreter
         /// </summary>
-        /// <param name="num">Tool Number</param>
+        /// <param name="index">Tool Table Index Number</param>
+        /// <param name="slot">Tool changer 2 digit slot Number</param>
+        /// <param name="ID">Tool 4 digit ID Number</param>
         /// <param name="length">Tool length offset</param>
         /// <param name="diameter">Tool diameter used in radius compensation</param>
-        public void SetToolTableEntry(int num, double length, double diameter)
+        /// <param name="xoffset">Tool X Offset</param>
+        /// <param name="yoffset">Tool Y Offset</param>
+        public void SetToolTableEntry(int index, int slot, int ID, double length, double diameter, double xoffset, double yoffset)
         {
-            _Controller.CoordMotion.Interpreter.SetupParams.SetTool(num, length, diameter);
+            _Controller.CoordMotion.Interpreter.SetupParams.SetTool(index, slot, ID, length, diameter, xoffset, yoffset);
         }
         /// <summary>
         /// Set Work Fixture Offset to be used by the GCode Interpreter

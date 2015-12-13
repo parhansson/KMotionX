@@ -8,7 +8,7 @@
 // Modified : 15/01/98
 //********************************************
 
-#include "..\stdafx.h"
+#include "stdafx.h"
 
 //////////////////////////////////////////////
 // CONSTRUCTORS
@@ -176,6 +176,7 @@ int CSceneGraph3d::glBuildList()
 //********************************************
 void CSceneGraph3d::glDraw(void)
 {
+
 	if(!m_ListDone)
 		glBuildList();
 

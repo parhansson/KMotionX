@@ -17,6 +17,7 @@
 
 // 3d library
 #include "Object3d.h"
+#include "Vertex3dFast.h"
 #include "Vertex3d.h"
 #include "Vector3d.h"
 #include "Edge3d.h"
@@ -26,6 +27,17 @@
 #include "SceneGraph3d.h"
 #include "Utils3d.h"
 #include "Transform.h"
+
+#include "dlgbars.h"
+#include "LogSlider.h"
+#include "RichEditCtrlEx.h"
+#include "Display.h"
+#include "ImageButton.h"
+#include "MotionButton.h"
+#include "DlgX.h"
+#include "..\GCodeInterpreter\GCodeInterpreter.h"
+#include "MainFrm.h"
+
 
 // Standard
 #include "Array3d.h"
@@ -43,6 +55,7 @@
 // Object types
 enum {TYPE_OBJECT3D,
 			TYPE_VERTEX3D,
+			TYPE_VERTEX3DFAST,
 			TYPE_VECTOR3D,
 			TYPE_FACE3D,
 			TYPE_POLYGON3D,

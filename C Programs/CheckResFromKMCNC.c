@@ -1,17 +1,13 @@
 #include "KMotionDef.h"
 
-int DoPC(int cmd);
-int DoPCFloat(int cmd, float f);
-int DoPCInt(int cmd, int i);
-int MsgBox(char *s, int Flags);
-int SetVars(int poff, int varoff, int n);
-int GetVars(int varoff, int n, int poff);
+#define TMP 10 // which spare persist to use to transfer data
+#include "KflopToKMotionCNCFunctions.c"
+
 
 
 main()
 {
 	int Answer;
-	double *pD = (double *)persist.UserData;
 	
 //	DoPC(PC_COMM_ESTOP);
 //	DoPC(PC_COMM_HALT);
@@ -38,9 +34,10 @@ main()
 
 	// put 3 double values in the persist vars 
 	
-	pD[10] = 123.456;
-	pD[11] = 1000.0;
-	pD[12] = 999.9;
+	SetUserDataDouble(10,123.456);
+	SetUserDataDouble(11,1000.0);
+	SetUserDataDouble(12,999.9);
+
 	
 	// transfer up to the GCode Vars
 	SetVars(100,3,10);  // Upload 3 to GCode 100 from persist 10   
@@ -50,7 +47,7 @@ main()
 	// read them back into different persist Vars
 //	GetVars(100,3,13);  // Download 3 from GCode 100 to persist 13 
 
-//	printf("%f %f %f\n",pD[13],pD[14],pD[15]);
+//	printf("%f %f %f\n",GetUserDataDouble(13),GetUserDataDouble(14),GetUserDataDouble(15));
 	
 	DoPCInt(PC_COMM_GETAXISRES, 150);
 	printf("XRes=%f\n", *(float *)&persist.UserData[150]);
@@ -59,89 +56,3 @@ main()
 	printf("ARes=%f\n", *(float *)&persist.UserData[153]);
 }
 
-int SetVars(int varoff, int n, int poff)
-{
-	persist.UserData[PC_COMM_PERSIST+2] = n;       // number of elements
-	persist.UserData[PC_COMM_PERSIST+3] = poff;    // persist offset (doubles)
-	return DoPCInt(PC_COMM_SET_VARS,varoff);       // Var index and Cmd
-}
-
-int GetVars(int varoff, int n, int poff)
-{
-	persist.UserData[PC_COMM_PERSIST+2] = n;       // number of elements
-	persist.UserData[PC_COMM_PERSIST+3] = poff;    // persist offset (doubles)
-	return DoPCInt(PC_COMM_GET_VARS,varoff);       // Var index and Cmd
-}
-
-
-#define GATH_OFF 0  // define the offset into the Gather buffer where strings are passed
-
-// Trigger a message box on the PC to be displayed
-// defines for MS Windows message box styles and Operator
-// response IDs are defined in the KMotionDef.h file 
-int MsgBox(char *s, int Flags)
-{
-	char *p=(char *)gather_buffer+GATH_OFF*sizeof(int);
-	int i;
-	
-	do // copy to gather buffer w offset 0
-	{
-		*p++ = *s++;
-	}while (s[-1]);
-	
-	persist.UserData[PC_COMM_PERSIST+2] = Flags;  // set options
-	DoPCInt(PC_COMM_MSG,GATH_OFF);
-	return persist.UserData[PC_COMM_PERSIST+3];
-}
-
-// put the MDI string (Manual Data Input - GCode) in the 
-// gather buffer and tell the App where it is
-int MDI(char *s)
-{
-	char *p=(char *)gather_buffer+GATH_OFF*sizeof(int);
-	int i;
-	
-	do // copy to gather buffer w offset 0
-	{
-		*p++ = *s++;
-	}while (s[-1]);
-	
-	// issue the command an wait till it is complete
-	// (or an error - such as busy)
-	return DoPCInt(PC_COMM_MDI,GATH_OFF);
-}
-
-// Put a Float as a parameter and pass the command to the App
-int DoPCFloat(int cmd, float f)
-{
-	int result;
-	persist.UserData[PC_COMM_PERSIST+1] = *(int*)&f;
-	return DoPC(cmd);
-}
-
-// Put an integer as a parameter and pass the command to the App
-int DoPCInt(int cmd, int i)
-{
-	int result;
-	persist.UserData[PC_COMM_PERSIST+1] = i;
-	return DoPC(cmd);
-}
-
-// Pass a command to the PC and wait for it to handshake
-// that it was received by either clearing the command
-// or changing it to a negative error code
-int DoPC(int cmd)
-{
-	int result;
-	
-	persist.UserData[PC_COMM_PERSIST]=cmd;
-	
-	do
-	{
-		WaitNextTimeSlice();	
-	}while (result=persist.UserData[PC_COMM_PERSIST]>0);
-	
-	printf("Result = %d\n",result);
-
-	return result;
-}

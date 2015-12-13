@@ -12,9 +12,11 @@ namespace KFlopWebNC.Model
         private int _Index = -1;
         private string _ToolName = "";
         private int _SlotNumber = -1;
-        private int _ToolNumber = -1;
+        private int _ID = -1;
         private double _LengthOffset = 0.0;
-        private double _DiameterOffset = 0.0; 
+        private double _DiameterOffset = 0.0;
+        private double _XOffset = 0.0;
+        private double _YOffset = 0.0;
         #endregion
 
         #region Properties
@@ -51,15 +53,15 @@ namespace KFlopWebNC.Model
                 _SlotNumber = value;
             }
         }
-        public int ToolNumber
+        public int ID
         {
             get
             {
-                return _ToolNumber;
+                return _ID;
             }
             set
             {
-                _ToolNumber = value;
+                _ID = value;
             }
         }
         public double LengthOffset
@@ -83,7 +85,29 @@ namespace KFlopWebNC.Model
             {
                 _DiameterOffset = value;
             }
-        } 
+        }
+        public double XOffset
+        {
+            get
+            {
+                return _XOffset;
+            }
+            set
+            {
+                _XOffset = value;
+            }
+        }
+        public double YOffset
+        {
+            get
+            {
+                return _YOffset;
+            }
+            set
+            {
+                _YOffset = value;
+            }
+        }
         #endregion
     }
 }

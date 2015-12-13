@@ -26,8 +26,7 @@ main()
 	// Set DRO = 0 and solve for OriginOffset
 	//
 	NewOriginOffset = Machiney -  AxisOffsetY;
-
-	pD[TMP]=NewOriginOffset;
+	SetUserDataDouble(TMP,NewOriginOffset);
 	SetVars(5201+FixtureIndex*20+1, 1, TMP);
 
 	DoPC(PC_COMM_UPDATE_FIXTURE);

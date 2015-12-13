@@ -6,6 +6,9 @@
 #include "HiResTimer.h"
 
 
+typedef void RENDERCALLBACK(void *);
+
+
 
 /////////////////////////////////////////////////////////////////////////////
 // COpenglCtl window
@@ -32,6 +35,8 @@ public:
 // Implementation
 public:
 	CHiResTimer HiResTimer;
+	CHiResTimer MouseTimer;
+
 	CMutex *OpenGLMutex;
 	virtual ~COpenglCtl();
 	// OpenGL specific
@@ -89,6 +94,9 @@ public:
 	GLenum m_Mode;
 
 	void RenderScene();
+
+	void *Parent;
+	RENDERCALLBACK *RenderCallback;
 
 
 	// Generated message map functions

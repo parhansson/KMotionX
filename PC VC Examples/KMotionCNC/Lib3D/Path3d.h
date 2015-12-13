@@ -15,7 +15,7 @@
 #define _Path_3D_
 
 #include "Array3d.h"
-#include "Vertex3d.h"
+#include "Vertex3dFast.h"
 #include "Face3d.h"
 #include "Vector3d.h"
 #include "Material.h"
@@ -28,7 +28,9 @@ class CPath3d : public CObject3d
 private :
 
 	// Datas
-	CArray3d<CVertex3d> m_ArrayVertex;
+	CArray3d<CVertex3dFast> m_ArrayVertex;
+
+	CArray3d<int> m_ListArray;
 
 	CTransform m_Transform;
 	CString m_Name;
@@ -36,10 +38,16 @@ private :
 
 
 	// OpenGL-specific
-	unsigned int m_ListOpenGL;
+	unsigned int m_nListsOpenGL;
+	unsigned int m_nPointsPerList;
+	unsigned int m_nPointsInList;
 	unsigned int m_ListDone;
 	int m_Modified;
 	int m_Show;
+
+	float m_LastToolOffsetX,m_LastToolOffsetY,m_LastToolOffsetZ;
+	float m_LastToolPositionX,m_LastToolPositionY,m_LastToolPositionZ;
+
 
 public :
 
@@ -57,15 +65,17 @@ public :
 	// Vertices
 	int NbVertex() { return m_ArrayVertex.GetSize(); }
 	void SetNbVertex(int NbVertex)  { m_ArrayVertex.SetSize(NbVertex); }
-	CArray3d<CVertex3d> *GetArrayVertex() { return &m_ArrayVertex; }
-	void AddVertex(CVertex3d *pVertex) { m_ArrayVertex.Add(pVertex); m_Modified=true; }
-	int DeleteVertex(CVertex3d *pVertex);
+	CArray3d<CVertex3dFast> *GetArrayVertex() { return &m_ArrayVertex; }
+	void AddVertex(CVertex3dFast *pVertex) { m_ArrayVertex.Add(pVertex); m_Modified=true; }
+	void AddVertexTool(CVertex3dFast *pVertex);
+
+	int DeleteVertex(CVertex3dFast *pVertex);
 	int DeleteVertex(int index);
-	CVertex3d *GetVertex(int index) {return m_ArrayVertex[index];}
-	int Has(CVertex3d *pVertex) { return m_ArrayVertex.Has(pVertex); }
+	CVertex3dFast *GetVertex(int index) {return m_ArrayVertex[index];}
+	int Has(CVertex3dFast *pVertex) { return m_ArrayVertex.Has(pVertex); }
 
 	int RemovePathEnd(int sequence_number,int ID, double x, double y, double z);
-	double FindDistPointToSegment(CVertex3d *s0, CVertex3d *s1, CVertex3d *s2);
+	double FindDistPointToSegment(CVertex3dFast *s0, CVertex3dFast *s1, CVertex3dFast *s2);
 
 	// Transform
 	void SetTransform(CTransform &transform) { m_Transform.Copy(transform); }
@@ -86,13 +96,15 @@ public :
 
 	// Modif
 	void SetModified() { m_Modified=1; }
-	void InvalidateDisplayList() {m_ListOpenGL=-1; };
+	void InvalidateDisplayList() {};
 	int GetModified() { return m_Modified; }
 
 
 	// Vertex removal
-	int VertexRemoval(CVertex3d *pV);
+	int VertexRemoval(CVertex3dFast *pV);
 	int VertexRemoval();
+
+	bool m_ToolOffsetValid;
 };
 
 

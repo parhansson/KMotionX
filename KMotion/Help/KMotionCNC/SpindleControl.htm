@@ -16,7 +16,8 @@ Program Configuration</a></font></i></b></u></p>
 Constant Surface Speed</a></font></b></i></u></p>
 <p><i><b><font face="Arial"><a href="#Step-by-step_Recap">Step-by-step Recap</a></font></b></i></p>
 <p><i><b><font face="Arial"><a href="#Video">Video</a></font></b></i></p>
-<p>&nbsp;</p>
+<p><u><i><b><font face="Arial">
+<a href="#Configuring_an_Axis_to_Control_a_DAC_open_Loop">Configuring an Axis to Control a DAC open Loop</a></font></b></i></u></p>
 <p>&nbsp;</p>
 <p><u><b><i><font face="Arial"><a name="Overview">Overview</a></font></i></b></u></p>
 <p><font face="Arial">KMotionCNC allows the User to configure how the Spindle is 
@@ -75,7 +76,10 @@ IO commands see <a href="SynchronousIOCommands.htm">here</a>.</font></p>
 <p><font face="Arial">For more advanced functionality User C Programs may be 
 assigned for each of the spindle actions.&nbsp; For systems that have a spindle 
 that can be controlled with an axis channel the C Programs listed below can be 
-used directly with little or no modification.&nbsp; This assumes that axis 
+used directly with little or no modification.&nbsp; Note if your Spindle speed 
+is controlled by a DAC an Axis channel can be configured to output open loop to 
+a DAC, see <a href="#Configuring_an_Axis_to_Control_a_DAC_open_Loop">here</a> 
+for how.&nbsp; This assumes that axis 
 channel has already been configured much like the other axes in the system and 
 can be moved using Axis Jog Commands.&nbsp; Spindles such as this are types that 
 can be driven like a servo with feedback, or as an open loop Step/Dir drive.&nbsp; 
@@ -106,8 +110,13 @@ described below.&nbsp; Each of the four C programs includes this file with an
 include statement of:&nbsp; #include &quot;MySpindleDefs.h&quot;.&nbsp; This should be 
 placed immediately after the #include &quot;KMotionDef.h&quot; (which includes 
 and defines all the 
-standard KFLOP definitions).<br>
-<br>
+standard KFLOP definitions).&nbsp; </font></p>
+<p><font face="Arial">Some Spindle controls/interfaces can accept a positive and 
+negative command to drive in CW and CCW directions.&nbsp; Others require inputs 
+(relays) to switch the directions and the speed is always set as&nbsp; a 
+positive command.&nbsp; If your system is capable of accepting positive and 
+negative commands then define </font><b><font face="Consolas">
+USE_POS_NEG_VOLTAGE</font></b><font face="Arial"> as 1 otherwise define it as 0.<br>
 &nbsp;</font></p>
 <p><font face="Arial">MySpindleDefs.h</font></p>
 <font FACE="Consolas" SIZE="2" COLOR="#0000ff">
@@ -138,7 +147,10 @@ persistant variable to store latest state (-1=CCW,0=off,1=CW)</p>
 <p style="margin-top: 0; margin-bottom: 0">#define</font><font FACE="Consolas" SIZE="2"> 
 KMVAR PC_COMM_CSS_S </font><font FACE="Consolas" SIZE="2" COLOR="#008000">// 
 variable KMotionCNC will pass speed parameter (113)</font></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Consolas" size="2">
+<font color="#0000FF">#define</font> USE_POS_NEG_VOLTAGE 0 <font color="#008000">
+// 0 = output Magnitude, 1 = output positive and negative speed</font> <br>
+&nbsp;</font></p>
 <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
 <p><font face="Arial">These C Programs (located in the &lt;Install Directory&gt;\C 
 Programs\SpindleUsingJogs\CSS directory) are written in a manner to handle a 
@@ -269,7 +281,7 @@ similar to that shown here</span></p>
 9.5pt;font-family:Consolas">&nbsp;</span></p>
 <p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
 <span style="font-size:
-9.5pt;font-family:Consolas;color:green">//#include &quot;KMotionDef.c&quot;</span></p>
+9.5pt;font-family:Consolas;color:green">//#include &quot;KMotionDef.h&quot;</span></p>
 <p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
 <span style="font-size:
 9.5pt;font-family:Consolas;color:green">//#include &quot;MySpindleDefs.h&quot;</span></p>
@@ -415,14 +427,21 @@ rpm = *css_max_rpm;</span></p>
 9.5pt;font-family:Consolas">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue">if</span> (persist.UserData[STATEVAR]!=0)&nbsp;
 <span style="color:green">// if spindle is already on, ramp to new speed</span></span></p>
 <p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
-<span style="font-size:
-9.5pt;font-family:Consolas">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Jog(SPINDLEAXIS,rpm * FACTOR);</span></p>
+<span style="font-family: Consolas; font-size: 9.5pt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+{</span></p>
 <p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
-<span style="font-size:
-9.5pt;font-family:Consolas">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
+<span style="font-family: Consolas; font-size: 9.5pt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+if (USE_POS_NEG_VOLTAGE)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+Jog(SPINDLEAXIS,rpm * FACTOR * persist.UserData[STATEVAR]);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+Jog(SPINDLEAXIS,rpm * FACTOR);</span></p>
 <p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
-<span style="font-size:
-9.5pt;font-family:Consolas;color:green">//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf(&quot;xoff=%f radius= %f 
+<span style="font-family: Consolas; font-size: 9.5pt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+}<br>
+</span><span style="font-size:
+9.5pt;font-family:Consolas;color:green">//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf(&quot;xoff=%f radius= %f 
 xfactor=%f s=%f(ips) maxrpm=%f rpm=%f\n&quot;,*css_xoff,radius,*css_xfactor,*css_s,*css_max_rpm,rpm);</span></p>
 <p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
 <span style="font-size:
@@ -459,10 +478,95 @@ your Initialization C File</span><font face="Arial"> </font></p>
 <p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">&nbsp;</p>
 <p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: -0pt">
 <span style="font-family: Arial"><u><i><b><a name="Video">Video</a></b></i></u>&nbsp;</span></p>
-<p class="MsoNormal"><font face="Arial"><span style="line-height: 115%">&nbsp;Simple
+<p class="MsoNormal"><font face="Arial"><span style="line-height: 115%">Simple 
+demo
 <a href="http://youtu.be/f7Ljo4LHids">Video</a> of final GCode running CSS GCode.</span></font></p>
+<p class="MsoNormal"><font face="Arial">User
+<a href="http://youtu.be/nWrntLmdJqY">Video</a> using CSS.</font></p>
+<p class="MsoNormal">&nbsp;</p>
 <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
 <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><u><i><b><font face="Arial">
+<a name="Configuring_an_Axis_to_Control_a_DAC_open_Loop">Configuring an Axis to Control a DAC open Loop</a></font></b></i></u></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">For Spindles that 
+are controlled open loop with a 0-10V signal it is possible to configure an Axis 
+Channel to output current Speed directly to a DAC.&nbsp; There a several 
+advantages to configuring in this manner.&nbsp; First, the Spindle can be 
+controlled using Jog Speed Commands in exactly the same manner as a closed loop 
+servo (or any other) type of Axis Channel.&nbsp;&nbsp; And second the Axis 
+Motion Profile Parameters (Acceleration and Jerk) can be used to ramp the speed 
+up and down.</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The configuration 
+is the same as a DAC Servo with no Feedback (PID all zero) and with Velocity 
+Feed Forward.&nbsp; The Servo diagram shows how the Motion Profile can be routed 
+directly o the output using the Velocity Feedforward path:</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">
+<img border="0" src="KMotionCNCfiles/ServoFlowDiagramVFFonly.png"></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The Screens below 
+show such a configuration.&nbsp; This configuration can be loaded from <i>
+AxisAsDAC7.mot</i></font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">No Input, DAC 
+Output, Negative Gain, Infinite Following error:</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+<img border="0" src="KMotionCNCfiles/OpenLoopDACConfig.png"></font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Filters all 
+cleared to have Flat DC Gain=1</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+<img border="0" src="KMotionCNCfiles/OpenLoopDACNoFilters.png"></font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">PID Zero, Max 
+Output = full DAC Range of 2047 counts, Max Error Infinity, Feed Forward 2047 so 
+that a velocity of 1 count/sec will generate full dac output.</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Acceleration = 1 
+count/s<sup>2</sup> so that full speed will ramp up in 1 second, Jerk=5 counts/s<sup>3</sup> 
+(Acceleration is &quot;smoothed&quot; over 1/5th second).&nbsp; This demonstration Move 
+profile moves at 0.5 counts/sec which results in half of the full DAC output 
+range (1023 counts or 5V analog).&nbsp; Note the output (green plot) follows the 
+Commanded Velocity (blue) in perfect proportion.&nbsp;&nbsp; Any Velocity Range 
+could be used because this is only a theoretical velocity profile and can be 
+scaled to any proportion by the Velocity FeedForward.&nbsp; 1.0 counts/s is used 
+to keep the math simple and to allow Jogging continuously for years without 
+exceeding the Max error or Max Following Error limits. </font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
+<img border="0" src="KMotionCNCfiles/OpenLoopDACStepResponse.png"></font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">You may also test 
+your Spindle Axis using Console Screen Jog commands.&nbsp;&nbsp; For example 
+Jog7=0.25 should drive the spindle at 25% full speed.</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">If your Spindle 
+can accept a +/-10V signal to drive both directions then Jog7 = <b>-</b>0.25 
+should drive in the negative direction.</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The standard 
+SpindleUsingJogs examples can now be used for an open loop DAC controlled 
+Spindle.</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">To determine the 
+proper FACTOR in the MySpindleDefs.h file you will need to know what RPM your 
+Spindle runs at when the full 10V analog signal is applied.&nbsp; This will 
+correspond to the RPM where a full Jog Speed of 1.0 will be required.&nbsp; So 
+for example if your RPM reading at 10V is 2500 RPM then configure:</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font FACE="Consolas" SIZE="2" COLOR="#0000ff">
+#define</font><font FACE="Consolas" SIZE="2"> 
+FACTOR (1.0/2500.0) </font><font FACE="Consolas" SIZE="2" COLOR="#008000">// to 
+convert RPM to counts/sec 
+</font></p>
 
 </body>
 

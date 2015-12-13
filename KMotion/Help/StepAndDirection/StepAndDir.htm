@@ -13,7 +13,7 @@
 <p>(for Legacy KMotion Board see <a href="StepAndDirKMotion.htm">here</a>)</p>
 <p>KFLOP supports connection to motor amplifiers that utilize step and 
 direction (or <span style="background-color: #FFFFFF"><a href="#Quadrature">
-quadrature</a></span>) inputs to control the motion.&nbsp; Step and direction motor 
+quadrature</a> or <a href="#CW/CCW">CW/CCW Pulses</a></span>) inputs to control the motion.&nbsp; Step and direction motor 
 amplifiers are typically used with stepper motors with or without micro-stepping 
 capability.&nbsp; Each &quot;step&quot; causes the motor amplifier to advance the motor 
 position one step in the direction specified by the &quot;Direction&quot; signal.&nbsp; 
@@ -188,9 +188,18 @@ amplifier has standard logic inputs then LVTTL outputs should work better.&nbsp;
 <p><a name="Quadrature">Quadrature</a> outputs are required for some amplifiers.&nbsp; 
 Quadrature outputs output two A B phases instead of Step/Dir signals.&nbsp; An 
 advantage is that only one signal edge transition takes place for each &quot;step&quot; as 
-opposed to a complete pulse.</p>
+opposed to a complete pulse and any Direction Setup Time and Minimum pulse time 
+is avoided.&nbsp; Quadrature mode is selected by adding 16 to the Output Channel 
+Number.</p>
+<p><a name="CW/CCW">CW/CCW</a> Mode is also available.&nbsp; In this mode instead of having a 
+Direction signal there is a separate output for CW and CCW Pulses.&nbsp; This 
+mode avoids any Direction Setup Time as well.&nbsp; CW/CCW mode is selected by 
+adding 48 to the Output Channel Number.</p>
+<p><img border="0" src="AllModes.png" width="647" height="623"></p>
 <p>&nbsp;</p>
-<p>The table below summarizes the modes:</p>
+<p>&nbsp;</p>
+<p>The table below summarizes the Channel Number to specify to access the 
+desired Generator and Mode:</p>
 	<table border="1" width="639" id="table5">
 		<tr>
 			<td bgcolor="#C0C0C0">
@@ -359,6 +368,166 @@ opposed to a complete pulse.</p>
 			<td align="center" width="218">7</td>
 			<td align="center" width="242">LVTTL - Quadrature</td>
 		</tr>
+		<tr>
+			<td align="center">32</td>
+			<td align="center" width="218">0</td>
+			<td align="center" width="242">reserved</td>
+		</tr>
+		<tr>
+			<td align="center">33</td>
+			<td align="center" width="218">1</td>
+			<td align="center" width="242">reserved</td>
+		</tr>
+		<tr>
+			<td align="center">34</td>
+			<td align="center" width="218">2</td>
+			<td align="center" width="242">reserved</td>
+		</tr>
+		<tr>
+			<td align="center">35</td>
+			<td align="center" width="218">3</td>
+			<td align="center" width="242">reserved</td>
+		</tr>
+		<tr>
+			<td align="center">36</td>
+			<td align="center" width="218">4</td>
+			<td align="center" width="242">reserved</td>
+		</tr>
+		<tr>
+			<td align="center">37</td>
+			<td align="center" width="218">5</td>
+			<td align="center" width="242">reserved</td>
+		</tr>
+		<tr>
+			<td align="center">38</td>
+			<td align="center" width="218">6</td>
+			<td align="center" width="242">reserved</td>
+		</tr>
+		<tr>
+			<td align="center">39</td>
+			<td align="center" width="218">7</td>
+			<td align="center" width="242">reserved</td>
+		</tr>
+		<tr>
+			<td align="center">40</td>
+			<td align="center" width="218">0</td>
+			<td align="center" width="242">reserved</td>
+		</tr>
+		<tr>
+			<td align="center">41</td>
+			<td align="center" width="218">1</td>
+			<td align="center" width="242">reserved</td>
+		</tr>
+		<tr>
+			<td align="center">42</td>
+			<td align="center" width="218">2</td>
+			<td align="center" width="242">reserved</td>
+		</tr>
+		<tr>
+			<td align="center">43</td>
+			<td align="center" width="218">3</td>
+			<td align="center" width="242">reserved</td>
+		</tr>
+		<tr>
+			<td align="center">44</td>
+			<td align="center" width="218">4</td>
+			<td align="center" width="242">reserved</td>
+		</tr>
+		<tr>
+			<td align="center">45</td>
+			<td align="center" width="218">5</td>
+			<td align="center" width="242">reserved</td>
+		</tr>
+		<tr>
+			<td align="center">46</td>
+			<td align="center" width="218">6</td>
+			<td align="center" width="242">reserved</td>
+		</tr>
+		<tr>
+			<td align="center">47</td>
+			<td align="center" width="218">7</td>
+			<td align="center" width="242">reserved</td>
+		</tr>
+		<tr>
+			<td align="center">48</td>
+			<td align="center" width="218">0</td>
+			<td align="center" width="242">Open Collector - CW/CCW</td>
+		</tr>
+		<tr>
+			<td align="center">49</td>
+			<td align="center" width="218">1</td>
+			<td align="center" width="242">Open Collector - CW/CCW</td>
+		</tr>
+		<tr>
+			<td align="center">50</td>
+			<td align="center" width="218">2</td>
+			<td align="center" width="242">Open Collector - CW/CCW</td>
+		</tr>
+		<tr>
+			<td align="center">51</td>
+			<td align="center" width="218">3</td>
+			<td align="center" width="242">Open Collector - CW/CCW</td>
+		</tr>
+		<tr>
+			<td align="center">52</td>
+			<td align="center" width="218">4</td>
+			<td align="center" width="242">Open Collector - CW/CCW</td>
+		</tr>
+		<tr>
+			<td align="center">53</td>
+			<td align="center" width="218">5</td>
+			<td align="center" width="242">Open Collector - CW/CCW</td>
+		</tr>
+		<tr>
+			<td align="center">54</td>
+			<td align="center" width="218">6</td>
+			<td align="center" width="242">Open Collector - CW/CCW</td>
+		</tr>
+		<tr>
+			<td align="center">55</td>
+			<td align="center" width="218">7</td>
+			<td align="center" width="242">Open Collector - CW/CCW</td>
+		</tr>
+		<tr>
+			<td align="center">56</td>
+			<td align="center" width="218">0</td>
+			<td align="center" width="242">LVTTL - CW/CCW</td>
+		</tr>
+		<tr>
+			<td align="center">57</td>
+			<td align="center" width="218">1</td>
+			<td align="center" width="242">LVTTL - CW/CCW</td>
+		</tr>
+		<tr>
+			<td align="center">58</td>
+			<td align="center" width="218">2</td>
+			<td align="center" width="242">LVTTL - CW/CCW</td>
+		</tr>
+		<tr>
+			<td align="center">59</td>
+			<td align="center" width="218">3</td>
+			<td align="center" width="242">LVTTL - CW/CCW</td>
+		</tr>
+		<tr>
+			<td align="center">60</td>
+			<td align="center" width="218">4</td>
+			<td align="center" width="242">LVTTL - CW/CCW</td>
+		</tr>
+		<tr>
+			<td align="center">61</td>
+			<td align="center" width="218">5</td>
+			<td align="center" width="242">LVTTL - CW/CCW</td>
+		</tr>
+		<tr>
+			<td align="center">62</td>
+			<td align="center" width="218">6</td>
+			<td align="center" width="242">LVTTL - CW/CCW</td>
+		</tr>
+		<tr>
+			<td align="center">63</td>
+			<td align="center" width="218">7</td>
+			<td align="center" width="242">LVTTL - CW/CCW</td>
+		</tr>
 	</table>
 	<p>&nbsp;</p>
 <p>Note when configuring the motion profile for a Step and Direction Axis the appropriate maximum Velocity, Acceleration, and Jerk should be set in units 
@@ -376,6 +545,9 @@ clocks.&nbsp; Which corresponds to 60ns to 3.78us.&nbsp; Using a long pulse
 length limits the maximum frequency that can be generated.&nbsp; For example 
 with the default pulse length of 2us the frequency should not exceed 1/(2 x 2us) 
 = 250KHz.&nbsp; </p>
+<p>KFLOP sets the Direction output 1.92us before generating a Step Pulse.&nbsp; 
+With the maximum Step Pulse length of 3.78us the maximum Direction Setup time to 
+the trailing edge of the Step Pulse is&nbsp; 5.7us. </p>
 <p>Setting Bit-6 high of the register can be set high to multiplex Step/Dir 
 generators 0-3 from JP7 to JP4 and JP6.</p>
 <p>Setting Bit-7 high will invert the Step Output pulse so that it pulses High 

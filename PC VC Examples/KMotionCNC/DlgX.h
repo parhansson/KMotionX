@@ -150,6 +150,7 @@ public:
 	int LookForCString(const char * s, const char * c, CString * b);
 	void LookForChars(const char * s, const char * c, char *b);
 	void LookForIIR(const char * s, const char * c, float *f0, float *f1, float *f2, float *f3, float *f4);
+	CString ExtractDirectory(CString s);
 
 // Dialog Data
 	//{{AFX_DATA(CDlgX)
@@ -183,7 +184,6 @@ protected:
 	afx_msg BOOL OnToolTipText(UINT nID, NMHDR* pNMHDR, LRESULT* pResult);
 	DECLARE_MESSAGE_MAP()
 
-	CString ExtractDirectory(CString s);
 	CRect OrigClientRect;
 	CRect OrigWindowRect;
 private:

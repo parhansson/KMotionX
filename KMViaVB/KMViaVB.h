@@ -18,7 +18,7 @@ void __stdcall KMViaVB_ReleaseToken(void *handle);
 long __stdcall KMViaVB_Failed(void *handle);
 long __stdcall KMViaVB_Disconnect(void *handle);
 long __stdcall KMViaVB_CheckForReady(void *handle);
-long __stdcall KMViaVB_LoadCoff(long *handle,long Thread, char *Name);
+long __stdcall KMViaVB_LoadCoff(long *handle,long Thread, char *Name, long PackToFlash);
 long __stdcall KMViaVB_CompileAndLoadCoff(long *handle, long Thread, char *Name, long MaxErrLen, char **Err);
 long __stdcall KMViaVB_ServiceConsole(void *handle);
 long __stdcall KMViaVB_SetConsoleCallback(void *handle, VB_CONSOLE_HANDLER *ch);

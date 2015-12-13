@@ -40,6 +40,8 @@ COpenglCtl::COpenglCtl()
 	OpenGLMutex = new CMutex(FALSE,"OpenGL",NULL);
 
 	InitGeometry();
+
+	Parent=RenderCallback=NULL;
 }
 
 void COpenglCtl::InitGeometry(void)
@@ -95,7 +97,7 @@ void COpenglCtl::OnLButtonDown(UINT nFlags, CPoint point)
 	m_LeftButtonDown = TRUE;
 	m_LeftDownPos = point;
 	SetCapture();
-	
+	MouseTimer.Start();
 	CStatic::OnLButtonDown(nFlags, point);
 }
 
@@ -113,6 +115,7 @@ void COpenglCtl::OnRButtonDown(UINT nFlags, CPoint point)
 	m_RightButtonDown = TRUE;
 	m_RightDownPos = point;
 	SetCapture();
+	MouseTimer.Start();
 	
 	CStatic::OnRButtonDown(nFlags, point);
 }
@@ -128,17 +131,22 @@ void COpenglCtl::OnRButtonUp(UINT nFlags, CPoint point)
 
 void COpenglCtl::OnMouseMove(UINT nFlags, CPoint point) 
 {
+	float TimeFactor=1.0;
+
+	// After 2 seconds of holding the same button reduce the speed
+	if (MouseTimer.Elapsed_Seconds() > 2.0) TimeFactor=0.05f;
+
 	// Both : rotation
 	if(m_LeftButtonDown && m_RightButtonDown)
 	{
 		if(!m_xyRotation)
 		{
-			m_yRotation -= (float)(m_LeftDownPos.x - point.x) * m_SpeedRotation;
-			m_xRotation -= (float)(m_LeftDownPos.y - point.y) * m_SpeedRotation;
+			m_yRotation -= (float)(m_LeftDownPos.x - point.x) * m_SpeedRotation * TimeFactor;
+			m_xRotation -= (float)(m_LeftDownPos.y - point.y) * m_SpeedRotation * TimeFactor;
 		}
 		else
 		{
-			m_zRotation -= (float)(m_LeftDownPos.x - point.x) * m_SpeedRotation;
+			m_zRotation -= (float)(m_LeftDownPos.x - point.x) * m_SpeedRotation * TimeFactor;
 //			m_xRotation -= (float)(m_LeftDownPos.y - point.y) * m_SpeedRotation;
 		}
 		m_LeftDownPos = point;
@@ -151,8 +159,8 @@ void COpenglCtl::OnMouseMove(UINT nFlags, CPoint point)
 	// Left : x / y translation
 	if(m_LeftButtonDown)
 	{
-		m_xTranslation -= (float)(m_LeftDownPos.x - point.x) * m_SpeedTranslation;
-		m_yTranslation += (float)(m_LeftDownPos.y - point.y) * m_SpeedTranslation;
+		m_xTranslation -= (float)(m_LeftDownPos.x - point.x) * m_SpeedTranslation * TimeFactor;
+		m_yTranslation += (float)(m_LeftDownPos.y - point.y) * m_SpeedTranslation * TimeFactor;
 		m_LeftDownPos = point;
 		InvalidateRect(NULL,FALSE);
 	}
@@ -162,7 +170,7 @@ void COpenglCtl::OnMouseMove(UINT nFlags, CPoint point)
 	// Right : z translation
 	if(m_RightButtonDown)
 	{
-		m_zTranslation += (float)(m_RightDownPos.y - point.y) * m_SpeedTranslation;
+		m_zTranslation += (float)(m_RightDownPos.y - point.y) * m_SpeedTranslation * TimeFactor;
 		m_RightDownPos = point;
 		InvalidateRect(NULL,FALSE);
 	}
@@ -492,7 +500,7 @@ void COpenglCtl::RenderScene()
 	// Main drawing
 	glPolygonMode(GL_FRONT,m_Mode);
 
-	TheFrame->GViewDlg.ChangeToolPosition();
+	if (RenderCallback) RenderCallback(Parent);
 
 	m_SceneGraph.glDraw();
 }

@@ -114,6 +114,7 @@ protected:
 	afx_msg void OnReplace();
 	afx_msg void OnSpecialContext();
 	afx_msg void OnTransformSel();
+	afx_msg void OnToggleBlock();
 	afx_msg void OnShowLineNumbers();
     afx_msg LONG OnFindReplaceCmd(WPARAM wParam, LPARAM lParam);
 	//}}AFX_MSG

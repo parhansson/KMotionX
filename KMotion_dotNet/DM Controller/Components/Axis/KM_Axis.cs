@@ -141,7 +141,7 @@ namespace KMotion_dotNet
 
 
         /// <summary>
-        /// Velocity to use during positioning
+        /// Acceleration to use during positioning
         /// Jogging uses its own velocity passed in
         /// </summary>
         public double Acceleration
@@ -265,11 +265,28 @@ namespace KMotion_dotNet
         {
             try
             {
-                _Controller.WriteLine(String.Format("Pos{0}={1}", _ID, pos * _CPU)); 
+                _Controller.WriteLine(String.Format("Pos{0}={1}", _ID, pos * _CPU));
             }
             catch (Exception ex)
             {
-                throw new Exception(String.Format("Problem with  setting current position for  axis [{0}]", _Name, pos), ex);
+                throw new Exception(String.Format("Problem with setting current position for  axis [{0}]", _Name), ex);
+            }
+        }
+
+        /// <summary>
+        /// Sets the axis node's commanded Destination
+        /// Caution: changing this may result in a sudden jump in the axis position
+        /// </summary>
+        /// <param name="dest">new value for the commanded destination</param>
+        public void SetCommandedDest(double dest)
+        {
+            try
+            {
+                _Controller.WriteLine(String.Format("Dest{0}={1}", _ID, dest * _CPU));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(String.Format("Problem with setting commanded destination for axis [{0}]", _Name), ex);
             }
         }
 
@@ -282,7 +299,7 @@ namespace KMotion_dotNet
         {
             try
             {
-                _Controller.WriteLine(String.Format("MoveAtVel{0}={1} {2}", _ID, pos * _CPU, _Velocity * (Math.Abs(_CPU) / 60.0)));
+                _Controller.WriteLine(String.Format("MoveAtVel{0}={1} {2}", _ID, pos * _CPU, _Velocity * Math.Abs(_CPU)));
                 WaitforMotionComplete(0);
             }
             catch (Exception ex)
@@ -299,7 +316,7 @@ namespace KMotion_dotNet
         {
             try
             {
-                _Controller.WriteLine(String.Format("MoveAtVel{0}={1} {2}", _ID, pos * _CPU, _Velocity * (Math.Abs(_CPU) / 60.0)));
+                _Controller.WriteLine(String.Format("MoveAtVel{0}={1} {2}", _ID, pos * _CPU, _Velocity * Math.Abs(_CPU)));
             }
             catch (Exception ex)
             {
@@ -468,14 +485,29 @@ namespace KMotion_dotNet
         }
 
         /// <summary> 
-        /// Power the axis and bring it to an enabled state
+        /// Bring an axis to an enabled state
         /// </summary>
         public void Enable()
         {
             try
             {
                 _Controller.WriteLine(String.Format("EnableAxis{0}", _ID));
-                Thread.Sleep(50); 
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(String.Format("Problem enabling axis [{0}]", _Name), ex);
+            }
+        }
+
+        /// <summary> 
+        /// Bring an axis to an enabled state and specify the commanded destination for the axis
+        /// dest is multiplied by CPU and sent to KFLOP
+        /// </summary>
+        public void EnableDest(double dest)
+        {
+            try
+            {
+                _Controller.WriteLine(String.Format("EnableAxisDest{0} {1}", _ID, dest * _CPU));
             }
             catch (Exception ex)
             {
@@ -647,15 +679,15 @@ namespace KMotion_dotNet
                 sb.AppendLine(String.Format("    EnableAxis({0});", _ID));
                 sb.AppendLine(String.Format("    persist.UserData[{0}] = {1};", _HomingParams.StatusBit, (int)HOMING_STATE.MOVING_FROM_SENSOR));
                 sb.AppendLine(String.Format("    MoveToStateAtVel({0}, {1}, {2}, {3}, {4}, {5});",
-               _ID, (_HomingParams.HomeFastVel * _CPU) / 60, (int)_HomingParams.GetDirection() * -1, _HomingParams.HomeLimitBit, _HomingParams.GetPolarity(true), _HomingParams.SensorOffset));
+               _ID, (_HomingParams.HomeFastVel * _CPU) , (int)_HomingParams.GetDirection() * -1, _HomingParams.HomeLimitBit, _HomingParams.GetPolarity(true), _HomingParams.SensorOffset));
 
                 sb.AppendLine(String.Format("    persist.UserData[{0}] = {1};", _HomingParams.StatusBit, (int)HOMING_STATE.MOVING_TO_SENSOR));
                 sb.AppendLine(String.Format("    MoveToStateAtVel({0}, {1}, {2}, {3}, {4}, {5});",
-               _ID, (_HomingParams.HomeFastVel * _CPU) / 60, (int)_HomingParams.GetDirection(), _HomingParams.HomeLimitBit, _HomingParams.GetPolarity(false), _HomingParams.SensorOffset));
+               _ID, (_HomingParams.HomeFastVel * _CPU) , (int)_HomingParams.GetDirection(), _HomingParams.HomeLimitBit, _HomingParams.GetPolarity(false), _HomingParams.SensorOffset));
 
                 sb.AppendLine(String.Format("    persist.UserData[{0}] = {1};", _HomingParams.StatusBit, (int)HOMING_STATE.MOVING_FROM_SENSOR));
                 sb.AppendLine(String.Format("    MoveToStateAtVel({0}, {1}, {2}, {3}, {4}, {5});",
-               _ID, (_HomingParams.HomeSlowVel * _CPU) / 60, (int)_HomingParams.GetDirection() * -1, _HomingParams.HomeLimitBit, _HomingParams.GetPolarity(true), _HomingParams.SensorOffset));
+               _ID, (_HomingParams.HomeSlowVel * _CPU) , (int)_HomingParams.GetDirection() * -1, _HomingParams.HomeLimitBit, _HomingParams.GetPolarity(true), _HomingParams.SensorOffset));
 
        
 
@@ -664,11 +696,11 @@ namespace KMotion_dotNet
                     sb.AppendLine("    //Home to switch at slower rate ");
                     sb.AppendLine(String.Format("    persist.UserData[{0}] = {1};", _HomingParams.StatusBit, (int)HOMING_STATE.MOVING_TO_SENSOR));
                     sb.AppendLine(String.Format("    MoveToStateAtVel({0}, {1}, {2}, {3}, {4}, {5});",
-                   _ID, (_HomingParams.HomeSlowVel * _CPU) / 60, (int)_HomingParams.GetDirection(), _HomingParams.HomeLimitBit, _HomingParams.GetPolarity(false), _HomingParams.SensorOffset));
+                   _ID, (_HomingParams.HomeSlowVel * _CPU) , (int)_HomingParams.GetDirection(), _HomingParams.HomeLimitBit, _HomingParams.GetPolarity(false), _HomingParams.SensorOffset));
 
                     sb.AppendLine(String.Format("    persist.UserData[{0}] = {1};", _HomingParams.StatusBit, (int)HOMING_STATE.MOVING_FROM_SENSOR));
                     sb.AppendLine(String.Format("    MoveToStateAtVel({0}, {1}, {2}, {3}, {4}, {5});",
-                   _ID, (_HomingParams.HomeSlowVel * _CPU) / 60, (int)_HomingParams.GetDirection() * -1, _HomingParams.HomeLimitBit, _HomingParams.GetPolarity(true), _HomingParams.SensorOffset));
+                   _ID, (_HomingParams.HomeSlowVel * _CPU) , (int)_HomingParams.GetDirection() * -1, _HomingParams.HomeLimitBit, _HomingParams.GetPolarity(true), _HomingParams.SensorOffset));
 
                 }
 
@@ -678,7 +710,7 @@ namespace KMotion_dotNet
                     sb.AppendLine("//Move To Origin ");
                     sb.AppendLine(String.Format("    persist.UserData[{0}] = {1};", _HomingParams.StatusBit, (int)HOMING_STATE.MOVING_TO_FINAL));
                     sb.AppendLine(String.Format("    MoveAtVel({0}, {1}, {2});",
-                    _ID, _HomingParams.Origin * _CPU, (_HomingParams.HomeFastVel * _CPU) / 60));
+                    _ID, _HomingParams.Origin * _CPU, (_HomingParams.HomeFastVel * _CPU)));
                 }
 
                 sb.AppendLine(String.Format("    EnableAxisDest({0}, {1});", _ID, 0));
@@ -741,7 +773,11 @@ namespace KMotion_dotNet
         /// <returns>complete path to generated file</returns>
         private string WriteHomingToFile(string filesourcecode)
         {
-            string root = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string root=_HomingParams.Homing_c_Program_Dir;
+
+            // if unspecified use directory of Assembly
+            if (root == "") root = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
             string filename = String.Format("AutoHome_Axis({0})_Channel({1})_Thread({2}).{3}", _Name, _ID, _HomingParams.DefaultThread, "c");
             string path = Path.Combine(root, filename);
             File.WriteAllText(path, filesourcecode, Encoding.ASCII);

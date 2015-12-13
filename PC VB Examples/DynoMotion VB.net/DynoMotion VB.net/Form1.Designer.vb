@@ -104,6 +104,7 @@ Partial Class Form1
         Me.btnGetInterpreterFileName = New System.Windows.Forms.Button
         Me.txtInterpreterFileName = New System.Windows.Forms.TextBox
         Me.Label5 = New System.Windows.Forms.Label
+        Me.RealtimeLine = New System.Windows.Forms.Label
         Me.grpAxisPositions.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
         CType(Me.sldJogZ, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -873,6 +874,7 @@ Partial Class Form1
         'GroupBox5
         '
         Me.GroupBox5.BackColor = System.Drawing.Color.White
+        Me.GroupBox5.Controls.Add(Me.RealtimeLine)
         Me.GroupBox5.Controls.Add(Me.Panel1)
         Me.GroupBox5.Controls.Add(Me.btnRunInterpreter)
         Me.GroupBox5.Controls.Add(Me.chkSimInterpreter)
@@ -924,7 +926,7 @@ Partial Class Form1
         'chkSimInterpreter
         '
         Me.chkSimInterpreter.AutoSize = True
-        Me.chkSimInterpreter.Location = New System.Drawing.Point(125, 21)
+        Me.chkSimInterpreter.Location = New System.Drawing.Point(135, 21)
         Me.chkSimInterpreter.Name = "chkSimInterpreter"
         Me.chkSimInterpreter.Size = New System.Drawing.Size(66, 17)
         Me.chkSimInterpreter.TabIndex = 11
@@ -979,6 +981,15 @@ Partial Class Form1
         Me.Label5.Size = New System.Drawing.Size(63, 13)
         Me.Label5.TabIndex = 0
         Me.Label5.Text = "File Name ::"
+        '
+        'RealtimeLine
+        '
+        Me.RealtimeLine.AutoSize = True
+        Me.RealtimeLine.Location = New System.Drawing.Point(6, 17)
+        Me.RealtimeLine.Name = "RealtimeLine"
+        Me.RealtimeLine.Size = New System.Drawing.Size(78, 13)
+        Me.RealtimeLine.TabIndex = 14
+        Me.RealtimeLine.Text = "RealTime Line "
         '
         'Form1
         '
@@ -1100,5 +1111,6 @@ Partial Class Form1
     Friend WithEvents Button1 As System.Windows.Forms.Button
     Friend WithEvents SyncPositions As System.Windows.Forms.Button
     Friend WithEvents Label23 As System.Windows.Forms.Label
+    Friend WithEvents RealtimeLine As System.Windows.Forms.Label
 
 End Class

@@ -8,7 +8,7 @@
 // Modified : 15/01/98
 //********************************************
 
-#include "..\stdafx.h"
+#include "stdafx.h"
 
 //////////////////////////////////////////////
 // CONSTRUCTORS
@@ -353,17 +353,30 @@ int CMesh3d::DeleteFaceNbNeighbors(int NbNeighbor)
 //********************************************
 // Range
 //********************************************
-void CMesh3d::Range(int coord, 
-										float *min,
-										float *max)
+void CMesh3d::Range(int coord, float *min, float *max)
 {
+	float a[4],b[4],M[16];
 	ASSERT(coord >= 0 && coord <= 2);
+
+	m_Transform.make_matrix(M);
+
 	int NbVertex = m_ArrayVertex.GetSize();
-	float Min = m_ArrayVertex[0]->Get(coord);
+
+	a[0]=m_ArrayVertex[0]->Get(0);
+	a[1]=m_ArrayVertex[0]->Get(1);
+	a[2]=m_ArrayVertex[0]->Get(2);
+	a[3]=1.0f;
+	m_Transform.matrix_mul_vector(b,M,a);
+
+	float Min = b[coord];
 	float Max = Min;
 	for(int i=1;i<NbVertex;i++)
 	{
-		float value = m_ArrayVertex[i]->Get(coord);
+		a[0]=m_ArrayVertex[i]->Get(0);
+		a[1]=m_ArrayVertex[i]->Get(1);
+		a[2]=m_ArrayVertex[i]->Get(2);
+		m_Transform.matrix_mul_vector(b,M,a);
+		float value = b[coord];
 		if(value < Min)
 			Min = value;
 		if(value > Max)

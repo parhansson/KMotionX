@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 
 	// Compile and Download a C Program into Thread #1
 
-	if (KM->CompileAndLoadCoff("..\\..\\C Programs\\StepMotor0.c",1))	MyError();
+	if (KM->CompileAndLoadCoff("..\\..\\C Programs\\BlinkKFLOP.c",1))	MyError();
 
 	// Execute Thread 1
 	

@@ -50,11 +50,12 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\Scintilla\include,..\..\KMotionDLL"
+				AdditionalIncludeDirectories="&quot;..\..\PC VC Examples\KMotionCNC&quot;;..\..\Scintilla\include;..\..\KMotionDLL"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				FloatingPointModel="1"
+				UsePrecompiledHeader="1"
 				PrecompiledHeaderFile=".\Debug/KMotionCNC.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
@@ -148,12 +149,13 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\Scintilla\include,..\..\KMotionDLL"
+				AdditionalIncludeDirectories="&quot;..\..\PC VC Examples\KMotionCNC&quot;;..\..\Scintilla\include;..\..\KMotionDLL"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				FloatingPointModel="1"
+				UsePrecompiledHeader="1"
 				PrecompiledHeaderFile=".\Release/KMotionCNC.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
@@ -220,6 +222,10 @@
 			>
 			<File
 				RelativePath=".\AllToolSetupSheet.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CPreviewFileDialog.cpp"
 				>
 			</File>
 			<File
@@ -290,11 +296,19 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\DoPreview.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\EditFixtures.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\EditToolFile.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ForRevButton.cpp"
 				>
 			</File>
 			<File
@@ -773,6 +787,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\cpreviewfiledialog.h"
+				>
+			</File>
+			<File
 				RelativePath="Display.h"
 				>
 			</File>
@@ -785,6 +803,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DoPreview.h"
+				>
+			</File>
+			<File
 				RelativePath=".\EasySize.h"
 				>
 			</File>
@@ -794,6 +816,10 @@
 			</File>
 			<File
 				RelativePath=".\EditToolFile.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ForRevButton.h"
 				>
 			</File>
 			<File
@@ -974,10 +1000,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\bitmap3.bmp"
-				>
-			</File>
-			<File
 				RelativePath="res\CloseD.bmp"
 				>
 			</File>
@@ -1030,6 +1052,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\For.bmp"
+				>
+			</File>
+			<File
 				RelativePath="res\forwardd.bmp"
 				>
 			</File>
@@ -1050,6 +1076,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\fr32.bmp"
+				>
+			</File>
+			<File
 				RelativePath="res\gcode.bmp"
 				>
 			</File>
@@ -1066,11 +1096,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\Halt.bmp"
+				RelativePath=".\res\GViewBarPreView.bmp"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon5.ico"
+				RelativePath=".\res\Halt.bmp"
 				>
 			</File>
 			<File
@@ -1127,6 +1157,10 @@
 			</File>
 			<File
 				RelativePath="res\printx.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\Rew.bmp"
 				>
 			</File>
 			<File
@@ -1607,6 +1641,14 @@
 			</File>
 			<File
 				RelativePath="Lib3D\Vertex3d.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Lib3D\Vertex3dFast.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Lib3D\Vertex3dFast.h"
 				>
 			</File>
 		</Filter>

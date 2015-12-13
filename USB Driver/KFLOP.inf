@@ -31,7 +31,7 @@ Class=USB
 ClassGUID={36fc9e60-c465-11cf-8056-444553540000}
 Provider=%FTDI%
 CatalogFile=ftdibus.cat
-DriverVer=09/24/2011,2.08.14
+DriverVer=08/26/2014,2.12.00
 
 [SourceDisksNames]
 1=%DriversDisk%,,,
@@ -72,15 +72,9 @@ ExcludeFromSelect=*
 CopyFiles=FtdiBus.NT.Copy,FtdiBus.NT.Copy2
 AddReg=FtdiBus.NT.AddReg
 
-[FtdiBus.NT.HW]
-AddReg=FtdiBus.NT.HW.AddReg
-
 [FtdiBus.NTamd64]
 CopyFiles=FtdiBus.NTamd64.Copy,FtdiBus.NTamd64.Copy2,FtdiBus.NTamd64.Copy3
 AddReg=FtdiBus.NT.AddReg
-
-[FtdiBus.NTamd64.HW]
-AddReg=FtdiBus.NT.HW.AddReg
 
 [FtdiBus.NT.Services]
 AddService = FTDIBUS, 0x00000002, FtdiBus.NT.AddService
@@ -102,11 +96,10 @@ HKR,,DevLoader,,*ntkern
 HKR,,NTMPDriver,,ftdibus.sys
 HKR,,EnumPropPages32,,"ftbusui.dll,FTBUSUIPropPageProvider"
 
-[FtdiBus.NT.HW.AddReg]
-HKR,,"USBTimeout",0x00010001,5000
-
 [FtdiBus.NT.AddService.AddReg]
-HKR,Parameters,"RetryResetCount",0x10001,50
+;HKR,Parameters,"LocIds",1,31,00,00,00,32,00,00,00,00
+;HKR,Parameters,"RetryResetCount",0x10001,50
+
 
 [FtdiBus.NT.Copy]
 ftdibus.sys
@@ -129,7 +122,7 @@ ftd2xx.dll
 
 [Strings]
 Ftdi="Dynomotion"
-DESC="CDM Driver Package"
+DESC="CDM Driver Package - Bus/D2XX Driver"
 DriversDisk="FTDI USB Drivers Disk"
 USB\VID_0403&PID_F231.DeviceDesc="KFLOP - Motion Controller 4.XX"
 SvcDesc="USB Serial Converter Driver"

@@ -18,11 +18,17 @@
 <area href="ToolSetupScreenM100.htm" shape="rect" coords="55, 21, 101, 44">
 <area href="ToolSetupScreenButtons.htm" shape="rect" coords="102, 23, 162, 42">
 <area href="ToolSetupScreenFiles.htm" shape="rect" coords="163, 23, 245, 45">
-<area href="#Display_Encoders" shape="rect" coords="478, 165, 651, 198">
+<area href="#Display_Encoders" shape="rect" coords="459, 295, 632, 317">
 <area href="#Threading/Spindle_Settings" shape="rect" coords="16, 342, 402, 420">
-<area href="#Zero_Using_Fixture_Offsets" shape="rect" coords="476, 204, 645, 234">
+<area href="#Zero_Using_Fixture_Offsets" shape="rect" coords="464, 314, 633, 338">
+<area coords="460, 157, 632, 213" shape="rect" href="#Lathe_Options">
+<area href="#Feed_Rate_Override" shape="rect" coords="460, 215, 632, 248">
+<area href="#Tool_Length/Offset_Immediately" shape="rect" coords="465, 333, 637, 358">
+<area href="#M6onToolTableChanges" shape="rect" coords="468, 360, 626, 378">
+<area href="#Max_Rapid_FRO" shape="rect" coords="462, 249, 635, 267">
+<area href="#Rapids_as_Feeds" shape="rect" coords="459, 267, 634, 288">
 </map>
-<img border="0" src="KMotionCNCfiles/ToolSetupTP.PNG" usemap="#FPMap0"></p>
+<img border="0" src="KMotionCNCfiles/ToolSetupTP.PNG" usemap="#FPMap0" width="738" height="481"></p>
 
 <p><font face="Arial"><i>(Click on Image to Jump to 
 		related help)</i></font></p>
@@ -57,7 +63,7 @@ in direction in 3 dimensions (x,y,z ignoring a).&nbsp;&nbsp; The Trajectory
 Planner is capable of optimizing the acceleration and deceleration through many 
 short (or long) vectors all of which may have different acceleration and 
 velocity limitations.</font></p>
-<p><font face="Arial">The Trajectory Planner also has a &quot;lookahead&quot; parameter.&nbsp; With 
+<p><font face="Arial">The Trajectory Planner also has a &quot;<a name="lookahead">lookahead</a>&quot; parameter.&nbsp; With 
 KMotionCNC the G Code Program itself, the G Code Interpreter, and the Trajectory 
 Planner all reside within the PC running Microsoft Windows™.&nbsp; 
 Since the Microsoft Windows™ is <i>not</i> a 
@@ -158,6 +164,136 @@ the main <i>KMotionCNC</i> Screen.&nbsp; Setting a step size to zero will hide
 the size selection.&nbsp; See Also
 <a href="KMotionCNC.htm#Jog_Buttons">Jog Buttons</a>.</font></p>
 <p>&nbsp;</p>
+<p><i><b><font face="Arial" size="4"><a name="Lathe_Options">Lathe Options</a></font></b></i></p>
+<p>
+<img border="0" src="KMotionCNCfiles/LatheOptions.png"></p>
+<p><font face="Arial">Defines options relating to Lathe systems.&nbsp; </font></p>
+<p><font face="Arial">Selecting the Lathe option orients the Jog Buttons and 
+default GViewer orientations to have +Z horizontal to the right and with X 
+vertical as most Lathe systems are configured.&nbsp; The &quot;X Positive Front&quot; 
+rotates the axes system (and X Jog Keys) so that the tool moves toward the front 
+of the system as X increases.&nbsp; This is more suitable for cutting tools 
+mounted on the front side of the spindle.&nbsp; Otherwise the tool moves toward 
+the back as X increases.&nbsp; This is more suitable for read mounted tools.</font></p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">X Positive Rear
+</font></p>
+<p style="margin-top: 0; margin-bottom: 0">
+<font face="Arial">
+<img border="0" src="KMotionCNCfiles/LathePosBack.png" width="154" height="181"></font></p>
+<p style="margin-top: 0; margin-bottom: 0">
+&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">X Positive Front</font></p>
+<p style="margin-top: 0; margin-bottom: 0">
+<font face="Arial">
+<img border="0" src="KMotionCNCfiles/LathePosFront.png"></font></p>
+<p><font face="Arial">When Diameter Mode is selected the Gcode X Units, X Offset 
+Units, and X DRO Units are all in terms of diameter.&nbsp; In this mode actual 
+tool cutter motion is 1/2 the specified value so the the total diameter of the 
+cut part is the specified value.&nbsp; When Diameter Mode is not selected, 
+Radius mode will be used, the tool cutter motion will be the specified value, 
+and the cut part will have a radius of the specified value in the GCode. </font></p>
+<p>&nbsp;</p>
+<p><i><b><font face="Arial" size="4"><a name="Feed_Rate_Override">Feed Rate Override</a></font></b></i></p>
+<p>
+<img border="0" src="KMotionCNCfiles/FeedRateOverride.png" width="247" height="61"></p>
+<p><font face="Arial">The Hardware Range value allows control over what part of 
+the Feed Rate Override (FRO) Range is handled by Hardware, and what part is handled by 
+Software (Trajectory Planner).&nbsp;&nbsp; </font></p>
+<p><font face="Arial">Hardware FRO has the advantage of having instant response, 
+however it has a disadvantage of having accelerations distorted by time warping.&nbsp; 
+Accelerations will be distorted by the square of the FRO setting.&nbsp; For 
+example a FRO of 2.0 will result in accelerations 4X higher than planned.&nbsp; 
+Hardware FRO can be thought of like playing a movie back in fast or slow motion.&nbsp; 
+Another analogy might be a car that plans a trajectory accelerating from 0 to 
+60MPH in 10 seconds.&nbsp; Played at double time (FRO=2.0) would result in 
+acceleration from 0 to 120MPH in 5 seconds!&nbsp; Similarly feed rates through 
+tight curves will be proportionally increased by the FRO possibly resulting 
+in excessive acceleration.&nbsp; Velocities are also increased proportionally by 
+the Hardware FRO.&nbsp; This is obviously the normal intention, however speeds 
+at or near the maximum possible for the system may now exceed the capabilities 
+of the system.&nbsp;&nbsp; This also applies for Rapid (G0) motions.&nbsp; Any 
+Hardware FRO value higher than 1.0 must have maximum system settings set in a manner 
+that accelerations and velocities have sufficient margins to allow this 
+increased acceleration and velocity.&nbsp; </font></p>
+<p><font face="Arial">Hardware FRO values less than 1.0 will be distorted in the 
+opposite manner.&nbsp; Accelerations will be unnecessarily slow.&nbsp; In the 
+previous car analogy played at slow motion (FRO=0.5) the car would accelerate 
+from 0 to 30MPH in 20 seconds.&nbsp; Motions through tight curves will be 
+proportionally slowed down regardless if a higher speed might be possible and 
+closer to the desired feed rate.&nbsp; Hardware&nbsp; FRO values less than 1.0 
+will never cause a maximum acceleration or velocity limit to be exceeded.</font></p>
+<p><font face="Arial">Software FRO always provides the optimal motion without ever exceeding any system constraint.&nbsp; Maximum Accelerations and 
+Velocities on all axes will always be honored.&nbsp; Accelerations to feed rate 
+will always be optimized.&nbsp; Speeds through curves will always be optimal.&nbsp; 
+However such optimized Trajectory Planning is complex and requires look ahead 
+and results in some delayed response to changes.&nbsp; Reducing
+<a href="#lookahead">lookahead</a> can minimize this delay. </font></p>
+<p><font face="Arial">The FRO Hardware Range Parameter sets the boundary FRO 
+value where values below the setting will be handled by Hardware, and values 
+above the setting will be handled by Software.&nbsp; Here are some examples:</font></p>
+<p><font face="Arial">Hardware Range = 0.0 will cause <i>all</i> FRO values to be 
+handled by Software.&nbsp; </font></p>
+<p><font face="Arial">Hardware Range =&nbsp; 100.0 (a huge value) will result in 
+<i>all</i> FRO values being handled by Hardware.&nbsp; </font></p>
+<p><font face="Arial">Hardware Range = 1.0 will cause all values less than 1.0 
+to be handled by Hardware and values greater than 1.0 to be handled in Software.&nbsp; 
+This is the largest value that will never cause the set values of Max 
+Acceleration or Max Velocity set in the Trajectory Planner to be exceeded.</font></p>
+<p><font face="Arial">Hardware range = 1.2 will cause all values less than 1.2 
+to be handled by Hardware and values greater than 1.2 to be handled in Software.&nbsp; 
+This setting is useful if it is required to have minor increases (+20%) and 
+all decreases have an instant effect.&nbsp; However this requires that the set 
+values of Max Acceleration or Max Velocity set in the Trajectory Planner be set by a 
+factor of 1/1.2<sup>2</sup> = 0.69 of the system capabilities in order 
+to provide margin to allow for the Hardware FRO.</font></p>
+<p><font face="Arial">Hardware Range = 0.5 will cause all values less than 0.5 
+to be handled by Hardware, and values greater than 0.5 to be handled in Software.&nbsp; 
+In most cases this will result in a similar result as Hardware Range = 0.0 (with 
+all changes handled by Software).&nbsp; However in cases for example where the FRO is 
+suddenly reduced from 1.0 to 0.25 the system will first reduce the FRO to 0.5 in 
+Software, and then the remainder, another factor of 0.5 in Hardware.&nbsp; The 
+Software effect will be delayed but the hardware effect will be instant.&nbsp; 
+This provides most all of the benefits of Software FRO in the normal ranges of (ie 
+0.9 - 1.1) while also allowing a means of instantly slowing down.</font></p>
+<p>&nbsp;</p>
+<p><font size="4" face="Arial"><b><i><a name="Max_Rapid_FRO">Max Rapid FRO</a></i></b></font></p>
+<p>
+<img border="0" src="KMotionCNCfiles/MaxRapidFRO.png" width="198" height="30"></p>
+<p><font face="Arial">Limits the Rapid FRO to the specified value.&nbsp; Rapid 
+FRO is always performed in hardware so values Rapid FRO values greater than 1.0 
+will exceed the specified Velocity, Acceleration, and Jerk specified in KFLOP.&nbsp; 
+Use this limit to avoid FRO values that would cause Velocities,&nbsp; 
+Accelerations, or Jerks that the system would be incapable of performing.&nbsp; 
+This value is commonly set to 1.0 if the parameters specified in KFLOP are set 
+at the maximum possible.&nbsp; To allow FRO values greater than 1.0 the system 
+must have sufficient margin to be able to exceed the specified parameters.&nbsp; 
+Values less than 1.0 are not commonly specified.</font></p>
+<p>&nbsp;</p>
+<p><font size="4" face="Arial"><b><i><a name="Rapids_as_Feeds">Rapids as Feeds</a></i></b></font></p>
+<p>
+<img border="0" src="KMotionCNCfiles/RapidsAsFeeds.png" width="149" height="26"></p>
+<p><font face="Arial">Selects whether Rapids are performed as 3rd-order (Jerk 
+limited) motions or 2nd order Feed Motions.&nbsp; Most systems will not select 
+this option so that Rapids are performed as faster/smoother 3rd-order 
+Jerk-Limited motions.&nbsp; However KFLOP performs 3rd order Rapids as a single 
+linear interpolated multi-axis motion at the actuator level.&nbsp; This is fine 
+for normal Cartesian xyz linear systems however may cause problems for highly 
+non-linear kinematic systems as a straight line in actuator space is not likely 
+to be a straight line in real CAD space.&nbsp; For example a Delta Platform is 
+an example of a non-linear system.&nbsp; This may result in a rapid motion path 
+from one point to another to be along a somewhat unpredictable curved path.&nbsp; 
+In some cases this may result in an undesirable crash.&nbsp;
+<a href="GeoCorrection.htm">Geometric Correction</a> is also a form of 
+nonlinearity.&nbsp; However Geometric correction is usually not sufficiently 
+non-linear to cause problems unless long rapids are performed passing very close 
+to part surfaces or features.&nbsp; If nonlinearity is an issue for your system, 
+select this option and Rapids will always be performed along a straight line as 
+they will be subdivided into small segments where proper actuator positions are 
+calculated to keep the motion along a straight line.&nbsp; Regardless of whether 
+this option is selected or not the Velocity and Acceleration will be set by the 
+KFLOP Axis Parameters not by the current GCode Feed Rate or Trajectory Planner 
+Settings.</font></p>
+<p>&nbsp;</p>
 <p><i><b><font face="Arial" size="4"><a name="Display_Encoders">Display Encoders</a></font></b></i></p>
 <p><font face="Arial">
 <img border="0" src="KMotionCNCfiles/DisplayEncoders.png" width="170" height="37"></font></p>
@@ -173,8 +309,26 @@ Using Fixture Offsets</a></font></b></i></p>
 to Zero or a Specified Value.&nbsp; This is accomplished by adjusting GCode 
 Offsets.&nbsp; When this option is selected then the currently selected Fixture 
 Offset will be adjusted.&nbsp; When unchecked the Global G92/G52 Offset will be 
-adjusted</font></p>
+adjusted.</font></p>
 
+<p>&nbsp;</p>
+<p><i><b><font face="Arial" size="4"><a name="Tool_Length/Offset_Immediately">
+Tool Length/Offset Immediately</a></font></b></i></p>
+<p>
+<img border="0" src="KMotionCNCfiles/ToolLengthImmediate.png" width="261" height="39"></p>
+<p><font face="Arial">This option causes the KMotionCNC Drop Down Tool Selector 
+to immediately select and apply the Tool Length (and offsets) Compensation 
+without having to select and turn on the compensation in GCode with &quot;HxxxxG43&quot;.</font></p>
+<p>&nbsp;</p>
+<p><b><i><font face="Arial" size="4"><a name="M6onToolTableChanges">M6 on Tool 
+Table Changes</a></font></i></b></p>
+<p>
+<img border="0" src="KMotionCNCfiles/M6onToolTableChanges.png"></p>
+<p><font face="Arial">This option causes the automatic execution of an TxxxM6 
+operation after the Tool Table has been edited to re-select the specified Tool 
+so the selected Tool ID, slot, offsets, image all reflect the current state of 
+the Tool Table.</font></p>
+<p>&nbsp;</p>
 <p>&nbsp;</p>
 <p><i><b><font size="4" face="Arial"><a name="Axis_Motion_Parameters">Axis Motion Parameters</a></font></b></i></p>
 <p>

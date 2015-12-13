@@ -55,6 +55,10 @@ public :
 
 	void Copy(CTransform &transform);
 	void Copy(CTransform *pTransform);
+
+	void matrix_mul_vector(float *c,float *a,float *b);
+	void make_matrix(float *a);
+
 };
 
 #endif // _TRANSFORM_

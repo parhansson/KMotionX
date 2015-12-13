@@ -12,6 +12,7 @@
 #include "Display.h"
 #include "ImageButton.h"
 #include "MotionButton.h"
+#include "ForRevButton.h"
 #include "DlgX.h"
 #include "..\GCodeInterpreter\GCodeInterpreter.h"
 #include "MainFrm.h"
@@ -21,8 +22,13 @@
 
 #define N_USER_GCODE_FILES 7
 #define GCODE_SUB_DIR                   "\\GCode Programs"
+#define TOOL_IMAGE_SUB_DIR              "\\KMotion\\Data\\ToolImages"
+#define CONFIG_FILE						"\\KMotion\\Data\\GCodeConfigCNC.txt"
+#define CONFIG_FILE_BACKUP				"\\KMotion\\Data\\GCodeConfigCNC.txt.bak"
 #define PERSISTANT_FILE					"\\KMotion\\Data\\persistCNC.ini"
+#define PERSISTANT_FILE_BACKUP			"\\KMotion\\Data\\persistCNC.ini.bak"
 #define TEMP_GCODE_FILE					"\\KMotion\\Data\\Temp_Gcode_Temp_.ngc"
+#define LOG_RUNTIME_FILE				"\\KMotion\\Data\\RunLog.txt"
 
 
 #define NCOMMAND_HISTORY 10
@@ -44,12 +50,15 @@ public:
 	double m_Joyx0,m_Joyy0,m_Joyz0,m_Joya0,m_Joyb0,m_Joyc0;
 	bool m_JoyMovedx,m_JoyMovedy,m_JoyMovedz,m_JoyMoveda,m_JoyMovedb,m_JoyMovedc;
 	bool PersistRestored;
+	bool FirstStartup;
+	bool m_PerformPostHaltCommand;
 	CString CommandHistory[NCOMMAND_HISTORY];
 	int board;
 	bool ReadStatus;
 	CKMotionCNCDlg(CWnd* pParent = NULL);	// standard constructor
 	virtual ~CKMotionCNCDlg();
 	CGCodeInterpreter *Interpreter;
+	setup_pointer m_RealTimeSetup;
 	BOOL ShuttingDownApplication;
 	MAIN_STATUS MainStatus;
 	double PrevMainStatusTimeStamp;
@@ -60,7 +69,9 @@ public:
 	int SetExecutionPoint(int line);
 	CString CurrentDirectory;
 	int m_ThreadThatWasLaunched;
+	int m_ThreadThatWasOriginallyStopped;
 	volatile bool ThreadIsExecuting;
+	bool EnableJogKeys;
 	bool GCodeThreadActive[N_USER_GCODE_FILES];
 	bool ThreadHadError[N_USER_GCODE_FILES];
 	DWORD m_exitcode;
@@ -96,6 +107,8 @@ public:
 	double	m_CountsPerInchZ;
 	double  m_JogSpeed[6];
 	double  m_JogSlowPercent;
+	double  m_HardwareFRORange;
+	double  m_MaxRapidFRO;
 	double	m_Step0;
 	double	m_Step1;
 	double	m_Step2;
@@ -110,13 +123,20 @@ public:
 	BOOL	m_ReverseRZ;
 	BOOL	m_EnableGamePad;
 	BOOL	m_ZeroUsingFixtures;
+	BOOL	m_ToolLengthImmediately;
+	BOOL	m_ToolTableDoM6;
 	BOOL	m_ArcsToSegs;
 	BOOL	m_DisplayEncoder;
 	BOOL	m_DegreesA;
 	BOOL	m_DegreesB;
 	BOOL	m_DegreesC;
 	BOOL	m_Lathe;
+	BOOL	m_DoRapidsAsFeeds;
+	BOOL	m_DiameterMode;
+	BOOL	m_XPosFront;
 	int		m_DialogFace;
+	int		m_ConfigCheckWord;
+	bool	m_ConfigCheckWordVersion;
 	double  m_SafeZ;
 	int		m_SafeRelAbs;
 	bool m_ConnectedForStatus;
@@ -144,6 +164,8 @@ public:
 
 	CColor m_ColorTraverse;
 	CColor m_ColorFeed;
+	CColor m_ColorJump;
+
 	CMutex *GCodeMutex;
 	int DisplayedThreadStat[N_USER_GCODE_FILES];  // -1 = undefined, 1=active, 0 = inactive
 	int NumberToThreadID(int i) ;
@@ -176,6 +198,7 @@ public:
 	int GetAxisDRO(int axis, double *Act, double *Dest, bool *DisplayedEnc);
 	int SendOneDouble(int i, double d);
 	int SendCoordinates(int i, bool MachineCoords);
+	int ConvertToolToIndex(int number,int *index);
 
 
 	CString m_ErrorOutput;
@@ -189,6 +212,8 @@ public:
 
 	bool m_DoingSimulationRun;
 
+	BOOL m_DisplayGViewer;
+
 
 // Dialog Data
 	//{{AFX_DATA(CKMotionCNCDlg)
@@ -198,6 +223,7 @@ public:
 	CComboBox	m_FixtureOffset;
 	CRichEditCtrlEx	m_Editor;
 	int		m_Thread;
+	int		m_Rapid;
 	BOOL	m_Simulate;
 	BOOL	m_ShowLineNumbers;
 	BOOL	m_ShowMach;
@@ -256,6 +282,7 @@ public:
 	CImageButton	m_KeyJogMode;
 
 	double	m_FeedRateValue;
+	double	m_FeedRateRapidValue;
 	double	m_SpindleRateValue;
 	CString	m_CommandString;
 	int		m_StepSize;
@@ -278,6 +305,8 @@ protected:
 	CImageButton m_EmergencyStop;
 	CImageButton m_GO;
 	CImageButton m_FeedHold;
+	CForRevButton m_Forward;
+	CForRevButton m_Reverse;
 	HICON m_hIcon;
 	int GetStatus();
 	void KillMinusZero(CString &s);
@@ -304,6 +333,8 @@ protected:
 	afx_msg void OnZeroB();
 	afx_msg void OnZeroC();
 	afx_msg void OnIhelp();
+	afx_msg void OnRapid();
+	afx_msg void OnFeed();
 	afx_msg void OnThread1();
 	afx_msg void OnThread2();
 	afx_msg void OnThread3();
@@ -319,6 +350,7 @@ protected:
 	afx_msg void OnSaveAs();
 	afx_msg void OnHalt();
 	afx_msg void OnToolSetup();
+	afx_msg void OnReloadGeoCorrection();
 	afx_msg void OnExecuteComplete();
 	afx_msg void OnSingleStep();
 	afx_msg void OnRestart();
@@ -369,6 +401,7 @@ protected:
 	afx_msg void OnRel();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	//}}AFX_MSG
+	afx_msg BOOL OnToolTipNotify( UINT id, NMHDR * pTTTStruct, LRESULT * pResult );
 	afx_msg BOOL OnToolTipText(UINT nID, NMHDR* pNMHDR, LRESULT* pResult);
 	DECLARE_MESSAGE_MAP()
 private:
@@ -379,7 +412,7 @@ private:
 	void SetMotionParams();
 	void SetAUserButton(int ID, CString s);
 	void SetUserButtons();
-	void FillComboWithCount(int i0, int i1, CComboBox *Box);
+	void FillComboWithTools(CComboBox *Box);
 	void FillComboWithCountFixture(int i0, int i1, CComboBox *Box);
 	int m_LastToolDisplayed;
 	int m_LastFixtureDisplayed;
@@ -401,8 +434,14 @@ private:
 	bool m_ConfigSpindleDirty;
 	bool CSS_BitmapValid;
 	bool CSS_BitmapDisplayed;
+	bool G32_BitmapValid;
+	bool G32_BitmapDisplayed;
+	void LogJobEndTime(double seconds);
+
 
 public:
+	void HandleToolTableClose();
+
 	afx_msg void OnBnClickedFeedhold();
 	afx_msg void OnBnClickedEdittoolfile();
 	afx_msg void OnBnClickedEditfixtures();
@@ -423,6 +462,7 @@ public:
 	afx_msg void OnBnClickedSpindleoncw();
 	afx_msg void OnBnClickedSpindleonccw();
 	afx_msg void OnBnClickedSpindleoff();
+	afx_msg BOOL OnNcActivate(BOOL bActive);
 };
 
 

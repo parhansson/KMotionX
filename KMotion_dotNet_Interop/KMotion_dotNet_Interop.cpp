@@ -153,7 +153,7 @@ extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_New(int *handle
 {
 	CKMotionDLL *KM; // one instance of the interface class
 
-	KM = new CKMotionDLL(0);
+	KM = new CKMotionDLL(board);
 	KM->BoardID = board;
 	*handle=(int)KM; 
 	return 1L;
@@ -812,6 +812,58 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_M
 	p->MaxLinearLength = value;
 }
 
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxRapidFRO(int *handle)
+{
+	CCoordMotion *CM_dll=(CCoordMotion *)handle;
+	MOTION_PARAMS *p=CM_dll->GetMotionParams();
+	return p->MaxRapidFRO;
+}
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxRapidFRO(int *handle, double value)
+{
+	CCoordMotion *CM_dll=(CCoordMotion *)handle;
+	MOTION_PARAMS *p=CM_dll->GetMotionParams();
+	p->MaxRapidFRO = value;
+}
+
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_UseOnlyLinearSegments(int *handle)
+{
+	CCoordMotion *CM_dll=(CCoordMotion *)handle;
+	MOTION_PARAMS *p=CM_dll->GetMotionParams();
+	return p->UseOnlyLinearSegments;
+}
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_UseOnlyLinearSegments(int *handle, bool value)
+{
+	CCoordMotion *CM_dll=(CCoordMotion *)handle;
+	MOTION_PARAMS *p=CM_dll->GetMotionParams();
+	p->UseOnlyLinearSegments = value;
+}
+
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_DoRapidsAsFeeds(int *handle)
+{
+	CCoordMotion *CM_dll=(CCoordMotion *)handle;
+	MOTION_PARAMS *p=CM_dll->GetMotionParams();
+	return p->DoRapidsAsFeeds;
+}
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_DoRapidsAsFeeds(int *handle, bool value)
+{
+	CCoordMotion *CM_dll=(CCoordMotion *)handle;
+	MOTION_PARAMS *p=CM_dll->GetMotionParams();
+	p->DoRapidsAsFeeds = value;
+}
+
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_ArcsToSegs(int *handle)
+{
+	CCoordMotion *CM_dll=(CCoordMotion *)handle;
+	MOTION_PARAMS *p=CM_dll->GetMotionParams();
+	return p->ArcsToSegs;
+}
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_ArcsToSegs(int *handle, bool value)
+{
+	CCoordMotion *CM_dll=(CCoordMotion *)handle;
+	MOTION_PARAMS *p=CM_dll->GetMotionParams();
+	p->ArcsToSegs = value;
+}
+
 extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_DegreesA(int *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
@@ -891,10 +943,40 @@ extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->GetFeedRateOverride(); 
 }
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_Get_FeedRateRapidOverride(int *handle)
+{
+	CCoordMotion *CM_dll=(CCoordMotion *)handle;
+    return CM_dll->GetFeedRateRapidOverride(); 
+}
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_FeedRateOverride(int *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     CM_dll->SetFeedRateOverride(value); 
+}
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_FeedRateRapidOverride(int *handle, double value)
+{
+	CCoordMotion *CM_dll=(CCoordMotion *)handle;
+    CM_dll->SetFeedRateRapidOverride(value); 
+}
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_Get_SpindleRateOverride(int *handle)
+{
+	CCoordMotion *CM_dll=(CCoordMotion *)handle;
+    return CM_dll->GetSpindleRateOverride(); 
+}
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_SpindleRateOverride(int *handle, double value)
+{
+	CCoordMotion *CM_dll=(CCoordMotion *)handle;
+    CM_dll->SetSpindleRateOverride(value); 
+}
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_Get_HardwareFRORange(int *handle)
+{
+	CCoordMotion *CM_dll=(CCoordMotion *)handle;
+    return CM_dll->GetHardwareFRORange(); 
+}
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_HardwareFRORange(int *handle, double value)
+{
+	CCoordMotion *CM_dll=(CCoordMotion *)handle;
+    CM_dll->SetHardwareFRORange(value); 
 }
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_Get_AxisDestination(int *handle, int axis, double *value)
 {
@@ -1082,11 +1164,15 @@ extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_Do
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->DoRateAdjustments(i0, i1);
 }
-
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_GetAxisDefinitions(int *handle, int *x, int *y, int *z, int *a, int *b, int *c)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->GetAxisDefinitions(x, y, z, a, b, c);
+}
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_SetAxisDefinitions(int *handle, int x, int y, int z, int a, int b, int c)
+{
+	CCoordMotion *CM_dll=(CCoordMotion *)handle;
+    return CM_dll->SetAxisDefinitions(x, y, z, a, b, c);
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_SetTPParams(int *handle)
 {
@@ -1243,7 +1329,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_A_Axis_Offset(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->AA_axis_offset;
+	return GC_dll->GetRealTimeState()->AA_axis_offset;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_A_Axis_Offset(int *handle, double value)
 {
@@ -1254,7 +1340,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_A_Current_Position(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->AA_current;
+	return GC_dll->GetRealTimeState()->AA_current;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_A_Current_Position(int *handle, double value)
 {
@@ -1265,7 +1351,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_A_Origin_Offset(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->AA_origin_offset;
+	return GC_dll->GetRealTimeState()->AA_origin_offset;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_A_Origin_Offset(int *handle, double value)
 {
@@ -1276,7 +1362,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_B_Axis_Offset(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->BB_axis_offset;
+	return GC_dll->GetRealTimeState()->BB_axis_offset;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_B_Axis_Offset(int *handle, double value)
 {
@@ -1287,7 +1373,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_B_Current_Position(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->BB_current;
+	return GC_dll->GetRealTimeState()->BB_current;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_B_Current_Position(int *handle, double value)
 {
@@ -1298,7 +1384,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_B_Origin_Offset(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->BB_origin_offset;
+	return GC_dll->GetRealTimeState()->BB_origin_offset;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_B_Origin_Offset(int *handle, double value)
 {
@@ -1309,7 +1395,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_C_Axis_Offset(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->CC_axis_offset;
+	return GC_dll->GetRealTimeState()->CC_axis_offset;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_C_Axis_Offset(int *handle, double value)
 {
@@ -1320,7 +1406,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_C_Current_Position(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->CC_current;
+	return GC_dll->GetRealTimeState()->CC_current;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_C_Current_Position(int *handle, double value)
 {
@@ -1331,7 +1417,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_C_Origin_Offset(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->CC_origin_offset;
+	return GC_dll->GetRealTimeState()->CC_origin_offset;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_C_Origin_Offset(int *handle, double value)
 {
@@ -1342,7 +1428,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_X_Axis_Offset(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->axis_offset_x;
+	return GC_dll->GetRealTimeState()->axis_offset_x;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_X_Axis_Offset(int *handle, double value)
 {
@@ -1353,7 +1439,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_X_Current_Position(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->current_x;
+	return GC_dll->GetRealTimeState()->current_x;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_X_Current_Position(int *handle, double value)
 {
@@ -1364,7 +1450,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_X_Origin_Offset(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->origin_offset_x;
+	return GC_dll->GetRealTimeState()->origin_offset_x;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_X_Origin_Offset(int *handle, double value)
 {
@@ -1375,7 +1461,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Y_Axis_Offset(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->axis_offset_y;
+	return GC_dll->GetRealTimeState()->axis_offset_y;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Y_Axis_Offset(int *handle, double value)
 {
@@ -1386,7 +1472,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Y_Current_Position(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->current_y;
+	return GC_dll->GetRealTimeState()->current_y;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Y_Current_Position(int *handle, double value)
 {
@@ -1397,7 +1483,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Y_Origin_Offset(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->origin_offset_y;
+	return GC_dll->GetRealTimeState()->origin_offset_y;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Y_Origin_Offset(int *handle, double value)
 {
@@ -1408,7 +1494,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Z_Axis_Offset(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->axis_offset_z;
+	return GC_dll->GetRealTimeState()->axis_offset_z;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Z_Axis_Offset(int *handle, double value)
 {
@@ -1419,7 +1505,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Z_Current_Position(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->current_z;
+	return GC_dll->GetRealTimeState()->current_z;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Z_Current_Position(int *handle, double value)
 {
@@ -1430,7 +1516,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Z_Origin_Offset(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->origin_offset_z;
+	return GC_dll->GetRealTimeState()->origin_offset_z;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Z_Origin_Offset(int *handle, double value)
 {
@@ -1443,7 +1529,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ControlMode(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->control_mode;
+	return GC_dll->GetRealTimeState()->control_mode;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ControlMode(int *handle, int value)
 {
@@ -1454,7 +1540,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_LengthUnits(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->length_units;
+	return GC_dll->GetRealTimeState()->length_units;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_LengthUnits(int *handle, int value)
 {
@@ -1465,7 +1551,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_OriginIndex(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->origin_index;
+	return GC_dll->GetRealTimeState()->origin_index;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_OriginIndex(int *handle, int value)
 {
@@ -1476,7 +1562,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_WorkPlane(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->plane;
+	return GC_dll->GetRealTimeState()->plane;
 } 
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_WorkPlane(int *handle, int value)
 {
@@ -1487,13 +1573,13 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_PercentFlag(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->percent_flag;
+	return GC_dll->GetRealTimeState()->percent_flag;
 } 
 
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ProbeComplete(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->probe_flag;
+	return GC_dll->GetRealTimeState()->probe_flag;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ProbeComplete(int *handle, int value)
 {
@@ -1504,7 +1590,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ProgramX(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->program_x;
+	return GC_dll->GetRealTimeState()->program_x;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ProgramX(int *handle, double value)
 {
@@ -1515,7 +1601,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ProgramY(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->program_y;
+	return GC_dll->GetRealTimeState()->program_y;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ProgramY(int *handle, double value)
 {
@@ -1526,13 +1612,13 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_SequenceNumber(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->sequence_number;
+	return GC_dll->GetRealTimeState()->sequence_number;
 } 
 
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_CurrentLine(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->current_line;
+	return GC_dll->GetRealTimeState()->current_line;
 } 
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_CurrentLine(int *handle, int value)
 {
@@ -1543,7 +1629,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_TraverseSpeed(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->traverse_rate;
+	return GC_dll->GetRealTimeState()->traverse_rate;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_TraverseSpeed(int *handle, double value)
 {
@@ -1554,7 +1640,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_LineLength(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->line_length;
+	return GC_dll->GetRealTimeState()->line_length;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_FileName(int *handle, char *file)
 {
@@ -1564,14 +1650,14 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_LineText(int *handle, char *line)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	line = GC_dll->p_setup->linetext;
+	line = GC_dll->GetRealTimeState()->linetext;
 }
 
 
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_CurrentMotionMode(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->motion_mode;
+	return GC_dll->GetRealTimeState()->motion_mode;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_CurrentMotionMode(int *handle, int value)
 {
@@ -1582,25 +1668,25 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Active_GCode(int *handle, int index)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->active_g_codes[index];
+	return GC_dll->GetRealTimeState()->active_g_codes[index];
 }  
  
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Active_MCode(int *handle, int index)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->active_m_codes[index];
+	return GC_dll->GetRealTimeState()->active_m_codes[index];
 }  
  
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Active_Setting(int *handle, int index)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->active_settings[index];
+	return GC_dll->GetRealTimeState()->active_settings[index];
 } 
  
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_DistanceMode(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->distance_mode;
+	return GC_dll->GetRealTimeState()->distance_mode;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_DistanceMode(int *handle, int value)
 {
@@ -1611,7 +1697,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_FeedMode(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->feed_mode;
+	return GC_dll->GetRealTimeState()->feed_mode;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_FeedMode(int *handle, int value)
 {
@@ -1622,7 +1708,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_FloodCoolantOn(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->flood;
+	return GC_dll->GetRealTimeState()->flood;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_FloodCoolantOn(int *handle, int value)
 {
@@ -1633,7 +1719,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_MistCoolantOn(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->mist;
+	return GC_dll->GetRealTimeState()->mist;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_MistCoolantOn(int *handle, int value)
 {
@@ -1644,7 +1730,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_BlockDelete(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->block_delete;
+	return GC_dll->GetRealTimeState()->block_delete;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_BlockDelete(int *handle, int value)
 {
@@ -1658,7 +1744,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_CurrentToolSlot(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->current_slot;
+	return GC_dll->GetRealTimeState()->current_slot;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_CurrentToolSlot(int *handle, int value)
 {
@@ -1669,7 +1755,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_SelectedToolSlot(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->selected_tool_slot;
+	return GC_dll->GetRealTimeState()->selected_tool_slot;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_SelectedToolSlot(int *handle, int value)
 {
@@ -1677,11 +1763,36 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 	 GC_dll->p_setup->selected_tool_slot = value;
 }
 
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ToolXOffset(int *handle)
+{
+	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
+	return GC_dll->GetRealTimeState()->tool_xoffset;
+}
+
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ToolYOffset(int *handle)
+{
+	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
+	return GC_dll->GetRealTimeState()->tool_yoffset;
+}
+
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ToolLengthOffset(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->tool_length_offset;
+	return GC_dll->GetRealTimeState()->tool_length_offset;
 }
+
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ToolXOffset(int *handle, double value)
+{
+	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
+	 GC_dll->p_setup->tool_xoffset = value;
+}
+
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ToolYOffset(int *handle, double value)
+{
+	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
+	 GC_dll->p_setup->tool_yoffset = value;
+}
+
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ToolLengthOffset(int *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
@@ -1691,7 +1802,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ToolLengthOffsetIndex(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->length_offset_index;
+	return GC_dll->GetRealTimeState()->length_offset_index;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ToolLengthOffsetIndex(int *handle, int value)
 {
@@ -1702,7 +1813,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_RadiusComp(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->cutter_radius_compensation;
+	return GC_dll->GetRealTimeState()->cutter_radius_compensation;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_RadiusComp(int *handle, int value)
 {
@@ -1713,7 +1824,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_RadiusCompValue(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->cutter_comp_radius;
+	return GC_dll->GetRealTimeState()->cutter_comp_radius;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_RadiusCompValue(int *handle, double value)
 {
@@ -1724,7 +1835,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_RadiusCompSide(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->cutter_comp_side;
+	return GC_dll->GetRealTimeState()->cutter_comp_side;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_RadiusCompSide(int *handle, int value)
 {
@@ -1735,7 +1846,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_AllowSpindleSpeedOverride(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->speed_override;
+	return GC_dll->GetRealTimeState()->speed_override;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_AllowSpindleSpeedOverride(int *handle, int value)
 {
@@ -1746,18 +1857,29 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_SpindleSpeed(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->speed;
+	return GC_dll->GetRealTimeState()->speed;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_SpindleSpeed(int *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->speed = value;
 }
+
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_FeedRate(int *handle)
+{
+	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
+	return GC_dll->GetRealTimeState()->feed_rate;
+}
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_FeedRate(int *handle, double value)
+{
+	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
+	 GC_dll->p_setup->feed_rate = value;
+}
  
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_SpindleDirection(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->spindle_turning;
+	return GC_dll->GetRealTimeState()->spindle_turning;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_SpindleDirection(int *handle, int value)
 {
@@ -1765,29 +1887,35 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 	 GC_dll->p_setup->spindle_turning = value;
 }
  
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_SetTool(int *handle, int id, double length, double diameter)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_SetTool(int *handle, int index, int slot, int id, 
+																							  double length, double diameter, double xoffset, double yoffset)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
  
-	 GC_dll->p_setup->tool_table[id].length = length;
-	 GC_dll->p_setup->tool_table[id].diameter = diameter;
-	 char* tooltable = GC_dll->ToolFile;
-	 
+	 GC_dll->p_setup->tool_table[index].slot = slot;
+	 GC_dll->p_setup->tool_table[index].id = id;
+	 GC_dll->p_setup->tool_table[index].length = length;
+	 GC_dll->p_setup->tool_table[index].xoffset = xoffset;
+	 GC_dll->p_setup->tool_table[index].yoffset = yoffset;
 } 
 
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_GetTool(int *handle, int id, double *length, double *diameter)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_GetTool(int *handle, int index, int *slot, int *id, 
+																							  double *length, double *diameter, double *xoffset, double *yoffset)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	 *length = GC_dll->p_setup->tool_table[id].length;
-	 *diameter = GC_dll->p_setup->tool_table[id].diameter;
-	 char* tooltable = GC_dll->ToolFile;
+	 *slot = GC_dll->GetRealTimeState()->tool_table[index].slot;
+	 *id = GC_dll->GetRealTimeState()->tool_table[index].id;
+	 *length = GC_dll->GetRealTimeState()->tool_table[index].length;
+	 *diameter = GC_dll->GetRealTimeState()->tool_table[index].diameter;
+	 *xoffset = GC_dll->GetRealTimeState()->tool_table[index].xoffset;
+	 *yoffset = GC_dll->GetRealTimeState()->tool_table[index].yoffset;
 } 
 
 	//Fixed Cycle Params
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_CC(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->cycle_cc;
+	return GC_dll->GetRealTimeState()->cycle_cc;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_CC(int *handle, double value)
 {
@@ -1798,7 +1926,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_I(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->cycle_i;
+	return GC_dll->GetRealTimeState()->cycle_i;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_I(int *handle, double value)
 {
@@ -1809,7 +1937,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_J(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->cycle_j;
+	return GC_dll->GetRealTimeState()->cycle_j;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_J(int *handle, double value)
 {
@@ -1820,7 +1948,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_K(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->cycle_k;
+	return GC_dll->GetRealTimeState()->cycle_k;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_K(int *handle, double value)
 {
@@ -1831,7 +1959,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_L(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->cycle_l;
+	return GC_dll->GetRealTimeState()->cycle_l;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_L(int *handle, double value)
 {
@@ -1842,7 +1970,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_P(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->cycle_p;
+	return GC_dll->GetRealTimeState()->cycle_p;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_P(int *handle, double value)
 {
@@ -1853,7 +1981,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_Q(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->cycle_q;
+	return GC_dll->GetRealTimeState()->cycle_q;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_Q(int *handle, double value)
 {
@@ -1864,7 +1992,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_R(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->cycle_r;
+	return GC_dll->GetRealTimeState()->cycle_r;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_R(int *handle, double value)
 {
@@ -1875,7 +2003,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_Z(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->cycle_z;
+	return GC_dll->GetRealTimeState()->cycle_z;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_Z(int *handle, double value)
 {
@@ -1886,12 +2014,48 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_RetractMode(int *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->p_setup->retract_mode;
+	return GC_dll->GetRealTimeState()->retract_mode;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_RetractMode(int *handle, int value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->retract_mode = (value == 0) ? R_PLANE : OLD_Z;
+}
+
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_block_p_flag(int *handle)
+{
+	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
+	return GC_dll->GetRealTimeState()->block1.p_flag==ON;
+}
+
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_block_p_number(int *handle)
+{
+	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
+	return GC_dll->GetRealTimeState()->block1.p_number;
+}
+
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_block_q_flag(int *handle)
+{
+	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
+	return GC_dll->GetRealTimeState()->block1.q_flag==ON;
+}
+
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_block_q_number(int *handle)
+{
+	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
+	return GC_dll->GetRealTimeState()->block1.q_number;
+}
+
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_block_r_flag(int *handle)
+{
+	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
+	return GC_dll->GetRealTimeState()->block1.r_flag==ON;
+}
+
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_block_r_number(int *handle)
+{
+	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
+	return GC_dll->GetRealTimeState()->block1.r_number;
 }
 
 

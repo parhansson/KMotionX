@@ -115,9 +115,9 @@ namespace SimpleFormsCS
             }
 
             ConsoleMutex.WaitOne();  // make sure we are thread safe
-            if (ConsoleMessageReceived != "")
+            if (ConsoleMessageReceived!=null && ConsoleMessageReceived != "")
             {
-                ConsoleTextBox.Text += ConsoleMessageReceived;
+                ConsoleTextBox.AppendText(ConsoleMessageReceived);
                 ConsoleMessageReceived = "";
             }
             ConsoleMutex.ReleaseMutex();
@@ -164,8 +164,35 @@ namespace SimpleFormsCS
 
         private void SendCommand_Click(object sender, EventArgs e)
         {
-            KM.WriteLineWithEcho(Command.Text);
-            KM.CheckIsReady();
+            var result = KM.WaitToken(1000);
+
+            if (result == KMOTION_TOKEN.KMOTION_LOCKED)
+            {
+                KM.WriteLineWithEcho(Command.Text);
+                while(true)
+                {
+                    var status = KM.CheckIsReady();
+                    
+                    if (status == KMOTION_CHECK_READY.READY)
+                    {
+                        KM.ReleaseToken();
+                        break;
+                    }
+
+                    if (status == KMOTION_CHECK_READY.TIMEOUT ||
+                        status == KMOTION_CHECK_READY.ERROR)
+                    {
+                        KM.ReleaseToken();
+                        MessageBox.Show("Response Error");
+                        break;
+                    }
+                    Thread.Sleep(10);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Unable to Send Command to Board");
+            }
         }
 
 
@@ -256,6 +283,24 @@ namespace SimpleFormsCS
                 KM.ReleaseToken();
                 MessageBox.Show(ex.InnerException.Message);
             }
+
         }
-    } 
+
+        private void MoveTo_Click(object sender, EventArgs e)
+        {
+            KM_Axis XAxis = new KM_Axis(KM, 0, "X");
+            XAxis.Velocity = 1000.0;
+            XAxis.StartMoveTo(double.Parse(MoveToValue.Text));
+        }
+
+        private void TestBoard2_click(object sender, EventArgs e)
+        {
+            KM_Controller KM2;
+            KM2 = new KMotion_dotNet.KM_Controller(530);
+            if (KM2.WriteLineReadLine("ReadBit47")=="0")
+                KM2.WriteLine("SetBit47");
+            else
+                KM2.WriteLine("ClearBit47");
+        }
+   } 
 }

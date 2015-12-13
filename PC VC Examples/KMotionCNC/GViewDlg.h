@@ -12,6 +12,9 @@
 
 #define NBOXPATHS 4
 
+enum ViewDir { VIEWXY, VIEWYZ, VIEWXZ };
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CGViewDlg dialog
 
@@ -24,6 +27,7 @@ public:
 	
 	CString m_ToolShapeFile;
 	CString m_AxisShapeFile;
+	CString m_ToolFileDisplayed;
 
 	float m_minx;
 	float m_maxx;
@@ -56,19 +60,20 @@ public:
 	int LoadConfig();
 	int SaveConfig();
 	void RefreshTitle(); 
-	void SetViewDistance();
+	void SetViewDistance(ViewDir View);
 
 	CColor m_ColorBox;
 
     CDlgToolBar *m_GViewTools;
 
 	bool m_SceneIsInitialized;
+	bool m_SceneIsDirty;
 	bool m_FirstScreenDisplay;
 
 
 	CGViewDlg(CWnd* pParent = NULL);   // standard constructor
 	void ClearPaths();
-	void CGViewDlg::AddBox();
+	void AddBox();
 	void AddAxisToScene();
 	void AddToolToScene();
 	
@@ -79,6 +84,8 @@ public:
 	void DeleteAllScene();
 	int StartIndexAxis,EndIndexAxis;
 	int StartIndexTool,EndIndexTool;
+
+
 	
 // Dialog Data
 	//{{AFX_DATA(CGViewDlg)
@@ -125,6 +132,7 @@ protected:
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
+	CString GetToolFileToDisplay(bool *UsingDefault);
 public:
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 	afx_msg void OnMove(int x, int y);

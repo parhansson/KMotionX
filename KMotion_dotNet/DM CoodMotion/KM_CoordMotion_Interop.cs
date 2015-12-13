@@ -152,7 +152,25 @@ namespace KMotion_dotNet
         static extern double KM_dotnet_Interop_CoordMotion_Get_FeedRateOverride(IntPtr handle);
 
         [DllImport("KMotion_dotNet_Interop.dll")]
+        static extern double KM_dotnet_Interop_CoordMotion_Get_FeedRateRapidOverride(IntPtr handle);
+
+        [DllImport("KMotion_dotNet_Interop.dll")]
         static extern void KM_dotnet_Interop_CoordMotion_Set_FeedRateOverride(IntPtr handle, double value);
+
+        [DllImport("KMotion_dotNet_Interop.dll")]
+        static extern void KM_dotnet_Interop_CoordMotion_Set_FeedRateRapidOverride(IntPtr handle, double value);
+
+        [DllImport("KMotion_dotNet_Interop.dll")]
+        static extern double KM_dotnet_Interop_CoordMotion_Get_SpindleRateOverride(IntPtr handle);
+
+        [DllImport("KMotion_dotNet_Interop.dll")]
+        static extern void KM_dotnet_Interop_CoordMotion_Set_SpindleRateOverride(IntPtr handle, double value);
+
+        [DllImport("KMotion_dotNet_Interop.dll")]
+        static extern double KM_dotnet_Interop_CoordMotion_Get_HardwareFRORange(IntPtr handle);
+
+        [DllImport("KMotion_dotNet_Interop.dll")]
+        static extern void KM_dotnet_Interop_CoordMotion_Set_HardwareFRORange(IntPtr handle, double value);
 
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern int KM_dotnet_Interop_CoordMotion_Get_AxisDestination(IntPtr handle, int axis, ref double value);
@@ -252,6 +270,10 @@ namespace KMotion_dotNet
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern int KM_dotnet_Interop_CoordMotion_GetAxisDefinitions
             (IntPtr handle, ref int x, ref int y, ref int z, ref int a, ref int b, ref int c);
+
+        [DllImport("KMotion_dotNet_Interop.dll")]
+        static extern int KM_dotnet_Interop_CoordMotion_SetAxisDefinitions
+            (IntPtr handle, int x, int y, int z, int a, int b, int c);
 
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern int KM_dotnet_Interop_CoordMotion_ReadCurAbsPosition

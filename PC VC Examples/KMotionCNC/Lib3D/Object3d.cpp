@@ -8,7 +8,7 @@
 // Modified : 15/01/98
 //********************************************
 
-#include "..\stdafx.h"
+#include "stdafx.h"
 
 
 

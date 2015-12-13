@@ -80,6 +80,10 @@ int main(int argc, char* argv[])
 	
 	double Speed = 0.5; //inch/sec
 
+	int result = CM->ReadCurAbsPosition(&CM->current_x,&CM->current_y,&CM->current_z,
+										&CM->current_a,&CM->current_b,&CM->current_c,true);
+
+
 	CM->StraightTraverse(0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000);  // jump back to zero
     
 	// set a bit, move in a circle, clear a bit

@@ -20,17 +20,17 @@ div.Section1
 <font face="Arial Black" size="5">Using 
 KSTEP</font></b></i></p>
 <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">KStep is a high 
-efficiency 4-axis microstepping drive that can drive motors up to 5Amps @ 48V.&nbsp; 
-In addition to the 4 motor drives KStep also provides addition I/O features:&nbsp; 
-(16) 12-24V opto isolated filtered inputs, (2) opto-isolated relay driver type 
-outputs good for 0.1A @ 30V, and one isolated PMW to Analog output.&nbsp; All 
-controller signals are 3.3V LVTTL compatable.&nbsp; There is also an on-board 
-voltage clamp circuit to protect against regenerative over voltage.&nbsp; KStep 
-is designed to snap together with KFLOP for plug and play operation.&nbsp; A 
-single 1:1 26-pin ribbon cable will provide all logic power, Step/Dir Signals, 
-Enable, Relay driver, Analog PWM, and Opto input connections.&nbsp; Two KSteps 
-can be stacked to drive a total of 8 motors.&nbsp; </font></p>
+<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">KStep is a high efficiency 4-axis microstepping drive that can drive four motors with up to 5Amps @ 48V each.
+In addition to the 4 motor drives, KStep also provides additional I/O features:<br>
+<ul>
+<li>Sixteen (16) 12-24V tolerant optically isolated filtered inputs</li>
+<li>Two (2) optically isolated relay driver type outputs, each good for 0.1A @ 30V</li>
+<li>One (1) isolated PMW to Analog output</li>
+</ul>
+All controller signals are 3.3V/LVTTL compatible.  An on-board voltage clamp circuit to protect against regenerative over voltage is also included.
+KStep is designed to snap together with KFLOP for easy plug and play operation.  A single 26-pin ribbon cable provides all the logic, power, Step/Dir Signals,
+Enable, Relay driver, Analog PWM, and Optically isolated input connections between the Kstep and KFLOP boards.  If necessary, two KSteps can be connected to a
+single KFLOP to drive a total of 8 motors. &nbsp; </font></p>
 <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
 <p style="margin-top: 0; margin-bottom: 0">
 <img border="0" src="KStep550.png" width="550" height="464"></p>
@@ -51,29 +51,15 @@ can be stacked to drive a total of 8 motors.&nbsp; </font></p>
 	<p style="margin-top: 0; margin-bottom: 0"><i><b>
 	<font face="Arial" size="4">Configuring KFLOP for use with KStep</font></b></i></p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Configuring 
-	KStep is fairly straightforward as it is normally an open loop system 
-	(although it is possible to operate in
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Configuring KStep is fairly straightforward, as it is normally used in an open loop system (although it is possible to operate in
 	<a href="../ClosedLoopStep/ClosedLoopStepper.htm">closed loop stepper mode</a>) 
-	so all feedback, servo, PID, Filter, Feedforward, commutation parameters are 
-	not used and amy be ignored.&nbsp; KStep is basically a
-	<a href="../StepAndDirection/StepAndDir.htm">Step/Dir</a> drive so it makes 
-	use of the Step/Dir Output mode in KFLOP.&nbsp; See the items circled in red 
-	below.&nbsp; Note output mode type &quot;Step Dir&quot; is selected.&nbsp; Shown is 
-	the Output Channel selection for KStep Motor #0.&nbsp; Note that output 
-	channel 8 is selected instead of 0 to select the LVTTL output mode required 
-	by KStep.&nbsp; See <a href="../StepAndDirection/StepAndDir.htm">here</a> 
-	for more information.&nbsp; Motors #0, #1, #2, and #3 would be selected as 
-	8, 9, 10, 11 respectively.&nbsp; Output gain may be specified as -1 to 
-	reverse the direction of motion.</font></p>
+	so all feedback, servo, PID, Filter, Feedforward and commutation parameters are not used and can be ignored.  KStep is effectively a
+	<a href="../StepAndDirection/StepAndDir.htm">Step/Dir</a> driver, so it makes use of the Step/Dir Output mode in KFLOP (See the items circled in red below - Note that output mode type "Step Dir" is selected).  The screen shown is the Output Channel selection for KStep Motor channel #0.  Note that output channel 8 is selected instead of 0 as you might assume.  As KStep requires a LVTTL signal, rather than using Output channels 0 through 4, Output channels 8 through 11 respectively should be used instead, as they provide a LVTTL signal.  See <a href="../StepAndDirection/StepAndDir.htm">here</a> 
+	for more information.&nbsp; An output gain of -1 may be specified to reverse the direction of motion.</font></p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Note: for the 
-	pulse polarity and pulse time to be set properly the following line of C 
-	Code needs to be executed after every power up.&nbsp; With the default 
-	settings there is marginal timing on direction setup which may result in 
-	&quot;drift&quot; caused by a microstep in the wrong direction when changing 
-	directions.&nbsp; This line of Code is already included in the Example C 
-	Initialization Programs (ie InitKStep3Axis.c)</font></p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Note: for the pulse polarity and pulse time to be set properly, the following line of C Code needs to be executed after every power up.  
+FPGA(STEP_PULSE_LENGTH_ADD) = 63 + 0x80; // set polarity and pulse length to 4us
+When using the default settings, there is marginal timing on direction setup which may result in "drift" caused by a microstep in the wrong direction when changing directions.  This line of Code is already included in the Example C Initialization Programs (i.e. InitKStep3Axis.c)</font></p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
 	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">	
 	FPGA(STEP_PULSE_LENGTH_ADD) = 63 + 0x80; // set polarity and pulse length to 
@@ -87,12 +73,8 @@ can be stacked to drive a total of 8 motors.&nbsp; </font></p>
 	<img border="0" src="ConfigStepDir.png" width="293" height="373"></font></p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Limit switch 
-	options may also be selected.&nbsp; KStep 12-24V Opto inputs are commonly 
-	used as Limit switch inputs and are referenced as Input Bits 168-183.&nbsp; 
-	Using NC type limit switches will mean that the inputs are normally high and 
-	go open and low when activated.&nbsp; In this case the &quot;Stop when low&quot; 
-	option should be selected.&nbsp;&nbsp; For more info see
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Example Axis configurations are provided in the C:\KMotion431\KMotion\Motors directory (assuming a default install location). KStepAxis0.mot, KStepAxis1.mot, KStepAxis2.mot and KStepAxis3.mot are the most basic configurations.   
+Limit switch options are also configured on this screen.  KStep's optically isolated 12-24V Inputs are commonly used to connect Limit switches and are referenced as Input Bits 168 through 183 inclusive.  If you are using NC (normally closed) type limit switches, this means that the inputs are normally high and become low when activated.  In this case the "Stop when low" option should be selected.  If using NO (normally open) type limit switches, this means the inputs are normally low, and become high when activated.  In this case, the "Stop when low" option should be cleared.   For more info see
 	<a href="../ConfigurationScreen/ConfigurationScreen.htm#Limit_Switch_Options">
 	here</a>.</font></p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
@@ -110,21 +92,9 @@ can be stacked to drive a total of 8 motors.&nbsp; </font></p>
 	<p style="margin-top: 0; margin-bottom: 0"><b><i>
 	<font face="Arial" size="4">Enable KStep Amplifiers</font></i></b></p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">An amplifier 
-	enable signal is required to enable the KStep Full Bridge Amplifiers.&nbsp; 
-	One signal enables all 4 of the KStep amplifiers.&nbsp; The enable signal is 
-	positive true meaning it requires a high level 3.3V LVTTL (sourcing) signal 
-	to enable the drives.&nbsp; With the standard&nbsp; JP36 26-pin ribbon 
-	connector to KFLOP this signal is connected to KFLOP IO 45 which must be set 
-	as an output and set high to enable the drives.&nbsp;&nbsp;&nbsp; The enable 
-	signal is optically isolated from the KSTEP VBB and GND when operating KSTEP 
-	in isolated mode.</font></p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">An amplifier enable signal is required to enable the KStep Full Bridge Amplifiers.  One signal enables all four of the KStep amplifiers.  The enable signal is positive true, meaning the drives are enabled when a 3.3V LVTTL (sourcing) signal is received.  When using a 26-pin ribbon cable to connect KStep (JP 36) and KFLOP (JP 7), this signal is routed to KFLOP's IO 45, which must be set as an output, and also set high to enable the drives.  Note that the enable signal is only optically isolated from VBB and GND when KSTEP is in isolated mode.</font></p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">If JP36 is not 
-	used then a 3.3V enable signal may alternately be applied to a screw 
-	terminal on J6.&nbsp; Or when two KSteps are stacked for driving 8 motors 
-	the screw terminals on J6 may be used as an output on the first KStep to 
-	daisy chain the enable signal to the second KStep. </font></p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">If JP36 is not being used to connect KFLOP to KStep, then a 3.3V enable signal may be applied to a screw terminal on J6 instead.  If two KSteps are being used (for driving 8 motors), then the screw terminals on J6 should be used as an output on the first KStep to daisy chain the enable signal to the second KStep. </font></p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
 	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">For testing 
 	purposes KStep may be enabled using the Digital I/O Screen as shown below.</font></p>
@@ -133,8 +103,7 @@ can be stacked to drive a total of 8 motors.&nbsp; </font></p>
 	<img border="0" src="DigitalEnable.png" width="479" height="533"></p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">From C code 
-	the Amplifiers may be enabled with the code shown below.</font></p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">From C code the Amplifiers can be enabled with the following code.</font></p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
 	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0pt">
 	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
@@ -146,10 +115,7 @@ can be stacked to drive a total of 8 motors.&nbsp; </font></p>
 	Amplifiers</span></span></p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Additionally, 
-	code might be added to enable the amplifiers as soon as motion is detected 
-	and disabled after a period of time with no motion.&nbsp; Here is an 
-	example:</font></p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">It's possible to write code to enable the amplifiers as soon as motion is detected and disabled after a period of time with no motion.  Here is an example:</font></p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
 	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-bottom: .0001pt">
 	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -217,15 +183,8 @@ can be stacked to drive a total of 8 motors.&nbsp; </font></p>
 	<p style="margin-top: 0; margin-bottom: 0"><b><i>
 	<font face="Arial" size="4">Digital Status</font></i></b></p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The Opto 
-	Isolated 12-24V Digital Inputs can be 
-	observed by selecting the Virtual Tab of the Digital I/O Screen.&nbsp; The 
-	16 opto inputs will be shown as active when current is flowing through the 
-	opto circuit.&nbsp; For input circuit and pinouts
-	<a href="ConnectorsKStep.htm#Optically_isolated_Inputs">see</a>.&nbsp; The 
-	KStep Opto Inputs are actually virtual inputs that are multiplexed in 
-	through KFLOP I/O.&nbsp; KFLOP can perform this multiplexing automatically 
-	by setting the global variable <b>KStepPresent.</b>&nbsp; The following line 
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The state of the Optically Isolated 12-24V Digital Inputs can be observed by selecting the "Virtual/KSTEP" Tab on the Digital I/O Screen.  Each input will be marked as active if current is flowing through the optical isolation circuit.  For input circuits and pinouts
+	<a href="ConnectorsKStep.htm#Optically_isolated_Inputs">see</a>.&nbsp; The KStep Opto Inputs are actually virtual inputs that are multiplexed in through KFLOP I/O.  KFLOP can perform this multiplexing automatically by setting the global variable <b>KStepPresent.</b>&nbsp; The following line 
 	of C code should be added to your Init.c program:</font></p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
 	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">KStepPresent=TRUE;</font></p>
@@ -239,13 +198,7 @@ can be stacked to drive a total of 8 motors.&nbsp; </font></p>
 	<p style="margin-top: 0; margin-bottom: 0"><b><i>
 	<font face="Arial" size="4">Relay Driver Outputs</font></i></b></p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The Opto 
-	Isolated 24V outputs can be 
-	observed and controlled by selecting the KFLOP tab of the Digital I/O Screen.&nbsp; The 
-	2 opto outputs will be shown as active when the outputs are conducting 
-	current.&nbsp; The KStep outputs are the same as the standard KFLOP outputs 
-	except they are opto isolated and amplified to handle up to 24V.&nbsp; For 
-	output circuit and pinouts
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The Optically Isolated 24V outputs can be observed and controlled by selecting the KFLOP tab on the Digital I/O Screen.  Each output will be marked as active if current is flowing through the optical isolation circuit.  The KStep outputs are the same as the standard KFLOP outputs except they are optically isolated and amplified to handle up to 24V.  For output circuit and pinouts
 	<a href="ConnectorsKStep.htm#Relay_Driver_Outputs">see</a>.</font></p>
 	<p style="margin-top: 0; margin-bottom: 0">
 	&nbsp;</p>
@@ -255,9 +208,7 @@ can be stacked to drive a total of 8 motors.&nbsp; </font></p>
 	&nbsp;</p>
 	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;</p>
 	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-family: Arial">To make use of the outputs within a C 
-	program the following C code shows an example of enabling both the outputs, 
-	turning them on, then turning them off. </span></p>
+	<span style="font-family: Arial">To make use of the outputs within a C program the following C code shows an example of enabling both the outputs, turning them on, then turning them off. </span></p>
 	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;</p>
 	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;</p>
 	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
@@ -288,22 +239,9 @@ can be stacked to drive a total of 8 motors.&nbsp; </font></p>
 	<p style="margin-top: 0; margin-bottom: 0"><b><i>
 	<font face="Arial" size="4">Analog Output</font></i></b></p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The KStep 
-	Analog output is a low Speed (10ms time constant) isolated analog output 
-	that is commonly used as a VFD Spindle Speed Control signal.&nbsp; KFLOP 
-	outputs a 3.3V digital PWM on IO 44 to KSTEP which optically isolates and 
-	filters it to create an analog signal.&nbsp; Isolated power and ground 
-	(often supplied by the VFD) are required.&nbsp; The analog output voltage 
-	will be a proportion of the supplied voltage relative to the duty cycle of 
-	the PWM signal.&nbsp; For example a 75% high duty cycle will provide a 
-	voltage which is approximately 75% of the supplied voltage.</font></p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial"> The KStep Analog output is a low Speed (10ms time constant) isolated analog output that is commonly used as a VFD Spindle Speed Control signal.  KFLOP outputs a 3.3V digital PWM on IO 44 to KSTEP which optically isolates and filters it to create an analog signal.  Isolated power and ground (often supplied by the VFD) are required.  The analog output voltage will be a proportion of the supplied voltage relative to the duty cycle of the PWM signal.  For example a 75% high duty cycle will provide a voltage which is approximately 75% of the supplied voltage.</font></p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">To configure 
-	KFLOP to output the appropriate PWM signal into KSTEP the configuration code 
-	below should be used.&nbsp; There is an FPGA option to move PWM0 (which 
-	normally is output on connector JP6 with the other 7 PWM outputs) over to 
-	JP7 Pin5 IO44.&nbsp; IO44 must also be configured as an output, the PWM 
-	Prescale Divider set to a reasonable value, and the PWM enabled.</font></p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">To configure KFLOP to output the appropriate PWM signal into KSTEP the configuration code below should be used.  There is an FPGA option to move PWM0 (which normally is output on connector JP6 with the other 7 PWM outputs) over to JP7 Pin5 IO 44.  IO 44 must be configured as an output; the PWM Prescale dividers set to a reasonable value (like?), and then enable PWM.</font></p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
 	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: .0001pt">
@@ -321,23 +259,13 @@ can be stacked to drive a total of 8 motors.&nbsp; </font></p>
 	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
 	FPGA(IO_PWMS+1) = 1;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:green">// Enable</span></span></p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The Analog 
-	output has nonlinearity near the 0% duty cycle region due to opto coupler 
-	pulse shaping effects.&nbsp; The nonlinearity can be mostly corrected in 
-	software through calibration.&nbsp; Below is a raw uncorrected analog output 
-	with a PWM frequency of 1.4KHz (PWM Prescale = 46).</font></p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The Analog output has nonlinearity near the 0% duty cycle region due to opto coupler pulse shaping effects.  The nonlinearity can be mostly corrected in software through calibration.  Below is a raw uncorrected analog output with a PWM frequency of 1.4KHz (PWM Prescale = 46).</font></p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
 	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
 	<img border="0" src="AnalogRaw.png" width="601" height="507"></font></p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Using a 
-	correction algorithm where the PWM value that will most closely produce the 
-	desired output voltage is determined from a table lookup approach for the 
-	first 7 PWM counts, and a simple linear interpolation is used for 
-	determining PWM settings 7 through 240 the linearized results are shown 
-	below. Although now linear there is still low resolution for settings below 
-	~5% full scale.</font></p>
+	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Using a correction algorithm where the PWM value that will most closely produce the desired output voltage is determined from a table lookup approach for the first 7 PWM counts, and a simple linear interpolation is used for determining PWM settings 7 through 240 the linearized results are shown below. Although the signal is now linear, the resolution is low for settings below ~5% full scale.  </font></p>
 	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
 	<p style="margin-top: 0; margin-bottom: 0">
 	<img border="0" src="AnalogCorrected.png" width="603" height="502"></p>

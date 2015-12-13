@@ -7,7 +7,7 @@
 // Include this function into your main Init Thead code and call it
 // continuously from a forever loop similar to that shown here
  
-//#include "KMotionDef.c"
+//#include "KMotionDef.h"
 //#include "MySpindleDefs.h"
 //#include "CSSJog.c"
 //main()
@@ -48,7 +48,12 @@ void ServiceCSS(void)
 		if (rpm > *css_max_rpm) rpm = *css_max_rpm;
 				
 		if (persist.UserData[STATEVAR]!=0)  // if spindle is already on, ramp to new speed
-			Jog(SPINDLEAXIS,rpm * FACTOR);
+		{
+			if (USE_POS_NEG_VOLTAGE)
+				Jog(SPINDLEAXIS,rpm * FACTOR * persist.UserData[STATEVAR]);
+			else
+				Jog(SPINDLEAXIS,rpm * FACTOR);
+		}
 		
 //		printf("xoff=%f radius= %f xfactor=%f s=%f(ips) maxrpm=%f rpm=%f\n",*css_xoff,radius,*css_xfactor,*css_s,*css_max_rpm,rpm);
 	}

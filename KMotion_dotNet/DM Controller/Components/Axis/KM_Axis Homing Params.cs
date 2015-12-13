@@ -153,6 +153,7 @@ namespace KMotion_dotNet
             private bool _SetToZero = true;
             private HOMING_ROUTINE_SOURCE_TYPE _SourceType = HOMING_ROUTINE_SOURCE_TYPE.AUTO;
             private string _Homing_c_Program = "";
+            private string _Homing_c_Program_Dir = "";
             #endregion
 
             #region Properties
@@ -385,6 +386,26 @@ namespace KMotion_dotNet
                     _Homing_c_Program = value;
                 }
             }
+
+            /// <summary>
+            /// C Program Filename Directory for Homing
+            /// if unspecified the Directory of the DLL assembly will be used
+            /// for writing and reading the auto created C Program
+            /// </summary>
+            public string Homing_c_Program_Dir
+            {
+                get
+                {
+                    return _Homing_c_Program_Dir;
+                }
+                set
+                {
+                    _Homing_c_Program_Dir = value;
+                }
+            }
+
+            
+            
             #endregion 
 
             /// <summary>

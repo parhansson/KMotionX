@@ -182,6 +182,9 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_M
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxLinearLength(int *handle);
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxLinearLength(int *handle, double value);
 
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxRapidFRO(int *handle);
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxRapidFRO(int *handle, double value);
+
 extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_DegreesA(int *handle);
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_DegreesA(int *handle, bool value);
 
@@ -198,7 +201,11 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_D
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_CheckMotionHalt(int *handle, bool Coord);
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_ExecutionStop(int *handle);
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_Get_FeedRateOverride(int *handle);
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_Get_FeedRateRapidOverride(int *handle);
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_FeedRateOverride(int *handle, double value);
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_FeedRateRapidOverride(int *handle, double value);
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_Get_SpidleRateOverride(int *handle);
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_SpindleRateOverride(int *handle, double value);
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_Get_AxisDestination(int *handle, int axis, double *value);
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_Get_AxisPosition(int *handle, int axis, double *value);
 
@@ -256,6 +263,7 @@ extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_Do
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_DoRateAdjustments(int *handle, int i0, int i1);
 
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_GetAxisDefinitions(int *handle, int *x, int *y, int *z, int *a, int *b, int *c);
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_SetAxisDefinitions(int *handle, int x, int y, int z, int a, int b, int c);
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_SetTPParams(int *handle);
 
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_Dwell(int *handle, double seconds, int sequence_number);
@@ -426,6 +434,12 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ToolLengthOffset(int *handle);
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ToolLengthOffset(int *handle, double value);
 
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ToolXOffset(int *handle);
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ToolXOffset(int *handle, double value);
+
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ToolYOffset(int *handle);
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ToolYOffset(int *handle, double value);
+
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ToolLengthOffsetIndex(int *handle);
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ToolLengthOffsetIndex(int *handle, int value);
  
@@ -444,11 +458,16 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_SpindleSpeed(int *handle);
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_SpindleSpeed(int *handle, double value);
  
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_FeedRate(int *handle);
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_FeedRate(int *handle, double value);
+ 
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_SpindleDirection(int *handle);
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_SpindleDirection(int *handle, int value);
 
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_SetTool(int *handle, int id, double length, double diameter); 
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_GetTool(int *handle, int id, double *length, double *diameter);
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_SetTool(int *handle, int index, int slot, int id, 
+																							  double length, double diameter, double xoffset, double yoffset); 
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_GetTool(int *handle, int index, int *slot, int *id, 
+																							  double *length, double *diameter, double *xoffset, double *yoffset);
 
 	//Fixed Cycle Params
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_CC(int *handle);

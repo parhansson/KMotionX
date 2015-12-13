@@ -169,6 +169,18 @@ namespace KMotion_dotNet
 
         [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("KMotion_dotNet_Interop.dll")]
+        static extern bool KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_UseOnlyLinearSegments(IntPtr handle);
+        [DllImport("KMotion_dotNet_Interop.dll")]
+        static extern void KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_UseOnlyLinearSegments(IntPtr handle, bool value);
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("KMotion_dotNet_Interop.dll")]
+        static extern bool KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_ArcsToSegs(IntPtr handle);
+        [DllImport("KMotion_dotNet_Interop.dll")]
+        static extern void KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_ArcsToSegs(IntPtr handle, bool value);
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("KMotion_dotNet_Interop.dll")]
         static extern bool KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_DegreesA(IntPtr handle);
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern void KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_DegreesA(IntPtr handle, bool value);
