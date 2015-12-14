@@ -24,8 +24,8 @@ enum cb_type {
   CB_CONSOLE,      //Non blocking callback, event though it has return value??
   CB_USER, //Blocking callback. Called from the interpreter in different thread
   CB_USER_M_CODE, //Blocking callback. Called from the interpreter in different thread
-  CB_STATE,
-  CB_MESSAGEBOX
+  CB_STATE, // contains loaded machine configuration(trajectory planning etc) and loaded gcode file
+  CB_MESSAGEBOX //Message box and AfxMessageBox
 };
 enum cb_status {
   CBS_ENQUEUED, CBS_WAITING, CBS_ACKNOWLEDGED, CBS_STATE_IDLE
