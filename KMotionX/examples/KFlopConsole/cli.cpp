@@ -8,9 +8,12 @@ CKMotionDLL *KM;                // one instance of the interface class
 
 int WaitForReady(int waittime);
 
-int console(const char* msg){
+int consoleCallback(const char* msg){
   printf("CONSOLE> %s",msg );
   return 0;
+}
+void errorCallback(const char* msg){
+  printf("ERROR> %s\n",msg );
 }
 
 int main(int argc, char* argv[])
@@ -25,11 +28,15 @@ int main(int argc, char* argv[])
     exit(1);
   }
 
-  if(KM->SetConsoleCallback(console)){
+  if(KM->SetErrMsgCallback(errorCallback)){
+    printf("Faild to register error callback\n");
+  }
+
+  if(KM->SetConsoleCallback(consoleCallback)){
     printf("Faild to register console callback\n");
   }
 
-  if (KM->KMotionLock() == KMOTION_LOCKED)  // see if we can get access
+  if (KM->WaitToken(true, 1000) == KMOTION_LOCKED)  // see if we can get access
   {
     // Get the firmware date from the KMotion Card which
     // will be in PT (Pacific Time)
@@ -56,15 +63,16 @@ int main(int argc, char* argv[])
           str[strlen(str) - 1] = '\0';
 
 
-    if(KM->ServiceConsole()){
-          printf(">ServiceConsole Failed\n");
-        }
+    if (KM->ServiceConsole()) {
+      printf(">ServiceConsole Failed\n");
+    }
 
-        if(strlen(str) > 1){
-      if (KM->KMotionLock() == KMOTION_LOCKED)  // see if we can get access
-      {
+    if (strlen(str) > 1) {
+      if (KM->WaitToken(true, 1000) == KMOTION_LOCKED) // see if we can get access
+          {
         // send command
-        if(KM->WriteLineWithEcho(str)){
+        if (KM->WriteLineWithEcho(str)) {
+          KM->ReleaseToken();
           printf(">Command failed\n");
           exit(1);
         }
@@ -78,9 +86,9 @@ int main(int argc, char* argv[])
         KM->ReleaseToken();
       } else {
         printf("Failed to get lock\n");
-        exit(1);
+        //exit(1);
       }
-        }
+    }
   }
   return 0;
 }
