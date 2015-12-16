@@ -108,8 +108,8 @@
     {
       "action": 0,
       "name": "Halt",
-      "dParam0": 1,
-      "dParam1": 2
+      "dParam0": 47,
+      "dParam1": 0
     },
     {
       "action": 0,
@@ -118,18 +118,20 @@
     {
       "action": 1,
       "name": "Feedhold",
-      "dParam0": 43,
+      "dParam0": 46,
       "dParam1": 0
     },
     {
       "action": 1,
       "name": "Resume",
-      "dParam0": 43,
+      "dParam0": 46,
       "dParam1": 1
     },
     {
-      "action": 0,
-      "name": "Prog Start"
+      "action": 4,
+      "name": "Prog Start",
+      "file": "c-programs/LaserInit.c",
+      "dParam0": 2
     },
     {
       "action": 0,
@@ -230,7 +232,7 @@
       "action": 4,
       "name": "Init",
       "dParam0": 2,
-      "file": "/Users/parhansson/git/KMotionX/KMotionX/KMotionXCNC/app/c-programs/LaserInit.c"
+      "file": "c-programs/LaserInit.c"
     },
     {
       "action": 0,

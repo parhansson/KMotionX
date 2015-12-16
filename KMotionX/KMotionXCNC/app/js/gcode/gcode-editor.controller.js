@@ -75,8 +75,8 @@
     vm.onFeedhold = function(){
       kmxBackend.onFeedhold();     
     }  
-    vm.onAbort = function(){
-      kmxBackend.onAbort();     
+    vm.onEmergencyStop = function(){
+      kmxBackend.onEmergencyStop();     
     }    
     vm.onStep = function(){
       kmxBackend.onStep();     

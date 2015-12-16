@@ -31,7 +31,7 @@
 void onSimulate();
 void onCycleStart();
 void onHalt();
-void onAbort();
+void onEmergencyStop();
 void onFeedhold();
 void onStep();
 void onReset();
@@ -74,6 +74,7 @@ struct state {
   bool connected;
   bool simulate;
   bool interpreting;
+  bool performPostHaltCommand;
   int currentLine;
   char current_file[256];
   char current_machine[256];
@@ -118,8 +119,6 @@ void initHandler() {
     }
   //}
 
-  //pollTID = getThreadId();
-  //debug("Poll thread id %ld", pollTID);
   mb_callback = MessageBoxHandler;
   cbh_init();
 
@@ -151,8 +150,9 @@ void readSetup(){
   json_str(setup,"machine",gstate.current_machine);
   json_str(setup,"gcodefile",gstate.current_file);
 
+  gstate.performPostHaltCommand=false;
   gstate.interpreting = false;
-  gstate.currentLine = 0;
+  gstate.currentLine = 0; //Store current line in setup file? need to implement store file first
   gstate.connected = false;
   gstate.simulate = false;
 
@@ -367,11 +367,11 @@ void CompleteCallback(int status, int line_no, int sequence_number,
       "message", err);
   gstate.interpreting = false;
 
-  //if (p->m_PerformPostHaltCommand)
-  //{
-    //p->m_PerformPostHaltCommand=false;
+  if (gstate.performPostHaltCommand)
+  {
+    gstate.performPostHaltCommand=false;
     Interpreter->InvokeAction(ACTION_HALT,FALSE);  // Do Special Action
-  //}
+  }
 
   gstate.currentLine = line_no;
   //enqueueState();
@@ -795,8 +795,8 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
       onFeedhold();
     } else if (FUNC_SIGP("onSimulate", 0)) {
       onSimulate();
-    } else if (FUNC_SIGP("onAbort", 0)) {
-      onAbort();
+    } else if (FUNC_SIGP("onEmergencyStop", 0)) {
+      onEmergencyStop();
     } else if (FUNC_SIGP("onHalt", 0)) {
       onHalt();
     } else if (FUNC_SIGP("onStep", 0)) {
@@ -938,20 +938,13 @@ void onCycleStart() {
 }
 void onHalt() {
   if (gstate.interpreting) {
+    gstate.performPostHaltCommand=true;
     Interpreter->Halt();
   }
 }
 
-void onAbort() {
-  if (gstate.interpreting) {
-    Interpreter->Abort();
-  }
-}
-
-//TODO
-void OnEmergencyStop()
+void onEmergencyStop()
 {
-
   char s[MAX_LINE];
   int i;
 
@@ -959,7 +952,10 @@ void OnEmergencyStop()
   {
     sprintf(s, "Kill %d", i+1);
 
-    if (km->WriteLine(s)) return;
+    if (km->WriteLine(s)){
+      log_info("Command failed: %s\n", s);
+      return;
+    }
   }
 
   Interpreter->Halt();
@@ -969,7 +965,10 @@ void OnEmergencyStop()
   for (i=0;i<N_CHANNELS;i++)             // disable all servo channels
   {
     sprintf(s, "DISABLEAXIS%d",i);
-    if (km->WriteLine(s)) return;
+    if (km->WriteLine(s)){
+      log_info("Command failed: %s\n", s);
+      return;
+    }
   }
 
   Interpreter->InvokeAction(ACTION_STOP,FALSE);  // Do Special Action
@@ -977,8 +976,9 @@ void OnEmergencyStop()
 
 void onFeedhold(){
   //TODO wait token should be done globaly when handling requests that interact with board
-  if(km->WaitToken(false,100.0 == KMOTION_LOCKED)){
+  //if(km->WaitToken(false,100.0 == KMOTION_LOCKED)){
     char res[MAX_LINE];
+    //WriteLineReadLine waits for token
     if(km->WriteLineReadLine("GetStopState", res)){
       debug("Read stop state failed");
     } else  {
@@ -986,19 +986,17 @@ void onFeedhold(){
       if (res[0] == '0') {
         //Not stopping
         //feedHold = 1;
-        //TODO invoke action here makes trouble
-        //Interpreter->InvokeAction(ACTION_FEEDHOLD,FALSE);  // Do Special Action
+        Interpreter->InvokeAction(ACTION_FEEDHOLD,FALSE);  // Do Special Action
         km->WriteLine("StopImmediate0");
       } else {
         //Stopping or stopped
         //feedHold = 0;
-        //TODO invoke action here makes trouble
-        //Interpreter->InvokeAction(ACTION_RESUME,FALSE);  // Do Special Action
+        Interpreter->InvokeAction(ACTION_RESUME,FALSE);  // Do Special Action
         km->WriteLine("StopImmediate1");
       }
     }
     km->ReleaseToken();
-  }
+  //}
 }
 
 void interpret(int BoardType,char *InFile,int start,int end,bool restart) {
@@ -1191,7 +1189,15 @@ void setInterpreterActionParams(struct json_token *jsontoken, int indexOffset, i
       if(file == NULL || action == 0){
         Interpreter->McodeActions[actionIndex].String[0] = 0;
       } else {
-        strcpy(Interpreter->McodeActions[actionIndex].String, file);
+        if(file[0]=='/'){
+          //path is absolute
+          strcpy(Interpreter->McodeActions[actionIndex].String, file);
+        } else {
+          //path is relative. make it absolute
+          char absoluteFile[256];
+          absolutePath(file, absoluteFile);
+          strcpy(Interpreter->McodeActions[actionIndex].String, absoluteFile);
+        }
       }
 
     } else {

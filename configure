@@ -150,9 +150,9 @@ MULTIARCH_TRIPLET=`$cc --print-multiarch 2>/dev/null`
 if test -n "$MULTIARCH_TRIPLET"; then
   LD_LIB_PATH="$LD_LIB_PATH /usr/lib/$MULTIARCH_TRIPLET /lib/$MULTIARCH_TRIPLET"
 fi
-if test "$targetos" = "Darwin" ; then
-	LD_LIB_PATH="$LD_LIB_PATH /opt/local/lib"
-fi
+#if test "$targetos" = "Darwin" ; then
+ #LD_LIB_PATH="$LD_LIB_PATH /opt/local/lib"
+#fi
 
 
 checklib (){

@@ -13,7 +13,7 @@
         onUpdateMotionParams: onUpdateMotionParams,   
         onSimulate: onSimulate,
         onFeedhold: onFeedhold,
-        onAbort: onAbort,
+        onEmergencyStop: onEmergencyStop,
         onHalt: onHalt,
         onCycleStart: onCycleStart,
         onStep: onStep,
@@ -69,8 +69,8 @@
     function onHalt() {
       onEvent('onHalt');
     }
-    function onAbort() {
-      onEvent('onAbort');
+    function onEmergencyStop() {
+      onEvent('onEmergencyStop');
     }
     function onCycleStart() {
       onEvent('onCycleStart');
