@@ -16,20 +16,18 @@
 #include "frozen.h"
 #include "json.h"
 #include "utils.h"
+#include "callbackhandler.h"
 
-enum cb_type {
-  CB_STATUS, //Non blocking callback. Called from the interpreter in different thread
-  CB_COMPLETE, //Non blocking callback. Called from the interpreter in different thread
-  CB_ERR_MSG,      //Non blocking callback
-  CB_CONSOLE,      //Non blocking callback, event though it has return value??
-  CB_USER, //Blocking callback. Called from the interpreter in different thread
-  CB_USER_M_CODE, //Blocking callback. Called from the interpreter in different thread
-  CB_STATE, // contains loaded machine configuration(trajectory planning etc) and loaded gcode file
-  CB_MESSAGEBOX //Message box and AfxMessageBox
-};
-enum cb_status {
-  CBS_ENQUEUED, CBS_WAITING, CBS_ACKNOWLEDGED, CBS_STATE_IDLE
-};
+//same as in KMotionCNCDlg.c
+#define ACTION_CYCLE_START 25
+#define ACTION_HALT 26
+#define ACTION_STOP 27
+#define ACTION_FEEDHOLD 28
+#define ACTION_RESUME 29
+#define ACTION_PROG_START 30
+#define ACTION_PROG_EXIT 31
+
+
 void onSimulate();
 void onCycleStart();
 void onHalt();
@@ -42,7 +40,6 @@ void updateMotionParams();
 void interpret(int BoardType,char *InFile,int start,int end,bool restart);
 void setInterpreterActionParams(struct json_token *jsontoken, int indexOffset, int count, const char* pathTemplate);
 void setMotionParams(struct json_token *jsontoken);
-void interpret(struct json_token *paramtoken);
 void loadGlobalFile(struct json_token *paramtoken);
 void listDir(struct json_token *paramtoken);
 int invokeAction(struct json_token *paramtoken);
@@ -51,25 +48,22 @@ void setSimulationMode(bool enable);
 int handle_api(struct mg_connection *conn, enum mg_event ev);
 int handleJson(struct mg_connection *conn,const char *object, const char *func);
 int handle_close(struct mg_connection *conn);
-void push_message(const char *msg);
+//void push_message(const char *msg);
 void push_status();
-void delete_callback(struct callback *node);
+
 void ErrMsgHandler(const char *msg);
 int ConsoleHandler(const char *msg);
 int MessageBoxHandler(const char *, const char *, int );
 int MUserCallback(int);
 int UserCallback(const char *);
-void enqueueState();
-int enqueueCallback(const char * msg, enum cb_type type);
 int readStatus();
+void _enqueueState();
 
-
-struct callback * alloc_callback();
 //struct callback * set_callback(struct callback *last, const char * message, enum cb_type type);
 
 //Emits json resonse
 #define EMIT_RESPONSE_PARAM(fmt,...) w += json_emit(gp_response+w, MAX_LINE-w, fmt, ##__VA_ARGS__);
-#define EMIT_RESPONSE(fmt, ...) int w = 0; w = json_emit(gp_response+w, MAX_LINE, "{ s: s, s: s, s: ", "clazz", object,"func",func, "params"); \
+#define EMIT_RESPONSE(fmt, ...) int w = 0; w = json_emit(gp_response+w, MAX_LINE, "{ s: s, s: s, s: ", "api", object,"func",func, "params"); \
     EMIT_RESPONSE_PARAM(fmt,##__VA_ARGS__)  \
     w += json_emit(gp_response+w, MAX_LINE-w, ", s: i }", "ret",ret);
 
@@ -88,39 +82,19 @@ struct state {
 //Check function signature
 #define FUNC_SIGP(name, nr_of_params) !strcmp(name,func) && params == nr_of_params
 
-struct callback {
-  int id;
-  enum cb_type type;
-  enum cb_status status;
-  time_t sent_time;
-  int ret;
-  char msg[512]; //TODO malloc correct size
-  struct callback *next;
-};
-pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t con = PTHREAD_COND_INITIALIZER;
 
 CGCodeInterpreter *Interpreter;
 CKMotionDLL *km;
 CCoordMotion *CM;
-long int pollTID; //Poll thread id
-state gstate;
-MAIN_STATUS main_status;
+static state gstate;
+static MAIN_STATUS main_status;
 
-struct callback *callbacks = NULL; // head of this list is always state callback
-//Callback id counter.
-int callbackCounter = 0;
 
 //global poll thread response array, no need to allocate eah time since server is single threaded
-char gp_response[MAX_LINE];
+static char gp_response[MAX_LINE];
 
-const char STATUS_NAMES[][24] = { "CBS_ENQUEUED", "CBS_WAITING",
-    "CBS_ACKNOWLEDGED", "CBS_STATE_IDLE" };
 
-const char CB_NAMES[][24] = { "STATUS", "COMPLETE", "ERR_MSG",
-    "CONSOLE", "USER", "USER_M_CODE", "STATE", "MESSAGEBOX" };
-
-const char ACTION_NAMES[][32] = { "M_Action_None", "M_Action_Setbit", "M_Action_SetTwoBits",
+static const char ACTION_NAMES[][32] = { "M_Action_None", "M_Action_Setbit", "M_Action_SetTwoBits",
     "M_Action_DAC", "M_Action_Program", "M_Action_Program_wait", "M_Action_Program_wait_sync",
     "M_Action_Program_PC", "M_Action_Callback", "M_Action_Waitbit", "UNAVAILABLE" };
 
@@ -135,13 +109,19 @@ void initHandler() {
   Interpreter = new CGCodeInterpreter(CM);
   readSetup();
   updateMotionParams();
+  //if (FirstStartup)
+  //{
+    //FirstStartup=false;
+    if (Interpreter->InvokeAction(ACTION_PROG_START,FALSE))  // Special Command
+    {
+      AfxMessageBox("Unable to perform Startup Action");
+    }
+  //}
 
-  pollTID = getThreadId();
+  //pollTID = getThreadId();
   //debug("Poll thread id %ld", pollTID);
   mb_callback = MessageBoxHandler;
-  //Enqueue state as first callback. This first entry will never be removed
-  callbacks = (struct callback *) malloc(sizeof(struct callback));
-  callbacks->next = NULL;
+  cbh_init();
 
   //Try without simulation on startup
   setSimulationMode(false); //enques state
@@ -180,25 +160,7 @@ void readSetup(){
   unmapFile(mmFile);
 }
 void info_handler(int signum) {
-  struct callback *last;
-  int cb_count = 0;
-  int statCounts[3][8][1];
-  memset(statCounts, 0, sizeof(statCounts));
-  last = callbacks;
-  while (last->next != NULL) {
-    statCounts[last->status][last->type][0]++;
-    cb_count++;
-    last = last->next;
-  }
-  for (int status = 0; status < 3; status++) {
-    for (int type = 0; type < 8; type++) {
-      int count = statCounts[status][type][0];
-      if (count > 0) {
-        fprintf(stdout, "%s, %s %d\n", STATUS_NAMES[status], CB_NAMES[type],
-            count);
-      }
-    }
-  }
+  cbh_print_info();
   struct mg_connection *c = NULL;
   int websockets = 0;
   int connections = 0;
@@ -218,7 +180,7 @@ void info_handler(int signum) {
   }
   //debug("Pushed to %d sockets", sockets);
 
-  fprintf(stdout, "Total callbacks in queue :%d\n", cb_count);
+
   fprintf(stdout, "Websockets   :%d\n", websockets);
   fprintf(stdout, "Connections  :%d\n", connections);
 
@@ -231,10 +193,6 @@ void info_handler(int signum) {
   fprintf(stdout, "Simulating   :%d\n", gstate.simulate);
 
 }
-
-//TODO Implement support for blocking callback in poll thread
-//#define isBlocking(type) (type == CB_USER || type == CB_USER_M_CODE || type ==  CB_MESSAGEBOX)
-#define isBlocking(type) (type == CB_USER || type == CB_USER_M_CODE)
 
 //
 /**
@@ -388,39 +346,7 @@ void push_status() {
   free(msg);
 }
 
-void pollCallback(struct callback *cb, int id, int ret) {
-  if (cb->status == CBS_ENQUEUED) {
-    cb->sent_time = time(NULL);
-    push_message(cb->msg);
-    cb->status = CBS_WAITING;
-  } else if (cb->status == CBS_WAITING) {
 
-    if (cb->id == id) {
-      cb->status = CBS_ACKNOWLEDGED;
-      cb->ret = ret;
-      if (cb->type == CB_STATE) {
-        cb->status = CBS_STATE_IDLE;
-      } else {
-        //Only signal waiting thread if blocking callback
-        if (isBlocking(cb->type)) {
-          pthread_cond_signal(&con); //wake up waiting thread with condition variable
-        } else {
-          //printf("Non blocking callback acked and deleted\n");
-          delete_callback(cb);
-        }
-      }
-    } else {
-      //resend message if not acked for 30 seconds
-      //This will prevent hanging threads if browser is closed.
-      //When a new browser is connected the message will show up and can be acked
-      time_t current_time = time(NULL);
-      if (current_time - cb->sent_time > 30) {
-        cb->status = CBS_ENQUEUED;
-      }
-
-    }
-  }
-}
 #define DUMP_CON if(conn->content_len > 0){ \
     char *_msg; \
     _msg = strndup(conn->content, conn->content_len); \
@@ -428,138 +354,7 @@ void pollCallback(struct callback *cb, int id, int ret) {
     free(_msg); \
 }
 
-void pollCallbacks(char * content) {
 
-  int id = -1;
-  char type[16];
-  memset(type,0,16);
-
-  int ret = -1;
-  if (content != NULL) {
-    //we have a connection.
-    //incoming answer from client
-    if (strlen(content) > 12 && memcmp(content, "CB_ACK:", 7) == 0) {
-      sscanf(content, "CB_ACK: %d  %s %d", &id, type, &ret);
-
-/*
-       char *msg;
-       msg = strndup(conn->content, conn->content_len);
-       debug("CB_ACK id: %s type: %s    raw: %s\n",id,type,msg);
-       free(msg);
-*/
-    }
-  }
-
-  pthread_mutex_lock(&mut);
-
-  struct callback *node, *current;
-
-  node = callbacks;
-  do{
-
-    current = node;
-    // pollCallback might free the current node in this case node->next is not valid.
-    node = node->next;
-    pollCallback(current, id, ret);
-  } while (node != NULL);
-
-  pthread_mutex_unlock(&mut);
-}
-struct callback * alloc_callback() {
-  struct callback *last;
-  last = callbacks;
-  int size = 0;
-  while (last->next != NULL) {
-    last = last->next;
-    size++;
-  }
-  last->next = (struct callback *) malloc(sizeof(struct callback));
-  last->next->next = NULL;
-  return last->next;
-}
-struct callback * init_callback(struct callback *last, const char * message, enum cb_type type) {
-
-  if (last == NULL) {
-    last = alloc_callback();
-  }
-
-  last->id = callbackCounter++;
-  last->status = CBS_ENQUEUED;
-  last->ret = -1;
-  last->type = type;
-  //{ "id": 5, "type": 67, data: ""|6776|{}|[]|null|true|false}
-  json_emit(last->msg, 512, "{ s: i, s: s, s: S, s: S}",
-      "id", last->id,
-      "type", CB_NAMES[type],
-      "block",isBlocking(type)?"true":"false",
-      "data", message);
-
-  //debug("Enqueued %s message: %s",CB_NAMES[type], last->msg);
-  return last;
-}
-void delete_callback(struct callback *node) {
-  // When node to be deleted is head node
-  if (callbacks == node) {
-    log_err("Not allowed to remove head of callback list");
-    return;
-  } else {
-
-    // When not first node, follow the normal deletion process
-    // find the previous node
-    struct callback *prev = callbacks;
-    while (prev->next != NULL && prev->next != node) {
-      prev = prev->next;
-    }
-
-    // Check if node really exists in Linked List
-    if (prev->next == NULL) {
-      log_err("Given node is not present in Linked List ");
-      return;
-    }
-
-    // Remove node from Linked List
-    prev->next = prev->next->next;
-  }
-  // Free memory
-  free(node);
-}
-//msg needs to be quoted if string
-int enqueueCallback(const char * msg, enum cb_type type) {
-
-  //Enqueued messages are held in list (callbacks)
-  //Callbacks are created here and sent to clients in next poll
-
-  struct callback * cb;
-  long int curTID = getThreadId();
-  int result = 0;
-  //debug("Poll thread: %ld. Current thread: %ld", pollTID, curTID);
-  if (pollTID == curTID) {
-    //if this is a blocking call. then we are in trouble.
-    //we can not stop and wait in poll/main thread
-    //TODO mutex lock here is new and not very well tested
-    pthread_mutex_lock(&mut);
-    cb = init_callback(NULL, msg, type);
-    if (isBlocking(cb->type)) {
-      log_err("-------ERROR: Blocking callback in poll thread %ld", pollTID);
-      result = cb->ret;
-      delete_callback(cb);
-    }
-    pthread_mutex_unlock(&mut);
-  } else {
-    pthread_mutex_lock(&mut);
-    cb = init_callback(NULL, msg, type);
-    if (isBlocking(cb->type)) {
-      debug("wait called");
-      pthread_cond_wait(&con, &mut); //wait for the signal with con as condition variable
-      debug("wait done signal received");
-      result = cb->ret;
-      delete_callback(cb);
-    }
-    pthread_mutex_unlock(&mut);
-  }
-
-  return result;
-}
 
 void CompleteCallback(int status, int line_no, int sequence_number,
     const char *err) {
@@ -571,9 +366,16 @@ void CompleteCallback(int status, int line_no, int sequence_number,
       "sequence", sequence_number,
       "message", err);
   gstate.interpreting = false;
+
+  //if (p->m_PerformPostHaltCommand)
+  //{
+    //p->m_PerformPostHaltCommand=false;
+    Interpreter->InvokeAction(ACTION_HALT,FALSE);  // Do Special Action
+  //}
+
   gstate.currentLine = line_no;
   //enqueueState();
-  enqueueCallback(buf, CB_COMPLETE);
+  cbh_enqueue_callback(buf, CB_COMPLETE);
 }
 
 void StatusCallback(int line_no, const char *msg) {
@@ -586,14 +388,14 @@ void StatusCallback(int line_no, const char *msg) {
   json_emit(buf, 256, "{ s: i, s: s }",
       "line", line_no,
       "message", msg);
-  enqueueCallback(buf, CB_STATUS);
+  cbh_enqueue_callback(buf, CB_STATUS);
 }
 
 void ErrMsgHandler(const char *msg) {
   //This is a non blocking call enqueue in poll thread
   char buf[256];
   json_emit(buf, 256, "s", msg);
-  enqueueCallback(buf, CB_ERR_MSG);
+  cbh_enqueue_callback(buf, CB_ERR_MSG);
 
 }
 
@@ -602,7 +404,7 @@ int ConsoleHandler(const char *msg) {
   //Not even sure this happens in another thread
   char buf[256];
   json_emit(buf, 256, "s", msg);
-  return enqueueCallback(buf, CB_CONSOLE);
+  return cbh_enqueue_callback(buf, CB_CONSOLE);
 }
 
 int MessageBoxHandler(const char *title, const char *msg, int options) {
@@ -619,14 +421,14 @@ int MessageBoxHandler(const char *title, const char *msg, int options) {
       "title", title,
       "message", msg);
   //todo handle blocking messagebox
-  return enqueueCallback(buf, CB_MESSAGEBOX);
+  return cbh_enqueue_callback(buf, CB_MESSAGEBOX);
 }
 
 int UserCallback(const char *msg) {
   //This is a blocking call. A bit trickier
   char buf[256];
   json_emit(buf, 256, "s", msg);
-  int result = enqueueCallback(buf, CB_USER);
+  int result = cbh_enqueue_callback(buf, CB_USER);
   debug("UserCallback result: %d", result);
   return result;
 }
@@ -647,7 +449,7 @@ int MUserCallback(int mCode) {
   //instantiate a struct and wait for a signal/variable in that struct
   char buf[10];
   json_emit(buf, 10, "i", mCode);
-  int result = enqueueCallback(buf, CB_USER_M_CODE);
+  int result = cbh_enqueue_callback(buf, CB_USER_M_CODE);
   debug("UserMCallback result: %d", result);
   return result;
 
@@ -656,17 +458,12 @@ int MUserCallback(int mCode) {
 //only canon_stand_alone.cpp is using the message box result value
 //hence maybe blocking call to this is unneccessary
 
-void enqueueState() {
-  //Lock mutex when enqueing state.
-  pthread_mutex_lock(&mut);
+void _enqueueState() {
   char stateBuf[512];
-  //debug("enquing current file: %s", gstate.current_file);
-  //this could be implemented as callback to one client (connection) only
   json_emit(stateBuf, 512, "{s: s, s: s }",
       "file", gstate.current_file,
       "machine", gstate.current_machine);
-  init_callback(callbacks, stateBuf, CB_STATE);
-  pthread_mutex_unlock(&mut);
+  cbh_enqueue_state(stateBuf);
 }
 
 bool msPast(struct timeval *tval_last, int ms){
@@ -690,22 +487,27 @@ int handle_poll(struct mg_connection *conn) {
   //poll is called every at least every 100 ms but can be alot more often
   if(msPast(&tval_poll_callbacks,200)){
     //debug("polling callbacks");
-    pollCallbacks(NULL);
+    cbh_poll_callbacks(NULL);
   }
 
-  if(msPast(&tval_status,200)){
-    //debug("pushar status");
-    push_status();
-  }
+  //only perform poll when locked
+  if(km->WaitToken(false,100.0 == KMOTION_LOCKED)){
 
-  if(!gstate.simulate){
-    if(msPast(&tval_service_console,1000)){
-      //debug("serving console");
-      if(km->ServiceConsole()){
-        //TODO not verified that this works.
-        ErrMsgHandler(">ServiceConsole Failed\n");
+    if(msPast(&tval_status,200)){
+      //debug("pushar status");
+      push_status();
+    }
+
+    if(!gstate.simulate){
+      if(msPast(&tval_service_console,1000)){
+        //debug("serving console");
+        if(km->ServiceConsole()){
+          //TODO not verified that this works.
+          ErrMsgHandler(">ServiceConsole Failed\n");
+        }
       }
     }
+    km->ReleaseToken();
   }
 
   //printf("event %d\n", ev);
@@ -714,7 +516,7 @@ int handle_poll(struct mg_connection *conn) {
 int handle_ws_connect(struct mg_connection *conn) {
   //if websocket /ws is param here
   //printf("event %d param: %s\n", ev, conn->uri);
-  enqueueState();
+  _enqueueState();
   return MG_FALSE;
 }
 
@@ -837,7 +639,7 @@ int handle_request(struct mg_connection *conn,enum mg_event ev) {
   if (conn->is_websocket) {
     char * content = strndup(conn->content, conn->content_len);
     //debug("MG_REQUEST websocket. content:\"%s\"",content);
-    pollCallbacks(content);
+    cbh_poll_callbacks(content);
     free(content);
     return MG_TRUE;
   } else if (isUploadRequest(conn)) {
@@ -984,31 +786,9 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
   gp_response[0] = '\0';
   //gp_response = (char*) malloc(sizeof(char) * ( MAX_LINE));
   int ret = 0;
-  if (!strcmp("aux", object)) {
+  if (!strcmp("kmx", object)) {
     if (FUNC_SIGP("loadGlobalFile", 2)) {
       loadGlobalFile(paramtoken);
-    /*
-     } else if (FUNC_SIGP("saveMachine", 1)) {
-      char *machineFile = NULL;
-      char *machineData = NULL;
-      toks(paramtoken+1, &machineFile);
-      toks(paramtoken+2, &machineData);
-
-      if (machineData && machineFile) {
-        FILE *fp;
-        fp = fopen(machineFile, "w");
-        if (fp != NULL) {
-          fputs(machineData, fp);
-          fclose(fp);
-        } else {
-          ErrMsgHandler(strerror(errno));
-        }
-
-      }
-
-      free(machineFile);
-      free(machineData);
-     */
     } else if(FUNC_SIGP("listDir", 1)){
       listDir(paramtoken);
     } else if (FUNC_SIGP("onFeedhold", 0)) {
@@ -1025,116 +805,24 @@ int handleJson(struct mg_connection *conn, const char *object, const char *func)
       onReset();
     } else if (FUNC_SIGP("onCycleStart", 0)) {
       onCycleStart();
-    }
-  } else if (!strcmp("kmotion", object)) {
-    if (FUNC_SIGP("CheckCoffSize", 0)) {
-
-    } else if (FUNC_SIGP("CheckForReady", 0)) {
-      ret = km->CheckForReady();
-      EMIT_RESPONSE("[]");
-    } else if (FUNC_SIGP("CheckKMotionVersion", 0)) {
-      ret = km->CheckKMotionVersion();
-      EMIT_RESPONSE("[]");
-    } else if (FUNC_SIGP("CheckKMotionVersion", 1)) {
-      int type;
-      toki(paramtoken + 1, &type);
-      ret = km->CheckKMotionVersion(&type);
-      EMIT_RESPONSE("[i]", type);
-    } else if (FUNC_SIGP("CheckKMotionVersion", 2)) {
-      int type;
-      bool GetBoardTypeOnly;
-      toki(paramtoken + 1, &type);
-      tokb(paramtoken + 2, &GetBoardTypeOnly);
-      ret = km->CheckKMotionVersion(&type, GetBoardTypeOnly);
-      EMIT_RESPONSE("[i]", type);
-
-    } else if (FUNC_SIGP("Compile", 6)) {
-      char *Name = NULL;
-      char *OutFile = NULL;
-      int BoardType;
-      int Thread;
-      char *Err = NULL;
-      int MaxErrLen;
-      toks(paramtoken + 1, &Name, 0);
-      toks(paramtoken + 2, &OutFile, 0);
-      toki(paramtoken + 3, &BoardType);
-      toki(paramtoken + 4, &Thread);
-      toki(paramtoken + 6, &MaxErrLen);
-      toks(paramtoken + 5, &Err, MaxErrLen);
-
-      ret = km->Compile(Name, OutFile, BoardType, Thread, Err, MaxErrLen);
-      EMIT_RESPONSE("[S, S, i, i, S, i]", Name, OutFile, BoardType, Thread, Err,
-          MaxErrLen);
-      free(Name);
-      free(OutFile);
-      free(Err);
-
-    } else if (FUNC_SIGP("CompileAndLoadCoff", 2)) {
-      char *Name = NULL;
-      int Thread;
-      toks(paramtoken + 1, &Name, 0);
-      toki(paramtoken + 2, &Thread);
-      char err[512];
-      if(km->CompileAndLoadCoff(Name, Thread, err, 511)){
-        if(strlen(err)>0)ErrMsgHandler(err);
-      }
-      free(Name);
-    } else if (FUNC_SIGP("ConvertToOut", 4)) {
-
-      int p1;
-      char *p2 = NULL;
-      char *p3 = NULL;
-      int p4;
-      toki(paramtoken + 1, &p1);
-      toks(paramtoken + 2, &p2, 0);
-      toki(paramtoken + 4, &p4);
-      toks(paramtoken + 3, &p3, p4);
-
-      km->ConvertToOut(p1, p2, p3, p4);
-      ret = 0;
-      EMIT_RESPONSE("[i, S, S, i]", p1, p2, p3, p4);
-      free(p2);
-      free(p3);
-
-    } else if (FUNC_SIGP("Disconnect", 0)) {
-      ret = km->Disconnect();
-      EMIT_RESPONSE("[]");
-    } else if (FUNC_SIGP("DoErrMsg", 1)) {
+    } else if(FUNC_SIGP("onUpdateMotionParams", 0)) {
+      updateMotionParams();
+    } else if (FUNC_SIGP("onInvokeAction", 1)) {
+      ret = invokeAction(paramtoken);
+    } else if (FUNC_SIGP("onDoErrorMessage", 1)) {
       char *p1 = NULL;
       toks(paramtoken, &p1, 0);
       ret = 0;
       km->DoErrMsg(p1);
       EMIT_RESPONSE("[S]", p1);
       free(p1);
-    } else if (FUNC_SIGP("FirmwareVersion", 0)) {
-      ret = km->FirmwareVersion();
-      EMIT_RESPONSE("[]");
-    } else if (FUNC_SIGP("WriteLineReadLine", 2)) {
-      char p1[200];
-      char p2[200];
-      ret = km->WriteLineReadLine(p1, p2);
-      EMIT_RESPONSE("[S, S]", p1, p2);
-    } else if (FUNC_SIGP("WriteLineWithEcho", 1)) {
+    } else {
+      log_info("Function request is not part of API %s",func);
     }
-
-  } else if (!strcmp("interpreter", object)) {
-    if (FUNC_SIGP("InvokeAction", 1)) {
-      ret = invokeAction(paramtoken);
-
-    } else if (FUNC_SIGP("Interpret", 5)) {
-
-      interpret(paramtoken);
-      // test message from poll thread
-      //blocking message from pull thread should be implementet to work.
-      //km->DoErrMsg("Error message from poll thread");
-
-
-//    } else if (FUNC_SIGP("SetUserMCallback", 1)) {
-//    } else if (FUNC_SIGP("SetUserMCodeCallback", 1)) {
-    } else if(FUNC_SIGP("updateMotionParams", 0)) {
-      updateMotionParams();
-    }
+  } else {
+    log_info("API not implemented %s",object);
   }
+
   mg_send_header(conn, "Content-Type", "application/json");
 
   //Need to send some data or connection will not be closed
@@ -1187,7 +875,7 @@ void loadGlobalFile(struct json_token *paramtoken){
           if (strcmp(globalFile, file) != 0) {
               strcpy(globalFile, file);
               //when file changes all clients will e noticed.
-              enqueueState();
+              _enqueueState();
           }
         }
       }
@@ -1260,41 +948,57 @@ void onAbort() {
   }
 }
 
-void onFeedhold(){
-  char res[MAX_LINE];
-  if(km->WriteLineReadLine("GetStopState", res)){
-    debug("Read stop state failed");
-  } else  {
-    //int feedHold;
-    if (res[0] == '0') {
-      //Not stopping
-      //feedHold = 1;
-      km->WriteLine("StopImmediate0");
-    } else {
-      //Stopping or stopped
-      //feedHold = 0;
-      km->WriteLine("StopImmediate1");
-    }
-    //EMIT_RESPONSE("[i]", feedHold);
+//TODO
+void OnEmergencyStop()
+{
+
+  char s[MAX_LINE];
+  int i;
+
+  for (i=1;i<N_USER_THREADS;i++)   // kill all user programs except Thread #1
+  {
+    sprintf(s, "Kill %d", i+1);
+
+    if (km->WriteLine(s)) return;
   }
+
+  Interpreter->Halt();
+
+  Interpreter->Abort();
+
+  for (i=0;i<N_CHANNELS;i++)             // disable all servo channels
+  {
+    sprintf(s, "DISABLEAXIS%d",i);
+    if (km->WriteLine(s)) return;
+  }
+
+  Interpreter->InvokeAction(ACTION_STOP,FALSE);  // Do Special Action
 }
 
-void interpret(struct json_token *paramtoken) {
-  int BoardType;      // = BOARD_TYPE_KFLOP;
-  char *InFile = NULL;
-  int start;      // = 0;
-  int end;      //= -1;
-  bool restart;      // = true;
-
-  toki(paramtoken + 1, &BoardType);
-  toks(paramtoken + 2, &InFile, 0);
-  toki(paramtoken + 3, &start);
-  toki(paramtoken + 4, &end);
-  tokb(paramtoken + 5, &restart);
-  if (InFile) {
-    interpret(BoardType, InFile, start, end, restart);
+void onFeedhold(){
+  //TODO wait token should be done globaly when handling requests that interact with board
+  if(km->WaitToken(false,100.0 == KMOTION_LOCKED)){
+    char res[MAX_LINE];
+    if(km->WriteLineReadLine("GetStopState", res)){
+      debug("Read stop state failed");
+    } else  {
+      //int feedHold;
+      if (res[0] == '0') {
+        //Not stopping
+        //feedHold = 1;
+        //TODO invoke action here makes trouble
+        //Interpreter->InvokeAction(ACTION_FEEDHOLD,FALSE);  // Do Special Action
+        km->WriteLine("StopImmediate0");
+      } else {
+        //Stopping or stopped
+        //feedHold = 0;
+        //TODO invoke action here makes trouble
+        //Interpreter->InvokeAction(ACTION_RESUME,FALSE);  // Do Special Action
+        km->WriteLine("StopImmediate1");
+      }
+    }
+    km->ReleaseToken();
   }
-  free(InFile);
 }
 
 void interpret(int BoardType,char *InFile,int start,int end,bool restart) {
@@ -1304,6 +1008,7 @@ void interpret(int BoardType,char *InFile,int start,int end,bool restart) {
     //Interpreter->CoordMotion->m_AxisDisabled=false;
     //Interpreter->CoordMotion->ClearHalt();
     //TODO CheckForResume
+    Interpreter->InvokeAction(ACTION_CYCLE_START,FALSE);  // Do Special Action
     if (!Interpreter->Interpret(BoardType, InFile, start, end, restart,
         StatusCallback, CompleteCallback)) {
       gstate.interpreting = true;
@@ -1413,7 +1118,9 @@ void setMotionParams(struct json_token *jsontoken) {
     //M2-M9,S index 2-9
     //userButtons index 11-20
     //M100-M119 index 21 -39
+    //Special actions index 41 -48
     setInterpreterActionParams(jsontoken, 0,MAX_MCODE_ACTIONS_M1,"actions[%i]");
+    setInterpreterActionParams(jsontoken, MCODE_ACTIONS_SPECIAL_OFFSET,MAX_MCODE_ACTIONS_SPECIAL,"specialActions[%i]");
     setInterpreterActionParams(jsontoken, MAX_MCODE_ACTIONS_M1,MAX_MCODE_ACTIONS_BUTTONS,"userActions[%i]");
     setInterpreterActionParams(jsontoken, MCODE_ACTIONS_M100_OFFSET,MAX_MCODE_ACTIONS_M100,"extendedActions[%i]");
 
@@ -1465,6 +1172,7 @@ void setInterpreterActionParams(struct json_token *jsontoken, int indexOffset, i
       //M2-M9,S index 2-9
       //userButtons index 11-20
       //M100-M119 index 21 -39
+      //Special actions index 41 -48
       int actionIndex = indexOffset + i;
       int actionNameIndex = action > 0 && action < 10?action:10;
       if(actionNameIndex != 10){
@@ -1485,11 +1193,6 @@ void setInterpreterActionParams(struct json_token *jsontoken, int indexOffset, i
       } else {
         strcpy(Interpreter->McodeActions[actionIndex].String, file);
       }
-
-
-      //invoke user buttons with a call such as this,
-      //Interpreter->InvokeAction(10,FALSE);  // resend new Speed
-
 
     } else {
       printf("Failed %s\n", pathTemplate);

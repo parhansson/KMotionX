@@ -46,16 +46,16 @@
   },
   "actions": [
     {
-      "action": -1,
-      "name": ""
+      "action": 0,
+      "name": "M0"
     },
     {
-      "action": -1,
-      "name": ""
+      "action": 0,
+      "name": "M1"
     },
     {
-      "action": -1,
-      "name": ""
+      "action": 0,
+      "name": "M2"
     },
     {
       "action": 1,
@@ -96,6 +96,46 @@
       "name": "S"
     }
   ],
+  "specialActions": [
+    {
+      "action": 0,
+      "name": "M30"
+    },
+    {
+      "action": 0,
+      "name": "Cycle Start"
+    },
+    {
+      "action": 0,
+      "name": "Halt",
+      "dParam0": 1,
+      "dParam1": 2
+    },
+    {
+      "action": 0,
+      "name": "Stop"
+    },
+    {
+      "action": 1,
+      "name": "Feedhold",
+      "dParam0": 43,
+      "dParam1": 0
+    },
+    {
+      "action": 1,
+      "name": "Resume",
+      "dParam0": 43,
+      "dParam1": 1
+    },
+    {
+      "action": 0,
+      "name": "Prog Start"
+    },
+    {
+      "action": 0,
+      "name": "Prog Exit"
+    }
+  ],
   "extendedActions": [
     {
       "action": 4,
@@ -104,7 +144,7 @@
       "dParam2": 5,
       "dParam3": 5,
       "dParam1": 0,
-      "file": "/Users/parhansson/git/KMotionX/KMotionX/examples/webgui/site/c-programs/LaserPPI.c"
+      "file": "/Users/parhansson/git/KMotionX/KMotionX/KMotionXCNC/app/c-programs/LaserPPI.c"
     },
     {
       "action": 0,
@@ -190,7 +230,7 @@
       "action": 4,
       "name": "Init",
       "dParam0": 2,
-      "file": "/Users/parhansson/git/KMotionX/KMotionX/examples/webgui/site/c-programs/LaserInit.c"
+      "file": "/Users/parhansson/git/KMotionX/KMotionX/KMotionXCNC/app/c-programs/LaserInit.c"
     },
     {
       "action": 0,

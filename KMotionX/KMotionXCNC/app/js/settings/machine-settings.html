@@ -6,7 +6,7 @@
 
     <ul id=" " class="nav nav-tabs" data-tabs="_tabs">
         <li class="active"><a href="#_settings_general" data-toggle="tab">General</a></li>
-        <li><a href="#_settings_mcodes" data-toggle="tab">M3-M9</a></li>
+        <li><a href="#_settings_mcodes" data-toggle="tab">M0-M30</a></li>
         <li><a href="#_settings_mcodes2" data-toggle="tab">M100-M119</a></li>
         <li><a href="#_settings_userbuttons" data-toggle="tab">User buttons</a></li>
         <li><a href="#_settings_motionparameter" data-toggle="tab">Motion Parameters</a></li>
@@ -60,8 +60,10 @@
         <h3 class="settings-header">M-codes</h3>
         <div class="">
           <kmx-mcode-value 
-            ng-repeat="action in machine.actions track by $index" 
-            ng-if="action.action != -1">
+            ng-repeat="action in machine.actions track by $index">
+          </kmx-mcode-value>
+          <kmx-mcode-value 
+            ng-repeat="action in machine.specialActions track by $index">
           </kmx-mcode-value>
         </div>
       </div>

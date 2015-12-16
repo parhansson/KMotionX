@@ -17,6 +17,7 @@ extern "C" {
 int ev_handler(struct mg_connection *conn, enum mg_event ev);
 void initHandler();
 void info_handler(int signum);
+void push_message(const char *msg);
 
 #ifdef __cplusplus
 }

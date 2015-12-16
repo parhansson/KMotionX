@@ -7,12 +7,10 @@
   
   function kmxBackend($http){     
     var service = {
-        listDir: listDir,
-        loadGlobalFile: loadGlobalFile,
-        compileAndLoadCoff: compileAndLoadCoff,
-        invokeAction: invokeAction,
-        updateMotionParams: updateMotionParams,
-        //interpret: interpret,        
+        listDir: onListDir,
+        loadGlobalFile: onLoadGlobalFile,
+        onInvokeAction: onInvokeAction,
+        onUpdateMotionParams: onUpdateMotionParams,   
         onSimulate: onSimulate,
         onFeedhold: onFeedhold,
         onAbort: onAbort,
@@ -20,6 +18,7 @@
         onCycleStart: onCycleStart,
         onStep: onStep,
         onReset: onReset,
+        onDoErrorMessage: onDoErrorMessage,
         
         load: load,
         save: save
@@ -54,30 +53,12 @@
         alert("Error saving file " + name);
       });
     }
-    
-    
-    
-    function listDir(path) {
-      var url = "/api/aux/listDir";
-      var msg = {"params": path};
-      return $http.post(url, msg)
-        .error(function(data, status, headers, config) {
-          // called asynchronously if an error occurs
-          // or server returns response with an error status.
-          console.log(data);
-        });
-      
+   
+    function onListDir(path) {
+      return onEvent('listDir',{"params": path});
     }
-    function loadGlobalFile(type, file) {
-      var url = "/api/aux/loadGlobalFile";
-      var msg = {"params": [type, file]};
-      return $http.post(url, msg)
-        .error(function(data, status, headers, config) {
-          // called asynchronously if an error occurs
-          // or server returns response with an error status.
-          console.log(data);
-        });
-      
+    function onLoadGlobalFile(type, file) {
+      onEvent('loadGlobalFile',{"params": [type, file]});
     }
     function onFeedhold() {
       onEvent('onFeedhold');
@@ -100,71 +81,26 @@
     function onReset() {
       onEvent('onReset');
     }
-    function onEvent(eventName){
-      
-      var url = "/api/aux/"+eventName;
-      var msg = {"ret":null};
-      return $http.post(url, msg)
+    function onUpdateMotionParams() {
+      onEvent('onUpdateMotionParams');
+    }
+    function onInvokeAction(action) {
+      onEvent('onInvokeAction', {"params": [action]});
+    }
+    function onDoErrorMessage(message) {
+      onEvent('onDoErrorMessage', {"params": msg});
+    }    
+    
+    function onEvent(eventName, msg){
+      var url = "/api/kmx/"+eventName;
+      var data = msg || {};
+      return $http.post(url, data)
       .error(function(data, status, headers, config) {
         // called asynchronously if an error occurs
         // or server returns response with an error status.
         console.log(data);
       });
-    }
-    
-    function compileAndLoadCoff(params) {
-      var url = "/api/kmotion/CompileAndLoadCoff";
-      var msg = {"params":params,"ret":null};
-      return $http.post(url, msg)
-        .error(function(data, status, headers, config) {
-          // called asynchronously if an error occurs
-          // or server returns response with an error status.
-          console.log(data);
-        });
-    }
-    
-    function updateMotionParams() {
-      var url = "/api/interpreter/updateMotionParams";
-      var msg = {"ret":null};
-      return $http.post(url, msg)
-        .error(function(data, status, headers, config) {
-          // called asynchronously if an error occurs
-          // or server returns response with an error status.
-          console.log(data);
-        });
-    }
-    
-    function invokeAction(action) {
-      var url = "/api/interpreter/InvokeAction";
-      var msg = {"params": [action]};
-      return $http.post(url, msg)
-        .error(function(data, status, headers, config) {
-          // called asynchronously if an error occurs
-          // or server returns response with an error status.
-          console.log(data);
-        });
-    }
-    
-    function interpret(BoardType, InFile, start, end, restart) {
-      var url = "/api/interpreter/Interpret";
-      var msg = {"params":[BoardType, InFile, start, end, restart],"ret":null};
-      return $http.post(url, msg)
-        .error(function(data, status, headers, config) {
-          // called asynchronously if an error occurs
-          // or server returns response with an error status.
-          console.log(data);
-        });
-    } 
-    
-    function doErrMsg(msg) { //currently not used
-      var url = "/api/kmotion/DoErrMsg";
-      return $http.post(url, {"params":msg})
-        .error(function(data, status, headers, config) {
-          // called asynchronously if an error occurs
-          // or server returns response with an error status.
-          console.log(data);
-        });
-    }    
+    }  
   }
   
     
