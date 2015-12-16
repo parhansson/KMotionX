@@ -1,5 +1,9 @@
+label.switch {
+    margin-bottom: 0px;
+}
 .switch input {
     display: none;
+    margin-top: 0px;
 }
 .switch i {
     display: inline-block;
