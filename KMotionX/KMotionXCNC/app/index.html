@@ -197,8 +197,8 @@
                   <!--
                   <label class="switch"><input type="checkbox" ng-model="interpreting"><i></i></label>Interpret
                   -->            
-                  <div class="btn" ng-click="gcodeEditCtrl.onCycleStart()"><span class='glyphicon' ng-class="interpreting ? 'btn_down glyphicon-pause' : 'glyphicon-play'"></span>{{interpreting ? 'Halt' : 'Cycle Start'}}</div>
-                  <div class="btn" ng-click="gcodeEditCtrl.onFeedhold()"><span class='glyphicon' ng-class="feedHold ? 'btn_down glyphicon-hourglass' : 'glyphicon-hourglass'"></span>Feed Hold</div>
+                  <div class="btn btn-primary" ng-class="interpreting ? 'active' : ''" ng-click="gcodeEditCtrl.onCycleStart()"><span class='glyphicon' ng-class="interpreting ? 'glyphicon-pause' : 'glyphicon-play'"></span>{{interpreting ? 'Halt' : 'Cycle Start'}}</div>
+                  <div class="btn btn-primary" ng-class="feedHold ? 'active' : ''" ng-click="gcodeEditCtrl.onFeedhold()"><span class='glyphicon' ng-class="feedHold ? 'glyphicon-hourglass' : 'glyphicon-hourglass'"></span>Feed Hold</div>
                 </div>
               </div>
               <div class="btn-toolbar">
@@ -216,8 +216,8 @@
               <input ng-model="currentDir"/>
               <input ng-model="editorContentName"/>
               <span class="glyphButtonBar">
-                <span class="btn glyphicon glyphicon-folder-open" title="Open" ng-click="listFiles(currentDir)"></span>
-                <span class="btn glyphicon glyphicon-floppy-save" title="Save" ng-click="save()"></span>
+                <span class="btn btn-primary glyphicon glyphicon-folder-open" title="Open" ng-click="listFiles(currentDir)"></span>
+                <span class="btn btn-primary glyphicon glyphicon-floppy-save" title="Save" ng-click="save()"></span>
               </span>
             </div>
             <kmx-ace id="gcodeEditor" ng-model="editorContent" mode="gcode" ></kmx-ace>
@@ -231,7 +231,7 @@
             <button 
               ng-repeat="action in machine.userActions track by $index"
               ng-show="action.action > 0" 
-              class='btn btn-grid' 
+              class='btn btn-primary btn-grid' 
               ng-click="onUserButton($index, action)" 
               ng-bind="action.name || '[Unnamed]'">
            </button>
@@ -250,8 +250,8 @@
             <input ng-model="currentDir"/>
             <input ng-model="editorContentName"/>
             <span  class="glyphButtonBar">
-              <span class="btn glyphicon glyphicon-folder-open" title="Open" ng-click="listFiles(currentDir)"></span>
-              <span class="btn glyphicon glyphicon-floppy-save" title="Save" ng-click="save()"></span>
+              <span class="btn btn-primary glyphicon glyphicon-folder-open" title="Open" ng-click="listFiles(currentDir)"></span>
+              <span class="btn btn-primary glyphicon glyphicon-floppy-save" title="Save" ng-click="save()"></span>
             </span>
           </div>
           <kmx-ace id="ceditor" ng-model="editorContent" mode="c_cpp" ></kmx-ace>

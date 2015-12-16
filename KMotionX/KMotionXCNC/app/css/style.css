@@ -112,17 +112,25 @@ input[type='text'] {
     font-size: 1.5em;
     color: #abd;
 }
-
-.btn 
-{
-
-    color: #fff;
-    background-color: #9ac;
+/*
+.btn-primary {
+    background-image: -webkit-linear-gradient(top,#9ac 0, #337ab7 100%);
+    background-image: -o-linear-gradient(top,#9ac 0, #337ab7 100%);
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#9ac),to(#337ab7));
+    background-image: linear-gradient(to bottom,#9ac 0, #337ab7 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff9ac', endColorstr='#ff337ab7', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+    background-repeat: repeat-x;
+    border-color: #245580;
+}
+*/
+.btn-primary.active, .btn-primary:active {
+    background-color: #bbe;       
+    border-color: #245580;
+  /*background-color: #dbd;*/
+  /*background-image: linear-gradient(to bottom,#9ac 0, #dbd 100%);*/
 }
 
-.btn_down {
-  background-color: #dbd;
-}
 .btn_wide {
   width: 100%;
 }

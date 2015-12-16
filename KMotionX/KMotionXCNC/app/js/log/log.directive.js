@@ -10,7 +10,7 @@
   function kmxLog(kmxLogger) {
     var directive = {
       restrict: 'E',
-      template: '<button class="btn btn_wide" ng-click="clearLog()">{{::title}} (Clear)</button><div id="{{::consoleId}}" class="status_message status_small" title="{{::title}}"></div>',
+      template: '<button class="btn btn-primary btn_wide" ng-click="clearLog()">{{::title}} (Clear)</button><div id="{{::consoleId}}" class="status_message status_small" title="{{::title}}"></div>',
       scope: {},
       link: link
     };
