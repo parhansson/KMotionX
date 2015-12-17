@@ -18,11 +18,22 @@
         STATE: stateHandler,// 6: Non blocking callback. Updates gui with current state from server.
         MESSAGEBOX: messageHandler// 7: Blocking callback. However there is no need to block OK only boxes.
     }    
-    
-    return {
+    var SocketService = {
         acknowledge: acknowledge,
-        init: init
+        init: init,
+        data: {
+          raw: {},
+          interpreting:false,
+          feedHold:false,
+          dro:[],
+          timeStamp:"N/A",
+          connected:false,
+          simulating:false,
+          currentLine:-1
+        }
     }
+    return SocketService; 
+    
     
     function init(){
       if(socketWorker){
@@ -68,7 +79,15 @@
         //Event is coming outside of angular.
         //enter digest cycle with scope.apply
         $rootScope.$apply(function(){
-          $rootScope.$broadcast('status-update', { status: data.message });
+          var raw = data.message;
+          //SocketService.data.raw = raw;
+          SocketService.data.interpreting = raw.interpreting,
+          SocketService.data.feedHold = raw.stopImmediateState > 0;//pause
+          SocketService.data.dro = raw.dro;
+          SocketService.data.timeStamp = raw.timeStamp;
+          SocketService.data.connected = raw.connected;
+          SocketService.data.simulating = raw.simulate;
+          SocketService.data.currentLine = raw.currentLine;
         });        
       } else if(data.log){
         logHandler(data.message, data.type);
@@ -113,7 +132,8 @@
       //Event is coming outside of angular.
       //enter digest cycle with scope.apply
       $rootScope.$apply(function(){
-        $rootScope.$broadcast('state-update', { state: obj.data });
+        SocketService.data.gcodeFile = obj.data.file;
+        SocketService.data.machineSettings = obj.data.machine;
       }); 
       //TODO listen for machine configuration changes?
     }
@@ -170,15 +190,5 @@
     }    
     
   }
-  
-  
-
-
-
-
-
-
-
-  
   
 })();

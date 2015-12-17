@@ -34,15 +34,13 @@
   angular.module('KmotionXApp')
     .controller('KMotionXController', KMotionXController);
   
-  KMotionXController.$inject =['$scope', 'kmxThreeView', 'kmxBackend'];
+  KMotionXController.$inject =['$scope', 'kmxThreeView', 'kmxBackend', 'SocketService'];
   
-  function KMotionXController($scope, kmxThreeView, kmxBackend){
-    $scope.kmxThreeViewData = kmxThreeView;
-
-    $scope.$on('status-update', function(event, args){
-      $scope.simulating = args.status.simulate;
-    });
-    $scope.onSimulate = function(){
+  function KMotionXController($scope, kmxThreeView, kmxBackend, SocketService){
+    var vm = this;
+    vm.intStatus = SocketService.data;
+    vm.kmxThreeViewData = kmxThreeView;
+    vm.onSimulate = function(){
       kmxBackend.onSimulate();
     }
   }

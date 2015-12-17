@@ -33,13 +33,12 @@
       console.log(angular.toJson(settings.machine,true));
     }
     
-    $scope.$on('state-update', function(event, args){
-      var state = args.state;
-      if (state.machine != "" && state.machine != settings.fileName()) {
-        settings.load(state.machine);
+    //TODO force load if file was updated on another machine
+    $scope.$watch('kmx.intStatus.machineSettings',function (newFile, oldFile){
+      if (newFile && newFile != "" && newFile != settings.fileName()) {
+        settings.load(newFile);
       }
     });
-    
   }
   
 })();
