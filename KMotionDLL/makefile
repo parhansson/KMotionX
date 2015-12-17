@@ -14,7 +14,10 @@ else
 SOURCES+=KmotionIOX.cpp
 IDIR+=/usr/include/lib$(FTDILIB)
 ifeq ($(OSNAME),Darwin)
-	IDIR+=/opt/local/include/lib$(FTDILIB)
+#if installed with macports
+ 	IDIR+=/opt/local/include/lib$(FTDILIB)
+#if installed with homebrew
+	IDIR+=/usr/local/include/lib$(FTDILIB)
 endif	
 endif
 
