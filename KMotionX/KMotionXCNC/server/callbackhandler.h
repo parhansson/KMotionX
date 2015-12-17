@@ -9,6 +9,7 @@
 #define KMOTIONX_KMOTIONXCNC_SERVER_CALLBACKHANDLER_H_
 #include <stdlib.h>
 #include <time.h>
+#include "handler.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,13 +42,12 @@ struct callback {
 const char CB_NAMES[][24] = { "STATUS", "COMPLETE", "ERR_MSG",
     "CONSOLE", "USER", "USER_M_CODE", "STATE", "MESSAGEBOX" };
 
-void cbh_init();
+void cbh_init(PUSH_TO_CLIENTS *push_cb);
 void cbh_print_info();
 void cbh_enqueue_state(const char * content);
 int cbh_enqueue_callback(const char * msg, enum cb_type type);
-void cbh_poll_callbacks(char * content);
+void cbh_poll_callbacks(const char * content);
 
-//Private
 
 #ifdef __cplusplus
 }

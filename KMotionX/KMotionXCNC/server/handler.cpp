@@ -41,21 +41,11 @@ void interpret(int BoardType,char *InFile,int start,int end,bool restart);
 void setInterpreterActionParams(struct json_token *jsontoken, int indexOffset, int count, const char* pathTemplate);
 void setMotionParams(struct json_token *jsontoken);
 void loadGlobalFile(struct json_token *paramtoken);
-void listDir(struct json_token *paramtoken);
+
 int invokeAction(struct json_token *paramtoken);
 void setSimulationMode(bool enable);
-
-int handle_api(struct mg_connection *conn, enum mg_event ev);
-int handleJson(struct mg_connection *conn,const char *object, const char *func);
-int handle_close(struct mg_connection *conn);
-//void push_message(const char *msg);
 void push_status();
 
-void ErrMsgHandler(const char *msg);
-int ConsoleHandler(const char *msg);
-int MessageBoxHandler(const char *, const char *, int );
-int MUserCallback(int);
-int UserCallback(const char *);
 int readStatus();
 void _enqueueState();
 
@@ -67,7 +57,8 @@ void _enqueueState();
     EMIT_RESPONSE_PARAM(fmt,##__VA_ARGS__)  \
     w += json_emit(gp_response+w, MAX_LINE-w, ", s: i }", "ret",ret);
 
-
+//Check function signature
+#define FUNC_SIGP(name, nr_of_params) !strcmp(name,func) && params == nr_of_params
 
 //state of gui.
 struct state {
@@ -79,10 +70,6 @@ struct state {
   char current_file[256];
   char current_machine[256];
 };
-
-//Check function signature
-#define FUNC_SIGP(name, nr_of_params) !strcmp(name,func) && params == nr_of_params
-
 
 CGCodeInterpreter *Interpreter;
 CKMotionDLL *km;
@@ -100,6 +87,9 @@ static const char ACTION_NAMES[][32] = { "M_Action_None", "M_Action_Setbit", "M_
     "M_Action_Program_PC", "M_Action_Callback", "M_Action_Waitbit", "UNAVAILABLE" };
 
 void initHandler() {
+  mb_callback = MessageBoxHandler;
+  cbh_init(push_to_clients);
+
   km = new CKMotionDLL(0);
   int type = BOARD_TYPE_UNKNOWN;
   if(km->CheckKMotionVersion(&type,false)){
@@ -108,6 +98,8 @@ void initHandler() {
   }
   CM = new CCoordMotion(km);
   Interpreter = new CGCodeInterpreter(CM);
+
+
   readSetup();
   updateMotionParams();
   //if (FirstStartup)
@@ -119,8 +111,6 @@ void initHandler() {
     }
   //}
 
-  mb_callback = MessageBoxHandler;
-  cbh_init();
 
   //Try without simulation on startup
   setSimulationMode(false); //enques state
@@ -199,20 +189,17 @@ void info_handler(int signum) {
  *It is not allowed to call any function that takes mg_server from other thread than poll thread
  *Hence this function must only be called from poll thread
  */
-void push_message(const char *msg) {
+void push_to_clients(int opCode, const char *data , size_t data_len) {
 
   struct mg_connection *c = NULL;
-  int len = strlen(msg);
-  int sockets = 0;
   // Iterate over all connections, and push current time message to websocket ones.
   for (c = mg_next(server, c); c != NULL; c = mg_next(server, c)) {
     if (c->is_websocket) {
-      sockets++;
-      mg_websocket_write(c, WEBSOCKET_OPCODE_TEXT, msg, len);
+      mg_websocket_write(c, opCode, data, data_len);
     }
   }
-  //debug("Pushed to %d sockets", sockets);
 }
+
 int readStatus(){
   int result = km->GetStatus(main_status,true);
   if(result){
@@ -335,13 +322,7 @@ void push_status() {
     CheckRadioButton(IDC_mm,IDC_inch,IDC_mm);
 */
 
-  struct mg_connection *conn = NULL;
-  // Iterate over all connections, and push message to websocket ones.
-  for (conn = mg_next(server, conn); conn != NULL; conn = mg_next(server, conn)) {
-    if (conn->is_websocket) {
-      mg_websocket_write(conn, WEBSOCKET_OPCODE_BINARY, msg, size);
-    }
-  }
+  push_to_clients(WEBSOCKET_OPCODE_BINARY, msg, size);
 
   free(msg);
 }
@@ -912,6 +893,7 @@ void listDir(struct json_token *paramtoken){
     }
     free(dir);
 }
+
 void onSimulate() {
   if (!gstate.interpreting) {
     setSimulationMode(!gstate.simulate);

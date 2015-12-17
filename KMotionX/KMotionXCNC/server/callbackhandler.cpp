@@ -5,7 +5,6 @@
  *      Author: parhansson
  */
 #include "callbackhandler.h"
-#include "handler.h"
 #include <string.h>
 #include <pthread.h>
 #include "dbg.h"
@@ -25,20 +24,21 @@ static pthread_cond_t con = PTHREAD_COND_INITIALIZER;
 static struct callback *callbacks = NULL; // head of this list is always state callback
 static int callback_counter = 0; //Callback id counter.
 static long int poll_TID; //Poll thread id
-
+static PUSH_TO_CLIENTS *push_callback;
 //TODO Implement support for blocking callback in poll thread
 //#define isBlocking(type) (type == CB_USER || type == CB_USER_M_CODE || type ==  CB_MESSAGEBOX)
 #define IS_BLOCKING(type) (type == CB_USER || type == CB_USER_M_CODE)
 
-void cbh_init(){
+void cbh_init(PUSH_TO_CLIENTS *push_cb){
   //Enqueue state as first callback. This first entry will never be removed
+  push_callback = push_cb;
   callbacks = (struct callback *) malloc(sizeof(struct callback));
   callbacks->next = NULL;
   poll_TID = getThreadId();
 
 }
 
-void cbh_poll_callbacks(char * content) {
+void cbh_poll_callbacks(const char * content) {
 
   int id = -1;
   char type[16];
@@ -76,7 +76,8 @@ void cbh_poll_callbacks(char * content) {
   pthread_mutex_unlock(&mut);
 }
 
-
+// if last is null new call back will be last on queue
+// if last equals to "callbacks" object it will be put first on queue (head)
 struct callback * cbh_init_callback(struct callback *last, const char * message, enum cb_type type) {
 
   if (last == NULL) {
@@ -174,7 +175,7 @@ void cbh_print_info(){
 static void cbh_poll_callback(struct callback *cb, int id, int ret) {
   if (cb->status == CBS_ENQUEUED) {
     cb->sent_time = time(NULL);
-    push_message(cb->msg);
+    push_callback(/*WEBSOCKET_OPCODE_TEXT */0x1,cb->msg, strlen(cb->msg));
     cb->status = CBS_WAITING;
   } else if (cb->status == CBS_WAITING) {
 
@@ -208,7 +209,7 @@ static void cbh_poll_callback(struct callback *cb, int id, int ret) {
 static void cbh_delete_callback(struct callback *node) {
   // When node to be deleted is head node
   if (callbacks == node) {
-    log_err("Not allowed to remove head of callback list");
+    log_info("Not allowed to remove head of callback list");
     return;
   } else {
 
@@ -221,7 +222,7 @@ static void cbh_delete_callback(struct callback *node) {
 
     // Check if node really exists in Linked List
     if (prev->next == NULL) {
-      log_err("Given node is not present in Linked List ");
+      log_info("Given node is not present in Linked List ");
       return;
     }
 
