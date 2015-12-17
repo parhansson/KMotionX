@@ -41,7 +41,7 @@ Anyone that would like to operate their KFlop controlled machine from their phon
 
 
 Dependencies
-Linux at least GCC 4.7 toolchain
+Linux at least GCC 4.6 toolchain
 libudev-dev
 cmake
 boost
@@ -53,63 +53,13 @@ udev rule
 ##Build and install
 This guide contains four sections. How to install on Mac OS X, Ubuntu, Rasbian (Raspberry Pi) and a common section for KMotion libraries.
 
-###Mac OS X
-This is a really nice platform. Almost everything is installed already. Given that you are a developer and have the latest XCode installed.
+Setup and install required dependencies on your platform
 
-Install macports from https://www.macports.org
-Then install libftdi
+[Mac OS X](KMotionX/doc/MacOSX.md)
 
-Then install libfdti.
-```
-sudo port install libftdi1
-```
-Jump to section "Install KMotionX" or "Install Java" if you will use the Java binding.
+[Ubuntu](KMotionX/doc/Ubuntu.md)
 
-
-###Ubuntu
-
-This is only tested on 14.04.
-
-######1. Install g++
-```
-sudo apt-get install g++
-```
-######2. Install libftdi
-Skip this step if you will be using ftd2xx driver. However libftdi works a lot better on linux libftdi is an open source ftdi driver that might be used as replacement when running on Linux or MacOSX
-```
-sudo apt-get install libftdi-dev
-```
-
-###Raspberry Pi
-
-######1. Install Raspbian
-Install latest Rasbian download zip image (current version 2014-01-07-wheezy-raspbian)
-Follow installation guide README.md
-
-Boot up your Pi.  A configuration wizard (raspi-config) will start automatically.  At least expand filesystem.
-
-Update your installation executing following commands. Second and third command might take a while. This step is most probably not necessary, but it is how I did it.
-```
-sudo apt-get update
-sudo apt-get upgrade
-sudo apt-get dist-upgrade
-```
-
-######2. Install gcc 4.8
-It might work with gcc 4.6 but it will not tested by me. On Raspberry Pi it seems to have more options for different ARM processors.
-And why not just use the newer stuff?
-Skip this step if ”gcc --version” is 4.7 or later. The current latest version available is 4.8
-Install gcc and g++ 4.8. This command installs gcc and g++ 4.8 but does not change to 4.8 as default. If you would like to do that here is a guide. (switching-gccg-versions.html) If you do you need to adjust make file to use default installed version.
-```
-sudo apt-get install gcc-4.8 g++-4.8
-```
-######3. Install libftdi
-Skip this step if you will be using ftd2xx driver. However libftdi works a lot better on linux libftdi is an open source ftdi driver that might be used as replacement when running on Linux or MacOSX
-```
-sudo apt-get install libftdi-dev
-```
-Jump to section "Install KMotionX" or "Install Java" if you will use the Java binding.
-
+[Raspberry Pi](KMotionX/doc/RaspberryPi.md)
 
 ##Install KMotionX
 
@@ -154,7 +104,7 @@ Start executeGCode example
 ```
 ./executeGCode
 ```
-Or try the new web application. Start and surf to http://localhost:8080 in a modern web browser.
+Or try the new web application. Start and surf to http://localhost:8080 in a web browser preferably Chrome.
 ```
 ./kmxWeb -document_root ../KMotionX/KMotionXCNC/app
 ```
