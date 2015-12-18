@@ -19,7 +19,8 @@ KmxController::KmxController(CGCodeInterpreter *interpreter, MessageQueue *messa
   CM = Interpreter->CoordMotion;
   km = CM->KMotionDLL;
   mq = message_queue;
-
+  //TODO init struct before first read. memset?
+  main_status.StopImmediateState = 0;
 
   int type = BOARD_TYPE_UNKNOWN;
   if(km->CheckKMotionVersion(&type,false)){
@@ -32,7 +33,7 @@ KmxController::KmxController(CGCodeInterpreter *interpreter, MessageQueue *messa
   //Try without simulation on startup
   setSimulationMode(false); //enques state
 
-  if(readStatus()){
+  if(!readStatus()){
   //if (FirstStartup)
   //{
     //FirstStartup=false;
@@ -54,11 +55,13 @@ KmxController::~KmxController() {
   if (km) delete km;
 
 }
-void KmxController::PushClientData(const char *data , size_t data_len){
+int KmxController::PushClientData(const char *data , size_t data_len){
   log_info("PushClientData binary needs to be implemented in subclass");
+  return 0;
 }
-void KmxController::PushClientData(const char *data){
+int KmxController::PushClientData(const char *data){
   log_info("PushClientData text needs to be implemented in subclass");
+  return 0;
 }
 void KmxController::readSetup(){
 
@@ -102,15 +105,6 @@ int KmxController::readStatus(){
 }
 #define MEMCPY(to, from, size) memcpy(to, from, size); to += size;
 
-void KmxController::_enqueueState() {
-  //TODO gcode file and machine should be sent in regular update
-  char stateBuf[512];
-  json_emit(stateBuf, 512, "{s: s, s: s }",
-      "file", current_file,
-      "machine", current_machine);
-  mq->EnqueueState(stateBuf);
-}
-
 void KmxController::push_status() {
 
   if(!simulate){
@@ -118,9 +112,10 @@ void KmxController::push_status() {
       //return;
     }
   }
-
+  int current_file_len = strlen(current_file);
+  int current_machine_len = strlen(current_machine);
   //copy struct and avoid padding wich may differ on platforms
-  size_t size = 456 + 6*8 + 4*4;//sizeof(main_status);
+  size_t size = 456 + 6*8 + 4*4 + current_file_len+4 +current_machine_len+4;//sizeof(main_status);
   char * msg = (char*)malloc(size);
   char * msgPtr = msg;
   //client does not expect sizeof(int) but exaclyt 4 bytes for an int
@@ -205,6 +200,12 @@ void KmxController::push_status() {
   MEMCPY(msgPtr, &simulate, 1);
   MEMCPY(msgPtr, &interpreting, 1);
   MEMCPY(msgPtr, &currentLine, 4);
+
+  MEMCPY(msgPtr, &current_file_len, 4);
+  MEMCPY(msgPtr, &current_file, current_file_len);
+  MEMCPY(msgPtr, &current_machine_len, 4);
+  MEMCPY(msgPtr, &current_machine, current_machine_len);
+
 /*
   if (Interpreter->p_setup->distance_mode==MODE_ABSOLUTE)
     CheckRadioButton(IDC_Rel,IDC_Abs,IDC_Abs);
@@ -225,11 +226,7 @@ void KmxController::push_status() {
 
 
 void KmxController::setSimulationMode(bool enable){
-  bool changed = enable != simulate;
-  simulate = Interpreter->CoordMotion->m_Simulate = enable;
-  if(changed){
-    //enqueueState();
-  }
+    simulate = Interpreter->CoordMotion->m_Simulate = enable;
 }
 
 int KmxController::InvokeAction(int action, bool FlushBeforeUnbufferedOperation){
@@ -240,8 +237,6 @@ void KmxController::LoadMachineConfiguration(const char* path){
   if(current_machine != NULL){
     if (strcmp(current_machine, path) != 0) {
         strcpy(current_machine, path);
-        //when file changes all clients will e noticed.
-        _enqueueState();
     }
   }
 }
@@ -251,15 +246,13 @@ void KmxController::LoadGcode(const char* path){
       if (strcmp(current_file, path) != 0) {
           strcpy(current_file, path);
           currentLine = 0;
-          //when file changes all clients will e noticed.
-          _enqueueState();
       }
     }
   }
 }
 
 void KmxController::ClientConnect(){
-  _enqueueState();
+
 }
 
 void KmxController::Simulate() {
@@ -294,7 +287,7 @@ void KmxController::Halt() {
 
 void KmxController::EmergencyStop()
 {
-  if(km->WaitToken(false,5000.0 == KMOTION_LOCKED)){
+  if(km->WaitToken(false, 1000) == KMOTION_LOCKED){
     char s[MAX_LINE];
     int i;
 
@@ -329,7 +322,7 @@ void KmxController::DoErrorMessage(const char * msg){
 }
 void KmxController::Feedhold(){
   //TODO wait token should be done globaly when handling requests that interact with board
-  //if(km->WaitToken(false,100.0 == KMOTION_LOCKED)){
+  //if(km->WaitToken(false,100) == KMOTION_LOCKED)){
     char res[MAX_LINE];
     //WriteLineReadLine waits for token
     if(km->WriteLineReadLine("GetStopState", res)){
@@ -592,7 +585,11 @@ void KmxController::OnCompleteCallback(int status, int line_no, int sequence_num
       "status", status,
       "sequence", sequence_number,
       "message", err);
-  //enqueueState();
+
+  if(strlen(err)>0){
+    OnErrorMessageCallback(err);
+  }
+
   mq->EnqueueCallback(buf, CB_COMPLETE);
 }
 void KmxController::OnErrorMessageCallback(const char *msg) {
@@ -673,7 +670,8 @@ void KmxController::Poll() {
   }
 
   //only perform poll when locked
-  if(km->WaitToken(false,100.0 == KMOTION_LOCKED)){
+  //if(km->WaitToken(false,0) == KMOTION_LOCKED){
+  if(km->WaitToken(false,100.0== KMOTION_LOCKED)){
 
     if(msPast(&tval_status,200)){
       //debug("pushar status");

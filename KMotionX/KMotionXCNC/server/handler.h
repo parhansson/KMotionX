@@ -23,9 +23,9 @@ int UserCallback(const char *);
 void StatusCallback(int line_no, const char *msg);
 void CompleteCallback(int status, int line_no, int sequence_number,const char *err);
 
-void push_to_clients(int opCode, const char *data , size_t data_len);
+int push_to_clients(int opCode, const char *data , size_t data_len);
 
-typedef void PUSH_TO_CLIENTS(int opCode, const char *data, size_t data_len);
+typedef int PUSH_TO_CLIENTS(int opCode, const char *data, size_t data_len);
 
 #ifdef __cplusplus
 }

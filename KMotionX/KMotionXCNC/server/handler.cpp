@@ -73,9 +73,9 @@ int MUserCallback(int mCode) {
   return kmxCtrl->OnMcodeUserCallback(mCode);
 }
 
-void push_to_clients(int opCode, const char *data , size_t data_len) {
+int push_to_clients(int opCode, const char *data , size_t data_len) {
   //We know this is text;
-  kmxCtrl->PushClientData(data);
+  return kmxCtrl->PushClientData(data);
 }
 
 

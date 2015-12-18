@@ -69,8 +69,8 @@ public:
 
   //Called by application when client sends data, such as acknowledged messages
   void OnReceiveClientData(const char * msg);
-  virtual void PushClientData(const char *data);
-  virtual void PushClientData(const char *data , size_t data_len);
+  virtual int PushClientData(const char *data);
+  virtual int PushClientData(const char *data , size_t data_len);
 
   int OnMessageBoxCallback(const char *title, const char *msg, int options);
   int OnUserCallback(const char *msg);
@@ -116,9 +116,6 @@ private:
   int readStatus();
   void readSetup();
   void push_status();
-
-  //Will be removed or reborn in another shape
-  void _enqueueState();
   bool msPast(struct timeval *tval_last, int ms);
 
 

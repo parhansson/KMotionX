@@ -23,8 +23,8 @@ public:
   int OnEventRecv(struct mg_connection *conn);
   int OnEventRequest(struct mg_connection *conn);
 
-  virtual void PushClientData(const char *data);
-  virtual void PushClientData(const char *data , size_t data_len);
+  virtual int PushClientData(const char *data);
+  virtual int PushClientData(const char *data , size_t data_len);
 private:
   mg_server *server;
   //global poll thread response array, no need to allocate eah time since server is single threaded
@@ -34,7 +34,7 @@ private:
   int HandleJsonRequest(struct mg_connection *conn, const char *object, const char *func);
   void HandleUploadRequest(struct mg_connection *conn);
   int HandleUploadReceiveEvent(struct mg_connection *conn);
-  void PushClientData(int opCode, const char *data , size_t data_len);
+  int PushClientData(int opCode, const char *data , size_t data_len);
   bool isUploadRequest(struct mg_connection *conn);
   bool isApiRequest(struct mg_connection *conn);
 

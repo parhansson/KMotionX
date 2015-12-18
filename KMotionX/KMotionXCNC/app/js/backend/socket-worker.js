@@ -1,5 +1,6 @@
 
 importScripts('shared-types.js');
+importScripts('../../vendor/mozilla/stringview.js');
 importScripts('socket-handler.js');
 
 var socket;
@@ -109,7 +110,8 @@ function parseStatus(arraybuffer){
   var simulate = r.byte() > 0;
   var interpreting = r.byte() > 0;
   var currentLine = r.int();
-  
+  var gcodeFile = r.string();
+  var machineSettingsFile = r.string();
   
   
   var status = {
@@ -131,7 +133,9 @@ function parseStatus(arraybuffer){
       connected:connected,
       simulate:simulate,
       interpreting:interpreting,
-      currentLine:currentLine
+      currentLine:currentLine,
+      gcodeFile:gcodeFile,
+      machineSettingsFile:machineSettingsFile
       
   };
   

@@ -8,8 +8,7 @@
 #ifndef KMOTIONX_KMOTIONXCNC_SERVER_MESSAGEQUEUE_H_
 #define KMOTIONX_KMOTIONXCNC_SERVER_MESSAGEQUEUE_H_
 #include <pthread.h>
-
-typedef void PUSH_TO_CLIENTS(int opCode, const char *data, size_t data_len);
+#include "handler.h"
 
 enum cb_type {
   CB_STATUS, //Non blocking callback. Called from the interpreter in different thread
@@ -18,21 +17,20 @@ enum cb_type {
   CB_CONSOLE,      //Non blocking callback, event though it has return value??
   CB_USER, //Blocking callback. Called from the interpreter in different thread
   CB_USER_M_CODE, //Blocking callback. Called from the interpreter in different thread
-  CB_STATE, // contains loaded machine configuration(trajectory planning etc) and loaded gcode file
   CB_MESSAGEBOX //Message box and AfxMessageBox
 };
 enum cb_status {
-  CBS_ENQUEUED, CBS_WAITING, CBS_ACKNOWLEDGED, CBS_STATE_IDLE
+  CBS_ENQUEUED, CBS_WAITING, CBS_ACKNOWLEDGED
 };
 
-static const char CB_NAMES[][24] = { "STATUS", "COMPLETE", "ERR_MSG",
-    "CONSOLE", "USER", "USER_M_CODE", "STATE", "MESSAGEBOX" };
+static const char CB_NAMES[][24] = {"STATUS", "COMPLETE", "ERR_MSG", "CONSOLE",
+    "USER", "USER_M_CODE", "MESSAGEBOX" };
 
 static const char STATUS_NAMES[][24] = {
   "CBS_ENQUEUED",
   "CBS_WAITING",
-  "CBS_ACKNOWLEDGED",
-  "CBS_STATE_IDLE" };
+  "CBS_ACKNOWLEDGED"
+};
 
 struct callback {
   int id;
@@ -51,14 +49,13 @@ public:
   virtual ~MessageQueue();
 
   void PollCallbacks(const char * content);
-  void EnqueueState(const char* msg);
-  //msg needs to be quoted if string
-  int EnqueueCallback(const char * msg, enum cb_type type);
+  //payload needs to be quoted if string
+  int EnqueueCallback(const char * payload, enum cb_type type);
   void PrintInfo();
 
 private:
 
-  struct callback * InitCallback(struct callback *last, const char * message, enum cb_type type);
+  struct callback * InitCallback(struct callback *last, const char * payload, enum cb_type type);
   void PollCallback(struct callback *cb, int id, int ret);
   void DeleteCallback(struct callback *node);
   struct callback * AllocCallback();

@@ -33,5 +33,12 @@ function BufStreamReader(buf){
     off = off+8;
     return val; 
   }
+  this.string = function(){
+    var len = this.int();
+    var val = new StringView(dv.buffer,'utf-8',off,len).valueOf();
+    off = off+len;
+    return val;
+    //stringView new StringView(arrayBuffer input, optional DOMString encoding, optional unsigned long byteOffset, optional unsigned long length);
+  }
   
 }

@@ -15,8 +15,7 @@
         CONSOLE: consoleHandler,// 3: Non blocking callback, event though it has return value??
         USER: userHandler,// 4: Blocking callback. Called from the interpreter in different thread
         USER_M_CODE: userMCodeHandler,// 5: Blocking callback. Called from the interpreter in different thread
-        STATE: stateHandler,// 6: Non blocking callback. Updates gui with current state from server.
-        MESSAGEBOX: messageHandler// 7: Blocking callback. However there is no need to block OK only boxes.
+        MESSAGEBOX: messageHandler// 6: Blocking callback. However there is no need to block OK only boxes.
     }    
     var SocketService = {
         acknowledge: acknowledge,
@@ -88,6 +87,8 @@
           SocketService.data.connected = raw.connected;
           SocketService.data.simulating = raw.simulate;
           SocketService.data.currentLine = raw.currentLine;
+          SocketService.data.gcodeFile = raw.gcodeFile;
+          SocketService.data.machineSettings = raw.machineSettingsFile;
         });        
       } else if(data.log){
         logHandler(data.message, data.type);
@@ -98,8 +99,6 @@
       socketWorker.postMessage({command:'acknowledge',obj:obj,ret:ret});
     } 
 
-    
-    
     function statusHandler(obj) {
       kmxLogger.log('status', 'Line: '+ obj.data.line + " - " + obj.data.message);
     }
@@ -126,16 +125,6 @@
       } else {
           return 1;
       }
-    }
-    
-    function stateHandler(obj) {
-      //Event is coming outside of angular.
-      //enter digest cycle with scope.apply
-      $rootScope.$apply(function(){
-        SocketService.data.gcodeFile = obj.data.file;
-        SocketService.data.machineSettings = obj.data.machine;
-      }); 
-      //TODO listen for machine configuration changes?
     }
     
     function messageHandler(obj) {

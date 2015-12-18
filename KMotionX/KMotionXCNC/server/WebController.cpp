@@ -60,11 +60,11 @@ void WebController::PrintInfo(){
  *It is not allowed to call any function that takes mg_server from other thread than poll thread
  *Hence this function must only be called from poll thread
  */
-void WebController::PushClientData(const char *data){
-  PushClientData(WEBSOCKET_OPCODE_TEXT, data, strlen(data));
+int WebController::PushClientData(const char *data){
+  return PushClientData(WEBSOCKET_OPCODE_TEXT, data, strlen(data));
 }
-void WebController::PushClientData(const char *data , size_t data_len){
-  PushClientData(WEBSOCKET_OPCODE_BINARY, data, data_len);
+int WebController::PushClientData(const char *data , size_t data_len){
+  return PushClientData(WEBSOCKET_OPCODE_BINARY, data, data_len);
 }
 
 int WebController::OnEventRequest(struct mg_connection *conn) {
@@ -121,14 +121,18 @@ int WebController::OnEventWsConnect(struct mg_connection *conn) {
   return MG_FALSE;
 }
 
-void WebController::PushClientData(int opCode, const char *data , size_t data_len){
+int WebController::PushClientData(int opCode, const char *data , size_t data_len){
   struct mg_connection *c = NULL;
+  int nrOfClients = 0;
   // Iterate over all connections, and push current time message to websocket ones.
+
   for (c = mg_next(server, c); c != NULL; c = mg_next(server, c)) {
     if (c->is_websocket) {
       mg_websocket_write(c, opCode, data, data_len);
+      nrOfClients++;
     }
   }
+  return nrOfClients;
 }
 
 bool WebController::isUploadRequest(struct mg_connection *conn){

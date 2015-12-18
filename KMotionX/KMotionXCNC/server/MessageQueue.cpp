@@ -37,7 +37,7 @@ MessageQueue::~MessageQueue() {
 
 
 
-struct callback * MessageQueue::InitCallback(struct callback *item, const char * message, enum cb_type type) {
+struct callback * MessageQueue::InitCallback(struct callback *item, const char * payload, enum cb_type type) {
 
   item->id = callback_counter++;
   item->status = CBS_ENQUEUED;
@@ -48,25 +48,14 @@ struct callback * MessageQueue::InitCallback(struct callback *item, const char *
       "id", item->id,
       "type", CB_NAMES[type],
       "block",IS_BLOCKING(type)?"true":"false",
-      "data", message);
+      "data", payload);
 
   //debug("Enqueued %s message: %s",CB_NAMES[type], last->msg);
   return item;
 }
 
-//TODO use enqueue callback instead. it's the same if callbacks is sent as hed of list.
-void MessageQueue::EnqueueState(const char* msg) {
-  //Lock mutex when enqueing state.
-  pthread_mutex_lock(&mut);
-  //debug("enquing current file: %s", gstate.current_file);
-  //this could be implemented as callback to one client (connection) only
-  // if InitCallback equals to "callbackQueue" object it will be put first on queue (head)
-  InitCallback(callbackQueue, msg, CB_STATE);
-  pthread_mutex_unlock(&mut);
-}
-
 //msg needs to be quoted if string
-int MessageQueue::EnqueueCallback(const char * msg, enum cb_type type) {
+int MessageQueue::EnqueueCallback(const char * payload, enum cb_type type) {
 
   //Enqueued messages are held in list (callbacks)
   //Callbacks are created here and sent to clients in next poll
@@ -80,11 +69,11 @@ int MessageQueue::EnqueueCallback(const char * msg, enum cb_type type) {
     //we can not stop and wait in poll/main thread
     //TODO mutex lock here is new and not very well tested
     if (IS_BLOCKING(type)) {
-        log_info("-------ERROR: Unsupported blocking callback %s in poll thread %ld\n%s\n", CB_NAMES[type], poll_TID, msg);
+        log_info("-------ERROR: Unsupported blocking callback %s in poll thread %ld\n%s\n", CB_NAMES[type], poll_TID, payload);
     }
 
     pthread_mutex_lock(&mut);
-    cb = InitCallback(AllocCallback(), msg, type);
+    cb = InitCallback(AllocCallback(), payload, type);
     if (IS_BLOCKING(cb->type)) {
       result = cb->ret;
       DeleteCallback(cb);
@@ -92,7 +81,7 @@ int MessageQueue::EnqueueCallback(const char * msg, enum cb_type type) {
     pthread_mutex_unlock(&mut);
   } else {
     pthread_mutex_lock(&mut);
-    cb = InitCallback(AllocCallback(), msg, type);
+    cb = InitCallback(AllocCallback(), payload, type);
     if (IS_BLOCKING(cb->type)) {
       debug("wait called");
       pthread_cond_wait(&con, &mut); //wait for the signal with con as condition variable
@@ -171,25 +160,21 @@ void MessageQueue::PollCallbacks(const char * content) {
 void MessageQueue::PollCallback(struct callback *cb, int id, int ret) {
   if (cb->status == CBS_ENQUEUED) {
     cb->sent_time = time(NULL);
-    push_callback(/*WEBSOCKET_OPCODE_TEXT */0x1,cb->msg, strlen(cb->msg));
-    cb->status = CBS_WAITING;
+    if(push_callback(/*WEBSOCKET_OPCODE_TEXT */0x1,cb->msg, strlen(cb->msg)) > 0){
+      cb->status = CBS_WAITING;
+    }
   } else if (cb->status == CBS_WAITING) {
 
     if (cb->id == id) {
       cb->status = CBS_ACKNOWLEDGED;
       cb->ret = ret;
-      if (cb->type == CB_STATE) {
-        //This is the magic of the first callback in queue always beeing of type CB_STATE
-        //Need to get rid of type dependency
-        cb->status = CBS_STATE_IDLE;
+
+      //Only signal waiting thread if blocking callback
+      if (IS_BLOCKING(cb->type)) {
+        pthread_cond_signal(&con); //wake up waiting thread with condition variable
       } else {
-        //Only signal waiting thread if blocking callback
-        if (IS_BLOCKING(cb->type)) {
-          pthread_cond_signal(&con); //wake up waiting thread with condition variable
-        } else {
-          //printf("Non blocking callback acked and deleted\n");
-          DeleteCallback(cb);
-        }
+        //printf("Non blocking callback acked and deleted\n");
+        DeleteCallback(cb);
       }
     } else {
       //resend message if not acked for 30 seconds
