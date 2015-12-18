@@ -1656,7 +1656,7 @@ int CCoordMotion::LaunchCoordMotion()
 
 	if (KMotionDLL->WriteLineReadLine("CheckDoneBuf",s)) {SetAbort(); return 1;}
 
-	if (s == "-1")
+	if (strcmp(s, "-1") == 0)
 	{
 		m_AxisDisabled=true;
 		SetAbort();
