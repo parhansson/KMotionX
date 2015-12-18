@@ -155,7 +155,7 @@ int CGCodeInterpreter::rs274ErrorExit(int status)
 	{
 		if (CoordMotion->m_AxisDisabled)
 		{
-			strcpy(ErrDescr,"Axis Disabled - GCode Aborted");
+		  strcpy(ErrDescr,"Axis Disabled - GCode Aborted");
 			status=1000;
 		}
 		else
@@ -284,9 +284,9 @@ int CGCodeInterpreter::DoExecute()
 		if (result == 1)
 		{
 			if (CoordMotion->m_AxisDisabled)
-				strcat(ErrorOutput,"Unable to read defined coordinate system axis positions - Axis Disabled ");
+			  strcpy(ErrorOutput,"Unable to read defined coordinate system axis positions - Axis Disabled ");
 			else
-				strcat(ErrorOutput,"Unable to read defined coordinate system axis positions ");
+			  strcpy(ErrorOutput,"Unable to read defined coordinate system axis positions ");
 		}
 
 		if (result != 0) return 1005;
@@ -305,7 +305,7 @@ int CGCodeInterpreter::DoExecute()
 		read_ok = fgets(trash, INTERP_TEXT_SIZE,_setup.file_pointer);
 		if (!read_ok) 
 		{
-			strcat(ErrorOutput,"Error while reading GCode file ");
+		  strcpy(ErrorOutput,"Error while reading GCode file ");
 			return NCE_A_FILE_IS_ALREADY_OPEN;
 		}
 	}
@@ -725,9 +725,9 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 					                                                               &_setup.AA_current,&_setup.BB_current,&_setup.CC_current))
 				{
 					if (CoordMotion->m_AxisDisabled)
-						strcat(ErrorOutput,"Unable to read defined coordinate system axis positions - Axis Disabled ");
+					  strcpy(ErrorOutput,"Unable to read defined coordinate system axis positions - Axis Disabled ");
 					else
-						strcat(ErrorOutput,"Unable to read defined coordinate system axis positions ");
+					  strcpy(ErrorOutput,"Unable to read defined coordinate system axis positions ");
 	
 					return 1;
 				}
