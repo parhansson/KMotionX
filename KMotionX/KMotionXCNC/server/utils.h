@@ -14,6 +14,8 @@ extern struct mg_server * server;
 extern "C" {
 #endif // __cplusplus
 #include <stdio.h>
+#include <sys/types.h>
+
 
 struct MappedFile{
   caddr_t addr;

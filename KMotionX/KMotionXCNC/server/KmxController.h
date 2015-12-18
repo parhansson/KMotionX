@@ -9,6 +9,7 @@
 #define KMOTIONX_KMOTIONXCNC_SERVER_KMXCONTROLLER_H_
 
 #include "../../../GCodeInterpreter/StdAfx.h"
+#include "MessageQueue.h"
 
 //same as in KMotionCNCDlg.c
 #define ACTION_CYCLE_START 25
@@ -19,11 +20,14 @@
 #define ACTION_PROG_START 30
 #define ACTION_PROG_EXIT 31
 
+static const char ACTION_NAMES[][32] = { "M_Action_None", "M_Action_Setbit", "M_Action_SetTwoBits",
+      "M_Action_DAC", "M_Action_Program", "M_Action_Program_wait", "M_Action_Program_wait_sync",
+      "M_Action_Program_PC", "M_Action_Callback", "M_Action_Waitbit", "UNAVAILABLE" };
 //namespace kmx {
 
 class KmxController {
 public:
-  KmxController(CGCodeInterpreter *interpreter);
+  KmxController(CGCodeInterpreter *interpreter, MessageQueue *message_queue);
   virtual ~KmxController();
 
   //Should be called by an intervall of say 100ms by application
@@ -65,6 +69,8 @@ public:
 
   //Called by application when client sends data, such as acknowledged messages
   void OnReceiveClientData(const char * msg);
+  virtual void PushClientData(const char *data);
+  virtual void PushClientData(const char *data , size_t data_len);
 
   int OnMessageBoxCallback(const char *title, const char *msg, int options);
   int OnUserCallback(const char *msg);
@@ -81,7 +87,9 @@ public:
   void LoadGcode(const char* path);
 
 
-  //status variables should be protected
+protected:
+  //status variables
+  bool performPostHaltCommand;
   int currentLine;
   MAIN_STATUS main_status;
   char current_machine[256];
@@ -89,17 +97,10 @@ public:
   bool connected;
   bool interpreting;
   bool simulate;
-
-protected:
-  //status variables
-  bool performPostHaltCommand;
+  MessageQueue *mq;
 
 private:
-/*
-  const char ACTION_NAMES[][32] = { "M_Action_None", "M_Action_Setbit", "M_Action_SetTwoBits",
-      "M_Action_DAC", "M_Action_Program", "M_Action_Program_wait", "M_Action_Program_wait_sync",
-      "M_Action_Program_PC", "M_Action_Callback", "M_Action_Waitbit", "UNAVAILABLE" };
-*/
+
   struct timeval tval_status;
   struct timeval tval_service_console;
   struct timeval tval_poll_callbacks;
@@ -116,6 +117,7 @@ private:
   void readSetup();
   void push_status();
 
+  //Will be removed or reborn in another shape
   void _enqueueState();
   bool msPast(struct timeval *tval_last, int ms);
 

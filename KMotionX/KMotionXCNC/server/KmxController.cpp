@@ -11,18 +11,14 @@
 #include "frozen.h"
 #include "utils.h"
 #include "json.h"
-#include "callbackhandler.h"
-
+#include "handler.h"
 //namespace kmx {
 
-KmxController::KmxController(CGCodeInterpreter *interpreter) {
-  //TODO Need to send
-  mb_callback = MessageBoxHandler;
-  //TODO Reimplement callback handler in C++ and take constructor parameter
-  cbh_init(push_to_clients);
+KmxController::KmxController(CGCodeInterpreter *interpreter, MessageQueue *message_queue) {
   Interpreter = interpreter;
   CM = Interpreter->CoordMotion;
   km = CM->KMotionDLL;
+  mq = message_queue;
 
 
   int type = BOARD_TYPE_UNKNOWN;
@@ -58,8 +54,12 @@ KmxController::~KmxController() {
   if (km) delete km;
 
 }
-
-
+void KmxController::PushClientData(const char *data , size_t data_len){
+  log_info("PushClientData binary needs to be implemented in subclass");
+}
+void KmxController::PushClientData(const char *data){
+  log_info("PushClientData text needs to be implemented in subclass");
+}
 void KmxController::readSetup(){
 
   char fileName[256];
@@ -108,7 +108,7 @@ void KmxController::_enqueueState() {
   json_emit(stateBuf, 512, "{s: s, s: s }",
       "file", current_file,
       "machine", current_machine);
-  cbh_enqueue_state(stateBuf);
+  mq->EnqueueState(stateBuf);
 }
 
 void KmxController::push_status() {
@@ -216,8 +216,8 @@ void KmxController::push_status() {
   else if (Interpreter->p_setup->length_units==CANON_UNITS_MM)
     CheckRadioButton(IDC_mm,IDC_inch,IDC_mm);
 */
-  //TODO needs to be a call back or implemented in subclass
-  push_to_clients(WEBSOCKET_OPCODE_BINARY, msg, size);
+  //needs to be a call back or implemented in subclass
+  PushClientData(msg, size);
 
   free(msg);
 }
@@ -294,32 +294,34 @@ void KmxController::Halt() {
 
 void KmxController::EmergencyStop()
 {
-  char s[MAX_LINE];
-  int i;
+  if(km->WaitToken(false,5000.0 == KMOTION_LOCKED)){
+    char s[MAX_LINE];
+    int i;
 
-  for (i=1;i<N_USER_THREADS;i++)   // kill all user programs except Thread #1
-  {
-    sprintf(s, "Kill %d", i+1);
+    for (i=1;i<N_USER_THREADS;i++)   // kill all user programs except Thread #1
+    {
+      sprintf(s, "Kill %d", i+1);
 
-    if (km->WriteLine(s)){
-      log_info("Command failed: %s\n", s);
-      return;
+      if (km->WriteLine(s)){
+        log_info("Command failed: %s\n", s);
+        return;
+      }
     }
-  }
 
-  Interpreter->Halt();
+    Interpreter->Halt();
 
-  Interpreter->Abort();
+    Interpreter->Abort();
 
-  for (i=0;i<N_CHANNELS;i++)             // disable all servo channels
-  {
-    sprintf(s, "DISABLEAXIS%d",i);
-    if (km->WriteLine(s)){
-      log_info("Command failed: %s\n", s);
-      return;
+    for (i=0;i<N_CHANNELS;i++)             // disable all servo channels
+    {
+      sprintf(s, "DISABLEAXIS%d",i);
+      if (km->WriteLine(s)){
+        log_info("Command failed: %s\n", s);
+        return;
+      }
     }
+    km->ReleaseToken();
   }
-
   Interpreter->InvokeAction(ACTION_STOP,FALSE);  // Do Special Action
 }
 void KmxController::DoErrorMessage(const char * msg){
@@ -346,7 +348,7 @@ void KmxController::Feedhold(){
         km->WriteLine("StopImmediate1");
       }
     }
-    km->ReleaseToken();
+    //km->ReleaseToken();
   //}
 }
 
@@ -359,7 +361,7 @@ void KmxController::interpret(int BoardType,char *InFile,int start,int end,bool 
     //TODO CheckForResume
     Interpreter->InvokeAction(ACTION_CYCLE_START,FALSE);  // Do Special Action
     if (!Interpreter->Interpret(BoardType, InFile, start, end, restart,
-        StatusCallback, CompleteCallback)) {
+        ::StatusCallback, ::CompleteCallback)) {
       interpreting = true;
       //enqueueState();
     }
@@ -525,7 +527,7 @@ void KmxController::setInterpreterActionParams(struct json_token *jsontoken, int
       int actionIndex = indexOffset + i;
       int actionNameIndex = action > 0 && action < 10?action:10;
       if(actionNameIndex != 10){
-        //printf("Set action index %d to %s\n",actionIndex, ACTION_NAMES[actionNameIndex]);
+        printf("Set action index %d to %s\n",actionIndex, ACTION_NAMES[actionNameIndex]);
 
       }
       Interpreter->McodeActions[actionIndex].Action = action;
@@ -569,7 +571,7 @@ void KmxController::OnStatusCallback(int line_no, const char *msg) {
   json_emit(buf, 256, "{ s: i, s: s }",
       "line", line_no,
       "message", msg);
-  cbh_enqueue_callback(buf, CB_STATUS);
+  mq->EnqueueCallback(buf, CB_STATUS);
 }
 
 
@@ -591,13 +593,13 @@ void KmxController::OnCompleteCallback(int status, int line_no, int sequence_num
       "sequence", sequence_number,
       "message", err);
   //enqueueState();
-  cbh_enqueue_callback(buf, CB_COMPLETE);
+  mq->EnqueueCallback(buf, CB_COMPLETE);
 }
 void KmxController::OnErrorMessageCallback(const char *msg) {
   //This is a non blocking call enqueue in poll thread
   char buf[256];
   json_emit(buf, 256, "s", msg);
-  cbh_enqueue_callback(buf, CB_ERR_MSG);
+  mq->EnqueueCallback(buf, CB_ERR_MSG);
 
 }
 
@@ -606,7 +608,7 @@ int KmxController::OnConsoleCallback(const char *msg) {
   //Not even sure this happens in another thread
   char buf[256];
   json_emit(buf, 256, "s", msg);
-  return cbh_enqueue_callback(buf, CB_CONSOLE);
+  return mq->EnqueueCallback(buf, CB_CONSOLE);
 }
 
 int KmxController::OnMessageBoxCallback(const char *title, const char *msg, int options) {
@@ -623,14 +625,14 @@ int KmxController::OnMessageBoxCallback(const char *title, const char *msg, int 
       "title", title,
       "message", msg);
   //todo handle blocking messagebox
-  return cbh_enqueue_callback(buf, CB_MESSAGEBOX);
+  return mq->EnqueueCallback(buf, CB_MESSAGEBOX);
 }
 
 int KmxController::OnUserCallback(const char *msg) {
   //This is a blocking call. A bit trickier
   char buf[256];
   json_emit(buf, 256, "s", msg);
-  int result = cbh_enqueue_callback(buf, CB_USER);
+  int result = mq->EnqueueCallback(buf, CB_USER);
   debug("UserCallback result: %d", result);
   return result;
 }
@@ -651,7 +653,7 @@ int KmxController::OnMcodeUserCallback(int mCode) {
   //instantiate a struct and wait for a signal/variable in that struct
   char buf[10];
   json_emit(buf, 10, "i", mCode);
-  int result = cbh_enqueue_callback(buf, CB_USER_M_CODE);
+  int result = mq->EnqueueCallback(buf, CB_USER_M_CODE);
   debug("UserMCallback result: %d", result);
   return result;
 
@@ -661,13 +663,13 @@ void KmxController::OnReceiveClientData(const char * msg) {
   //TODO parse message here and call with parameters
   //Will allow for subclassing
 
-  cbh_poll_callbacks(msg);
+  mq->PollCallbacks(msg);
 }
 void KmxController::Poll() {
   //poll is called every at least every 100 ms but can be alot more often
   if(msPast(&tval_poll_callbacks,200)){
     //debug("polling callbacks");
-    cbh_poll_callbacks(NULL);
+    mq->PollCallbacks(NULL);
   }
 
   //only perform poll when locked

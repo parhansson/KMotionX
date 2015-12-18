@@ -1,7 +1,6 @@
 include $(BUILD_ROOT)/config.mak
 #DEFS+=-DDEBUG
-SOURCES=utils.cpp frozen.cpp mongoose.cpp json.cpp handler2.cpp webserver.cpp callbackhandler.cpp KmxController.cpp
-#SOURCES=utils.cpp frozen.cpp mongoose.cpp json.cpp handler.cpp webserver.cpp callbackhandler.cpp
+SOURCES=utils.cpp frozen.cpp mongoose.cpp json.cpp handler.cpp webserver.cpp MessageQueue.cpp KmxController.cpp WebController.cpp
 IDIR+=$(BUILD_ROOT)/KMotionX/include
 IDIR+=$(BUILD_ROOT)/KMotionX/KMotionSupport/include
 IDIR+=$(BUILD_ROOT)/KMotionDLL
