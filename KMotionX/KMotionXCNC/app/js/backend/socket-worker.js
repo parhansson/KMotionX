@@ -18,12 +18,14 @@ function messageHandler(data){
     });
     reader.readAsArrayBuffer(data);
   } else {
+    if(data !== "KMotionX"){
+      
     //try{ //try catch disables optimization in chrome
       var obj = JSON.parse(data);
       postMessage({data:true,message:obj});
       //ack messages that don't require users answer here
-      if(!obj.block){    
-        socket.acknowledge(obj, -1);
+      if(obj.payload.block === false){    
+        socket.acknowledge(obj.id, -1);
       }
       
     //} catch(e){
@@ -31,6 +33,7 @@ function messageHandler(data){
     //  logHandler("Error handling message: " + data, LOG_TYPE.ERROR);
     //  throw e;
     //}
+    }
   }
   
 }
@@ -171,7 +174,7 @@ function onMessage(event){
     socket = new SocketHandler(url, messageHandler, logHandler);
     socket.connect();    
   } else if(event.data.command == 'acknowledge'){
-      socket.acknowledge(event.data.obj, event.data.ret);
+      socket.acknowledge(event.data.id, event.data.ret);
   } else if(event.data.command == 'disconnect'){
     //no need to acually disconnect at the moment
     socket.destroy();

@@ -1,28 +1,25 @@
 #include "handler.h"
 #include "KmxController.h"
 #include "WebController.h"
-#include "MessageQueue.h"
 
 
 WebController *kmxCtrl;
 CGCodeInterpreter *Interpreter;
 CKMotionDLL *km;
 CCoordMotion *CM;
-MessageQueue *mq;
 
 void initHandler() {
-  mq = new MessageQueue(push_to_clients);
   km = new CKMotionDLL(0);
   CM = new CCoordMotion(km);
   Interpreter = new CGCodeInterpreter(CM);
-
-  kmxCtrl = new WebController(Interpreter,mq, server);
+  kmxCtrl = new WebController(Interpreter,server);
   //Set callbacks after initialising KmxController
   mb_callback = MessageBoxHandler;
   Interpreter->SetUserMCodeCallback(MUserCallback);
   Interpreter->SetUserCallback(UserCallback);
   km->SetErrMsgCallback(ErrMsgHandler);
   km->SetConsoleCallback(ConsoleHandler);
+  kmxCtrl->Initialize();
 }
 
 int ev_handler(struct mg_connection *conn, enum mg_event ev) {
@@ -72,10 +69,4 @@ int UserCallback(const char *msg) {
 int MUserCallback(int mCode) {
   return kmxCtrl->OnMcodeUserCallback(mCode);
 }
-
-int push_to_clients(int opCode, const char *data , size_t data_len) {
-  //We know this is text;
-  return kmxCtrl->PushClientData(data);
-}
-
 

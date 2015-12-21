@@ -8,65 +8,48 @@
 #ifndef KMOTIONX_KMOTIONXCNC_SERVER_MESSAGEQUEUE_H_
 #define KMOTIONX_KMOTIONXCNC_SERVER_MESSAGEQUEUE_H_
 #include <pthread.h>
-#include "handler.h"
+#include <vector>
+#include "AbstractController.h"
 
-enum cb_type {
-  CB_STATUS, //Non blocking callback. Called from the interpreter in different thread
-  CB_COMPLETE, //Non blocking callback. Called from the interpreter in different thread
-  CB_ERR_MSG,      //Non blocking callback
-  CB_CONSOLE,      //Non blocking callback, event though it has return value??
-  CB_USER, //Blocking callback. Called from the interpreter in different thread
-  CB_USER_M_CODE, //Blocking callback. Called from the interpreter in different thread
-  CB_MESSAGEBOX //Message box and AfxMessageBox
-};
+
 enum cb_status {
-  CBS_ENQUEUED, CBS_WAITING, CBS_ACKNOWLEDGED
+  CBS_ENQUEUED, CBS_WAITING, CBS_ACKNOWLEDGED, CBS_COMPLETE
 };
 
-static const char CB_NAMES[][24] = {"STATUS", "COMPLETE", "ERR_MSG", "CONSOLE",
-    "USER", "USER_M_CODE", "MESSAGEBOX" };
 
 static const char STATUS_NAMES[][24] = {
   "CBS_ENQUEUED",
   "CBS_WAITING",
-  "CBS_ACKNOWLEDGED"
+  "CBS_ACKNOWLEDGED",
+  "CBS_COMPLETE"
 };
 
 struct callback {
   int id;
-  enum cb_type type;
   enum cb_status status;
+  bool blocking;
   time_t sent_time;
   int ret;
-  char msg[512]; //TODO malloc correct size
-  struct callback *next;
+  char payload[512]; //TODO malloc correct size
 };
 
-
+//template<class T>
 class MessageQueue {
 public:
-  MessageQueue(PUSH_TO_CLIENTS *push_cb);
+  MessageQueue(AbstractController *controller);
   virtual ~MessageQueue();
 
-  void PollCallbacks(const char * content);
-  //payload needs to be quoted if string
-  int EnqueueCallback(const char * payload, enum cb_type type);
+  void PollCallbacks(int id = -1, int ret = -1);
+  int EnqueueCallback(int id, const char * payload, bool blocking);
   void PrintInfo();
 
 private:
-
-  struct callback * InitCallback(struct callback *last, const char * payload, enum cb_type type);
-  void PollCallback(struct callback *cb, int id, int ret);
-  void DeleteCallback(struct callback *node);
-  struct callback * AllocCallback();
-
+  AbstractController *controller;
+  std::vector<callback> queue;
+  struct callback * InitCallback(struct callback *cb, int id,  bool blocking, const char * payload);
   pthread_mutex_t mut;
   pthread_cond_t con;
-  struct callback *callbackQueue; // head of this list is always state callback
-  int callback_counter = 0; //Callback id counter.
   long int poll_TID; //Poll thread id
-
-  PUSH_TO_CLIENTS *push_callback;
 
 
 };

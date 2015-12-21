@@ -39,11 +39,10 @@
         return;
       }
       var url = 'ws://' + window.location.host + '/ws';
-      //socketWorker = new Worker("js/backend/socket-worker.js");
-      //socketWorker.onmessage = workerMessage;
       KMX.Util.getSingletonWorker("js/backend/socket-worker.js", workerMessage)
       .then(
-        function(socketWorker) {
+        function(worker) {
+          socketWorker = worker; 
           socketWorker.postMessage({command:'connect',url:url}) 
         },function(reason){
           console.error(reason);
@@ -64,11 +63,14 @@
       var data = event.data; 
       if(data.data){
         var obj = data.message;
-        var handler = socketHandlers[obj.type];// || _this.defaultHandler;
-        var ret = handler(obj);
-        if(obj.block){
+        if(obj.KMX){
+          return;
+        }
+        var handler = socketHandlers[obj.payload.type];// || _this.defaultHandler;
+        var ret = handler(obj.payload);
+        if(obj.payload.block === true){
           //only ack messages that require users answer here
-          acknowledge(obj, ret);              
+          acknowledge(obj.id, ret);              
         }
       } else if(data.status){
         //var json = angular.toJson(data.message,true);
@@ -95,40 +97,40 @@
       }
     }
     
-    function acknowledge(obj, ret){
-      socketWorker.postMessage({command:'acknowledge',obj:obj,ret:ret});
+    function acknowledge(id, ret){
+      socketWorker.postMessage({command:'acknowledge',id:id,ret:ret});
     } 
 
-    function statusHandler(obj) {
-      kmxLogger.log('status', 'Line: '+ obj.data.line + " - " + obj.data.message);
+    function statusHandler(payload) {
+      kmxLogger.log('status', 'Line: '+ payload.line + " - " + payload.message);
     }
-    function completeHandler(obj) {
-      kmxLogger.log('status', 'Done Line: '+ obj.data.line + " Status: " + obj.data.status + " Sequence " + obj.data.sequence + " - " + obj.data.message);
+    function completeHandler(payload) {
+      kmxLogger.log('status', 'Done Line: '+ payload.line + " Status: " + payload.status + " Sequence " + payload.sequence + " - " + payload.message);
     }
-    function errorMessageHandler(obj) {
-      kmxLogger.log('error', obj.data);
+    function errorMessageHandler(payload) {
+      kmxLogger.log('error', payload.message);
     }
-    function consoleHandler(obj) {
-      kmxLogger.log('console', obj.data);
+    function consoleHandler(payload) {
+      kmxLogger.log('console', payload.message);
     }
     
-    function userHandler(obj) {
-      if (confirm('USR: ' + obj.data + ' ?')) {
+    function userHandler(payload) {
+      if (confirm('USR: ' + payload.message + ' ?')) {
         return 0; // zero is true for this callback
       } else {
           return 1;
       }
     }
-    function userMCodeHandler(obj) {
-      if (confirm('Are you sure you want to continue after M' + obj.data + ' ?')) {
+    function userMCodeHandler(payload) {
+      if (confirm('Are you sure you want to continue after M' + payload.code + ' ?')) {
         return 0; // zero is true for this callback
       } else {
           return 1;
       }
     }
     
-    function messageHandler(obj) {
-      alert(obj.data.message);
+    function messageHandler(payload) {
+      alert(payload.message);
       return 0;
     }
     

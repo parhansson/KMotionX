@@ -10,12 +10,17 @@
 
 #include "KmxController.h"
 #include "mongoose.h"
-#include "MessageQueue.h"
+
+static const char CB_NAMES[][24] = {"STATUS", "COMPLETE", "ERR_MSG", "CONSOLE",
+    "USER", "USER_M_CODE", "MESSAGEBOX" };
 
 class WebController: public KmxController {
 public:
-  WebController(CGCodeInterpreter *interpreter, MessageQueue *message_queue, mg_server *serv);
+  WebController(CGCodeInterpreter *interpreter, mg_server *serv);
   virtual ~WebController();
+
+
+
   void PrintInfo();
   int OnEventPoll(struct mg_connection *conn);
   int OnEventWsConnect(struct mg_connection *conn);
@@ -23,10 +28,25 @@ public:
   int OnEventRecv(struct mg_connection *conn);
   int OnEventRequest(struct mg_connection *conn);
 
+  virtual void OnReceiveClientData(const char * content);
   virtual int PushClientData(const char *data);
   virtual int PushClientData(const char *data , size_t data_len);
+  virtual void ClientConnect();
+
+protected:
+  virtual int Setup();
+  virtual int CreateMessageBoxCallbackData(const char *title, const char *msg, int options, bool blocking, char *buf, size_t buf_len);
+  virtual int CreateCompleteCallbackData(int status, int line_no, int sequence_number,const char *err, bool blocking, char *buf, size_t buf_len);
+  virtual int CreateStatusCallbackData(int line_no, const char *msg, bool blocking, char *buf, size_t buf_len);
+  virtual int CreateErrorMessageCallbackData(const char *msg, bool blocking, char *buf, size_t buf_len);
+  virtual int CreateConsoleCallbackData(const char *msg, bool blocking, char *buf, size_t buf_len);
+  virtual int CreateUserCallbackData(const char *msg, bool blocking, char *buf, size_t buf_len);
+  virtual int CreateMcodeUserCallbackData(int mCode, bool blocking, char *buf, size_t buf_len);
+  virtual void SetMotionParams(const char *buf, size_t len);
+
 private:
   mg_server *server;
+  int callback_counter = 0; //Callback id counter.
   //global poll thread response array, no need to allocate eah time since server is single threaded
   char gp_response[MAX_LINE];
   void ListDir(struct json_token *paramtoken);
@@ -37,6 +57,7 @@ private:
   int PushClientData(int opCode, const char *data , size_t data_len);
   bool isUploadRequest(struct mg_connection *conn);
   bool isApiRequest(struct mg_connection *conn);
+  void setInterpreterActionParams(struct json_token *jsontoken, int indexOffset, int count, const char* pathTemplate);
 
 };
 

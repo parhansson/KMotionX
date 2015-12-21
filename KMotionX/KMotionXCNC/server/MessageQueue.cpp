@@ -7,224 +7,149 @@
 
 #include "MessageQueue.h"
 #include <stdlib.h>
-#include <string.h>
 #include "dbg.h"
-#include "utils.h"
-#include "frozen.h"
 
 //TODO fix in some non existing header file
 extern long int getThreadId();
 
-MessageQueue::MessageQueue(PUSH_TO_CLIENTS *push_cb) {
+MessageQueue::MessageQueue(AbstractController *ctrl) {
   mut = PTHREAD_MUTEX_INITIALIZER;
   con = PTHREAD_COND_INITIALIZER;
-  callbackQueue = NULL; // head of this list is always state callback
-  //Enqueue state as first callback. This first entry will never be removed
-  push_callback = push_cb;
-  callbackQueue = (struct callback *) malloc(sizeof(struct callback));
-  callbackQueue->next = NULL;
+  controller = ctrl;
   poll_TID = ::getThreadId();
 }
 
 MessageQueue::~MessageQueue() {
-  // TODO Auto-generated destructor stub
+
 }
 
-//TODO Implement support for blocking callback in poll thread
-//#define isBlocking(type) (type == CB_USER || type == CB_USER_M_CODE || type ==  CB_MESSAGEBOX)
-#define IS_BLOCKING(type) (type == CB_USER || type == CB_USER_M_CODE)
 
-
-
-
-struct callback * MessageQueue::InitCallback(struct callback *item, const char * payload, enum cb_type type) {
-
-  item->id = callback_counter++;
+struct callback * MessageQueue::InitCallback(struct callback *item, int mid, bool blocking, const char * payload) {
+  item->id = mid;
   item->status = CBS_ENQUEUED;
+  item->blocking = blocking;
   item->ret = -1;
-  item->type = type;
-  //{ "id": 5, "type": 67, data: ""|6776|{}|[]|null|true|false}
-  json_emit(item->msg, 512, "{ s: i, s: s, s: S, s: S}",
-      "id", item->id,
-      "type", CB_NAMES[type],
-      "block",IS_BLOCKING(type)?"true":"false",
-      "data", payload);
-
-  //debug("Enqueued %s message: %s",CB_NAMES[type], last->msg);
+  strcpy(item->payload, payload);
   return item;
+
 }
 
 //msg needs to be quoted if string
-int MessageQueue::EnqueueCallback(const char * payload, enum cb_type type) {
+int MessageQueue::EnqueueCallback(int id, const char * payload, bool blocking) {
 
   //Enqueued messages are held in list (callbacks)
   //Callbacks are created here and sent to clients in next poll
 
-  struct callback * cb;
-  long int curTID = ::getThreadId();
   int result = 0;
-  //debug("Poll thread: %ld. Current thread: %ld", pollTID, curTID);
-  if (poll_TID == curTID) {
-    //if this is a blocking call. then we are in trouble.
-    //we can not stop and wait in poll/main thread
-    //TODO mutex lock here is new and not very well tested
-    if (IS_BLOCKING(type)) {
-        log_info("-------ERROR: Unsupported blocking callback %s in poll thread %ld\n%s\n", CB_NAMES[type], poll_TID, payload);
-    }
+  bool sameThread = poll_TID == ::getThreadId();
+  bool waitForResult = blocking;
 
-    pthread_mutex_lock(&mut);
-    cb = InitCallback(AllocCallback(), payload, type);
-    if (IS_BLOCKING(cb->type)) {
-      result = cb->ret;
-      DeleteCallback(cb);
-    }
-    pthread_mutex_unlock(&mut);
-  } else {
-    pthread_mutex_lock(&mut);
-    cb = InitCallback(AllocCallback(), payload, type);
-    if (IS_BLOCKING(cb->type)) {
-      debug("wait called");
-      pthread_cond_wait(&con, &mut); //wait for the signal with con as condition variable
-      debug("wait done signal received");
-      result = cb->ret;
-      DeleteCallback(cb);
-    }
-    pthread_mutex_unlock(&mut);
+  if (sameThread && waitForResult) {
+    log_info("-------ERROR: Blocking callback in poll thread is unsupported and will be set to nonblocking %ld\nPayload: %s\n",  poll_TID, payload);
+    waitForResult = false;
   }
+
+  pthread_mutex_lock(&mut);
+  callback cb = callback();
+  InitCallback(&cb, id, waitForResult, payload);
+  queue.push_back(cb);
+  if (waitForResult) {
+    debug("wait called");
+    pthread_cond_wait(&con, &mut); //wait for the signal with con as condition variable
+    debug("wait done signal received");
+    //vector::push_back copies our object. mayby a vector of pointers should be used instead
+    for (std::vector<callback>::iterator it = queue.begin() ; it != queue.end();++it)
+    {
+      if(it->id == id){
+        it->status = CBS_COMPLETE;
+        result = it->ret;
+        break;
+      }
+    }
+  }
+  pthread_mutex_unlock(&mut);
+
 
   return result;
 }
 
+void MessageQueue::PollCallbacks(int id, int ret) {
+
+  pthread_mutex_lock(&mut);
+  for (std::vector<callback>::iterator it = queue.begin() ; it != queue.end();)
+  {
+    switch ( it->status ) {
+    case CBS_ENQUEUED:
+      it->sent_time = time(NULL);
+      if(controller->PushClientData(it->payload)) {
+        it->status = CBS_WAITING;
+      }
+      break;
+    case CBS_WAITING:
+      if (it->id == id) {
+        it->status = CBS_ACKNOWLEDGED;
+        it->ret = ret;
+        //Only signal waiting thread if blocking callback
+        if (it->blocking) {
+          pthread_cond_signal(&con); //wake up waiting thread with condition variable
+        } else {
+          it->status = CBS_COMPLETE; //We are done with this item
+        }
+      } else {
+        //resend message if not acked for 30 seconds
+        //This will prevent hanging threads if client is closed.
+        //When a new client is connected the message will show up and can be acked
+        time_t current_time = time(NULL);
+        if (current_time - it->sent_time > 30) {
+          it->status = CBS_ENQUEUED;
+        }
+      }
+      break;
+    case CBS_ACKNOWLEDGED:
+      //Do nothing. we need this state if the same message is acked more than once due to multiple clients
+      //we are not allowed to block thread again.
+      break;
+    case CBS_COMPLETE:
+        // will be deleted
+        break;
+    default:
+      break;
+    }
+
+    //Delete callback if completed
+    if(it->status == CBS_COMPLETE){
+      it = queue.erase(it);
+    } else {
+      ++it;
+    }
+  }
+  pthread_mutex_unlock(&mut);
+}
 
 void MessageQueue::PrintInfo(){
   struct callback *last;
   int cb_count = 0;
-  int statCounts[3][8][1];
+  int statCounts[4][1];
   memset(statCounts, 0, sizeof(statCounts));
-  last = callbackQueue;
-  while (last->next != NULL) {
-    statCounts[last->status][last->type][0]++;
+  //Need to lock mutex here or print might crash
+  pthread_mutex_lock(&mut);
+  memset(statCounts, 0, sizeof(statCounts));
+  for (std::vector<callback>::iterator it = queue.begin() ; it != queue.end(); ++it)
+  {
+    statCounts[it->status][0]++;
     cb_count++;
-    last = last->next;
   }
-  for (int status = 0; status < 3; status++) {
-    for (int type = 0; type < 8; type++) {
-      int count = statCounts[status][type][0];
+
+
+  pthread_mutex_unlock(&mut);
+  for (int status = 0; status < 4; status++) {
+      int count = statCounts[status][0];
       if (count > 0) {
-        fprintf(stdout, "%s, %s %d\n", STATUS_NAMES[status], CB_NAMES[type],
-            count);
+        fprintf(stdout, "Number of callbacks %d in state %s, \n", count, STATUS_NAMES[status]);
       }
-    }
   }
   fprintf(stdout, "Total callbacks in queue :%d\n", cb_count);
 }
 
-void MessageQueue::PollCallbacks(const char * content) {
 
-  int id = -1;
-  char type[16];
-  memset(type,0,16);
 
-  int ret = -1;
-  if (content != NULL) {
-    //we have a connection.
-    //incoming answer from client
-    if (strlen(content) > 12 && memcmp(content, "CB_ACK:", 7) == 0) {
-      sscanf(content, "CB_ACK: %d  %s %d", &id, type, &ret);
-
-/*
-       char *msg;
-       msg = strndup(conn->content, conn->content_len);
-       debug("CB_ACK id: %s type: %s    raw: %s\n",id,type,msg);
-       free(msg);
-*/
-    }
-  }
-
-  pthread_mutex_lock(&mut);
-
-  struct callback *node, *current;
-
-  node = callbackQueue;
-  do{
-
-    current = node;
-    // pollCallback might free the current node in this case node->next is not valid.
-    node = node->next;
-    PollCallback(current, id, ret);
-  } while (node != NULL);
-
-  pthread_mutex_unlock(&mut);
-}
-
-void MessageQueue::PollCallback(struct callback *cb, int id, int ret) {
-  if (cb->status == CBS_ENQUEUED) {
-    cb->sent_time = time(NULL);
-    if(push_callback(/*WEBSOCKET_OPCODE_TEXT */0x1,cb->msg, strlen(cb->msg)) > 0){
-      cb->status = CBS_WAITING;
-    }
-  } else if (cb->status == CBS_WAITING) {
-
-    if (cb->id == id) {
-      cb->status = CBS_ACKNOWLEDGED;
-      cb->ret = ret;
-
-      //Only signal waiting thread if blocking callback
-      if (IS_BLOCKING(cb->type)) {
-        pthread_cond_signal(&con); //wake up waiting thread with condition variable
-      } else {
-        //printf("Non blocking callback acked and deleted\n");
-        DeleteCallback(cb);
-      }
-    } else {
-      //resend message if not acked for 30 seconds
-      //This will prevent hanging threads if browser is closed.
-      //When a new browser is connected the message will show up and can be acked
-      time_t current_time = time(NULL);
-      if (current_time - cb->sent_time > 30) {
-        cb->status = CBS_ENQUEUED;
-      }
-
-    }
-  }
-}
-
-void MessageQueue::DeleteCallback(struct callback *node) {
-  // When node to be deleted is head node
-  if (callbackQueue == node) {
-    log_info("Not allowed to remove head of callback list");
-    return;
-  } else {
-
-    // When not first node, follow the normal deletion process
-    // find the previous node
-    struct callback *prev = callbackQueue;
-    while (prev->next != NULL && prev->next != node) {
-      prev = prev->next;
-    }
-
-    // Check if node really exists in Linked List
-    if (prev->next == NULL) {
-      log_info("Given node is not present in Linked List ");
-      return;
-    }
-
-    // Remove node from Linked List
-    prev->next = prev->next->next;
-  }
-  // Free memory
-  free(node);
-}
-
-struct callback * MessageQueue::AllocCallback() {
-  struct callback *last;
-  last = callbackQueue;
-  int size = 0;
-  while (last->next != NULL) {
-    last = last->next;
-    size++;
-  }
-  last->next = (struct callback *) malloc(sizeof(struct callback));
-  last->next->next = NULL;
-  return last->next;
-}

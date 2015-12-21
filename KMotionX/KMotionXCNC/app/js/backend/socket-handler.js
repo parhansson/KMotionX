@@ -72,10 +72,7 @@ SocketHandler.prototype.sendMessage = function(message) {
     this.logHandler(message, LOG_TYPE.SEND);
     this.websocket.send(message);
 }
-SocketHandler.prototype.acknowledge = function(obj, ret) {
-
-    if (obj.type != null) { //not sure if type ever is not null
-        this.sendMessage("CB_ACK: " + obj.id + " " + obj.type + " " + ret);
-    }
+SocketHandler.prototype.acknowledge = function(id, ret) {
+    this.sendMessage(JSON.stringify({type:"CB_ACK", id: id, returnValue: ret}));
 }
 

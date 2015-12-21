@@ -8,30 +8,58 @@
 #include "KmxController.h"
 
 #include <dirent.h>
-#include "frozen.h"
 #include "utils.h"
-#include "json.h"
 #include "handler.h"
 //namespace kmx {
+#define IS_BLOCKING(type) (type == CB_USER || type == CB_USER_M_CODE)
+//TODO Implement support for blocking callback in poll thread
+//#define isBlocking(type) (type == CB_USER || type == CB_USER_M_CODE || type ==  CB_MESSAGEBOX)
 
-KmxController::KmxController(CGCodeInterpreter *interpreter, MessageQueue *message_queue) {
+KmxController::KmxController(CGCodeInterpreter *interpreter)
+/*:AbstractController()*/{
   Interpreter = interpreter;
   CM = Interpreter->CoordMotion;
   km = CM->KMotionDLL;
-  mq = message_queue;
+  mq = new MessageQueue(this);
+
+  performPostHaltCommand = false;
+  currentLine = 0;
+  current_machine[0] = '\0';
+  current_file[0] = '\0';
+  connected = false;
+  interpreting = false;
+  simulate = false;
+
   //TODO init struct before first read. memset?
   main_status.StopImmediateState = 0;
+
+}
+
+KmxController::~KmxController() {
+  // release token since server might still be running
+  km->ReleaseToken();
+  if (Interpreter) delete Interpreter;
+  if (CM) delete CM;
+  if (km) delete km;
+
+}
+int KmxController::Initialize(){
 
   int type = BOARD_TYPE_UNKNOWN;
   if(km->CheckKMotionVersion(&type,false)){
     //enter simulation mode?
     exit(1);
   }
-  readSetup();
+
+  if(Setup()){
+    printf("Setup failed.\n");
+    return -1;
+  }
+
   UpdateMotionParams();
 
   //Try without simulation on startup
-  setSimulationMode(false); //enques state
+  setSimulationMode(false);
 
   if(!readStatus()){
   //if (FirstStartup)
@@ -44,49 +72,7 @@ KmxController::KmxController(CGCodeInterpreter *interpreter, MessageQueue *messa
   //}
 
   }
-
-}
-
-KmxController::~KmxController() {
-  // release token since server might still be running
-  km->ReleaseToken();
-  if (Interpreter) delete Interpreter;
-  if (CM) delete CM;
-  if (km) delete km;
-
-}
-int KmxController::PushClientData(const char *data , size_t data_len){
-  log_info("PushClientData binary needs to be implemented in subclass");
   return 0;
-}
-int KmxController::PushClientData(const char *data){
-  log_info("PushClientData text needs to be implemented in subclass");
-  return 0;
-}
-void KmxController::readSetup(){
-
-  char fileName[256];
-  absolutePath("settings/setup.cnf", fileName);
-  MappedFile mmFile;
-  if(mmapNamedFile(mmFile, fileName)){
-    debug("Failed to read setup file");
-    return;
-  }
-
-  json_token *setup = NULL;
-  setup = parse_json2(mmFile.addr, mmFile.filesize);
-
-  json_str(setup,"machine",current_machine);
-  json_str(setup,"gcodefile",current_file);
-
-  performPostHaltCommand=false;
-  interpreting = false;
-  currentLine = 0; //Store current line in setup file? need to implement store file first
-  connected = false;
-  simulate = false;
-
-  free(setup);
-  unmapFile(mmFile);
 }
 
 int KmxController::readStatus(){
@@ -234,25 +220,20 @@ int KmxController::InvokeAction(int action, bool FlushBeforeUnbufferedOperation)
 }
 
 void KmxController::LoadMachineConfiguration(const char* path){
-  if(current_machine != NULL){
-    if (strcmp(current_machine, path) != 0) {
-        strcpy(current_machine, path);
-    }
+  if (strcmp(current_machine, path) != 0) {
+      strcpy(current_machine, path);
   }
 }
 void KmxController::LoadGcode(const char* path){
   if(!interpreting){
-    if(current_file != NULL){
       if (strcmp(current_file, path) != 0) {
           strcpy(current_file, path);
           currentLine = 0;
       }
-    }
   }
 }
 
 void KmxController::ClientConnect(){
-
 }
 
 void KmxController::Simulate() {
@@ -367,204 +348,23 @@ void KmxController::UpdateMotionParams(){
 
   MappedFile mmFile;
   if(mmapNamedFile(mmFile, fileName)){
+    log_info("Failed to map file: %s", fileName);
     return;
   }
+  SetMotionParams(mmFile.addr, mmFile.filesize);
 
-  json_token *json = NULL;
-  json = parse_json2(mmFile.addr, mmFile.filesize);
-  setMotionParams(json);
-  free(json);
   unmapFile(mmFile);
 }
-void KmxController::setMotionParams(struct json_token *jsontoken) {
 
-    char * name = NULL;
-    json_token *token;
-
-    MOTION_PARAMS *p=Interpreter->GetMotionParams();
-    double maxAccel,maxVel,countsPerUnit;
-    double breakAngle,collinearTol,cornerTol,facetAngle,tpLookahead;
-
-    breakAngle = collinearTol = cornerTol = facetAngle = tpLookahead = 0;
-    json_double(jsontoken,"tplanner.breakangle",&breakAngle);
-    json_double(jsontoken,"tplanner.cornertolerance",&cornerTol);
-    json_double(jsontoken,"tplanner.lookahead",&tpLookahead);
-    json_double(jsontoken,"tplanner.collineartolerance",&collinearTol);
-    json_double(jsontoken,"tplanner.facetangle",&facetAngle);
-
-    p->BreakAngle = breakAngle;
-    p->CollinearTol = collinearTol;
-    p->CornerTol = cornerTol;
-    p->FacetAngle = facetAngle;
-    p->TPLookahead = tpLookahead;
-
-    //TODO
-    //p->RadiusA = m_RadiusA;
-    //p->RadiusB = m_RadiusB;
-    //p->RadiusC = m_RadiusC;
-
-    char path[64];
-    for(int i= 0;i<6;i++){
-
-      sprintf(path,"axes[%i]",i);
-      token = find_json_token(jsontoken, path);
-      if(token){
-        maxAccel = maxVel = countsPerUnit = 0.0;
-        json_str(token,"name",&name,1);
-        json_double(token,"countsPerUnit",&countsPerUnit);
-        json_double(token,"maxAccel",&maxAccel);
-        json_double(token,"maxVel",&maxVel);
-
-        // default values form KMotionCNCDlg.c
-        maxAccel = maxAccel == 0.0?0.01:maxAccel;
-        maxVel = maxVel == 0.0?0.1:maxVel;
-        //Zero on countPerUnit will abort GCode
-        countsPerUnit = countsPerUnit == 0.0?100.0:countsPerUnit;
-        switch (name[0]) {
-          case 'X':
-            p->CountsPerInchX = countsPerUnit;
-            p->MaxAccelX = maxAccel;
-            p->MaxVelX = maxVel;
-            break;
-          case 'Y':
-            p->CountsPerInchY = countsPerUnit;
-            p->MaxAccelY = maxAccel;
-            p->MaxVelY = maxVel;
-            break;
-          case 'Z':
-            p->CountsPerInchZ = countsPerUnit;
-            p->MaxAccelZ = maxAccel;
-            p->MaxVelZ = maxVel;
-            break;
-          case 'A':
-            p->CountsPerInchA = countsPerUnit;
-            p->MaxAccelA = maxAccel;
-            p->MaxVelA = maxVel;
-            break;
-          case 'B':
-            p->CountsPerInchB = countsPerUnit;
-            p->MaxAccelB = maxAccel;
-            p->MaxVelB = maxVel;
-            break;
-          case 'C':
-            p->CountsPerInchC = countsPerUnit;
-            p->MaxAccelC = maxAccel;
-            p->MaxVelC = maxVel;
-            break;
-        }
-
-      } else {
-        printf("Failed %s\n",path);
-      }
-
-    }
-    free(name);
-    //M2-M9,S index 2-9
-    //userButtons index 11-20
-    //M100-M119 index 21 -39
-    //Special actions index 41 -48
-    setInterpreterActionParams(jsontoken, 0,MAX_MCODE_ACTIONS_M1,"actions[%i]");
-    setInterpreterActionParams(jsontoken, MCODE_ACTIONS_SPECIAL_OFFSET,MAX_MCODE_ACTIONS_SPECIAL,"specialActions[%i]");
-    setInterpreterActionParams(jsontoken, MAX_MCODE_ACTIONS_M1,MAX_MCODE_ACTIONS_BUTTONS,"userActions[%i]");
-    setInterpreterActionParams(jsontoken, MCODE_ACTIONS_M100_OFFSET,MAX_MCODE_ACTIONS_M100,"extendedActions[%i]");
-
-    printf("X %lf, %lf, %lf \n",p->CountsPerInchX,p->MaxAccelX, p->MaxVelX );
-    printf("Y %lf, %lf, %lf \n",p->CountsPerInchY,p->MaxAccelY, p->MaxVelY );
-    printf("Z %lf, %lf, %lf \n",p->CountsPerInchZ,p->MaxAccelZ, p->MaxVelZ );
-    printf("A %lf, %lf, %lf \n",p->CountsPerInchA,p->MaxAccelA, p->MaxVelA );
-    printf("B %lf, %lf, %lf \n",p->CountsPerInchB,p->MaxAccelB, p->MaxVelB );
-    printf("C %lf, %lf, %lf \n",p->CountsPerInchC,p->MaxAccelC, p->MaxVelC );
-
-    //TODO
-    //strcpy(Interpreter->ToolFile,m_ToolFile);
-    //strcpy(Interpreter->SetupFile,m_SetupFile);
-    //strcpy(Interpreter->GeoFile,m_GeoFile);
-    //strcpy(Interpreter->VarsFile,m_VarsFile);
-    //p->DegreesA = m_DegreesA!=0;
-    //p->DegreesB = m_DegreesB!=0;
-    //p->DegreesC = m_DegreesC!=0;
-    p->ArcsToSegs = true;;
-
-    Interpreter->CoordMotion->SetTPParams();
-
-}
-void KmxController::setInterpreterActionParams(struct json_token *jsontoken, int indexOffset, int count, const char* pathTemplate) {
-  double dParam0, dParam1, dParam2, dParam3, dParam4;
-  int action;
-  char path[64];
-  char *file = NULL;
-  char *name = NULL;
-  json_token *token;
-
-  for(int i= 0;i<count;i++){
-
-    sprintf(path,pathTemplate,i);
-    token = find_json_token(jsontoken, path);
-    if(token){
-      action = dParam0 = dParam1 = dParam2 = dParam3 = dParam4 = 0;
-      json_int(token,"action",&action);
-      if(action > 0){
-        json_str(token,"name",&name,64);
-        json_str(token,"file",&file,256);
-        json_double(token,"dParam0",&dParam0);
-        json_double(token,"dParam1",&dParam1);
-        json_double(token,"dParam2",&dParam2);
-        json_double(token,"dParam3",&dParam3);
-        json_double(token,"dParam4",&dParam4);
-
-      }
-      //M2-M9,S index 2-9
-      //userButtons index 11-20
-      //M100-M119 index 21 -39
-      //Special actions index 41 -48
-      int actionIndex = indexOffset + i;
-      int actionNameIndex = action > 0 && action < 10?action:10;
-      if(actionNameIndex != 10){
-        printf("Set action index %d to %s\n",actionIndex, ACTION_NAMES[actionNameIndex]);
-
-      }
-      Interpreter->McodeActions[actionIndex].Action = action;
-      Interpreter->McodeActions[actionIndex].dParams[0] = dParam0;
-      Interpreter->McodeActions[actionIndex].dParams[1] = dParam1;
-      Interpreter->McodeActions[actionIndex].dParams[2] = dParam2;
-      Interpreter->McodeActions[actionIndex].dParams[3] = dParam3;
-      Interpreter->McodeActions[actionIndex].dParams[4] = dParam4;
-
-
-      //file should be nulled if not set.
-      if(file == NULL || action == 0){
-        Interpreter->McodeActions[actionIndex].String[0] = 0;
-      } else {
-        if(file[0]=='/'){
-          //path is absolute
-          strcpy(Interpreter->McodeActions[actionIndex].String, file);
-        } else {
-          //path is relative. make it absolute
-          char absoluteFile[256];
-          absolutePath(file, absoluteFile);
-          strcpy(Interpreter->McodeActions[actionIndex].String, absoluteFile);
-        }
-      }
-
-    } else {
-      printf("Failed %s\n", pathTemplate);
-    }
-  }
-  free(file);
-  free(name);
-}
 
 void KmxController::OnStatusCallback(int line_no, const char *msg) {
   //This is a non blocking call from other thread to be enqueued in poll thread
-  char buf[256];
-  //if(gstate.currentLine != line_no){
+  char buf[512];
+  memset(buf, 0,512);
   currentLine = line_no;
-    //enqueueState();
-  //}
-  json_emit(buf, 256, "{ s: i, s: s }",
-      "line", line_no,
-      "message", msg);
-  mq->EnqueueCallback(buf, CB_STATUS);
+  bool blocking = IS_BLOCKING(CB_STATUS);
+  int id = CreateStatusCallbackData(line_no, msg, blocking, buf, 512);
+  mq->EnqueueCallback(id, buf, blocking);
 }
 
 
@@ -580,23 +380,21 @@ void KmxController::OnCompleteCallback(int status, int line_no, int sequence_num
   currentLine = line_no;
 
   char buf[256];
-  json_emit(buf, 256, "{ s: i, s: i, s: i, s: s }",
-      "line", line_no,
-      "status", status,
-      "sequence", sequence_number,
-      "message", err);
-
+  bool blocking = IS_BLOCKING(CB_COMPLETE);
+  int id = CreateCompleteCallbackData(status, line_no, sequence_number, err, blocking, buf, 256);
   if(strlen(err)>0){
     OnErrorMessageCallback(err);
   }
 
-  mq->EnqueueCallback(buf, CB_COMPLETE);
+  mq->EnqueueCallback(id, buf, blocking);
 }
+
 void KmxController::OnErrorMessageCallback(const char *msg) {
   //This is a non blocking call enqueue in poll thread
   char buf[256];
-  json_emit(buf, 256, "s", msg);
-  mq->EnqueueCallback(buf, CB_ERR_MSG);
+  bool blocking = IS_BLOCKING(CB_ERR_MSG);
+  int id = CreateErrorMessageCallbackData(msg, blocking, buf, 256);
+  mq->EnqueueCallback(id, buf, false);
 
 }
 
@@ -604,35 +402,36 @@ int KmxController::OnConsoleCallback(const char *msg) {
   //This is a non blocking call even though it has a return value.. strange
   //Not even sure this happens in another thread
   char buf[256];
-  json_emit(buf, 256, "s", msg);
-  return mq->EnqueueCallback(buf, CB_CONSOLE);
+  bool blocking = IS_BLOCKING(CB_CONSOLE);
+  int id = CreateConsoleCallbackData(msg, blocking, buf, 256);
+  return mq->EnqueueCallback(id, buf, blocking);
 }
 
 int KmxController::OnMessageBoxCallback(const char *title, const char *msg, int options) {
-  int blocking = 0;
+  bool blocking = false;
   //non blocking MB_OK?
   if ((options & (MB_YESNO | MB_OKCANCEL)) == (MB_YESNO | MB_OKCANCEL)) {
-    blocking = 1;
+    blocking = true;
   }
 
   //TODO Messages might be pretty long check this and alloc
   char buf[512];
-  json_emit(buf, 512, "{ s: i, s: s, s: s }",
-      "options", options,
-      "title", title,
-      "message", msg);
+  int id = CreateMessageBoxCallbackData(title, msg, options, blocking, buf, 512);
   //todo handle blocking messagebox
-  return mq->EnqueueCallback(buf, CB_MESSAGEBOX);
+  return mq->EnqueueCallback(id, buf, blocking);
 }
+
 
 int KmxController::OnUserCallback(const char *msg) {
   //This is a blocking call. A bit trickier
   char buf[256];
-  json_emit(buf, 256, "s", msg);
-  int result = mq->EnqueueCallback(buf, CB_USER);
+  bool blocking = IS_BLOCKING(CB_USER);
+  int id = CreateUserCallbackData(msg, blocking, buf, 256);
+  int result = mq->EnqueueCallback(id, buf, blocking);
   debug("UserCallback result: %d", result);
   return result;
 }
+
 int KmxController::OnMcodeUserCallback(int mCode) {
   //This is a blocking call. A bit trickier
   //Currently not supported.
@@ -648,33 +447,30 @@ int KmxController::OnMcodeUserCallback(int mCode) {
   //the thread needs to wait for timeout and then issue the request again in poll thread
   //if gui is closed and reopened
   //instantiate a struct and wait for a signal/variable in that struct
-  char buf[10];
-  json_emit(buf, 10, "i", mCode);
-  int result = mq->EnqueueCallback(buf, CB_USER_M_CODE);
+  char buf[256];
+  bool blocking = IS_BLOCKING(CB_USER_M_CODE);
+  int id = CreateMcodeUserCallbackData(mCode, blocking, buf, 256);
+  int result = mq->EnqueueCallback(id, buf, blocking);
   debug("UserMCallback result: %d", result);
   return result;
 
 }
 
-void KmxController::OnReceiveClientData(const char * msg) {
-  //TODO parse message here and call with parameters
-  //Will allow for subclassing
-
-  mq->PollCallbacks(msg);
+void KmxController::Acknowledge(int id, int returnValue) {
+  mq->PollCallbacks(id, returnValue);
 }
+
 void KmxController::Poll() {
   //poll is called every at least every 100 ms but can be alot more often
   if(msPast(&tval_poll_callbacks,200)){
     //debug("polling callbacks");
-    mq->PollCallbacks(NULL);
+    mq->PollCallbacks();
   }
 
   //only perform poll when locked
   //if(km->WaitToken(false,0) == KMOTION_LOCKED){
   if(km->WaitToken(false,100.0== KMOTION_LOCKED)){
-
     if(msPast(&tval_status,200)){
-      //debug("pushar status");
       push_status();
     }
 
@@ -705,4 +501,5 @@ bool KmxController::msPast(struct timeval *tval_last, int ms){
   }
   return false;
 }
+
 //} /* namespace KMX */

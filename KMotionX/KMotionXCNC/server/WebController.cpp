@@ -19,14 +19,36 @@
 //Check function signature
 #define FUNC_SIGP(name, nr_of_params) !strcmp(name,func) && params == nr_of_params
 
-WebController::WebController(CGCodeInterpreter *interpreter, MessageQueue *message_queue, mg_server *serv)
-:KmxController(interpreter,message_queue) {
+WebController::WebController(CGCodeInterpreter *interpreter, mg_server *serv)
+:KmxController(interpreter) {
   server = serv;
 }
 
 WebController::~WebController() {
   // TODO Auto-generated destructor stub
 }
+
+int WebController::Setup(){
+  log_info("Initialize");
+  char fileName[256];
+  absolutePath("settings/setup.cnf", fileName);
+  MappedFile mmFile;
+  if(mmapNamedFile(mmFile, fileName)){
+    log_info("Failed to read setup file");
+    return -1;
+  }
+
+  json_token *setup = NULL;
+  setup = parse_json2(mmFile.addr, mmFile.filesize);
+
+  json_str(setup,"machine",current_machine);
+  json_str(setup,"gcodefile",current_file);
+
+  free(setup);
+  unmapFile(mmFile);
+  return 0;
+}
+
 
 void WebController::PrintInfo(){
   mq->PrintInfo();
@@ -395,5 +417,289 @@ void WebController::ListDir(struct json_token *paramtoken){
       }
     }
     free(dir);
+}
+
+void WebController::ClientConnect(){
+  //We need to send something to the websocket
+  PushClientData("KMotionX");
+}
+
+void WebController::OnReceiveClientData(const char * content) {
+  int id = -1;
+  int returnValue = -1;
+  //we have a connection.
+  //incoming answer from client
+  if (strlen(content) > 39 && strstr(content, "CB_ACK") == content+9) {
+    // answer looks like this {"type":"CB_ACK","id":<integer>,"returnValue":<integer>}
+    if(sscanf(content, "{\"type\":\"CB_ACK\",\"id\":%d,\"returnValue\":%d}", &id, &returnValue) == 2){
+      //only poll poll callbacks in here
+      Acknowledge(id, returnValue);
+    }
+  }
+}
+
+void WebController::SetMotionParams(const char *buf, size_t len) {
+  log_info("SetMotionParams");
+  json_token *jsontoken = NULL;
+  jsontoken = parse_json2(buf, len);
+
+  char * name = NULL;
+  json_token *token;
+
+  MOTION_PARAMS *p=Interpreter->GetMotionParams();
+  double maxAccel,maxVel,countsPerUnit;
+  double breakAngle,collinearTol,cornerTol,facetAngle,tpLookahead;
+
+  breakAngle = collinearTol = cornerTol = facetAngle = tpLookahead = 0;
+  json_double(jsontoken,"tplanner.breakangle",&breakAngle);
+  json_double(jsontoken,"tplanner.cornertolerance",&cornerTol);
+  json_double(jsontoken,"tplanner.lookahead",&tpLookahead);
+  json_double(jsontoken,"tplanner.collineartolerance",&collinearTol);
+  json_double(jsontoken,"tplanner.facetangle",&facetAngle);
+
+  p->BreakAngle = breakAngle;
+  p->CollinearTol = collinearTol;
+  p->CornerTol = cornerTol;
+  p->FacetAngle = facetAngle;
+  p->TPLookahead = tpLookahead;
+
+  //TODO
+  //p->RadiusA = m_RadiusA;
+  //p->RadiusB = m_RadiusB;
+  //p->RadiusC = m_RadiusC;
+
+  char path[64];
+  for(int i= 0;i<6;i++){
+
+    sprintf(path,"axes[%i]",i);
+    token = find_json_token(jsontoken, path);
+    if(token){
+      maxAccel = maxVel = countsPerUnit = 0.0;
+      json_str(token,"name",&name,1);
+      json_double(token,"countsPerUnit",&countsPerUnit);
+      json_double(token,"maxAccel",&maxAccel);
+      json_double(token,"maxVel",&maxVel);
+
+      // default values form KMotionCNCDlg.c
+      maxAccel = maxAccel == 0.0?0.01:maxAccel;
+      maxVel = maxVel == 0.0?0.1:maxVel;
+      //Zero on countPerUnit will abort GCode
+      countsPerUnit = countsPerUnit == 0.0?100.0:countsPerUnit;
+      switch (name[0]) {
+        case 'X':
+          p->CountsPerInchX = countsPerUnit;
+          p->MaxAccelX = maxAccel;
+          p->MaxVelX = maxVel;
+          break;
+        case 'Y':
+          p->CountsPerInchY = countsPerUnit;
+          p->MaxAccelY = maxAccel;
+          p->MaxVelY = maxVel;
+          break;
+        case 'Z':
+          p->CountsPerInchZ = countsPerUnit;
+          p->MaxAccelZ = maxAccel;
+          p->MaxVelZ = maxVel;
+          break;
+        case 'A':
+          p->CountsPerInchA = countsPerUnit;
+          p->MaxAccelA = maxAccel;
+          p->MaxVelA = maxVel;
+          break;
+        case 'B':
+          p->CountsPerInchB = countsPerUnit;
+          p->MaxAccelB = maxAccel;
+          p->MaxVelB = maxVel;
+          break;
+        case 'C':
+          p->CountsPerInchC = countsPerUnit;
+          p->MaxAccelC = maxAccel;
+          p->MaxVelC = maxVel;
+          break;
+      }
+
+    } else {
+      printf("Failed %s\n",path);
+    }
+
+  }
+  free(name);
+  //M2-M9,S index 2-9
+  //userButtons index 11-20
+  //M100-M119 index 21 -39
+  //Special actions index 41 -48
+  setInterpreterActionParams(jsontoken, 0,MAX_MCODE_ACTIONS_M1,"actions[%i]");
+  setInterpreterActionParams(jsontoken, MCODE_ACTIONS_SPECIAL_OFFSET,MAX_MCODE_ACTIONS_SPECIAL,"specialActions[%i]");
+  setInterpreterActionParams(jsontoken, MAX_MCODE_ACTIONS_M1,MAX_MCODE_ACTIONS_BUTTONS,"userActions[%i]");
+  setInterpreterActionParams(jsontoken, MCODE_ACTIONS_M100_OFFSET,MAX_MCODE_ACTIONS_M100,"extendedActions[%i]");
+
+  printf("X %lf, %lf, %lf \n",p->CountsPerInchX,p->MaxAccelX, p->MaxVelX );
+  printf("Y %lf, %lf, %lf \n",p->CountsPerInchY,p->MaxAccelY, p->MaxVelY );
+  printf("Z %lf, %lf, %lf \n",p->CountsPerInchZ,p->MaxAccelZ, p->MaxVelZ );
+  printf("A %lf, %lf, %lf \n",p->CountsPerInchA,p->MaxAccelA, p->MaxVelA );
+  printf("B %lf, %lf, %lf \n",p->CountsPerInchB,p->MaxAccelB, p->MaxVelB );
+  printf("C %lf, %lf, %lf \n",p->CountsPerInchC,p->MaxAccelC, p->MaxVelC );
+
+  //TODO
+  //strcpy(Interpreter->ToolFile,m_ToolFile);
+  //strcpy(Interpreter->SetupFile,m_SetupFile);
+  //strcpy(Interpreter->GeoFile,m_GeoFile);
+  //strcpy(Interpreter->VarsFile,m_VarsFile);
+  //p->DegreesA = m_DegreesA!=0;
+  //p->DegreesB = m_DegreesB!=0;
+  //p->DegreesC = m_DegreesC!=0;
+  p->ArcsToSegs = true;;
+
+  Interpreter->CoordMotion->SetTPParams();
+
+  free(jsontoken);
+}
+void WebController::setInterpreterActionParams(struct json_token *jsontoken, int indexOffset, int count, const char* pathTemplate) {
+  double dParam0, dParam1, dParam2, dParam3, dParam4;
+  int action;
+  char path[64];
+  char *file = NULL;
+  char *name = NULL;
+  json_token *token;
+
+  for(int i= 0;i<count;i++){
+
+    sprintf(path,pathTemplate,i);
+    token = find_json_token(jsontoken, path);
+    if(token){
+      action = dParam0 = dParam1 = dParam2 = dParam3 = dParam4 = 0;
+      json_int(token,"action",&action);
+      if(action > 0){
+        json_str(token,"name",&name,64);
+        json_str(token,"file",&file,256);
+        json_double(token,"dParam0",&dParam0);
+        json_double(token,"dParam1",&dParam1);
+        json_double(token,"dParam2",&dParam2);
+        json_double(token,"dParam3",&dParam3);
+        json_double(token,"dParam4",&dParam4);
+
+      }
+      //M2-M9,S index 2-9
+      //userButtons index 11-20
+      //M100-M119 index 21 -39
+      //Special actions index 41 -48
+      int actionIndex = indexOffset + i;
+      int actionNameIndex = action > 0 && action < 10?action:10;
+      if(actionNameIndex != 10){
+        printf("Set action index %d to %s\n",actionIndex, ACTION_NAMES[actionNameIndex]);
+
+      }
+      Interpreter->McodeActions[actionIndex].Action = action;
+      Interpreter->McodeActions[actionIndex].dParams[0] = dParam0;
+      Interpreter->McodeActions[actionIndex].dParams[1] = dParam1;
+      Interpreter->McodeActions[actionIndex].dParams[2] = dParam2;
+      Interpreter->McodeActions[actionIndex].dParams[3] = dParam3;
+      Interpreter->McodeActions[actionIndex].dParams[4] = dParam4;
+
+
+      //file should be nulled if not set.
+      if(file == NULL || action == 0){
+        Interpreter->McodeActions[actionIndex].String[0] = 0;
+      } else {
+        if(file[0]=='/'){
+          //path is absolute
+          strcpy(Interpreter->McodeActions[actionIndex].String, file);
+        } else {
+          //path is relative. make it absolute
+          char absoluteFile[256];
+          absolutePath(file, absoluteFile);
+          strcpy(Interpreter->McodeActions[actionIndex].String, absoluteFile);
+        }
+      }
+
+    } else {
+      printf("Failed %s\n", pathTemplate);
+    }
+  }
+  free(file);
+  free(name);
+}
+
+int WebController::CreateMessageBoxCallbackData(const char *title, const char *msg, int options, bool blocking, char *buf, size_t buf_len) {
+  int id = callback_counter++;
+  json_emit(buf, buf_len, "{ s: i, s: { s: S, s: s, s: i, s: s, s: s }}",
+      "id", id,
+      "payload",
+      "block",blocking?"true":"false",
+      "type", CB_NAMES[CB_MESSAGEBOX],
+      "options", options,
+      "title", title,
+      "message", msg);
+  return id;
+}
+
+int WebController::CreateCompleteCallbackData(int status, int line_no, int sequence_number,const char *err, bool blocking, char *buf, size_t buf_len){
+  int id = callback_counter++;
+  json_emit(buf, buf_len, "{ s: i, s: { s: S, s: s, s: i, s: i, s: i, s: s }}",
+      "id", id,
+      "payload",
+      "block",blocking?"true":"false",
+      "type", CB_NAMES[CB_COMPLETE],
+      "line", line_no,
+      "status", status,
+      "sequence", sequence_number,
+      "message", err);
+  return id;
+
+}
+int WebController::CreateStatusCallbackData(int line_no, const char *msg, bool blocking, char *buf, size_t buf_len){
+  int id = callback_counter++;
+  json_emit(buf, buf_len, "{ s: i, s: { s: S, s: s, s: i, s: s }}",
+      "id", id,
+      "payload",
+      "block", blocking?"true":"false",
+      "type", CB_NAMES[CB_STATUS],
+      "line", line_no,
+      "message", msg);
+  return id;
+}
+
+int WebController::CreateErrorMessageCallbackData(const char *msg, bool blocking, char *buf, size_t buf_len) {
+  //This is a non blocking call enqueue in poll thread
+  int id = callback_counter++;
+  json_emit(buf, buf_len, "{ s: i, s: { s: S, s: s, s: s }}",
+      "id", id,
+      "payload",
+      "block",blocking?"true":"false",
+      "type", CB_NAMES[CB_ERR_MSG],
+      "message", msg);
+  return id;
+}
+int WebController::CreateConsoleCallbackData(const char *msg, bool blocking, char *buf, size_t buf_len){
+  int id = callback_counter++;
+  json_emit(buf, buf_len, "{ s: i, s: { s: S, s: s, s: s }}",
+      "id", id,
+      "payload",
+      "block",blocking?"true":"false",
+      "type", CB_NAMES[CB_CONSOLE],
+      "message", msg);
+  return id;
+
+}
+int WebController::CreateUserCallbackData(const char *msg, bool blocking, char *buf, size_t buf_len){
+  int id = callback_counter++;
+  json_emit(buf, buf_len, "{ s: i, s: { s: S, s: s, s: s }}",
+      "id", id,
+      "payload",
+      "block",blocking?"true":"false",
+      "type", CB_NAMES[CB_USER],
+      "message", msg);
+  return id;
+
+}
+int WebController::CreateMcodeUserCallbackData(int mCode, bool blocking, char *buf, size_t buf_len){
+  int id = callback_counter++;
+  json_emit(buf, buf_len,"{ s: i, s: { s: S, s: s, s: i }}",
+      "id", id,
+      "payload",
+      "block",blocking?"true":"false",
+      "type", CB_NAMES[CB_USER_M_CODE],
+      "code", mCode);
+  return id;
 }
 
