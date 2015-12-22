@@ -34,7 +34,15 @@ struct callback * MessageQueue::InitCallback(struct callback *item, int mid, boo
 
 }
 
-//msg needs to be quoted if string
+void MessageQueue::PollCallbacks(){
+  MaintainQueue();
+}
+
+//Clears a waiting callback state. If the callback was blocking the calling thread to EnqueueCallback will awakened.
+void MessageQueue::Acknowledge(int id, int results){
+  MaintainQueue(id, results);
+}
+
 int MessageQueue::EnqueueCallback(int id, const char * payload, bool blocking) {
 
   //Enqueued messages are held in list (callbacks)
@@ -45,7 +53,7 @@ int MessageQueue::EnqueueCallback(int id, const char * payload, bool blocking) {
   bool waitForResult = blocking;
 
   if (sameThread && waitForResult) {
-    log_info("-------ERROR: Blocking callback in poll thread is unsupported and will be set to nonblocking %ld\nPayload: %s\n",  poll_TID, payload);
+    log_info("WARNING: Blocking callback in poll thread is unsupported and will be set to nonblocking %ld\nPayload: %s\n",  poll_TID, payload);
     waitForResult = false;
   }
 
@@ -57,7 +65,9 @@ int MessageQueue::EnqueueCallback(int id, const char * payload, bool blocking) {
     debug("wait called");
     pthread_cond_wait(&con, &mut); //wait for the signal with con as condition variable
     debug("wait done signal received");
-    //vector::push_back copies our object. mayby a vector of pointers should be used instead
+    //vector::push_back copies our object hence we need to find the actual object in vector.
+    //mayby a vector of pointers should be used instead
+    //then again this happens for blocking calls only and is not a bigg issue.
     for (std::vector<callback>::iterator it = queue.begin() ; it != queue.end();++it)
     {
       if(it->id == id){
@@ -73,7 +83,7 @@ int MessageQueue::EnqueueCallback(int id, const char * payload, bool blocking) {
   return result;
 }
 
-void MessageQueue::PollCallbacks(int id, int ret) {
+void MessageQueue::MaintainQueue(int id, int results) {
 
   pthread_mutex_lock(&mut);
   for (std::vector<callback>::iterator it = queue.begin() ; it != queue.end();)
@@ -81,14 +91,14 @@ void MessageQueue::PollCallbacks(int id, int ret) {
     switch ( it->status ) {
     case CBS_ENQUEUED:
       it->sent_time = time(NULL);
-      if(controller->PushClientData(it->payload)) {
+      if(controller->DoCallback(it->payload)) {
         it->status = CBS_WAITING;
       }
       break;
     case CBS_WAITING:
       if (it->id == id) {
         it->status = CBS_ACKNOWLEDGED;
-        it->ret = ret;
+        it->ret = results;
         //Only signal waiting thread if blocking callback
         if (it->blocking) {
           pthread_cond_signal(&con); //wake up waiting thread with condition variable
@@ -127,7 +137,7 @@ void MessageQueue::PollCallbacks(int id, int ret) {
 }
 
 void MessageQueue::PrintInfo(){
-  struct callback *last;
+
   int cb_count = 0;
   int statCounts[4][1];
   memset(statCounts, 0, sizeof(statCounts));

@@ -11,15 +11,20 @@
 #include "KmxController.h"
 #include "mongoose.h"
 
-static const char CB_NAMES[][24] = {"STATUS", "COMPLETE", "ERR_MSG", "CONSOLE",
-    "USER", "USER_M_CODE", "MESSAGEBOX" };
+enum cb_type {
+  CB_STATUS, //Non blocking callback. Called from the interpreter in different thread
+  CB_COMPLETE, //Non blocking callback. Called from the interpreter in different thread
+  CB_ERR_MSG,      //Non blocking callback
+  CB_CONSOLE,      //Non blocking callback, event though it has return value??
+  CB_USER, //Blocking callback. Called from the interpreter in different thread
+  CB_USER_M_CODE, //Blocking callback. Called from the interpreter in different thread
+  CB_MESSAGEBOX //Message box and AfxMessageBox
+};
 
 class WebController: public KmxController {
 public:
   WebController(CGCodeInterpreter *interpreter, mg_server *serv);
   virtual ~WebController();
-
-
 
   void PrintInfo();
   int OnEventPoll(struct mg_connection *conn);
@@ -29,12 +34,11 @@ public:
   int OnEventRequest(struct mg_connection *conn);
 
   virtual void OnReceiveClientData(const char * content);
-  virtual int PushClientData(const char *data);
-  virtual int PushClientData(const char *data , size_t data_len);
-  virtual void ClientConnect();
+  virtual int DoCallback(const char *data);
 
 protected:
   virtual int Setup();
+  virtual void UpdateClient();
   virtual int CreateMessageBoxCallbackData(const char *title, const char *msg, int options, bool blocking, char *buf, size_t buf_len);
   virtual int CreateCompleteCallbackData(int status, int line_no, int sequence_number,const char *err, bool blocking, char *buf, size_t buf_len);
   virtual int CreateStatusCallbackData(int line_no, const char *msg, bool blocking, char *buf, size_t buf_len);

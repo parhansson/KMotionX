@@ -11,24 +11,24 @@
 #include "utils.h"
 #include "handler.h"
 //namespace kmx {
-#define IS_BLOCKING(type) (type == CB_USER || type == CB_USER_M_CODE)
+
 //TODO Implement support for blocking callback in poll thread
-//#define isBlocking(type) (type == CB_USER || type == CB_USER_M_CODE || type ==  CB_MESSAGEBOX)
 
 KmxController::KmxController(CGCodeInterpreter *interpreter)
 /*:AbstractController()*/{
   Interpreter = interpreter;
+
   CM = Interpreter->CoordMotion;
   km = CM->KMotionDLL;
   mq = new MessageQueue(this);
 
   performPostHaltCommand = false;
   currentLine = 0;
-  current_machine[0] = '\0';
-  current_file[0] = '\0';
+  settings_file_[0] = '\0';
+  current_gcode_file_[0] = '\0';
   connected = false;
   interpreting = false;
-  simulate = false;
+  simulate = Interpreter->CoordMotion->m_Simulate;
 
   //TODO init struct before first read. memset?
   main_status.StopImmediateState = 0;
@@ -89,126 +89,6 @@ int KmxController::readStatus(){
    }
   return result;
 }
-#define MEMCPY(to, from, size) memcpy(to, from, size); to += size;
-
-void KmxController::push_status() {
-
-  if(!simulate){
-    if(readStatus()){
-      //return;
-    }
-  }
-  int current_file_len = strlen(current_file);
-  int current_machine_len = strlen(current_machine);
-  //copy struct and avoid padding wich may differ on platforms
-  size_t size = 456 + 6*8 + 4*4 + current_file_len+4 +current_machine_len+4;//sizeof(main_status);
-  char * msg = (char*)malloc(size);
-  char * msgPtr = msg;
-  //client does not expect sizeof(int) but exaclyt 4 bytes for an int
-  MEMCPY(msgPtr, &main_status.VersionAndSize, 4);
-  MEMCPY(msgPtr, &main_status.ADC, 96);
-  MEMCPY(msgPtr, &main_status.DAC, 32);
-  MEMCPY(msgPtr, &main_status.PWM, 64);
-  //struct padding 4 avoided here
-  MEMCPY(msgPtr, &main_status.Position, 64);
-  MEMCPY(msgPtr, &main_status.Dest, 64);
-  MEMCPY(msgPtr, &main_status.OutputChan0, 8);
-  MEMCPY(msgPtr, &main_status.InputModes, 4);
-  MEMCPY(msgPtr, &main_status.InputModes2, 4);
-  MEMCPY(msgPtr, &main_status.OutputModes, 4);
-  MEMCPY(msgPtr, &main_status.OutputModes2, 4);
-  MEMCPY(msgPtr, &main_status.Enables, 4);
-  MEMCPY(msgPtr, &main_status.AxisDone, 4);
-  MEMCPY(msgPtr, &main_status.BitsDirection, 8);
-  MEMCPY(msgPtr, &main_status.BitsState, 8);
-  MEMCPY(msgPtr, &main_status.SnapBitsDirection0, 4);
-  MEMCPY(msgPtr, &main_status.SnapBitsDirection1, 4);
-  MEMCPY(msgPtr, &main_status.SnapBitsState0, 4);
-  MEMCPY(msgPtr, &main_status.SnapBitsState1, 4);
-  MEMCPY(msgPtr, &main_status.KanalogBitsStateInputs, 4);
-  MEMCPY(msgPtr, &main_status.KanalogBitsStateOutputs, 4);
-  MEMCPY(msgPtr, &main_status.RunOnStartUp, 4);
-  MEMCPY(msgPtr, &main_status.ThreadActive, 4);
-  MEMCPY(msgPtr, &main_status.StopImmediateState, 4);
-  //struct padding 4 avoided here
-  if(connected && !simulate){
-    MEMCPY(msgPtr, &main_status.TimeStamp, 8);
-  } else {
-    time_t service_console_time = time(NULL);
-    double timeStamp = service_console_time;
-    MEMCPY(msgPtr, &timeStamp, 8);
-  }
-  MEMCPY(msgPtr, &main_status.PC_comm, 32);
-  MEMCPY(msgPtr, &main_status.VirtualBits, 4);
-  MEMCPY(msgPtr, &main_status.VirtualBitsEx0, 4);
-  //total size 456 instead of 464 with padding
-
-  double x,y,z,a,b,c;
-  if(connected && !simulate){
-
-    double ActsDest[MAX_ACTUATORS];
-
-    for (int i=0; i<MAX_ACTUATORS; i++) ActsDest[i]=0.0;
-
-    if (CM->x_axis >=0) ActsDest[CM->x_axis] = main_status.Dest[CM->x_axis];
-    if (CM->y_axis >=0) ActsDest[CM->y_axis] = main_status.Dest[CM->y_axis];
-    if (CM->z_axis >=0) ActsDest[CM->z_axis] = main_status.Dest[CM->z_axis];
-    if (CM->a_axis >=0) ActsDest[CM->a_axis] = main_status.Dest[CM->a_axis];
-    if (CM->b_axis >=0) ActsDest[CM->b_axis] = main_status.Dest[CM->b_axis];
-    if (CM->c_axis >=0) ActsDest[CM->c_axis] = main_status.Dest[CM->c_axis];
-
-    CM->Kinematics->TransformActuatorstoCAD(ActsDest,&x,&y,&z,&a,&b,&c);
-
-    bool MachineCoords = true;
-    if (MachineCoords){
-      Interpreter->ConvertAbsoluteToMachine(x,y,z,a,b,c,&x,&y,&z,&a,&b,&c);
-    } else {
-      Interpreter->ConvertAbsoluteToInterpreterCoord(x,y,z,a,b,c,&x,&y,&z,&a,&b,&c);
-    }
-
-  } else {
-    x = CM->current_x;
-    y = CM->current_y;
-    z = CM->current_z;
-    a = CM->current_a;
-    b = CM->current_b;
-    c = CM->current_c;
-    Interpreter->ConvertAbsoluteToMachine(x,y,z,a,b,c,&x,&y,&z,&a,&b,&c);
-  }
-
-  MEMCPY(msgPtr, &x, 8);
-  MEMCPY(msgPtr, &y, 8);
-  MEMCPY(msgPtr, &z, 8);
-  MEMCPY(msgPtr, &a, 8);
-  MEMCPY(msgPtr, &b, 8);
-  MEMCPY(msgPtr, &c, 8);
-  MEMCPY(msgPtr, &connected, 1);
-  MEMCPY(msgPtr, &simulate, 1);
-  MEMCPY(msgPtr, &interpreting, 1);
-  MEMCPY(msgPtr, &currentLine, 4);
-
-  MEMCPY(msgPtr, &current_file_len, 4);
-  MEMCPY(msgPtr, &current_file, current_file_len);
-  MEMCPY(msgPtr, &current_machine_len, 4);
-  MEMCPY(msgPtr, &current_machine, current_machine_len);
-
-/*
-  if (Interpreter->p_setup->distance_mode==MODE_ABSOLUTE)
-    CheckRadioButton(IDC_Rel,IDC_Abs,IDC_Abs);
-  else
-    CheckRadioButton(IDC_Rel,IDC_Abs,IDC_Rel);
-
-  if (Interpreter->p_setup->length_units==CANON_UNITS_INCHES)
-    CheckRadioButton(IDC_mm,IDC_inch,IDC_inch);
-  else if (Interpreter->p_setup->length_units==CANON_UNITS_MM)
-    CheckRadioButton(IDC_mm,IDC_inch,IDC_mm);
-*/
-  //needs to be a call back or implemented in subclass
-  PushClientData(msg, size);
-
-  free(msg);
-}
-
 
 
 void KmxController::setSimulationMode(bool enable){
@@ -220,20 +100,17 @@ int KmxController::InvokeAction(int action, bool FlushBeforeUnbufferedOperation)
 }
 
 void KmxController::LoadMachineConfiguration(const char* path){
-  if (strcmp(current_machine, path) != 0) {
-      strcpy(current_machine, path);
+  if (strcmp(settings_file_, path) != 0) {
+      strcpy(settings_file_, path);
   }
 }
 void KmxController::LoadGcode(const char* path){
   if(!interpreting){
-      if (strcmp(current_file, path) != 0) {
-          strcpy(current_file, path);
+      if (strcmp(current_gcode_file_, path) != 0) {
+          strcpy(current_gcode_file_, path);
           currentLine = 0;
       }
   }
-}
-
-void KmxController::ClientConnect(){
 }
 
 void KmxController::Simulate() {
@@ -243,7 +120,7 @@ void KmxController::Simulate() {
 }
 void KmxController::Step(){
   if (!interpreting/* && Interpreter->GetHalt()*/) {
-    interpret(2, current_file , currentLine, currentLine, false);
+    interpret(2, current_gcode_file_ , currentLine, currentLine, false);
   }
 }
 void KmxController::Reset(){
@@ -255,7 +132,7 @@ void KmxController::CycleStart() {
   if (interpreting) {
     Halt();
   } else {
-    interpret(2, current_file , currentLine, -1, true);
+    interpret(2, current_gcode_file_ , currentLine, -1, true);
   }
 
 }
@@ -335,7 +212,7 @@ void KmxController::interpret(int BoardType,char *InFile,int start,int end,bool 
     //TODO CheckForResume
     Interpreter->InvokeAction(ACTION_CYCLE_START,FALSE);  // Do Special Action
     if (!Interpreter->Interpret(BoardType, InFile, start, end, restart,
-        ::StatusCallback, ::CompleteCallback)) {
+         ::StatusCallback, ::CompleteCallback)) {
       interpreting = true;
       //enqueueState();
     }
@@ -344,7 +221,7 @@ void KmxController::interpret(int BoardType,char *InFile,int start,int end,bool 
 
 void KmxController::UpdateMotionParams(){
   char fileName[256];
-  absolutePath(current_machine, fileName);
+  absolutePath(settings_file_, fileName);
 
   MappedFile mmFile;
   if(mmapNamedFile(mmFile, fileName)){
@@ -360,9 +237,9 @@ void KmxController::UpdateMotionParams(){
 void KmxController::OnStatusCallback(int line_no, const char *msg) {
   //This is a non blocking call from other thread to be enqueued in poll thread
   char buf[512];
+  bool blocking = false;
   memset(buf, 0,512);
   currentLine = line_no;
-  bool blocking = IS_BLOCKING(CB_STATUS);
   int id = CreateStatusCallbackData(line_no, msg, blocking, buf, 512);
   mq->EnqueueCallback(id, buf, blocking);
 }
@@ -370,17 +247,17 @@ void KmxController::OnStatusCallback(int line_no, const char *msg) {
 
 void KmxController::OnCompleteCallback(int status, int line_no, int sequence_number,const char *err) {
   //This is a non blocking call from other thread to be enqueued in poll thread
+  char buf[256];
+  bool blocking = false;
   interpreting = false;
+  currentLine = line_no;
 
   if (performPostHaltCommand)
   {
     performPostHaltCommand=false;
     InvokeAction(ACTION_HALT,FALSE);  // Do Special Action
   }
-  currentLine = line_no;
 
-  char buf[256];
-  bool blocking = IS_BLOCKING(CB_COMPLETE);
   int id = CreateCompleteCallbackData(status, line_no, sequence_number, err, blocking, buf, 256);
   if(strlen(err)>0){
     OnErrorMessageCallback(err);
@@ -392,7 +269,7 @@ void KmxController::OnCompleteCallback(int status, int line_no, int sequence_num
 void KmxController::OnErrorMessageCallback(const char *msg) {
   //This is a non blocking call enqueue in poll thread
   char buf[256];
-  bool blocking = IS_BLOCKING(CB_ERR_MSG);
+  bool blocking = false;
   int id = CreateErrorMessageCallbackData(msg, blocking, buf, 256);
   mq->EnqueueCallback(id, buf, false);
 
@@ -402,12 +279,13 @@ int KmxController::OnConsoleCallback(const char *msg) {
   //This is a non blocking call even though it has a return value.. strange
   //Not even sure this happens in another thread
   char buf[256];
-  bool blocking = IS_BLOCKING(CB_CONSOLE);
+  bool blocking = false;
   int id = CreateConsoleCallbackData(msg, blocking, buf, 256);
   return mq->EnqueueCallback(id, buf, blocking);
 }
 
 int KmxController::OnMessageBoxCallback(const char *title, const char *msg, int options) {
+  char buf[512];
   bool blocking = false;
   //non blocking MB_OK?
   if ((options & (MB_YESNO | MB_OKCANCEL)) == (MB_YESNO | MB_OKCANCEL)) {
@@ -415,9 +293,8 @@ int KmxController::OnMessageBoxCallback(const char *title, const char *msg, int 
   }
 
   //TODO Messages might be pretty long check this and alloc
-  char buf[512];
   int id = CreateMessageBoxCallbackData(title, msg, options, blocking, buf, 512);
-  //todo handle blocking messagebox
+  //TODO handle blocking messagebox
   return mq->EnqueueCallback(id, buf, blocking);
 }
 
@@ -425,7 +302,7 @@ int KmxController::OnMessageBoxCallback(const char *title, const char *msg, int 
 int KmxController::OnUserCallback(const char *msg) {
   //This is a blocking call. A bit trickier
   char buf[256];
-  bool blocking = IS_BLOCKING(CB_USER);
+  bool blocking = true;
   int id = CreateUserCallbackData(msg, blocking, buf, 256);
   int result = mq->EnqueueCallback(id, buf, blocking);
   debug("UserCallback result: %d", result);
@@ -448,7 +325,7 @@ int KmxController::OnMcodeUserCallback(int mCode) {
   //if gui is closed and reopened
   //instantiate a struct and wait for a signal/variable in that struct
   char buf[256];
-  bool blocking = IS_BLOCKING(CB_USER_M_CODE);
+  bool blocking = true;
   int id = CreateMcodeUserCallbackData(mCode, blocking, buf, 256);
   int result = mq->EnqueueCallback(id, buf, blocking);
   debug("UserMCallback result: %d", result);
@@ -457,7 +334,7 @@ int KmxController::OnMcodeUserCallback(int mCode) {
 }
 
 void KmxController::Acknowledge(int id, int returnValue) {
-  mq->PollCallbacks(id, returnValue);
+  mq->Acknowledge(id, returnValue);
 }
 
 void KmxController::Poll() {
@@ -471,7 +348,13 @@ void KmxController::Poll() {
   //if(km->WaitToken(false,0) == KMOTION_LOCKED){
   if(km->WaitToken(false,100.0== KMOTION_LOCKED)){
     if(msPast(&tval_status,200)){
-      push_status();
+
+      if(!simulate){
+        if(readStatus()){
+          //return;
+        }
+      }
+      UpdateClient();
     }
 
     if(!simulate){

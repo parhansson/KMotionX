@@ -19,6 +19,15 @@
 //Check function signature
 #define FUNC_SIGP(name, nr_of_params) !strcmp(name,func) && params == nr_of_params
 
+static const char CB_NAMES[][24] = {"STATUS", "COMPLETE", "ERR_MSG", "CONSOLE",
+    "USER", "USER_M_CODE", "MESSAGEBOX" };
+
+
+static const char ACTION_NAMES[][32] = { "M_Action_None", "M_Action_Setbit", "M_Action_SetTwoBits",
+      "M_Action_DAC", "M_Action_Program", "M_Action_Program_wait", "M_Action_Program_wait_sync",
+      "M_Action_Program_PC", "M_Action_Callback", "M_Action_Waitbit", "UNAVAILABLE" };
+
+
 WebController::WebController(CGCodeInterpreter *interpreter, mg_server *serv)
 :KmxController(interpreter) {
   server = serv;
@@ -41,8 +50,8 @@ int WebController::Setup(){
   json_token *setup = NULL;
   setup = parse_json2(mmFile.addr, mmFile.filesize);
 
-  json_str(setup,"machine",current_machine);
-  json_str(setup,"gcodefile",current_file);
+  json_str(setup,"machine",settings_file_);
+  json_str(setup,"gcodefile",current_gcode_file_);
 
   free(setup);
   unmapFile(mmFile);
@@ -69,24 +78,137 @@ void WebController::PrintInfo(){
   fprintf(stdout, "Websockets   :%d\n", websockets);
   fprintf(stdout, "Connections  :%d\n", connections);
   fprintf(stdout, "State        :%s\n", this->interpreting ? "Interpreting" : "Stopped");
-  fprintf(stdout, "Config       :%s\n", this->current_machine);
-  fprintf(stdout, "File         :%s\n", this->current_file);
+  fprintf(stdout, "Config       :%s\n", this->settings_file_);
+  fprintf(stdout, "File         :%s\n", this->current_gcode_file_);
   fprintf(stdout, "Line         :%d\n", this->currentLine);
   fprintf(stdout, "FeedHold     :%d\n", this->main_status.StopImmediateState);
   fprintf(stdout, "Simulating   :%d\n", this->simulate);
 }
 
 
+
+#define MEMCPY(to, from, size) memcpy(to, from, size); to += size;
+void WebController::UpdateClient() {
+
+  CCoordMotion *CM = Interpreter->CoordMotion;
+  int current_file_len = strlen(current_gcode_file_);
+  int current_machine_len = strlen(settings_file_);
+  //copy struct and avoid padding wich may differ on platforms
+  size_t size = 456 + 6*8 + 4*4 + current_file_len+4 +current_machine_len+4;//sizeof(main_status);
+  char * msg = (char*)malloc(size);
+  char * msgPtr = msg;
+  //client does not expect sizeof(int) but exaclyt 4 bytes for an int
+  MEMCPY(msgPtr, &main_status.VersionAndSize, 4);
+  MEMCPY(msgPtr, &main_status.ADC, 96);
+  MEMCPY(msgPtr, &main_status.DAC, 32);
+  MEMCPY(msgPtr, &main_status.PWM, 64);
+  //struct padding 4 avoided here
+  MEMCPY(msgPtr, &main_status.Position, 64);
+  MEMCPY(msgPtr, &main_status.Dest, 64);
+  MEMCPY(msgPtr, &main_status.OutputChan0, 8);
+  MEMCPY(msgPtr, &main_status.InputModes, 4);
+  MEMCPY(msgPtr, &main_status.InputModes2, 4);
+  MEMCPY(msgPtr, &main_status.OutputModes, 4);
+  MEMCPY(msgPtr, &main_status.OutputModes2, 4);
+  MEMCPY(msgPtr, &main_status.Enables, 4);
+  MEMCPY(msgPtr, &main_status.AxisDone, 4);
+  MEMCPY(msgPtr, &main_status.BitsDirection, 8);
+  MEMCPY(msgPtr, &main_status.BitsState, 8);
+  MEMCPY(msgPtr, &main_status.SnapBitsDirection0, 4);
+  MEMCPY(msgPtr, &main_status.SnapBitsDirection1, 4);
+  MEMCPY(msgPtr, &main_status.SnapBitsState0, 4);
+  MEMCPY(msgPtr, &main_status.SnapBitsState1, 4);
+  MEMCPY(msgPtr, &main_status.KanalogBitsStateInputs, 4);
+  MEMCPY(msgPtr, &main_status.KanalogBitsStateOutputs, 4);
+  MEMCPY(msgPtr, &main_status.RunOnStartUp, 4);
+  MEMCPY(msgPtr, &main_status.ThreadActive, 4);
+  MEMCPY(msgPtr, &main_status.StopImmediateState, 4);
+  //struct padding 4 avoided here
+  if(connected && !simulate){
+    MEMCPY(msgPtr, &main_status.TimeStamp, 8);
+  } else {
+    time_t service_console_time = time(NULL);
+    double timeStamp = service_console_time;
+    MEMCPY(msgPtr, &timeStamp, 8);
+  }
+  MEMCPY(msgPtr, &main_status.PC_comm, 32);
+  MEMCPY(msgPtr, &main_status.VirtualBits, 4);
+  MEMCPY(msgPtr, &main_status.VirtualBitsEx0, 4);
+  //total size 456 instead of 464 with padding
+
+  double x,y,z,a,b,c;
+  if(connected && !simulate){
+
+    double ActsDest[MAX_ACTUATORS];
+
+    for (int i=0; i<MAX_ACTUATORS; i++) ActsDest[i]=0.0;
+
+    if (CM->x_axis >=0) ActsDest[CM->x_axis] = main_status.Dest[CM->x_axis];
+    if (CM->y_axis >=0) ActsDest[CM->y_axis] = main_status.Dest[CM->y_axis];
+    if (CM->z_axis >=0) ActsDest[CM->z_axis] = main_status.Dest[CM->z_axis];
+    if (CM->a_axis >=0) ActsDest[CM->a_axis] = main_status.Dest[CM->a_axis];
+    if (CM->b_axis >=0) ActsDest[CM->b_axis] = main_status.Dest[CM->b_axis];
+    if (CM->c_axis >=0) ActsDest[CM->c_axis] = main_status.Dest[CM->c_axis];
+
+    CM->Kinematics->TransformActuatorstoCAD(ActsDest,&x,&y,&z,&a,&b,&c);
+
+    bool MachineCoords = true;
+    if (MachineCoords){
+      Interpreter->ConvertAbsoluteToMachine(x,y,z,a,b,c,&x,&y,&z,&a,&b,&c);
+    } else {
+      Interpreter->ConvertAbsoluteToInterpreterCoord(x,y,z,a,b,c,&x,&y,&z,&a,&b,&c);
+    }
+
+  } else {
+    x = CM->current_x;
+    y = CM->current_y;
+    z = CM->current_z;
+    a = CM->current_a;
+    b = CM->current_b;
+    c = CM->current_c;
+    Interpreter->ConvertAbsoluteToMachine(x,y,z,a,b,c,&x,&y,&z,&a,&b,&c);
+  }
+
+  MEMCPY(msgPtr, &x, 8);
+  MEMCPY(msgPtr, &y, 8);
+  MEMCPY(msgPtr, &z, 8);
+  MEMCPY(msgPtr, &a, 8);
+  MEMCPY(msgPtr, &b, 8);
+  MEMCPY(msgPtr, &c, 8);
+  MEMCPY(msgPtr, &connected, 1);
+  MEMCPY(msgPtr, &simulate, 1);
+  MEMCPY(msgPtr, &interpreting, 1);
+  MEMCPY(msgPtr, &currentLine, 4);
+
+  MEMCPY(msgPtr, &current_file_len, 4);
+  MEMCPY(msgPtr, &current_gcode_file_, current_file_len);
+  MEMCPY(msgPtr, &current_machine_len, 4);
+  MEMCPY(msgPtr, &settings_file_, current_machine_len);
+
+/*
+  if (Interpreter->p_setup->distance_mode==MODE_ABSOLUTE)
+    CheckRadioButton(IDC_Rel,IDC_Abs,IDC_Abs);
+  else
+    CheckRadioButton(IDC_Rel,IDC_Abs,IDC_Rel);
+
+  if (Interpreter->p_setup->length_units==CANON_UNITS_INCHES)
+    CheckRadioButton(IDC_mm,IDC_inch,IDC_inch);
+  else if (Interpreter->p_setup->length_units==CANON_UNITS_MM)
+    CheckRadioButton(IDC_mm,IDC_inch,IDC_mm);
+*/
+  //needs to be a call back or implemented in subclass
+  PushClientData(WEBSOCKET_OPCODE_BINARY, msg, size);
+
+  free(msg);
+}
+
 //
 /**
  *It is not allowed to call any function that takes mg_server from other thread than poll thread
  *Hence this function must only be called from poll thread
  */
-int WebController::PushClientData(const char *data){
+int WebController::DoCallback(const char *data){
   return PushClientData(WEBSOCKET_OPCODE_TEXT, data, strlen(data));
-}
-int WebController::PushClientData(const char *data , size_t data_len){
-  return PushClientData(WEBSOCKET_OPCODE_BINARY, data, data_len);
 }
 
 int WebController::OnEventRequest(struct mg_connection *conn) {
@@ -133,13 +255,14 @@ int WebController::OnEventClose(struct mg_connection *conn) {
 
 int WebController::OnEventPoll(struct mg_connection *conn) {
   this->Poll();
-  //printf("event %d\n", ev);
   return MG_FALSE; //Return value is said to be ignored on MG_POLL but does'nt seem to be
 }
 int WebController::OnEventWsConnect(struct mg_connection *conn) {
   //if websocket /ws is param here
   //printf("event %d param: %s\n", ev, conn->uri);
-  this->ClientConnect();
+
+  //We need to send something to the websocket
+  DoCallback("KMotionX");
   return MG_FALSE;
 }
 
@@ -419,11 +542,6 @@ void WebController::ListDir(struct json_token *paramtoken){
     free(dir);
 }
 
-void WebController::ClientConnect(){
-  //We need to send something to the websocket
-  PushClientData("KMotionX");
-}
-
 void WebController::OnReceiveClientData(const char * content) {
   int id = -1;
   int returnValue = -1;
@@ -660,7 +778,6 @@ int WebController::CreateStatusCallbackData(int line_no, const char *msg, bool b
 }
 
 int WebController::CreateErrorMessageCallbackData(const char *msg, bool blocking, char *buf, size_t buf_len) {
-  //This is a non blocking call enqueue in poll thread
   int id = callback_counter++;
   json_emit(buf, buf_len, "{ s: i, s: { s: S, s: s, s: s }}",
       "id", id,

@@ -20,19 +20,7 @@
 #define ACTION_PROG_START 30
 #define ACTION_PROG_EXIT 31
 
-enum cb_type {
-  CB_STATUS, //Non blocking callback. Called from the interpreter in different thread
-  CB_COMPLETE, //Non blocking callback. Called from the interpreter in different thread
-  CB_ERR_MSG,      //Non blocking callback
-  CB_CONSOLE,      //Non blocking callback, event though it has return value??
-  CB_USER, //Blocking callback. Called from the interpreter in different thread
-  CB_USER_M_CODE, //Blocking callback. Called from the interpreter in different thread
-  CB_MESSAGEBOX //Message box and AfxMessageBox
-};
 
-static const char ACTION_NAMES[][32] = { "M_Action_None", "M_Action_Setbit", "M_Action_SetTwoBits",
-      "M_Action_DAC", "M_Action_Program", "M_Action_Program_wait", "M_Action_Program_wait_sync",
-      "M_Action_Program_PC", "M_Action_Callback", "M_Action_Waitbit", "UNAVAILABLE" };
 //namespace kmx {
 
 class KmxController: public AbstractController {
@@ -40,10 +28,13 @@ public:
   KmxController(CGCodeInterpreter *interpreter);
   virtual ~KmxController();
 
-  //Called after construction to allow for subclassing Setup()
+  //Should be called by application after construction to allow for subclassing Setup()
   int Initialize();
 
+  //Called by Initialize, Subclasses should implement and set members KmxController::settings_file_
+  //and a possible default gcode file KmxController::current_gcode_file_
   virtual int Setup(){return 0;};
+
   //Should be called by an intervall of say 100ms by application
   void Poll();
 
@@ -80,26 +71,33 @@ public:
   //Loads a new gcode file. File name will be pushed to clients in state update
   void LoadGcode(const char* path);
 
+  //Applications should this to acknowledge and return value from callback sent to client
   virtual void Acknowledge(int id, int returnValue);
 
-  //Call when a new client has connected. Subclasses should do whatever they need
-  virtual void ClientConnect();
-
-  //Read settings file from disk and updates motion parameters
+  //Reads settings file (stored in settings_file_) from disk and calls SetMotionParams()
+  //Subclasses should invoke this function whenever appropriate
   void UpdateMotionParams();
 
   //Called by application when client sends data, such as acknowledged messages
   virtual void OnReceiveClientData(const char * msg) {};
-  virtual int PushClientData(const char *data){return 0;};
-  virtual int PushClientData(const char *data , size_t data_len){return 0;};
 
+  //Executes callback to client. Subclasses should override and implement.
+  virtual int DoCallback(const char *data){return 0;};
 
+  //Handles message boxes. MessageBoxes might be of blocking and modal nature.
+  //One must be sure not to call this from the event loop thread.
   int OnMessageBoxCallback(const char *title, const char *msg, int options);
+  //Handles user message callbacks from GCode. This is a blocking call and should not be called from event loop.
   int OnUserCallback(const char *msg);
+  //Handles user M code callbacks from GCode. This is a blocking call and should not be called from event loop.
   int OnMcodeUserCallback(int mCode);
+  //Handles Console message callbacks. This is a non blocking call.
   int OnConsoleCallback(const char *msg);
+  //Handles Error message callbacks. This is a non blocking call.
   void OnErrorMessageCallback(const char *msg);
+  //Handles Status update callbacks. This is a non blocking call.
   void OnStatusCallback(int line_no, const char *msg);
+  //Handles GCode Complete callbacks. This is a non blocking call.
   void OnCompleteCallback(int status, int line_no, int sequence_number,const char *err);
 
 
@@ -110,20 +108,31 @@ protected:
   bool performPostHaltCommand;
   int currentLine;
   MAIN_STATUS main_status;
-  char current_machine[256];
-  char current_file[256];
+  char settings_file_[MAX_PATH];
+  char current_gcode_file_[MAX_PATH];
   bool connected;
   bool interpreting;
   bool simulate;
 
+  //Gets called by controller and clients should implement to update screen and whatever status they need.
+  virtual void UpdateClient(){};
+
+  // Called by UpdateMotionParams. Subclasses may use any format of this data an is responsible for parsing and updating motionparams
   virtual void SetMotionParams(const char *buf, size_t len){};
 
+  //Subclasses should implement to create a meaningful message to their client and return a unique message id
   virtual int CreateMessageBoxCallbackData(const char *title, const char *msg, int options, bool blocking, char *buf, size_t buf_len){return 0;};
+  //Subclasses should implement to create a meaningful message to their client and return a unique message id
   virtual int CreateCompleteCallbackData(int status, int line_no, int sequence_number,const char *err, bool blocking, char *buf, size_t buf_len){return 0;};
+  //Subclasses should implement to create a meaningful message to their client and return a unique message id
   virtual int CreateStatusCallbackData(int line_no, const char *msg, bool blocking, char *buf, size_t buf_len){return 0;};
+  //Subclasses should implement to create a meaningful message to their client and return a unique message id
   virtual int CreateErrorMessageCallbackData(const char *msg, bool blocking, char *buf, size_t buf_len){return 0;};
+  //Subclasses should implement to create a meaningful message to their client and return a unique message id
   virtual int CreateConsoleCallbackData(const char *msg, bool blocking, char *buf, size_t buf_len){return 0;};
+  //Subclasses should implement to create a meaningful message to their client and return a unique message id
   virtual int CreateUserCallbackData(const char *msg, bool blocking, char *buf, size_t buf_len){return 0;};
+  //Subclasses should implement to create a meaningful message to their client and return a unique message id
   virtual int CreateMcodeUserCallbackData(int mCode, bool blocking, char *buf, size_t buf_len){return 0;};
 private:
 
@@ -135,10 +144,7 @@ private:
 
   void interpret(int BoardType,char *InFile,int start,int end,bool restart);
   void setSimulationMode(bool enable);
-
   int readStatus();
-
-  void push_status();
   bool msPast(struct timeval *tval_last, int ms);
 
 
