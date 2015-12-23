@@ -76,7 +76,7 @@ int KmxController::Initialize(){
 }
 
 int KmxController::readStatus(){
-  int result = km->GetStatus(main_status,true);
+  int result = km->GetStatus(main_status,false); //already locked
   if(result){
       connected = false;
       setSimulationMode(true);
@@ -345,8 +345,8 @@ void KmxController::Poll() {
   }
 
   //only perform poll when locked
-  //if(km->WaitToken(false,0) == KMOTION_LOCKED){
-  if(km->WaitToken(false,100.0== KMOTION_LOCKED)){
+  //Timeout must be short enough not to be reentering if multiple threads are calling poll
+  if(km->WaitToken(false,50) == KMOTION_LOCKED){
     if(msPast(&tval_status,200)){
 
       if(!simulate){
