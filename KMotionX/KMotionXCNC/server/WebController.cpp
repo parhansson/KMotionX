@@ -651,12 +651,13 @@ void WebController::SetMotionParams(const char *buf, size_t len) {
   setInterpreterActionParams(jsontoken, MAX_MCODE_ACTIONS_M1,MAX_MCODE_ACTIONS_BUTTONS,"userActions[%i]");
   setInterpreterActionParams(jsontoken, MCODE_ACTIONS_M100_OFFSET,MAX_MCODE_ACTIONS_M100,"extendedActions[%i]");
 
-  printf("X %lf, %lf, %lf \n",p->CountsPerInchX,p->MaxAccelX, p->MaxVelX );
-  printf("Y %lf, %lf, %lf \n",p->CountsPerInchY,p->MaxAccelY, p->MaxVelY );
-  printf("Z %lf, %lf, %lf \n",p->CountsPerInchZ,p->MaxAccelZ, p->MaxVelZ );
-  printf("A %lf, %lf, %lf \n",p->CountsPerInchA,p->MaxAccelA, p->MaxVelA );
-  printf("B %lf, %lf, %lf \n",p->CountsPerInchB,p->MaxAccelB, p->MaxVelB );
-  printf("C %lf, %lf, %lf \n",p->CountsPerInchC,p->MaxAccelC, p->MaxVelC );
+
+  //printf("X %lf, %lf, %lf \n",p->CountsPerInchX,p->MaxAccelX, p->MaxVelX );
+  //printf("Y %lf, %lf, %lf \n",p->CountsPerInchY,p->MaxAccelY, p->MaxVelY );
+  //printf("Z %lf, %lf, %lf \n",p->CountsPerInchZ,p->MaxAccelZ, p->MaxVelZ );
+  //printf("A %lf, %lf, %lf \n",p->CountsPerInchA,p->MaxAccelA, p->MaxVelA );
+  //printf("B %lf, %lf, %lf \n",p->CountsPerInchB,p->MaxAccelB, p->MaxVelB );
+  //printf("C %lf, %lf, %lf \n",p->CountsPerInchC,p->MaxAccelC, p->MaxVelC );
 
   //TODO
   //strcpy(Interpreter->ToolFile,m_ToolFile);
@@ -704,7 +705,7 @@ void WebController::setInterpreterActionParams(struct json_token *jsontoken, int
       int actionIndex = indexOffset + i;
       int actionNameIndex = action > 0 && action < 10?action:10;
       if(actionNameIndex != 10){
-        printf("Set action index %d to %s\n",actionIndex, ACTION_NAMES[actionNameIndex]);
+        //printf("Set action index %d to %s\n",actionIndex, ACTION_NAMES[actionNameIndex]);
 
       }
       Interpreter->McodeActions[actionIndex].Action = action;
