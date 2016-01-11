@@ -31,6 +31,7 @@ public:
   //Should be called by application after construction to allow for subclassing Setup()
   int Initialize();
 
+  virtual void Shutdown();
   //Called by Initialize, Subclasses should implement and set members KmxController::settings_file_
   //and a possible default gcode file KmxController::current_gcode_file_
   virtual int Setup(){return 0;};
@@ -137,7 +138,6 @@ protected:
 private:
 
   struct timeval tval_status;
-  struct timeval tval_service_console;
   struct timeval tval_poll_callbacks;
   CKMotionDLL *km;
   CCoordMotion *CM;

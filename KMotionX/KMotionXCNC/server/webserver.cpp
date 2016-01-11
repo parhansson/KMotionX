@@ -475,11 +475,25 @@ static void set_options(char *argv[]) {
 
   signal(29/*SIGINFO*/, info_handler);
 
+  struct sigaction sa;
+
+  sa.sa_handler = signal_handler;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_flags = 0;//SA_RESTART; /* Restart functions if interrupted by handler */
+
   // Setup signal handler: quit on Ctrl-C
-  signal(SIGTERM, signal_handler);
-  signal(SIGINT, signal_handler);
+  //signal(SIGTERM, signal_handler);
+  //signal(SIGINT, signal_handler);
+  if (sigaction(SIGINT, &sa, NULL) == -1)
+      printf("SIGINT handler not installed\n");
+
+  if (sigaction(SIGTERM, &sa, NULL) == -1)
+    printf("SIGTERM handler not installed\n");
+
 #ifndef _WIN32
   //PH Had to remove this. Currently not using CGI extensions anyway.(No child processes, fingers crossed)
+  //popen is used when compiling with tcc. This catches the signal when process is done.
+  //Hence pclose fails since this handler has already waited the pid
   //signal(SIGCHLD, signal_handler);
 #endif
 }
@@ -496,7 +510,12 @@ int main(int argc, char *argv[]) {
   printf("Exiting on signal %d ...", exit_flag);
   fflush(stdout);
   mg_destroy_server(&server);
+  //clean up KMX
+  teardown();
+  //wait a second for KMotionServer to respond if server was stopped along with this process
+  usleep(1000000);
   printf("%s\n", " done.");
+  fflush(stdout);
 
   return EXIT_SUCCESS;
 }

@@ -36,20 +36,28 @@ KmxController::KmxController(CGCodeInterpreter *interpreter)
 }
 
 KmxController::~KmxController() {
-  // release token since server might still be running
   km->ReleaseToken();
   if (Interpreter) delete Interpreter;
   if (CM) delete CM;
   if (km) delete km;
 
 }
+
+void KmxController::Shutdown(){
+  // release token since server might still be running
+  km->ReleaseToken();
+  km->Disconnect();
+}
 int KmxController::Initialize(){
 
   int type = BOARD_TYPE_UNKNOWN;
+
   if(km->CheckKMotionVersion(&type,false)){
     //enter simulation mode?
-    exit(1);
+    log_info("CheckKMotionVersion failed. Simulation mode active.");
+    setSimulationMode(true);
   }
+
 
   if(Setup()){
     printf("Setup failed.\n");
@@ -346,28 +354,31 @@ void KmxController::Poll() {
 
   //only perform poll when locked
   //Timeout must be short enough not to be reentering if multiple threads are calling poll
-  if(km->WaitToken(false,50) == KMOTION_LOCKED){
-    if(msPast(&tval_status,200)){
+  if(msPast(&tval_status,200)){
+    if(km->WaitToken(false,100) == KMOTION_LOCKED){
 
       if(!simulate){
+        // Note only service the console
+        // after we have the token so we
+        // are sure of no getting blocked
+        if(km->ServiceConsole()){
+            //TODO not verified that this works.
+            DoErrorMessage(">ServiceConsole Failed\n");
+        }
         if(readStatus()){
           //return;
         }
       }
-      UpdateClient();
-    }
+      km->ReleaseToken();
 
-    if(!simulate){
-      if(msPast(&tval_service_console,1000)){
-        //debug("serving console");
-        if(km->ServiceConsole()){
-          //TODO not verified that this works.
-          DoErrorMessage(">ServiceConsole Failed\n");
-        }
-      }
+      UpdateClient();
+
+      //TODO
+      //ServiceKFLOPCommands();
+
     }
-    km->ReleaseToken();
   }
+
 }
 bool KmxController::msPast(struct timeval *tval_last, int ms){
   struct timeval tval_current, tval_result;

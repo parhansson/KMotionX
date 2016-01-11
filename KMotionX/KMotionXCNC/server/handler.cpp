@@ -7,23 +7,30 @@ WebController *kmxCtrl;
 CGCodeInterpreter *Interpreter;
 CKMotionDLL *km;
 CCoordMotion *CM;
+bool running = false;
 
 void initHandler() {
   km = new CKMotionDLL(0);
   CM = new CCoordMotion(km);
   Interpreter = new CGCodeInterpreter(CM);
   kmxCtrl = new WebController(Interpreter,server);
-  //Set callbacks after initialising KmxController
+  //Set callbacks after constructing KmxController
   mb_callback = MessageBoxHandler;
   Interpreter->SetUserMCodeCallback(MUserCallback);
   Interpreter->SetUserCallback(UserCallback);
   km->SetErrMsgCallback(ErrMsgHandler);
   km->SetConsoleCallback(ConsoleHandler);
   kmxCtrl->Initialize();
+  running = true;
 }
 
 int ev_handler(struct mg_connection *conn, enum mg_event ev) {
 
+  //On signal exit there might be a chance we get here when kmxCtrl is deleted since server can execute timeout on select()
+  //Shouldn't happen though, since teardown() is executed after server has exited loop and current version is single threaded
+  if(kmxCtrl == NULL || !running){
+    return MG_FALSE;
+  }
   switch (ev) {
     case MG_AUTH:       return MG_TRUE;
     case MG_POLL:       return kmxCtrl->OnEventPoll(conn);
@@ -37,7 +44,15 @@ int ev_handler(struct mg_connection *conn, enum mg_event ev) {
 }
 
 void info_handler(int signum) {
+  //TODO printf should not be used within signal handlers
   kmxCtrl->PrintInfo();
+}
+
+void teardown(){
+  running = false;
+  kmxCtrl->Shutdown();
+  delete kmxCtrl;
+  kmxCtrl = NULL;
 }
 
 void CompleteCallback(int status, int line_no, int sequence_number,const char *err) {
@@ -56,7 +71,7 @@ int ConsoleHandler(const char *msg) {
   return kmxCtrl->OnConsoleCallback(msg);
 }
 
-//(Afx)MessageBox e implementet as callback.
+//(Afx)MessageBox implementet as callback.
 //only canon_stand_alone.cpp is using the message box result value
 //hence maybe blocking call to this is unneccessary
 int MessageBoxHandler(const char *title, const char *msg, int options) {
