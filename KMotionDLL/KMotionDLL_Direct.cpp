@@ -220,12 +220,12 @@ int CKMotionDLL_Direct::ListLocations(int *nlocations, int *list)
     
 	if (ftStatus < 0)
 	{
-		debug("ftdi_usb_find_all failed: %d (%s)\n",ftStatus, ftdi_get_error_string(ftdi));
+		debug("ftdi_usb_find_all failed: %d (%s)",ftStatus, ftdi_get_error_string(ftdi));
 		return 1;
 	} else if (numDevs < 1 || numDevs >= MAX_BOARDS)
 	{
 		ftdi_list_free(&devlist);
-		debug("ftdi_list_free failed: %d (%s)\n",ftStatus, ftdi_get_error_string(ftdi));
+		debug("ftdi_list_free failed: %d (%s)",ftStatus, ftdi_get_error_string(ftdi));
 		//if (Reason) strcpy(Reason,"No KMotion devices available");
 		return 1;
 	}
@@ -236,14 +236,13 @@ int CKMotionDLL_Direct::ListLocations(int *nlocations, int *list)
 		if ((ftStatus = ftdi_usb_get_strings(ftdi, curdev->dev, Manufacturer, sizeof(Manufacturer), 
 		                                    Description, sizeof(Description), NULL, 0)) < 0)
 		{
-			debug("ftdi_usb_get_strings failed: %d (%s)\n",ftStatus, ftdi_get_error_string(ftdi));
+			debug("ftdi_usb_get_strings failed: %d (%s)",ftStatus, ftdi_get_error_string(ftdi));
 		   // FT_Open failed
 		   list[i] = -1;  // mark as unusable
 		}
 		else
 		{
-            debug("%d '%s' '%s'\n", ftStatus, Manufacturer, Description);
-
+      debug("%d '%s' '%s'", ftStatus, Manufacturer, Description);
 			if (strstr(Description,"KFLOP")!= NULL ||
 				strstr(Description,"KMotion")!= NULL ||
 				strstr(Description,"Dynomotion")!= NULL)
