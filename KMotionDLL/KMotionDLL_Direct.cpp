@@ -255,6 +255,7 @@ int CKMotionDLL_Direct::ListLocations(int *nlocations, int *list)
 		}
 		curdev = curdev->next;
 	}
+	ftdi_list_free(&devlist);
 	ftdi_free(ftdi);
 
 	// note ListDevices fails if all devices are open,
@@ -364,7 +365,12 @@ int CKMotionDLL_Direct::SetConsoleCallback(int board, SERVER_CONSOLE_HANDLER *ch
 
 int CKMotionDLL_Direct::nInstances()
 {
+#ifdef _KMOTIONX
+  return *(KMotionLocal.sharePtr);
+#else
 	return share;
+#endif
+
 }
 
 const char * CKMotionDLL_Direct::GetErrMsg(int board)

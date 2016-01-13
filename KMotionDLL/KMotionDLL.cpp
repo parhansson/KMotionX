@@ -90,12 +90,16 @@ CKMotionDLL::CKMotionDLL(int boardid, unsigned int dfltport, const char * url)
 
 CKMotionDLL::~CKMotionDLL()
 {
-	if (PipeOpen)
+  if (PipeOpen)
 	{
 		PipeOpen=false;
-		if(share==2)
+#ifdef _KMOTIONX
+		if((*KMotionLocal.sharePtr) == 2)
+#else
+		if(share == 2)
+#endif
 		{
-			PipeFile.Close();
+		  PipeFile.Close();
 			Sleep(100);  // give some time for Server to close
 		}
 	}

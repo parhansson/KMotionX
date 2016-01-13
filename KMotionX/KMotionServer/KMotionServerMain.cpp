@@ -62,7 +62,7 @@ either expressed or implied, of the FreeBSD Project.
 #include <KMotionDLL.h>
 #include <KmotionIO.h>
 #include <KMotionDLL_Direct.h>
-
+#include "KMotionLocal.h"
 
 #ifdef DEBUG
 #define SYSLOGD(M, ...) syslog(LOG_ERR,M,##__VA_ARGS__);
@@ -246,6 +246,8 @@ static void daemonize(){
 
 int main(void) 
 {
+
+    //printf("SHARE %d\n", *KMotionLocal.sharePtr);
     /* SJH - modified to listen to a TCP socket in addition to the unix domain (local) socket.
        Listens at port KMOTION_PORT (defined in KMotionDLL.h).
        FIXME: need to make this an argc/argv parameter.
@@ -333,17 +335,28 @@ int main(void)
 	//printf("Thread %.8x %.8x: Current thread\n", ct);
    for (;;) 
    { 
+     //If exit() is executed in the processs that started the server we never get here
+     //Hence the reference counting from KMotionDLl.nInstances must be made.
+     //if (nClients <= 0) exit(0);              // nobody left - terminate server
+     if (KMotionDLL.nInstances() < 2) exit(0);  // nobody left - terminate server
 
        syslog(LOG_ERR,"Main Thread. Waiting for a connection...\n");
        
        FD_ZERO(&rfds);
        FD_SET(main_socket, &rfds);
        FD_SET(tcp_socket, &rfds);
-       
-       retval = select(tcp_socket+1, &rfds, NULL, NULL, NULL);
-       if (retval < 0)
+
+       struct timeval timeout;
+       // Initialize the timeout data structure.
+       timeout.tv_sec = 1;
+       timeout.tv_usec = 0;
+
+       retval = select(tcp_socket+1, &rfds, NULL, NULL, &timeout);
+       if (retval < 0){
             perrorExit("select");
-       if (FD_ISSET(main_socket, &rfds)) {
+       } else if(retval == 0){
+         continue; //timeout
+       } else if (FD_ISSET(main_socket, &rfds)) {
             t = sizeof(remote);
             client_socket = accept(main_socket, (struct sockaddr *)&remote, &t);
        }
@@ -355,10 +368,10 @@ int main(void)
                 setsockopt(client_socket, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag));
             }
        }
-       else
+       else {
             // select() man page indicates possibility that there is nothing really there
             continue;
-       
+       }
        if (client_socket < 0) {
     	   perrorExit("Main Thread. accept");
        } else {
@@ -495,14 +508,7 @@ void * InstanceThread(void *ptr){
 	}
 
 	close(thread_socket);
-	if (--nClients <= 0){
-		//syslog(LOG_ERR,"Worker Thread. Nr of clients %d left. Terminating server", nClients);
-		//_exit(0);              // nobody left - terminate server
-	}
-	syslog(LOG_ERR,"Worker Thread. Nr of clients left %d", nClients);
-	//If exit() is executed in the processs that started the server we never get here
-	//Hence the reference counting from KMotionDLl.nInstances must be made.
-	   //if (KMotionDLL.nInstances() < 2) exit(0);  // nobody left - terminate server
+	syslog(LOG_ERR,"Worker Thread. Nr of clients left %d", --nClients);
 	pthread_exit(0);
 	return 0;
 }

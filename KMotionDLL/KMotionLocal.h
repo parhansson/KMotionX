@@ -25,8 +25,9 @@
 class CKMotionLocal;
 
 extern CKMotionLocal KMotionLocal;  // declare one global instance 
-
+#ifndef _KMOTIONX
 extern volatile int share;
+#endif
 
 class CKMotionLocal  
 {
@@ -35,6 +36,9 @@ public:
 	virtual ~CKMotionLocal();
 
 	CKMotionIO KMotionIO[MAX_BOARDS];
+#ifdef _KMOTIONX
+	u_int32_t *sharePtr;
+#endif
 };
 
 #endif // !defined(AFX_KMOTIONLOCAL_H__00C03845_F2F4_4CE3_A014_1FA7DC1E4026__INCLUDED_)
