@@ -33,18 +33,19 @@ either expressed or implied, of the FreeBSD Project.
 #include <stdlib.h>
 #include <ftdi.h>
 
-//Wrapper method due to bug in old libftdi driver
-//http://developer.intra2net.com/mailarchive/html/libftdi/2009/msg00214.html
 int _ftdi_usb_close(ftdi_context *ftdi){
-#ifdef OLD_LIBFTDI
+#ifdef __APPLE__
+  return ftdi_usb_close(ftdi);
+#else
+  //Still needed on Ubuntu
+  //Wrapper method due to bug in old libftdi driver
+  //http://developer.intra2net.com/mailarchive/html/libftdi/2009/msg00214.html
 	int ret = 0;
 	if (ftdi->usb_dev != NULL){
 		ret = ftdi_usb_close(ftdi);
 		ftdi->usb_dev = NULL;
   }
   return ret;
-#else
-  return ftdi_usb_close(ftdi);
 #endif
 }
 //////////////////////////////////////////////////////////////////////
