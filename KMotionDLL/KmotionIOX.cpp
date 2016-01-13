@@ -909,7 +909,6 @@ int CKMotionIO::KMotionLock()
 		if (!RequestedDeviceAvail(reason))
 		{
 		  debug("KMOTION_NOT_CONNECTED %s", reason);
-		  ErrorMessageBox(reason);
 			NonRespondingCount=0;
 			Mutex->Unlock();  // no such device available
 			return KMOTION_NOT_CONNECTED; 
