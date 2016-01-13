@@ -1,6 +1,13 @@
 <div>
-    <div class="dro-display"><span class="dro-axis">X:</span><span class="dro-value" ng-bind="kmx.intStatus.dro[0]"></span></div>
-    <div class="dro-display"><span class="dro-axis">Y:</span><span class="dro-value" ng-bind="kmx.intStatus.dro[1]"></span></div>
-    <div class="dro-display"><span class="dro-axis">Z:</span><span class="dro-value" ng-bind="kmx.intStatus.dro[2]"></span></div>
-    <div>Time:&nbsp;<span class="" ng-bind="kmx.intStatus.timeStamp"></span></div>
+    <div ng-repeat="name in droAxes track by $index" class="input-group">
+        <span class="input-group-addon dro-axis">{{name}}</span>
+        <span class="form-control input-lg text-right dro-display" ng-bind="kmx.intStatus.dro[$index]"></span>
+        <span class="btn input-group-addon">
+            <span ng-mousedown="kmx.jog($index,-100)" ng-mouseup="kmx.jog($index,0)"><span class="glyphicon glyphicon-minus"></span></span>
+        </span>
+        <span class="btn input-group-addon">
+            <span ng-mousedown="kmx.jog($index,-100)" ng-mouseup="kmx.jog($index,0)"><span class="glyphicon glyphicon-plus"></span></span>
+        </span>
+    </div>
+    <div>Uptime:&nbsp;{{kmx.intStatus.timeStamp | number : 3}}</div>
 </div>

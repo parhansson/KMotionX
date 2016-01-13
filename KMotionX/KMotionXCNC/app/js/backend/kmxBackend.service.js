@@ -19,6 +19,7 @@
         onStep: onStep,
         onReset: onReset,
         onDoErrorMessage: onDoErrorMessage,
+        jog: jog,
         
         load: load,
         save: save
@@ -59,6 +60,9 @@
     }
     function onLoadGlobalFile(type, file) {
       onEvent('loadGlobalFile',{"params": [type, file]});
+    }
+    function jog(axis, speed) {
+      onEvent('jog',{"params": [axis, speed]});
     }
     function onFeedhold() {
       onEvent('onFeedhold');

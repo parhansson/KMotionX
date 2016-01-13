@@ -186,6 +186,26 @@ void KmxController::EmergencyStop()
 void KmxController::DoErrorMessage(const char * msg){
   km->DoErrMsg(msg);
 }
+
+void KmxController::Jog(int axis, int speed){
+  char command[32];
+  sprintf(command, "Jog%d=%d", axis, speed);
+
+  if(speed == 0){ //Stop jog
+    //if(jogging[axis]){
+    if(km->WriteLine(command)){
+        if(speed > 0){
+          //jogging[axis] = false;
+        }
+      }
+    //}
+  } else { // start jog
+
+    if(km->WriteLine(command)){
+        //jogging[axis] = true;
+    }
+  }
+}
 void KmxController::Feedhold(){
   //TODO wait token should be done globaly when handling requests that interact with board
   //if(km->WaitToken(false,100) == KMOTION_LOCKED)){
@@ -371,12 +391,14 @@ void KmxController::Poll() {
       }
       km->ReleaseToken();
 
-      UpdateClient();
-
       //TODO
+      //if(!simulate){
       //ServiceKFLOPCommands();
+      //}
 
     }
+    UpdateClient();
+
   }
 
 }

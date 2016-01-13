@@ -72,6 +72,8 @@ public:
   //Loads a new gcode file. File name will be pushed to clients in state update
   void LoadGcode(const char* path);
 
+  void Jog(int axis, int speed);
+
   //Applications should this to acknowledge and return value from callback sent to client
   virtual void Acknowledge(int id, int returnValue);
 

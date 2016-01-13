@@ -5,20 +5,9 @@
 }
 
 .dro-display {
-    margin: 2px;
     background-color: #949782;
-    font-size: 32px;
-    display: flex;
-    display: -webkit-flex;
-}
-.dro-axis {
-    flex-grow: 1;
-    -webkit-flex-grow: 1;
-}
-.dro-value {
-    flex-grow: 3;
-    -webkit-flex-grow: 3;
-    text-align:right;
+    color: #000000;
+    /*font-size: 32px;*/
 }
   /*
   #sidebar.affix-top {

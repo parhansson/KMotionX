@@ -127,8 +127,9 @@ void WebController::UpdateClient() {
   if(connected && !simulate){
     MEMCPY(msgPtr, &main_status.TimeStamp, 8);
   } else {
+    //Timestamp is not acually used other than to see if backend is connected. Send seconds since midnight
     time_t service_console_time = time(NULL);
-    double timeStamp = service_console_time;
+    double timeStamp = service_console_time % 86400;
     MEMCPY(msgPtr, &timeStamp, 8);
   }
   MEMCPY(msgPtr, &main_status.PC_comm, 32);
@@ -464,6 +465,12 @@ int WebController::HandleJsonRequest(struct mg_connection *conn, const char *obj
       }
     } else if(FUNC_SIGP("listDir", 1)){
       ListDir(paramtoken);
+    } else if (FUNC_SIGP("jog", 2)) {
+      int axis;
+      int speed;
+      toki(paramtoken + 1, &axis);
+      toki(paramtoken + 2, &speed);
+      this->Jog(axis, speed);
     } else if (FUNC_SIGP("onFeedhold", 0)) {
       this->Feedhold();
     } else if (FUNC_SIGP("onSimulate", 0)) {

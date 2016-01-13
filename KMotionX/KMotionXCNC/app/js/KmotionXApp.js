@@ -43,6 +43,9 @@
     vm.onSimulate = function(){
       kmxBackend.onSimulate();
     }
+    vm.jog = function(axis, speed){
+      kmxBackend.jog(axis, speed);
+    }
   }
 
 
