@@ -276,6 +276,7 @@ int main(void)
     fd_set rfds;
     int retval;
     socklen_t len;
+    bool select_timedout;
 
 
     if ((main_socket = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
@@ -333,18 +334,17 @@ int main(void)
 // with that client, and the loop is repeated. 
 	//pthread_t ct = pthread_self();
 	//printf("Thread %.8x %.8x: Current thread\n", ct);
+   select_timedout = false;
    for (;;) 
    { 
-     //If exit() is executed in the processs that started the server we never get here
-     //Hence the reference counting from KMotionDLl.nInstances must be made.
-     //if (nClients <= 0) exit(0);              // nobody left - terminate server
-     if (KMotionDLL.nInstances() < 2) exit(0);  // nobody left - terminate server
-
-       syslog(LOG_ERR,"Main Thread. Waiting for a connection...\n");
        
        FD_ZERO(&rfds);
        FD_SET(main_socket, &rfds);
        FD_SET(tcp_socket, &rfds);
+
+       if(!select_timedout){
+         syslog(LOG_ERR,"Main Thread. Waiting for a connection...\n");
+       }
 
        struct timeval timeout;
        // Initialize the timeout data structure.
@@ -352,9 +352,14 @@ int main(void)
        timeout.tv_usec = 0;
 
        retval = select(tcp_socket+1, &rfds, NULL, NULL, &timeout);
+       select_timedout = retval == 0;
        if (retval < 0){
-            perrorExit("select");
-       } else if(retval == 0){
+          perrorExit("select");
+       } else if(select_timedout){
+         //If exit() is executed in the processs that started the server we never get here
+         //Hence the reference counting from KMotionDLl.nInstances must be made.
+         if (nClients <= 0) break;                // nobody left - terminate server
+         if (KMotionDLL.nInstances() < 2) break;  // nobody left - terminate server
          continue; //timeout
        } else if (FD_ISSET(main_socket, &rfds)) {
             t = sizeof(remote);
@@ -372,40 +377,33 @@ int main(void)
             // select() man page indicates possibility that there is nothing really there
             continue;
        }
+
        if (client_socket < 0) {
-    	   perrorExit("Main Thread. accept");
+         perrorExit("Main Thread. accept");
        } else {
-    	   //struct timeval tv;
+         //struct timeval tv;
+         //tv.tv_sec = 5;  /* 30 Secs Timeout */
+         //setsockopt(client_socket, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&tv,sizeof(struct timeval));
 
-    	   //tv.tv_sec = 5;  /* 30 Secs Timeout */
+         syslog(LOG_ERR,"Main Thread. Connected descriptor %d %s\n",
+             client_socket, FD_ISSET(tcp_socket, &rfds) ? "(tcp)" : "(local)");
+         nClients++;
 
-    	   //setsockopt(client_socket, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&tv,sizeof(struct timeval));
+         syslog(LOG_ERR,"Main Thread. Spawning worker\n");
+         pthread_t thr;
+         // initialize data to pass to thread
+         thdata data;
+         data.file_desc = client_socket;
 
-    	   syslog(LOG_ERR,"Main Thread. Connected descriptor %d %s\n",
-    	        client_socket, FD_ISSET(tcp_socket, &rfds) ? "(tcp)" : "(local)");
-    	   nClients++;
-
-    	   syslog(LOG_ERR,"Main Thread. Spawning worker\n");
-			pthread_t thr;
-			// initialize data to pass to thread
-			thdata data;
-			data.file_desc = client_socket;
-
- 		    if(pthread_create(&thr, &attr, &InstanceThread, (void *) &data))
- 		    {
- 		        MyErrExit("Main Thread. pthread_create");
- 		        //return -1;
- 		    }
-
- 		    //if(pthread_join(thr, NULL))
- 		    //{
- 		    //    printf("Could not join thread\n");
- 		    //    return -1;
- 		    //}
+         if(pthread_create(&thr, &attr, &InstanceThread, (void *) &data))
+         {
+            MyErrExit("Main Thread. pthread_create");
+         }
        }
 
    }
    closelog();
+   syslog(LOG_ERR,"Main Thread. Closing server\n");
    exit(EXIT_SUCCESS);
 } 
 //http://www.amparo.net/ce155/thread-ex.html
