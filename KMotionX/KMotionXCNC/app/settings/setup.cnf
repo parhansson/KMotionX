@@ -1,4 +1,4 @@
 {
   "machine":"settings/laser.cnf",
-  "gcodefile":"gcode/Dynomotion.ngc"
+  "gcodefile":"gcode/DynoMotion.ngc"
 }
