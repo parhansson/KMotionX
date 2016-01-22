@@ -6,7 +6,7 @@
   
   function GCodeRenderer($q,kmxThreeView, transformer) {
     var currentObject = null;
-    
+    var view = kmxThreeView.getInstance("main");
     var instance = {
         clearScene: clearScene,
         renderGCode: renderGCode
@@ -17,7 +17,8 @@
     
     function clearScene(){
       if (currentObject) {
-        kmxThreeView.scene.remove(currentObject);
+        view.modelObject.remove(currentObject);
+        view.update();
       }
     }
     
@@ -25,7 +26,8 @@
       transformer.transformNamed('G-Code to Three', gcode).then(function (object) {
           clearScene();
           currentObject = object;
-          kmxThreeView.scene.add(currentObject);
+          view.modelObject.add(currentObject);
+          view.update();
       },function (reason) {
           console.error(reason);
       });

@@ -88,31 +88,13 @@
        //I don't like the idea of watching an object this large anyway. 
       //view3d is inheritet from app controller
       GCodeRenderer.renderGCode(new GCode.Source($scope.editorContent));
+    
     });
-    
-    
-    var machineBounds = null;
     
     $scope.$on('settings-update', function(event, args){
-      if(machineBounds != null){
-        kmxThreeView.scene.remove(machineBounds);
-      }
-      machineBounds = createMachineBounds();
-      kmxThreeView.scene.add(machineBounds);
+      var view = kmxThreeView.getInstance("main");
+      view.updateSettings(settings);
     });
-    
-    function createMachineBounds(){
-      
-      var x = settings.machine.dimX;
-      var y = settings.machine.dimY;
-      var z = settings.machine.dimZ;
-      var mesh = new THREE.Mesh(new THREE.BoxGeometry( x, y, z ));
-      mesh.matrixWorld.makeTranslation(x/2,y/2,z/2);
-      var edges = new THREE.EdgesHelper(mesh, 0x0000ff );
-      edges.material.linewidth = 1;
-      return edges;
-      
-    }
     
   }
 

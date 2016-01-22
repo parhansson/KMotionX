@@ -39,7 +39,7 @@
   function KMotionXController($scope, kmxThreeView, kmxBackend, SocketService){
     var vm = this;
     vm.intStatus = SocketService.data;
-    vm.kmxThreeViewData = kmxThreeView;
+    vm.kmxThreeViewData = kmxThreeView.getInstance("main");
     vm.onSimulate = function(){
       kmxBackend.onSimulate();
     }

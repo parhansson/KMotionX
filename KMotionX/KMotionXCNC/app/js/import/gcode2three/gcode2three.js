@@ -8,7 +8,7 @@ KMX.Transformers.gcode2three = {
 
        // Create the final Object3d to add to the scene
        var group = new THREE.Group();
-       var lineGeometry = new THREE.Geometry();
+       //var lineGeometry = new THREE.Geometry();
        
        var interpolateColor = new THREE.Color(0x080808);
        var positionColor = new THREE.Color(0xAAAAFF);
@@ -20,7 +20,7 @@ KMX.Transformers.gcode2three = {
        });
        
        group.name = 'GCODE';
-       group.add(new THREE.Line( lineGeometry, lineMaterial ));
+       //group.add(new THREE.Line( lineGeometry, lineMaterial ));
 
        //Bind this since handler is called from worker context 
        var thisParameterHandler = parameterHandler.bind(this); 
@@ -36,12 +36,15 @@ KMX.Transformers.gcode2three = {
             e: 0,
             extruding: false
           },
+          prevCommand: null,
           lastCommand: {
               code:'NONE',
               val: -1
           },
           scale: 1.0,
-          absolute: true         
+          absolute: true,
+          lineGeometry:null,
+          lineNo:-1
        };
        
        var gcodeHandlers = {
@@ -51,6 +54,7 @@ KMX.Transformers.gcode2three = {
            },
            G: function(cmd, line) {
              state.lastCommand = cmd;
+             state.lineNo = line;
            },
            S: function() {
            },
@@ -70,16 +74,35 @@ KMX.Transformers.gcode2three = {
            }
         };
        
-       
+       function newLine(lineNo){
+         var lineMaterial2 = new THREE.LineBasicMaterial({
+         opacity: 0.6,
+         transparent: true,
+         linewidth: 1,
+         vertexColors: THREE.FaceColors
+       });
+         var lineGeometry = new THREE.Geometry();
+         var line = new THREE.Line( lineGeometry, lineMaterial2 );
+         line.userData = {lineNo:lineNo}
+         group.add(line);
+         console.log("new line");
+         return lineGeometry;
+       }
          
        
        function parameterHandler(args, line) {
          var lastCommand = state.lastCommand;
+         var prevCommand = state.prevCommand;
          var lastVector = state.lastVector;
+         var lineGeometry = state.lineGeometry
          var scale = state.scale;
          var absolute = state.absolute;
          //Only handle G codes 1-3
          if(lastCommand.code != 'G' || lastCommand.val < 0 || lastCommand.val >  3) return;
+         if(lineGeometry == null || prevCommand == null || prevCommand.code !== lastCommand.code || prevCommand.val !== lastCommand.val){
+           state.lineGeometry = newLine(state.lineNo);
+           lineGeometry = state.lineGeometry;
+         }
          var currentVector;
          if(absolute){
            currentVector = {
@@ -113,6 +136,7 @@ KMX.Transformers.gcode2three = {
            lastVector = this.createArc(lastCommand, args, lastVector, currentVector,lineGeometry, interpolateColor,false);
          }
          state.lastVector = currentVector;
+         state.prevCommand = {code:lastCommand.code, val:lastCommand.val};
        };
      
   
