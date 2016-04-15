@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
-  <link rel="stylesheet" type="text/css" href="css/style.css">
-  <link rel="stylesheet" type="text/css" href="css/switch.css">
+  <link rel="stylesheet" type="text/css" href="/css/style.css">
+  <link rel="stylesheet" type="text/css" href="/css/switch.css">
   <!-- 1. Load libraries -->
   <!-- IE required polyfills, in this exact order -->
   <script src="node_modules/es6-shim/es6-shim.min.js"></script>
@@ -26,17 +26,17 @@
   <script src="node_modules/intl/dist/Intl.min.js"></script>
   <script src="node_modules/intl/locale-data/jsonp/en.js"></script>
   <!-- third party -->
-  <script src="node_modules/ace-min-noconflict/ace.js" charset="utf-8"></script>
+  <script src="node_modules/ace-min-noconflict/ace.js"></script>
   <script src="node_modules/three/three.js"></script>
-  <script src="vendor/three/TrackballControls.js"></script>
+  <script src="/vendor/three/TrackballControls.js"></script>
   <!--
   <script src="node_modules/three-trackballcontrols/index.js"></script>
   <script src="vendor/mozilla/stringview.js"></script>
+  <script src="/vendor/modernizr/modernizr.custom.93389.js"></script>
   -->
 
-  <script src="vendor/opentype/opentype.min.js"></script>
+  <script src="/vendor/opentype/opentype.min.js"></script>
 
-  <script src="vendor/modernizr/modernizr.custom.93389.js"></script>
 
   <!-- 2. Configure SystemJS 
   <script type="text/javascript">
@@ -57,7 +57,20 @@ document.write("<base href='http://" + document.location.host + "' />");
             moment: 'node_modules/moment/moment.js', //needed by ng2-bootstrap datepicker
             kmxlog: "dist/app/log"
         }
+        /*
+        ,
+        meta: {
+          'node_modules/three-trackballcontrols/index.js': {
+            format: 'cjs',
+            deps: ['./node_modules/three/three.js']
+          }
+        }
+        */
       });
+      /*
+      System.import('node_modules/three-trackballcontrols/index.js')
+            .then(null, console.error.bind(console));
+            */
       System.import('dist/app/main')
             .then(null, console.error.bind(console));
   </script>

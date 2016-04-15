@@ -58,7 +58,7 @@
         }
         
         function renderBackground(x,y,z){
-            var texture = THREE.ImageUtils.loadTexture('images/bghoneym.jpg');
+            var texture = THREE.ImageUtils.loadTexture('/settings/textures/bghoneym.jpg');
             
             // assuming you want the texture to repeat in both directions:
             //texture.wrapS = THREE.RepeatWrapping; 

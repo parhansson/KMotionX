@@ -1,6 +1,6 @@
 
 importScripts('shared-types.js');
-importScripts('../../vendor/mozilla/stringview.js');
+importScripts('../../../vendor/mozilla/stringview.js');
 importScripts('socket-handler.js');
 
 var socket;

@@ -295,7 +295,7 @@
     function createCube(scene){ // create an array with six textures for a cool cube
       var loader = new THREE.TextureLoader();
       loader.load(
-        'images/textures.png',
+        '/settings/textures/textures.png',
         onTexture,
         function ( xhr ) { console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );},
         function ( xhr ) { console.log( 'An error happened' );}

@@ -7,21 +7,20 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
   -->
-  <link rel="stylesheet" href="vendor/bootstrap/3.3.4/css/bootstrap.min.css">
-  <link rel="stylesheet" href="vendor/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap/3.3.4/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap/3.3.4/css/bootstrap-theme.min.css">
   
-  <link rel="stylesheet" type="text/css" href="css/style.css">
-  <link rel="stylesheet" type="text/css" href="css/switch.css">
+  <link rel="stylesheet" type="text/css" href="/css/style.css">
+  <link rel="stylesheet" type="text/css" href="/css/switch.css">
   <!-- 3rd party libs -->
   <!-- 
     there is some problem with jqlite in angular
     jquery needs to be loaded before angular to disable jqlite
   -->
-  <script src="vendor/jquery/jquery-2.1.4.min.js"></script>        
-  <script src="vendor/angularjs/1.4.0/angular.min.js"></script>
-  <script src="vendor/angular-typecheck/angular-typecheck.min.js"></script>
-  <script src="vendor/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-  <script src="vendor/threejs/r73/three.min.js"></script>
+  <script src="/vendor/jquery/jquery-2.1.4.min.js"></script>        
+  <script src="/vendor/angularjs/1.4.0/angular.min.js"></script>
+  <script src="/vendor/angular-typecheck/angular-typecheck.min.js"></script>
+  <script src="/vendor/bootstrap/3.3.4/js/bootstrap.min.js"></script>
   
   <!--
   <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
@@ -33,13 +32,15 @@
   <!--
   <script src="vendor/mozilla/stringview.js"></script>
   -->
-  <script src="vendor/three/TrackballControls.js"></script>
+  <script src="/ng2/node_modules/ace-min-noconflict/ace.js"></script>
+  <script src="/ng2/node_modules/three/three.js"></script>
   
-  <script src="vendor/opentype/opentype.min.js"></script>
+  <script src="/vendor/three/TrackballControls.js"></script>
+  
+  <script src="/vendor/opentype/opentype.min.js"></script>
 
-  <script src="vendor/modernizr/modernizr.custom.93389.js"></script>
+  <script src="/vendor/modernizr/modernizr.custom.93389.js"></script>
   
-  <script src="vendor/ace/src-min-noconflict/ace.js" charset="utf-8"></script>
   
   <!-- Custom code -->
   
@@ -242,7 +243,7 @@
   </div><!-- /NavGCode -->
   <div class="tab-pane" id="NavC">
   
-      <div ng-controller="EditorController as ceditCtrl" ng-init="currentDir = './c-programs/'">
+      <div ng-controller="EditorController as ceditCtrl" ng-init="currentDir = './settings/c-programs/'">
         <div modal-show="showFileModal" class="modal fade">
           <file-modal></file-modal>
         </div>

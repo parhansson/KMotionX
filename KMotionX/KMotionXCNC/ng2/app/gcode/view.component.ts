@@ -15,7 +15,7 @@ import {window} from 'angular2/src/facade/browser';
   // template: `
   //     <canvas></canvas>    
   //   `
-    template:""
+  template: ""
 })
 export class ThreeViewComponent {
   public viewer = { updateFn: null, machineObject: new THREE.Group(), modelObject: new THREE.Group() }
@@ -97,7 +97,7 @@ export class ThreeViewComponent {
         light.position.set(position[0], position[1], position[2]).normalize();
         this.scene.add(light);
       }.bind(this));
- 
+
     window.addEventListener('resize', this.onResize.bind(this));
     this.element.addEventListener('mousemove', this.onMouseMove.bind(this));
     this.element.addEventListener('mousedown', this.onMouseButton.bind(this, true));
@@ -125,7 +125,7 @@ element.on( 'mouseleave', function(){
   onMouseButton(mouseDown: boolean) {
     this.mouseDown = mouseDown;
   }
-  
+
   onMouseMove(event) {
     event.preventDefault();
     var mouseVector = this.getMouseVector(event);
@@ -310,8 +310,20 @@ export class Orientation {
   }
 
   createCube(scene) { // create an array with six textures for a cool cube
-    var loader = new THREE.TextureLoader();
-    loader.load('images/textures.png', onTexture);
+    var manager = new THREE.LoadingManager(() => {
+      console.log("onLoad")
+    },
+      (url, loaded, total) => {
+        console.log(url)
+        console.log(loaded)
+        console.log(total)
+      }, () => {
+        console.error("error loading texture")
+      }
+    );
+    var loader = new THREE.TextureLoader(manager);
+    
+    loader.load('/settings/textures/textures.png', onTexture);
     /*
     loader.load(
       'images/textures.png',
@@ -321,7 +333,7 @@ export class Orientation {
     );
     */
 
-    function onTexture(texture:THREE.Texture) {
+    function onTexture(texture: THREE.Texture) {
       //var material = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('images/box-atlas.png') } );
       var material = new THREE.MeshBasicMaterial({
         map: texture

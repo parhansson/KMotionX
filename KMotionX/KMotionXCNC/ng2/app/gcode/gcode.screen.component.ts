@@ -60,7 +60,7 @@ export class GCodeScreenComponent extends ScreenComponent{
   }
 
   onOpenFile() {
-    this.backendService.load("test.svg").subscribe(
+    this.backendService.load("/gcode/test.svg").subscribe(
       data => this.parseXML(data),
       err => console.error(err),
       () => console.log('Random Quote Complete')

@@ -130,7 +130,7 @@ export class SettingsService {
   constructor(private http: Http, private kmxBackend: BackendService) {
     
     this.machine = new Machine();
-    this.load("/settings/laser.cnf");
+    this.load("/settings/machines/laser.cnf");
   }
   public save(): void {
     var file = this.fileName();

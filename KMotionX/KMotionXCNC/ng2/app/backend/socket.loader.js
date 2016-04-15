@@ -5,7 +5,7 @@ var root = "../../../"
 
 importScripts(root + "node_modules/es6-shim/es6-shim.min.js");
 importScripts(root + "node_modules/systemjs/dist/system.src.js");
-importScripts(root + "vendor/mozilla/stringview.js");
+importScripts(root + "../vendor/mozilla/stringview.js");
 
 //importScripts("angular2/web_worker/worker.js");
 System.config({
