@@ -1,0 +1,18 @@
+<h1>CCode</h1>
+
+      <div ng-controller="EditorController as ceditCtrl" ng-init="currentDir = './c-programs/'">
+        <div modal-show="showFileModal" class="modal fade">
+          <file-modal></file-modal>
+        </div>
+        <div file-dropzone="" file-content="editorContent" file-name="editorContentName" >      
+          <div>
+            <input ng-model="currentDir"/>
+            <input ng-model="editorContentName"/>
+            <span  class="glyphButtonBar">
+              <span class="btn btn-primary glyphicon glyphicon-folder-open" title="Open" ng-click="listFiles(currentDir)"></span>
+              <span class="btn btn-primary glyphicon glyphicon-floppy-save" title="Save" ng-click="save()"></span>
+            </span>
+          </div>
+          <div aceEditor id="ceditor" mode="c_cpp" ng-model="editorContent"></div>
+        </div>      
+     </div>  

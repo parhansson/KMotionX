@@ -1,5 +1,5 @@
-///<reference path="../../../typings/KMX.d.ts" />
-'use strict'
+
+import {Vec2, IGM, IgmObject} from '../igm/igm';
 /**
   SVG parser for the Lasersaur.
   Converts SVG DOM to a flat collection of paths.
@@ -33,93 +33,135 @@
   ToDo:
     * check for out of bounds geometry
 */
-
-function createAnchor(name,url){
+/*
+if (typeof(String.prototype.strip) === "undefined") {
+    String.prototype.strip = function() {
+        return String(this).replace(/^\s+|\s+$/g, '');
+    };
+}
+*/
+function createAnchor(name, url) {
   var anchor = document.createElement('a');
   anchor.setAttribute('title', name);
   anchor.setAttribute('href', url);
-  var newContent = document.createTextNode(name); 
+  var newContent = document.createTextNode(name);
   anchor.appendChild(newContent);
   document.body.appendChild(anchor);
   return anchor;
 }
-var KMX = KMX || {};
-KMX.Transformers = KMX.Transformers || {};
-KMX.Transformers.svg2igm = {
+
+export class SvgNode {
+  path: Array<Array<Array<number>>>
+  xformToWorld = [1, 0, 0, 1, 0, 0] //2d Transformation vector
+  xform = [1, 0, 0, 1, 0, 0]//2d Transformation vector
+  id:string
+  display: string
+  visibility: string
+  fill: string
+  stroke : any
+  color: string
+  opacity: number
+  fillOpacity: number
+  strokeOpacity: number
+  unsupported: boolean
+  href: string
+  fontBlob:string
+  
+  constructor(){
+    this.path = [];
+  }
+  inherit() {
+    var node = new SvgNode();
+    node.path = [];
+    node.xform = [1, 0, 0, 1, 0, 0];
+    node.opacity = this.opacity;
+    node.display = this.display;
+    node.visibility = this.visibility;
+    node.fill = this.fill;
+    node.stroke = this.stroke;
+    node.color = this.color;
+    node.fillOpacity = this.fillOpacity;
+    node.strokeOpacity = this.strokeOpacity;
+    node.unsupported = this.unsupported;
+    return node;
+  }
+}
+
+export interface ISVGParser{
+  addPath(d:any, node:SvgNode)
+  parseUnit(val:string)
+  matrixMult(mA: number[], mB: number[])
+  strip(val:string);
+}
+
+export class Svg2Igm implements ISVGParser{
 
 
-  boundarys : null,
-    // output path flattened (world coords)
-    // hash of path by color
-    // each path is a list of subpaths
-    // each subpath is a list of verteces
-  style : {},
-    // style at current parsing position
-  tolerance : 0.1,
-    // max tollerance when tesselating curvy shapes
+  boundarys: IGM
+  // output path flattened (world coords)
+  // hash of path by color
+  // each path is a list of subpaths
+  // each subpath is a list of verteces
+  style = {}
+  // style at current parsing position
+  tolerance = 0.1
+  // max tollerance when tesselating curvy shapes
+  tolerance_squared: number
 
+  constructor() {
 
-  transform : function(svgRootElement, config) {
-    this.boundarys = new KMX.IGM();
+  }
+
+  transform(svgRootElement:SVGElement, config) {
+
+    this.boundarys = new IGM();
     this.tolerance_squared = Math.pow(this.tolerance, 2);
 
-
     // let the fun begin
-    var node = {}    
-    node.stroke = [255,0,0];
-    node.xformToWorld = [1,0,0,1,0,0]
-    var cssFilterAllowed = ['svg','g','defs','style'];
-    var cssFilter = function(tag){
+    var node = new SvgNode();
+    node.stroke = [255, 0, 0];
+    node.xformToWorld = [1, 0, 0, 1, 0, 0]
+    var cssFilterAllowed = ['svg', 'g', 'defs', 'style'];
+    var cssFilter = function(tag) {
       return cssFilterAllowed.indexOf(tag.localName) > -1;
-    };
-    
+    }
+
     this.parseChildren(svgRootElement, node, cssFilter)
-    
-    var contentFilterDissalowed = ['style','defs'];
-    var contentFilter = function(tag){
+
+    var contentFilterDissalowed = ['style', 'defs'];
+    var contentFilter = function(tag) {
       return contentFilterDissalowed.indexOf(tag.localName) < 0;
     };
     this.parseChildren(svgRootElement, node, contentFilter)
 
     return this.boundarys
-  },
+  }
 
 
-  parseChildren : function(domNode, parentNode, filter) {
-    if(!filter(domNode)){
+  parseChildren(domNode:SVGElement, parentNode: SvgNode, filter) {
+    if (!filter(domNode)) {
       return;
     }
 
-    for (var i=0; i<domNode.childNodes.length; i++) {
-      var tag = domNode.childNodes[i]
-      if (tag.childNodes) { 
-        
+    for (var i = 0; i < domNode.childNodes.length; i++) {
+      var tag = domNode.childNodes[i] as SVGElement
+      if (tag.childNodes) {
+
         // exclude textnodes, might check for tag.nodeName ===  "#text" or tag.nodeType === 3 instead
         // but that would include to check several types
-        if (tag.localName) {  
-          
+        if (tag.localName) {
+
           // we are looping here through
           // all nodes with child nodes
           // others are irrelevant
 
           // 1.) setup a new node
           // and inherit from parent
-          var node = {}
-          node.path = [];
-          node.xform = [1,0,0,1,0,0];
-          node.opacity = parentNode.opacity;
-          node.display = parentNode.display;
-          node.visibility = parentNode.visibility;
-          node.fill = parentNode.fill;
-          node.stroke = parentNode.stroke;
-          node.color = parentNode.color;
-          node.fillOpacity = parentNode.fillOpacity;
-          node.strokeOpacity = parentNode.strokeOpacity;
-          node.unsupported = parentNode.unsupported;
+          var node = parentNode.inherit()
 
           // 2.) parse own attributes and overwrite
           if (tag.attributes) {
-            for (var j=0; j<tag.attributes.length; j++) {
+            for (var j = 0; j < tag.attributes.length; j++) {
               var attr = tag.attributes[j]
               if (attr.nodeName && attr.nodeValue && this.SVGAttributeMapping[attr.nodeName]) {
                 this.SVGAttributeMapping[attr.nodeName](this, node, attr.nodeValue)
@@ -135,13 +177,13 @@ KMX.Transformers.svg2igm = {
           // changed from tagName to localName to handle svg files with namespace prefix svg:svg, svg:path etc;
           if (this.SVGTagMapping[tag.localName]) {
             //if (node.stroke[0] == 255 && node.stroke[1] == 0 && node.stroke[2] == 0) {
-              this.SVGTagMapping[tag.localName](this, tag, node)
+            this.SVGTagMapping[tag.localName](this, tag, node)
             //}
-          } 
-          
-          
+          }
+
+
           // TODO det här funkar inte för att det sker asynkront.
-          
+
           // if(node.fontBlob){
           //   console.log('fontblob', node.fontBlob);
           //   var tempParser = this;
@@ -160,27 +202,33 @@ KMX.Transformers.svg2igm = {
           //       }
           //   });
           // }
-          
+
           // 5.) compile boundarys
           // before adding all path data convert to world coordinates
-          for (var k=0; k<node.path.length; k++) {
+          for (var k = 0; k < node.path.length; k++) {
+            var igmObject = new IgmObject();
             var subpath = node.path[k];
-            for (var l=0; l<node.path[k].length; l++) {
-              var tmp =  this.matrixApply(node.xformToWorld, subpath[l]);
+            for (var l = 0; l < node.path[k].length; l++) {
+              var tt = this.matrixApply(node.xformToWorld, subpath[l])
+              var t = new Vec2(tt[0],tt[1]);
+              //t.matrixApply(node.xformToWorld);
+              igmObject.vectors.push(t);
+              
+              //var tmp = this.matrixApply(node.xformToWorld, subpath[l]);
               //TODO clip on clipPath here. this will be extremely difficult
-              subpath[l] = new Vec2(tmp[0], tmp[1]);
+              //subpath[l] = new Vec2(tmp[0], tmp[1]);
             }
-            subpath.node = node;
-            subpath.cmd = {code: "G", val: 1, name: "G1"};
+            igmObject.node = node;
+            igmObject.cmd = { code: "G", val: 1, name: "G1" };
 
-              if(node.unsupported === true){
-                this.boundarys.unsupported.push(subpath);
-              } else {                
-                //this.boundarys.allcolors.push(subpath);
-                this.boundarys.addToLayerObject(node.stroke, subpath);                
-              }
+            if (node.unsupported === true) {
+              this.boundarys.unsupported.push(subpath);
+            } else {
+              //this.boundarys.allcolors.push(subpath);
+              this.boundarys.addToLayerObject(node.stroke, igmObject);
+            }
           }
-          if(node.href){
+          if (node.href) {
             //createAnchor('bulle',node.href);
             //console.log(node.href.length, node.href);
           }
@@ -191,7 +239,7 @@ KMX.Transformers.svg2igm = {
         this.parseChildren(tag, node, filter)
       }
     }
-  },
+  }
 
 
 
@@ -199,26 +247,26 @@ KMX.Transformers.svg2igm = {
   /////////////////////////////
   // recognized svg attributes
 
-  SVGAttributeMapping : {
-    DEG_TO_RAD : Math.PI / 180,
-    RAD_TO_DEG : 180 / Math.PI,
+  SVGAttributeMapping = {
+    DEG_TO_RAD: Math.PI / 180,
+    RAD_TO_DEG: 180 / Math.PI,
 
-    id : function(parser, node, val) {
+    id: function(parser, node: SvgNode, val) {
       node.id = val
     },
 
-    transform : function(parser, node, val) {
+    transform: function(parser:ISVGParser, node: SvgNode, val:string) {
       // http://www.w3.org/TR/SVG11/coords.html#EstablishingANewUserSpace
       var xforms = []
       var segs = val.match(/[a-z]+\s*\([^)]*\)/ig)
-      for (var i=0; i<segs.length; i++) {
+      for (var i = 0; i < segs.length; i++) {
         var kv = segs[i].split("(");
-        var xformKind = kv[0].strip();
-        var paramsTemp = kv[1].strip().slice(0,-1);
+        var xformKind = parser.strip(kv[0]);
+        var paramsTemp = parser.strip(kv[1]).slice(0, -1);
         var params = paramsTemp.split(/[\s,]+/).map(parseFloat)
         // double check params
-        for (var j=0; j<params.length; j++) {
-          if ( isNaN(params[j]) ) {
+        for (var j = 0; j < params.length; j++) {
+          if (isNaN(params[j])) {
             console.warn('warning', 'transform skipped; contains non-numbers');
             continue  // skip this transform
           }
@@ -233,7 +281,7 @@ KMX.Transformers.svg2igm = {
           } else {
             console.warn('warning', 'translate skipped; invalid num of params');
           }
-        // rotate
+          // rotate
         } else if (xformKind == 'rotate') {
           if (params.length == 3) {
             var angle = params[0] * this.DEG_TO_RAD
@@ -246,7 +294,7 @@ KMX.Transformers.svg2igm = {
           } else {
             console.warn('warning', 'rotate skipped; invalid num of params');
           }
-        //scale
+          //scale
         } else if (xformKind == 'scale') {
           if (params.length == 1) {
             xforms.push([params[0], 0, 0, params[0], 0, 0])
@@ -255,23 +303,23 @@ KMX.Transformers.svg2igm = {
           } else {
             console.warn('warning', 'scale skipped; invalid num of params');
           }
-        // matrix
+          // matrix
         } else if (xformKind == 'matrix') {
           if (params.length == 6) {
             xforms.push(params)
           }
-        // skewX
+          // skewX
         } else if (xformKind == 'skewX') {
           if (params.length == 1) {
-            var angle = params[0]*this.DEG_TO_RAD
+            var angle = params[0] * this.DEG_TO_RAD
             xforms.push([1, 0, Math.tan(angle), 1, 0, 0])
           } else {
             console.warn('warning', 'skewX skipped; invalid num of params');
           }
-        // skewY
+          // skewY
         } else if (xformKind == 'skewY') {
           if (params.length == 1) {
-            var angle = params[0]*this.DEG_TO_RAD
+            var angle = params[0] * this.DEG_TO_RAD
             xforms.push([1, Math.tan(angle), 0, 1, 0, 0])
           } else {
             console.warn('warning', 'skewY skipped; invalid num of params');
@@ -280,8 +328,8 @@ KMX.Transformers.svg2igm = {
       }
 
       //calculate combined transformation matrix
-      var xform_combined = [1,0,0,1,0,0]
-      for (var i=0; i<xforms.length; i++) {
+      var xform_combined = [1, 0, 0, 1, 0, 0]
+      for (var i = 0; i < xforms.length; i++) {
         xform_combined = parser.matrixMult(xform_combined, xforms[i])
       }
 
@@ -289,7 +337,7 @@ KMX.Transformers.svg2igm = {
       node.xform = xform_combined
     },
 
-    style : function(parser, node, val) {
+    style: function(parser:ISVGParser, node: SvgNode, val:string) {
       // style attribute
       // http://www.w3.org/TR/SVG11/styling.html#StyleAttribute
       // example: <rect x="200" y="100" width="600" height="300"
@@ -297,11 +345,11 @@ KMX.Transformers.svg2igm = {
 
       // relay to parse style attributes the same as Presentation Attributes
       var segs = val.split(";")
-      for (var i=0; i<segs.length; i++) {
+      for (var i = 0; i < segs.length; i++) {
         var kv = segs[i].split(":")
-        var k = kv[0].strip()
+        var k = parser.strip(kv[0])
         if (this[k]) {
-          var v = kv[1].strip()
+          var v = parser.strip(kv[1])
           this[k](parser, node, v)
         }
       }
@@ -313,43 +361,43 @@ KMX.Transformers.svg2igm = {
     // example: <rect x="200" y="100" width="600" height="300"
     //          fill="red" stroke="blue" stroke-width="3"/>
 
-    opacity : function(parser, node, val) {
+    opacity: function(parser:ISVGParser, node: SvgNode, val:string) {
       node.opacity = parseFloat(val)
     },
 
-    display : function (parser, node, val) {
+    display: function(parser:ISVGParser, node: SvgNode, val:string) {
       node.display = val
     },
 
-    visibility : function (parser, node, val) {
+    visibility: function(parser:ISVGParser, node: SvgNode, val:string) {
       node.visibility = val
     },
 
-    fill : function(parser, node, val) {
-      node.fill = this.__parseColor(val, node.color)
+    fill: function(parser:ISVGParser, node: SvgNode, val:string) {
+      node.fill = this.__parseColor(parser, val, node.color)
     },
 
-    stroke : function(parser, node, val) {
-      node.stroke = this.__parseColor(val, node.color)
+    stroke: function(parser:ISVGParser, node: SvgNode, val:string) {
+      node.stroke = this.__parseColor(parser, val, node.color)
     },
 
-    color : function(parser, node, val) {
+    color: function(parser:ISVGParser, node: SvgNode, val:string) {
       if (val == 'inherit') return
-      node.color = this.__parseColor(val, node.color)
+      node.color = this.__parseColor(parser, val, node.color)
     },
 
-    'fill-opacity' : function(parser, node, val) {
-      node.fillOpacity = Math.min(1,Math.max(0,parseFloat(val)))
+    'fill-opacity': function(parser:ISVGParser, node: SvgNode, val:string) {
+      node.fillOpacity = Math.min(1, Math.max(0, parseFloat(val)))
     },
 
-    'stroke-opacity' : function(parser, node, val) {
-      node.strokeOpacity = Math.min(1,Math.max(0,parseFloat(val)))
+    'stroke-opacity': function(parser:ISVGParser, node: SvgNode, val:string) {
+      node.strokeOpacity = Math.min(1, Math.max(0, parseFloat(val)))
     },
 
     // Presentations Attributes
     ///////////////////////////
 
-    __parseColor : function(val, currentColor) {
+    __parseColor: function(parser:ISVGParser, val, currentColor) {
 
       if (val.charAt(0) == '#') {
         if (val.length == 4)
@@ -359,28 +407,28 @@ KMX.Transformers.svg2igm = {
         return a
 
       } else if (val.search(/^rgb\(/) != -1) {
-        var a = val.slice(4,-1).split(",")
-        for (var i=0; i<a.length; i++) {
-          var c = a[i].strip()
-          if (c.charAt(c.length-1) == '%')
-            a[i] = Math.round(parseFloat(c.slice(0,-1)) * 2.55)
+        var a = val.slice(4, -1).split(",")
+        for (var i = 0; i < a.length; i++) {
+          var c = parser.strip(a[i])
+          if (c.charAt(c.length - 1) == '%')
+            a[i] = Math.round(parseFloat(c.slice(0, -1)) * 2.55)
           else
             a[i] = parseInt(c)
         }
         return a
 
       } else if (val.search(/^rgba\(/) != -1) {
-        var a = val.slice(5,-1).split(",")
-        for (var i=0; i<3; i++) {
-          var c = a[i].strip()
-          if (c.charAt(c.length-1) == '%')
-            a[i] = Math.round(parseFloat(c.slice(0,-1)) * 2.55)
+        var a = val.slice(5, -1).split(",")
+        for (var i = 0; i < 3; i++) {
+          var c = parser.strip(a[i])
+          if (c.charAt(c.length - 1) == '%')
+            a[i] = Math.round(parseFloat(c.slice(0, -1)) * 2.55)
           else
             a[i] = parseInt(c)
         }
-        var c = a[3].strip()
-        if (c.charAt(c.length-1) == '%')
-          a[3] = Math.round(parseFloat(c.slice(0,-1)) * 0.01)
+        var c = parser.strip(a[3])
+        if (c.charAt(c.length - 1) == '%')
+          a[3] = Math.round(parseFloat(c.slice(0, -1)) * 0.01)
         else
           a[3] = Math.max(0, Math.min(1, parseFloat(c)))
         return a
@@ -399,7 +447,7 @@ KMX.Transformers.svg2igm = {
         return val
       }
     }
-  },
+  }
 
   // recognized svg attributes
   /////////////////////////////
@@ -411,8 +459,9 @@ KMX.Transformers.svg2igm = {
   ///////////////////////////
   // recognized svg elements
 
-  SVGTagMapping : {
-    svg : function(parser, tag, node) {
+  SVGTagMapping = {
+    
+    svg: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
       // has style attributes
       node.fill = 'black'
       node.stroke = 'none'
@@ -430,39 +479,39 @@ KMX.Transformers.svg2igm = {
     },
 
 
-    g : function(parser, tag, node) {
+    g: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
       // http://www.w3.org/TR/SVG11/struct.html#Groups
       // has transform and style attributes
     },
 
 
-    polygon : function(parser, tag, node) {
+    polygon: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
       // http://www.w3.org/TR/SVG11/shapes.html#PolygonElement
       // has transform and style attributes
-      var d = this.__getPolyPath(tag)
+      var d = this.__getPolyPath(parser, tag)
       d.push('z')
       parser.addPath(d, node)
     },
 
 
-    polyline : function(parser, tag, node) {
+    polyline: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
       // http://www.w3.org/TR/SVG11/shapes.html#PolylineElement
       // has transform and style attributes
-      var d = this.__getPolyPath(tag)
+      var d = this.__getPolyPath(parser, tag)
       parser.addPath(d, node)
     },
 
-    __getPolyPath : function(tag) {
+    __getPolyPath: function(parser:ISVGParser, tag:SVGElement) {
       // has transform and style attributes
       var subpath = []
-      var vertnums = tag.getAttribute("points").toString().strip().split(/[\s,]+/).map(parseFloat)
+      var vertnums = parser.strip(tag.getAttribute("points").toString()).split(/[\s,]+/).map(parseFloat)
       if (vertnums.length % 2 == 0) {
         var d = ['M']
         d.push(vertnums[0])
         d.push(vertnums[1])
-        for (var i=2; i<vertnums.length; i+=2) {
+        for (var i = 2; i < vertnums.length; i += 2) {
           d.push(vertnums[i])
-          d.push(vertnums[i+1])
+          d.push(vertnums[i + 1])
         }
         return d
       } else {
@@ -470,7 +519,7 @@ KMX.Transformers.svg2igm = {
       }
     },
 
-    rect : function(parser, tag, node) {
+    rect: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
       // http://www.w3.org/TR/SVG11/shapes.html#RectElement
       // has transform and style attributes
       var w = parser.parseUnit(tag.getAttribute('width')) || 0
@@ -480,29 +529,29 @@ KMX.Transformers.svg2igm = {
       var rx = parser.parseUnit(tag.getAttribute('rx'))
       var ry = parser.parseUnit(tag.getAttribute('ry'))
 
-      if(rx == null || ry == null) {  // no rounded corners
+      if (rx == null || ry == null) {  // no rounded corners
         var d = ['M', x, y, 'h', w, 'v', h, 'h', -w, 'z'];
         parser.addPath(d, node)
       } else {                       // rounded corners
         if ('ry' == null) { ry = rx; }
-        if (rx < 0.0) { rx *=-1; }
-        if (ry < 0.0) { ry *=-1; }
-        d = ['M', x+rx , y ,
-             'h', w-2*rx,
-             'c', rx, 0.0, rx, ry, rx, ry,
-             'v', h-ry,
-             'c', '0.0', ry, -rx, ry, -rx, ry,
-             'h', -w+2*rx,
-             'c', -rx, '0.0', -rx, -ry, -rx, -ry,
-             'v', -h+ry,
-             'c', '0.0','0.0','0.0', -ry, rx, -ry,
-             'z'];
+        if (rx < 0.0) { rx *= -1; }
+        if (ry < 0.0) { ry *= -1; }
+        d = ['M', x + rx, y,
+          'h', w - 2 * rx,
+          'c', rx, 0.0, rx, ry, rx, ry,
+          'v', h - ry,
+          'c', '0.0', ry, -rx, ry, -rx, ry,
+          'h', -w + 2 * rx,
+          'c', -rx, '0.0', -rx, -ry, -rx, -ry,
+          'v', -h + ry,
+          'c', '0.0', '0.0', '0.0', -ry, rx, -ry,
+          'z'];
         parser.addPath(d, node)
       }
     },
 
 
-    line : function(parser, tag, node) {
+    line: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
       // http://www.w3.org/TR/SVG11/shapes.html#LineElement
       // has transform and style attributes
       var x1 = parser.parseUnit(tag.getAttribute('x1')) || 0
@@ -514,7 +563,7 @@ KMX.Transformers.svg2igm = {
     },
 
 
-    circle : function(parser, tag, node) {
+    circle: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
       // http://www.w3.org/TR/SVG11/shapes.html#CircleElement
       // has transform and style attributes
       var r = parser.parseUnit(tag.getAttribute('r'))
@@ -522,18 +571,18 @@ KMX.Transformers.svg2igm = {
       var cy = parser.parseUnit(tag.getAttribute('cy')) || 0
 
       if (r > 0.0) {
-        var d = ['M', cx-r, cy,
-                 'A', r, r, 0, 0, 0, cx, cy+r,
-                 'A', r, r, 0, 0, 0, cx+r, cy,
-                 'A', r, r, 0, 0, 0, cx, cy-r,
-                 'A', r, r, 0, 0, 0, cx-r, cy,
-                 'Z'];
+        var d = ['M', cx - r, cy,
+          'A', r, r, 0, 0, 0, cx, cy + r,
+          'A', r, r, 0, 0, 0, cx + r, cy,
+          'A', r, r, 0, 0, 0, cx, cy - r,
+          'A', r, r, 0, 0, 0, cx - r, cy,
+          'Z'];
         parser.addPath(d, node);
       }
     },
 
 
-    ellipse : function(parser, tag, node) {
+    ellipse: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
       // has transform and style attributes
       var rx = parser.parseUnit(tag.getAttribute('rx'))
       var ry = parser.parseUnit(tag.getAttribute('ry'))
@@ -541,68 +590,68 @@ KMX.Transformers.svg2igm = {
       var cy = parser.parseUnit(tag.getAttribute('cy')) || 0
 
       if (rx > 0.0 && ry > 0.0) {
-        var d = ['M', cx-rx, cy,
-                 'A', rx, ry, 0, 0, 0, cx, cy+ry,
-                 'A', rx, ry, 0, 0, 0, cx+rx, cy,
-                 'A', rx, ry, 0, 0, 0, cx, cy-ry,
-                 'A', rx, ry, 0, 0, 0, cx-rx, cy,
-                 'Z'];
+        var d = ['M', cx - rx, cy,
+          'A', rx, ry, 0, 0, 0, cx, cy + ry,
+          'A', rx, ry, 0, 0, 0, cx + rx, cy,
+          'A', rx, ry, 0, 0, 0, cx, cy - ry,
+          'A', rx, ry, 0, 0, 0, cx - rx, cy,
+          'Z'];
         parser.addPath(d, node);
       }
     },
 
 
-    path : function(parser, tag, node) {
+    path: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
       // http://www.w3.org/TR/SVG11/paths.html
       // has transform and style attributes
       var d = tag.getAttribute("d")
       parser.addPath(d, node)
     },
 
-    image : function(parser, tag, node) {
+    image: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
       // not supported
       // has transform and style attributes
       var ns = "http://www.w3.org/1999/xlink";
-      var href = tag.getAttributeNS(ns,"href");
+      var href = tag.getAttributeNS(ns, "href");
       node.href = href;
     },
 
-    defs : function(parser, tag, node) {
+    defs: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
       node.unsupported = true;
       // not supported
       // http://www.w3.org/TR/SVG11/struct.html#Head
       // has transform and style attributes
     },
-    
-    clipPath : function(parser, tag, node) {
-      node.unsupported = true;
-      // not supported
-      // has transform and style attributes
-    },
-    
-    use : function(parser, tag, node) {
+
+    clipPath: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
       node.unsupported = true;
       // not supported
       // has transform and style attributes
     },
 
-    style : function(parser, tag, node) {
+    use: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
+      node.unsupported = true;
+      // not supported
+      // has transform and style attributes
+    },
+
+    style: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
       //node.unsupported = true;
-      
+
       var doc = document.implementation.createHTMLDocument(""),
-      styleElement = document.createElement("style");
-    
+        styleElement = document.createElement("style");
+
       styleElement.textContent = tag.textContent;
       // the style will only be parsed once it is added to a document
       doc.body.appendChild(styleElement);
-      
+
       //@font-face
-      console.log('rules', styleElement.sheet.cssRules);
+      //console.log('rules', styleElement.sheet.cssRules);
       var style = tag.textContent;
-      var s = style.indexOf('url(') +4;
-      var e = style.indexOf(')',s);
-      node.fontBlob = tag.textContent.substring(s,e);
-      
+      var s = style.indexOf('url(') + 4;
+      var e = style.indexOf(')', s);
+      node.fontBlob = tag.textContent.substring(s, e);
+
       //blob:
       // not supported: embedded style sheets
       // http://www.w3.org/TR/SVG11/styling.html#StyleElement
@@ -621,7 +670,7 @@ KMX.Transformers.svg2igm = {
       // }
     }
 
-  },
+  }
 
   // recognized svg elements
   ///////////////////////////
@@ -632,7 +681,7 @@ KMX.Transformers.svg2igm = {
   // handle path data
   // this is where all the geometry gets converted for the boundarys output
 
-  addPath : function(d, node) {
+  addPath(d:any, node:SvgNode) {
     // http://www.w3.org/TR/SVG11/paths.html#PathData
 
     var tolerance2 = this.tolerance_squared
@@ -643,10 +692,10 @@ KMX.Transformers.svg2igm = {
       // console.info('notice', "tolerance2: " + tolerance2.toString());
     }
 
-    if ( typeof d == 'string') {
+    if (typeof d == 'string') {
       // parse path string
       d = d.match(/([A-Za-z]|-?[0-9]+\.?[0-9]*(?:e-?[0-9]*)?)/g);
-      for (var i=0; i<d.length; i++) {
+      for (var i = 0; i < d.length; i++) {
         var num = parseFloat(d[i]);
         if (!isNaN(num)) {
           d[i] = num;
@@ -655,8 +704,8 @@ KMX.Transformers.svg2igm = {
     }
     //console.info('notice', "d: " + d.toString());
 
-    function nextIsNum () {
-      return (d.length > 0) && (typeof(d[0]) === 'number');
+    function nextIsNum() {
+      return (d.length > 0) && (typeof (d[0]) === 'number');
     }
 
     function getNext() {
@@ -673,14 +722,14 @@ KMX.Transformers.svg2igm = {
     var cmdPrev = '';
     var xPrevCp;
     var yPrevCp;
-    var subpath = [];
+    var subpath:number[][] = [];
 
     while (d.length > 0) {
       var cmd = getNext();
-      switch(cmd) {
+      switch (cmd) {
         case 'M':  // moveto absolute
           // start new subpath
-          if ( subpath.length > 0) {
+          if (subpath.length > 0) {
             node.path.push(subpath);
             subpath = [];
           }
@@ -694,7 +743,7 @@ KMX.Transformers.svg2igm = {
           break
         case 'm':  //moveto relative
           // start new subpath
-          if ( subpath.length > 0) {
+          if (subpath.length > 0) {
             node.path.push(subpath);
             subpath = [];
           }
@@ -716,11 +765,11 @@ KMX.Transformers.svg2igm = {
         case 'Z':  // closepath
         case 'z':  // closepath
           // loop and finalize subpath
-          if ( subpath.length > 0) {
+          if (subpath.length > 0) {
             subpath.push(subpath[0]);  // close
             node.path.push(subpath);
-            x = subpath[subpath.length-1][0];
-            y = subpath[subpath.length-1][1];
+            x = subpath[subpath.length - 1][0];
+            y = subpath[subpath.length - 1][1];
             subpath = [];
           }
           break
@@ -770,9 +819,9 @@ KMX.Transformers.svg2igm = {
             var y3 = getNext();
             var x4 = getNext();
             var y4 = getNext();
-            subpath.push([x,y]);
+            subpath.push([x, y]);
             this.addCubicBezier(subpath, x, y, x2, y2, x3, y3, x4, y4, 0, tolerance2);
-            subpath.push([x4,y4]);
+            subpath.push([x4, y4]);
             x = x4;
             y = y4;
             xPrevCp = x3;
@@ -787,9 +836,9 @@ KMX.Transformers.svg2igm = {
             var y3 = y + getNext();
             var x4 = x + getNext();
             var y4 = y + getNext();
-            subpath.push([x,y]);
+            subpath.push([x, y]);
             this.addCubicBezier(subpath, x, y, x2, y2, x3, y3, x4, y4, 0, tolerance2);
-            subpath.push([x4,y4]);
+            subpath.push([x4, y4]);
             x = x4;
             y = y4;
             xPrevCp = x3;
@@ -801,8 +850,8 @@ KMX.Transformers.svg2igm = {
             var x2;
             var y2;
             if (cmdPrev.match(/[CcSs]/)) {
-              x2 = x-(xPrevCp-x);
-              y2 = y-(yPrevCp-y);
+              x2 = x - (xPrevCp - x);
+              y2 = y - (yPrevCp - y);
             } else {
               x2 = x;
               y2 = y;
@@ -811,9 +860,9 @@ KMX.Transformers.svg2igm = {
             var y3 = getNext();
             var x4 = getNext();
             var y4 = getNext();
-            subpath.push([x,y]);
+            subpath.push([x, y]);
             this.addCubicBezier(subpath, x, y, x2, y2, x3, y3, x4, y4, 0, tolerance2);
-            subpath.push([x4,y4]);
+            subpath.push([x4, y4]);
             x = x4;
             y = y4;
             xPrevCp = x3;
@@ -825,8 +874,8 @@ KMX.Transformers.svg2igm = {
             var x2;
             var y2;
             if (cmdPrev.match(/[CcSs]/)) {
-              x2 = x-(xPrevCp-x);
-              y2 = y-(yPrevCp-y);
+              x2 = x - (xPrevCp - x);
+              y2 = y - (yPrevCp - y);
             } else {
               x2 = x;
               y2 = y;
@@ -835,9 +884,9 @@ KMX.Transformers.svg2igm = {
             var y3 = y + getNext();
             var x4 = x + getNext();
             var y4 = y + getNext();
-            subpath.push([x,y]);
+            subpath.push([x, y]);
             this.addCubicBezier(subpath, x, y, x2, y2, x3, y3, x4, y4, 0, tolerance2);
-            subpath.push([x4,y4]);
+            subpath.push([x4, y4]);
             x = x4;
             y = y4;
             xPrevCp = x3;
@@ -850,9 +899,9 @@ KMX.Transformers.svg2igm = {
             var y2 = getNext();
             var x3 = getNext();
             var y3 = getNext();
-            subpath.push([x,y]);
+            subpath.push([x, y]);
             this.addQuadraticBezier(subpath, x, y, x2, y2, x3, y3, 0, tolerance2);
-            subpath.push([x3,y3]);
+            subpath.push([x3, y3]);
             x = x3;
             y = y3;
           }
@@ -863,9 +912,9 @@ KMX.Transformers.svg2igm = {
             var y2 = y + getNext();
             var x3 = x + getNext();
             var y3 = y + getNext();
-            subpath.push([x,y]);
+            subpath.push([x, y]);
             this.addQuadraticBezier(subpath, x, y, x2, y2, x3, y3, 0, tolerance2);
-            subpath.push([x3,y3]);
+            subpath.push([x3, y3]);
             x = x3;
             y = y3;
           }
@@ -875,17 +924,17 @@ KMX.Transformers.svg2igm = {
             var x2;
             var y2;
             if (cmdPrev.match(/[QqTt]/)) {
-              x2 = x-(xPrevCp-x);
-              y2 = y-(yPrevCp-y);
+              x2 = x - (xPrevCp - x);
+              y2 = y - (yPrevCp - y);
             } else {
               x2 = x;
               y2 = y;
             }
             var x3 = getNext();
             var y3 = getNext();
-            subpath.push([x,y]);
+            subpath.push([x, y]);
             this.addQuadraticBezier(subpath, x, y, x2, y2, x3, y3, 0, tolerance2);
-            subpath.push([x3,y3]);
+            subpath.push([x3, y3]);
             x = x3;
             y = y3;
             xPrevCp = x2;
@@ -897,17 +946,17 @@ KMX.Transformers.svg2igm = {
             var x2;
             var y2;
             if (cmdPrev.match(/[QqTt]/)) {
-              x2 = x-(xPrevCp-x);
-              y2 = y-(yPrevCp-y);
+              x2 = x - (xPrevCp - x);
+              y2 = y - (yPrevCp - y);
             } else {
               x2 = x;
               y2 = y;
             }
             var x3 = x + getNext();
             var y3 = y + getNext();
-            subpath.push([x,y]);
+            subpath.push([x, y]);
             this.addQuadraticBezier(subpath, x, y, x2, y2, x3, y3, 0, tolerance2);
-            subpath.push([x3,y3]);
+            subpath.push([x3, y3]);
             x = x3;
             y = y3;
             xPrevCp = x2;
@@ -946,14 +995,14 @@ KMX.Transformers.svg2igm = {
       cmdPrev = cmd;
     }
     // finalize subpath
-    if ( subpath.length > 0) {
+    if (subpath.length > 0) {
       node.path.push(subpath);
       subpath = [];
     }
-  },
+  }
 
 
-  addCubicBezier : function(subpath, x1, y1, x2, y2, x3, y3, x4, y4, level, tolerance2) {
+  addCubicBezier(subpath, x1, y1, x2, y2, x3, y3, x4, y4, level, tolerance2) {
     // for details see:
     // http://www.antigrain.com/research/adaptive_bezier/index.html
     // based on DeCasteljau Algorithm
@@ -969,39 +1018,39 @@ KMX.Transformers.svg2igm = {
     }
 
     // Calculate all the mid-points of the line segments
-    var x12   = (x1 + x2) / 2.0
-    var y12   = (y1 + y2) / 2.0
-    var x23   = (x2 + x3) / 2.0
-    var y23   = (y2 + y3) / 2.0
-    var x34   = (x3 + x4) / 2.0
-    var y34   = (y3 + y4) / 2.0
-    var x123  = (x12 + x23) / 2.0
-    var y123  = (y12 + y23) / 2.0
-    var x234  = (x23 + x34) / 2.0
-    var y234  = (y23 + y34) / 2.0
+    var x12 = (x1 + x2) / 2.0
+    var y12 = (y1 + y2) / 2.0
+    var x23 = (x2 + x3) / 2.0
+    var y23 = (y2 + y3) / 2.0
+    var x34 = (x3 + x4) / 2.0
+    var y34 = (y3 + y4) / 2.0
+    var x123 = (x12 + x23) / 2.0
+    var y123 = (y12 + y23) / 2.0
+    var x234 = (x23 + x34) / 2.0
+    var y234 = (y23 + y34) / 2.0
     var x1234 = (x123 + x234) / 2.0
     var y1234 = (y123 + y234) / 2.0
 
     // Try to approximate the full cubic curve by a single straight line
-    var dx = x4-x1
-    var dy = y4-y1
+    var dx = x4 - x1
+    var dy = y4 - y1
 
     var d2 = Math.abs(((x2 - x4) * dy - (y2 - y4) * dx))
     var d3 = Math.abs(((x3 - x4) * dy - (y3 - y4) * dx))
 
-    if ( Math.pow(d2+d3, 2) < 5.0 * tolerance2 * (dx*dx + dy*dy) ) {
+    if (Math.pow(d2 + d3, 2) < 5.0 * tolerance2 * (dx * dx + dy * dy)) {
       // added factor of 5.0 to match circle resolution
       subpath.push([x1234, y1234])
       return
     }
 
     // Continue subdivision
-    this.addCubicBezier(subpath, x1, y1, x12, y12, x123, y123, x1234, y1234, level+1, tolerance2);
-    this.addCubicBezier(subpath, x1234, y1234, x234, y234, x34, y34, x4, y4, level+1, tolerance2);
-  },
+    this.addCubicBezier(subpath, x1, y1, x12, y12, x123, y123, x1234, y1234, level + 1, tolerance2);
+    this.addCubicBezier(subpath, x1234, y1234, x234, y234, x34, y34, x4, y4, level + 1, tolerance2);
+  }
 
 
-  addQuadraticBezier : function(subpath, x1, y1, x2, y2, x3, y3, level, tolerance2) {
+  addQuadraticBezier(subpath, x1, y1, x2, y2, x3, y3, level, tolerance2) {
     if (level > 18) {
       // protect from deep recursion cases
       // max 2**18 = 262144 segments
@@ -1009,18 +1058,18 @@ KMX.Transformers.svg2igm = {
     }
 
     // Calculate all the mid-points of the line segments
-    var x12   = (x1 + x2) / 2.0
-    var y12   = (y1 + y2) / 2.0
-    var x23   = (x2 + x3) / 2.0
-    var y23   = (y2 + y3) / 2.0
-    var x123  = (x12 + x23) / 2.0
-    var y123  = (y12 + y23) / 2.0
+    var x12 = (x1 + x2) / 2.0
+    var y12 = (y1 + y2) / 2.0
+    var x23 = (x2 + x3) / 2.0
+    var y23 = (y2 + y3) / 2.0
+    var x123 = (x12 + x23) / 2.0
+    var y123 = (y12 + y23) / 2.0
 
-    var dx = x3-x1
-    var dy = y3-y1
+    var dx = x3 - x1
+    var dy = y3 - y1
     var d = Math.abs(((x2 - x3) * dy - (y2 - y3) * dx))
 
-    if ( d*d <= 5.0 * tolerance2 * (dx*dx + dy*dy) ) {
+    if (d * d <= 5.0 * tolerance2 * (dx * dx + dy * dy)) {
       // added factor of 5.0 to match circle resolution
       subpath.push([x123, y123])
       return
@@ -1029,10 +1078,10 @@ KMX.Transformers.svg2igm = {
     // Continue subdivision
     this.addQuadraticBezier(subpath, x1, y1, x12, y12, x123, y123, level + 1, tolerance2)
     this.addQuadraticBezier(subpath, x123, y123, x23, y23, x3, y3, level + 1, tolerance2)
-  },
+  }
 
 
-  addArc : function(subpath, x1, y1, rx, ry, phi, large_arc, sweep, x2, y2, tolerance2) {
+  addArc(subpath, x1, y1, rx, ry, phi, large_arc, sweep, x2, y2, tolerance2) {
     // Implemented based on the SVG implementation notes
     // plus some recursive sugar for incrementally refining the
     // arc resolution until the requested tolerance is met.
@@ -1043,27 +1092,27 @@ KMX.Transformers.svg2igm = {
     var dy = 0.5 * (y1 - y2);
     var x_ = cp * dx + sp * dy;
     var y_ = -sp * dx + cp * dy;
-    var r2 = (Math.pow(rx*ry,2)-Math.pow(rx*y_,2)-Math.pow(ry*x_,2)) /
-             (Math.pow(rx*y_,2)+Math.pow(ry*x_,2));
+    var r2 = (Math.pow(rx * ry, 2) - Math.pow(rx * y_, 2) - Math.pow(ry * x_, 2)) /
+      (Math.pow(rx * y_, 2) + Math.pow(ry * x_, 2));
     if (r2 < 0) { r2 = 0; }
     var r = Math.sqrt(r2);
     if (large_arc == sweep) { r = -r; }
-    var cx_ = r*rx*y_ / ry;
-    var cy_ = -r*ry*x_ / rx;
-    var cx = cp*cx_ - sp*cy_ + 0.5*(x1 + x2);
-    var cy = sp*cx_ + cp*cy_ + 0.5*(y1 + y2);
+    var cx_ = r * rx * y_ / ry;
+    var cy_ = -r * ry * x_ / rx;
+    var cx = cp * cx_ - sp * cy_ + 0.5 * (x1 + x2);
+    var cy = sp * cx_ + cp * cy_ + 0.5 * (y1 + y2);
 
     function angle(u, v) {
-      var a = Math.acos((u[0]*v[0] + u[1]*v[1]) /
-              Math.sqrt((Math.pow(u[0],2) + Math.pow(u[1],2)) *
-              (Math.pow(v[0],2) + Math.pow(v[1],2))));
+      var a = Math.acos((u[0] * v[0] + u[1] * v[1]) /
+        Math.sqrt((Math.pow(u[0], 2) + Math.pow(u[1], 2)) *
+          (Math.pow(v[0], 2) + Math.pow(v[1], 2))));
       var sgn = -1;
-      if (u[0]*v[1] > u[1]*v[0]) { sgn = 1; }
+      if (u[0] * v[1] > u[1] * v[0]) { sgn = 1; }
       return sgn * a;
     }
 
-    var psi = angle([1,0], [(x_-cx_)/rx, (y_-cy_)/ry]);
-    var delta = angle([(x_-cx_)/rx, (y_-cy_)/ry], [(-x_-cx_)/rx, (-y_-cy_)/ry]);
+    var psi = angle([1, 0], [(x_ - cx_) / rx, (y_ - cy_) / ry]);
+    var delta = angle([(x_ - cx_) / rx, (y_ - cy_) / ry], [(-x_ - cx_) / rx, (-y_ - cy_) / ry]);
     if (sweep && delta < 0) { delta += Math.PI * 2; }
     if (!sweep && delta > 0) { delta -= Math.PI * 2; }
 
@@ -1071,7 +1120,7 @@ KMX.Transformers.svg2igm = {
       var theta = psi + delta * pct;
       var ct = Math.cos(theta);
       var st = Math.sin(theta);
-      return [cp*rx*ct-sp*ry*st+cx, sp*rx*ct+cp*ry*st+cy];
+      return [cp * rx * ct - sp * ry * st + cx, sp * rx * ct + cp * ry * st + cy];
     }
 
     // let the recursive fun begin
@@ -1082,17 +1131,17 @@ KMX.Transformers.svg2igm = {
         // max 2**18 = 262144 segments
         return
       }
-      var tRange = t2-t1
-      var tHalf = t1 + 0.5*tRange;
-      var c2 = getVertex(t1 + 0.25*tRange);
+      var tRange = t2 - t1
+      var tHalf = t1 + 0.5 * tRange;
+      var c2 = getVertex(t1 + 0.25 * tRange);
       var c3 = getVertex(tHalf);
-      var c4 = getVertex(t1 + 0.75*tRange);
-      if (parser.vertexDistanceSquared(c2, parser.vertexMiddle(c1,c3)) > tolerance2) {
-        recursiveArc(parser, t1, tHalf, c1, c3, level+1, tolerance2);
+      var c4 = getVertex(t1 + 0.75 * tRange);
+      if (parser.vertexDistanceSquared(c2, parser.vertexMiddle(c1, c3)) > tolerance2) {
+        recursiveArc(parser, t1, tHalf, c1, c3, level + 1, tolerance2);
       }
       subpath.push(c3);
-      if (parser.vertexDistanceSquared(c4, parser.vertexMiddle(c3,c5)) > tolerance2) {
-        recursiveArc(parser, tHalf, t2, c3, c5, level+1, tolerance2);
+      if (parser.vertexDistanceSquared(c4, parser.vertexMiddle(c3, c5)) > tolerance2) {
+        recursiveArc(parser, tHalf, t2, c3, c5, level + 1, tolerance2);
       }
     }
 
@@ -1103,7 +1152,7 @@ KMX.Transformers.svg2igm = {
     subpath.push(c1Init);
     recursiveArc(this, t1Init, t2Init, c1Init, c5Init, 0, tolerance2);
     subpath.push(c5Init);
-  },
+  }
 
 
   // handle path data
@@ -1113,7 +1162,7 @@ KMX.Transformers.svg2igm = {
 
 
 
-  parseUnit : function(val) {
+  parseUnit(val:string) {
     if (val == null) {
       return null
     } else {
@@ -1130,52 +1179,49 @@ KMX.Transformers.svg2igm = {
       } else if (val.search(/in$/i) != -1) {
         multiplier = 90.0
       }
-      return multiplier * parseFloat(val.strip())
+      return multiplier * parseFloat(this.strip(val))
     }
-  },
+  }
 
 
-  matrixMult : function(mA, mB) {
-    return [ mA[0]*mB[0] + mA[2]*mB[1],
-             mA[1]*mB[0] + mA[3]*mB[1],
-             mA[0]*mB[2] + mA[2]*mB[3],
-             mA[1]*mB[2] + mA[3]*mB[3],
-             mA[0]*mB[4] + mA[2]*mB[5] + mA[4],
-             mA[1]*mB[4] + mA[3]*mB[5] + mA[5] ]
-  },
+  matrixMult(mA: number[], mB: number[]) {
+    return [mA[0] * mB[0] + mA[2] * mB[1],
+      mA[1] * mB[0] + mA[3] * mB[1],
+      mA[0] * mB[2] + mA[2] * mB[3],
+      mA[1] * mB[2] + mA[3] * mB[3],
+      mA[0] * mB[4] + mA[2] * mB[5] + mA[4],
+      mA[1] * mB[4] + mA[3] * mB[5] + mA[5]]
+  }
 
 
-  matrixApply : function(mat, vec) {
-    return [ mat[0]*vec[0] + mat[2]*vec[1] + mat[4],
-             mat[1]*vec[0] + mat[3]*vec[1] + mat[5] ] ;
-  },
+  matrixApply(mat:number[], vec:number[]) {
+    return [mat[0] * vec[0] + mat[2] * vec[1] + mat[4],
+      mat[1] * vec[0] + mat[3] * vec[1] + mat[5]];
+  }
 
-  matrixGetScale : function(mat) {
+  matrixGetScale(mat) {
     // extract absolute scale from matrix
-    var sx = Math.sqrt(mat[0]*mat[0] + mat[1]*mat[1]);
-    var sy = Math.sqrt(mat[2]*mat[2] + mat[3]*mat[3]);
+    var sx = Math.sqrt(mat[0] * mat[0] + mat[1] * mat[1]);
+    var sy = Math.sqrt(mat[2] * mat[2] + mat[3] * mat[3]);
     // return dominant axis
     if (sx > sy) {
       return sx;
     } else {
       return sy;
     }
-  },
-
-
-  vertexDistanceSquared : function(v1, v2) {
-    return Math.pow(v2[0]-v1[0], 2) + Math.pow(v2[1]-v1[1], 2);
-  },
-
-  vertexMiddle : function(v1, v2) {
-    return [ (v2[0]+v1[0])/2.0, (v2[1]+v1[1])/2.0 ];
   }
 
+
+  vertexDistanceSquared(v1, v2) {
+    return Math.pow(v2[0] - v1[0], 2) + Math.pow(v2[1] - v1[1], 2);
+  }
+
+  vertexMiddle(v1, v2) {
+    return [(v2[0] + v1[0]) / 2.0, (v2[1] + v1[1]) / 2.0];
+  }
+  
+  strip(val:string){
+    return val.replace(/^\s+|\s+$/g, '');
+  }
 }
 
-
-if (typeof(String.prototype.strip) === "undefined") {
-    String.prototype.strip = function() {
-        return String(this).replace(/^\s+|\s+$/g, '');
-    };
-}

@@ -14,6 +14,7 @@
 #include "../DSP_KFLOP/PC-DSP.h"
 #ifdef _KMOTIONX
 #include <SocketWrapper.h>
+#include <CMutex.h>
 #else
 #define KMOTIONDLL_DLL
 #endif

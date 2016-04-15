@@ -1,0 +1,75 @@
+<html>
+
+<head>
+  <title>KMX CNC ng2</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <link rel="stylesheet" type="text/css" href="css/switch.css">
+  <!-- 1. Load libraries -->
+  <!-- IE required polyfills, in this exact order -->
+  <script src="node_modules/es6-shim/es6-shim.min.js"></script>
+  <script src="node_modules/systemjs/dist/system-polyfills.js"></script>
+  <script src="node_modules/angular2/es6/dev/src/testing/shims_for_IE.js"></script>
+  <script src="node_modules/angular2/bundles/angular2-polyfills.js"></script>
+  <script src="node_modules/systemjs/dist/system.src.js"></script>
+  <script src="node_modules/rxjs/bundles/Rx.js"></script>
+  <script src="node_modules/angular2/bundles/angular2.dev.js"></script>
+
+
+  <script src="node_modules/angular2/bundles/http.dev.js"></script>
+  <script src="node_modules/angular2/bundles/router.dev.js"></script>
+  <script src="node_modules/ng2-bootstrap/bundles/ng2-bootstrap.js"></script>
+
+  <!-- need for number pipe on safari-->
+  <script src="node_modules/intl/dist/Intl.min.js"></script>
+  <script src="node_modules/intl/locale-data/jsonp/en.js"></script>
+  <!-- third party -->
+  <script src="node_modules/ace-min-noconflict/ace.js" charset="utf-8"></script>
+  <script src="node_modules/three/three.js"></script>
+  <script src="vendor/three/TrackballControls.js"></script>
+  <!--
+  <script src="node_modules/three-trackballcontrols/index.js"></script>
+  <script src="vendor/mozilla/stringview.js"></script>
+  -->
+
+  <script src="vendor/opentype/opentype.min.js"></script>
+
+  <script src="vendor/modernizr/modernizr.custom.93389.js"></script>
+
+  <!-- 2. Configure SystemJS 
+  <script type="text/javascript">
+document.write("<base href='http://" + document.location.host + "' />");
+</script>
+  
+  -->
+  <base href="/ng2/">
+  <script>
+    System.config({
+        packages: {        
+          "dist": {
+            format: 'register',
+            defaultExtension: 'js'
+          }
+        },
+        map: {
+            moment: 'node_modules/moment/moment.js', //needed by ng2-bootstrap datepicker
+            kmxlog: "dist/app/log"
+        }
+      });
+      System.import('dist/app/main')
+            .then(null, console.error.bind(console));
+  </script>
+
+
+
+</head>
+
+<!-- 3. Display the application -->
+
+<body>
+  <kmx-app>KMotionX CNC loading...</kmx-app>
+</body>
+
+</html>

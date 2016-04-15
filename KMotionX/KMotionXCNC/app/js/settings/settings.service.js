@@ -38,7 +38,7 @@
     }
     
     function load(file) {
-      return $http.get(file +"?nocache=1").success(function(jsonData) {
+      return kmxBackend.load(file).success(function(jsonData) {
         updateSettings(jsonData);
         $rootScope.$broadcast('settings-update');
       });

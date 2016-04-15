@@ -49,7 +49,7 @@ function GCodeParser(codeHandler, paramHandler) {
     'L': "G10 parameter",
     'P': "G10 parameter"
   };
-  this.valueChars = '-0123456789.';
+  this.valueChars = '+-0123456789.';
 }
 
 function GCodeCmd(code, val) {

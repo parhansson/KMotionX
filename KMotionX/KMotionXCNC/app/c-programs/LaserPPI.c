@@ -45,6 +45,9 @@ void servicePPI() {
       //If many threads are running on KFlop result may differ.
       vx = (ch0->Dest - ch0->last_dest) * (1.0f / TIMEBASE);
       vy = (ch1->Dest - ch1->last_dest) * (1.0f / TIMEBASE);
+      // compute xy speed in counts/sec
+      //Do this instead, velocity is already computed
+      //speed = sqrtf(ch0->last_vel*ch0->last_vel + ch1->last_vel*ch1->last_vel);
       speed = sqrtf(vx * vx + vy * vy);
       //speed is steps per second
       //speed=step/sec
@@ -111,7 +114,7 @@ main() {
 
 
   SetBitDirection(LASER_PWM_BIT, 1);    // Set bit 26 (PWM 0 as an output)
-  FPGA(IO_PWMS_PRESCALE) = 2;   // set pwm frequency 21.7KHz KHz
+  FPGA(IO_PWMS_PRESCALE) = 2;   // set pwm frequency 21.7KHz KHz 32,5?
   FPGA(IO_PWMS+1) = 1;   // enable the PWM0
   FPGA(IO_PWMS+0) = dutycycle;   //12;//4.7%  // Set duty cycle to 25%
 
