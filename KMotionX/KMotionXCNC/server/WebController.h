@@ -59,6 +59,7 @@ private:
   void HandleUploadRequest(struct mg_connection *conn);
   int HandleUploadReceiveEvent(struct mg_connection *conn);
   int PushClientData(int opCode, const char *data , size_t data_len);
+  bool isRegisteredRoute(struct mg_connection *conn);
   bool isUploadRequest(struct mg_connection *conn);
   bool isApiRequest(struct mg_connection *conn);
   void setInterpreterActionParams(struct json_token *jsontoken, int indexOffset, int count, const char* pathTemplate);

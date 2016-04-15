@@ -225,6 +225,11 @@ int WebController::OnEventRequest(struct mg_connection *conn) {
   } else if (isApiRequest(conn)) {
     //Starts with /api but can be anything
     return HandleApiRequest(conn);
+  } else if(isRegisteredRoute(conn)){
+    char * file = "ng2/index.html";
+    char * headers ="";
+    mg_send_file(conn, file,headers);
+    return MG_MORE;
   }
   return MG_FALSE;
 }
@@ -288,6 +293,15 @@ bool WebController::isUploadRequest(struct mg_connection *conn){
 
 bool WebController::isApiRequest(struct mg_connection *conn){
   return strstr(conn->uri, "/api") == conn->uri;
+}
+bool WebController::isRegisteredRoute(struct mg_connection *conn){
+  if(strstr(conn->uri, "/ng2/gcode") == conn->uri || 
+      strstr(conn->uri, "/ng2/debug") == conn->uri || 
+      strstr(conn->uri, "/ng2/settings") == conn->uri){
+      //printf("%s\n", conn->uri);
+      return true;
+  }
+  return false;
 }
 
 int WebController::HandleUploadReceiveEvent(struct mg_connection *conn){
