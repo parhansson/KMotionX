@@ -155,6 +155,7 @@ input[type='text'] {
     white-space: pre;
     word-wrap: normal;
     overflow-x: scroll;
+    cursor: pointer;
 }
 
 #code_text {

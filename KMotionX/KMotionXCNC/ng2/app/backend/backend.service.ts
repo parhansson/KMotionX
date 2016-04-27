@@ -1,7 +1,8 @@
 import {Injectable} from 'angular2/core';
-import {Http,Response} from 'angular2/http';
-import { Observable } from 'rxjs/Observable';
-//module kmx {
+import {Http, Response} from 'angular2/http';
+import {Observable} from 'rxjs/Observable';
+import {Observer} from 'rxjs/Observer';
+
 @Injectable()
 export class BackendService {
   constructor(private http: Http) { }
@@ -32,64 +33,82 @@ export class BackendService {
     //         alert("Error saving file " + name);
     //       });
   }
+  public onOpenFile(path): Observable<any> {
 
+    let loadobserver: Observer<any>;
+    let observable = new Observable(observer => loadobserver = observer)
+    let url = "/api/kmx/" + 'openFile';
+    let data = { "params": path };
+    let oReq = new XMLHttpRequest();
+    oReq.open("POST", url, true);
+    oReq.responseType = "arraybuffer";
+
+    oReq.onload = (oEvent) => {
+      let arrayBuffer = oReq.response; // Note: not oReq.responseText
+      if (arrayBuffer) {
+        //application/pdf
+        loadobserver.next({ contentType: oReq.getResponseHeader("Content-Type"), payload: arrayBuffer })
+        loadobserver.complete()
+      }
+    };
+
+    oReq.send(JSON.stringify(data));
+
+
+    //var obs = this.http.post(url, JSON.stringify(data));
+    return observable;
+    //return this.onEvent('openFile', { "params": path });
+  }
   public onListDir(path) {
     return this.onEvent('listDir', { "params": path });
   }
   public onLoadGlobalFile(type, file) {
-    this.onEvent('loadGlobalFile', { "params": [type, file] });
+    return this.onEvent('loadGlobalFile', { "params": [type, file] });
   }
   public jog(axis: number, speed: number) {
-    this.onEvent('jog', { "params": [axis, speed] });
+    return this.onEvent('jog', { "params": [axis, speed] });
   }
   public onFeedhold() {
-    this.onEvent('onFeedhold');
+    return this.onEvent('onFeedhold');
   }
   public onSimulate() {
-    this.onEvent('onSimulate');
+    return this.onEvent('onSimulate');
   }
   public onHalt() {
-    this.onEvent('onHalt');
+    return this.onEvent('onHalt');
   }
   public onEmergencyStop() {
-    this.onEvent('onEmergencyStop');
+    return this.onEvent('onEmergencyStop');
   }
   public onCycleStart() {
-    this.onEvent('onCycleStart');
+    return this.onEvent('onCycleStart');
   }
   public onStep() {
-    this.onEvent('onStep');
+    return this.onEvent('onStep');
   }
   public onReset() {
-    this.onEvent('onReset');
+    return this.onEvent('onReset');
   }
   public onUpdateMotionParams() {
-    this.onEvent('onUpdateMotionParams');
+    return this.onEvent('onUpdateMotionParams');
   }
   public onInvokeAction(action) {
-    this.onEvent('onInvokeAction', { "params": [action] });
+    return this.onEvent('onInvokeAction', { "params": [action] });
   }
   public onDoErrorMessage(message) {
-    this.onEvent('onDoErrorMessage', { "params": message });
+    return this.onEvent('onDoErrorMessage', { "params": message });
   }
 
   private onEvent(eventName: string, msg?: any) {
     var url = "/api/kmx/" + eventName;
     var data = msg || {};
-    var o = this.http.post(url, JSON.stringify(data))
-      //return o.map(res => res.json())
-      .subscribe(
-      data => console.log(data),
-      err => this.logError(err),
-      () => console.log('Random Quote Complete')
-      );
-    console.log(url);
-  }
-
-  private logError(err) {
-    console.error('There was an error: ', err);
+    var obs = this.http.post(url, JSON.stringify(data));
+    obs.subscribe(
+      data => { },
+      err => console.error('There was an error on event: ' + eventName, err),
+      () => console.log(eventName + ' Complete')
+    );
+    return obs;
   }
 
 }
-    
-//}

@@ -1,47 +1,86 @@
-// Copyright (c) 2014 par.hansson@gmail.com
+// Copyright (c) 2016 par.hansson@gmail.com
 /**
  * Parses a string of gcode instructions, and invokes codeHandlers for each type of
  * command or values.
  */
-export interface ParamCallback {
-  (n: any): any;
+import {Observable} from 'rxjs/Observable';
+import {Observer} from 'rxjs/Observer';
+
+export class Block {
+  line: number
+  parts: BlockPart<string | Word[]>[] = []
+
+  constructor(public text: string) { }
+
+}
+export abstract class BlockPart<T> {
+  constructor(public value: T) { }
 }
 
-export interface CodeCallback {
-  (n: any): any;
-}
-
-export class GCodeCmd {
-  code: string
-  val: any
-
-
-  constructor(code: string, val: any) {
-    this.code = code;
-    this.val = val;
-
+export abstract class Word extends BlockPart<string> {
+  constructor(public literal: string, public address: number) {
+    super(literal + address)
   }
-  done = function() {
-    this.val = parseFloat(this.val);
-    this.name = this.code + this.val;
+}
+
+export class WordParameters extends BlockPart<Word[]> {
+  constructor() {
+    super([])
+  }
+}
+
+export class Comment extends BlockPart<string> { }
+
+export class ControlWord extends Word { }
+export class ParamWord extends Word { }
+
+
+class ParseValue {
+  static None = 0
+  static Comment = 1
+  static ControlWord = 2
+  static ParamWord = 3
+
+  val: string = ''
+  letter: string = null
+  type: number = ParseValue.None
+
+  constructor() { }
+
+  toPart() {
+    switch (this.type) {
+      case (ParseValue.Comment):
+        return new Comment(this.val)
+      case (ParseValue.ParamWord):
+        return new ParamWord(this.letter, parseFloat(this.val));
+      case (ParseValue.ControlWord):
+        return new ControlWord(this.letter, parseFloat(this.val));
+    }
+  }
+  next(block: Block, nextType: number, nextLetter?: string) {
+
+    if (this.type === ParseValue.ParamWord) {
+      (block.parts[block.parts.length - 1] as WordParameters).value.push(this.toPart() as Word)
+    } else if (this.type !== ParseValue.None) {
+      block.parts.push(this.toPart())
+    }
+
+    if (ParseValue.ParamWord === nextType && this.type !== ParseValue.ParamWord) {
+      block.parts.push(new WordParameters())
+    }
+
+    this.letter = nextLetter
+    this.type = nextType
+    this.val = ''
   }
 }
 
 export class GCodeParser {
-  static State = {
-
-    NONE: 0,
-    CONTROL_VAL: 1,
-    PARAM_VAL: 2,
-    SKIP_VAL: 3
-  }
-  cmd: GCodeCmd
-  values: any
   // Search for codes without space between them
-  skipCodes = {
+  public static skipCodes = {
     'N': "Line number"
   };
-  controlCodes = {
+  public static controlWords = {
     'G': "G codes, Interpolate, rapid traverse etc",
     'M': "M code",
     'F': "Set Feed rate in/min or mm/min",
@@ -49,14 +88,14 @@ export class GCodeParser {
     'D': "Tool",
     'O': "Subroutine Label"
   };
-  paramCodes = {
+  public static paramWords = {
     'X': "X axis",
     'Y': "Y axis",
     'Z': "Z axis",
     'A': "A axis",
     'B': "B axis",
     'C': "C axis",
-    'E': "E axis present in 3d printer gcode files",
+    //'E': "E axis present in 3d printer gcode files",
     'I': "I parameter on G2,G3",
     'J': "J parameter on G2,G3",
     'K': "K parameter on G2,G3",
@@ -64,103 +103,69 @@ export class GCodeParser {
     'L': "G10 parameter",
     'P': "G10 parameter"
   }
-  
-  valueChars = '+-0123456789.';
-  codeHandler: CodeCallback
-  paramHandler: ParamCallback
 
-  constructor(codeHandler: CodeCallback, paramHandler: ParamCallback) {
+  private static valueChars = '+-0123456789.';
+  private static blockCommentDepth = {
+    '(': 1,
+    ';': Infinity
+  };
 
-    this.paramHandler = paramHandler || function(dummy: any) { };
-    this.codeHandler = codeHandler || function(dummy: any) { };
-  }
-  
-  handleCode(cmd, line) {
-    this.codeHandler({ cmd: cmd, line: line })
-  }
-  
-  handleParam(values, line) {
-    this.paramHandler({ params: values, line: line })
+  private static blockCommentEnd = ')';
+
+  private observer: Observer<Block>;
+  observable: Observable<Block>
+
+  constructor() {
+    this.observable = new Observable(observer => this.observer = observer)
   }
 
-  flush(line) {
-    if (this.cmd !== undefined) {
-      this.cmd.done();
-      //this.handle();
-      this.handleCode(this.cmd, line);
-      // console.info("handle", this.cmd.name);
-      delete this.cmd;
-    }
-    if (this.values !== undefined) {
-      for (var key in this.values) {
-        this.values[key] = parseFloat(this.values[key]);
-      }
-      var values = this.values;
-
-      this.handleParam(this.values, line);
-      // console.info("params ", JSON.stringify(this.values));
-      delete this.values;
-    }
-  }
-
-  parseLine(_text, line) {
-
-    var state = GCodeParser.State.NONE;
-    var currentControlCode = '';
-
-    _text = _text.replace(/;.*$/, ''); // Remove comments
-    _text = _text.replace(/\(.*\)/, '').trim(); // Remove comments
-    var text = _text.toUpperCase();
-    var arr = text.split("");
-    var len = _text.length;
+  parseLine(rawText: string) {
+    let block = new Block(rawText);
+    let text = rawText.toUpperCase();
+    let len = text.length
+    let part = new ParseValue()
+    let commentDepth = 0;
     for (var x = 0; x < len; x++) {
-      var c = arr[x];
-
-      // Skip white space
-      if (c === ' ') {
-        continue;
+      let c = text.charAt(x)
+      if (commentDepth == 0 && (commentDepth += (GCodeParser.blockCommentDepth[c] || 0)) > 0) {
+        part.next(block, ParseValue.Comment)
+      } else if (c === GCodeParser.blockCommentEnd) {
+        commentDepth -= 1
+        part.val += c
+        continue
       }
-      if (this.controlCodes[c]) { // If control code G M F S etc flush previous
-        // control command if present
-        this.flush(line);
-        this.cmd = new GCodeCmd(c, '');
-        // Set state to parse control values
-        state = GCodeParser.State.CONTROL_VAL;
-      } else if (this.paramCodes[c]) { // If parameter codes X Y Z etc
-        currentControlCode = c;
-        if (this.values === undefined) {
-          this.values = {};
+      if (commentDepth > 0) {
+        part.val += c
+      } else if (GCodeParser.valueChars.indexOf(c) >= 0) {
+        part.val += c
+      } else if (GCodeParser.controlWords[c]) {
+        part.next(block, ParseValue.ControlWord, c)
+      } else if (GCodeParser.paramWords[c]) {
+        part.next(block, ParseValue.ParamWord, c)
+      } else if (GCodeParser.skipCodes[c]) {
+        part.next(block, ParseValue.Comment, c)
+      } else {
+        if (c !== ' ') {
+          console.log("Strange unhandled character?", c)
         }
-        this.values[currentControlCode] = ''; // store code even if not values are
-        // found later on.
-        // Set state to parse parameter values
-        state = GCodeParser.State.PARAM_VAL;
-      } else if (this.valueChars.indexOf(c) >= 0) {
-        if (state == GCodeParser.State.CONTROL_VAL) {
-          this.cmd.val += c;
-        } else if (state == GCodeParser.State.PARAM_VAL) {
-          this.values[currentControlCode] += c;
-        } else if (state == GCodeParser.State.SKIP_VAL) {
-          // do nothing.
-        }
-
-      } else if (this.skipCodes[c]) {
-        // If skip code like N(line number) set state to skip values
-        state = GCodeParser.State.SKIP_VAL;
       }
     }
-    this.flush(line);
+    part.next(block, ParseValue.None)
+    return block
   }
 
-  parse(gcodeLines) {
+  parseLines(gcodeLines: string[]) {
     console.time("parsing");
-    for (var i = 0; i < gcodeLines.length; i++) {
-      this.parseLine(gcodeLines[i],i)
-    // if (this.parseLine(gcodeLines[i], i) === false) {
-    //   break;
-    // }
+    let i = 0;
+    for (let line of gcodeLines) {
+      let block = this.parseLine(line)
+      block.line = i++
+      this.observer.next(block);
+
     }
+    this.observer.complete();
     console.timeEnd("parsing");
+
   }
 
 }

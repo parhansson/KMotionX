@@ -1,6 +1,7 @@
 {
   "ambientDependencies": {
     "es6-shim": "github:DefinitelyTyped/DefinitelyTyped/es6-shim/es6-shim.d.ts#6697d6f7dadbf5773cb40ecda35a76027e0783b2",
+    "ace": "github:DefinitelyTyped/DefinitelyTyped/ace/ace.d.ts#7de6c3dd94feaeb21f20054b9f30d5dabc5efabd",
     "three-projector": "github:DefinitelyTyped/DefinitelyTyped/threejs/three-projector.d.ts#48f20e97bfaf70fc1a9537b38aed98e9749be0ae",
     "three-detector": "github:DefinitelyTyped/DefinitelyTyped/threejs/three-effectcomposer.d.ts#48f20e97bfaf70fc1a9537b38aed98e9749be0ae",
     "three-effectscomposer": "github:DefinitelyTyped/DefinitelyTyped/threejs/detector.d.ts#48f20e97bfaf70fc1a9537b38aed98e9749be0ae",

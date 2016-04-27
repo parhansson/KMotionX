@@ -12,14 +12,11 @@
 
   </div>
   <div class="col-xs-3 col-md-3">
-    <div id="gcc" ng-controller="GCodeEditorController as gcodeEditCtrl" ng-init="currentDir = './gcode/'">
-      <div modal-show="showFileModal" class="modal fade">
-        <file-modal></file-modal>
-      </div>
+    <div id="gcc">
+      <file-dialog #fd (selectedFile)="onOpenFile($event)" dir="./gcode"></file-dialog>
       <div>
         <div class="btn-toolbar">
           <div class="btn-group btn-group-sm btn-group-justified">
-            <div class="btn btn-primary active" (click)="setThree(tv)">Klicka</div>                  
             <div *ngIf="intStatus.interpreting" class="btn btn-primary active" (click)="onCycleStart()"><span class='glyphicon glyphicon-pause'></span>Halt</div>
             <div *ngIf="!intStatus.interpreting" class="btn btn-primary" (click)="onCycleStart()"><span class='glyphicon glyphicon-play'></span>Cycle Start</div>
             <div class="btn btn-primary" ng-class="intStatus.feedHold ? 'active' : ''" (click)="onFeedhold()"><span class='glyphicon'></span>Feed Hold</div>
@@ -27,20 +24,20 @@
         </div>
         <div class="btn-toolbar">
           <div class="btn-group btn-group-sm btn-group-justified">
-            <div class="btn btn-primary" (click)="onEmergencyStop()"><span class='glyphicon glyphicon-remove'></span>E-Stop</div>
+            <div class="btn btn-danger" (click)="onEmergencyStop()"><span class='glyphicon glyphicon-remove'></span>E-Stop</div>
             <div class="btn btn-primary" (click)="onStep()"><span class='glyphicon glyphicon-step-forward'></span>Step</div>
             <div class="btn btn-primary" (click)="onReset()"><span class='glyphicon glyphicon-fast-backward'></span>Reset</div>
           </div>
         </div>
-        <div ng-bind="gcodeEditCtrl.editorLine"></div>
-        <div ng-bind="intStatus.currentLine"></div>
+        <div>Editor line:{{intStatus.currentLine +1}}</div>
+        <div>Interpreter line:{{intStatus.currentLine}}</div>
       </div>
       <div file-dropzone="" transform-fn="transform(mime,data)" file-content="editorContent" file-name="editorContentName">
         <div>
-          <input ng-model="currentDir" />
-          <input ng-model="editorContentName" />
+          <input [(ngModel)]="fd.currentDir" />
+          <input [ngModel]="fd.currentFile" />
           <span class="glyphButtonBar">
-                <span class="btn btn-primary glyphicon glyphicon-folder-open" title="Open" (click)="onOpenFile()" ng-click="listFiles(currentDir)"></span>
+                <span class="btn btn-primary glyphicon glyphicon-folder-open" title="Open" (click)="fd.toggle()"></span>
           <span class="btn btn-primary glyphicon glyphicon-floppy-save" title="Save" ng-click="save()"></span>
           </span>
         </div>

@@ -5,9 +5,7 @@ import {StringMapWrapper} from 'angular2/src/facade/collection';
 //import {Promise,PromiseWrapper} from 'angular2/src/facade/async';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {BaseException} from 'angular2/src/facade/exceptions';
-import {
-    ElementRef, DynamicComponentLoader, Directive, Injector, provide, ComponentRef, Attribute
-} from 'angular2/core';
+import {ViewContainerRef, DynamicComponentLoader, Directive, Injector, ReflectiveInjector, provide, ComponentRef, Attribute} from 'angular2/core';
 import {
     ComponentInstruction, CanReuse, OnReuse, CanDeactivate,
     RouterOutlet, OnActivate, Router, RouteData, RouteParams, OnDeactivate
@@ -41,26 +39,26 @@ class RefCache {
         return !isBlank(this.cache[type]);
     }
 
-    public removeRef(type: any){
+    public removeRef(type: any) {
         delete this.cache[type];
     }
 
-    public remove(ref){
-      // remove self from cache
-      this.removeRef(ref.componentType);
+    public remove(ref) {
+        // remove self from cache
+        this.removeRef(ref.componentType);
 
-      // remove children
-      var parent = ref.location.nativeElement;
-      Object.keys(this.cache).forEach((key)=>{
-        var child = this.cache[key].componentRef.location.nativeElement;
-        if (parent.contains(child)){
-          this.removeRef(key)
-        }
-      })
+        // remove children
+        var parent = ref.location.nativeElement;
+        Object.keys(this.cache).forEach((key) => {
+            var child = this.cache[key].componentRef.location.nativeElement;
+            if (parent.contains(child)) {
+                this.removeRef(key)
+            }
+        })
 
-      // will destroy component and all children
-      // sense this is an angular call, all lifecycle methods will be called
-      ref.dispose();
+        // will destroy component and all children
+        // sense this is an angular call, all lifecycle methods will be called
+        ref.dispose();
     }
 }
 
@@ -70,17 +68,17 @@ const refCache = new RefCache();
  *
  * @author Wael Jammal
  */
-@Directive({selector: 'persistent-router-outlet'})
+@Directive({ selector: 'persistent-router-outlet' })
 export class PersistentRouterOutlet extends RouterOutlet {
     private currentInstruction: ComponentInstruction;
     private currentElementRef;
     private resolveToTrue = PromiseWrapper.resolve(true);
     private currentComponentRef: ComponentRef;
 
-    constructor(elementRef: ElementRef,
-                private loader: DynamicComponentLoader,
-                private parentRouter: Router,
-                @Attribute('name') nameAttr: string) {
+    constructor(elementRef: ViewContainerRef,
+        private loader: DynamicComponentLoader,
+        private parentRouter: Router,
+        @Attribute('name') nameAttr: string) {
         super(elementRef, loader, parentRouter, nameAttr);
 
         this.currentElementRef = elementRef;
@@ -99,10 +97,10 @@ export class PersistentRouterOutlet extends RouterOutlet {
             let componentType = nextInstruction.componentType;
             let childRouter = this.parentRouter.childRouter(componentType);
 
-            let providers = Injector.resolve([
-                provide(RouteData, {useValue: nextInstruction.routeData}),
-                provide(RouteParams, {useValue: new RouteParams(nextInstruction.params)}),
-                provide(routerMod.Router, {useValue: childRouter})
+            let providers = ReflectiveInjector.resolve([
+                provide(RouteData, { useValue: nextInstruction.routeData }),
+                provide(RouteParams, { useValue: new RouteParams(nextInstruction.params) }),
+                provide(routerMod.Router, { useValue: childRouter })
             ]);
 
             return this.loader.loadNextToLocation(componentType, this.currentElementRef, providers)
@@ -169,11 +167,11 @@ export class PersistentRouterOutlet extends RouterOutlet {
 
         return next.then(() => {
             if (isPresent(ref)) {
-              if (ref.instance.routerCanReuse && ref.instance.routerCanReuse(nextInstruction, ref.componentType)){
-                ref.location.nativeElement.style.display = 'none';
-              } else{
-                refCache.remove(ref);
-              }
+                if (ref.instance.routerCanReuse && ref.instance.routerCanReuse(nextInstruction, ref.componentType)) {
+                    ref.location.nativeElement.style.display = 'none';
+                } else {
+                    refCache.remove(ref);
+                }
             }
         });
     }
@@ -236,7 +234,7 @@ export class PersistentRouterOutlet extends RouterOutlet {
         } else {
             result = nextInstruction === this.currentInstruction ||
                 (isPresent(nextInstruction.params) && isPresent(this.currentInstruction.params) &&
-                StringMapWrapper.equals(nextInstruction.params, this.currentInstruction.params));
+                    StringMapWrapper.equals(nextInstruction.params, this.currentInstruction.params));
         }
 
         return PromiseWrapper.resolve(result);

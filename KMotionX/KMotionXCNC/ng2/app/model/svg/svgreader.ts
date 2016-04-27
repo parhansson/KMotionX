@@ -1,5 +1,6 @@
 
-import {Vec2, IGM, IgmObject} from '../igm/igm';
+import {IGM, IgmObject} from '../igm/igm';
+import {GCodeVector} from '../vector';
 /**
   SVG parser for the Lasersaur.
   Converts SVG DOM to a flat collection of paths.
@@ -54,20 +55,20 @@ export class SvgNode {
   path: Array<Array<Array<number>>>
   xformToWorld = [1, 0, 0, 1, 0, 0] //2d Transformation vector
   xform = [1, 0, 0, 1, 0, 0]//2d Transformation vector
-  id:string
+  id: string
   display: string
   visibility: string
   fill: string
-  stroke : any
+  stroke: any
   color: string
   opacity: number
   fillOpacity: number
   strokeOpacity: number
   unsupported: boolean
   href: string
-  fontBlob:string
-  
-  constructor(){
+  fontBlob: string
+
+  constructor() {
     this.path = [];
   }
   inherit() {
@@ -87,17 +88,17 @@ export class SvgNode {
   }
 }
 
-export interface ISVGParser{
-  addPath(d:any, node:SvgNode)
-  parseUnit(val:string)
+export interface ISVGParser {
+  addPath(d: any, node: SvgNode)
+  parseUnit(val: string)
   matrixMult(mA: number[], mB: number[])
-  strip(val:string);
+  strip(val: string);
 }
 
-export class Svg2Igm implements ISVGParser{
+export class Svg2Igm implements ISVGParser {
 
 
-  boundarys: IGM
+  igm: IGM
   // output path flattened (world coords)
   // hash of path by color
   // each path is a list of subpaths
@@ -112,9 +113,9 @@ export class Svg2Igm implements ISVGParser{
 
   }
 
-  transform(svgRootElement:SVGElement, config) {
+  transform(svgRootElement: SVGElement, config) {
 
-    this.boundarys = new IGM();
+    this.igm = new IGM();
     this.tolerance_squared = Math.pow(this.tolerance, 2);
 
     // let the fun begin
@@ -122,35 +123,34 @@ export class Svg2Igm implements ISVGParser{
     node.stroke = [255, 0, 0];
     node.xformToWorld = [1, 0, 0, 1, 0, 0]
     var cssFilterAllowed = ['svg', 'g', 'defs', 'style'];
-    var cssFilter = function(tag) {
+    var cssFilter = function (tag) {
       return cssFilterAllowed.indexOf(tag.localName) > -1;
     }
 
     this.parseChildren(svgRootElement, node, cssFilter)
 
     var contentFilterDissalowed = ['style', 'defs'];
-    var contentFilter = function(tag) {
-      return contentFilterDissalowed.indexOf(tag.localName) < 0;
+    var contentFilter = (element: SVGElement) => {
+      return contentFilterDissalowed.indexOf(element.localName) < 0;
     };
     this.parseChildren(svgRootElement, node, contentFilter)
 
-    return this.boundarys
+    return this.igm
   }
 
 
-  parseChildren(domNode:SVGElement, parentNode: SvgNode, filter) {
+  parseChildren(domNode: SVGElement, parentNode: SvgNode, filter: (element: SVGElement) => boolean) {
     if (!filter(domNode)) {
       return;
     }
-
-    for (var i = 0; i < domNode.childNodes.length; i++) {
-      var tag = domNode.childNodes[i] as SVGElement
+    //domNode.childNodes will not return text nodes
+    for (let i = 0; i < domNode.childNodes.length; i++) {
+      let tag = domNode.childNodes.item(i) as SVGElement
       if (tag.childNodes) {
 
         // exclude textnodes, might check for tag.nodeName ===  "#text" or tag.nodeType === 3 instead
         // but that would include to check several types
         if (tag.localName) {
-
           // we are looping here through
           // all nodes with child nodes
           // others are irrelevant
@@ -182,11 +182,12 @@ export class Svg2Igm implements ISVGParser{
           }
 
 
-          // TODO det här funkar inte för att det sker asynkront.
+          // TODO this does not work due to asynchronous operation
 
           // if(node.fontBlob){
           //   console.log('fontblob', node.fontBlob);
           //   var tempParser = this;
+          ///settings/RawengulkPcs.otf
           //   opentype.load(node.fontBlob, function(err, font) {
           //       if (err) {
           //           alert('Could not load font: ' + err);
@@ -207,25 +208,27 @@ export class Svg2Igm implements ISVGParser{
           // before adding all path data convert to world coordinates
           for (var k = 0; k < node.path.length; k++) {
             var igmObject = new IgmObject();
+            igmObject.type = "Linear interpolation"
+            igmObject.cmd = "G1"
             var subpath = node.path[k];
             for (var l = 0; l < node.path[k].length; l++) {
               var tt = this.matrixApply(node.xformToWorld, subpath[l])
-              var t = new Vec2(tt[0],tt[1]);
+              var t = new GCodeVector(tt[0], tt[1], 0);
               //t.matrixApply(node.xformToWorld);
               igmObject.vectors.push(t);
-              
+
               //var tmp = this.matrixApply(node.xformToWorld, subpath[l]);
               //TODO clip on clipPath here. this will be extremely difficult
               //subpath[l] = new Vec2(tmp[0], tmp[1]);
             }
             igmObject.node = node;
-            igmObject.cmd = { code: "G", val: 1, name: "G1" };
+
 
             if (node.unsupported === true) {
-              this.boundarys.unsupported.push(subpath);
+              this.igm.unsupported.push(subpath);
             } else {
               //this.boundarys.allcolors.push(subpath);
-              this.boundarys.addToLayerObject(node.stroke, igmObject);
+              this.igm.addToLayerObject(node.stroke, igmObject);
             }
           }
           if (node.href) {
@@ -251,13 +254,13 @@ export class Svg2Igm implements ISVGParser{
     DEG_TO_RAD: Math.PI / 180,
     RAD_TO_DEG: 180 / Math.PI,
 
-    id: function(parser, node: SvgNode, val) {
+    id: function (parser, node: SvgNode, val) {
       node.id = val
     },
 
-    transform: function(parser:ISVGParser, node: SvgNode, val:string) {
+    transform: function (parser: ISVGParser, node: SvgNode, val: string) {
       // http://www.w3.org/TR/SVG11/coords.html#EstablishingANewUserSpace
-      var xforms = []
+      var xforms: number[][] = []
       var segs = val.match(/[a-z]+\s*\([^)]*\)/ig)
       for (var i = 0; i < segs.length; i++) {
         var kv = segs[i].split("(");
@@ -337,7 +340,7 @@ export class Svg2Igm implements ISVGParser{
       node.xform = xform_combined
     },
 
-    style: function(parser:ISVGParser, node: SvgNode, val:string) {
+    style: function (parser: ISVGParser, node: SvgNode, val: string) {
       // style attribute
       // http://www.w3.org/TR/SVG11/styling.html#StyleAttribute
       // example: <rect x="200" y="100" width="600" height="300"
@@ -361,49 +364,49 @@ export class Svg2Igm implements ISVGParser{
     // example: <rect x="200" y="100" width="600" height="300"
     //          fill="red" stroke="blue" stroke-width="3"/>
 
-    opacity: function(parser:ISVGParser, node: SvgNode, val:string) {
+    opacity: function (parser: ISVGParser, node: SvgNode, val: string) {
       node.opacity = parseFloat(val)
     },
 
-    display: function(parser:ISVGParser, node: SvgNode, val:string) {
+    display: function (parser: ISVGParser, node: SvgNode, val: string) {
       node.display = val
     },
 
-    visibility: function(parser:ISVGParser, node: SvgNode, val:string) {
+    visibility: function (parser: ISVGParser, node: SvgNode, val: string) {
       node.visibility = val
     },
 
-    fill: function(parser:ISVGParser, node: SvgNode, val:string) {
+    fill: function (parser: ISVGParser, node: SvgNode, val: string) {
       node.fill = this.__parseColor(parser, val, node.color)
     },
 
-    stroke: function(parser:ISVGParser, node: SvgNode, val:string) {
+    stroke: function (parser: ISVGParser, node: SvgNode, val: string) {
       node.stroke = this.__parseColor(parser, val, node.color)
     },
 
-    color: function(parser:ISVGParser, node: SvgNode, val:string) {
+    color: function (parser: ISVGParser, node: SvgNode, val: string) {
       if (val == 'inherit') return
       node.color = this.__parseColor(parser, val, node.color)
     },
 
-    'fill-opacity': function(parser:ISVGParser, node: SvgNode, val:string) {
+    'fill-opacity': function (parser: ISVGParser, node: SvgNode, val: string) {
       node.fillOpacity = Math.min(1, Math.max(0, parseFloat(val)))
     },
 
-    'stroke-opacity': function(parser:ISVGParser, node: SvgNode, val:string) {
+    'stroke-opacity': function (parser: ISVGParser, node: SvgNode, val: string) {
       node.strokeOpacity = Math.min(1, Math.max(0, parseFloat(val)))
     },
 
     // Presentations Attributes
     ///////////////////////////
 
-    __parseColor: function(parser:ISVGParser, val, currentColor) {
+    __parseColor: function (parser: ISVGParser, val, currentColor) {
 
       if (val.charAt(0) == '#') {
         if (val.length == 4)
           val = val.replace(/([^#])/g, '$1$1')
         var a = val.slice(1).match(/../g).map(
-          function(i) { return parseInt(i, 16) })
+          function (i) { return parseInt(i, 16) })
         return a
 
       } else if (val.search(/^rgb\(/) != -1) {
@@ -460,8 +463,8 @@ export class Svg2Igm implements ISVGParser{
   // recognized svg elements
 
   SVGTagMapping = {
-    
-    svg: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
+
+    svg: function (parser: ISVGParser, tag: SVGElement, node: SvgNode) {
       // has style attributes
       node.fill = 'black'
       node.stroke = 'none'
@@ -479,13 +482,13 @@ export class Svg2Igm implements ISVGParser{
     },
 
 
-    g: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
+    g: function (parser: ISVGParser, tag: SVGElement, node: SvgNode) {
       // http://www.w3.org/TR/SVG11/struct.html#Groups
       // has transform and style attributes
     },
 
 
-    polygon: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
+    polygon: function (parser: ISVGParser, tag: SVGElement, node: SvgNode) {
       // http://www.w3.org/TR/SVG11/shapes.html#PolygonElement
       // has transform and style attributes
       var d = this.__getPolyPath(parser, tag)
@@ -494,14 +497,14 @@ export class Svg2Igm implements ISVGParser{
     },
 
 
-    polyline: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
+    polyline: function (parser: ISVGParser, tag: SVGElement, node: SvgNode) {
       // http://www.w3.org/TR/SVG11/shapes.html#PolylineElement
       // has transform and style attributes
       var d = this.__getPolyPath(parser, tag)
       parser.addPath(d, node)
     },
 
-    __getPolyPath: function(parser:ISVGParser, tag:SVGElement) {
+    __getPolyPath: function (parser: ISVGParser, tag: SVGElement) {
       // has transform and style attributes
       var subpath = []
       var vertnums = parser.strip(tag.getAttribute("points").toString()).split(/[\s,]+/).map(parseFloat)
@@ -519,7 +522,7 @@ export class Svg2Igm implements ISVGParser{
       }
     },
 
-    rect: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
+    rect: function (parser: ISVGParser, tag: SVGElement, node: SvgNode) {
       // http://www.w3.org/TR/SVG11/shapes.html#RectElement
       // has transform and style attributes
       var w = parser.parseUnit(tag.getAttribute('width')) || 0
@@ -551,7 +554,7 @@ export class Svg2Igm implements ISVGParser{
     },
 
 
-    line: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
+    line: function (parser: ISVGParser, tag: SVGElement, node: SvgNode) {
       // http://www.w3.org/TR/SVG11/shapes.html#LineElement
       // has transform and style attributes
       var x1 = parser.parseUnit(tag.getAttribute('x1')) || 0
@@ -563,7 +566,7 @@ export class Svg2Igm implements ISVGParser{
     },
 
 
-    circle: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
+    circle: function (parser: ISVGParser, tag: SVGElement, node: SvgNode) {
       // http://www.w3.org/TR/SVG11/shapes.html#CircleElement
       // has transform and style attributes
       var r = parser.parseUnit(tag.getAttribute('r'))
@@ -582,7 +585,7 @@ export class Svg2Igm implements ISVGParser{
     },
 
 
-    ellipse: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
+    ellipse: function (parser: ISVGParser, tag: SVGElement, node: SvgNode) {
       // has transform and style attributes
       var rx = parser.parseUnit(tag.getAttribute('rx'))
       var ry = parser.parseUnit(tag.getAttribute('ry'))
@@ -601,14 +604,14 @@ export class Svg2Igm implements ISVGParser{
     },
 
 
-    path: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
+    path: function (parser: ISVGParser, tag: SVGElement, node: SvgNode) {
       // http://www.w3.org/TR/SVG11/paths.html
       // has transform and style attributes
       var d = tag.getAttribute("d")
       parser.addPath(d, node)
     },
 
-    image: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
+    image: function (parser: ISVGParser, tag: SVGElement, node: SvgNode) {
       // not supported
       // has transform and style attributes
       var ns = "http://www.w3.org/1999/xlink";
@@ -616,26 +619,26 @@ export class Svg2Igm implements ISVGParser{
       node.href = href;
     },
 
-    defs: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
+    defs: function (parser: ISVGParser, tag: SVGElement, node: SvgNode) {
       node.unsupported = true;
       // not supported
       // http://www.w3.org/TR/SVG11/struct.html#Head
       // has transform and style attributes
     },
 
-    clipPath: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
+    clipPath: function (parser: ISVGParser, tag: SVGElement, node: SvgNode) {
       node.unsupported = true;
       // not supported
       // has transform and style attributes
     },
 
-    use: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
+    use: function (parser: ISVGParser, tag: SVGElement, node: SvgNode) {
       node.unsupported = true;
       // not supported
       // has transform and style attributes
     },
 
-    style: function(parser:ISVGParser, tag:SVGElement, node: SvgNode) {
+    style: function (parser: ISVGParser, tag: SVGElement, node: SvgNode) {
       //node.unsupported = true;
 
       var doc = document.implementation.createHTMLDocument(""),
@@ -681,7 +684,7 @@ export class Svg2Igm implements ISVGParser{
   // handle path data
   // this is where all the geometry gets converted for the boundarys output
 
-  addPath(d:any, node:SvgNode) {
+  addPath(d: any, node: SvgNode) {
     // http://www.w3.org/TR/SVG11/paths.html#PathData
 
     var tolerance2 = this.tolerance_squared
@@ -722,7 +725,7 @@ export class Svg2Igm implements ISVGParser{
     var cmdPrev = '';
     var xPrevCp;
     var yPrevCp;
-    var subpath:number[][] = [];
+    var subpath: number[][] = [];
 
     while (d.length > 0) {
       var cmd = getNext();
@@ -1162,7 +1165,7 @@ export class Svg2Igm implements ISVGParser{
 
 
 
-  parseUnit(val:string) {
+  parseUnit(val: string) {
     if (val == null) {
       return null
     } else {
@@ -1194,7 +1197,7 @@ export class Svg2Igm implements ISVGParser{
   }
 
 
-  matrixApply(mat:number[], vec:number[]) {
+  matrixApply(mat: number[], vec: number[]) {
     return [mat[0] * vec[0] + mat[2] * vec[1] + mat[4],
       mat[1] * vec[0] + mat[3] * vec[1] + mat[5]];
   }
@@ -1219,8 +1222,8 @@ export class Svg2Igm implements ISVGParser{
   vertexMiddle(v1, v2) {
     return [(v2[0] + v1[0]) / 2.0, (v2[1] + v1[1]) / 2.0];
   }
-  
-  strip(val:string){
+
+  strip(val: string) {
     return val.replace(/^\s+|\s+$/g, '');
   }
 }

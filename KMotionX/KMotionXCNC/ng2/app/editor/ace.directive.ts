@@ -1,6 +1,5 @@
+/// <reference path="../../typings/main/ambient/ace/index.d.ts" />
 import {Component,Directive,EventEmitter,ElementRef} from 'angular2/core';
-
-declare var ace: any;
 
 @Directive({
     selector: '[aceEditor]',

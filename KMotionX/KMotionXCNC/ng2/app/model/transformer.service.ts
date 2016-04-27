@@ -2,11 +2,12 @@
 import {Injectable} from 'angular2/core';
 import {KMXUtil} from '../util/kmxutil';
 
-export interface ModelTransformer {
+
+export abstract class ModelTransformer {
   inputMime: string[]
   outputMime: string
-  name: string
-  execute(source: any): Promise<any>
+  name: string  
+  abstract execute(source: any): Promise<any>
 }
 
 @Injectable()
@@ -16,13 +17,13 @@ export class TransformerService {
   constructor(private transformerSettings) {
 
   }
-  register(transformer) {
+  register(transformer:ModelTransformer) {
     this.transformers.push(transformer);
   }
 
-  matchType(mime) {
+  matchType(mimeType:string) {
     for (var i = 0; i < this.transformers.length; i++) {
-      if (this.transformers[i].inputMime.indexOf(mime) > -1) {
+      if (this.transformers[i].inputMime.indexOf(mimeType) > -1) {
         return this.transformers[i];
       }
     }

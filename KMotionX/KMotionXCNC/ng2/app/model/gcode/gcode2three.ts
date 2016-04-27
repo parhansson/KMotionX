@@ -1,7 +1,7 @@
 /// <reference path="../../../typings/main/ambient/three/index.d.ts" />
 import {KMXUtil} from '../../util/kmxutil';
-import {GCodeCurve3,GCodeVector} from '../igm/igm';
-import {GCodeParser} from './gcode.parser';
+import {GCodeVector, GCodeCurve3} from '../vector';
+import {GCodeParser, Block, Word, WordParameters, ControlWord} from './gcode.parser';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 
@@ -11,134 +11,78 @@ export class ExtendedGCodeVector extends GCodeVector {
   extruding = false
 }
 
-export class Gcode2Three {
-  constructor() {
+class State {
+  lastVector = new ExtendedGCodeVector()
+  prevMoveCommand: Word = null
+  currentMoveCommand: Word = new ControlWord('G', 0)
+  scale = 1.0
+  absolute = true
+  lineGeometry = null as THREE.Geometry
+  lineNo = -1
 
-  }
+  wordHandlers = {
+    M: () => {
+    },
+    F: () => {
+    },
+    G: (cmd: Word, line: number) => {
+      this.currentMoveCommand = cmd;
+      this.lineNo = line;
+    },
+    S: () => {
+    },
+    G20: (cmd: Word, line: number) => {
+      this.scale = 25.4; //Inches
+    },
+    G21: (cmd: Word, line: number) => {
+      this.scale = 1.0; //mm
+    },
+    G90: (cmd: Word, line: number) => {
+      //absolute
+      this.absolute = true;
+    },
+    G91: (cmd: Word, line: number) => {
+      //relative
+      this.absolute = false;
+    },
+    UNKNOWN: (cmd: Word, line: number) => {
+      console.info('Unknown command:', cmd.value, cmd, line);
+    }
+  };
+}
+
+export class Gcode2Three {
+  // Create the final Object3d to add to the scene
+  group: THREE.Group
+  interpolateColor = new THREE.Color(0x080808);
+  positionColor = new THREE.Color(0xAAAAFF);
+  lineMaterial = new THREE.LineBasicMaterial({
+    opacity: 0.6,
+    transparent: true,
+    linewidth: 1,
+    vertexColors: THREE.FaceColors
+  });
+  private state: State
+
+  constructor() { }
 
   transform(transformedDefer: Observer<any>, gcode, disableWorker: boolean) {
-
-    // Create the final Object3d to add to the scene
-    var group = new THREE.Group();
-    //var lineGeometry = new THREE.Geometry();
-
-    var interpolateColor = new THREE.Color(0x080808);
-    var positionColor = new THREE.Color(0xAAAAFF);
-    var lineMaterial = new THREE.LineBasicMaterial({
-      opacity: 0.6,
-      transparent: true,
-      linewidth: 1,
-      vertexColors: THREE.FaceColors
-    });
-
-    group.name = 'GCODE';
-    //group.add(new THREE.Line( lineGeometry, lineMaterial ));
-
-    //Bind this since handler is called from worker context 
-    var thisParameterHandler = parameterHandler.bind(this);
-
-    var state = {
-      lastVector: new ExtendedGCodeVector(),
-      prevCommand: null,
-      lastCommand: {
-        code: 'NONE',
-        val: -1
+    this.group = new THREE.Group();
+    this.group.name = 'GCODE';
+    this.state = new State()
+    var parser = new GCodeParser()
+    parser.observable.subscribe(
+      (block) => {
+        this.onBlock(block);
       },
-      scale: 1.0,
-      absolute: true,
-      lineGeometry: null as THREE.Geometry,
-      lineNo: -1
-    };
+      (error) => { transformedDefer.error(error) },
+      () => {
+        transformedDefer.next(this.group);
+        //transformedDefer.complete();
 
-    var gcodeHandlers = {
-      M: ()=> {
-      },
-      F: ()=> {
-      },
-      G: (cmd, line)=> {
-        state.lastCommand = cmd;
-        state.lineNo = line;
-      },
-      S: ()=> {
-      },
-      G20: (cmd, line)=> {
-        state.scale = 25.4; //Inches
-      },
-      G21: (cmd, line)=> {
-        state.scale = 1.0; //mm
-      },
-      G90: (cmd, line)=> {
-        //absolute
-        state.absolute = true;
-      },
-      G91: (cmd, line)=> {
-        //relative
-        state.absolute = false;
-      }
-    };
+      })
 
-    function newLine(lineNo) {
-      var lineMaterial2 = new THREE.LineBasicMaterial({
-        opacity: 0.6,
-        transparent: true,
-        linewidth: 1,
-        vertexColors: THREE.FaceColors
-      });
-      var lineGeometry = new THREE.Geometry();
-      var line = new THREE.Line(lineGeometry, lineMaterial2);
-      line.userData = { lineNo: lineNo }
-      group.add(line);
-      console.log("new line");
-      return lineGeometry;
-    }
-
-
-    function parameterHandler(args, line) {
-      var lastCommand = state.lastCommand;
-      var prevCommand = state.prevCommand;
-      var lastVector = state.lastVector;
-      var lineGeometry = state.lineGeometry
-      var scale = state.scale;
-      var absolute = state.absolute;
-      //Only handle G codes 1-3
-      if (lastCommand.code != 'G' || lastCommand.val < 0 || lastCommand.val > 3) return;
-      if (lineGeometry == null || prevCommand == null || prevCommand.code !== lastCommand.code || prevCommand.val !== lastCommand.val) {
-        state.lineGeometry = newLine(state.lineNo);
-        lineGeometry = state.lineGeometry;
-      }
-      var currentVector = new ExtendedGCodeVector();
-      if (absolute) {
-        currentVector.X = args.X !== undefined ? args.X * scale : lastVector.X
-        currentVector.Y = args.Y !== undefined ? args.Y * scale : lastVector.Y
-        currentVector.Z = args.Z !== undefined ? args.Z * scale : lastVector.Z
-        currentVector.A = args.A !== undefined ? args.A * scale : lastVector.A
-        currentVector.B = args.B !== undefined ? args.B * scale : lastVector.B
-        currentVector.C = args.C !== undefined ? args.C * scale : lastVector.C
-      } else {
-        currentVector.X = args.X !== undefined ? args.X * scale + lastVector.X : lastVector.X
-        currentVector.Y = args.Y !== undefined ? args.Y * scale + lastVector.Y : lastVector.Y
-        currentVector.Z = args.Z !== undefined ? args.Z * scale + lastVector.Z : lastVector.Z
-        currentVector.A = args.A !== undefined ? args.A * scale + lastVector.A : lastVector.A
-        currentVector.B = args.B !== undefined ? args.B * scale + lastVector.B : lastVector.B
-        currentVector.C = args.C !== undefined ? args.C * scale + lastVector.C : lastVector.C
-      }
-
-      if (lastCommand.val == 0) {
-        lastVector = this.createLine(lastCommand, args, lastVector, currentVector, lineGeometry, positionColor);
-      } else if (lastCommand.val == 1) {
-        lastVector = this.createLine(lastCommand, args, lastVector, currentVector, lineGeometry, interpolateColor);
-        //lastVector = this.createLinePrinter(lastCommand, args, lastVector, currentVector,geometry);
-      } else if (lastCommand.val == 2) {
-        lastVector = this.createArc(lastCommand, args, lastVector, currentVector, lineGeometry, interpolateColor, true);
-      } else if (lastCommand.val == 3) {
-        lastVector = this.createArc(lastCommand, args, lastVector, currentVector, lineGeometry, interpolateColor, false);
-      }
-      state.lastVector = currentVector;
-      state.prevCommand = { code: lastCommand.code, val: lastCommand.val };
-    };
-
-    new GCodeParser(parserDataHandler, parserDataHandler).parse(gcode.lines);
-    parserDataHandler('done');
+    parser.parseLines(gcode.lines);
     /*
         if (disableWorker) {
           // parse without worker. Application will freeze during parsing
@@ -169,54 +113,121 @@ export class Gcode2Three {
         }
     */
 
-
-    function parserDataHandler(data) {
-      var cmd = data.cmd;
-      var params = data.params;
-      if (cmd) {
-        var handler = gcodeHandlers[cmd.name] || gcodeHandlers[cmd.code] || defaultHandler;
-        handler(cmd, data.line);
-      } else if (params) {
-        thisParameterHandler(params, data.line)
-      } else if (data == 'done') {
-        console.timeEnd("parsingAndTransfer");
-        //console.profileEnd();
-        transformedDefer.next(group);
-        transformedDefer.complete();
-      }
-
-      function defaultHandler(args, info) {
-        console.info('Unknown command:', args.name, args, info);
-      }
-    }
   }
 
+  onBlock(block: Block) {
+    for (let part of block.parts) {
+      if (part instanceof Word) {
+        let handler = this.state.wordHandlers[part.value] || this.state.wordHandlers[part.literal] || this.state.wordHandlers.UNKNOWN;
+        handler(part, block.line);
+      } else if (part instanceof WordParameters) {
+        let params = []
+        for (let word of part.value) {
+          params[word.literal] = word.address
+        }
+        this.parameterHandler(params, block.line)
+        //console.log(word.value)
+      }
+    }
+
+  }
+
+  private newLine(lineNo: number, group: THREE.Group) {
+
+    let lineGeometry = new THREE.Geometry();
+    let line = new THREE.Line(lineGeometry, new THREE.LineBasicMaterial({
+      opacity: 0.6,
+      transparent: true,
+      linewidth: 1,
+      vertexColors: THREE.FaceColors
+    }));
+    line.userData = { lineNo: lineNo }
+    group.add(line);
+    //console.log("new line");
+    return lineGeometry;
+  }
+
+  private parameterHandler(args: any, line) {
+    let lastVector = this.state.lastVector;
+    let lineGeometry = this.state.lineGeometry
+    let scale = this.state.scale;
+    let absolute = this.state.absolute;
+    //Only handle G codes 1-3
+    if (this.state.currentMoveCommand.address < 0 || this.state.currentMoveCommand.address > 3) {
+      return;
+    }
+
+    if (lineGeometry == null
+      || this.state.prevMoveCommand == null
+      || this.state.prevMoveCommand.value !== this.state.currentMoveCommand.value) {
+      this.state.lineGeometry = this.newLine(this.state.lineNo, this.group);
+      lineGeometry = this.state.lineGeometry;
+    }
+    var currentVector = new ExtendedGCodeVector();
+    if (absolute) {
+      currentVector.x = args.X !== undefined ? args.X * scale : lastVector.x
+      currentVector.y = args.Y !== undefined ? args.Y * scale : lastVector.y
+      currentVector.z = args.Z !== undefined ? args.Z * scale : lastVector.z
+      currentVector.a = args.A !== undefined ? args.A * scale : lastVector.a
+      currentVector.b = args.B !== undefined ? args.B * scale : lastVector.b
+      currentVector.c = args.C !== undefined ? args.C * scale : lastVector.c
+    } else {
+      currentVector.x = args.X !== undefined ? args.X * scale + lastVector.x : lastVector.x
+      currentVector.y = args.Y !== undefined ? args.Y * scale + lastVector.y : lastVector.y
+      currentVector.z = args.Z !== undefined ? args.Z * scale + lastVector.z : lastVector.z
+      currentVector.a = args.A !== undefined ? args.A * scale + lastVector.a : lastVector.a
+      currentVector.b = args.B !== undefined ? args.B * scale + lastVector.b : lastVector.b
+      currentVector.c = args.C !== undefined ? args.C * scale + lastVector.c : lastVector.c
+    }
+
+    switch (this.state.currentMoveCommand.address) {
+      case (0):
+        this.createLine(args, lastVector, currentVector, lineGeometry, this.positionColor);
+        break
+      case (1):
+        this.createLine(args, lastVector, currentVector, lineGeometry, this.interpolateColor);
+        //this.createLinePrinter(lastCommand, args, lastVector, currentVector,geometry);
+        break
+      case (2):
+        this.createArc(args, lastVector, currentVector, lineGeometry, this.interpolateColor, true);
+        break
+      case (3):
+        this.createArc(args, lastVector, currentVector, lineGeometry, this.interpolateColor, false);
+        break
+    }
+
+    this.state.lastVector = currentVector;
+    this.state.prevMoveCommand = this.state.currentMoveCommand;
+  };
+
+
+
   //use for 3dprinter files
-  createLinePrinter(cmd, args, lastVector: ExtendedGCodeVector, currentVector:ExtendedGCodeVector, geometry:THREE.Geometry) {
+  private createLinePrinter(args, lastVector: ExtendedGCodeVector, currentVector: ExtendedGCodeVector, geometry: THREE.Geometry) {
 
     currentVector.e = args.E !== undefined ? args.E : lastVector.e,
       //TODO doesn't work as expected due to changing feedrate in the middle of line.
       currentVector.extruding = (currentVector.e - lastVector.e) > 0;
     if (currentVector.extruding) {
       var color = new THREE.Color(currentVector.extruding ? 0xBBFFFF : 0xFF00FF);
-      geometry.vertices.push(new THREE.Vector3(lastVector.X, lastVector.Y, lastVector.Z));
-      geometry.vertices.push(new THREE.Vector3(currentVector.X, currentVector.Y, currentVector.Z));
+      geometry.vertices.push(new THREE.Vector3(lastVector.x, lastVector.y, lastVector.z));
+      geometry.vertices.push(new THREE.Vector3(currentVector.x, currentVector.y, currentVector.z));
       geometry.colors.push(color);
       geometry.colors.push(color);
     }
     return currentVector;
   }
 
-  createLine(cmd, args, lastVector:GCodeVector, currentVector:GCodeVector, geometry:THREE.Geometry, color) {
+  private createLine(args, lastVector: GCodeVector, currentVector: GCodeVector, geometry: THREE.Geometry, color) {
 
-    geometry.vertices.push(new THREE.Vector3(lastVector.X, lastVector.Y, lastVector.Z));
-    geometry.vertices.push(new THREE.Vector3(currentVector.X, currentVector.Y, currentVector.Z));
+    geometry.vertices.push(new THREE.Vector3(lastVector.x, lastVector.y, lastVector.z));
+    geometry.vertices.push(new THREE.Vector3(currentVector.x, currentVector.y, currentVector.z));
     geometry.colors.push(color);
     geometry.colors.push(color);
     return currentVector;
   }
 
-  createArc(cmd, args, lastVector:GCodeVector, currentVector:GCodeVector, geometry:THREE.Geometry, color, clockWise) {
+  private createArc(args, lastVector: GCodeVector, currentVector: GCodeVector, geometry: THREE.Geometry, color, clockWise) {
 
     var curve = new GCodeCurve3(
       lastVector,
@@ -225,7 +236,10 @@ export class Gcode2Three {
       clockWise);
     //geometry.vertices.push(new THREE.Vector3(lastVector.x, lastVector.y,lastVector.z));
     var vectors = curve.getPoints(50);
-    geometry.vertices.push.apply(geometry.vertices, vectors);
+    for (var i = 0; i < vectors.length; i++) {
+      geometry.vertices.push(new THREE.Vector3(vectors[i].x, vectors[i].y, vectors[i].z));
+    }
+    new THREE.Vector3().fromAttribute
     for (var i = 0; i < vectors.length; i++) {
       geometry.colors.push(color);
     }
@@ -233,4 +247,5 @@ export class Gcode2Three {
 
     return currentVector;
   }
+
 }

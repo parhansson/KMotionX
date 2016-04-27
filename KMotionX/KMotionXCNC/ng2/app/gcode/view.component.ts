@@ -4,6 +4,8 @@ import {Component, ElementRef} from 'angular2/core';
 //import {WINDOW, WINDOW_PROVIDERS} from 'angular2/core';
 import {window} from 'angular2/src/facade/browser';
 
+declare var opentype: any
+
 @Component({
   selector: "three-viewer",
   //directives: [LogComponent],
@@ -32,7 +34,7 @@ export class ThreeViewComponent {
 
   constructor(private elRef: ElementRef) {
     //schedule setsize and render after element has been created
-    setTimeout(function() {
+    setTimeout(function () {
       this.onResize(null);
       //render 
       this.requestTick();
@@ -43,6 +45,7 @@ export class ThreeViewComponent {
     this.viewer.updateFn = this.requestTick.bind(this);
     // Renderer
     this.renderer = new THREE.WebGLRenderer({ /*canvas: this.element.firstChild,*/ antialias: true, clearColor: 0x000000, alpha: true });
+
     this.element.appendChild(this.renderer.domElement);
     this.renderer.clear();
 
@@ -92,7 +95,7 @@ export class ThreeViewComponent {
       [1, 0, 0, 0xCCFFFF],
       [0, 0, -1, 0xCCCCFF],
       [0, -1, 0, 0xCCFFCC],
-      [-1, 0, 0, 0xFFCCCC]].forEach(function(position) {
+      [-1, 0, 0, 0xFFCCCC]].forEach(function (position) {
         var light = new THREE.DirectionalLight(position[3]);
         light.position.set(position[0], position[1], position[2]).normalize();
         this.scene.add(light);
@@ -322,7 +325,7 @@ export class Orientation {
       }
     );
     var loader = new THREE.TextureLoader(manager);
-    
+
     loader.load('/settings/textures/textures.png', onTexture);
     /*
     loader.load(

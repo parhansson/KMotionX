@@ -1,4 +1,4 @@
-import {Vec2, IGM, IgmObject} from './igm';
+import {IGM, IgmObject} from './igm';
 
 export class GCodeOutput {
   code:string[] = [];
@@ -16,6 +16,7 @@ export class GCodeOutput {
       line = gc;
     }
     if (this.filter) {
+      //filter duplicate lines
       if (this.code[this.code.length - 1] !== line) {
         this.code.push(line);
       }
@@ -42,9 +43,6 @@ export class igm2gcode {
     settings.fractionalDigits = settings.fractionalDigits || 3; //Thousands will do 
     //settings.initCode
     //settings.dpi = settings.dpi || null;
-
-    //var p = new IGM();
-
 
     var dpiScale = 1;
     var mmPerInch = 25.4;
@@ -112,7 +110,7 @@ export class igm2gcode {
       //gcode.push('F' + settings.seekRate);
       // seek to index 0
       gcode.push([
-        'G0',
+        'N 100 G0',
         'X' + format(startVec.x),
         'Y' + format(startVec.y)/*,
         'F' + settings.seekRate*/

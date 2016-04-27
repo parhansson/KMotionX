@@ -2,7 +2,7 @@ export class KMXUtil {
   static createAnchor = {}
 
 
-  static ab2str(buf) {
+  static ab2str(buf:ArrayBuffer) {
     var arr = new Uint8Array(buf)
     var str = "";
     for (var i = 0, l = arr.length; i < l; i++)
