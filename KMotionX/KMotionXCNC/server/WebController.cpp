@@ -297,6 +297,8 @@ bool WebController::isApiRequest(struct mg_connection *conn){
 bool WebController::isRegisteredRoute(struct mg_connection *conn){
   if(strstr(conn->uri, "/ng2/gcode") == conn->uri || 
       strstr(conn->uri, "/ng2/debug") == conn->uri || 
+      strstr(conn->uri, "/ng2/ccode") == conn->uri ||
+      strstr(conn->uri, "/ng2/laser-calc") == conn->uri ||
       strstr(conn->uri, "/ng2/settings") == conn->uri){
       //printf("%s\n", conn->uri);
       return true;
@@ -479,6 +481,8 @@ int WebController::HandleJsonRequest(struct mg_connection *conn, const char *obj
       }
     } else if(FUNC_SIGP("listDir", 1)){
       ListDir(paramtoken);
+    } else if(FUNC_SIGP("openFile", 1)){
+      return OpenFile(conn, paramtoken);
     } else if (FUNC_SIGP("jog", 2)) {
       int axis;
       int speed;
@@ -534,6 +538,16 @@ int WebController::HandleJsonRequest(struct mg_connection *conn, const char *obj
   return MG_TRUE;
 }
 
+int WebController::OpenFile(struct mg_connection *conn, struct json_token *paramtoken){
+    char * file = NULL;//"ng2/index.html";
+    toks(paramtoken, &file, 0);
+    if (file) {
+      char * headers ="";
+      mg_send_file(conn, file, headers);
+      return MG_MORE;
+  }
+  return MG_TRUE;
+}
 
 void WebController::ListDir(struct json_token *paramtoken){
     char *dir = NULL;

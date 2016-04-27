@@ -54,6 +54,7 @@ private:
   //global poll thread response array, no need to allocate eah time since server is single threaded
   char gp_response[MAX_LINE];
   void ListDir(struct json_token *paramtoken);
+  int OpenFile(struct mg_connection *conn, struct json_token *paramtoken);
   int HandleApiRequest(struct mg_connection *conn);
   int HandleJsonRequest(struct mg_connection *conn, const char *object, const char *func);
   void HandleUploadRequest(struct mg_connection *conn);
