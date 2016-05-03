@@ -1,22 +1,23 @@
-import * as hookMod from 'angular2/src/router/lifecycle/lifecycle_annotations';
-import * as routerMod from 'angular2/src/router/router';
-import {isBlank, isPresent} from 'angular2/src/facade/lang';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
+
+import * as hookMod from '@angular/router-deprecated/src/lifecycle/lifecycle_annotations';
+import * as routerMod from '@angular/router-deprecated/router';
+import {isBlank, isPresent} from '@angular/common/src/facade/lang';
+import {StringMapWrapper} from '@angular/common/src/facade/collection';
 //import {Promise,PromiseWrapper} from 'angular2/src/facade/async';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {BaseException} from 'angular2/src/facade/exceptions';
-import {ViewContainerRef, DynamicComponentLoader, Directive, Injector, ReflectiveInjector, provide, ComponentRef, Attribute} from 'angular2/core';
+import {PromiseWrapper} from '@angular/common/src/facade/async';
+import {BaseException} from '@angular/core/index';
+import {ViewContainerRef, DynamicComponentLoader, Directive, Injector, ReflectiveInjector, provide, ComponentRef, Attribute} from '@angular/core';
 import {
     ComponentInstruction, CanReuse, OnReuse, CanDeactivate,
     RouterOutlet, OnActivate, Router, RouteData, RouteParams, OnDeactivate
-} from 'angular2/router';
-import {hasLifecycleHook} from 'angular2/src/router/lifecycle/route_lifecycle_reflector';
+} from '@angular/router-deprecated';
+import {hasLifecycleHook} from '@angular/router-deprecated/src/lifecycle/route_lifecycle_reflector';
 
 /**
  * Reference Cache Entry
  */
 class RefCacheItem {
-    constructor(public componentRef: ComponentRef) {
+    constructor(public componentRef: ComponentRef<any>) {
 
     }
 }
@@ -73,7 +74,7 @@ export class PersistentRouterOutlet extends RouterOutlet {
     private currentInstruction: ComponentInstruction;
     private currentElementRef;
     private resolveToTrue = PromiseWrapper.resolve(true);
-    private currentComponentRef: ComponentRef;
+    private currentComponentRef: ComponentRef<any>;
 
     constructor(elementRef: ViewContainerRef,
         private loader: DynamicComponentLoader,

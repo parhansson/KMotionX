@@ -50,27 +50,23 @@
     <tab heading="M0-M30">
       <h3 class="settings-header">M-codes</h3>
       <div class="">
-        <kmx-mcode-value *ngFor="#action of machine.actions; #index = index" [action]="action">
-        </kmx-mcode-value>
-        <kmx-mcode-value *ngFor="#action of machine.specialActions; #index = index" [action]="action">
-        </kmx-mcode-value>
+        <kmx-mcode-value *ngFor="let action of machine.actions" [action]="action"></kmx-mcode-value>
+        <kmx-mcode-value *ngFor="let action of machine.specialActions" [action]="action"></kmx-mcode-value>
       </div>
     </tab>
 
     <tab heading="M100-M119">
-      
+
       <h3 class="settings-header">Extended M-codes</h3>
       <div class="">
         {{action | json}}
-        <kmx-mcode-value *ngFor="#action of machine.extendedActions; #index = index" [action]="action">
-        </kmx-mcode-value>
+        <kmx-mcode-value *ngFor="let action of machine.extendedActions" [action]="action"></kmx-mcode-value>
       </div>
     </tab>
     <tab heading="User buttons">
       <h3 class="settings-header">User defined buttons</h3>
       <div class="">
-        <kmx-mcode-value *ngFor="#action of machine.userActions; #index = index" [action]="action" userButton="true">
-        </kmx-mcode-value>
+        <kmx-mcode-value *ngFor="let action of machine.userActions" [action]="action" userButton="true"></kmx-mcode-value>
       </div>
     </tab>
 
@@ -87,19 +83,20 @@
           <div class="form-group">
             <label for="lookaheadInput">Look Ahead</label>
             <p class="help-block">In seconds</p>
-            <input id="lookaheadInput" class="form-control" [(ngModel)]="machine.tplanner.lookahead" min="0" type="number" step="any" />
+            <input id="lookaheadInput" class="form-control" [(ngModel)]="machine.tplanner.lookahead" min="0" type="number" step="any"
+            />
           </div>
           <div class="form-group">
             <label for="collineartoleranceInput">Collinear Tolerance</label>
             <p class="help-block">In inches</p>
             <input id="collineartoleranceInput" class="form-control" [(ngModel)]="machine.tplanner.collineartolerance" min="0" type="number"
-            step="any" />
+              step="any" />
           </div>
           <div class="form-group">
             <label for="cornertoleranceInput">Corner Tolerance</label>
             <p class="help-block">In inches</p>
-            <input id="cornertoleranceInput" class="form-control" [(ngModel)]="machine.tplanner.cornertolerance" min="0" type="number" step="any"
-            />
+            <input id="cornertoleranceInput" class="form-control" [(ngModel)]="machine.tplanner.cornertolerance" min="0" type="number"
+              step="any" />
           </div>
           <div class="form-group">
             <label for="facetangleInput">Facet Angle</label>
@@ -112,7 +109,7 @@
           <div class="form-group">
             <label>Jog speeds</label>
             <div class="row">
-              <div class="col-sm-2" *ngFor="#axis of machine.axes; #index = index">
+              <div class="col-sm-2" *ngFor="let axis of machine.axes">
                 <div class="input-group">
                   <span class="input-group-addon">{{axis.name}}</span>
                   <input class="form-control" [(ngModel)]="axis.jogVel" min="0" type="number" step="any" />
@@ -142,7 +139,7 @@
               </div>
             </div>
           </div>
-          <div class="form-group row" *ngFor="#axis of machine.axes">
+          <div class="form-group row" *ngFor="let axis of machine.axes">
             <div class="col-sm-2">
               <label ng-bind="axis.name"></label>
             </div>

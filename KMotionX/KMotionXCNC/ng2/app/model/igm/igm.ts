@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main/ambient/three/index.d.ts" />
+
 import {GCodeVector} from '../vector';
 
 

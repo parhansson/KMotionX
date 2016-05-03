@@ -1,5 +1,5 @@
-import {Component, Injectable, Pipe, PipeTransform,Input} from 'angular2/core';
-import {NgClass} from 'angular2/common';
+import {Component, Injectable, Pipe, PipeTransform,Input} from '@angular/core';
+import {NgClass} from '@angular/common';
 import {SocketService} from '../backend/socket.service'
 import {KmxStatus,IOPin} from '../backend/shared'
 
@@ -33,14 +33,14 @@ import {KmxStatus,IOPin} from '../backend/shared'
             {{name}}
             <div class="well">
               <div class="row">
-                <div class="iopin outer_circle" *ngFor="#pin of getConnectorPins(true)">
+                <div class="iopin outer_circle" *ngFor="let pin of getConnectorPins(true)">
                   <div class="circle" [attr.style]="pin.state?'color:green':'color:red'">
                   <span class="glyphicon" [ngClass]="{'glyphicon-resize-full': pin.output, 'glyphicon-resize-small': !pin.output}" ></span>
                   </div>
                 </div>
               </div>
               <div class="row">
-                <div class="iopin outer_circle" *ngFor="#pin of getConnectorPins(false)">
+                <div class="iopin outer_circle" *ngFor="let pin of getConnectorPins(false)">
                   <div class="circle" [attr.style]="pin.state?'color:green':'color:red'">
                   <span class="glyphicon" [ngClass]="{'glyphicon-resize-full': pin.output, 'glyphicon-resize-small': !pin.output}" ></span>
                   </div>

@@ -116,7 +116,7 @@ export class GCodeParser {
   observable: Observable<Block>
 
   constructor() {
-    this.observable = new Observable(observer => this.observer = observer)
+    this.observable = new Observable<Block>(observer => this.observer = observer)
   }
 
   parseLine(rawText: string) {

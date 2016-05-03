@@ -1,5 +1,4 @@
-import {Component, Inject,Input,ElementRef} from 'angular2/core';
-//import {View} from 'angular2/core';
+import {Component, Inject,Input,ElementRef} from '@angular/core';
 import {LogService} from "./log.service"
 
 @Component({

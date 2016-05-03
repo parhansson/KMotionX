@@ -1,5 +1,7 @@
-import {Component, Inject} from 'angular2/core';
-import {RouteConfig, ROUTER_DIRECTIVES} from 'angular2/router';
+import {Component, Inject} from '@angular/core';
+//import {RouteConfig, ROUTER_DIRECTIVES} from '@angular/router-deprecated';
+import {RouteConfig} from '@angular/router-deprecated';
+import {RouterLink} from '@angular/router-deprecated/src/directives/router_link';
 
 import {LaserCalculatorComponent} from './laser/laser.calculator.component';
 import {GCodeScreenComponent} from './gcode/gcode.screen.component';
@@ -14,7 +16,7 @@ import {BackendService} from './backend/backend.service'
 import {PersistentRouterOutlet} from './PersistentRouterOutlet'
 @Component({
     selector: 'kmx-app',
-    directives: [ROUTER_DIRECTIVES, PersistentRouterOutlet],
+    directives: [PersistentRouterOutlet, RouterLink/*, ROUTER_DIRECTIVES*/],
     templateUrl: 'dist/app/kmx.component.html'
 })
 @RouteConfig([
@@ -27,11 +29,11 @@ import {PersistentRouterOutlet} from './PersistentRouterOutlet'
 ])
 export class KmxComponent {
     intStatus: KmxStatus
-    constructor(private socketService: SocketService, private backend:BackendService) {
+    constructor(private socketService: SocketService, private backend: BackendService) {
         this.intStatus = this.socketService.data
         //socketService.simluateObservable.subscribe(()=>this.intStatus = this.socketService.data)
-        
-        
+
+
     }
     onSimulate() {
         this.backend.onSimulate()

@@ -1,21 +1,13 @@
-/// <reference path="../../typings/main/ambient/three/index.d.ts" />
-/// <reference path="../../typings/main/ambient/three-trackballcontrols/index.d.ts" />
-import {Component, ElementRef} from 'angular2/core';
-//import {WINDOW, WINDOW_PROVIDERS} from 'angular2/core';
-import {window} from 'angular2/src/facade/browser';
+
+import {Component, ElementRef} from '@angular/core';
 
 declare var opentype: any
 
 @Component({
   selector: "three-viewer",
-  //directives: [LogComponent],
-
   // template: `
   //     <div (window:resize)="onResize2($event)">
   //     </div>    
-  //   `
-  // template: `
-  //     <canvas></canvas>    
   //   `
   template: ""
 })

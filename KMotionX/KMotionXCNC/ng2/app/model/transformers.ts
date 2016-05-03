@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/core';
+import {Injectable} from '@angular/core';
 import {Observable, Observer} from 'rxjs/Rx';
 import {igm2gcode} from './igm/igm2gcode'
 import {IGM, GCodeSource} from './igm/igm'
@@ -68,7 +68,7 @@ export class StaticTransformer {
       }
     }
     if(doc.localName !== "svg"){
-      this.logService.log("error", "Failed to parse SVG document")
+      this.logService.log("error", "Failed to parse SVG document: " + doc.textContent)
       this.parseGcode(source as any)
     } else {
       let igm = new Svg2Igm().transform(doc, null);

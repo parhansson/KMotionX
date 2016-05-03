@@ -1,11 +1,11 @@
-import {Component} from 'angular2/core';
+import {Component} from '@angular/core';
 import {SettingsService} from '../settings/settings.service';
 import {BackendService} from '../backend/backend.service';
 
 @Component({
   selector: "user-defined-buttons",
   template: `
-    <span *ngFor="#action of machine.userActions; #index = index">
+    <span *ngFor="let action of machine.userActions; let index = index">
       <button  
         *ngIf="action.action > 0" 
         class='btn btn-primary btn-grid'

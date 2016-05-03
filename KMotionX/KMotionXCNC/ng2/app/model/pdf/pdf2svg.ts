@@ -30,7 +30,7 @@ export class PDF2SVG {
       let MAX_NUM_PAGES = 50;
       let ii = Math.min(MAX_NUM_PAGES, numPages);
       let svgPages = [];
-      let promise = Promise.resolve();
+      let promise:Promise<any> = Promise.resolve();
       for (var i = 1; i <= ii; i++) {
         let anchor = null;//createAnchor(i);
         if (transformerSettings.pdf.page != i) continue;

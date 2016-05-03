@@ -6,7 +6,7 @@
         <div class="input-group">
             <span class="input-group-addon" *ngIf="!userButton">{{action.name}}</span>
                <select [(ngModel)]="action.action" class="form-control" style="width:250px">
-                <option *ngFor="#option of actionOptions" [value]="option.action">{{option.name}}</option>
+                <option *ngFor="let option of actionOptions" [value]="option.action">{{option.name}}</option>
               </select>
             
         </div>

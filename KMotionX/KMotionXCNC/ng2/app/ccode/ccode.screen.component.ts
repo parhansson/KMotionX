@@ -1,4 +1,4 @@
-import {Component,Inject} from 'angular2/core';
+import {Component,Inject} from '@angular/core';
 import {AceDirective} from "../editor/ace.directive";
 import {ScreenComponent} from "../screen.component"
 import {KMXUtil}    from '../util/KMXUtil'

@@ -9,19 +9,20 @@
   <link rel="stylesheet" type="text/css" href="/css/switch.css">
   <!-- 1. Load libraries -->
   <!-- IE required polyfills, in this exact order -->
+
   <script src="node_modules/es6-shim/es6-shim.min.js"></script>
-  <script src="node_modules/systemjs/dist/system-polyfills.js"></script>
-  <script src="node_modules/angular2/es6/dev/src/testing/shims_for_IE.js"></script>
-  <script src="node_modules/angular2/bundles/angular2-polyfills.js"></script>
+
+  <script src="node_modules/zone.js/dist/zone.js"></script>
+  <script src="node_modules/reflect-metadata/Reflect.js"></script>
   <script src="node_modules/systemjs/dist/system.src.js"></script>
+  <!--
+    Loading bundles nit working
   <script src="node_modules/rxjs/bundles/Rx.js"></script>
   <script src="node_modules/angular2/bundles/angular2.dev.js"></script>
-
-
-  <script src="node_modules/angular2/bundles/http.dev.js"></script>
-  <script src="node_modules/angular2/bundles/router.dev.js"></script>
+  -->
+  <!--
   <script src="node_modules/ng2-bootstrap/bundles/ng2-bootstrap.js"></script>
-
+  -->
   <!-- need for number pipe on safari-->
   <script src="node_modules/intl/dist/Intl.min.js"></script>
   <script src="node_modules/intl/locale-data/jsonp/en.js"></script>
@@ -33,8 +34,6 @@
   <script src="/vendor/three/TrackballControls.js"></script>
   <!--
   <script src="node_modules/three-trackballcontrols/index.js"></script>
-  <script src="vendor/mozilla/stringview.js"></script>
-  <script src="/vendor/modernizr/modernizr.custom.93389.js"></script>
   -->
 
 
@@ -45,7 +44,8 @@ document.write("<base href='http://" + document.location.host + "' />");
   
   -->
   <base href="/ng2/">
-  <script>
+  <script src="systemjs.config.js"></script>
+  <noscript>
     System.config({
         packages: {        
           "dist": {
@@ -73,8 +73,11 @@ document.write("<base href='http://" + document.location.host + "' />");
             */
       System.import('dist/app/main')
             .then(null, console.error.bind(console));
+  </noscript>
+  <script>
+    System.import('dist/app/main')
+            .then(null, console.error.bind(console));
   </script>
-
 
 
 </head>

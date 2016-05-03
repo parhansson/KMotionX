@@ -1,4 +1,4 @@
-import {Component,Inject, Input, Output} from 'angular2/core';
+import {Component,Inject, Input, Output} from '@angular/core';
 import {ScreenComponent} from "../screen.component"
 @Component({
     selector: 'laser-calc-screen',

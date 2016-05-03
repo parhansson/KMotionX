@@ -1,4 +1,4 @@
-import {ComponentInstruction, CanReuse, OnReuse, RouteParams} from 'angular2/router';
+import {ComponentInstruction, CanReuse, OnReuse, RouteParams} from '@angular/router-deprecated';
 
 export class ScreenComponent implements CanReuse,
   OnReuse {

@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/core';
+import {Injectable} from '@angular/core';
 import {Observable, Observer} from 'rxjs/Rx';
 import {LogService} from "../log/log.service"
 import {KMXUtil} from '../util/kmxutil';

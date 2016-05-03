@@ -1,4 +1,4 @@
-import {Directive, Component, Input, Output, EventEmitter, ElementRef} from 'angular2/core';
+import {Directive, Component, Input, Output, EventEmitter, ElementRef} from '@angular/core';
 import {BackendService} from '../backend/backend.service'
 
 export interface IFileObject {
@@ -127,7 +127,7 @@ export class FileResource {
   selector: 'file-path',
   template: `
       <div>
-        <span *ngFor="#part of resource?.paths; #index = index" (click)="openIndex(index)" >{{part}}/</span>
+        <span *ngFor="let part of resource?.paths; let index = index" (click)="openIndex(index)" >{{part}}/</span>
         <!--<span>{{resource.file}}</span>-->
       </div>
     `
@@ -161,7 +161,7 @@ export class FilePathComponent {
           <div class="modal-body" file-dropzone (dropped)="onDroppedFile($event)">
             <file-path [resource]="resource" (changed)="listDir()" ></file-path>
             <ul class="modal-file-list">
-              <li class="button" (click)="selectFile(file)" *ngFor="#file of files">{{file.name}}</li>          
+              <li class="button" (click)="selectFile(file)" *ngFor="let file of files">{{file.name}}</li>          
             </ul>
             <p>Open file by selecting or with drag and drop to editor from desktop</p>
           </div>

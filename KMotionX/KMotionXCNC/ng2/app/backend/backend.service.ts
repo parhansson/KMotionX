@@ -1,5 +1,5 @@
-import {Injectable} from 'angular2/core';
-import {Http, Response} from 'angular2/http';
+import {Injectable} from '@angular/core';
+import {Http, Response} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {IFileObject} from '../resources/resource.component'
@@ -62,7 +62,7 @@ export class BackendService {
   public onOpenFile(path): Observable<IFileObject> {
 
     let loadobserver: Observer<IFileObject>;
-    let observable = new Observable(observer => loadobserver = observer)
+    let observable = new Observable<IFileObject>(observer => loadobserver = observer)
     let url = "/api/kmx/" + 'openFile';
     let data = { "params": path };
     let oReq = new XMLHttpRequest();

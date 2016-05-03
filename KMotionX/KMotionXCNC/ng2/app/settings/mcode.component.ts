@@ -1,4 +1,4 @@
-import {Component,Inject,Input} from 'angular2/core';
+import {Component,Inject,Input} from '@angular/core';
 
 @Component({
     selector : 'kmx-mcode-value',

@@ -1,4 +1,4 @@
-import {Component, Inject, ViewChild} from 'angular2/core';
+import {Component, Inject, ViewChild} from '@angular/core';
 import {AceDirective} from "../editor/ace.directive";
 import {LogComponent} from "../log/log.component";
 import {BackendService} from '../backend/backend.service';

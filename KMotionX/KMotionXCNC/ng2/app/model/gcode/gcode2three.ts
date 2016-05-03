@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main/ambient/three/index.d.ts" />
+
 import {KMXUtil} from '../../util/kmxutil';
 import {GCodeVector, GCodeCurve3} from '../vector';
 import {GCodeParser, Block, Word, WordParameters, ControlWord} from './gcode.parser';
