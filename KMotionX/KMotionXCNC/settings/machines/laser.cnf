@@ -130,7 +130,7 @@
     {
       "action": 4,
       "name": "Prog Start",
-      "file": "c-programs/LaserInit.c",
+      "file": "settings/c-programs/LaserInit.c",
       "dParam0": 2
     },
     {
@@ -146,7 +146,7 @@
       "dParam2": 5,
       "dParam3": 5,
       "dParam1": 0,
-      "file": "/Users/parhansson/git/KMotionX/KMotionX/KMotionXCNC/app/c-programs/LaserPPI.c"
+      "file": "settings/c-programs/LaserPPI.c"
     },
     {
       "action": 0,
@@ -232,7 +232,7 @@
       "action": 4,
       "name": "Init",
       "dParam0": 2,
-      "file": "c-programs/LaserInit.c"
+      "file": "settings/c-programs/LaserInit.c"
     },
     {
       "action": 0,

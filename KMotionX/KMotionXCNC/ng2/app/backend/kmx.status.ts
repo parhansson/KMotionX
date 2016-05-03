@@ -1,4 +1,5 @@
 import {BufStreamReader} from './buffer.reader'
+import {KmxStatus} from './shared'
 export class KmxStatusStream {
 
   readBuffer(arraybuffer: ArrayBuffer) {
@@ -89,14 +90,15 @@ export class KmxStatusStream {
     status.outputModes = this.decodeBits(OutputModes, 16, 4).concat(this.decodeBits(OutputModes2, 16, 4));
     status.enables = this.toBitArr(Enables, 8);
     status.axisDone = this.toBitArr(AxisDone, 8);
-    status.bitsDirection = this.toBitArr(BitsDirection0, 32).concat(this.toBitArr(BitsDirection1, 32)).join(', ');
-    status.bitsState = this.toBitArr(BitsState0, 32).concat(this.toBitArr(BitsState1, 32)).join(', ');
+    status.bitsDirection = this.toBitArr(BitsDirection0, 32).concat(this.toBitArr(BitsDirection1, 32))
+    status.bitsState = this.toBitArr(BitsState0, 32).concat(this.toBitArr(BitsState1, 32))
     status.runOnStartUp = this.toBitArr(RunOnStartUp, 8);
     status.threadActive = this.toBitArr(ThreadActive, 8);
     status.stopImmediateState = StopImmediateState;
     status.dro = dros;
+    status.feedHold = StopImmediateState > 0
     status.connected = connected;
-    status.simulate = simulate;
+    status.simulating = simulate;
     status.interpreting = interpreting;
     status.currentLine = currentLine;
     status.gcodeFile = gcodeFile;
@@ -106,9 +108,9 @@ export class KmxStatusStream {
   }
 
   toBitArr(value: number, size: number) {
-    var bitArr: number[] = [];
+    var bitArr: boolean[] = [];
     for (var i = 0; i < size; i++) {
-      bitArr[i] = value >> i & 1;
+      bitArr[i] = (value >> i & 1) == 1;
     }
     return bitArr;
   }
@@ -126,33 +128,3 @@ export class KmxStatusStream {
 
 }
 
-export class KmxStatus {
-  timeStamp: number;
-  version: number;
-  size: number;
-  position: number[];
-  dest: number[];
-  inputModes: number[];
-  outputModes: number[];
-  enables: number[];
-  axisDone: number[];
-  bitsDirection: string;
-  bitsState: string;
-  runOnStartUp: number[];
-  threadActive: number[];
-  stopImmediateState: number;
-  dro: number[];
-  connected: boolean;
-  simulate: boolean;
-  interpreting: boolean;
-  currentLine: number;
-  gcodeFile: string;
-  machineSettingsFile: string
-
-  constructor() {
-
-  }
-
-
-
-}

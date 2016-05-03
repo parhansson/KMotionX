@@ -22,7 +22,7 @@
         <li><a [routerLink]="['DebugScreen']">Debug</a></li>
         <li><a [routerLink]="['LaserCalculator']">Laser Calculator</a></li>
         <!--<li><a href="javascript:$('#aboutModal').modal();">About</a></li>-->
-          <li><a href="#"><label title="Simulation Mode" class="switch red"><input type="checkbox" ng-model="kmx.intStatus.simulating" ng-click="kmx.onSimulate()"><i></i></label></a></li>
+          <li><a href="#"><label title="Simulation Mode" class="switch red"><input type="checkbox" [ngModel]="intStatus?.simulating" (click)="onSimulate()"><i></i></label></a></li>
         <!--
           -->
         </ul>
@@ -30,6 +30,7 @@
   </div>
 </nav>
 <!--
+<div>{{intStatus | json}}</div>
 <router-outlet></router-outlet> 
 -->
 <persistent-router-outlet></persistent-router-outlet>

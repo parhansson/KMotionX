@@ -30,10 +30,13 @@
     
     
     function load(file) { 
-      return $http({
-        url: file,
-        params: { 'nocache': new Date().getTime() }
-      });
+      return onEvent('openFile',{"params": file});
+    //       let url = "/api/kmx/" + 'openFile';
+    // let data = { "params": path };
+      // return $http({
+      //   url: file,
+      //   params: { 'nocache': new Date().getTime() }
+      // });
       
     }
 

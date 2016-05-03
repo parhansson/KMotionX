@@ -1,24 +1,24 @@
+import {Injectable} from 'angular2/core';
+import {Observable, Observer} from 'rxjs/Rx';
 import {igm2gcode} from './igm/igm2gcode'
 import {IGM, GCodeSource} from './igm/igm'
 import {ModelTransformer} from './transformer.service'
-//import {Observable, Observer} from 'rxjs/rx';
-import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
 import {KMXUtil}    from '../util/KMXUtil'
 import {Svg2Igm} from '../model/svg/svgreader';
 import {ModelSettingsService} from '../model/model.settings.service';
 import {Gcode2Three} from '../model/gcode/gcode2three';
 import {PDF2SVG} from '../model/pdf/pdf2svg';
+import {LogService} from "../log/log.service"
 
 
-
+@Injectable()
 export class StaticTransformer {
   gcodeSourceObserver: Observer<GCodeSource>;
   gcodeSourceObservable = new Observable<GCodeSource>(observer => this.gcodeSourceObserver = observer)
   threeObserver: Observer<any>;
   threeObservable = new Observable<any>(observer => this.threeObserver = observer)
-  
-  constructor(private modelSettings: ModelSettingsService) {
+
+  constructor(private logService:LogService, private modelSettings: ModelSettingsService) {
   }
 
   transform(contentType, payload: ArrayBuffer) {
@@ -67,8 +67,14 @@ export class StaticTransformer {
         console.error("DOMParser not supported. Update your browser");
       }
     }
-    let igm = new Svg2Igm().transform(doc, null);
-    this.parseGcode(new igm2gcode().transform(igm, {}))
+    if(doc.localName !== "svg"){
+      this.logService.log("error", "Failed to parse SVG document")
+      this.parseGcode(source as any)
+    } else {
+      let igm = new Svg2Igm().transform(doc, null);
+      this.parseGcode(new igm2gcode().transform(igm, {}))  
+      
+    }
 
     //return null;     
   }

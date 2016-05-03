@@ -2,6 +2,7 @@ import {Injectable} from 'angular2/core';
 import {Http, Response} from 'angular2/http';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
+import {IFileObject} from '../resources/resource.component'
 
 @Injectable()
 export class BackendService {
@@ -16,26 +17,51 @@ export class BackendService {
 
   }
 
-  save(name, content) {
-    //       //http://uncorkedstudios.com/blog/multipartformdata-file-upload-with-angularjs
-    //       var fd = new FormData();
-    //       var blob = new Blob([content], { type: 'plain/text', endings: 'transparent' });
-    //       fd.append('file', blob, name);
-    // 
-    //       this.http.post("/upload", fd, {
-    //           transformRequest: angular.identity,
-    //           headers: {'Content-Type': undefined}
-    //       })
-    //       .success(function(response){
-    //         //alert(response);
-    //       })
-    //       .error(function(){
-    //         alert("Error saving file " + name);
-    //       });
-  }
-  public onOpenFile(path): Observable<any> {
+  save(name, content: ArrayBuffer | ArrayBufferView | Blob | string) {
+    let progressObserver: any;
+    //progress: number = 0;
+    let progress$ = new Observable<number>(observer => { progressObserver = observer })
+    //TODO Safari does not support File constructor. 
+    let url: string = "/upload", files: File[] = []
+    files.push(new File([content], name))
+     
+    
+    //return new Promise((resolve, reject) => {
+      let formData: FormData = new FormData(),
+        xhr: XMLHttpRequest = new XMLHttpRequest();
 
-    let loadobserver: Observer<any>;
+      for (let i = 0; i < files.length; i++) {
+        formData.append("file"+i, files[i], files[i].name);
+      }
+
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            //resolve(JSON.parse(xhr.response));
+            progressObserver.complete()
+          } else {
+            //reject(xhr.response);
+            progressObserver.error(xhr.response);
+          }
+        }
+      };
+
+      //FileUploadService.setUploadUpdateInterval(500);
+
+      xhr.upload.onprogress = (event) => {
+        let progress = Math.round(event.loaded / event.total * 100);
+        progressObserver.next(progress);
+      };
+
+      xhr.open('POST', url, true);
+      xhr.send(formData);
+   // });
+    progress$.subscribe(data=>console.log(data +"%"))
+    return progress$
+  }
+  public onOpenFile(path): Observable<IFileObject> {
+
+    let loadobserver: Observer<IFileObject>;
     let observable = new Observable(observer => loadobserver = observer)
     let url = "/api/kmx/" + 'openFile';
     let data = { "params": path };

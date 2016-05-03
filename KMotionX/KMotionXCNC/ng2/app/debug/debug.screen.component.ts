@@ -1,12 +1,12 @@
 import {Component, Inject} from 'angular2/core';
-import {Alert} from 'ng2-bootstrap/ng2-bootstrap';
 import {LogComponent} from "../log/log.component"
 import {ScreenComponent} from "../screen.component"
+import {DigitalIOComponent} from "./digital.io.component"
 
 
 @Component({
   selector: 'debug-screen',
-  directives: [Alert, LogComponent],
+  directives: [LogComponent,DigitalIOComponent],
   templateUrl: 'dist/app/debug/debug.screen.html'
 })
 export class DebugScreenComponent extends ScreenComponent{

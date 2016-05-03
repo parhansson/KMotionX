@@ -1,6 +1,7 @@
 
 import {SocketConnector,SocketMessageHandler} from './socket.connector'
-import {KmxStatusStream, KmxStatus} from './kmx.status'
+import {KmxStatusStream} from './kmx.status'
+import {KmxStatus} from './shared'
 //
 //declare function postMessage(data: any): void;
 export interface PostMessageCallback { (data: any, transfer?:any[]): void }

@@ -8,6 +8,7 @@ import {KmxComponent}     from './kmx.component'
 import {SocketService}    from './backend/socket.service'
 import {SettingsService}    from './settings/settings.service'
 import {ModelSettingsService} from './model/model.settings.service';
+import {StaticTransformer} from './model/transformers'
 import {HTTP_PROVIDERS}   from 'angular2/http';
 import {ROUTER_PROVIDERS} from 'angular2/router';
 import {provide}           from 'angular2/core';
@@ -20,7 +21,8 @@ bootstrap(KmxComponent, [
   BackendService,
   LogService,
   SettingsService,
-  ModelSettingsService
+  ModelSettingsService,
+  StaticTransformer
   //,
   //provide(LocationStrategy,{useClass: HashLocationStrategy})]);
   //provide(LocationStrategy,{})

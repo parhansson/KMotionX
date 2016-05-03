@@ -1,15 +1,14 @@
 <h1>CCode</h1>
-<file-dialog #fd (selectedFile)="onOpenFile($event)" dir="./settings/c-programs"></file-dialog>
+<file-dialog #fd (selectedFile)="onOpenFile($event)" [resource]="resource"></file-dialog>
 <div>
-  <div file-dropzone="" file-content="editorContent" file-name="editorContentName">
+  <div file-dropzone (dropped)="onOpenFile($event)">
     <div>
-      <input [(ngModel)]="fd.currentDir" />
-      <input [ngModel]="fd.currentFile" />
       <span class="glyphButtonBar">
-              <span class="btn btn-primary glyphicon glyphicon-folder-open" title="Open" (click)="fd.toggle()"></span>
+              <span class="btn btn-primary glyphicon glyphicon-folder-open" title="Open" (click)="fd.open()"></span>
       <span class="btn btn-primary glyphicon glyphicon-floppy-save" title="Save" ng-click="save()"></span>
       </span>
     </div>
-    <div aceEditor id="ceditor" mode="c_cpp" [text]="editorContent" ></div>
+    <file-path [resource]="resource"></file-path>
+    <div aceEditor mode="c_cpp" [text]="editorContent" ></div>
   </div>
 </div>
