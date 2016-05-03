@@ -11,10 +11,10 @@
 #include "utils.h"
 
 //Emits json resonse
-#define EMIT_RESPONSE_PARAM(fmt,...) w += json_emit(gp_response+w, MAX_LINE-w, fmt, ##__VA_ARGS__);
-#define EMIT_RESPONSE(fmt, ...) int w = 0; w = json_emit(gp_response+w, MAX_LINE, "{ s: s, s: s, s: ", "api", object,"func",func, "params"); \
+#define EMIT_RESPONSE_PARAM(fmt,...) w += json_emit(gp_response+w, MAX_RESPONSE-w, fmt, ##__VA_ARGS__);
+#define EMIT_RESPONSE(fmt, ...) int w = 0; w = json_emit(gp_response+w, MAX_RESPONSE, "{ s: s, s: s, s: ", "api", object,"func",func, "params"); \
     EMIT_RESPONSE_PARAM(fmt,##__VA_ARGS__)  \
-    w += json_emit(gp_response+w, MAX_LINE-w, ", s: i }", "ret",ret);
+    w += json_emit(gp_response+w, MAX_RESPONSE-w, ", s: i }", "ret",ret);
 
 //Check function signature
 #define FUNC_SIGP(name, nr_of_params) !strcmp(name,func) && params == nr_of_params
@@ -49,10 +49,11 @@ int WebController::Setup(){
 
   json_token *setup = NULL;
   setup = parse_json2(mmFile.addr, mmFile.filesize);
-
-  json_str(setup,"machine",settings_file_);
-  json_str(setup,"gcodefile",current_gcode_file_);
-
+  json_str(setup,"machine",fileName);
+  absolutePath(fileName, settings_file_);
+  json_str(setup,"gcodefile",fileName);
+  absolutePath(fileName, current_gcode_file_);
+  
   free(setup);
   unmapFile(mmFile);
   return 0;
@@ -318,6 +319,8 @@ int WebController::HandleUploadReceiveEvent(struct mg_connection *conn){
   return fwrite(conn->content, 1, conn->content_len, fp);
 }
 void WebController::HandleUploadRequest(struct mg_connection *conn){
+
+  char msg[256];
   FILE *fp = (FILE *) conn->connection_param;
   if (fp != NULL) {
 
@@ -337,22 +340,21 @@ void WebController::HandleUploadRequest(struct mg_connection *conn){
     size_t filesize=0;
 
     const char *data;
-    int data_len, ofs = 0;
-    char var_name[100], file_name[100];
-    while ((ofs = mg_parse_multipart(mmFile.addr + ofs, mmFile.mapsize - ofs,
+    int data_len, ofs = 0, mapOffset = 0;
+    char var_name[100], file_name[256];
+    char absoluteFile[256];
+    FILE * pFile; 
+    while ((ofs = mg_parse_multipart(mmFile.addr + mapOffset, mmFile.mapsize - mapOffset,
                                      var_name, sizeof(var_name),
                                      file_name, sizeof(file_name),
                                      &data, &data_len)) > 0) {
+      mapOffset += ofs;
+     
+      absolutePath(file_name, absoluteFile);
+      
+      //TODO open file only when file_name changes 
+      pFile = fopen (absoluteFile, "w+");
 
-      FILE * pFile;
-      //Add one to skip first slash and make path relative
-      if(file_name[0] == '/'){
-        pFile = fopen (file_name+1, "w+");
-      } else {
-        pFile = fopen (file_name, "w+");
-      }
-      //ConsoleHandler("Writing to file");
-      //ConsoleHandler(file_name);
       if(pFile){
         size_t written = fwrite (data , sizeof(char), data_len, pFile);
         if(written != data_len){
@@ -362,27 +364,28 @@ void WebController::HandleUploadRequest(struct mg_connection *conn){
           filesize += written;
         }
         if(fclose (pFile) == EOF){
-          this->DoErrorMessage("Error closing file");
+          snprintf(msg,sizeof(msg)-1, "Failed to close file %s\n",absoluteFile);
+          this->DoErrorMessage(msg);
+          this->DoErrorMessage(strerror(errno));
         }
       } else {
-        this->DoErrorMessage("Error saving file");
+        snprintf(msg,sizeof(msg)-1, "Failed to open file %s\n",absoluteFile);
+        this->DoErrorMessage(msg);
         this->DoErrorMessage(strerror(errno));
       }
-
     }
-
+    unmapFile(mmFile);
     if(filesize == 0 /*filesize != tmpfilesize*/){
-      char msg[256];
-      snprintf(msg,256, "Bytes written %ld of %ld",filesize, mmFile.filesize);
+      snprintf(msg,sizeof(msg)-1, "Bytes written %ld of %ld\n",filesize, mmFile.filesize);
       this->DoErrorMessage(msg);
     }
     //need to send response back to client to avoid wating connection
     mg_printf_data(conn,
         "Written %ld bytes to file: %s\n\n",
         filesize,
-        file_name);
+        absoluteFile);
   } else {
-    mg_printf_data(conn, "%s", "Had no data to write...");
+    mg_printf_data(conn, "%s", "Had no data to write...\n\n");
   }
   //MG_CLOSE event is not raised by mongoose as expected. Need to close file
   OnEventClose(conn);
@@ -461,7 +464,7 @@ int WebController::HandleJsonRequest(struct mg_connection *conn, const char *obj
 
   //Reset global response string
   gp_response[0] = '\0';
-  //gp_response = (char*) malloc(sizeof(char) * ( MAX_LINE));
+  //gp_response = (char*) malloc(sizeof(char) * ( MAX_RESPONSE));
   ret = 0;
   if (!strcmp("kmx", object)) {
     if (FUNC_SIGP("loadGlobalFile", 2)) {
@@ -551,26 +554,30 @@ int WebController::OpenFile(struct mg_connection *conn, struct json_token *param
 
 void WebController::ListDir(struct json_token *paramtoken){
     char *dir = NULL;
+    char absoluteDir[256];
     toks(paramtoken, &dir, 0);
     if (dir) {
       DIR *dp;
       struct dirent *ep;
       int w = 0,first=1;
-      dp = opendir (dir);
+      absolutePath(dir, absoluteDir);
+      dp = opendir (absoluteDir);
       if (dp != NULL){
-          w += snprintf(gp_response+w, MAX_LINE-w, "[");
+          w += json_emit(gp_response+w, MAX_RESPONSE-w, "{s: s, s: [", "dir", absoluteDir,"files");
+          //w += snprintf(gp_response+w, MAX_RESPONSE-w, "[");
           while ((ep = readdir(dp))){
             //printf("%d %s\n", ep->d_type, ep->d_name);
             if(first){
               first = 0;
-              w += json_emit(gp_response+w, MAX_LINE-w, "{s: s, s: i}", "name", ep->d_name,"type",ep->d_type );
+              w += json_emit(gp_response+w, MAX_RESPONSE-w, "{s: s, s: i}", "name", ep->d_name,"type",ep->d_type );
             } else {
-              w += json_emit(gp_response+w, MAX_LINE-w, ",{s: s, s: i}", "name", ep->d_name,"type",ep->d_type );
+              w += json_emit(gp_response+w, MAX_RESPONSE-w, ",{s: s, s: i}", "name", ep->d_name,"type",ep->d_type );
             }
           }
-          w += snprintf(gp_response+w, MAX_LINE-w, "]");
+          w += snprintf(gp_response+w, MAX_RESPONSE-w, "]}");
           (void) closedir (dp);
       } else {
+        w += json_emit(gp_response+w, MAX_RESPONSE-w, "{s: s, s: []}", "dir", absoluteDir,"files");
         this->DoErrorMessage(strerror(errno));
       }
     }
@@ -755,15 +762,9 @@ void WebController::setInterpreterActionParams(struct json_token *jsontoken, int
       if(file == NULL || action == 0){
         Interpreter->McodeActions[actionIndex].String[0] = 0;
       } else {
-        if(file[0]=='/'){
-          //path is absolute
-          strcpy(Interpreter->McodeActions[actionIndex].String, file);
-        } else {
-          //path is relative. make it absolute
-          char absoluteFile[256];
-          absolutePath(file, absoluteFile);
-          strcpy(Interpreter->McodeActions[actionIndex].String, absoluteFile);
-        }
+        char absoluteFile[256];
+        absolutePath(file, absoluteFile);
+        strcpy(Interpreter->McodeActions[actionIndex].String, absoluteFile);
       }
 
     } else {

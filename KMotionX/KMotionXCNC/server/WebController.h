@@ -10,7 +10,7 @@
 
 #include "KmxController.h"
 #include "mongoose.h"
-
+#define MAX_RESPONSE MAX_LINE*4 
 enum cb_type {
   CB_STATUS, //Non blocking callback. Called from the interpreter in different thread
   CB_COMPLETE, //Non blocking callback. Called from the interpreter in different thread
@@ -52,7 +52,7 @@ private:
   mg_server *server;
   int callback_counter = 0; //Callback id counter.
   //global poll thread response array, no need to allocate eah time since server is single threaded
-  char gp_response[MAX_LINE];
+  char gp_response[MAX_RESPONSE];
   void ListDir(struct json_token *paramtoken);
   int OpenFile(struct mg_connection *conn, struct json_token *paramtoken);
   int HandleApiRequest(struct mg_connection *conn);
