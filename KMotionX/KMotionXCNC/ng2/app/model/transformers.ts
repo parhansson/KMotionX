@@ -15,8 +15,8 @@ import {LogService} from "../log/log.service"
 export class StaticTransformer {
   gcodeSourceObserver: Observer<GCodeSource>;
   gcodeSourceObservable = new Observable<GCodeSource>(observer => this.gcodeSourceObserver = observer)
-  threeObserver: Observer<any>;
-  threeObservable = new Observable<any>(observer => this.threeObserver = observer)
+  threeObserver: Observer<THREE.Group>;
+  threeObservable = new Observable<THREE.Group>(observer => this.threeObserver = observer)
 
   constructor(private logService:LogService, private modelSettings: ModelSettingsService) {
   }

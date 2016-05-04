@@ -42,7 +42,7 @@ export class GCodeScreenComponent extends ScreenComponent {
     private staticTransformer: StaticTransformer) {
     super()
     this.intStatus = socketService.data;
-    this.staticTransformer.threeObservable.subscribe(data => this.onThree(data))
+    this.staticTransformer.threeObservable.subscribe(data => this.threeComp.model = data)
     this.staticTransformer.gcodeSourceObservable.subscribe(data => this.gcodetext = data.text)
     this.resource = new FileResource("", '');
     socketService.gcodeFileObservable.subscribe(gcodeFile => {
@@ -75,15 +75,8 @@ export class GCodeScreenComponent extends ScreenComponent {
   onSave() {
     this.backendService.save(this.resource.canonical, this.gcodetext)
   }
+  
   onOpenFile(event) {
     this.staticTransformer.transform(event.contentType, event.payload)
-  }
-
-  private onThree(data: any) {
-    console.log(data)
-    var view = this.threeComp.viewer;
-    view.modelObject.add(data);
-    view.updateFn();
-    //this.threeComp.requestTick();
   }
 }

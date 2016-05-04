@@ -66,7 +66,7 @@ export class Gcode2Three {
 
   constructor() { }
 
-  transform(transformedDefer: Observer<any>, gcode, disableWorker: boolean) {
+  transform(transformedDefer: Observer<THREE.Group>, gcode, disableWorker: boolean) {
     this.group = new THREE.Group();
     this.group.name = 'GCODE';
     this.state = new State()

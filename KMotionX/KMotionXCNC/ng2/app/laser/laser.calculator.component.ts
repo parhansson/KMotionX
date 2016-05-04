@@ -2,7 +2,6 @@ import {Component,Inject, Input, Output} from '@angular/core';
 import {ScreenComponent} from "../screen.component"
 @Component({
     selector: 'laser-calc-screen',
-    //directives: [Alert,Hello],
     templateUrl:'dist/app/laser/laser-calc.html'
 })
 export class LaserCalculatorComponent extends ScreenComponent{ 

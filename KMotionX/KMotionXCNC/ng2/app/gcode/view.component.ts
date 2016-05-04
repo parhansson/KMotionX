@@ -12,17 +12,28 @@ declare var opentype: any
   template: ""
 })
 export class ThreeViewComponent {
-  public viewer = { updateFn: null, machineObject: new THREE.Group(), modelObject: new THREE.Group() }
-  private renderer: any
-  private camera: any
-  private controls: any
-  private scene: any
+  private renderer: THREE.WebGLRenderer
+  private camera: THREE.PerspectiveCamera
+  private controls: THREE.TrackballControls
+  private scene: THREE.Scene
   private element: HTMLElement
   private mouseDown = false;
   private ticking = false;
   private orientation: Orientation
-  private modelDetector
-  private machineDetector
+  private modelDetector: RaycastDetector
+  private machineDetector: RaycastDetector
+  private modelGroup = new THREE.Group()
+  private auxiliaryGroup = new THREE.Group()
+  private currentModelObject: THREE.Object3D = null
+
+  set model(model: THREE.Object3D) {
+    if(this.currentModelObject !== null){
+      this.modelGroup.remove(this.currentModelObject)
+    }
+    this.currentModelObject = model
+    this.modelGroup.add(this.currentModelObject)
+    this.requestTick()
+  }
 
   constructor(private elRef: ElementRef) {
     //schedule setsize and render after element has been created
@@ -34,7 +45,7 @@ export class ThreeViewComponent {
 
     this.element = elRef.nativeElement
     //Directive Exports
-    this.viewer.updateFn = this.requestTick.bind(this);
+    //this.viewer.updateFn = this.requestTick.bind(this);
     // Renderer
     this.renderer = new THREE.WebGLRenderer({ /*canvas: this.element.firstChild,*/ antialias: true, clearColor: 0x000000, alpha: true });
 
@@ -58,8 +69,8 @@ export class ThreeViewComponent {
     this.camera.lookAt(center);
     //camera.up = new THREE.Vector3( 0, 0, 0 );
     this.scene.add(this.camera);
-    this.scene.add(this.viewer.machineObject);
-    this.scene.add(this.viewer.modelObject);
+    this.scene.add(this.auxiliaryGroup);
+    this.scene.add(this.modelGroup);
 
 
 
@@ -79,8 +90,8 @@ export class ThreeViewComponent {
     //Logic
     var cursor = new THREE.Mesh(new THREE.SphereGeometry(1), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
     this.scene.add(cursor);
-    this.modelDetector = new RaycastDetector(cursor, this.camera, this.viewer.modelObject);
-    this.machineDetector = new RaycastDetector(cursor, this.camera, this.viewer.machineObject);
+    this.modelDetector = new RaycastDetector(cursor, this.camera, this.modelGroup);
+    this.machineDetector = new RaycastDetector(cursor, this.camera, this.auxiliaryGroup);
     // Lights...
     [[0, 0, 1, 0xFFFFCC],
       [0, 1, 0, 0xFFCCFF],
@@ -209,12 +220,12 @@ element.on( 'mouseleave', function(){
 
 // Find mouse intersection objects!
 export class RaycastDetector {
-  currentObject;
+  currentObject: any //THREE.Object3D;
   previousPoint = new THREE.Vector3(0, 0, 0);
   raycaster = new THREE.Raycaster();
 
 
-  constructor(private markerObject, private camera, private parentObject) {
+  constructor(private markerObject: THREE.Mesh, private camera: THREE.Camera, private parentObject: THREE.Group) {
     this.raycaster.linePrecision = 0.5;
     markerObject.visible = false;
   }
@@ -272,7 +283,7 @@ export class Orientation {
   scene: any
   camera: any
 
-  constructor(private element, private syncCamera) {
+  constructor(private element, private syncCamera: THREE.Camera) {
 
     this.renderer = new THREE.WebGLRenderer({ antialias: false, clearColor: 0x000000, alpha: true });
     this.scene = new THREE.Scene();
