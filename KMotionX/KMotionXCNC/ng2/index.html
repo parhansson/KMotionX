@@ -16,11 +16,11 @@
   <script src="node_modules/reflect-metadata/Reflect.js"></script>
   <script src="node_modules/systemjs/dist/system.src.js"></script>
   <!--
-    Loading bundles nit working
+    Loading bundles not available in rc.0
   <script src="node_modules/rxjs/bundles/Rx.js"></script>
   <script src="node_modules/angular2/bundles/angular2.dev.js"></script>
   -->
-  <!--
+  <!-- need to wait for new version on ng2-bootstrap
   <script src="node_modules/ng2-bootstrap/bundles/ng2-bootstrap.js"></script>
   -->
   <!-- need for number pipe on safari-->
@@ -37,43 +37,9 @@
   -->
 
 
-  <!-- 2. Configure SystemJS 
-  <script type="text/javascript">
-document.write("<base href='http://" + document.location.host + "' />");
-</script>
-  
-  -->
+  <!-- 2. Configure SystemJS -->
   <base href="/ng2/">
   <script src="systemjs.config.js"></script>
-  <noscript>
-    System.config({
-        packages: {        
-          "dist": {
-            format: 'register',
-            defaultExtension: 'js'
-          }
-        },
-        map: {
-            moment: 'node_modules/moment/moment.js', //needed by ng2-bootstrap datepicker
-            kmxlog: "dist/app/log"
-        }
-        /*
-        ,
-        meta: {
-          'node_modules/three-trackballcontrols/index.js': {
-            format: 'cjs',
-            deps: ['./node_modules/three/three.js']
-          }
-        }
-        */
-      });
-      /*
-      System.import('node_modules/three-trackballcontrols/index.js')
-            .then(null, console.error.bind(console));
-            */
-      System.import('dist/app/main')
-            .then(null, console.error.bind(console));
-  </noscript>
   <script>
     System.import('dist/app/main')
             .then(null, console.error.bind(console));

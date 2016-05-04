@@ -9,9 +9,7 @@
   var map = {
     //'app': 'app', // 'dist',
     'rxjs': 'node_modules/rxjs',
-    //'angular2-in-memory-web-api': 'node_modules/angular2-in-memory-web-api',
     '@angular': 'node_modules/@angular',
-    //'three':'node_modules/three'
     //moment: 'node_modules/moment/moment.js', //needed by ng2-bootstrap datepicker
   };
 
@@ -20,10 +18,17 @@
     "dist": { format: 'register', defaultExtension: 'js' },
     //'app':                        { main: 'main.js',  defaultExtension: 'js' },
     'rxjs': { defaultExtension: 'js' },
-    //'angular2-in-memory-web-api': { defaultExtension: 'js' },
-    //'three-trackballcontrols':{}
-    //"three":{ main: 'three.js',  defaultExtension: 'js' },
   };
+
+        /*
+        ,
+        meta: {
+          'node_modules/three-trackballcontrols/index.js': {
+            format: 'cjs',
+            deps: ['./node_modules/three/three.js']
+          }
+        }
+        */
 
   var packageNames = [
     '@angular/common',

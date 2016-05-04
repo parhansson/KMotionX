@@ -13,7 +13,7 @@ import {Component,Directive,EventEmitter,ElementRef} from '@angular/core';
     ]
 })
 export class AceDirective { 
-    private editor;
+    private editor:AceAjax.Editor;
     public textChanged: EventEmitter<string>;
 
     set text(s: string) {
@@ -43,7 +43,8 @@ export class AceDirective {
         this.editor.setTheme("ace/theme/chrome");
         
 
-        this.editor.on("change", (e) => {
+        this.editor.addEventListener("change", (e) => {
+            console.log("changed: ", e)
             this.textChanged.next(this.editor.getValue());
         });
     }
