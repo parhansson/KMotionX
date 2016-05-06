@@ -7,16 +7,6 @@ import {KmxStatus} from './shared'
 //import {LogLevel} from '../kmx';
 //import {LogLevel} from 'kmxlog/log.level';
 
-/*
-class LOG_TYPE {
-  static NONE = 0;
-  static SEND = 1;
-  static RECEIVE = 2;
-  static ERROR = 3;
-  static PING = 4;
-}
-*/
-
 @Injectable()
 export class SocketService {
   private gcodeFileObserver: Observer<string>
@@ -48,15 +38,12 @@ export class SocketService {
     this.data.gcodeFile = ""
     this.data.machineSettingsFile = ""
 
-    var __this = this;
     var url = 'ws://' + window.location.host + '/ws';
     KMXUtil.getSingletonWorker("dist/app/backend/socket.loader.js", this.workerMessage.bind(this))
       .then(
-      function (worker) {
-        __this.socketWorker = worker;
-      }, function (reason) {
-        console.error(reason);
-      });
+      (worker) => this.socketWorker = worker,
+      (reason) => console.error(reason)
+      );
 
 
     //does not seem to work, at least not in chrome
@@ -95,25 +82,18 @@ export class SocketService {
       //console.log(json);
 
       var raw = data.message as KmxStatus;
-      this.data.copyFrom(raw)
-      this.data.interpreting = raw.interpreting,
-        this.data.feedHold = raw.stopImmediateState > 0; //pause
-      this.data.dro = raw.dro;
-      this.data.timeStamp = raw.timeStamp;
-      this.data.connected = raw.connected;
-      this.data.simulating = raw.simulating;
+
       //  console.log("simulating", this.data.simulating)
       // if(this.data.simulating !== raw.simulating && this.simulateObserver){
       //   this.simulateObserver.next(this.data.simulating)
       // }
 
-
-      this.data.currentLine = raw.currentLine;
       if (this.data.gcodeFile !== raw.gcodeFile && this.gcodeFileObserver) {
         this.data.gcodeFile = raw.gcodeFile;
         this.gcodeFileObserver.next(this.data.gcodeFile)
       }
-      this.data.machineSettingsFile = raw.machineSettingsFile;
+
+      this.data.copyFrom(raw)
     } else if (data.log) {
       this.logHandler(data.message, data.type);
     }
@@ -156,8 +136,8 @@ export class SocketService {
     return 0;
   }
 
-  logHandler(message, type) {
-    if (this.kmxLogger.logExist('output') ||  true) {
+  logHandler(message, type: LogLevel) {
+    if (this.kmxLogger.logExist('output') || true) {
       var style = '';
       var fragment = document.createDocumentFragment();
       var div = document.createElement('div');

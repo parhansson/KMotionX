@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
 import {BackendService} from '../backend/backend.service';
+import {KMXUtil} from '../util/kmxutil';
 
 export class Machine {
   private static mcodes = ['M0', 'M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'S'];
@@ -130,7 +131,7 @@ export class SettingsService {
   constructor(private http: Http, private kmxBackend: BackendService) {
 
     this.machine = new Machine();
-    this.load("/settings/machines/laser.cnf");
+    this.load("./settings/machines/laser.cnf");
   }
   public save(): void {
     var file = this.fileName();
@@ -138,8 +139,8 @@ export class SettingsService {
   }
   public load(file) {
 
-    this.kmxBackend.load(file).subscribe(
-      (data) => this.machine.update(data.json()),
+    this.kmxBackend.onOpenFile(file).subscribe(
+      (data) => this.machine.update(JSON.parse(KMXUtil.ab2str(data.payload))),
       err => console.error(err),
       () => console.log('File loaded: ' + file)
     );;

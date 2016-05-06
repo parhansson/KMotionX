@@ -1,5 +1,5 @@
 
-import {Component,Directive,EventEmitter,ElementRef} from '@angular/core';
+import {Component, Directive, EventEmitter, ElementRef} from '@angular/core';
 
 @Directive({
     selector: '[aceEditor]',
@@ -12,8 +12,8 @@ import {Component,Directive,EventEmitter,ElementRef} from '@angular/core';
         "textChanged"
     ]
 })
-export class AceDirective { 
-    private editor:AceAjax.Editor;
+export class AceDirective {
+    public editor: AceAjax.Editor;
     public textChanged: EventEmitter<string>;
 
     set text(s: string) {
@@ -21,11 +21,18 @@ export class AceDirective {
         this.editor.clearSelection();
         //this.editor.focus();
     }
-    set theme(t:string){
-      this.editor.setTheme("ace/theme/"+ t);
+    get text(){
+        return this.editor.getValue()
     }
-    set mode(m:string){
-      this.editor.getSession().setMode("ace/mode/" + m);
+    set theme(theme: string) {
+        if (theme) {
+            this.editor.setTheme("ace/theme/" + theme);
+        }
+    }
+    set mode(mode: string) {
+        if (mode) {
+            this.editor.getSession().setMode("ace/mode/" + mode);
+        }
     }
 
     constructor(elementRef: ElementRef) {
@@ -37,11 +44,11 @@ export class AceDirective {
         //el.style.width = "300px";
         el.style.height = "100%";
         el.style.width = "100%";
-        
+
         this.editor = ace.edit(el);
         this.editor.resize(true);
         this.editor.setTheme("ace/theme/chrome");
-        
+
 
         this.editor.addEventListener("change", (e) => {
             console.log("changed: ", e)

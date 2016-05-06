@@ -1,8 +1,14 @@
 
 
 
-
-export class KmxStatus {
+export interface Status {
+  bitsDirection: boolean[]
+  bitsState: boolean[]
+  dro: number[]
+  currentLine: number
+  gcodeFile: string
+}
+export class KmxStatus implements Status{
   timeStamp: number = 0
   version: number = 0
   size: number = 0

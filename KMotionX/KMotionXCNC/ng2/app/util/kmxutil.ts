@@ -46,14 +46,14 @@ export class KMXUtil {
   
   static getSingletonWorker(workerScript, messageHandler) {
     return new Promise<Worker>(function(resolve, reject) {
-      var worker = this.workers[workerScript];
+      var worker = KMXUtil.workers[workerScript];
       if (worker === undefined) {
         try {
           worker = new Worker(workerScript);;
         } catch (error) {
           reject(Error(error));
         }
-        this.workers[workerScript] = worker;
+        KMXUtil.workers[workerScript] = worker;
       }
       //This needs to be set every time. Need to figure out why 
       worker.onmessage = messageHandler;

@@ -1,6 +1,7 @@
 
 import {bootstrap}        from '@angular/platform-browser-dynamic'
 import {BackendService}   from './backend/backend.service';
+import {KFlopBackendService}   from './backend/kflop/kflop.backend.service';
 import {LogService}       from './log/log.service';
 import {KmxComponent}     from './kmx.component'
 import {SocketService}    from './backend/socket.service'
@@ -19,11 +20,11 @@ bootstrap(KmxComponent, [
   HTTP_PROVIDERS,
   ROUTER_PROVIDERS,
   SocketService,
-  BackendService,
   LogService,
   SettingsService,
   ModelSettingsService,
-  StaticTransformer
+  StaticTransformer,
+  provide(BackendService, { useClass: KFlopBackendService })
   //,
   //provide(LocationStrategy,{useClass: HashLocationStrategy})]);
   //provide(LocationStrategy,{})

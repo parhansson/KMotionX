@@ -92,7 +92,7 @@
       onEvent('onUpdateMotionParams');
     }
     function onInvokeAction(action) {
-      onEvent('onInvokeAction', {"params": [action]});
+      onEvent('onInvokeAction', {"params": action});
     }
     function onDoErrorMessage(message) {
       onEvent('onDoErrorMessage', {"params": msg});

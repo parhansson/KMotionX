@@ -511,7 +511,7 @@ int WebController::HandleJsonRequest(struct mg_connection *conn, const char *obj
     } else if (FUNC_SIGP("onInvokeAction", 1)) {
       BOOL FlushBeforeUnbufferedOperation = FALSE;
       int action;
-      toki(paramtoken + 1, &action);
+      toki(paramtoken, &action);
       ret = this->InvokeAction(action,FlushBeforeUnbufferedOperation);
     } else if (FUNC_SIGP("onDoErrorMessage", 1)) {
       char *p1 = NULL;

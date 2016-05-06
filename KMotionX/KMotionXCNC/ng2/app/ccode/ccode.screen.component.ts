@@ -1,22 +1,21 @@
-import {Component,Inject} from '@angular/core';
-import {AceDirective} from "../editor/ace.directive";
+import {Component, Inject} from '@angular/core';
 import {ScreenComponent} from "../screen.component"
-import {KMXUtil}    from '../util/KMXUtil'
-import {ResourceComponent,FilePathComponent, FileResource, FileDropZone}    from '../resources/resource.component'
-@Component({
-    selector: 'ccode-screen',
-    directives: [AceDirective,ResourceComponent,FilePathComponent, FileDropZone],
-    templateUrl:'dist/app/ccode/ccode.screen.html'
-})
-export class CCodeScreenComponent extends ScreenComponent{ 
-    editorContent:string
-    resource:FileResource
-    constructor(){
-      super()
-      this.resource = new FileResource("./settings/c-programs",'');
-    }
+import {AceEditorComponent} from '../editor/ace.editor.component'
+import {FileResource} from '../backend/file'
 
-  onOpenFile(event) {
-    this.editorContent = KMXUtil.ab2str(event.payload)
+@Component({
+  selector: 'ccode-screen',
+  directives: [AceEditorComponent],
+  template: `
+    <code-editor id="ccodeEditor" [resource]="resource" mode="c_cpp" >
+      <buttons>TODO add compile, load and execute buttons</buttons>
+    </code-editor>`
+})
+export class CCodeScreenComponent extends ScreenComponent {
+  resource:FileResource
+  
+  constructor() {
+    super()
+    this.resource = new FileResource("./settings/c-programs", '');
   }
 }

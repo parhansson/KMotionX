@@ -1,16 +1,15 @@
 import {Directive, Component, Input, Output, EventEmitter, ElementRef} from '@angular/core';
 import {BackendService} from '../backend/backend.service'
+import {IFileObject, FileResource} from '../backend/file'
 
-export interface IFileObject {
-  contentType: string
-  payload: ArrayBuffer
-}
+
 
 @Directive({
   selector: "[file-dropzone]",
   host: {
     '(dragover)': 'processDragOverOrEnter($event)',
     '(dragenter)': 'processDragOverOrEnter($event)',
+    '(dragleave)': 'processDragExit($event)',
     '(drop)': 'processDrop($event)'
   }
 
@@ -26,42 +25,48 @@ export class FileDropZone {
     this.element = element.nativeElement
   }
 
-  processDrop(event) {
-    var file, name, size, type;
+  processDrop(event:DragEvent) {
+    var file:File
     if (event != null) {
       event.preventDefault();
     }
     this.highlight(null)
-    var ev = event.originalEvent || event; //if jquery is loaded before angular event is wrapped
-    file = ev.dataTransfer.files[0];
-    name = file.name;
-    type = file.type;
-    size = file.size;
+    file = (event.dataTransfer as DataTransfer).files.item(0);
 
     let reader = new FileReader();
-    reader.onload = (evt) => {
-      if (this.checkSize(size) && this.isTypeValid(type)) {
+    reader.addEventListener("load",(evt) => {
+      if (this.checkSize(file.size) && this.isTypeValid(file.type)) {
         console.log(typeof ((evt as any).target.result))
-        this.dropped.emit({ contentType: type, payload: (evt as any).target.result })
+        this.dropped.emit({ contentType: file.type, payload: (evt as any).target.result })
       }
-    };
+    })
+
     reader.readAsArrayBuffer(file)
+    return false;
+  }
+  
+  processDragExit(event:DragEvent){
+    if (event != null) {
+      event.preventDefault();
+    }
+    this.highlight(null)
+    event.dataTransfer.effectAllowed = 'none';
+    return false
+  }
+  
+  processDragOverOrEnter(event:DragEvent) {
+    if (event != null) {
+      event.preventDefault();
+    }
+    this.highlight('lightgray')
+    event.dataTransfer.effectAllowed = 'copy';
     return false;
   }
 
   private highlight(color: string) {
     this.element.style.backgroundColor = color;
   }
-
-  processDragOverOrEnter(event) {
-    if (event != null) {
-      event.preventDefault();
-    }
-    this.highlight('lightgray')
-    var ev = event.originalEvent || event; //if jquery is loaded before angular event is wrapped
-    ev.dataTransfer.effectAllowed = 'copy';
-    return false;
-  }
+  
   private checkSize(size) {
     /*
     var _ref;
@@ -90,38 +95,7 @@ export class FileDropZone {
 
 }
 
-export class FileResource {
-  paths: string[]
 
-  constructor(dir?: string, public file?: string) {
-    this.dir = dir
-  }
-  set dir(dir: string) {
-    this.paths = dir.split("/")
-  }
-  get dir() {
-    return this.paths.join("/")
-  }
-  append(path: string) {
-    this.paths.push(path)
-  }
-
-  get canonical() {
-    return this.dir + "/" + this.file
-  }
-  set canonical(file) {
-    let parts = file.split("/");
-    this.file = parts.splice(parts.length - 1)[0]
-    this.paths = parts
-  }
-
-  up(count: number) {
-    this.paths = this.paths.splice(0, this.paths.length - count);
-  }
-  goto(index: number) {
-    this.paths = this.paths.splice(0, index);
-  }
-}
 
 @Component({
   selector: 'file-path',
@@ -158,7 +132,7 @@ export class FilePathComponent {
             <a class="close" (click)="close()">&times;</a>
             <h4>Open GCode</h4>
           </div>
-          <div class="modal-body" file-dropzone (dropped)="onDroppedFile($event)">
+          <div class="modal-body" file-dropzone (dropped)="setFile($event)">
             <file-path [resource]="resource" (changed)="listDir()" ></file-path>
             <ul class="modal-file-list">
               <li class="button" (click)="selectFile(file)" *ngFor="let file of files">{{file.name}}</li>          
@@ -209,12 +183,20 @@ export class ResourceComponent {
     this.listDir()
   }
 
+  save(content:string) {
+    this.backendService.save(this.resource.canonical, content)
+  }
+  
+  saveAs(content:string) {
+    //TODO implement
+    console.warn("Save as not yet implemented")
+  }
   close() {
     this.showModal = false;
     this.modalDisplay = "none"
   }
-  private onDroppedFile(data: IFileObject) {
-    this.selectedFile.emit(data)
+  private setFile(file: IFileObject) {
+    this.selectedFile.emit(file)
     this.close()
   }
   private openFile() {
@@ -227,9 +209,8 @@ export class ResourceComponent {
   private listDir() {
     this.backendService.onListDir(this.resource.dir).subscribe(
       data => {
-        let value = data.json()
-        this.files = value.files
-        this.resource.dir = value.dir
+        this.files = data.files
+        this.resource.dir = data.dir
       },
       err => console.log(err)
     )
