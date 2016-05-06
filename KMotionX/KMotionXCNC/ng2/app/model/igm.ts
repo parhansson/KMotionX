@@ -1,8 +1,6 @@
 
-import {GCodeVector} from '../vector';
-
-
-
+import {GCodeVector} from './vector';
+import {SVGModelSettings } from './model.settings.service'
 export class IgmPath {
 
 }
@@ -54,12 +52,12 @@ export class IGM {
   layerKeys: any[] = []; // layerKey is a mapping to add unnamed layers, layer will get a generated name
   textLayer = []; // textpaths
   unsupported = []  // Unsupported nodes
-  rawLine:string[] = []
+  rawLine: string[] = []
   constructor() {
 
   }
 
-  public addRaw(raw:string){
+  public addRaw(raw: string) {
     this.rawLine.push(raw)
   }
   public addToLayerObject(layerKey: any, obj: IgmObject, layerName?: string) {
@@ -96,13 +94,7 @@ export class IGM {
 
   }
 
-  public applyModifications(settings: any, ratio: number) {
-    //cannot use this default value syntax for booleans
-    settings.translateToOrigo = (typeof settings.translateToOrigo === 'boolean') ? settings.translateToOrigo : true;
-    settings.removeOutline = (typeof settings.removeOutline === 'boolean') ? settings.removeOutline : false;
-    settings.removeDuplicates = (typeof settings.removeDuplicates === 'boolean') ? settings.removeDuplicates : true;
-    settings.removeSingularites = (typeof settings.removeSingularites === 'boolean') ? settings.removeSingularites : true;
-    settings.fractionalDigits = settings.fractionalDigits || 3;
+  public applyModifications(settings: SVGModelSettings, ratio: number) {
     var paths = this.alllayers;
     console.info("Nr of Shapes: ", paths.length);
 
@@ -245,7 +237,7 @@ export class IGM {
   joinAdjacent(paths: IgmObject[], fractionalDigits: number) {
     var joined = 0;
     if (paths.length < 2) {
-      return;
+      return joined;
     }
     var idx = 0;
     var last = paths[idx++];
@@ -282,18 +274,16 @@ export class IGM {
     //  mark V as visited.
     //  if all the vertices in domain are visited, then terminate.
     //  Go to step 2.
-    var orderedPaths: IgmObject[] = [];
-    var next = this.nearest(new GCodeVector(0, 0, 0), paths);
-    orderedPaths.push(next);
-    while (paths.length > 0) {
-      next = this.nearest(next.end(), paths)
-      orderedPaths.push(next)
+    let orderedPaths: IgmObject[] = [];
+    let next = this.nearest(new GCodeVector(0, 0, 0), paths);
+    if (next) { // next is undefined if paths is an empty array
+      orderedPaths.push(next);
+      while (paths.length > 0) {
+        next = this.nearest(next.end(), paths)
+        orderedPaths.push(next)
+      }
+      paths.push.apply(paths, orderedPaths)
     }
-
-    paths.push.apply(paths, orderedPaths)
-    return;
-
-
   }
   private nearest(point: GCodeVector, paths: IgmObject[]) {
 
@@ -331,14 +321,6 @@ export class IGM {
   }
 
 }
-
-
-
-var Unit = {
-  inch: "inch",
-  mm: "mm"
-}
-
 
 export class GCodeSource {
   lines: string[];

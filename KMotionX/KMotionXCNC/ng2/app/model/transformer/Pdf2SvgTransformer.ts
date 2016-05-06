@@ -1,28 +1,28 @@
-import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
+import {Observer} from 'rxjs/Rx';
 import {ModelSettingsService, ModelSettings} from '../model.settings.service';
+import {ModelTransformer} from './ModelTransformer';
 
 declare var PDFJS: any
 
-export class PDF2SVG {
+export class Pdf2SvgTransformer extends ModelTransformer<ArrayBuffer,SVGElement> {
   transformerSettings: ModelSettings
 
   constructor(private modelSettingsService: ModelSettingsService) {
+    super()
     this.transformerSettings = modelSettingsService.settings;
   }
 
-  transcodePDF(transformedDefer: Observer<string | SVGElement>, arrayBuffer, asText: boolean) {
-    var resultAsText = asText || false;
+  execute(source:ArrayBuffer,targetObserver: Observer<SVGElement>) {
     var scale = 1.0;
     //this will use base64 encoded instead of bloburls for images
     //PDFJS.disableCreateObjectURL = true;
     //
-    //PDFJS.disableFontFace = true;
+    PDFJS.disableFontFace = true;
     // Fetch the PDF document from the URL using promises
     //
     let transformerSettings = this.transformerSettings
 
-    PDFJS.getDocument(arrayBuffer).then(function (pdf) {
+    PDFJS.getDocument(source).then(function (pdf) {
       let numPages = pdf.numPages;
       // Using promise to fetch the page
 
@@ -30,7 +30,7 @@ export class PDF2SVG {
       let MAX_NUM_PAGES = 50;
       let ii = Math.min(MAX_NUM_PAGES, numPages);
       let svgPages = [];
-      let promise:Promise<any> = Promise.resolve();
+      let promise: Promise<any> = Promise.resolve();
       for (var i = 1; i <= ii; i++) {
         let anchor = null;//createAnchor(i);
         if (transformerSettings.pdf.page != i) continue;
@@ -44,17 +44,9 @@ export class PDF2SVG {
 
             return page.getOperatorList().then(function (opList) {
               let svgGfx = new PDFJS.SVGGraphics(page.commonObjs, page.objs);
-              return svgGfx.getSVG(opList, viewport).then(function (svg) {
-                // container.appendChild(svg);                  
-                if (resultAsText) {
-                  // need to add namespace declarations for this to be a valid xml document
-                  transformedDefer.next(svg.outerHTML.replace('<svg:svg ', '<svg:svg xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" '))
-                } else {
-                  //transformedDefer.resolve(svg);
-                  transformedDefer.next(svg)
-
-                }
-                transformedDefer.complete()
+              return svgGfx.getSVG(opList, viewport).then(function (svg: SVGElement) {
+                targetObserver.next(svg)
+                //svgObserver.complete()
                 pdf.destroy(); //Destroy worker
               });
             });
@@ -62,8 +54,6 @@ export class PDF2SVG {
         }.bind(null, i, anchor));
       }
     });
-
-    return transformedDefer;
   }
   createContainer(pageNum, width, height) {
     var container = document.createElement('div');

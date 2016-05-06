@@ -2,7 +2,7 @@ export class KMXUtil {
   static createAnchor = {}
 
 
-  static ab2str(buf:ArrayBuffer) {
+  static ab2str(buf: ArrayBuffer) {
     var arr = new Uint8Array(buf)
     var str = "";
     for (var i = 0, l = arr.length; i < l; i++)
@@ -21,9 +21,9 @@ export class KMXUtil {
     }
     return buf;
   }
-  
+
   static injectScript(source, loadedCondition) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       if (loadedCondition === true) {
         //TODO check if script tag is present instead of external loaded condition 
         resolve("Script already loaded:" + source);
@@ -31,11 +31,11 @@ export class KMXUtil {
         var script = document.createElement('script');
         script.type = 'text/javascript';
         script.async = true;
-        script.onload = function() {
+        script.onload = function () {
           // remote script has loaded
           resolve("Script loaded:" + source);
         };
-        script.onerror = function() { reject(Error("Load script failed: " + source)); }
+        script.onerror = function () { reject(Error("Load script failed: " + source)); }
         script.src = source;
         document.getElementsByTagName('head')[0].appendChild(script);
       }
@@ -43,9 +43,9 @@ export class KMXUtil {
 
     });
   }
-  
+
   static getSingletonWorker(workerScript, messageHandler) {
-    return new Promise<Worker>(function(resolve, reject) {
+    return new Promise<Worker>(function (resolve, reject) {
       var worker = KMXUtil.workers[workerScript];
       if (worker === undefined) {
         try {
@@ -61,7 +61,7 @@ export class KMXUtil {
     }.bind(this));
 
   }
-  
+
   static workers = {}
   // Returns a function, that, as long as it continues to be invoked, will not
   // be triggered. The function will be called after it stops being called for
@@ -69,9 +69,9 @@ export class KMXUtil {
   // leading edge, instead of the trailing.
   static debounce(func, wait, immediate) {
     var timeout;
-    return function() {
+    return function () {
       var context = this, args = arguments;
-      var later = function() {
+      var later = function () {
         timeout = null;
         if (!immediate) func.apply(context, args);
       };
@@ -81,5 +81,8 @@ export class KMXUtil {
       if (callNow) func.apply(context, args);
     };
   }
-
+  static svgToString(svg: SVGElement):string {
+    // need to add namespace declarations for this to be a valid xml document
+    return (svg as any).outerHTML.replace('<svg:svg ', '<svg:svg xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ')
+  }
 }

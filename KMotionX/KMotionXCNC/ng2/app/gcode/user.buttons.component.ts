@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {SettingsService} from '../settings/settings.service';
+import {SettingsService, Machine} from '../settings/settings.service';
 import {BackendService} from '../backend/backend.service';
 
 @Component({
@@ -15,7 +15,7 @@ import {BackendService} from '../backend/backend.service';
     `
 })
 export class UserButtonsComponent {
-  machine: any;
+  machine: Machine;
 
   constructor(settingsService: SettingsService, private backendService:BackendService) {
     this.machine = settingsService.machine;

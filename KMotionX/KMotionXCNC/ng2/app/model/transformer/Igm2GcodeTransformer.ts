@@ -1,7 +1,11 @@
-import {IGM, IgmObject} from './igm';
+import {IGM, GCodeSource} from '../igm';
+import {SVGModelSettings} from '../model.settings.service'
+import {ModelTransformer} from './ModelTransformer';
+import {Observer} from 'rxjs/Rx'
 
-export class GCodeOutput {
-  code:string[] = [];
+
+class GCodeOutput {
+  code: string[] = [];
   filter: boolean
 
   constructor(filter: boolean) {
@@ -26,22 +30,18 @@ export class GCodeOutput {
   }
 }
 
-export class igm2gcode {
+export class Igm2GcodeTransformer extends ModelTransformer<IGM,GCodeSource>{
 
-  transform(igm: IGM, settings: any) {
-    settings = settings || {};
-    settings.passes = settings.passes || 1;
-    settings.materialWidth = settings.materialWidth || 6;
-    settings.passWidth = settings.materialWidth / settings.passes;
-    settings.scale = settings.scale || 1;
-    settings.cutZ = settings.cutZ || 0; // cut z
-    settings.safeZ = settings.safeZ || 0;   // safe z
-    settings.feedRate = settings.feedRate || 1400;
-    settings.seekRate = settings.seekRate || 800;
-    settings.bitWidth = settings.bitWidth || 1; // in mm
-    settings.unit = settings.unit || "mm";
-    settings.fractionalDigits = settings.fractionalDigits || 3; //Thousands will do 
-    //settings.initCode
+  constructor(private settings: SVGModelSettings){
+    super()
+  }
+
+  execute(igm: IGM, targetObserver:Observer<GCodeSource>) {
+    
+    let passWidth = this.settings.materialWidth / this.settings.passes;
+    let settings = this.settings
+    //settings.seekRate = settings.seekRate || 800;
+    //settings.bitWidth = settings.bitWidth || 1; // in mm 
     //settings.dpi = settings.dpi || null;
 
     var dpiScale = 1;
@@ -55,12 +55,12 @@ export class igm2gcode {
       }
     }
 
-    var scaleNoDPI = function(val) {
+    var scaleNoDPI = function (val) {
       return format(val * settings.scale);
     }
     var ratio = settings.scale * dpiScale;
 
-    var format = function(numb) {
+    var format = function (numb) {
       //fix fractional digits
       numb = +numb.toFixed(settings.fractionalDigits);
       // Note the plus sign that drops any "extra" zeroes at the end.
@@ -116,7 +116,7 @@ export class igm2gcode {
         'F' + settings.seekRate*/
       ]);
 
-      for (var p = settings.passWidth; p <= settings.materialWidth; p += settings.passWidth) {
+      for (var p = passWidth; p <= settings.materialWidth; p += passWidth) {
         gcode.push('(Forward pass depth ' + p + ')');
         // begin the cut by dropping the tool to the work
         gcode.push([
@@ -151,7 +151,7 @@ export class igm2gcode {
 
             if (segment.x !== startVec.x || segment.y !== startVec.y) {
 
-              p += settings.passWidth;
+              p += passWidth;
               if (p <= settings.materialWidth) {
                 gcode.push('(Reverse pass depth ' + p + ')');
                 // begin the cut by dropping the tool to the work
@@ -185,7 +185,9 @@ export class igm2gcode {
     gcode.push('G0 Z0 F300');
     gcode.push('G0 X0 Y0 F800');
     gcode.push('M2');
-    return gcode.code;
+    
+    targetObserver.next(new GCodeSource(gcode.code))
+    
   }
 }
 

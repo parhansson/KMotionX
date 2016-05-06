@@ -3,8 +3,8 @@
  * Parses a string of gcode instructions, and invokes codeHandlers for each type of
  * command or values.
  */
-import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
+import {Subject} from 'rxjs/Rx';
+
 
 export class Block {
   line: number
@@ -112,11 +112,11 @@ export class GCodeParser {
 
   private static blockCommentEnd = ')';
 
-  private observer: Observer<Block>;
-  observable: Observable<Block>
+  public subject: Subject<Block>;
+
 
   constructor() {
-    this.observable = new Observable<Block>(observer => this.observer = observer)
+    this.subject = new Subject<Block>()
   }
 
   parseLine(rawText: string) {
@@ -160,10 +160,10 @@ export class GCodeParser {
     for (let line of gcodeLines) {
       let block = this.parseLine(line)
       block.line = i++
-      this.observer.next(block);
+      this.subject.next(block);
 
     }
-    this.observer.complete();
+    this.subject.complete();
     console.timeEnd("parsing");
 
   }

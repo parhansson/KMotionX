@@ -1,10 +1,11 @@
 
 import {KMXUtil} from '../../util/kmxutil';
 import {GCodeVector, GCodeCurve3} from '../vector';
-import {GCodeParser, Block, Word, WordParameters, ControlWord} from './gcode.parser';
+import {GCodeParser, Block, Word, WordParameters, ControlWord} from '../gcode/gcode.parser';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
-
+import {GCodeSource} from '../igm'
+import {ModelTransformer} from './ModelTransformer';
 //Copyright (c) 2014 par.hansson@gmail.com
 export class ExtendedGCodeVector extends GCodeVector {
   e = 0
@@ -51,7 +52,7 @@ class State {
   };
 }
 
-export class Gcode2Three {
+export class Gcode2ThreeTransformer extends ModelTransformer<GCodeSource, THREE.Group>{
   // Create the final Object3d to add to the scene
   group: THREE.Group
   interpolateColor = new THREE.Color(0x080808);
@@ -64,20 +65,20 @@ export class Gcode2Three {
   });
   private state: State
 
-  constructor() { }
+  constructor(private disableWorker?: boolean) { super() }
 
-  transform(transformedDefer: Observer<THREE.Group>, gcode, disableWorker: boolean) {
+  execute(gcode: GCodeSource, observer: Observer<THREE.Group>) {
     this.group = new THREE.Group();
     this.group.name = 'GCODE';
     this.state = new State()
     var parser = new GCodeParser()
-    parser.observable.subscribe(
+    parser.subject.subscribe(
       (block) => {
         this.onBlock(block);
       },
-      (error) => { transformedDefer.error(error) },
+      (error) => { observer.error(error) },
       () => {
-        transformedDefer.next(this.group);
+        observer.next(this.group);
         //transformedDefer.complete();
 
       })

@@ -23,7 +23,7 @@ export class ThreeViewComponent {
   private modelDetector: RaycastDetector
   private machineDetector: RaycastDetector
   private modelGroup = new THREE.Group()
-  private auxiliaryGroup = new THREE.Group()
+  public auxiliaryGroup = new THREE.Group()
   private currentModelObject: THREE.Object3D = null
 
   set model(model: THREE.Object3D) {
@@ -192,16 +192,17 @@ element.on( 'mouseleave', function(){
     this.camera.updateProjectionMatrix();
     this.controls.screen.width = width; //window.innerWidth;
     this.controls.screen.height = height;// window.innerHeight;
+    //this.requestTick()
   }
 
   getMouseVector(event) {
-    var height = this.height();
-    var width = this.width();
+    let height = this.height();
+    let width = this.width();
     // calculate mouse position in normalized device coordinates
     // (-1 to +1) for both components
-    var elementXPosition = (event.offsetX != null) ? event.offsetX : event.originalEvent.layerX;
-    var elementYPosition = (event.offsetY != null) ? event.offsetY : event.originalEvent.layerY;
-    var mouse = new THREE.Vector2();
+    let elementXPosition = (event.offsetX != null) ? event.offsetX : event.originalEvent.layerX;
+    let elementYPosition = (event.offsetY != null) ? event.offsetY : event.originalEvent.layerY;
+    let mouse = new THREE.Vector2();
     mouse.x = (elementXPosition / width) * 2 - 1;
     mouse.y = - (elementYPosition / height) * 2 + 1;
     //console.info("mouse.x mouse.y %",mouse.x ,mouse.y);

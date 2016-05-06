@@ -1,24 +1,43 @@
 import {Injectable} from '@angular/core';
-import {Observable, Observer} from 'rxjs/Rx';
-import {igm2gcode} from './igm/igm2gcode'
-import {IGM, GCodeSource} from './igm/igm'
-import {ModelTransformer} from './transformer.service'
+import {Observable, Observer, Subject} from 'rxjs/Rx';
+import {ModelTransformer} from './transformer/ModelTransformer'
+import {Igm2GcodeTransformer} from './transformer/Igm2GcodeTransformer'
+import {Gcode2ThreeTransformer} from './transformer/Gcode2ThreeTransformer';
+import {Pdf2SvgTransformer} from './transformer/Pdf2SvgTransformer';
+import {Svg2IgmTransformer} from './transformer/Svg2IgmTransformer';
+import {IGM, GCodeSource} from './igm'
 import {KMXUtil}    from '../util/KMXUtil'
-import {Svg2Igm} from '../model/svg/svgreader';
-import {ModelSettingsService} from '../model/model.settings.service';
-import {Gcode2Three} from '../model/gcode/gcode2three';
-import {PDF2SVG} from '../model/pdf/pdf2svg';
+import {ModelSettingsService} from './model.settings.service';
 import {LogService} from "../log/log.service"
 
 
 @Injectable()
 export class StaticTransformer {
-  gcodeSourceObserver: Observer<GCodeSource>;
-  gcodeSourceObservable = new Observable<GCodeSource>(observer => this.gcodeSourceObserver = observer)
-  threeObserver: Observer<THREE.Group>;
-  threeObservable = new Observable<THREE.Group>(observer => this.threeObserver = observer)
+  gcodeSubject = new Subject<GCodeSource>()
+  threeSubject = new Subject<THREE.Group>()
+  svgSubject = new Subject<SVGElement>()
+  igmSubject = new Subject<IGM>()
+  pdf2svgTransformer: Pdf2SvgTransformer
+  img2gcodeTransformer: Igm2GcodeTransformer
+  svg2IgmTransformer: Svg2IgmTransformer
 
-  constructor(private logService:LogService, private modelSettings: ModelSettingsService) {
+  constructor(private logService: LogService, private modelSettings: ModelSettingsService) {
+    this.pdf2svgTransformer = new Pdf2SvgTransformer(modelSettings)
+    this.img2gcodeTransformer = new Igm2GcodeTransformer(modelSettings.settings.svg)
+    this.svg2IgmTransformer = new Svg2IgmTransformer()
+    this.igmSubject.subscribe(
+      igm => this.img2gcodeTransformer.execute(igm, this.gcodeSubject),
+      err => console.error(err))
+    this.svgSubject.subscribe(
+      data => {
+        //console.log(KMXUtil.svgToString(data))
+        this.parseSVG(data)
+      },
+      err => console.error(err)
+    );
+    this.gcodeSubject.subscribe(
+      gcode => new Gcode2ThreeTransformer(true).execute(gcode, this.threeSubject),
+      err => console.error(err))
   }
 
   transform(contentType, payload: ArrayBuffer) {
@@ -32,19 +51,10 @@ export class StaticTransformer {
   }
 
   parsePDF(data: ArrayBuffer) {
-    //Observable.fr
-    var transformobserver: Observer<string | SVGElement>;
-    var observable = new Observable<string | SVGElement>(observer => transformobserver = observer)
-    observable.subscribe(
-      data => this.parseSVG(data),
-      err => console.error(err),
-      () => console.log('testa')
-    );
-
-    new PDF2SVG(this.modelSettings).transcodePDF(transformobserver, data, false);
+    this.pdf2svgTransformer.execute(data, this.svgSubject);
   }
 
-  parseSVG(source: string | SVGElement | ArrayBuffer) {
+  asSVGElement(source: string | SVGElement | ArrayBuffer) {
     let doc: SVGElement = null
 
     if (source instanceof SVGElement) {
@@ -67,35 +77,34 @@ export class StaticTransformer {
         console.error("DOMParser not supported. Update your browser");
       }
     }
-    if(doc.localName !== "svg"){
+    if (doc.localName !== "svg") {
       this.logService.log("error", "Failed to parse SVG document: " + doc.textContent)
-      this.parseGcode(source as any)
-    } else {
-      let igm = new Svg2Igm().transform(doc, null);
-      this.parseGcode(new igm2gcode().transform(igm, {}))  
-      
+      doc = null
     }
+    return doc
+  }
+  asGCodeSource(input: string | string[] | ArrayBuffer) {
+    if (input instanceof ArrayBuffer) {
+      return new GCodeSource(KMXUtil.ab2str(input));
+    } else {
+      return new GCodeSource(input);
+    }
+  }
+  parseSVG(source: string | SVGElement | ArrayBuffer) {
+    let doc: SVGElement = this.asSVGElement(source)
+    this.svg2IgmTransformer.execute(doc, this.igmSubject)
 
-    //return null;     
   }
 
   parseGcode(input: string | string[] | ArrayBuffer) {
-    let gcode: GCodeSource
-    if (input instanceof ArrayBuffer) {
-      gcode = new GCodeSource(KMXUtil.ab2str(input));
-    } else {
-      gcode = new GCodeSource(input);
-    }
-    this.gcodeSourceObserver.next(gcode);
-    this.createThree(gcode);
+    let gcode = this.asGCodeSource(input)
+    this.gcodeSubject.next(gcode);
   }
 
-  createThree(gcode: GCodeSource) {
-    new Gcode2Three().transform(this.threeObserver, gcode, true);
-  }
+
 }
 
-export class IGM2GCodeTransformer extends ModelTransformer {
+export class IGM2GCodeTransformer extends ModelTransformer<IGM, string> {
 
   name: 'IGM to G-Code'
   inputMime: ["application/x-kmx-gcode"]
@@ -103,15 +112,14 @@ export class IGM2GCodeTransformer extends ModelTransformer {
 
   //transformer.register(descriptor);
 
-  execute(src) {
-    return new Promise<string>((resolve, reject) => {
+  execute(source: IGM, targetObserver: Observer<string>) {
 
-      if (src instanceof IGM) {
-        //var gcode = new GCodeSource(new igm2gcode().transform(src, transformerSettings.svg));
-        //resolve(gcode.text);
-      } else {
-        reject("Unsupported source: " + (typeof src));
-      }
-    })
+    if (source instanceof IGM) {
+      //var gcode = new GCodeSource(new igm2gcode().transform(src, transformerSettings.svg));
+      //resolve(gcode.text);
+    } else {
+      targetObserver.error("Unsupported source: " + (typeof source));
+    }
+    return null
   }
 }

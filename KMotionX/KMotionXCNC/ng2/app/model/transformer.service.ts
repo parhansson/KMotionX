@@ -1,24 +1,19 @@
 
 
 import {Injectable} from '@angular/core';
+import {Observer,Observable,Subject,AsyncSubject} from 'rxjs/Rx';
 import {KMXUtil} from '../util/kmxutil';
+import {ModelTransformer} from './transformer/ModelTransformer';
 
-
-export abstract class ModelTransformer {
-  inputMime: string[]
-  outputMime: string
-  name: string  
-  abstract execute(source: any): Promise<any>
-}
 
 @Injectable()
 export class TransformerService {
-  transformers: ModelTransformer[] = [];
+  transformers: ModelTransformer<any,any>[] = [];
 
-  constructor(private transformerSettings) {
+  constructor() {
 
   }
-  register(transformer:ModelTransformer) {
+  register(transformer:ModelTransformer<any,any>) {
     this.transformers.push(transformer);
   }
 
@@ -40,17 +35,21 @@ export class TransformerService {
   }
   transformNamed(transformerName, source) {
 
+    let subject = new Subject<any>()
     var transformer = this.matchName(transformerName);
     if (transformer !== null) {
-      return transformer.execute(source);
+      return transformer.execute(source,subject);
     }
-    return Promise.reject('Named transformer "' + transformerName + '" not found');
+    subject.error('Named transformer "' + transformerName + '" not found')
+    subject.complete()
   }
-  transcode(mime:string, source:any): Promise<any> {
-
+  transcode(mime:string, source:any ): Subject<any> {
+    let subject = new AsyncSubject<any>()
     var transformer = this.matchType(mime);
     if (transformer !== null) {
-      var resultPromise = transformer.execute(source);
+      transformer.execute(source,subject).subscribe(result=>this.transcode(transformer.outputMime, result))
+      /*
+      var resultPromise = transformer.execute(source,subject);
       if (transformer.outputMime !== "application/x-gcode") {
         return resultPromise.then(
           (result) => {
@@ -58,21 +57,21 @@ export class TransformerService {
           });
       }
       return resultPromise;
+      */
     }
-
-    return new Promise<any>((resolve, reject) => {
-
-      if (typeof source === 'string') {
-        //gcode text do not transform
-        resolve(source);
+    
+    if (typeof source === 'string') {
+        //asume gcode text do not transform
+        subject.next(source);
       } else if (typeof source === 'ArrayBuffer') {
         //gcode file do not transform
-        resolve(KMXUtil.ab2str(source));
+        subject.next(KMXUtil.ab2str(source));
       } else {
-        reject("Unsupported source: " + (typeof source));
+        subject.error("Unsupported source: " + (typeof source));
       }
-    })
+      subject.complete()
 
+    return subject
 
   }
 

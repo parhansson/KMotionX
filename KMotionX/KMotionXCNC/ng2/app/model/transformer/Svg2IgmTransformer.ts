@@ -1,39 +1,9 @@
 
-import {IGM, IgmObject} from '../igm/igm';
+import {Observer} from 'rxjs/Rx';
+import {IGM, IgmObject} from '../igm';
 import {GCodeVector} from '../vector';
-/**
-  SVG parser for the Lasersaur.
-  Converts SVG DOM to a flat collection of paths.
-
-  Copyright (c) 2011 Nortd Labs
-  Open Source by the terms of the Gnu Public License (GPL3) or higher.
-
-  Code inspired by cake.js, canvg.js, svg2obj.py, and Squirtle.
-  Thank you for open sourcing your work!
-
-  Usage:
-  var boundarys = SVGReader.parse(svgstring, config)
-
-  Features:
-    * <svg> width and height, viewBox clipping.
-    * paths, rectangles, ellipses, circles, lines, polylines and polygons
-    * nested transforms
-    * transform lists (transform="rotate(30) translate(2,2) scale(4)")
-    * non-pixel units (cm, mm, in, pt, pc)
-    * 'style' attribute and presentation attributes
-    * curves, arcs, cirles, ellipses tesellated according to tolerance
-
-  Intentinally not Supported:
-    * markers
-    * masking
-    * em, ex, % units
-    * text (needs to be converted to paths)
-    * raster images
-    * style sheets
-
-  ToDo:
-    * check for out of bounds geometry
-*/
+import {ModelTransformer} from '../transformer/ModelTransformer';
+declare var opentype
 /*
 if (typeof(String.prototype.strip) === "undefined") {
     String.prototype.strip = function() {
@@ -67,6 +37,7 @@ export class SvgNode {
   unsupported: boolean
   href: string
   fontBlob: string
+  text: string = null
 
   constructor() {
     this.path = [];
@@ -84,21 +55,115 @@ export class SvgNode {
     node.fillOpacity = this.fillOpacity;
     node.strokeOpacity = this.strokeOpacity;
     node.unsupported = this.unsupported;
+    node.text = null //cannot inherit text
     return node;
   }
 }
 
+export class Svg2IgmTransformer extends ModelTransformer<SVGElement, IGM>{
+
+  font: any
+
+  constructor() {
+    super()
+    // /settings/RawengulkPcs.otf
+    //opentype.load(node.fontBlob, function(err, font) {  
+    opentype.load("/settings/RawengulkPcs.otf", (err, font) => {
+      if (err) {
+        alert('Could not load font: ' + err);
+      } else {
+        this.font = font
+      }
+    });
+
+  }
+
+  execute(svgRootElement: SVGElement, targetObserver: Observer<IGM>) {
+
+    let igm = new IGM();
+
+
+    // var glyph = font.charToGlyph('K');
+    // var path = glyph.getPath(100, 100, 72);
+    // var decimalPlaces = 3;
+    // var d = path.toPathData(decimalPlaces);
+    // console.log('path', d);
+    // console.log('path svg', path.toSVG(decimalPlaces));
+
+    // tempParser.addPath(d, node);
+
+
+    // let the fun begin
+    var node = new SvgNode();
+    node.stroke = [255, 0, 0];
+    node.xformToWorld = [1, 0, 0, 1, 0, 0]
+    let cssFilterAllowed = ['svg', 'g', 'defs', 'style', 'use'];
+    let cssFilter = function (tag: SVGElement) {
+      return cssFilterAllowed.indexOf(tag.localName) > -1
+    }
+    let igmText = new IGM()
+    
+    this.font = null //disable text rendering
+    new SvgParser(cssFilter, this.font).parse(svgRootElement, node, igmText)
+    //console.log(igmText)
+
+    let contentFilterDissalowed = ['style', 'defs'];
+    let contentFilter = (element: SVGElement) => {
+      return contentFilterDissalowed.indexOf(element.localName) < 0;
+    };
+    new SvgParser(contentFilter, this.font).parse(svgRootElement, node, igm)
+
+    targetObserver.next(igm)
+  }
+}
+export interface ElementFilter {
+  (element: SVGElement): boolean
+}
+
+/**
+  SVG parser for the Lasersaur.
+  Converts SVG DOM to a flat collection of paths.
+
+  Copyright (c) 2011 Nortd Labs
+  Open Source by the terms of the Gnu Public License (GPL3) or higher.
+
+  Code inspired by cake.js, canvg.js, svg2obj.py, and Squirtle.
+  Thank you for open sourcing your work!
+
+  Usage:
+  var boundarys = SVGReader.parse(svgstring, config)
+
+  Features:
+    * <svg> width and height, viewBox clipping.
+    * paths, rectangles, ellipses, circles, lines, polylines and polygons
+    * nested transforms
+    * transform lists (transform="rotate(30) translate(2,2) scale(4)")
+    * non-pixel units (cm, mm, in, pt, pc)
+    * 'style' attribute and presentation attributes
+    * curves, arcs, cirles, ellipses tesellated according to tolerance
+
+  Intentinally not Supported:
+    * markers
+    * masking
+    * em, ex, % units
+    * text (needs to be converted to paths)
+    * raster images
+    * style sheets
+
+  ToDo:
+    * check for out of bounds geometry
+*/
+
 export interface ISVGParser {
+  font: any
   addPath(d: any, node: SvgNode)
   parseUnit(val: string)
   matrixMult(mA: number[], mB: number[])
   strip(val: string);
 }
 
-export class Svg2Igm implements ISVGParser {
+export class SvgParser implements ISVGParser {
 
-
-  igm: IGM
   // output path flattened (world coords)
   // hash of path by color
   // each path is a list of subpaths
@@ -109,43 +174,22 @@ export class Svg2Igm implements ISVGParser {
   // max tollerance when tesselating curvy shapes
   tolerance_squared: number
 
-  constructor() {
-
-  }
-
-  transform(svgRootElement: SVGElement, config) {
-
-    this.igm = new IGM();
+  constructor(private elementFilter: ElementFilter, public font: any) {
     this.tolerance_squared = Math.pow(this.tolerance, 2);
-
-    // let the fun begin
-    var node = new SvgNode();
-    node.stroke = [255, 0, 0];
-    node.xformToWorld = [1, 0, 0, 1, 0, 0]
-    var cssFilterAllowed = ['svg', 'g', 'defs', 'style'];
-    var cssFilter = function (tag) {
-      return cssFilterAllowed.indexOf(tag.localName) > -1;
-    }
-
-    this.parseChildren(svgRootElement, node, cssFilter)
-
-    var contentFilterDissalowed = ['style', 'defs'];
-    var contentFilter = (element: SVGElement) => {
-      return contentFilterDissalowed.indexOf(element.localName) < 0;
-    };
-    this.parseChildren(svgRootElement, node, contentFilter)
-
-    return this.igm
   }
 
-
-  parseChildren(domNode: SVGElement, parentNode: SvgNode, filter: (element: SVGElement) => boolean) {
-    if (!filter(domNode)) {
+  parse(currentElement: SVGElement, parentNode: SvgNode, igm: IGM) {
+    /*
+    if (!this.elementFilter(domNode)) {
       return;
     }
+    */
     //domNode.childNodes will not return text nodes
-    for (let i = 0; i < domNode.childNodes.length; i++) {
-      let tag = domNode.childNodes.item(i) as SVGElement
+    for (let i = 0; i < currentElement.childNodes.length; i++) {
+      let tag = currentElement.childNodes.item(i) as SVGElement
+      if (!this.elementFilter(tag)) {
+        continue
+      }
       if (tag.childNodes) {
 
         // exclude textnodes, might check for tag.nodeName ===  "#text" or tag.nodeType === 3 instead
@@ -184,26 +228,29 @@ export class Svg2Igm implements ISVGParser {
 
           // TODO this does not work due to asynchronous operation
 
-          // if(node.fontBlob){
-          //   console.log('fontblob', node.fontBlob);
-          //   var tempParser = this;
-          ///settings/RawengulkPcs.otf
-          //   opentype.load(node.fontBlob, function(err, font) {
-          //       if (err) {
-          //           alert('Could not load font: ' + err);
-          //       } else {
-          //           var glyph = font.charToGlyph('K');
-          //           var path = glyph.getPath(100, 100, 72);
-          //           var decimalPlaces = 3;
-          //           var d = path.toPathData(decimalPlaces);
-          //           console.log('path', d);
-          //           console.log('path svg', path.toSVG(decimalPlaces));
-          //           
-          //           tempParser.addPath(d, node);
-          //       }
-          //   });
-          // }
+          if (node.fontBlob) {
+            console.log('fontblob', node.fontBlob);
+            //   var tempParser = this;
+            ///settings/RawengulkPcs.otf
+            //   opentype.load(node.fontBlob, function(err, font) {
+            //       if (err) {
+            //           alert('Could not load font: ' + err);
+            //       } else {
+            //           var glyph = font.charToGlyph('K');
+            //           var path = glyph.getPath(100, 100, 72);
+            //           var decimalPlaces = 3;
+            //           var d = path.toPathData(decimalPlaces);
+            //           console.log('path', d);
+            //           console.log('path svg', path.toSVG(decimalPlaces));
+            //           
+            //           tempParser.addPath(d, node);
+            //       }
+            //   });
+          }
+          if (node.text) {
 
+            //console.log(node)
+          }
           // 5.) compile boundarys
           // before adding all path data convert to world coordinates
           for (var k = 0; k < node.path.length; k++) {
@@ -225,10 +272,10 @@ export class Svg2Igm implements ISVGParser {
 
 
             if (node.unsupported === true) {
-              this.igm.unsupported.push(subpath);
+              igm.unsupported.push(subpath);
             } else {
               //this.boundarys.allcolors.push(subpath);
-              this.igm.addToLayerObject(node.stroke, igmObject);
+              igm.addToLayerObject(node.stroke, igmObject);
             }
           }
           if (node.href) {
@@ -239,7 +286,7 @@ export class Svg2Igm implements ISVGParser {
         }
 
         // recursive call
-        this.parseChildren(tag, node, filter)
+        this.parse(tag, node, igm)
       }
     }
   }
@@ -671,6 +718,37 @@ export class Svg2Igm implements ISVGParser {
       //     }
       //   }
       // }
+    },
+    tspan: function (parser: ISVGParser, tag: SVGElement, node: SvgNode) {
+      if (parser.font) {
+
+        if (tag.textContent !== null) {
+          let path = parser.font.getPath(tag.textContent, 0, 0, 1, { kerning: true })
+          let dPath = path.toPathData()
+          //console.log(tag.textContent, dPath)
+          if (dPath.length > 0) {
+            parser.addPath(dPath, node);
+          }
+          /*
+          for (var x = 0; x < tag.textContent.length; x++) {
+            let char = tag.textContent.charAt(x)
+            let glyph = parser.font.charToGlyph(char);
+            let path = glyph.getPath(0, 0, 10);
+            let decimalPlaces = 3;
+            let d = path.toPathData(decimalPlaces);
+            console.log('path', d);
+            //console.log('path svg', path.toSVG(decimalPlaces));
+            if (d.length > 0) {
+              parser.addPath(d, node);
+            }
+          }
+          */
+          node.text = tag.textContent
+        }
+      }
+      // not supported
+      // http://www.w3.org/TR/SVG11/struct.html#Head
+      // has transform and style attributes
     }
 
   }
@@ -684,7 +762,7 @@ export class Svg2Igm implements ISVGParser {
   // handle path data
   // this is where all the geometry gets converted for the boundarys output
 
-  addPath(d: any, node: SvgNode) {
+  addPath(dObject: string | any[], node: SvgNode) {
     // http://www.w3.org/TR/SVG11/paths.html#PathData
 
     var tolerance2 = this.tolerance_squared
@@ -694,16 +772,18 @@ export class Svg2Igm implements ISVGParser {
       tolerance2 /= Math.pow(totalMaxScale, 2);
       // console.info('notice', "tolerance2: " + tolerance2.toString());
     }
-
-    if (typeof d == 'string') {
+    let d: any[]
+    if (typeof dObject == 'string') {
       // parse path string
-      d = d.match(/([A-Za-z]|-?[0-9]+\.?[0-9]*(?:e-?[0-9]*)?)/g);
+      d = (dObject as string).match(/([A-Za-z]|-?[0-9]+\.?[0-9]*(?:e-?[0-9]*)?)/g);
       for (var i = 0; i < d.length; i++) {
         var num = parseFloat(d[i]);
         if (!isNaN(num)) {
           d[i] = num;
         }
       }
+    } else {
+      d = dObject as any[]
     }
     //console.info('notice', "d: " + d.toString());
 
