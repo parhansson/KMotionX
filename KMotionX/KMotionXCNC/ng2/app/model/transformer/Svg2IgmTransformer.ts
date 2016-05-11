@@ -719,9 +719,9 @@ export class SvgParser implements ISVGParser {
       //   }
       // }
     },
-    tspan: function (parser: ISVGParser, tag: SVGElement, node: SvgNode) {
+    tspan: function (parser: ISVGParser, tag: SVGTSpanElement, node: SvgNode) {
       if (parser.font) {
-
+        
         if (tag.textContent !== null) {
           let path = parser.font.getPath(tag.textContent, 0, 0, 1, { kerning: true })
           let dPath = path.toPathData()

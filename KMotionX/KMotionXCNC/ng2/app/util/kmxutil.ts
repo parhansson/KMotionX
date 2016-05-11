@@ -13,7 +13,7 @@ export class KMXUtil {
     //Solution to this can be found in PDF.js
   }
 
-  static str2ab(str) {
+  static str2ab(str: string) {
     var buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
     var bufView = new Uint16Array(buf);
     for (var i = 0, strLen = str.length; i < strLen; i++) {
@@ -81,7 +81,7 @@ export class KMXUtil {
       if (callNow) func.apply(context, args);
     };
   }
-  static svgToString(svg: SVGElement):string {
+  static svgToString(svg: SVGElement): string {
     // need to add namespace declarations for this to be a valid xml document
     return (svg as any).outerHTML.replace('<svg:svg ', '<svg:svg xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ')
   }

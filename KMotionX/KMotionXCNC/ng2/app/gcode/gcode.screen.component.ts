@@ -1,4 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
+import {Subject} from 'rxjs/Rx'
 import {LogComponent} from "../log/log.component";
 import {BackendService} from '../backend/backend.service';
 import {SocketService} from '../backend/socket.service';
@@ -9,7 +10,8 @@ import {UserButtonsComponent} from './user.buttons.component';
 import {ControlButtonsComponent} from './control.buttons.component';
 import {ScreenComponent} from "../screen.component"
 import {StaticTransformer} from '../model/transformers'
-import {FileResource, IFileObject} from '../backend/file'
+import {FileResource, Payload} from '../resources/FileResource'
+import {FileBackend} from '../resources/FileBackend'
 import {AceEditorComponent} from '../editor/ace.editor.component'
 import {SettingsService, Machine} from '../settings/settings.service'
 
@@ -38,7 +40,7 @@ import {SettingsService, Machine} from '../settings/settings.service'
         <control-buttons></control-buttons>
         <div>Editor line:{{kmxStatus.currentLine +1}}</div>
         <div>Interpreter line:{{kmxStatus.currentLine}}</div>
-        <code-editor id="gcodeEditor" [resource]="resource" mode="gcode"></code-editor>
+        <code-editor id="gcodeEditor" mode="gcode"></code-editor>
         <hr>
         <user-defined-buttons></user-defined-buttons>
       </div>
@@ -52,29 +54,43 @@ export class GCodeScreenComponent extends ScreenComponent {
   editorComponent: AceEditorComponent;
   kmxStatus: KmxStatus
   resource: FileResource
+  payloadSubject = new Subject<Payload>()
 
-
-  constructor(private backendService: BackendService,
+  constructor(private backendService: BackendService, private fileBackend: FileBackend,
     private socketService: SocketService,
     private settingsService: SettingsService,
     private staticTransformer: StaticTransformer) {
     super()
     this.kmxStatus = socketService.data;
-    this.resource = new FileResource("");
-    socketService.gcodeFileObservable.subscribe(gcodeFile => {
-      this.resource.canonical = gcodeFile
-    })
+    this.payloadSubject.subscribe(payload => this.staticTransformer.transform(payload.contentType, payload.arrayBuffer()))
 
   }
   ngAfterViewInit() {
+    this.editorComponent.resource.canonical = ""
+    this.socketService.gcodeFileSubject.subscribe(gcodeFile => {
+      this.editorComponent.resource.canonical = gcodeFile
+      this.editorComponent.resourceComponent.openFile()
+      console.log("Ny fil:", gcodeFile)
+    })
     this.staticTransformer.threeSubject.subscribe(data => this.threeComp.model = data)
     this.staticTransformer.gcodeSubject.subscribe(data => this.editorComponent.textContent = data.text)
     this.editorComponent.onFileEventHandler = this.onOpenFile.bind(this)
     this.settingsService.subject.subscribe((machine) => this.renderMachineObject(machine))
   }
 
-  private onOpenFile(file: IFileObject) {
-    this.staticTransformer.transform(file.contentType, file.payload)
+  private onOpenFile(file: FileResource/* | File*/) {
+    this.editorComponent.resource.canonical = file.canonical
+    
+    if (file.payload === null) {
+      this.fileBackend.loadFile(file.canonical).subscribe(
+        file => {
+          this.payloadSubject.next(file.payload)
+          //this.backendService.setGCodeFile
+        })
+    } else {
+      this.payloadSubject.next(file.payload)
+    }
+    
   }
   private machineBounds: THREE.Object3D = null;
   private machineBackground: THREE.Object3D = null;

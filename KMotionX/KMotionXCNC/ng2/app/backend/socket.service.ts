@@ -1,18 +1,16 @@
 import {Injectable} from '@angular/core';
-import {Observable, Observer} from 'rxjs/Rx';
+import {Subject,BehaviorSubject} from 'rxjs/Rx';
 import {LogService} from "../log/log.service"
 import {KMXUtil} from '../util/kmxutil';
 import {LogLevel} from '../log/log.level';
-import {KmxStatus} from './shared'
+import {KmxStatus, Message, StatusMessage, LogMessage, TextMessage, JsonMessage} from './shared'
 //import {LogLevel} from '../kmx';
 //import {LogLevel} from 'kmxlog/log.level';
 
 @Injectable()
 export class SocketService {
-  private gcodeFileObserver: Observer<string>
-  gcodeFileObservable = new Observable<string>(observer => this.gcodeFileObserver = observer)
-  private simulateObserver: Observer<boolean>
-  simluateObservable = new Observable<boolean>(observer => this.simulateObserver = observer)
+  gcodeFileSubject: Subject<string> = new BehaviorSubject<string>("")
+  simulateSubject: Subject<boolean> = new BehaviorSubject<boolean>(true)
   data: KmxStatus = new KmxStatus()
   private socketHandlers = {
 
@@ -39,7 +37,8 @@ export class SocketService {
     this.data.machineSettingsFile = ""
 
     var url = 'ws://' + window.location.host + '/ws';
-    KMXUtil.getSingletonWorker("dist/app/backend/socket.loader.js", this.workerMessage.bind(this))
+    //KMXUtil.getSingletonWorker("dist/app/backend/socket.loader.js", this.workerMessage.bind(this))
+    KMXUtil.getSingletonWorker("dist/app/backend/WorkerBootstrap.js", this.workerMessage.bind(this))
       .then(
       (worker) => this.socketWorker = worker,
       (reason) => console.error(reason)
@@ -59,14 +58,14 @@ export class SocketService {
     //if(messageCount%5 == 0){
     //console.info("Messages received", messageCount);
     //}
-    if (event.data === 'WorkerReady') {
+    var message = event.data as Message<any>;
+    if (message.isText) {
+      if(message.message === 'WorkerReady')
       var url = 'ws://' + window.location.host + '/ws';
       this.socketWorker.postMessage({ command: 'connect', url: url });
       return;
-    }
-    var data = event.data;
-    if (data.data) {
-      var obj = data.message;
+    } else if (message.isJson) {
+      var obj = message.message;
       if (obj.KMX) {
         return;
       }
@@ -76,26 +75,23 @@ export class SocketService {
         //only ack messages that require users answer here
         this.acknowledge(obj.id, ret);
       }
-    } else if (data.status) {
-      //var json = angular.toJson(data.message,true);
-      //logHandler(json, LOG_TYPE.NONE);
-      //console.log(json);
-
-      var raw = data.message as KmxStatus;
+    } else if (message.isStatus) {
+      var raw = (message as StatusMessage).message
 
       //  console.log("simulating", this.data.simulating)
-      // if(this.data.simulating !== raw.simulating && this.simulateObserver){
-      //   this.simulateObserver.next(this.data.simulating)
+      // if(this.data.simulating !== raw.simulating){
+      //   this.simulateSubject.next(this.data.simulating)
       // }
 
-      if (this.data.gcodeFile !== raw.gcodeFile && this.gcodeFileObserver) {
+      if (this.data.gcodeFile !== raw.gcodeFile) {
         this.data.gcodeFile = raw.gcodeFile;
-        this.gcodeFileObserver.next(this.data.gcodeFile)
+        this.gcodeFileSubject.next(this.data.gcodeFile)
       }
 
       this.data.copyFrom(raw)
-    } else if (data.log) {
-      this.logHandler(data.message, data.type);
+    } else if (message.isLog) {
+      let logMessage = message as LogMessage
+      this.logHandler(message.message, logMessage.type);
     }
   }
 

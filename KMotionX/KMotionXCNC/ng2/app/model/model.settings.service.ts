@@ -15,6 +15,7 @@ export class SVGModelSettings {
   feedRate: number = 250
   passes:number =  1;
   materialWidth:number = 10
+  renderText:boolean = false
 }
 
 export class ModelSettings {

@@ -1,20 +1,20 @@
-import {Observable} from 'rxjs/Observable';
-import {IFileObject} from './file'
+import {Observable} from 'rxjs/Rx';
+import {FileResource} from '../resources/FileResource'
 
-export abstract class BackendService {
-
-  public abstract save(name, content: ArrayBuffer | ArrayBufferView | Blob | string): Observable<number>
+export abstract class BackendService  {
   
-  public abstract onOpenFile(path): Observable<IFileObject>
+  protected abstract onEvent(eventName: string, parameters?: any): Observable<any>;
   
-  protected abstract onEvent(eventName: string, parameters?: any) :Observable<any>
-    
-  public onListDir(path:string) {
-    return this.onEvent('listDir', path);
-  }
-  public onLoadGlobalFile(type:number, file:string) {
+  public onLoadGlobalFile(type: number, file: string) {
     return this.onEvent('loadGlobalFile', [type, file]);
   }
+  public setGCodeFile(file: string) {
+    return this.onEvent('setGcodeFile', file);
+  }
+  public setMachineFile(file: string) {
+    return this.onEvent('setMachineFile', file);
+  }
+
   public jog(axis: number, speed: number) {
     return this.onEvent('jog', [axis, speed]);
   }
@@ -42,10 +42,10 @@ export abstract class BackendService {
   public onUpdateMotionParams() {
     return this.onEvent('onUpdateMotionParams');
   }
-  public onInvokeAction(action:number) {
+  public onInvokeAction(action: number) {
     return this.onEvent('onInvokeAction', action);
   }
-  public onDoErrorMessage(message:string) {
+  public onDoErrorMessage(message: string) {
     return this.onEvent('onDoErrorMessage', message);
   }
 

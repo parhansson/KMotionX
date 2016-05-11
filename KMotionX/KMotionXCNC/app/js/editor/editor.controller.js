@@ -21,7 +21,7 @@
     
     function listFiles(){
       kmxBackend.listDir($scope.currentDir).then(function(response){
-        $scope.files = response.data;
+        $scope.files = response.data.files;
         $scope.showFileModal = true;
       });
     }

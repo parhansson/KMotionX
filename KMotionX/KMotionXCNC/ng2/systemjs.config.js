@@ -6,18 +6,20 @@
 (function (global) {
 
   // map tells the System loader where to look for things
-  var map = {
+  let map = {
     //'app': 'app', // 'dist',
     'rxjs': 'node_modules/rxjs',
     '@angular': 'node_modules/@angular',
-    //moment: 'node_modules/moment/moment.js', //needed by ng2-bootstrap datepicker
+    'ng2-bootstrap':'node_modules/ng2-bootstrap',
+    'moment': 'node_modules/moment/moment.js', //needed by ng2-bootstrap datepicker
   };
 
   // packages tells the System loader how to load when no filename and/or no extension
-  var packages = {
-    "dist": { format: 'register', defaultExtension: 'js' },
+  let packages = {
+    "dist": { defaultExtension: 'js' }, //format: 'register', 
     //'app':                        { main: 'main.js',  defaultExtension: 'js' },
     'rxjs': { defaultExtension: 'js' },
+    'ng2-bootstrap': { defaultExtension: 'js' }, //"ng2-bootstrap": { format: 'register', defaultExtension: 'js' },
   };
 
         /*
@@ -30,7 +32,7 @@
         }
         */
 
-  var packageNames = [
+  let packageNames = [
     '@angular/common',
     '@angular/compiler',
     '@angular/core',
@@ -47,7 +49,7 @@
     packages[pkgName] = { main: 'index.js', defaultExtension: 'js' };
   });
 
-  var config = {
+  let config = {
     map: map,
     packages: packages
   }

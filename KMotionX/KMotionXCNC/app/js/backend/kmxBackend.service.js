@@ -62,7 +62,11 @@
       return onEvent('listDir',{"params": path});
     }
     function onLoadGlobalFile(type, file) {
-      onEvent('loadGlobalFile',{"params": [type, file]});
+      if(type === 1){
+        return onEvent('setGcodeFile', {"params":file});        
+      } else if(type === 2){
+        return onEvent('setMachineFile', {"params":file});
+      }
     }
     function jog(axis, speed) {
       onEvent('jog',{"params": [axis, speed]});

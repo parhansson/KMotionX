@@ -467,21 +467,16 @@ int WebController::HandleJsonRequest(struct mg_connection *conn, const char *obj
   //gp_response = (char*) malloc(sizeof(char) * ( MAX_RESPONSE));
   ret = 0;
   if (!strcmp("kmx", object)) {
-    if (FUNC_SIGP("loadGlobalFile", 2)) {
-      int fileType = -1;
+    if(FUNC_SIGP("setGcodeFile", 1)){
       char * file = NULL;
-      toki(paramtoken + 1, &fileType);
-      toks(paramtoken + 2, &file, 0);
-      if (file != NULL) {
-        if(strlen(file) > 0){
-          if(fileType == 1){
-            this->LoadGcode(file);
-          } else if(fileType == 2){
-            this->LoadMachineConfiguration(file);
-          }
-        }
-        free(file);
-      }
+      toks(paramtoken, &file, 0);
+      this->LoadGcode(file);
+      free(file);
+    } else if(FUNC_SIGP("setMachineFile", 1)){
+      char * file = NULL;
+      toks(paramtoken, &file, 0);
+      this->LoadMachineConfiguration(file);
+      free(file);
     } else if(FUNC_SIGP("listDir", 1)){
       ListDir(paramtoken);
     } else if(FUNC_SIGP("openFile", 1)){

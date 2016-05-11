@@ -11,8 +11,8 @@ import {StaticTransformer} from './model/transformers'
 import {HTTP_PROVIDERS}   from '@angular/http';
 import {ROUTER_PROVIDERS} from '@angular/router-deprecated';
 import {provide}           from '@angular/core';
+import {FileBackend} from './resources/FileBackend'
 import {enableProdMode} from '@angular/core';
-
 enableProdMode();
 //import {LocationStrategy, HashLocationStrategy} from '@angular/platform-browser-dynamic';
 
@@ -24,7 +24,8 @@ bootstrap(KmxComponent, [
   SettingsService,
   ModelSettingsService,
   StaticTransformer,
-  provide(BackendService, { useClass: KFlopBackendService })
+  provide(BackendService, { useClass: KFlopBackendService }),
+  provide(FileBackend, { useClass: KFlopBackendService })
   //,
   //provide(LocationStrategy,{useClass: HashLocationStrategy})]);
   //provide(LocationStrategy,{})

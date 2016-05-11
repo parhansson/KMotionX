@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
 import {BackendService} from '../backend/backend.service';
+import {FileBackend} from '../resources/FileBackend'
 import {KMXUtil} from '../util/kmxutil';
 import {Subject,BehaviorSubject} from 'rxjs/Rx'
 
@@ -129,14 +130,14 @@ export class TPlanner {
 export class SettingsService {
   public machine: Machine
   public subject: Subject<Machine>
-  constructor(private http: Http, private kmxBackend: BackendService) {
+  constructor(private http: Http, private kmxBackend: BackendService, private fileBackend: FileBackend) {
     this.machine = new Machine();
     this.subject = new BehaviorSubject<Machine>(this.machine)
     this.load("./settings/machines/laser.cnf");
   }
   public save(): void {
     var file = this.fileName();
-    this.kmxBackend.save(file, JSON.stringify(this.machine, null, '  ')).subscribe(
+    this.fileBackend.saveFile(file, JSON.stringify(this.machine, null, '  ')).subscribe(
       () => {
         this.subject.next(this.machine)
         this.kmxBackend.onUpdateMotionParams()
@@ -144,9 +145,9 @@ export class SettingsService {
   }
   public load(file) {
 
-    this.kmxBackend.onOpenFile(file).subscribe(
+    this.fileBackend.loadFile(file).subscribe(
       (data) => {
-        this.machine.update(JSON.parse(KMXUtil.ab2str(data.payload)))
+        this.machine.update(data.payload.json())
         this.subject.next(this.machine)
         },
       err => console.error(err),

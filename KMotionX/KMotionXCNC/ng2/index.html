@@ -16,13 +16,15 @@
   <script src="node_modules/reflect-metadata/Reflect.js"></script>
   <script src="node_modules/systemjs/dist/system.src.js"></script>
   <!--
-    Loading bundles not available in rc.0
-  <script src="node_modules/rxjs/bundles/Rx.js"></script>
+    Loading bundles not available in rc.1
+    Bundle up project like this
+    https://github.com/robwormald/new-world-test/tree/system/system-js
+  Bundle loading not working as expected
   <script src="node_modules/angular2/bundles/angular2.dev.js"></script>
-  -->
-  <!-- need to wait for new version on ng2-bootstrap
   <script src="node_modules/ng2-bootstrap/bundles/ng2-bootstrap.js"></script>
+  <script src="node_modules/rxjs/bundles/Rx.js"></script>
   -->
+
   <!-- need for number pipe on safari-->
   <script src="node_modules/intl/dist/Intl.min.js"></script>
   <script src="node_modules/intl/locale-data/jsonp/en.js"></script>
@@ -41,8 +43,14 @@
   <base href="/ng2/">
   <script src="systemjs.config.js"></script>
   <script>
-    System.import('dist/app/main')
-            .then(null, console.error.bind(console));
+    
+    // System.import('rxjs/bundles/Rx.js').then(
+    //   function(){
+        System.import('dist/app/main').then(null, console.error.bind(console))
+      // }
+    //     ,console.error.bind(console)
+    // )
+    
   </script>
 
 

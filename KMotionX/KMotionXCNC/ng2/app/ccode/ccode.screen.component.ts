@@ -1,21 +1,26 @@
-import {Component, Inject} from '@angular/core';
+import {Component, Inject, ViewChild} from '@angular/core';
 import {ScreenComponent} from "../screen.component"
 import {AceEditorComponent} from '../editor/ace.editor.component'
-import {FileResource} from '../backend/file'
+import {FileResource} from '../resources/FileResource'
 
 @Component({
   selector: 'ccode-screen',
   directives: [AceEditorComponent],
   template: `
-    <code-editor id="ccodeEditor" [resource]="resource" mode="c_cpp" >
+    <code-editor id="ccodeEditor" mode="c_cpp" >
       <buttons>TODO add compile, load and execute buttons</buttons>
     </code-editor>`
 })
 export class CCodeScreenComponent extends ScreenComponent {
-  resource:FileResource
-  
+  @ViewChild(AceEditorComponent)
+  editorComponent: AceEditorComponent;
+
   constructor() {
     super()
-    this.resource = new FileResource("./settings/c-programs", '');
+  }
+  
+  ngAfterViewInit() {
+    this.editorComponent.resourceComponent.loadOnSelect = true
+    this.editorComponent.resource.dir = "./settings/c-programs"
   }
 }

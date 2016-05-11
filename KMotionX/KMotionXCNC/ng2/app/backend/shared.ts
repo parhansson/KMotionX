@@ -1,5 +1,41 @@
+export class Message<T> {
+  isText: boolean = false
+  isJson: boolean = false
+  isStatus: boolean = false
+  isLog: boolean = false
+  message: T
+  constructor(message: T) {
+    this.message = message
+  }
 
+}
+export class TextMessage extends Message<string>{
 
+  constructor(message: string) {
+    super(message)
+    this.isText = true
+  }
+}
+export class JsonMessage extends Message<any>{
+  constructor(message: any) {
+    super(message)
+    this.isJson = true
+  }
+}
+export class StatusMessage extends Message<KmxStatus>{
+  constructor(message: KmxStatus) {
+    super(message)
+    this.isStatus = true
+  }
+}
+
+export class LogMessage extends Message<any>{
+  constructor(message: any, public type:number) {
+    super(message)
+    this.isLog = true
+
+  }
+}
 
 export interface Status {
   bitsDirection: boolean[]
@@ -8,7 +44,7 @@ export interface Status {
   currentLine: number
   gcodeFile: string
 }
-export class KmxStatus implements Status{
+export class KmxStatus implements Status {
   timeStamp: number = 0
   version: number = 0
   size: number = 0

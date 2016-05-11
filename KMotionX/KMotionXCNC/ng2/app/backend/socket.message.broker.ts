@@ -1,22 +1,22 @@
 
-import {SocketConnector,SocketMessageHandler} from './socket.connector'
+import {SocketConnector, SocketMessageHandler} from './socket.connector'
 import {KmxStatusStream} from './kmx.status'
-import {KmxStatus} from './shared'
+import {KmxStatus, StatusMessage, LogMessage, TextMessage, JsonMessage} from './shared'
 //
 //declare function postMessage(data: any): void;
-export interface PostMessageCallback { (data: any, transfer?:any[]): void }
+export interface PostMessageCallback { (data: any, transfer?: any[]): void }
 export class SocketMessageBroker implements SocketMessageHandler {
 
   socket: SocketConnector;
   kmxStatusStream: KmxStatusStream;
 
-  constructor(private postMessageCallback:PostMessageCallback) {
+  constructor(private postMessageCallback: PostMessageCallback) {
     this.kmxStatusStream = new KmxStatusStream();
     this.socket = new SocketConnector(this);
-    this.postMessageCallback('WorkerReady');
+    this.postMessageCallback(new TextMessage('WorkerReady'));
   }
-  
-  onSocketMessage(data: any){
+
+  onSocketMessage(data: any) {
     if (data instanceof ArrayBuffer) {
       this.onBinaryMessage(data)
     } else if (data instanceof Blob) {
@@ -25,32 +25,32 @@ export class SocketMessageBroker implements SocketMessageHandler {
       reader.addEventListener("loadend", this.onBinaryMessage.bind(this, reader.result));
       reader.readAsArrayBuffer(data);
     } else {
-      if (data !== "KMotionX") {      
+      if (data !== "KMotionX") {
         //try{ //try catch disables optimization in chrome
         var obj = JSON.parse(data);
-        this.postMessageCallback({ data: true, message: obj });
+        this.postMessageCallback(new JsonMessage(obj));
         //ack messages that don't require users answer here
         if (obj.payload.block === false) {
           this.acknowledge(obj.id, -1);
         }
-      
+
         //} catch(e){
         //  console.log(data);
         //  logHandler("Error handling message: " + data, LOG_TYPE.ERROR);
         //  throw e;
         //}
       }
-    }    
+    }
   }
- 
-  onBinaryMessage(data:ArrayBuffer){
-    var status = this.kmxStatusStream.readBuffer(data);
-    this.postMessageCallback({ status: true, message: status });    
+
+  onBinaryMessage(data: ArrayBuffer) {
+    let status = this.kmxStatusStream.readBuffer(data);
+    this.postMessageCallback(new StatusMessage(status));
   }
-  
-  onSocketLog(message: any, type: number){
-    this.postMessageCallback({ log: true, type: type, message: message });
-    
+
+  onSocketLog(message: any, type: number) {
+    this.postMessageCallback(new LogMessage(message, type));
+
   }
 
   onMessage(event: MessageEvent) {
@@ -62,12 +62,12 @@ export class SocketMessageBroker implements SocketMessageHandler {
     } else if (event.data.command == 'disconnect') {
       //no need to acually disconnect at the moment
       this.socket.destroy();
-      this.postMessageCallback('done');
+      this.postMessageCallback(new TextMessage('done'));
     }
 
   }
   acknowledge(id, ret) {
     this.socket.sendMessage(JSON.stringify({ type: "CB_ACK", id: id, returnValue: ret }));
   }
-  
+
 }

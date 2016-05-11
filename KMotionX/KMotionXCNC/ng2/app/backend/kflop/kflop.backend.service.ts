@@ -1,15 +1,20 @@
 import {Injectable} from '@angular/core';
 import {Http, Response} from '@angular/http';
-import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
-import {IFileObject} from '../file'
+import {Observable, Observer, Subject, AsyncSubject} from 'rxjs/Rx';
+import {FileResource, Payload} from '../../resources/FileResource'
 import {BackendService} from '../backend.service'
+import {IFileBackend} from '../../resources/FileBackend'
+
 
 @Injectable()
-export class KFlopBackendService extends BackendService {
+export class KFlopBackendService extends BackendService implements IFileBackend {
   constructor(private http: Http) { super() }
 
-  save(name, content: ArrayBuffer | ArrayBufferView | Blob | string) {
+  public listDir(path: string) {
+    return this.onEvent('listDir', path);
+  }
+
+  saveFile(name, content: ArrayBuffer | ArrayBufferView | Blob | string) {
     let url: string = "/upload"
     let progressObserver: any;
     //progress: number = 0;
@@ -58,10 +63,9 @@ export class KFlopBackendService extends BackendService {
     return progress$
   }
 
-  onOpenFile(path): Observable<IFileObject> {
+  loadFile(path:string): Observable<FileResource> {
 
-    let loadobserver: Observer<IFileObject>;
-    let observable = new Observable<IFileObject>(observer => loadobserver = observer)
+    let observable = new AsyncSubject<FileResource>()
     let url = "/api/kmx/" + 'openFile';
     let data = { "params": path };
     let oReq = new XMLHttpRequest();
@@ -69,11 +73,14 @@ export class KFlopBackendService extends BackendService {
     oReq.responseType = "arraybuffer";
 
     oReq.onload = (oEvent) => {
-      let arrayBuffer = oReq.response; // Note: not oReq.responseText
+      let arrayBuffer = oReq.response as ArrayBuffer; // Note: not oReq.responseText
       if (arrayBuffer) {
         //application/pdf
-        loadobserver.next({ contentType: oReq.getResponseHeader("Content-Type"), payload: arrayBuffer })
-        loadobserver.complete()
+        let fr = new FileResource(path);
+        fr.up(1) 
+        fr.payload = new Payload(arrayBuffer,oReq.getResponseHeader("Content-Type")) 
+        observable.next(fr)
+        observable.complete()
       }
     };
 
@@ -92,7 +99,7 @@ export class KFlopBackendService extends BackendService {
       payload = JSON.stringify({});
     } else {
       payload = JSON.stringify({ params: parameters });
-    }
+    } 
     let obs = this.http.post(url, payload).map((res: Response) => res.json())
     obs.subscribe(
       data => { },

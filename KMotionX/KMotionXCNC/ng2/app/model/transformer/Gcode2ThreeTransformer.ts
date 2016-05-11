@@ -2,8 +2,7 @@
 import {KMXUtil} from '../../util/kmxutil';
 import {GCodeVector, GCodeCurve3} from '../vector';
 import {GCodeParser, Block, Word, WordParameters, ControlWord} from '../gcode/gcode.parser';
-import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
+import {Observable, Observer} from 'rxjs/Rx';
 import {GCodeSource} from '../igm'
 import {ModelTransformer} from './ModelTransformer';
 //Copyright (c) 2014 par.hansson@gmail.com
