@@ -1,19 +1,20 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "module": "commonjs",
+    "module": "system",
     "moduleResolution": "node",
     "sourceMap": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "removeComments": false,
     "noImplicitAny": false,
-    "outDir": "dist/app",
-    "rootDir": "app",
+    "outFile": "dist/kmx.js",
+    "rootDir": "./",
 //    "allowJs": true,
     "declaration": true
   },
   "exclude": [
+    "app/backend/WorkerBootstrap.ts",
     "dist",
     "vendor",
     "js",

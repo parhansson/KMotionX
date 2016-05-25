@@ -1,7 +1,6 @@
 
 import {Component, ElementRef} from '@angular/core';
-
-declare var opentype: any
+import * as THREE from 'three'
 
 @Component({
   selector: "three-viewer",

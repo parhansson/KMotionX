@@ -1,5 +1,5 @@
 import {Component,Inject,Input} from '@angular/core';
-
+import {Action}  from  './settings.service'
 @Component({
     selector : 'kmx-mcode-value',
     templateUrl:'dist/app/settings/mcode-value.html'
@@ -7,7 +7,7 @@ import {Component,Inject,Input} from '@angular/core';
 export class MCodeComponent { 
 
     @Input() userButton = false;
-    @Input() action:any;
+    @Input() action:Action;
     
     actionOptions = [
          //{action:-1,name:'Reserved', visible:[false,false,false,false,false,false],paramNames:['','','','','','']},
