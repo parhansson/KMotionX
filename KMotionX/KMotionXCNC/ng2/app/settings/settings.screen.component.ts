@@ -7,9 +7,10 @@ import {TAB_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 import {TransformerSettingsComponent} from './TransformerSettingsComponent'
 
 @Component({
+    moduleId: module.id,
     selector: 'settings-screen',
     directives: [TAB_DIRECTIVES, MCodeComponent, TransformerSettingsComponent],
-    templateUrl: 'dist/app/settings/settings.screen.html'
+    templateUrl: './settings.screen.html'
 })
 export class SettingsScreenComponent extends ScreenComponent {
     machine: Machine

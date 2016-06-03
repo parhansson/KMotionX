@@ -15,9 +15,10 @@ import {BackendService} from './backend/backend.service'
 
 import {PersistentRouterOutlet} from './PersistentRouterOutlet'
 @Component({
+    moduleId: module.id,
     selector: 'kmx-app',
     directives: [PersistentRouterOutlet, RouterLink/*, ROUTER_DIRECTIVES*/],
-    templateUrl: 'dist/app/kmx.component.html'
+    templateUrl: './kmx.component.html'
 })
 @RouteConfig([
     { path: '/gcode', name: 'GCodeScreen', component: GCodeScreenComponent, useAsDefault: true },

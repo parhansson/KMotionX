@@ -1,5 +1,9 @@
 
 import {bootstrap}        from '@angular/platform-browser-dynamic'
+import {HTTP_PROVIDERS}   from '@angular/http';
+import {ROUTER_PROVIDERS} from '@angular/router-deprecated';
+import {provide}           from '@angular/core';
+import {enableProdMode} from '@angular/core';
 import {BackendService}   from './backend/backend.service';
 import {KFlopBackendService}   from './backend/kflop/kflop.backend.service';
 import {LogService}       from './log/log.service';
@@ -8,12 +12,8 @@ import {SocketService}    from './backend/socket.service'
 import {SettingsService}    from './settings/settings.service'
 import {ModelSettingsService} from './model/model.settings.service';
 import {StaticTransformer} from './model/transformers'
-import {HTTP_PROVIDERS}   from '@angular/http';
-import {ROUTER_PROVIDERS} from '@angular/router-deprecated';
-import {provide}           from '@angular/core';
 import {FileBackend} from './resources/FileBackend'
-import {enableProdMode} from '@angular/core';
-enableProdMode();
+//enableProdMode();
 //import {LocationStrategy, HashLocationStrategy} from '@angular/platform-browser-dynamic';
 
 bootstrap(KmxComponent, [

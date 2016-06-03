@@ -1,8 +1,10 @@
 import {Component,Inject,Input} from '@angular/core';
 import {Action}  from  './settings.service'
+
 @Component({
+    moduleId: module.id,
     selector : 'kmx-mcode-value',
-    templateUrl:'dist/app/settings/mcode-value.html'
+    templateUrl:'./mcode-value.html'
 })
 export class MCodeComponent { 
 

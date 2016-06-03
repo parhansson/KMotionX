@@ -5,9 +5,10 @@ import {DigitalIOComponent} from "./digital.io.component"
 
 
 @Component({
+  moduleId: module.id,
   selector: 'debug-screen',
   directives: [LogComponent,DigitalIOComponent],
-  templateUrl: 'dist/app/debug/debug.screen.html'
+  templateUrl: './debug.screen.html'
 })
 export class DebugScreenComponent extends ScreenComponent{
 
