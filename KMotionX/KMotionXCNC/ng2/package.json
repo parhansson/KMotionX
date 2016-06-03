@@ -3,6 +3,7 @@
   "description": "Web GUI for CNC",
   "version": "1.0.0",
   "jsnext:main":"esm/main.js",
+  "main": "index.js",
   "scripts": {
     "postinstall": "npm run typings install",
     "tsc": "tsc",
@@ -11,7 +12,9 @@
     "start": "concurrent \"npm run tsc:w\" \"npm run lite\" \"npm run copy:dist\" ",
     "typings": "typings",
     "copy:dist": "node sync-dist.js",
-    "copy": "npm run copy:dist"
+    "copy": "npm run copy:dist",
+    "bundle": "node bundle.js",
+    "bundle:prod": "node bundle.js --prod"
   },
   "license": "ISC",
   "dependencies": {
@@ -51,6 +54,7 @@
     "lite-server": "2.2.0",
     "typescript": "1.8.10",
     "typings": "0.8.1",
-    "chokidar": "1.5.0"
+    "chokidar": "1.5.0",
+    "systemjs-builder": "^0.15.19"
   }
 }

@@ -13,7 +13,10 @@ import {SettingsService}    from './settings/settings.service'
 import {ModelSettingsService} from './model/model.settings.service';
 import {StaticTransformer} from './model/transformers'
 import {FileBackend} from './resources/FileBackend'
-//enableProdMode();
+
+//Remove this and fix error in FileComponent
+enableProdMode();
+
 //import {LocationStrategy, HashLocationStrategy} from '@angular/platform-browser-dynamic';
 
 bootstrap(KmxComponent, [
