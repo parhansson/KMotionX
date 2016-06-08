@@ -8,8 +8,7 @@
     "postinstall": "npm run typings install",
     "tsc": "tsc",
     "tsc:w": "tsc -w",
-    "lite": "lite-server",
-    "start": "concurrent \"npm run tsc:w\" \"npm run lite\" \"npm run copy:dist\" ",
+    "start": "concurrent \"npm run tsc:w\" \"npm run copy:dist\" ",
     "typings": "typings",
     "copy:dist": "node sync-dist.js",
     "copy": "npm run copy:dist",
@@ -51,7 +50,6 @@
   },
   "devDependencies": {
     "concurrently": "2.1.0",
-    "lite-server": "2.2.0",
     "typescript": "1.8.10",
     "typings": "0.8.1",
     "chokidar": "1.5.2",
