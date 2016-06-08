@@ -1,6 +1,9 @@
 
 import {Component, ElementRef} from '@angular/core';
 import * as THREE from 'three'
+import * as TrackballControls from 'three-trackballcontrols'
+//TODO do this in separate module instead of where it is needed
+Object.assign(THREE, {TrackballControls: TrackballControls});
 
 @Component({
   selector: "three-viewer",
@@ -70,8 +73,6 @@ export class ThreeViewComponent {
     this.scene.add(this.camera);
     this.scene.add(this.auxiliaryGroup);
     this.scene.add(this.modelGroup);
-
-
 
     this.controls = new THREE.TrackballControls(this.camera, this.element);
     //controls.noPan = false;

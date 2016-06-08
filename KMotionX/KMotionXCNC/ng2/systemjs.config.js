@@ -15,8 +15,8 @@
     'three-trackballcontrols': 'node_modules/three-trackballcontrols',
 
     // removed when loading from bundle
-    // 'rxjs': 'node_modules/rxjs',
-    // 'ng2-bootstrap':'node_modules/ng2-bootstrap',
+    'rxjs': 'node_modules/rxjs',
+    'ng2-bootstrap':'node_modules/ng2-bootstrap',
     
     //needed by ng2-bootstrap datepicker
     'moment': 'node_modules/moment/moment.js', 
@@ -27,13 +27,13 @@
     // path is normalized using map and paths configuration
     'node_modules/three-trackballcontrols/index.js': {
       format: 'cjs', // load this module as a CommonJS
-      //exports: 'THREE', // the global property to take as the module value
+      //exports: 'TrackballControls', // the global property to take as the module value
       deps: [
         // dependencies to load before this module
         'three'
       ]
-    }
-    ,
+      
+    },
     'node_modules/three/three.js': {
       format: 'global', // load this module as a global
       //exports: 'THREE', // the global property to take as the module value
@@ -44,23 +44,13 @@
   var packages = {
     "app": { main: 'app/main.js', defaultExtension: 'js' }, //format: 'register', 
     
-    'three': { main: 'three.js', defaultExtension: 'js' },
+    'three': { main: 'build/three.js', defaultExtension: 'js' },
     'three-trackballcontrols': { main: 'index.js', defaultExtension: 'js' },
     
     // removed when loading from bundle
-    // 'ng2-bootstrap': { defaultExtension: 'js' }, //"ng2-bootstrap": { format: 'register', defaultExtension: 'js' },
-    // 'rxjs': { defaultExtension: 'js' }, 
+    'ng2-bootstrap': { defaultExtension: 'js' }, //"ng2-bootstrap": { format: 'register', defaultExtension: 'js' },
+    'rxjs': { defaultExtension: 'js' }, 
   };
-
-  /*
-  ,
-  meta: {
-    'node_modules/three-trackballcontrols/index.js': {
-      format: 'cjs',
-      deps: ['./node_modules/three/three.js']
-    }
-  }
-  */
 
   var packageNames = [
     '@angular/common',
@@ -82,7 +72,13 @@
   var config = {
     map: map,
     packages: packages,
-    meta:meta
+    meta:meta,
+    /*
+    depCache: {
+      //'three': ['three-trackballcontrols'], // moduleA depends on moduleB
+      'three-trackballcontrols': ['three'], // moduleA depends on moduleB
+      },
+      */
   }
 
   // filterSystemConfig - index.html's chance to modify config before we register it.

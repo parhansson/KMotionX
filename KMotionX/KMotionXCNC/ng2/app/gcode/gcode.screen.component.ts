@@ -14,6 +14,7 @@ import {FileResource, Payload} from '../resources/FileResource'
 import {FileBackend} from '../resources/FileBackend'
 import {AceEditorComponent} from '../editor/ace.editor.component'
 import {SettingsService, Machine} from '../settings/settings.service'
+import * as THREE from 'three'
 
 @Component({
   selector: 'gcode-screen',
