@@ -1,7 +1,7 @@
 import {Directive, Component, Input, Output, EventEmitter, ElementRef} from '@angular/core';
-import {FileResource} from './FileResource'
-import {FileBackend} from './FileBackend'
-import {FileDropZone} from './FileDropZoneDirective'
+import {FileResource} from './file-resource'
+import {FileBackend} from './file-backend'
+import {DropZoneDirective} from './drop-zone.directive'
 
 @Component({
   selector: 'file-path',
@@ -26,7 +26,7 @@ export class FilePathComponent {
 
 @Component({
   selector: 'file-dialog',
-  directives: [FilePathComponent, FileDropZone],
+  directives: [FilePathComponent, DropZoneDirective],
   template: `
   <div class="modal" [style.display]="modalDisplay">
       <div class="modal-dialog">

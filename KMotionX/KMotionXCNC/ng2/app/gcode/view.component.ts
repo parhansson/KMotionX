@@ -317,28 +317,8 @@ export class Orientation {
   }
 
   createCube(scene) { // create an array with six textures for a cool cube
-    var manager = new THREE.LoadingManager(() => {
-      console.log("onLoad")
-    },
-      (url, loaded, total) => {
-        console.log(url)
-        console.log(loaded)
-        console.log(total)
-      }, () => {
-        console.error("error loading texture")
-      }
-    );
-    var loader = new THREE.TextureLoader(manager);
+    new THREE.TextureLoader().load('/settings/textures/textures.png', onTexture);
 
-    loader.load('/settings/textures/textures.png', onTexture);
-    /*
-    loader.load(
-      'images/textures.png',
-      onTexture,
-      function(xhr) { console.log((xhr.loaded / xhr.total * 100) + '% loaded'); },
-      function(xhr) { console.log('An error happened'); }
-    );
-    */
 
     function onTexture(texture: THREE.Texture) {
       //var material = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('images/box-atlas.png') } );

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
 import {BackendService} from '../backend/backend.service';
-import {FileBackend} from '../resources/FileBackend'
+import {FileBackend} from '../resources'
 import {KMXUtil} from '../util/kmxutil';
 import {Subject,BehaviorSubject} from 'rxjs/Rx'
 

@@ -1,7 +1,7 @@
 import {Component, Inject, ViewChild} from '@angular/core';
 import {ScreenComponent} from "../screen.component"
-import {AceEditorComponent} from '../editor/ace.editor.component'
-import {FileResource} from '../resources/FileResource'
+import {AceEditorComponent} from '../editor'
+import {FileResource} from '../resources'
 
 @Component({
   selector: 'ccode-screen',

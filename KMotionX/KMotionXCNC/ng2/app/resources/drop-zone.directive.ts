@@ -1,5 +1,5 @@
 import {Directive, Component, Input, Output, EventEmitter, ElementRef} from '@angular/core';
-import {FileResource, Payload} from './FileResource'
+import {FileResource, Payload} from './file-resource'
 
 @Directive({
   selector: "[file-dropzone]",
@@ -11,7 +11,7 @@ import {FileResource, Payload} from './FileResource'
   }
 
 })
-export class FileDropZone {
+export class DropZoneDirective {
   @Output() dropped = new EventEmitter<FileResource>()
 
   /*

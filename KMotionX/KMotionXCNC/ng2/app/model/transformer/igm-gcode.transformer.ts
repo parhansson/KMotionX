@@ -1,6 +1,6 @@
 import {IGM, GCodeSource} from '../igm';
 import {SVGModelSettings} from '../model.settings.service'
-import {ModelTransformer} from './ModelTransformer';
+import {ModelTransformer} from './model.transformer';
 import {Observer} from 'rxjs/Rx'
 
 

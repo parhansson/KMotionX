@@ -1,5 +1,5 @@
 import {Observable} from 'rxjs/Rx'
-import {FileResource} from './FileResource' 
+import {FileResource} from './file-resource' 
 
 export interface IFileBackend {
   saveFile(name, content: ArrayBuffer | ArrayBufferView | Blob | string): Observable<number>;

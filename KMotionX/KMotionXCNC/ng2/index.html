@@ -8,9 +8,8 @@
   <link rel="stylesheet" type="text/css" href="/css/style.css">
   <link rel="stylesheet" type="text/css" href="/css/switch.css">
   <!-- 1. Load libraries -->
-  <!-- IE required polyfills, in this exact order -->
-
-  <script src="node_modules/es6-shim/es6-shim.min.js"></script>
+  <!-- Polyfill(s) for older browsers -->
+  <script src="node_modules/core-js/client/shim.min.js"></script>
 
   <script src="node_modules/zone.js/dist/zone.js"></script>
   <script src="node_modules/reflect-metadata/Reflect.js"></script>
@@ -23,10 +22,10 @@
   <script src="node_modules/ace-min-noconflict/ace.js"></script>
   <script src="node_modules/opentype.js/dist/opentype.js"></script>
   <script src="node_modules/pdfjs-dist/build/pdf.js"></script>
-  <!--
-  Load from bundle when production
-  -->
+  
+  <!-- Load from bundle instead of sources
   <script src="dist/kmxcnc.js"></script>
+  -->
   <!-- 2. Configure SystemJS -->
   <base href="/ng2/">
   <script src="systemjs.config.js"></script>

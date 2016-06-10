@@ -6,7 +6,7 @@ import {Action}  from  './settings.service'
     selector : 'kmx-mcode-value',
     templateUrl:'./mcode-value.html'
 })
-export class MCodeComponent { 
+export class MCodeValueComponent { 
 
     @Input() userButton = false;
     @Input() action:Action;

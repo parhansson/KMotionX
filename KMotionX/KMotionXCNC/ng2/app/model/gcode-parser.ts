@@ -3,36 +3,16 @@
  * Parses a string of gcode instructions, and invokes codeHandlers for each type of
  * command or values.
  */
-import {Subject} from 'rxjs/Rx';
-
-
-export class Block {
-  line: number
-  parts: BlockPart<string | Word[]>[] = []
-
-  constructor(public text: string) { }
-
-}
-export abstract class BlockPart<T> {
-  constructor(public value: T) { }
-}
-
-export abstract class Word extends BlockPart<string> {
-  constructor(public literal: string, public address: number) {
-    super(literal + address)
-  }
-}
-
-export class WordParameters extends BlockPart<Word[]> {
-  constructor() {
-    super([])
-  }
-}
-
-export class Comment extends BlockPart<string> { }
-
-export class ControlWord extends Word { }
-export class ParamWord extends Word { }
+import { Subject } from 'rxjs/Rx';
+import {
+  Word,
+  BlockPart,
+  Block,
+  WordParameters,
+  Comment,
+  ControlWord,
+  ParamWord
+} from './gcode'
 
 
 class ParseValue {

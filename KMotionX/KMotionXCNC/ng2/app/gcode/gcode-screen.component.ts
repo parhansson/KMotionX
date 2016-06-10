@@ -6,13 +6,12 @@ import {SocketService} from '../backend/socket.service';
 import {KmxStatus} from '../backend/shared'
 import {DroComponent} from './dro.component';
 import {ThreeViewComponent} from './view.component';
-import {UserButtonsComponent} from './user.buttons.component';
-import {ControlButtonsComponent} from './control.buttons.component';
+import {UserButtonsComponent} from './user-buttons.component';
+import {ControlButtonsComponent} from './control-buttons.component';
 import {ScreenComponent} from "../screen.component"
 import {StaticTransformer} from '../model/transformers'
-import {FileResource, Payload} from '../resources/FileResource'
-import {FileBackend} from '../resources/FileBackend'
-import {AceEditorComponent} from '../editor/ace.editor.component'
+import {FileResource, Payload,FileBackend} from '../resources'
+import {AceEditorComponent} from '../editor'
 import {SettingsService, Machine} from '../settings/settings.service'
 import * as THREE from 'three'
 
@@ -126,7 +125,10 @@ export class GCodeScreenComponent extends ScreenComponent {
   }
 
   private renderBackground(x, y, z) {
-    var texture = THREE.ImageUtils.loadTexture('/settings/textures/bghoneym.jpg');
+
+    console.log("why are we here twice?")
+    var texture = new THREE.TextureLoader().load('/settings/textures/bghoneym.jpg');
+    
 
     // assuming you want the texture to repeat in both directions:
     //texture.wrapS = THREE.RepeatWrapping; 

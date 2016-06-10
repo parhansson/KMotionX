@@ -3,7 +3,7 @@ import {ScreenComponent} from "../screen.component"
 @Component({
     moduleId: module.id,
     selector: 'laser-calc-screen',
-    templateUrl:'./laser-calc.html'
+    templateUrl:'./laser-calculator.html'
 })
 export class LaserCalculatorComponent extends ScreenComponent{ 
     //@Input()

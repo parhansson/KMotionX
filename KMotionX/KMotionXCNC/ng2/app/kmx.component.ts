@@ -3,14 +3,13 @@ import {Component, Inject} from '@angular/core';
 import {RouteConfig} from '@angular/router-deprecated';
 import {RouterLink} from '@angular/router-deprecated/src/directives/router_link';
 
-import {LaserCalculatorComponent} from './laser/laser.calculator.component';
-import {GCodeScreenComponent} from './gcode/gcode.screen.component';
-import {CCodeScreenComponent} from './ccode/ccode.screen.component';
-import {DebugScreenComponent} from './debug/debug.screen.component';
-import {SettingsScreenComponent} from './settings/settings.screen.component';
+import {LaserCalculatorComponent} from './laser';
+import {GCodeScreenComponent} from './gcode';
+import {CCodeScreenComponent} from './ccode';
+import {DebugScreenComponent} from './debug';
+import {SettingsScreenComponent} from './settings';
 import {SocketService} from './backend/socket.service'
 import {KmxStatus} from './backend/shared'
-
 import {BackendService} from './backend/backend.service'
 
 import {PersistentRouterOutlet} from './PersistentRouterOutlet'

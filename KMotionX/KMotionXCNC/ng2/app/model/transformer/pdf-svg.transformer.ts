@@ -1,6 +1,6 @@
 import {Observer} from 'rxjs/Rx';
 import {ModelSettingsService, ModelSettings} from '../model.settings.service';
-import {ModelTransformer} from './ModelTransformer';
+import {ModelTransformer} from './model.transformer';
 
 declare var PDFJS: any
 

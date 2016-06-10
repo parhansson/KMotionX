@@ -3,7 +3,7 @@
 import {Injectable} from '@angular/core';
 import {Observer,Observable,Subject,AsyncSubject} from 'rxjs/Rx';
 import {KMXUtil} from '../util/kmxutil';
-import {ModelTransformer} from './transformer/ModelTransformer';
+import {ModelTransformer} from './transformer/model.transformer';
 
 
 @Injectable()

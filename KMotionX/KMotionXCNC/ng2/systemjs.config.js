@@ -62,6 +62,16 @@
     '@angular/router-deprecated',
     //'@angular/testing',
     //'@angular/upgrade',
+    'dist/app/ccode',
+    'dist/app/debug',
+    'dist/app/editor',
+    'dist/app/gcode',
+    'dist/app/laser',
+    'dist/app/log',
+    'dist/app/model/gcode',
+    'dist/app/model/transformer',
+    'dist/app/resources',
+    'dist/app/settings',
   ];
 
   // add package entries for angular packages in the form '@angular/common': { main: 'index.js', defaultExtension: 'js' }
@@ -72,13 +82,7 @@
   var config = {
     map: map,
     packages: packages,
-    meta:meta,
-    /*
-    depCache: {
-      //'three': ['three-trackballcontrols'], // moduleA depends on moduleB
-      'three-trackballcontrols': ['three'], // moduleA depends on moduleB
-      },
-      */
+    meta:meta
   }
 
   // filterSystemConfig - index.html's chance to modify config before we register it.

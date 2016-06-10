@@ -1,10 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Observable, Observer, Subject} from 'rxjs/Rx';
-import {ModelTransformer} from './transformer/ModelTransformer'
-import {Igm2GcodeTransformer} from './transformer/Igm2GcodeTransformer'
-import {Gcode2ThreeTransformer} from './transformer/Gcode2ThreeTransformer';
-import {Pdf2SvgTransformer} from './transformer/Pdf2SvgTransformer';
-import {Svg2IgmTransformer} from './transformer/Svg2IgmTransformer';
+import {ModelTransformer,Igm2GcodeTransformer, Gcode2ThreeTransformer, Pdf2SvgTransformer, Svg2IgmTransformer} from './transformer'
 import {IGM, GCodeSource} from './igm'
 import {KMXUtil}    from '../util/KMXUtil'
 import {ModelSettingsService} from './model.settings.service';

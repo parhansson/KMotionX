@@ -1,12 +1,3 @@
-import {Component, Inject} from '@angular/core';
-import {SettingsService, Machine} from './settings.service';
-import {MCodeComponent} from './mcode.component';
-import {ScreenComponent} from "../screen.component"
-import {ModelSettings, ModelSettingsService} from '../model/model.settings.service';
-
-@Component({
-    selector: 'transformer-settings',
-    template: `
 <h3 class="settings-header">Import settings</h3>
       <form class="form">
         <div class="row">
@@ -57,18 +48,4 @@ import {ModelSettings, ModelSettingsService} from '../model/model.settings.servi
             </div>
           </div>
         </div>
-      </form>    
-    
-    
-    `
-})
-export class TransformerSettingsComponent{
-    transformerSettings: ModelSettings
-    constructor(private settingsService: SettingsService, private modelSettingsService: ModelSettingsService) {
-        this.transformerSettings = modelSettingsService.settings
-    }
-
-    save() {
-     
-    }
-}
+      </form>  

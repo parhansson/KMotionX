@@ -1,5 +1,5 @@
 import {Observable} from 'rxjs/Rx';
-import {FileResource} from '../resources/FileResource'
+import {FileResource} from '../resources'
 
 export abstract class BackendService  {
   

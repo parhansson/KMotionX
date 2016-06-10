@@ -1,9 +1,7 @@
 import {Component, Inject, Input, ViewChild} from '@angular/core';
-import {AceDirective} from "../editor/ace.directive";
+import {AceDirective} from "./ace.directive";
 import {KMXUtil}    from '../util/KMXUtil'
-import {FileDropZone}    from '../resources/FileDropZoneDirective'
-import {ResourceComponent,FilePathComponent}    from '../resources/FileResourceComponent'
-import {FileResource} from '../resources/FileResource'
+import {DropZoneDirective, ResourceComponent, FilePathComponent,FileResource}    from '../resources'
 
 export interface OnFileEventHandler {
   (file: FileResource): void
@@ -11,7 +9,7 @@ export interface OnFileEventHandler {
 
 @Component({
   selector: 'code-editor',
-  directives: [AceDirective, ResourceComponent, FilePathComponent, FileDropZone],
+  directives: [AceDirective, ResourceComponent, FilePathComponent, DropZoneDirective],
   template: `
     <file-dialog #fd (selectedFile)="onFile($event)" [loadOnSelect]="false" [resource]="resource"></file-dialog>
     <div>

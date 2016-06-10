@@ -2,7 +2,7 @@
 import {Observer} from 'rxjs/Rx';
 import {IGM, IgmObject} from '../igm';
 import {GCodeVector} from '../vector';
-import {ModelTransformer} from '../transformer/ModelTransformer';
+import {ModelTransformer} from './model.transformer';
 declare var opentype
 /*
 if (typeof(String.prototype.strip) === "undefined") {

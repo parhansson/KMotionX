@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Subject,BehaviorSubject} from 'rxjs/Rx';
-import {LogService} from "../log/log.service"
+import {LogService,LogLevel} from "../log"
 import {KMXUtil} from '../util/kmxutil';
-import {LogLevel} from '../log/log.level';
 import {KmxStatus, Message, StatusMessage, LogMessage, TextMessage, JsonMessage} from './shared'
 //import {LogLevel} from '../kmx';
 //import {LogLevel} from 'kmxlog/log.level';

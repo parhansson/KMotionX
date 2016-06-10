@@ -1,5 +1,5 @@
 
-import {LogLevel} from '../log/log.level';
+import {LogLevel} from '../log/log-level';
 
 export interface SocketMessageHandler {
   onSocketLog(data: any, logType: number): void;
