@@ -1,48 +1,37 @@
 
-let root = "../../../"
+let root = "../../../" //added to map. relative to this file
 
 let imports = [
-  "node_modules/es6-shim/es6-shim.min.js",
+  "node_modules/core-js/client/shim.min.js",
   "node_modules/systemjs/dist/system.src.js",
-  "../vendor/mozilla/stringview.js"
-  //"node_modules/@angular/web_worker/worker.js"
+  "../vendor/mozilla/stringview.js",
+  "systemjs.config.js"
 ]
 
-let map = {
-  //'app': 'app', // 'dist',
-  'rxjs': root + 'node_modules/rxjs',
-  //'@angular': 'node_modules/@angular',
-  //'ng2-bootstrap':'node_modules/ng2-bootstrap',
-  //'moment': 'node_modules/moment/moment.js', //needed by ng2-bootstrap datepicker
-};
 
-imports.forEach(function (script) {
+self['filterSystemConfig'] =  function(config){
+    for(let key in config.map){
+      config.map[key] = root + config.map[key]; 
+    }
+    config.packages[root] = { defaultExtension: 'js' }
+  }
+
+for(let script of imports){
   importScripts(root + script)
-});
-
-let packages = {
-  'rxjs': { defaultExtension: 'js' },
 }
-packages[root] = { defaultExtension: 'js' } //format: 'register', 
 
-System.config({
-  //baseURL: '../../dist',
-  map: map,
-  packages: packages
-});
-//System.import("app/backend/socket.worker.js");
-//var workerModule = "socket.message.broker.js";
-let workerModule = "socket.message.broker.js";
-let workerThread = self;
-System.import(workerModule).then(
-  function (module) {
-    console.log("Loaded " + workerModule);
-    let socketWorker = new module.SocketMessageBroker(workerThread.postMessage.bind(workerThread));
+let mainModule = "socket.message.broker";
+
+
+System.import(mainModule).then((module) =>{
+
+    console.log("Loaded " + mainModule);
+    let socketWorker = new module.SocketMessageBroker(this.postMessage.bind(this));
     //self.addEventListener('message', onMessage, false);  
-    self.onmessage = socketWorker.onMessage.bind(socketWorker);
+    this.onmessage = socketWorker.onMessage.bind(socketWorker);
 
   },
-  function (error) {
+  (error) => {
     console.error("Failed:", error)
   }
 )
