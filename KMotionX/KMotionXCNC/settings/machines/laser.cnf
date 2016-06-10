@@ -1,5 +1,6 @@
 {
   "name": "laser",
+  "description": "My cheap laser",
   "dimX": 300,
   "dimY": 200,
   "dimZ": 60,
