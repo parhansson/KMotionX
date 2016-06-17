@@ -1,28 +1,8 @@
-import {Directive, Component, Input, Output, EventEmitter, ElementRef} from '@angular/core';
+import {Directive, Component, Input, Output, EventEmitter, ElementRef,Inject} from '@angular/core';
 import {FileResource} from './file-resource'
-import {FileBackend} from './file-backend'
+import {IFileBackend,FileServiceToken,FileEntry} from './file-backend'
 import {DropZoneDirective} from './drop-zone.directive'
-
-@Component({
-  selector: 'file-path',
-  template: `
-      <div>
-        <span *ngFor="let part of resource?.paths; let index = index" (click)="openIndex(index)" >{{part}}/</span><span>{{resource.file}}</span>
-      </div>
-    `
-
-})
-export class FilePathComponent {
-  @Output() changed = new EventEmitter()
-  @Input() resource: FileResource
-  constructor() {
-
-  }
-  openIndex(index: number) {
-    this.resource.goto(index + 1);
-    this.changed.emit(this.resource);
-  }
-}
+import {FilePathComponent} from './file-path.component'
 
 @Component({
   selector: 'file-dialog',
@@ -35,7 +15,7 @@ export class FilePathComponent {
             <a class="close" (click)="hide()">&times;</a>
             <h4>Open file</h4>
           </div>
-          <div class="modal-body" file-dropzone (dropped)="setFile($event)">
+          <div class="modal-body" file-dropzone (dropped)="setFileResource($event)">
             <file-path [resource]="resource" (changed)="listDir()" ></file-path>
             <ul class="modal-file-list">
               <li class="button" (click)="selectFile(file)" *ngFor="let file of files">{{file.name}}</li>          
@@ -51,21 +31,21 @@ export class FilePathComponent {
     `
 
 })
-export class ResourceComponent {
+export class FileDialogComponent {
   @Input() resource: FileResource
   @Input() loadOnSelect: boolean = false
   @Output() selectedFile = new EventEmitter<FileResource>()
 
-  private files = []
+  private files:FileEntry[] = []
   private showModal: boolean = false
   private modalDisplay: string = "none"
 
-  constructor(private fileBackend: FileBackend) {
+  constructor(@Inject(FileServiceToken)private fileBackend: IFileBackend) {
 
   }
 
 
-  selectFile(file: any) {
+  selectFile(file: FileEntry) {
     if (file.type === 4) {
       if (file.name === "..") {
         this.resource.up(1)
@@ -100,7 +80,7 @@ export class ResourceComponent {
     //TODO implement
     console.warn("Save as not yet implemented")
   }
-  private setFile(file: FileResource) {
+  protected setFileResource(file: FileResource) {
     this.selectedFile.emit(file)
     this.hide()
   }

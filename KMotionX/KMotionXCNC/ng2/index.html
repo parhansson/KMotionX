@@ -6,7 +6,6 @@
   <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap-theme.min.css">
   <link rel="stylesheet" type="text/css" href="/css/style.css">
-  <link rel="stylesheet" type="text/css" href="/css/switch.css">
   <!-- 1. Load libraries -->
   <!-- Polyfill(s) for older browsers -->
   <script src="node_modules/core-js/client/shim.min.js"></script>
@@ -34,7 +33,19 @@
 
 <!-- 3. Display the application -->
 <body>
-  <kmx-app>KMotionX CNC loading...</kmx-app>
+  <kmx-app>
+
+<div class="container" style="display: table;  height: 100%;">
+    <div class="row" style=" display: table-cell;vertical-align: middle;">
+        <div class="text-center col-md-4 col-md-offset-4">
+          KMotionX CNC loading...
+          <br>
+          <img style="center" src="/css/loading.gif"/>
+          
+        </div>
+    </div>
+</div>
+  </kmx-app>
   <script>
       System.import('app').then(null, console.error.bind(console));
   </script>  

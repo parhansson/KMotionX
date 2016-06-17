@@ -1,6 +1,6 @@
-import {Directive, Component, Input, Output, EventEmitter, ElementRef} from '@angular/core';
-import {FileResource, Payload} from './file-resource'
-
+import { Directive, Component, Input, Output, EventEmitter, ElementRef } from '@angular/core';
+import { FileResource } from './file-resource'
+import { Payload } from './payload'
 @Directive({
   selector: "[file-dropzone]",
   host: {

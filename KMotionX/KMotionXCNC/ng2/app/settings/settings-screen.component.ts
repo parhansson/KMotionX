@@ -17,8 +17,8 @@ export class SettingsScreenComponent extends ScreenComponent {
     transformerSettings: ModelSettings
     constructor(private settingsService: SettingsService, private modelSettingsService: ModelSettingsService) {
         super()
-        this.machine = settingsService.machine
-        this.transformerSettings = modelSettingsService.settings
+        settingsService.subject.subscribe(machine => this.machine = machine); 
+        this.transformerSettings = modelSettingsService.settings;
     }
 
     save() {

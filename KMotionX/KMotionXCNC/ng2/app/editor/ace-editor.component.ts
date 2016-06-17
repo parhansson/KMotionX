@@ -1,7 +1,12 @@
-import {Component, Inject, Input, ViewChild} from '@angular/core';
-import {AceDirective} from "./ace.directive";
-import {KMXUtil}    from '../util/KMXUtil'
-import {DropZoneDirective, ResourceComponent, FilePathComponent,FileResource}    from '../resources'
+import { Component, Inject, Input, ViewChild} from '@angular/core';
+import { AceDirective} from "./ace.directive";
+import { KMXUtil}    from '../util/KMXUtil'
+import { DropZoneDirective, 
+  FileDialogComponent, 
+  FilePathComponent,
+  FileResource, 
+  IFileBackend, 
+  FileServiceToken }    from '../resources'
 
 export interface OnFileEventHandler {
   (file: FileResource): void
@@ -9,7 +14,7 @@ export interface OnFileEventHandler {
 
 @Component({
   selector: 'code-editor',
-  directives: [AceDirective, ResourceComponent, FilePathComponent, DropZoneDirective],
+  directives: [AceDirective, FileDialogComponent, FilePathComponent, DropZoneDirective],
   template: `
     <file-dialog #fd (selectedFile)="onFile($event)" [loadOnSelect]="false" [resource]="resource"></file-dialog>
     <div>
@@ -33,15 +38,15 @@ export class AceEditorComponent {
   @ViewChild(AceDirective)
   private aceEditor: AceDirective
 
-  @ViewChild(ResourceComponent)
-  resourceComponent: ResourceComponent
+  @ViewChild(FileDialogComponent)
+  resourceComponent: FileDialogComponent
 
   @Input() mode: string
   @Input() theme: string
   resource: FileResource
   onFileEventHandler: OnFileEventHandler
   dirty: boolean
-  constructor() {
+  constructor(@Inject(FileServiceToken) private fileBackend: IFileBackend) {
     this.resource = new FileResource("");
   }
 
@@ -60,12 +65,14 @@ export class AceEditorComponent {
 
   onSave() {
     this.resourceComponent.save(this.textContent)
+    //this.fileBackend.saveFile(this.resource.canonical, this.textContent)
   }
   onSaveAs() {
     this.resourceComponent.saveAs(this.textContent)
   }
 
   onFile(file: FileResource) {
+    //TODO här ska jag använda en injectad service av olika slag
     if (this.onFileEventHandler) {
       this.onFileEventHandler(file)
     } else if(file.payload){

@@ -18,7 +18,7 @@ export class UserButtonsComponent {
   machine: Machine;
 
   constructor(settingsService: SettingsService, private backendService:BackendService) {
-    this.machine = settingsService.machine;
+    settingsService.subject.subscribe(machine => this.machine = machine);
   }
 
   onUserButton(index: number, action: any) {

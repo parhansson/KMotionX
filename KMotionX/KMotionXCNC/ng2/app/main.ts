@@ -12,7 +12,9 @@ import {SocketService}    from './backend/socket.service'
 import {SettingsService}    from './settings/settings.service'
 import {ModelSettingsService} from './model/model.settings.service';
 import {StaticTransformer} from './model/transformers'
-import {FileBackend} from './resources'
+import {FileServiceToken} from './resources'
+
+import './global' //Force loding globals such as three and three-trackballcontrols
 
 //Remove this and fix error in FileComponent
 enableProdMode();
@@ -28,7 +30,8 @@ bootstrap(KmxComponent, [
   ModelSettingsService,
   StaticTransformer,
   provide(BackendService, { useClass: KFlopBackendService }),
-  provide(FileBackend, { useClass: KFlopBackendService })
+  provide(FileServiceToken, { useExisting: BackendService }),
+  provide('FileServiceToken', { useExisting: BackendService }), // needed to avoid cyclic dependency
   //,
   //provide(LocationStrategy,{useClass: HashLocationStrategy})]);
   //provide(LocationStrategy,{})

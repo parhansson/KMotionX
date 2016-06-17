@@ -9,47 +9,40 @@
   var map = {
     '@angular': 'node_modules/@angular',
     'app': 'dist', // map app to dist folder
-    
+
     //loading three from modules
-    'three': 'node_modules/three',
-    'three-trackballcontrols': 'node_modules/three-trackballcontrols',
+    'three': 'node_modules/three/build',
+    'three-trackballcontrols': 'node_modules/three/examples/js/controls',
 
     // removed when loading from bundle
     'rxjs': 'node_modules/rxjs',
-    'ng2-bootstrap':'node_modules/ng2-bootstrap',
-    
+    'ng2-bootstrap': 'node_modules/ng2-bootstrap',
+
     //needed by ng2-bootstrap datepicker
-    'moment': 'node_modules/moment/moment.js', 
+    'moment': 'node_modules/moment/moment.js',
   };
-  var meta =  {
-    
+  var meta = {
     // meaning [baseURL]/vendor/angular.js when no other rules are present
     // path is normalized using map and paths configuration
-    'node_modules/three-trackballcontrols/index.js': {
-      format: 'cjs', // load this module as a CommonJS
-      //exports: 'TrackballControls', // the global property to take as the module value
-      deps: [
-        // dependencies to load before this module
-        'three'
-      ]
-      
+
+    'node_modules/three/examples/js/controls/TrackballControls.js': {
+      format: 'global', //format: 'cjs', // load this module as a CommonJS
+      deps: ['three'] // dependencies to load before this module
     },
-    'node_modules/three/three.js': {
+    'node_modules/three/build/three.js': {
       format: 'global', // load this module as a global
       //exports: 'THREE', // the global property to take as the module value
     }
-    
   }
   // packages tells the System loader how to load when no filename and/or no extension
   var packages = {
     "app": { main: 'app/main.js', defaultExtension: 'js' }, //format: 'register', 
-    
-    'three': { main: 'build/three.js', defaultExtension: 'js' },
-    'three-trackballcontrols': { main: 'index.js', defaultExtension: 'js' },
-    
+
+    'three': { main: 'three.js', defaultExtension: 'js' },
+    'three-trackballcontrols': { main: 'TrackballControls.js', defaultExtension: 'js' },
     // removed when loading from bundle
     'ng2-bootstrap': { defaultExtension: 'js' }, //"ng2-bootstrap": { format: 'register', defaultExtension: 'js' },
-    'rxjs': { defaultExtension: 'js' }, 
+    'rxjs': { defaultExtension: 'js' },
   };
 
   var packageNames = [
@@ -82,7 +75,7 @@
   var config = {
     map: map,
     packages: packages,
-    meta:meta
+    meta: meta
   }
 
   // filterSystemConfig - index.html's chance to modify config before we register it.

@@ -1,9 +1,5 @@
 
-import {Component, ElementRef} from '@angular/core';
-import * as THREE from 'three'
-import * as TrackballControls from 'three-trackballcontrols'
-//TODO do this in separate module instead of where it is needed
-Object.assign(THREE, {TrackballControls: TrackballControls});
+import {Component, ElementRef,HostListener} from '@angular/core';
 
 @Component({
   selector: "three-viewer",
@@ -27,6 +23,7 @@ export class ThreeViewComponent {
   private modelGroup = new THREE.Group()
   public auxiliaryGroup = new THREE.Group()
   private currentModelObject: THREE.Object3D = null
+  
 
   set model(model: THREE.Object3D) {
     if(this.currentModelObject !== null){
@@ -104,10 +101,9 @@ export class ThreeViewComponent {
         this.scene.add(light);
       }.bind(this));
 
+
+
     window.addEventListener('resize', this.onResize.bind(this));
-    this.element.addEventListener('mousemove', this.onMouseMove.bind(this));
-    this.element.addEventListener('mousedown', this.onMouseButton.bind(this, true));
-    this.element.addEventListener('mouseup', this.onMouseButton.bind(this, false));
     // this.element.addEventListener('click', function(event) {
     //   if (cursor.visible === true) {
     //     console.log(cursor.position);
@@ -128,10 +124,14 @@ element.on( 'mouseleave', function(){
 */
 
   }
+
+  @HostListener('mouseup', ['false'])
+  @HostListener('mousedown', ['true'])
   onMouseButton(mouseDown: boolean) {
     this.mouseDown = mouseDown;
   }
 
+  @HostListener('mousemove', ['$event'])
   onMouseMove(event) {
     event.preventDefault();
     var mouseVector = this.getMouseVector(event);
@@ -156,7 +156,7 @@ element.on( 'mouseleave', function(){
   }
 
 
-  onControlsEvent(event) {
+  onControlsEvent(event:THREE.Event) {
     this.requestTick();
   }
 

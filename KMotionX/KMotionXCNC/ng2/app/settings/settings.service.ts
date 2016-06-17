@@ -1,7 +1,7 @@
-import {Injectable} from '@angular/core';
+import {Injectable,Inject} from '@angular/core';
 import {Http} from '@angular/http';
 import {BackendService} from '../backend/backend.service';
-import {FileBackend} from '../resources'
+import {IFileBackend,FileServiceToken} from '../resources'
 import {KMXUtil} from '../util/kmxutil';
 import {Subject,BehaviorSubject} from 'rxjs/Rx'
 
@@ -128,9 +128,11 @@ export class TPlanner {
 
 @Injectable()
 export class SettingsService {
-  public machine: Machine
+  private machine: Machine
   public subject: Subject<Machine>
-  constructor(private http: Http, private kmxBackend: BackendService, private fileBackend: FileBackend) {
+  constructor(private http: Http, 
+  private kmxBackend: BackendService, 
+  @Inject(FileServiceToken)private fileBackend: IFileBackend) {
     this.machine = new Machine();
     this.subject = new BehaviorSubject<Machine>(this.machine)
     this.load("./settings/machines/laser.cnf");

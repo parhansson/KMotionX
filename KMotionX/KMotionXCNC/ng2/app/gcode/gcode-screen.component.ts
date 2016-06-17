@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, ViewChild, provide, SkipSelf, Inject} from '@angular/core';
 import {Subject} from 'rxjs/Rx'
 import {LogComponent} from "../log/log.component";
 import {BackendService} from '../backend/backend.service';
@@ -10,10 +10,11 @@ import {UserButtonsComponent} from './user-buttons.component';
 import {ControlButtonsComponent} from './control-buttons.component';
 import {ScreenComponent} from "../screen.component"
 import {StaticTransformer} from '../model/transformers'
-import {FileResource, Payload,FileBackend} from '../resources'
+import {FileResource, Payload, FileServiceToken, IFileBackend} from '../resources'
 import {AceEditorComponent} from '../editor'
+import {TransformingFileService} from './file.service'
 import {SettingsService, Machine} from '../settings/settings.service'
-import * as THREE from 'three'
+
 
 @Component({
   selector: 'gcode-screen',
@@ -45,7 +46,10 @@ import * as THREE from 'three'
         <user-defined-buttons></user-defined-buttons>
       </div>
     </div>  
-  `
+  `,
+  viewProviders: [
+    provide(FileServiceToken, { useClass: TransformingFileService })
+  ]
 })
 export class GCodeScreenComponent extends ScreenComponent {
   @ViewChild(ThreeViewComponent)
@@ -56,7 +60,8 @@ export class GCodeScreenComponent extends ScreenComponent {
   resource: FileResource
   payloadSubject = new Subject<Payload>()
 
-  constructor(private backendService: BackendService, private fileBackend: FileBackend,
+  constructor(private backendService: BackendService,
+    @Inject(FileServiceToken) private fileBackend: TransformingFileService,
     private socketService: SocketService,
     private settingsService: SettingsService,
     private staticTransformer: StaticTransformer) {
@@ -66,7 +71,7 @@ export class GCodeScreenComponent extends ScreenComponent {
 
   }
   ngAfterViewInit() {
-    this.editorComponent.resource.canonical = ""
+    //this.editorComponent.resource.canonical = ""
     this.socketService.gcodeFileSubject.subscribe(gcodeFile => {
       this.editorComponent.resource.canonical = gcodeFile
       this.editorComponent.resourceComponent.openFile()
@@ -80,7 +85,7 @@ export class GCodeScreenComponent extends ScreenComponent {
 
   private onOpenFile(file: FileResource/* | File*/) {
     this.editorComponent.resource.canonical = file.canonical
-    
+
     if (file.payload === null) {
       this.fileBackend.loadFile(file.canonical).subscribe(
         file => {
@@ -90,7 +95,7 @@ export class GCodeScreenComponent extends ScreenComponent {
     } else {
       this.payloadSubject.next(file.payload)
     }
-    
+
   }
   private machineBounds: THREE.Object3D = null;
   private machineBackground: THREE.Object3D = null;
@@ -128,7 +133,7 @@ export class GCodeScreenComponent extends ScreenComponent {
 
     console.log("why are we here twice?")
     var texture = new THREE.TextureLoader().load('/settings/textures/bghoneym.jpg');
-    
+
 
     // assuming you want the texture to repeat in both directions:
     //texture.wrapS = THREE.RepeatWrapping; 

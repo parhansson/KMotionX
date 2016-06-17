@@ -6,7 +6,7 @@ import {Block, Word, WordParameters, ControlWord} from '../gcode';
 import {Observable, Observer} from 'rxjs/Rx';
 import {GCodeSource} from '../igm'
 import {ModelTransformer} from './model.transformer';
-import * as THREE from 'three'
+
 //Copyright (c) 2014 par.hansson@gmail.com
 class ExtendedGCodeVector extends GCodeVector {
   e = 0

@@ -81,7 +81,9 @@ export class SocketService {
       // if(this.data.simulating !== raw.simulating){
       //   this.simulateSubject.next(this.data.simulating)
       // }
-
+      if (this.data.simulating !== raw.simulating) {
+        console.log(raw.simulating);
+      }
       if (this.data.gcodeFile !== raw.gcodeFile) {
         this.data.gcodeFile = raw.gcodeFile;
         this.gcodeFileSubject.next(this.data.gcodeFile)

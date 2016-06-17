@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Http, Response} from '@angular/http';
 import {Observable, Observer, Subject, AsyncSubject} from 'rxjs/Rx';
-import {FileResource, Payload, IFileBackend} from '../../resources'
+import {FileResource, Payload, IFileBackend, DirList} from '../../resources'
 import {BackendService} from '../backend.service'
 
 
@@ -9,7 +9,7 @@ import {BackendService} from '../backend.service'
 export class KFlopBackendService extends BackendService implements IFileBackend {
   constructor(private http: Http) { super() }
 
-  public listDir(path: string) {
+  public listDir(path: string): Observable<DirList> {
     return this.onEvent('listDir', path);
   }
 
@@ -62,7 +62,7 @@ export class KFlopBackendService extends BackendService implements IFileBackend 
     return progress$
   }
 
-  loadFile(path:string): Observable<FileResource> {
+  loadFile(path: string): Observable<FileResource> {
 
     let observable = new AsyncSubject<FileResource>()
     let url = "/api/kmx/" + 'openFile';
@@ -76,8 +76,8 @@ export class KFlopBackendService extends BackendService implements IFileBackend 
       if (arrayBuffer) {
         //application/pdf
         let fr = new FileResource(path);
-        fr.up(1) 
-        fr.payload = new Payload(arrayBuffer,oReq.getResponseHeader("Content-Type")) 
+        fr.up(1)
+        fr.payload = new Payload(arrayBuffer, oReq.getResponseHeader("Content-Type"))
         observable.next(fr)
         observable.complete()
       }
@@ -98,7 +98,7 @@ export class KFlopBackendService extends BackendService implements IFileBackend 
       payload = JSON.stringify({});
     } else {
       payload = JSON.stringify({ params: parameters });
-    } 
+    }
     let obs = this.http.post(url, payload).map((res: Response) => res.json())
     obs.subscribe(
       data => { },
