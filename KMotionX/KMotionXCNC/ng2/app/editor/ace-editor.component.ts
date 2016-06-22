@@ -1,11 +1,12 @@
 import { Component, Inject, Input, ViewChild} from '@angular/core';
 import { AceDirective} from "./ace.directive";
+import { FileStoreToken, FileStore } from './file-store';
 import { KMXUtil}    from '../util/KMXUtil'
-import { DropZoneDirective, 
-  FileDialogComponent, 
+import { DropZoneDirective,
+  FileDialogComponent,
   FilePathComponent,
-  FileResource, 
-  IFileBackend, 
+  FileResource,
+  IFileBackend,
   FileServiceToken }    from '../resources'
 
 export interface OnFileEventHandler {
@@ -16,7 +17,7 @@ export interface OnFileEventHandler {
   selector: 'code-editor',
   directives: [AceDirective, FileDialogComponent, FilePathComponent, DropZoneDirective],
   template: `
-    <file-dialog #fd (selectedFile)="onFile($event)" [loadOnSelect]="false" [resource]="resource"></file-dialog>
+    <file-dialog #fd (selectedFile)="onFile($event)" [resource]="resource"></file-dialog>
     <div>
       <span class="glyphButtonBar">
           <span class="btn btn-primary glyphicon glyphicon-folder-open" title="Open" (click)="fd.show()"></span>
@@ -36,18 +37,25 @@ export interface OnFileEventHandler {
 })
 export class AceEditorComponent {
   @ViewChild(AceDirective)
-  private aceEditor: AceDirective
+  private aceEditor: AceDirective;
 
   @ViewChild(FileDialogComponent)
-  resourceComponent: FileDialogComponent
+  resourceComponent: FileDialogComponent;
 
-  @Input() mode: string
-  @Input() theme: string
-  resource: FileResource
-  onFileEventHandler: OnFileEventHandler
-  dirty: boolean
-  constructor(@Inject(FileServiceToken) private fileBackend: IFileBackend) {
+  @Input() mode: string;
+  @Input() theme: string;
+  resource: FileResource;
+  dirty: boolean;
+
+  constructor( @Inject(FileStoreToken) private fileStore: FileStore) {
     this.resource = new FileResource("");
+
+    this.fileStore.textSubject.subscribe(text => {
+      this.textContent = text;
+      this.dirty = false;
+    },
+      err => console.error(err)
+    );
   }
 
   get textContent() {
@@ -64,22 +72,18 @@ export class AceEditorComponent {
   }
 
   onSave() {
-    this.resourceComponent.save(this.textContent)
-    //this.fileBackend.saveFile(this.resource.canonical, this.textContent)
+    this.fileStore.store(this.resource.canonical, this.textContent)
   }
+
   onSaveAs() {
-    this.resourceComponent.saveAs(this.textContent)
+    //this.resourceComponent.saveAs(this.textContent)
   }
 
   onFile(file: FileResource) {
-    //TODO här ska jag använda en injectad service av olika slag
-    if (this.onFileEventHandler) {
-      this.onFileEventHandler(file)
-    } else if(file.payload){
-      
-      this.textContent = file.payload.text()
-      this.dirty = false
-    }
+    this.resource = file;
+    //Drop imported file
+    //Selected in file dialog
+    this.fileStore.load(this.resource);
   }
 
 }

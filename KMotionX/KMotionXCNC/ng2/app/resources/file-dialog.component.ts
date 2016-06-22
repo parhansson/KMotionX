@@ -33,7 +33,6 @@ import {FilePathComponent} from './file-path.component'
 })
 export class FileDialogComponent {
   @Input() resource: FileResource
-  @Input() loadOnSelect: boolean = false
   @Output() selectedFile = new EventEmitter<FileResource>()
 
   private files:FileEntry[] = []
@@ -71,11 +70,6 @@ export class FileDialogComponent {
     this.modalDisplay = "none"
   }
 
-  save(content: string) {
-    //this should not be done here
-    this.fileBackend.saveFile(this.resource.canonical, content)
-  }
-
   saveAs(content: string) {
     //TODO implement
     console.warn("Save as not yet implemented")
@@ -85,21 +79,8 @@ export class FileDialogComponent {
     this.hide()
   }
   openFile() {
-    //TODO there should be an option to actually load file here or let subscriber do it
-    //however if file is dropped on dialog, what the heck should we do then
-    //store it in FileResource payload
-    //make FileResource payload an object that can be of different types 
-    //ArrayBuffer, File Blob String etc,  and store 
-    if(this.loadOnSelect){
-      this.fileBackend.loadFile(this.resource.canonical).subscribe(
-        data => this.selectedFile.emit(data),
-        err => console.error(err),
-        () => this.hide()
-      )
-    } else {
-      this.selectedFile.emit(this.resource)
-      this.hide()
-    }
+    this.selectedFile.emit(this.resource)
+    this.hide()
   }
   private listDir() {
     this.fileBackend.listDir(this.resource.dir).subscribe(

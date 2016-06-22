@@ -13,7 +13,7 @@ export class KFlopBackendService extends BackendService implements IFileBackend 
     return this.onEvent('listDir', path);
   }
 
-  saveFile(name, content: ArrayBuffer | ArrayBufferView | Blob | string) {
+  saveFile(name: string, content: ArrayBuffer | ArrayBufferView | Blob | string) {
     let url: string = "/upload"
     let progressObserver: any;
     //progress: number = 0;
@@ -75,8 +75,8 @@ export class KFlopBackendService extends BackendService implements IFileBackend 
       let arrayBuffer = oReq.response as ArrayBuffer; // Note: not oReq.responseText
       if (arrayBuffer) {
         //application/pdf
-        let fr = new FileResource(path);
-        fr.up(1)
+        let fr = new FileResource();
+        fr.canonical = path;
         fr.payload = new Payload(arrayBuffer, oReq.getResponseHeader("Content-Type"))
         observable.next(fr)
         observable.complete()

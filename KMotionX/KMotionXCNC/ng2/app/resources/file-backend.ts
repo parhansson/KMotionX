@@ -15,7 +15,7 @@ export interface DirList {
 }
 
 export interface IFileBackend {
-  saveFile(name, content: ArrayBuffer | ArrayBufferView | Blob | string): Observable<number>;
+  saveFile(name: string, content: ArrayBuffer | ArrayBufferView | Blob | string): Observable<number>;
 
   loadFile(path: string): Observable<FileResource>;
 

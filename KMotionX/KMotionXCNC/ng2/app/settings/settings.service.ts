@@ -156,7 +156,7 @@ export class SettingsService {
       () => console.log('File loaded: ' + file)
     );;
   }
-  public fileName(): String {
+  public fileName(): string {
     return "settings/machines/" + this.machine.name + ".cnf";
   }
 

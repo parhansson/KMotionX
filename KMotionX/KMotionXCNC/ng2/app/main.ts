@@ -16,8 +16,7 @@ import {FileServiceToken} from './resources'
 
 import './global' //Force loding globals such as three and three-trackballcontrols
 
-//Remove this and fix error in FileComponent
-enableProdMode();
+//enableProdMode();
 
 //import {LocationStrategy, HashLocationStrategy} from '@angular/platform-browser-dynamic';
 
@@ -30,8 +29,7 @@ bootstrap(KmxComponent, [
   ModelSettingsService,
   StaticTransformer,
   provide(BackendService, { useClass: KFlopBackendService }),
-  provide(FileServiceToken, { useExisting: BackendService }),
-  provide('FileServiceToken', { useExisting: BackendService }), // needed to avoid cyclic dependency
+  provide(FileServiceToken, { useExisting: BackendService })
   //,
   //provide(LocationStrategy,{useClass: HashLocationStrategy})]);
   //provide(LocationStrategy,{})

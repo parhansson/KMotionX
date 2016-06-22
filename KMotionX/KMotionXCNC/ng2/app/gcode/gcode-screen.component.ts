@@ -11,10 +11,8 @@ import {ControlButtonsComponent} from './control-buttons.component';
 import {ScreenComponent} from "../screen.component"
 import {StaticTransformer} from '../model/transformers'
 import {FileResource, Payload, FileServiceToken, IFileBackend} from '../resources'
-import {AceEditorComponent} from '../editor'
-import {TransformingFileService} from './file.service'
 import {SettingsService, Machine} from '../settings/settings.service'
-
+import {GCodeEditorComponent} from './gcode-editor.component'
 
 @Component({
   selector: 'gcode-screen',
@@ -24,7 +22,7 @@ import {SettingsService, Machine} from '../settings/settings.service'
     ThreeViewComponent,
     UserButtonsComponent,
     ControlButtonsComponent,
-    AceEditorComponent
+    GCodeEditorComponent
   ],
   template: `
     <div class="row  fill">
@@ -41,62 +39,33 @@ import {SettingsService, Machine} from '../settings/settings.service'
         <control-buttons></control-buttons>
         <div>Editor line:{{kmxStatus.currentLine +1}}</div>
         <div>Interpreter line:{{kmxStatus.currentLine}}</div>
-        <code-editor id="gcodeEditor" mode="gcode"></code-editor>
+        <gcode-editor></gcode-editor>
         <hr>
         <user-defined-buttons></user-defined-buttons>
       </div>
     </div>  
-  `,
-  viewProviders: [
-    provide(FileServiceToken, { useClass: TransformingFileService })
-  ]
+  `
 })
 export class GCodeScreenComponent extends ScreenComponent {
   @ViewChild(ThreeViewComponent)
   threeComp: ThreeViewComponent;
-  @ViewChild(AceEditorComponent)
-  editorComponent: AceEditorComponent;
+  @ViewChild(GCodeEditorComponent)
+  editorComponent: GCodeEditorComponent;
   kmxStatus: KmxStatus
-  resource: FileResource
-  payloadSubject = new Subject<Payload>()
 
   constructor(private backendService: BackendService,
-    @Inject(FileServiceToken) private fileBackend: TransformingFileService,
     private socketService: SocketService,
     private settingsService: SettingsService,
     private staticTransformer: StaticTransformer) {
     super()
     this.kmxStatus = socketService.data;
-    this.payloadSubject.subscribe(payload => this.staticTransformer.transform(payload.contentType, payload.arrayBuffer()))
 
   }
   ngAfterViewInit() {
-    //this.editorComponent.resource.canonical = ""
-    this.socketService.gcodeFileSubject.subscribe(gcodeFile => {
-      this.editorComponent.resource.canonical = gcodeFile
-      this.editorComponent.resourceComponent.openFile()
-      console.log("Ny fil:", gcodeFile)
-    })
     this.staticTransformer.threeSubject.subscribe(data => this.threeComp.model = data)
-    this.staticTransformer.gcodeSubject.subscribe(data => this.editorComponent.textContent = data.text)
-    this.editorComponent.onFileEventHandler = this.onOpenFile.bind(this)
     this.settingsService.subject.subscribe((machine) => this.renderMachineObject(machine))
   }
 
-  private onOpenFile(file: FileResource/* | File*/) {
-    this.editorComponent.resource.canonical = file.canonical
-
-    if (file.payload === null) {
-      this.fileBackend.loadFile(file.canonical).subscribe(
-        file => {
-          this.payloadSubject.next(file.payload)
-          //this.backendService.setGCodeFile
-        })
-    } else {
-      this.payloadSubject.next(file.payload)
-    }
-
-  }
   private machineBounds: THREE.Object3D = null;
   private machineBackground: THREE.Object3D = null;
 

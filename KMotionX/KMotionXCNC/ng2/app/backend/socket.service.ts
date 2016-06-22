@@ -1,14 +1,15 @@
-import {Injectable} from '@angular/core';
-import {Subject,BehaviorSubject} from 'rxjs/Rx';
-import {LogService,LogLevel} from "../log"
-import {KMXUtil} from '../util/kmxutil';
-import {KmxStatus, Message, StatusMessage, LogMessage, TextMessage, JsonMessage} from './shared'
+import { Injectable } from '@angular/core';
+import { Subject ,BehaviorSubject } from 'rxjs/Rx';
+import { LogService, LogLevel } from "../log"
+import { KMXUtil } from '../util/kmxutil';
+import { KmxStatus, Message, StatusMessage, LogMessage, TextMessage, JsonMessage } from './shared'
+import { FileResource } from '../resources'
 //import {LogLevel} from '../kmx';
 //import {LogLevel} from 'kmxlog/log.level';
 
 @Injectable()
 export class SocketService {
-  gcodeFileSubject: Subject<string> = new BehaviorSubject<string>("")
+  gcodeFileSubject: Subject<FileResource> = new BehaviorSubject<FileResource>(new FileResource())
   simulateSubject: Subject<boolean> = new BehaviorSubject<boolean>(true)
   data: KmxStatus = new KmxStatus()
   private socketHandlers = {
@@ -86,7 +87,9 @@ export class SocketService {
       }
       if (this.data.gcodeFile !== raw.gcodeFile) {
         this.data.gcodeFile = raw.gcodeFile;
-        this.gcodeFileSubject.next(this.data.gcodeFile)
+	      let gcodeResource = new FileResource();
+        gcodeResource.canonical = this.data.gcodeFile;
+        this.gcodeFileSubject.next(gcodeResource)
       }
 
       this.data.copyFrom(raw)
