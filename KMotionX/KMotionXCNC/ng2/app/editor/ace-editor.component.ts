@@ -7,7 +7,8 @@ import { DropZoneDirective,
   FilePathComponent,
   FileResource,
   IFileBackend,
-  FileServiceToken }    from '../resources'
+  FileServiceToken,
+  Payload }    from '../resources'
 
 export interface OnFileEventHandler {
   (file: FileResource): void
@@ -27,7 +28,7 @@ export interface OnFileEventHandler {
       <ng-content select="buttons"></ng-content>
     </div>
     <div file-dropzone (dropped)="onFile($event)">
-      <file-path [resource]="resource"></file-path>  
+      <span *ngIf="dirty">*</span><file-path [resource]="resource"></file-path>  
       <div class="codeEditor">
         <div aceEditor [mode]="mode" [theme]="theme" [text]="editorContent" (textChanged)="onContentChange($event)" ></div>
       </div>
@@ -66,24 +67,32 @@ export class AceEditorComponent {
     this.dirty = true
   }
 
-  onContentChange(content: string) {
-    console.log("onContentChange")
-    this.dirty = true
+  onContentChange(change: AceAjax.EditorChangeEvent) {
+    console.log("onContentChange", change);
+    this.dirty = true;
   }
 
   onSave() {
     this.fileStore.store(this.resource.canonical, this.textContent)
+    this.dirty = false;
   }
 
   onSaveAs() {
     //this.resourceComponent.saveAs(this.textContent)
   }
 
-  onFile(file: FileResource) {
-    this.resource = file;
-    //Drop imported file
-    //Selected in file dialog
-    this.fileStore.load(this.resource);
+  onFile(file: FileResource | Payload) {
+    if(file instanceof FileResource){
+      this.resource = file;
+    } else {
+      //Use imported name
+      this.resource.canonical = file.name;
+    }
+    //Selected in file dialog or drop imported file
+    //load() should be responsible for returning file resource.
+    //then imported files can be saved and get a real name
+    this.fileStore.load(file);
+
   }
 
 }

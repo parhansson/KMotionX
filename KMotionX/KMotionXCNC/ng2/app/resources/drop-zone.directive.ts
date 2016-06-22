@@ -12,7 +12,7 @@ import { Payload } from './payload'
 
 })
 export class DropZoneDirective {
-  @Output() dropped = new EventEmitter<FileResource>()
+  @Output() dropped = new EventEmitter<Payload>()
 
   /*
       var validMimeTypes = attrs.fileDropzone;
@@ -34,9 +34,9 @@ export class DropZoneDirective {
       let p:FilePropertyBag
       let reader = new FileReader();
       reader.addEventListener("load", (evt) => {
-        let fr = new FileResource(".", file.name);
-        fr.payload = new Payload((evt as any).target.result, file.type) 
-        this.dropped.emit(fr)
+        let payload = new Payload((evt as any).target.result, file.type);
+        payload.name = file.name; 
+        this.dropped.emit(payload);
       })
       reader.readAsArrayBuffer(file)
 

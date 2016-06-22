@@ -13,8 +13,8 @@ import {Component, Directive, EventEmitter, ElementRef} from '@angular/core';
     ]
 })
 export class AceDirective {
-    public editor: AceAjax.Editor;
-    public textChanged: EventEmitter<string>;
+    private editor: AceAjax.Editor;
+    public textChanged: EventEmitter<AceAjax.EditorChangeEvent>;
 
     set text(s: string) {
         this.editor.setValue(s);
@@ -36,7 +36,7 @@ export class AceDirective {
     }
 
     constructor(elementRef: ElementRef) {
-        this.textChanged = new EventEmitter<string>();
+        this.textChanged = new EventEmitter<AceAjax.EditorChangeEvent>();
 
         let el = elementRef.nativeElement;
         el.classList.add("editor");
@@ -51,8 +51,7 @@ export class AceDirective {
 
 
         this.editor.addEventListener("change", (e) => {
-            console.log("changed: ", e)
-            this.textChanged.next(this.editor.getValue());
+            this.textChanged.next(e);
         });
     }
 }

@@ -2,9 +2,6 @@ import { Payload } from './payload'
 
 export class FileResource {
   private paths: string[] = []
-  //TODO payload should be a complex type that 
-  payload: Payload = null
-
 
   constructor(dir?: string, public file?: string) {
     if (dir) {

@@ -1,6 +1,6 @@
-import {OpaqueToken} from '@angular/core'
-import {Observable} from 'rxjs/Rx'
-import {FileResource} from './file-resource'
+import { OpaqueToken} from '@angular/core'
+import { Observable} from 'rxjs/Rx'
+import { Payload } from './payload'
 
 export const FileServiceToken = new OpaqueToken("fileservice");
 
@@ -17,17 +17,7 @@ export interface DirList {
 export interface IFileBackend {
   saveFile(name: string, content: ArrayBuffer | ArrayBufferView | Blob | string): Observable<number>;
 
-  loadFile(path: string): Observable<FileResource>;
+  loadFile(resource: string): Observable<Payload>;
 
   listDir(path: string): Observable<DirList>;
 }
-
-// export abstract class FileBackend implements IFileBackend {
-
-//   abstract saveFile(name, content: ArrayBuffer | ArrayBufferView | Blob | string): Observable<number>;
-
-//   abstract loadFile(path: string): Observable<FileResource>;
-
-//   abstract listDir(path: string): Observable<DirList>;
-
-// }

@@ -4,7 +4,8 @@ import { FileStoreToken, FileStore } from './file-store';
 import {
   FileResource,
   IFileBackend,
-  FileServiceToken } from '../resources';
+  FileServiceToken,
+  Payload } from '../resources';
 
 @Injectable()
 export class DefaultFileStore implements FileStore {
@@ -18,17 +19,16 @@ export class DefaultFileStore implements FileStore {
     this.fileBackend.saveFile(name, content)
   }
 
-  load(file: FileResource) {
-    if (file.payload) {
+  load(resource: FileResource | Payload) {
+    if (resource instanceof Payload) {
       //Drop imported file
-      this.textSubject.next(file.payload.text());
+      this.textSubject.next(resource.text());
     } else {
       //Selected in file dialog
-      //TODO do i need to unsubsbrive
-      if(file.file){
-        let subscription = this.fileBackend.loadFile(file.canonical).subscribe(
-          file => {
-            this.textSubject.next(file.payload.text());
+      if (resource.file) {
+        let subscription = this.fileBackend.loadFile(resource.canonical).subscribe(
+          data => {
+            this.textSubject.next(data.text());
           },
           null,
           () => subscription.unsubscribe()

@@ -148,8 +148,8 @@ export class SettingsService {
   public load(file) {
 
     this.fileBackend.loadFile(file).subscribe(
-      (data) => {
-        this.machine.update(data.payload.json())
+      (payload) => {
+        this.machine.update(payload.json())
         this.subject.next(this.machine)
         },
       err => console.error(err),

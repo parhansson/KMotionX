@@ -4,7 +4,8 @@ import {KMXUtil} from '../util/KMXUtil'
 export class Payload {
   value: string | ArrayBuffer = null
   contentType: string = null
-
+  name:string = null
+  
   constructor(value?: string | ArrayBuffer, contentType?: string) {
     if (value) {
       this.value = value

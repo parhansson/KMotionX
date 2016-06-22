@@ -62,9 +62,9 @@ export class KFlopBackendService extends BackendService implements IFileBackend 
     return progress$
   }
 
-  loadFile(path: string): Observable<FileResource> {
+  loadFile(path: string): Observable<Payload> {
 
-    let observable = new AsyncSubject<FileResource>()
+    let observable = new AsyncSubject<Payload>()
     let url = "/api/kmx/" + 'openFile';
     let data = { "params": path };
     let oReq = new XMLHttpRequest();
@@ -74,11 +74,7 @@ export class KFlopBackendService extends BackendService implements IFileBackend 
     oReq.onload = (oEvent) => {
       let arrayBuffer = oReq.response as ArrayBuffer; // Note: not oReq.responseText
       if (arrayBuffer) {
-        //application/pdf
-        let fr = new FileResource();
-        fr.canonical = path;
-        fr.payload = new Payload(arrayBuffer, oReq.getResponseHeader("Content-Type"))
-        observable.next(fr)
+        observable.next(new Payload(arrayBuffer, oReq.getResponseHeader("Content-Type")))
         observable.complete()
       }
     };

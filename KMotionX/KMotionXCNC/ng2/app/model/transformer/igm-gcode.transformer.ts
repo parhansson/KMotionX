@@ -109,8 +109,9 @@ export class Igm2GcodeTransformer extends ModelTransformer<IGM,GCodeSource>{
       gcode.push(LaserOFF);
       //gcode.push('F' + settings.seekRate);
       // seek to index 0
+      //gcode.push('N 100 ');
       gcode.push([
-        'N 100 G0',
+        'G0',
         'X' + format(startVec.x),
         'Y' + format(startVec.y)/*,
         'F' + settings.seekRate*/

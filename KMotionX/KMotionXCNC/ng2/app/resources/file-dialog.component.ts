@@ -1,8 +1,9 @@
-import {Directive, Component, Input, Output, EventEmitter, ElementRef,Inject} from '@angular/core';
-import {FileResource} from './file-resource'
-import {IFileBackend,FileServiceToken,FileEntry} from './file-backend'
-import {DropZoneDirective} from './drop-zone.directive'
-import {FilePathComponent} from './file-path.component'
+import { Directive, Component, Input, Output, EventEmitter, ElementRef, Inject } from '@angular/core';
+import { FileResource } from './file-resource'
+import { IFileBackend, FileServiceToken, FileEntry } from './file-backend'
+import { DropZoneDirective } from './drop-zone.directive'
+import { FilePathComponent } from './file-path.component'
+import { Payload } from './payload'
 
 @Component({
   selector: 'file-dialog',
@@ -33,13 +34,13 @@ import {FilePathComponent} from './file-path.component'
 })
 export class FileDialogComponent {
   @Input() resource: FileResource
-  @Output() selectedFile = new EventEmitter<FileResource>()
+  @Output() selectedFile = new EventEmitter<FileResource | Payload>()
 
-  private files:FileEntry[] = []
+  private files: FileEntry[] = []
   private showModal: boolean = false
   private modalDisplay: string = "none"
 
-  constructor(@Inject(FileServiceToken)private fileBackend: IFileBackend) {
+  constructor( @Inject(FileServiceToken) private fileBackend: IFileBackend) {
 
   }
 
@@ -74,14 +75,19 @@ export class FileDialogComponent {
     //TODO implement
     console.warn("Save as not yet implemented")
   }
+  onPayload(payload: Payload) {
+    //Dropped file
+    console.log("Imported file")
+    this.selectedFile.emit(payload)
+  }
   protected setFileResource(file: FileResource) {
     this.selectedFile.emit(file)
     this.hide()
   }
   openFile() {
-    this.selectedFile.emit(this.resource)
-    this.hide()
+    this.setFileResource(this.resource);
   }
+
   private listDir() {
     this.fileBackend.listDir(this.resource.dir).subscribe(
       data => {
