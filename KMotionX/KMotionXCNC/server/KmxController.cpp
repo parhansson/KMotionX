@@ -21,11 +21,13 @@ KmxController::KmxController(CGCodeInterpreter *interpreter)
   CM = Interpreter->CoordMotion;
   km = CM->KMotionDLL;
   mq = new MessageQueue(this);
+  settings_file = new FileStatus();
+  current_gcode_file = new FileStatus();
 
   performPostHaltCommand = false;
   currentLine = 0;
-  settings_file_[0] = '\0';
-  current_gcode_file_[0] = '\0';
+  
+  
   connected = false;
   interpreting = false;
   simulate = Interpreter->CoordMotion->m_Simulate;
@@ -40,6 +42,8 @@ KmxController::~KmxController() {
   if (Interpreter) delete Interpreter;
   if (CM) delete CM;
   if (km) delete km;
+  if (settings_file) delete settings_file;
+  if (current_gcode_file) delete current_gcode_file;
 
 }
 
@@ -108,14 +112,11 @@ int KmxController::InvokeAction(int action, bool FlushBeforeUnbufferedOperation)
 }
 
 void KmxController::LoadMachineConfiguration(const char* path){
-  if (strcmp(settings_file_, path) != 0) {
-      strcpy(settings_file_, path);
-  }
+  settings_file->SetFile(path);
 }
 void KmxController::LoadGcode(const char* path){
   if(!interpreting){
-      if (strcmp(current_gcode_file_, path) != 0) {
-          strcpy(current_gcode_file_, path);
+      if (current_gcode_file->SetFile(path)) {
           currentLine = 0;
       }
   }
@@ -128,7 +129,7 @@ void KmxController::Simulate() {
 }
 void KmxController::Step(){
   if (!interpreting/* && Interpreter->GetHalt()*/) {
-    interpret(2, current_gcode_file_ , currentLine, currentLine, false);
+    interpret(2, current_gcode_file->path , currentLine, currentLine, false);
   }
 }
 void KmxController::Reset(){
@@ -140,7 +141,7 @@ void KmxController::CycleStart() {
   if (interpreting) {
     Halt();
   } else {
-    interpret(2, current_gcode_file_ , currentLine, -1, true);
+    interpret(2, current_gcode_file->path , currentLine, -1, true);
   }
 
 }
@@ -249,7 +250,7 @@ void KmxController::interpret(int BoardType,char *InFile,int start,int end,bool 
 
 void KmxController::UpdateMotionParams(){
   char fileName[256];
-  absolutePath(settings_file_, fileName);
+  absolutePath(settings_file->path, fileName);
 
   MappedFile mmFile;
   if(mmapNamedFile(mmFile, fileName)){

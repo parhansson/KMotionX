@@ -68,7 +68,7 @@ export class AceEditorComponent {
   }
 
   onContentChange(change: AceAjax.EditorChangeEvent) {
-    console.log("onContentChange", change);
+    //console.log("onContentChange", change);
     this.dirty = true;
   }
 

@@ -10,6 +10,7 @@
 
 #include "../../../GCodeInterpreter/StdAfx.h"
 #include "MessageQueue.h"
+#include "FileStatus.h"
 
 //same as in KMotionCNCDlg.c
 #define ACTION_CYCLE_START 25
@@ -111,8 +112,8 @@ protected:
   bool performPostHaltCommand;
   int currentLine;
   MAIN_STATUS main_status;
-  char settings_file_[MAX_PATH];
-  char current_gcode_file_[MAX_PATH];
+  FileStatus *settings_file;
+  FileStatus *current_gcode_file;
   bool connected;
   bool interpreting;
   bool simulate;

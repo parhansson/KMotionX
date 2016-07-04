@@ -40,6 +40,7 @@ WebController::~WebController() {
 int WebController::Setup(){
   log_info("Initialize");
   char fileName[256];
+  char absolute_path[256];
   absolutePath("settings/setup.cnf", fileName);
   MappedFile mmFile;
   if(mmapNamedFile(mmFile, fileName)){
@@ -49,11 +50,15 @@ int WebController::Setup(){
 
   json_token *setup = NULL;
   setup = parse_json2(mmFile.addr, mmFile.filesize);
+
   json_str(setup,"machine",fileName);
-  absolutePath(fileName, settings_file_);
+  absolutePath(fileName, absolute_path);
+  settings_file->SetFile(absolute_path);
+
   json_str(setup,"gcodefile",fileName);
-  absolutePath(fileName, current_gcode_file_);
-  
+  absolutePath(fileName, absolute_path);
+  current_gcode_file->SetFile(absolute_path);
+
   free(setup);
   unmapFile(mmFile);
   return 0;
@@ -79,8 +84,8 @@ void WebController::PrintInfo(){
   fprintf(stdout, "Websockets   :%d\n", websockets);
   fprintf(stdout, "Connections  :%d\n", connections);
   fprintf(stdout, "State        :%s\n", this->interpreting ? "Interpreting" : "Stopped");
-  fprintf(stdout, "Config       :%s\n", this->settings_file_);
-  fprintf(stdout, "File         :%s\n", this->current_gcode_file_);
+  fprintf(stdout, "Config       :%s (%d)\n", this->settings_file->path, this->settings_file->timestamp);
+  fprintf(stdout, "File         :%s (%d)\n", this->current_gcode_file->path, this->current_gcode_file->timestamp);
   fprintf(stdout, "Line         :%d\n", this->currentLine);
   fprintf(stdout, "FeedHold     :%d\n", this->main_status.StopImmediateState);
   fprintf(stdout, "Simulating   :%d\n", this->simulate);
@@ -92,10 +97,10 @@ void WebController::PrintInfo(){
 void WebController::UpdateClient() {
 
   CCoordMotion *CM = Interpreter->CoordMotion;
-  int current_file_len = strlen(current_gcode_file_);
-  int current_machine_len = strlen(settings_file_);
+  int current_file_len = strlen(current_gcode_file->path);
+  int current_machine_len = strlen(settings_file->path);
   //copy struct and avoid padding wich may differ on platforms
-  size_t size = 456 + 6*8 + 4*4 + current_file_len+4 +current_machine_len+4;//sizeof(main_status);
+  size_t size = 456 + 6*8 + 4*4 + current_file_len+4 +current_machine_len+4 + 8;//sizeof(main_status);
   char * msg = (char*)malloc(size);
   char * msgPtr = msg;
   //client does not expect sizeof(int) but exaclyt 4 bytes for an int
@@ -183,9 +188,12 @@ void WebController::UpdateClient() {
   MEMCPY(msgPtr, &currentLine, 4);
 
   MEMCPY(msgPtr, &current_file_len, 4);
-  MEMCPY(msgPtr, &current_gcode_file_, current_file_len);
+  MEMCPY(msgPtr, current_gcode_file->path, current_file_len);
+  MEMCPY(msgPtr, &current_gcode_file->timestamp, 4);
+
   MEMCPY(msgPtr, &current_machine_len, 4);
-  MEMCPY(msgPtr, &settings_file_, current_machine_len);
+  MEMCPY(msgPtr, settings_file->path, current_machine_len);
+  MEMCPY(msgPtr, &settings_file->timestamp, 4);
 
 /*
   if (Interpreter->p_setup->distance_mode==MODE_ABSOLUTE)
@@ -378,6 +386,10 @@ void WebController::HandleUploadRequest(struct mg_connection *conn){
     if(filesize == 0 /*filesize != tmpfilesize*/){
       snprintf(msg,sizeof(msg)-1, "Bytes written %ld of %ld\n",filesize, mmFile.filesize);
       this->DoErrorMessage(msg);
+    }
+    //TODO updating timestamp should be made in poll loop to detect outside changes to file.
+    if(strcmp(absoluteFile, current_gcode_file->path) == 0){
+      current_gcode_file->Update();
     }
     //need to send response back to client to avoid wating connection
     mg_printf_data(conn,

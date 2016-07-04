@@ -30,7 +30,7 @@ export class StatusMessage extends Message<KmxStatus>{
 }
 
 export class LogMessage extends Message<any>{
-  constructor(message: any, public type:number) {
+  constructor(message: any, public type: number) {
     super(message)
     this.isLog = true
 
@@ -66,7 +66,9 @@ export class KmxStatus implements Status {
   interpreting: boolean = false
   currentLine: number = 0
   gcodeFile: string = ""
+  gcodeFileTimestamp: number = 0;
   machineSettingsFile: string = ""
+  machineSettingsFileTimestamp: number  = 0;
 
   constructor() { }
 

@@ -72,12 +72,14 @@ export class KmxStatusStream {
     for (var i = 0; i < 6; i++) {
       dros.push(r.double());
     }
-    var connected = r.byte() > 0;
-    var simulate = r.byte() > 0;
-    var interpreting = r.byte() > 0;
-    var currentLine = r.int();
-    var gcodeFile = r.string();
-    var machineSettingsFile = r.string();
+    let connected = r.byte() > 0;
+    let simulate = r.byte() > 0;
+    let interpreting = r.byte() > 0;
+    let currentLine = r.int();
+    let gcodeFile = r.string();
+    let gcodeFileTimestamp = r.int();
+    let machineSettingsFile = r.string();
+    let machineSettingsFileTimestamp = r.int();
 
 
     var status = new KmxStatus()
@@ -102,7 +104,9 @@ export class KmxStatusStream {
     status.interpreting = interpreting;
     status.currentLine = currentLine;
     status.gcodeFile = gcodeFile;
+    status.gcodeFileTimestamp = gcodeFileTimestamp;
     status.machineSettingsFile = machineSettingsFile;
+    status.machineSettingsFileTimestamp = machineSettingsFileTimestamp;
 
     return status;
   }

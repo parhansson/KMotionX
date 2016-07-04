@@ -85,7 +85,8 @@ export class SocketService {
       if (this.data.simulating !== raw.simulating) {
         console.log(raw.simulating);
       }
-      if (this.data.gcodeFile !== raw.gcodeFile) {
+      if (this.data.gcodeFileTimestamp !== raw.gcodeFileTimestamp  || this.data.gcodeFile !== raw.gcodeFile) {
+        //timestamp in StatusMessage to detect file modifications
         this.data.gcodeFile = raw.gcodeFile;
 	      let gcodeResource = new FileResource();
         gcodeResource.canonical = this.data.gcodeFile;

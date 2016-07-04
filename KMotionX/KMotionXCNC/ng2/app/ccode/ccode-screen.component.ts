@@ -1,29 +1,26 @@
 import { Component, Inject, ViewChild, provide } from '@angular/core';
+import {TAB_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 import { ScreenComponent } from "../screen.component"
-import { AceEditorComponent, FileStoreToken, FileStore, DefaultFileStore } from '../editor'
-import { FileResource } from '../resources'
-
+import {CCodeEditorComponent} from './ccode-editor.component'
 
 @Component({
   selector: 'ccode-screen',
-  directives: [AceEditorComponent],
+  directives: [TAB_DIRECTIVES,CCodeEditorComponent],
   template: `
-    <code-editor id="ccodeEditor" mode="c_cpp" >
-      <buttons>TODO add compile, load and execute buttons</buttons>
-    </code-editor>`,
-  viewProviders: [
-    provide(FileStoreToken, { useClass: DefaultFileStore })
-  ]
+    <tabset>
+      <tab heading="File1">
+        <ccode-editor></ccode-editor>
+      </tab>
+      <tab heading="File2">
+        <ccode-editor></ccode-editor>
+      </tab>  
+    </tabset>
+    `
 })
 export class CCodeScreenComponent extends ScreenComponent {
-  @ViewChild(AceEditorComponent)
-  editorComponent: AceEditorComponent;
 
-  constructor(@Inject(FileStoreToken) private fileStore:FileStore) {
+  constructor() {
     super()
   }
 
-  ngAfterViewInit() {
-    this.editorComponent.onFile(new FileResource("./settings/c-programs")); 
-  }
 }

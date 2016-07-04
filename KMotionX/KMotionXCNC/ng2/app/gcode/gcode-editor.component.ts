@@ -29,7 +29,7 @@ export class GCodeEditorComponent {
   ngAfterViewInit() {
     this.editorComponent.onFile(new FileResource("./gcode"));
     this.socketService.gcodeFileSubject.subscribe(gcodeFile => {
-      //this.editorComponent.onFile(gcodeFile);
+      this.editorComponent.resource = gcodeFile;
       if (gcodeFile.file) {
         let subscription = this.fileBackend.loadFile(gcodeFile.canonical).subscribe(
           payload => {
