@@ -235,8 +235,8 @@ int WebController::OnEventRequest(struct mg_connection *conn) {
     //Starts with /api but can be anything
     return HandleApiRequest(conn);
   } else if(isRegisteredRoute(conn)){
-    char * file = "ng2/index.html";
-    char * headers ="";
+    const char * file = "ng2/index.html";
+    const char * headers ="";
     mg_send_file(conn, file,headers);
     return MG_MORE;
   }
@@ -551,11 +551,12 @@ int WebController::HandleJsonRequest(struct mg_connection *conn, const char *obj
 int WebController::OpenFile(struct mg_connection *conn, struct json_token *paramtoken){
     char * file = NULL;//"ng2/index.html";
     toks(paramtoken, &file, 0);
-    if (file) {
-      char * headers ="";
+    if (file != NULL) {
+      const char * headers = "";
       mg_send_file(conn, file, headers);
+      free(file);
       return MG_MORE;
-  }
+    }
   return MG_TRUE;
 }
 
@@ -782,9 +783,20 @@ void WebController::setInterpreterActionParams(struct json_token *jsontoken, int
   free(name);
 }
 
-int WebController::CreateMessageBoxCallbackData(const char *title, const char *msg, int options, bool blocking, char *buf, size_t buf_len) {
+#define MALLOC_CHAR_BUF(BUF, BUF_LEN) BUF = (char*) malloc (BUF_LEN * sizeof(char)); \
+  if(BUF == NULL) { \
+    printf("Error allocating memory"); \
+    exit (1); \
+  } \
+  BUF[0] = '\0';
+
+int WebController::CreateMessageBoxCallbackData(const char *title, const char *msg, int options, bool blocking, char **buf) {
+
+  int buf_len = 128 + strlen(title) + strlen(msg);
+  MALLOC_CHAR_BUF(*buf, buf_len);
+
   int id = callback_counter++;
-  json_emit(buf, buf_len, "{ s: i, s: { s: S, s: s, s: i, s: s, s: s }}",
+  json_emit(*buf, buf_len, "{ s: i, s: { s: S, s: s, s: i, s: s, s: s }}",
       "id", id,
       "payload",
       "block",blocking?"true":"false",
@@ -795,9 +807,13 @@ int WebController::CreateMessageBoxCallbackData(const char *title, const char *m
   return id;
 }
 
-int WebController::CreateCompleteCallbackData(int status, int line_no, int sequence_number,const char *err, bool blocking, char *buf, size_t buf_len){
+int WebController::CreateCompleteCallbackData(int status, int line_no, int sequence_number, const char *err, bool blocking, char **buf){
+
+  int buf_len = 128 + strlen(err);
+  MALLOC_CHAR_BUF(*buf, buf_len);
+
   int id = callback_counter++;
-  json_emit(buf, buf_len, "{ s: i, s: { s: S, s: s, s: i, s: i, s: i, s: s }}",
+  json_emit(*buf, buf_len, "{ s: i, s: { s: S, s: s, s: i, s: i, s: i, s: s }}",
       "id", id,
       "payload",
       "block",blocking?"true":"false",
@@ -809,9 +825,13 @@ int WebController::CreateCompleteCallbackData(int status, int line_no, int seque
   return id;
 
 }
-int WebController::CreateStatusCallbackData(int line_no, const char *msg, bool blocking, char *buf, size_t buf_len){
+int WebController::CreateStatusCallbackData(int line_no, const char *msg, bool blocking, char **buf){
+
+  int buf_len = 128 + strlen(msg);
+  MALLOC_CHAR_BUF(*buf, buf_len);
+
   int id = callback_counter++;
-  json_emit(buf, buf_len, "{ s: i, s: { s: S, s: s, s: i, s: s }}",
+  json_emit(*buf, buf_len, "{ s: i, s: { s: S, s: s, s: i, s: s }}",
       "id", id,
       "payload",
       "block", blocking?"true":"false",
@@ -821,9 +841,13 @@ int WebController::CreateStatusCallbackData(int line_no, const char *msg, bool b
   return id;
 }
 
-int WebController::CreateErrorMessageCallbackData(const char *msg, bool blocking, char *buf, size_t buf_len) {
+int WebController::CreateErrorMessageCallbackData(const char *msg, bool blocking, char **buf) {
+
+  int buf_len = 128 + strlen(msg);
+  MALLOC_CHAR_BUF(*buf, buf_len);
+
   int id = callback_counter++;
-  json_emit(buf, buf_len, "{ s: i, s: { s: S, s: s, s: s }}",
+  json_emit(*buf, buf_len, "{ s: i, s: { s: S, s: s, s: s }}",
       "id", id,
       "payload",
       "block",blocking?"true":"false",
@@ -831,9 +855,13 @@ int WebController::CreateErrorMessageCallbackData(const char *msg, bool blocking
       "message", msg);
   return id;
 }
-int WebController::CreateConsoleCallbackData(const char *msg, bool blocking, char *buf, size_t buf_len){
+int WebController::CreateConsoleCallbackData(const char *msg, bool blocking, char **buf){
+
+  int buf_len = 128 + strlen(msg);
+  MALLOC_CHAR_BUF(*buf, buf_len);
+
   int id = callback_counter++;
-  json_emit(buf, buf_len, "{ s: i, s: { s: S, s: s, s: s }}",
+  json_emit(*buf, buf_len, "{ s: i, s: { s: S, s: s, s: s }}",
       "id", id,
       "payload",
       "block",blocking?"true":"false",
@@ -842,9 +870,13 @@ int WebController::CreateConsoleCallbackData(const char *msg, bool blocking, cha
   return id;
 
 }
-int WebController::CreateUserCallbackData(const char *msg, bool blocking, char *buf, size_t buf_len){
+int WebController::CreateUserCallbackData(const char *msg, bool blocking, char **buf){
+  
+  int buf_len = 128 + strlen(msg);
+  MALLOC_CHAR_BUF(*buf, buf_len);
+
   int id = callback_counter++;
-  json_emit(buf, buf_len, "{ s: i, s: { s: S, s: s, s: s }}",
+  json_emit(*buf, buf_len, "{ s: i, s: { s: S, s: s, s: s }}",
       "id", id,
       "payload",
       "block",blocking?"true":"false",
@@ -853,9 +885,13 @@ int WebController::CreateUserCallbackData(const char *msg, bool blocking, char *
   return id;
 
 }
-int WebController::CreateMcodeUserCallbackData(int mCode, bool blocking, char *buf, size_t buf_len){
+int WebController::CreateMcodeUserCallbackData(int mCode, bool blocking, char **buf){
+
+  int buf_len = 128;
+  MALLOC_CHAR_BUF(*buf, buf_len);
+
   int id = callback_counter++;
-  json_emit(buf, buf_len,"{ s: i, s: { s: S, s: s, s: i }}",
+  json_emit(*buf, buf_len,"{ s: i, s: { s: S, s: s, s: i }}",
       "id", id,
       "payload",
       "block",blocking?"true":"false",

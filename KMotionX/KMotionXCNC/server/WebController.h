@@ -39,13 +39,13 @@ public:
 protected:
   virtual int Setup();
   virtual void UpdateClient();
-  virtual int CreateMessageBoxCallbackData(const char *title, const char *msg, int options, bool blocking, char *buf, size_t buf_len);
-  virtual int CreateCompleteCallbackData(int status, int line_no, int sequence_number,const char *err, bool blocking, char *buf, size_t buf_len);
-  virtual int CreateStatusCallbackData(int line_no, const char *msg, bool blocking, char *buf, size_t buf_len);
-  virtual int CreateErrorMessageCallbackData(const char *msg, bool blocking, char *buf, size_t buf_len);
-  virtual int CreateConsoleCallbackData(const char *msg, bool blocking, char *buf, size_t buf_len);
-  virtual int CreateUserCallbackData(const char *msg, bool blocking, char *buf, size_t buf_len);
-  virtual int CreateMcodeUserCallbackData(int mCode, bool blocking, char *buf, size_t buf_len);
+  virtual int CreateMessageBoxCallbackData(const char *title, const char *msg, int options, bool blocking, char **buf);
+  virtual int CreateCompleteCallbackData(int status, int line_no, int sequence_number,const char *err, bool blocking, char **buf);
+  virtual int CreateStatusCallbackData(int line_no, const char *msg, bool blocking, char **buf);
+  virtual int CreateErrorMessageCallbackData(const char *msg, bool blocking, char **buf);
+  virtual int CreateConsoleCallbackData(const char *msg, bool blocking, char **buf);
+  virtual int CreateUserCallbackData(const char *msg, bool blocking, char **buf);
+  virtual int CreateMcodeUserCallbackData(int mCode, bool blocking, char **buf);
   virtual void SetMotionParams(const char *buf, size_t len);
 
 private:

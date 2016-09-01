@@ -265,18 +265,21 @@ void KmxController::UpdateMotionParams(){
 
 void KmxController::OnStatusCallback(int line_no, const char *msg) {
   //This is a non blocking call from other thread to be enqueued in poll thread
-  char buf[512];
+  char * buf = NULL; 
   bool blocking = false;
-  memset(buf, 0,512);
   currentLine = line_no;
-  int id = CreateStatusCallbackData(line_no, msg, blocking, buf, 512);
+  int id = CreateStatusCallbackData(line_no, msg, blocking, &buf);
   mq->EnqueueCallback(id, buf, blocking);
+
+  if(buf != NULL) {
+    free(buf);
+  }  
 }
 
 
 void KmxController::OnCompleteCallback(int status, int line_no, int sequence_number,const char *err) {
   //This is a non blocking call from other thread to be enqueued in poll thread
-  char buf[256];
+  char * buf = NULL; 
   bool blocking = false;
   interpreting = false;
   currentLine = line_no;
@@ -287,53 +290,74 @@ void KmxController::OnCompleteCallback(int status, int line_no, int sequence_num
     InvokeAction(ACTION_HALT,FALSE);  // Do Special Action
   }
 
-  int id = CreateCompleteCallbackData(status, line_no, sequence_number, err, blocking, buf, 256);
+  int id = CreateCompleteCallbackData(status, line_no, sequence_number, err, blocking, &buf);
   if(strlen(err)>0){
     OnErrorMessageCallback(err);
   }
 
   mq->EnqueueCallback(id, buf, blocking);
+
+  if(buf != NULL) {
+    free(buf);
+  }  
 }
 
 void KmxController::OnErrorMessageCallback(const char *msg) {
   //This is a non blocking call enqueue in poll thread
-  char buf[256];
+  char * buf = NULL;  
   bool blocking = false;
-  int id = CreateErrorMessageCallbackData(msg, blocking, buf, 256);
+  int id = CreateErrorMessageCallbackData(msg, blocking, &buf);
   mq->EnqueueCallback(id, buf, false);
+
+  if(buf != NULL) {
+    free(buf);
+  }
 
 }
 
 int KmxController::OnConsoleCallback(const char *msg) {
   //This is a non blocking call even though it has a return value.. strange
   //Not even sure this happens in another thread
-  char buf[256];
+  char * buf = NULL;
   bool blocking = false;
-  int id = CreateConsoleCallbackData(msg, blocking, buf, 256);
-  return mq->EnqueueCallback(id, buf, blocking);
+  int id = CreateConsoleCallbackData(msg, blocking, &buf);
+  int result = mq->EnqueueCallback(id, buf, blocking);
+
+  if(buf != NULL) {
+    free(buf);
+  }
+  return result; // returning a stack value? int is ok right?
 }
 
 int KmxController::OnMessageBoxCallback(const char *title, const char *msg, int options) {
-  char buf[512];
+  
+  char * buf = NULL;
   bool blocking = false;
   //non blocking MB_OK?
   if ((options & (MB_YESNO | MB_OKCANCEL)) == (MB_YESNO | MB_OKCANCEL)) {
     blocking = true;
   }
 
-  //TODO Messages might be pretty long check this and alloc
-  int id = CreateMessageBoxCallbackData(title, msg, options, blocking, buf, 512);
   //TODO handle blocking messagebox
-  return mq->EnqueueCallback(id, buf, blocking);
+  int id = CreateMessageBoxCallbackData(title, msg, options, blocking, &buf);
+  int result = mq->EnqueueCallback(id, buf, blocking);
+  
+  if(buf != NULL) {
+    free(buf);
+  }
+  return result; // returning a stack value? int is ok right?
 }
 
 
 int KmxController::OnUserCallback(const char *msg) {
   //This is a blocking call. A bit trickier
-  char buf[256];
+  char * buf = NULL;
   bool blocking = true;
-  int id = CreateUserCallbackData(msg, blocking, buf, 256);
+  int id = CreateUserCallbackData(msg, blocking, &buf);
   int result = mq->EnqueueCallback(id, buf, blocking);
+  if(buf != NULL) {
+    free(buf);
+  }
   debug("UserCallback result: %d", result);
   return result;
 }
@@ -353,10 +377,13 @@ int KmxController::OnMcodeUserCallback(int mCode) {
   //the thread needs to wait for timeout and then issue the request again in poll thread
   //if gui is closed and reopened
   //instantiate a struct and wait for a signal/variable in that struct
-  char buf[256];
+  char * buf = NULL;
   bool blocking = true;
-  int id = CreateMcodeUserCallbackData(mCode, blocking, buf, 256);
+  int id = CreateMcodeUserCallbackData(mCode, blocking, &buf);
   int result = mq->EnqueueCallback(id, buf, blocking);
+  if(buf != NULL) {
+    free(buf);
+  }  
   debug("UserMCallback result: %d", result);
   return result;
 

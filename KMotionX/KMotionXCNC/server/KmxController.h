@@ -125,19 +125,19 @@ protected:
   virtual void SetMotionParams(const char *buf, size_t len){};
 
   //Subclasses should implement to create a meaningful message to their client and return a unique message id
-  virtual int CreateMessageBoxCallbackData(const char *title, const char *msg, int options, bool blocking, char *buf, size_t buf_len){return 0;};
+  virtual int CreateMessageBoxCallbackData(const char *title, const char *msg, int options, bool blocking, char **buf){return 0;};
   //Subclasses should implement to create a meaningful message to their client and return a unique message id
-  virtual int CreateCompleteCallbackData(int status, int line_no, int sequence_number,const char *err, bool blocking, char *buf, size_t buf_len){return 0;};
+  virtual int CreateCompleteCallbackData(int status, int line_no, int sequence_number,const char *err, bool blocking, char **buf){return 0;};
   //Subclasses should implement to create a meaningful message to their client and return a unique message id
-  virtual int CreateStatusCallbackData(int line_no, const char *msg, bool blocking, char *buf, size_t buf_len){return 0;};
+  virtual int CreateStatusCallbackData(int line_no, const char *msg, bool blocking, char **buf){return 0;};
   //Subclasses should implement to create a meaningful message to their client and return a unique message id
-  virtual int CreateErrorMessageCallbackData(const char *msg, bool blocking, char *buf, size_t buf_len){return 0;};
+  virtual int CreateErrorMessageCallbackData(const char *msg, bool blocking, char **buf){return 0;};
   //Subclasses should implement to create a meaningful message to their client and return a unique message id
-  virtual int CreateConsoleCallbackData(const char *msg, bool blocking, char *buf, size_t buf_len){return 0;};
+  virtual int CreateConsoleCallbackData(const char *msg, bool blocking, char **buf){return 0;};
   //Subclasses should implement to create a meaningful message to their client and return a unique message id
-  virtual int CreateUserCallbackData(const char *msg, bool blocking, char *buf, size_t buf_len){return 0;};
+  virtual int CreateUserCallbackData(const char *msg, bool blocking, char **buf){return 0;};
   //Subclasses should implement to create a meaningful message to their client and return a unique message id
-  virtual int CreateMcodeUserCallbackData(int mCode, bool blocking, char *buf, size_t buf_len){return 0;};
+  virtual int CreateMcodeUserCallbackData(int mCode, bool blocking, char **buf){return 0;};
 private:
 
   struct timeval tval_status;
