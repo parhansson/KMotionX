@@ -10,6 +10,7 @@ extern int ParametricIndex;
 // JP7 pin 7-14, IO bits 0-7 available for end limit switches 5v tolerant
 #define STEPS_INCH 2540
 #define STEPS_MM 100
+#define STEPS_MM_Z 133.3333
 
 #define CLOCK 16.6666e6
 main()
@@ -134,7 +135,7 @@ main()
 
   ch2->InputMode=NO_INPUT_MODE;
   ch2->OutputMode=STEP_DIR_MODE;
-  ch2->Vel=STEPS_MM*9; // 9 mm/s;
+  ch2->Vel=STEPS_MM_Z*10; // 10 mm/s;
   ch2->Accel=80000;
   ch2->Jerk=4e+006;
   ch2->P=0;
