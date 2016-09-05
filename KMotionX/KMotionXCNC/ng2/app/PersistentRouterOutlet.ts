@@ -3,8 +3,8 @@ import * as hookMod from '@angular/router-deprecated/src/lifecycle/lifecycle_ann
 import * as routerMod from '@angular/router-deprecated/router';
 import {isBlank, isPresent} from '@angular/common/src/facade/lang';
 import {StringMapWrapper} from '@angular/common/src/facade/collection';
-//import {Promise,PromiseWrapper} from 'angular2/src/facade/async';
-import {PromiseWrapper} from '@angular/common/src/facade/async';
+import {PromiseWrapper} from '@angular/router-deprecated/src/facade/promise';
+//import {PromiseWrapper} from '@angular/common/src/facade/async';
 import {BaseException} from '@angular/core/index';
 import {ViewContainerRef, DynamicComponentLoader, Directive, Injector, ReflectiveInjector, provide, ComponentRef, Attribute} from '@angular/core';
 import {

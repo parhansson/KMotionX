@@ -1,11 +1,10 @@
 import { Component, Inject, ViewChild, provide } from '@angular/core';
-import {TAB_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 import { ScreenComponent } from "../screen.component"
-import {CCodeEditorComponent} from './ccode-editor.component'
+import { CCodeEditorComponent } from './ccode-editor.component'
 
 @Component({
   selector: 'ccode-screen',
-  directives: [TAB_DIRECTIVES,CCodeEditorComponent],
+  directives: [CCodeEditorComponent],
   template: `
     <tabset>
       <tab heading="File1">

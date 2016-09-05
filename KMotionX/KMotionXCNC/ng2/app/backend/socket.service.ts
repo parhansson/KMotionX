@@ -138,7 +138,8 @@ export class SocketService {
   }
 
   logHandler(message, type: LogLevel) {
-    if (this.kmxLogger.logExist('output') || true) {
+    let force = true;
+    if (this.kmxLogger.logExist('output') || force) {
       var style = '';
       var fragment = document.createDocumentFragment();
       var div = document.createElement('div');

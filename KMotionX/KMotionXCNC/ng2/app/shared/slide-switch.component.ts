@@ -1,5 +1,6 @@
 import {Component, Self, OnInit, Input,  Output, EventEmitter}  from '@angular/core';
-import {ControlValueAccessor, NgModel} from '@angular/common';
+//import {ControlValueAccessor, NgModel} from '@angular/common';
+import { FORM_DIRECTIVES } from '@angular/forms'; 
 
 @Component({
   moduleId: module.id,
@@ -9,6 +10,7 @@ import {ControlValueAccessor, NgModel} from '@angular/common';
     <input type="checkbox" [ngModel]="state" (click)="toggle()">
     <i></i>
   </label>`,
+  directives: [FORM_DIRECTIVES], 
   styleUrls: ['slide-switch.css']
 })
 export class SlideSwitchComponent  

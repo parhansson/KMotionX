@@ -6,7 +6,7 @@
   <tabset>
     <tab heading="General">
       <h3 class="settings-header">General machine settings</h3>
-      <form class="form">
+      <div class="form"><!--<form class="form">-->
         <div class="row col-xs-12 col-sm-8 col-sm-offset-2">
           <div class="form-group">
             <label>Name</label>
@@ -45,7 +45,7 @@
             <input class="form-control" [(ngModel)]='machine.initThread' type="number" min=1 max=7 placeholder="Thread number 1-7">
           </div>
         </div>
-      </form>
+      </div><!--</form>-->
     </tab>
     <tab heading="M0-M30">
       <h3 class="settings-header">M-codes</h3>
@@ -72,7 +72,7 @@
 
     <tab heading="Motion Parameters">
       <h3 class="settings-header">Trajectory Planner / Axis Settings</h3>
-      <form class="form">
+      <div class="form"><!--<form class="form">-->
         <div class="form-inline well">
           <div class="form-group">
             <label for="breakangleInput">Break Angle</label>
@@ -156,7 +156,7 @@
             </div>
           </div>
         </div>
-      </form>
+      </div><!--</form>-->
     </tab>
     <tab heading="Import settings">
         <transformer-settings></transformer-settings>
