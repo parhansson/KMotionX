@@ -1,4 +1,4 @@
-import { Component, ViewChild, provide, SkipSelf, Inject } from '@angular/core';
+import { Component, ViewChild, SkipSelf, Inject } from '@angular/core';
 import { FileResource, Payload, FileServiceToken, IFileBackend } from '../resources'
 import { AceEditorComponent, FileStoreToken, FileStore } from '../editor'
 import { TransformingFileStore } from './transforming-file-store.service'
@@ -7,14 +7,11 @@ import { BackendService } from '../backend/backend.service'
 
 @Component({
   selector: 'gcode-editor',
-  directives: [
-    AceEditorComponent
-  ],
   template: `
         <code-editor id="gcodeEditor" mode="gcode"></code-editor>
   `,
   viewProviders: [
-    provide(FileStoreToken, { useClass: TransformingFileStore })
+    { provide: FileStoreToken, useClass: TransformingFileStore }
   ]
 })
 export class GCodeEditorComponent {

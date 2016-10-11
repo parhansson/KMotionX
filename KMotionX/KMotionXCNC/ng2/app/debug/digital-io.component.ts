@@ -1,5 +1,4 @@
 import {Component, Injectable, Pipe, PipeTransform, Input, Attribute} from '@angular/core';
-import {NgClass} from '@angular/common';
 import {SocketService} from '../backend/socket.service'
 import {KmxStatus} from '../backend/shared'
 
@@ -33,7 +32,6 @@ import {Connector, IOPin} from '../backend/hardware'
 
 @Component({
   selector: 'connector',
-  directives: [NgClass],
   //pipes: [ConnectorPipe],
   template: `
             {{connector.name}}
@@ -133,7 +131,6 @@ export class ConnectorComponent {
 
 @Component({
   selector: 'digital-io',
-  directives: [ConnectorComponent],
   template: `
             <connector name="JP7"></connector>
             <connector name="JP4"></connector>

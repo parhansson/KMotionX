@@ -1,4 +1,4 @@
-import {Component, ViewChild, provide, SkipSelf, Inject} from '@angular/core';
+import {Component, ViewChild, SkipSelf, Inject} from '@angular/core';
 import {Subject} from 'rxjs/Rx'
 import {LogComponent} from "../log/log.component";
 import {BackendService} from '../backend/backend.service';
@@ -16,14 +16,6 @@ import {GCodeEditorComponent} from './gcode-editor.component'
 
 @Component({
   selector: 'gcode-screen',
-  directives: [
-    LogComponent,
-    DroComponent,
-    ThreeViewComponent,
-    UserButtonsComponent,
-    ControlButtonsComponent,
-    GCodeEditorComponent
-  ],
   template: `
     <div class="row  fill">
       <div class="hidden-xs col-md-3">

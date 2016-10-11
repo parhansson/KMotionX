@@ -19,14 +19,14 @@
       "countsPerUnit": 2540,
       "maxAccel": 40,
       "maxVel": 40,
-      "jogVel": 200
+      "jogVel": 2000
     },
     {
       "name": "Z",
-      "countsPerUnit": 3386.66667,
-      "maxAccel": 20,
-      "maxVel": 20,
-      "jogVel": 20
+      "countsPerUnit": 40640,
+      "maxAccel": 40,
+      "maxVel": 40,
+      "jogVel": 2000
     },
     {
       "name": "A"

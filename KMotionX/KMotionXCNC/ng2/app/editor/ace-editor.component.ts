@@ -16,7 +16,6 @@ export interface OnFileEventHandler {
 
 @Component({
   selector: 'code-editor',
-  directives: [AceDirective, FileDialogComponent, FilePathComponent, DropZoneDirective],
   template: `
     <file-dialog #fd (selectedFile)="onFile($event)" [resource]="resource"></file-dialog>
     <div>
@@ -25,7 +24,7 @@ export interface OnFileEventHandler {
           <span class="btn btn-primary glyphicon glyphicon-floppy-save" title="Save" (click)="onSave()"></span>
           <span class="btn btn-primary glyphicon glyphicon-floppy-save" title="Save As" (click)="onSaveAs()"></span>
       </span>
-      <ng-content select="buttons"></ng-content>
+      <ng-content select="div[buttons]"></ng-content>
     </div>
     <div file-dropzone (dropped)="onFile($event)">
       <span *ngIf="dirty">*</span><file-path [resource]="resource"></file-path>  
@@ -41,7 +40,7 @@ export class AceEditorComponent {
   private aceEditor: AceDirective;
 
   @ViewChild(FileDialogComponent)
-  resourceComponent: FileDialogComponent;
+  private resourceComponent: FileDialogComponent;
 
   @Input() mode: string;
   @Input() theme: string;

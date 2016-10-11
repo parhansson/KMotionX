@@ -7,7 +7,6 @@ import { Payload } from './payload'
 
 @Component({
   selector: 'file-dialog',
-  directives: [FilePathComponent, DropZoneDirective],
   template: `
   <div class="modal" [style.display]="modalDisplay">
       <div class="modal-dialog">

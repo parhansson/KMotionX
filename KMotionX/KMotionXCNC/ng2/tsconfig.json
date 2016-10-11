@@ -20,5 +20,9 @@
     "node_modules",
     "typings/main",
     "typings/main.d.ts"
-  ]
+  ],
+  "angularCompilerOptions": {
+    "genDir": "./ngfactory",
+    "debug": true
+  }
 }

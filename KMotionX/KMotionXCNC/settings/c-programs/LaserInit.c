@@ -135,7 +135,7 @@ main()
 
   ch2->InputMode=NO_INPUT_MODE;
   ch2->OutputMode=STEP_DIR_MODE;
-  ch2->Vel=STEPS_MM_Z*10; // 10 mm/s;
+  ch2->Vel=STEPS_MM_Z*20; // 20 mm/s;
   ch2->Accel=80000;
   ch2->Jerk=4e+006;
   ch2->P=0;
@@ -168,7 +168,7 @@ main()
   ch2->BacklashMode=BACKLASH_OFF;
   ch2->BacklashAmount=0;
   ch2->BacklashRate=0;
-  ch2->invDistPerCycle=1.25;
+  ch2->invDistPerCycle=500;//1.25;
   ch2->Lead=0;
   ch2->MaxFollowingError=1000000000;
   ch2->StepperAmplitude=20;

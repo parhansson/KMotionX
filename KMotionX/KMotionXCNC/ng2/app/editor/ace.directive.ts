@@ -46,6 +46,7 @@ export class AceDirective {
         el.style.width = "100%";
 
         this.editor = ace.edit(el);
+        this.editor.$blockScrolling = Infinity; // Removes annoying scroll warning
         this.editor.resize(true);
         this.editor.setTheme("ace/theme/chrome");
 

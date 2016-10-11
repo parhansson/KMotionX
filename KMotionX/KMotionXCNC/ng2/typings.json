@@ -1,9 +1,9 @@
 {
   "globalDependencies": {
     "ace": "github:DefinitelyTyped/DefinitelyTyped/ace/ace.d.ts#7de6c3dd94feaeb21f20054b9f30d5dabc5efabd",
-    "core-js": "registry:dt/core-js#0.0.0+20160725163759",
+    "core-js": "registry:dt/core-js#0.0.0+20160914114559",
     "systemjs": "registry:dt/systemjs#0.19.29+20160702105636",
-    "three": "registry:dt/three#0.0.0+20160802154944",
+    "three": "registry:dt/three#0.0.0+20161004170959",
     "three-trackballcontrols": "registry:dt/three-trackballcontrols#0.0.0+20160730160925"
   },
   "dependencies": {

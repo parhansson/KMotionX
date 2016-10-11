@@ -8,9 +8,9 @@ import { TransformerSettingsComponent } from './transformer-settings.component'
 @Component({
     moduleId: module.id,
     selector: 'settings-screen',
-    directives: [ 
-        MCodeValueComponent, 
-        TransformerSettingsComponent],
+    // directives: [ 
+    //     MCodeValueComponent, 
+    //     TransformerSettingsComponent],
     templateUrl: './settings-screen.html'
 })
 export class SettingsScreenComponent extends ScreenComponent {

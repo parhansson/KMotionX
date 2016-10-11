@@ -1,10 +1,9 @@
-import { Component, Inject, ViewChild, provide } from '@angular/core';
+import { Component, Inject, ViewChild } from '@angular/core';
 import { ScreenComponent } from "../screen.component"
 import { CCodeEditorComponent } from './ccode-editor.component'
 
 @Component({
   selector: 'ccode-screen',
-  directives: [CCodeEditorComponent],
   template: `
     <tabset>
       <tab heading="File1">
