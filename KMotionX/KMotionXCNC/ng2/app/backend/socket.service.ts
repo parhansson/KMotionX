@@ -37,7 +37,6 @@ export class SocketService {
     this.data.machineSettingsFile = ""
 
     var url = 'ws://' + window.location.host + '/ws';
-    //KMXUtil.getSingletonWorker("dist/app/backend/socket.loader.js", this.workerMessage.bind(this))
     KMXUtil.getSingletonWorker("dist/app/backend/WorkerBootstrap.js", this.workerMessage.bind(this))
       .then(
       (worker) => this.socketWorker = worker,

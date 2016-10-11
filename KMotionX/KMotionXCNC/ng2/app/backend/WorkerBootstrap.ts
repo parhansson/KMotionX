@@ -1,5 +1,7 @@
 
+import { SocketMessageBroker } from './socket.message.broker'
 let root = "../../../" //added to map. relative to this file
+//let root = "/ng2/" //added to map. relative to this file
 
 let imports = [
   "node_modules/core-js/client/shim.min.js",
@@ -23,13 +25,10 @@ for(let script of imports){
 let mainModule = "socket.message.broker";
 
 
-System.import(mainModule).then((module) =>{
+SystemJS.import(mainModule).then((module) =>{
 
-    console.log("Loaded " + mainModule);
-    let socketWorker = new module.SocketMessageBroker(this.postMessage.bind(this));
-    //self.addEventListener('message', onMessage, false);  
-    this.onmessage = socketWorker.onMessage.bind(socketWorker);
-
+    console.log("Loaded ",module);
+    let socketWorker = new module['SocketMessageBroker'](this) as SocketMessageBroker;
   },
   (error) => {
     console.error("Failed:", error)

@@ -6,8 +6,11 @@ export interface SocketMessageHandler {
   onSocketMessage(data: any): void;
 }
 
-export class SocketConnector {
+export class SocketConnector 
+//implements MessagePort
+{
 
+  reconnectDelayMs = 5000;
   websocket: WebSocket;
   connectTimeout: number = null;
   url: string;
@@ -16,49 +19,48 @@ export class SocketConnector {
 
   connect(url: string) {
     this.url = url;
-    this.socketMessageHandler.onSocketLog('Websocket connecting...', LogLevel.NONE);
+    this.log('Websocket connecting...', LogLevel.NONE);
     this.websocket = new WebSocket(this.url);
     this.websocket.binaryType = "arraybuffer";
     this.websocket.onopen = this.onopen.bind(this);
     this.websocket.onclose = this.onclose.bind(this);
     this.websocket.onerror = this.onerror.bind(this);
     this.websocket.onmessage = this.onmessage.bind(this);
-
   }
 
   reconnect() {
     if (this.connectTimeout == null) {
-      this.connectTimeout = setInterval(this.connect.bind(this,this.url), 5000);
+      this.connectTimeout = setInterval(this.connect.bind(this,this.url), this.reconnectDelayMs);
     }
   }
 
-  onclose(ev) {
-    this.socketMessageHandler.onSocketLog('Websocket closed. (' + ev.code + ")" + ev.reason, LogLevel.NONE);
+  onclose(ev: CloseEvent) {
+    this.log('Websocket closed. (' + ev.code + ")" + ev.reason, LogLevel.NONE);
     this.reconnect();
   }
-  onerror(ev) {
-    this.socketMessageHandler.onSocketLog("Websocket error.", LogLevel.ERROR);
+  onerror(ev: Event) {
+    this.log("Websocket error.", LogLevel.ERROR);
     this.reconnect();
   }
-  onopen(ev) {
+  onopen(ev: Event) {
     if (this.connectTimeout != null) {
       clearInterval(this.connectTimeout);
       this.connectTimeout = null;
     }
-    this.socketMessageHandler.onSocketLog('Websocket connected.', LogLevel.NONE);
+    this.log('Websocket connected.', LogLevel.NONE);
     this.sendMessage('KMotionX');
   }
   onmessage(ev: MessageEvent) {
     if (!ev.data) {
-      this.socketMessageHandler.onSocketLog('Ping', LogLevel.PING);
+      this.log('Ping', LogLevel.PING);
     } else {
       //Data might be binary Blob or ArrayBuffer
       if (ev.data instanceof Blob) {
-        //this.socketMessageHandler.onSocketLog('Blob', LOG_TYPE.RECEIVE);
+        //this.log('Blob', LOG_TYPE.RECEIVE);
       } else if (ev.data instanceof ArrayBuffer) {
-        //this.socketMessageHandler.onSocketLog('ArrayBuffer', LOG_TYPE.RECEIVE);
+        //this.log('ArrayBuffer', LOG_TYPE.RECEIVE);
       } else {
-        this.socketMessageHandler.onSocketLog(ev.data, LogLevel.RECEIVE);
+        this.log(ev.data, LogLevel.RECEIVE);
       }
 
       this.socketMessageHandler.onSocketMessage(ev.data);
@@ -71,7 +73,10 @@ export class SocketConnector {
   }
 
   sendMessage(message) {
-    this.socketMessageHandler.onSocketLog(message, LogLevel.SEND);
+    this.log(message, LogLevel.SEND);
     this.websocket.send(message);
+  }
+  private log(data:any, logType:number){
+    this.socketMessageHandler.onSocketLog(data, LogLevel.SEND);
   }
 }

@@ -2,18 +2,19 @@
 import {SocketConnector, SocketMessageHandler} from './socket.connector'
 import {KmxStatusStream} from './kmx.status'
 import {KmxStatus, StatusMessage, LogMessage, TextMessage, JsonMessage} from './shared'
-//
-//declare function postMessage(data: any): void;
-export interface PostMessageCallback { (data: any, transfer?: any[]): void }
-export class SocketMessageBroker implements SocketMessageHandler {
+
+export class SocketMessageBroker implements SocketMessageHandler 
+{
 
   socket: SocketConnector;
   kmxStatusStream: KmxStatusStream;
 
-  constructor(private postMessageCallback: PostMessageCallback) {
+  constructor(private messagePort: MessagePort) {
+    messagePort.onmessage = this.onmessage.bind(this);
+
     this.kmxStatusStream = new KmxStatusStream();
     this.socket = new SocketConnector(this);
-    this.postMessageCallback(new TextMessage('WorkerReady'));
+    messagePort.postMessage(new TextMessage('WorkerReady'));
   }
 
   onSocketMessage(data: any) {
@@ -28,7 +29,7 @@ export class SocketMessageBroker implements SocketMessageHandler {
       if (data !== "KMotionX") {
         //try{ //try catch disables optimization in chrome
         var obj = JSON.parse(data);
-        this.postMessageCallback(new JsonMessage(obj));
+        this.messagePort.postMessage(new JsonMessage(obj));
         //ack messages that don't require users answer here
         if (obj.payload.block === false) {
           this.acknowledge(obj.id, -1);
@@ -45,15 +46,15 @@ export class SocketMessageBroker implements SocketMessageHandler {
 
   onBinaryMessage(data: ArrayBuffer) {
     let status = this.kmxStatusStream.readBuffer(data);
-    this.postMessageCallback(new StatusMessage(status));
+    this.messagePort.postMessage(new StatusMessage(status));
   }
 
   onSocketLog(message: any, type: number) {
-    this.postMessageCallback(new LogMessage(message, type));
+    this.messagePort.postMessage(new LogMessage(message, type));
 
   }
 
-  onMessage(event: MessageEvent) {
+  onmessage(event: MessageEvent) {
     if (event.data.command == 'connect') {
       var url = event.data.url;
       this.socket.connect(url);
@@ -62,7 +63,7 @@ export class SocketMessageBroker implements SocketMessageHandler {
     } else if (event.data.command == 'disconnect') {
       //no need to acually disconnect at the moment
       this.socket.destroy();
-      this.postMessageCallback(new TextMessage('done'));
+      this.messagePort.postMessage(new TextMessage('done'));
     }
 
   }
