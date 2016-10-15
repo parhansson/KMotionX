@@ -16,8 +16,8 @@
 
     // removed when loading from bundle
     'rxjs': 'node_modules/rxjs',
-    'ng2-bootstrap': 'node_modules/ng2-bootstrap',
 
+    'ng2-bootstrap/ng2-bootstrap': 'node_modules/ng2-bootstrap/bundles/ng2-bootstrap.umd.js',
     //needed by ng2-bootstrap datepicker
     'moment': 'node_modules/moment/moment.js',
 
