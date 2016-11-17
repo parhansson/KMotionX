@@ -7,19 +7,18 @@
 
   // map tells the System loader where to look for things
   var map = {
-    '@angular': 'node_modules/@angular',
     'app': 'dist', // map app to dist folder
 
     //loading three from modules
-    'three': 'node_modules/three/build',
-    'three-trackballcontrols': 'node_modules/three/examples/js/controls',
+    'three': 'npm:three/build',
+    'three-trackballcontrols': 'npm:three/examples/js/controls',
 
     // removed when loading from bundle
-    'rxjs': 'node_modules/rxjs',
+    'rxjs': 'npm:rxjs',
 
-    'ng2-bootstrap/ng2-bootstrap': 'node_modules/ng2-bootstrap/bundles/ng2-bootstrap.umd.js',
+    'ng2-bootstrap/ng2-bootstrap': 'npm:ng2-bootstrap/bundles/ng2-bootstrap.umd.js',
     //needed by ng2-bootstrap datepicker
-    'moment': 'node_modules/moment/moment.js',
+    'moment': 'npm:moment/moment.js',
 
 
     '@angular/core': 'npm:@angular/core/bundles/core.umd.js',
@@ -56,17 +55,6 @@
   };
 
   var packageNames = [
-    // '@angular/common',
-    // '@angular/compiler',
-    // '@angular/core',
-    // '@angular/forms',
-    // '@angular/http',
-    // '@angular/platform-browser',
-    // '@angular/platform-browser-dynamic',
-    // '@angular/router',
-    // '@angular/router-deprecated',
-    //'@angular/testing',
-    //'@angular/upgrade',
     'dist/app/ccode',
     'dist/app/debug',
     'dist/app/editor',
@@ -90,7 +78,8 @@
     meta: meta,
     paths: {
       // paths serve as alias
-      'npm:': 'node_modules/'
+      'npm:': 'node_modules/',
+      //'rxjs/*': 'node_modules/rxjs/bundles/Rx.js' //instead of 
 
     }
   }
