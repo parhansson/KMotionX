@@ -39,9 +39,7 @@
     "three": "0.81.2",
     "ace-min-noconflict": "1.1.9",
     "opentype.js": "0.6.6",
-    "pdfjs-dist": "1.5.500",
-    "angular": "1.5.7",
-    "jquery": "2.1.4"
+    "pdfjs-dist": "1.5.500"
   },
   "devDependencies": {
     "chokidar": "1.6.1",
