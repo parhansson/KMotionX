@@ -1,0 +1,39 @@
+<div class="form-group form-inline">
+    <div class="form-group" *ngIf="userButton">
+      <input class="form-control" type="text" placeholder="Button label" [(ngModel)]="action.name">
+    </div>
+    <div class="form-group">
+        <div class="input-group">
+            <span class="input-group-addon" *ngIf="!userButton">{{action.name}}</span>
+               <select [(ngModel)]="action.action" class="form-control" style="width:250px">
+                <option *ngFor="let option of actionOptions" [value]="option.action">{{option.name}}</option>
+              </select>
+            
+        </div>
+    </div>
+    <div class="form-group" *ngIf="actionOptions[action.action].visible[0]">
+      <label>{{actionOptions[action.action].paramNames[0]}}</label>
+      <input class="form-control" type="number" [(ngModel)]="action.dParam0">
+    </div>
+    <div class="form-group" *ngIf="actionOptions[action.action].visible[1]">
+      <label>{{actionOptions[action.action].paramNames[1]}}</label>
+      <input class="form-control" type="number" [(ngModel)]="action.dParam1">
+    </div>
+    <div class="form-group" *ngIf="actionOptions[action.action].visible[2]">
+      <label>{{actionOptions[action.action].paramNames[2]}}</label>
+      <input class="form-control" type="number" [(ngModel)]="action.dParam2">
+    </div>
+    <div class="form-group" *ngIf="actionOptions[action.action].visible[3]">
+      <label>{{actionOptions[action.action].paramNames[3]}}</label>
+      <input class="form-control" type="number" [(ngModel)]="action.dParam3">
+    </div>
+    <div class="form-group" *ngIf="actionOptions[action.action].visible[4]">
+      <label>{{actionOptions[action.action].paramNames[4]}}</label>
+      <input class="form-control" type="number" [(ngModel)]="action.dParam4">
+    </div>
+    
+    <div class="form-group" *ngIf="actionOptions[action.action].visible[5]">
+      <label>{{actionOptions[action.action].paramNames[5]}}</label>
+      <input class="form-control" type="text" [(ngModel)]="action.file" placeholder="File">
+    </div>
+</div>

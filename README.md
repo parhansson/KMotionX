@@ -106,7 +106,7 @@ Start executeGCode example
 ```
 Or try the new web application. Start and surf to http://localhost:8080 in a web browser preferably Chrome.
 ```
-./kmxWeb -document_root ../KMotionX/KMotionXCNC/app
+./kmxWeb -document_root ../KMotionX/KMotionXCNC
 ```
 
 ##Extra

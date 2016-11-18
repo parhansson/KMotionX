@@ -5,6 +5,6 @@ config.mak
 /**/*.project
 /**/*.cproject
 /**/.settings/
-
+/KMotionX/swig
 
 *.out

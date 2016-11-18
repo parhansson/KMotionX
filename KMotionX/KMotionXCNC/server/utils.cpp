@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stddef.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -54,7 +55,19 @@ void unmapFile(MappedFile& mmFile){
 }
 
 
-void absolutePath(const char * relativePath, char * absolutePath){
-  const char * rootDir = mg_get_option(server, "document_root");
-  sprintf(absolutePath, "%s/%s",rootDir,relativePath);
+void absolutePath(const char * relativePath, char * actualpath){
+  char absolute [256/*PATH_MAX*/];
+  
+  if(relativePath[0]=='/'){
+    sprintf(absolute, "%s",relativePath);
+  } else {
+    const char * rootDir = mg_get_option(server, "document_root");
+    sprintf(absolute, "%s/%s",rootDir,relativePath);
+  }
+  
+  
+  if(realpath(absolute, actualpath) == NULL){
+    printf("Error resolving relative path %s from %s\n", relativePath, absolute);
+    sprintf(actualpath, "%s",absolute);
+  } 
 }

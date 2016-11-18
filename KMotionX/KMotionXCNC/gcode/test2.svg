@@ -1,0 +1,276 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg:svg xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="1190.55px" height="841.89px" viewBox="0 0 1190.55 841.89">
+    <svg:g transform="matrix(1 0 0 -1 0 841.89)">
+        <svg:defs>
+            <svg:clipPath id="clippath0" transform="matrix(262.7583618 0 0 262.9447937 118.5900574 61.2177429)">
+                <svg:rect x="0" y="0" width="452" height="451" clip-rule="nonzero"></svg:rect>
+            </svg:clipPath>
+        </svg:defs>
+        <svg:g transform=""></svg:g>
+        <svg:g clip-path="url(#clippath0)">
+            <svg:g transform="matrix(262.7583618 0 0 262.9447937 118.5900574 61.2177429)">
+                <svg:image xlink:href="blob:http://localhost:8080/54fb00d3-3561-453d-954f-ee1afabb462a" x="0" y="-451" width="452px" height="451px" transform="scale(0.0022123894 -0.0022172949)"></svg:image>
+            </svg:g>
+        </svg:g>
+        <svg:g transform="">
+            <svg:text transform="matrix(13.071 -2.034 2.034 13.071 265.1216 538.9814) scale(1, -1)" xml:space="preserve">
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="0" x="0" fill="rgb(128,128,128)"></svg:tspan>
+            </svg:text>
+        </svg:g>
+        <svg:g transform="translate(281.4 541.3)">
+            <svg:path d="M 0 0 L 0 0.5 L 0 1 L 0 1.5 L -0.2 2 L -0.3 2.5 L -0.6 2.9 L -0.8 3.3 L -1.2 3.7 L -1.5 4.1 L -1.9 4.4 L -2.4 4.6 L -2.8 4.8 L -3.3 5 L -3.8 5.1 L -4.3 5.1 L -4.8 5.1 L -5.3 5 L -5.8 4.8 L -6.3 4.7 L -6.7 4.4 L -7.1 4.1 L -7.5 3.8 L -7.8 3.4 L -8.1 3 L -8.4 2.6 L -8.5 2.1 L -8.7 1.6 L -8.8 1.1 L -8.8 0.6 L -8.7 0.1 L -8.6 -0.4 L -8.5 -0.9 L -8.3 -1.3 L -8 -1.8 L -7.7 -2.2 L -7.4 -2.5 L -7 -2.9 L -6.6 -3.1 L -6.1 -3.4 L -5.7 -3.5 L -5.2 -3.7 L -4.7 -3.7 L -4.2 -3.7 L -3.7 -3.7 L -3.2 -3.6 L -2.7 -3.4 L -2.2 -3.2 L -1.8 -2.9 L -1.4 -2.6 L -1.1 -2.2 L -0.8 -1.9 L -0.5 -1.4 L -0.3 -1 L -0.1 -0.5 L 0 0 M -7.8 -5.2 L -0.9 6.5" stroke-miterlimit="0" stroke-linecap="" stroke-linejoin="" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(128,128,128)"></svg:path>
+        </svg:g>
+        <svg:g transform="">
+            <svg:text transform="matrix(13.071 -2.034 2.034 13.071 283.5279 536.1171) scale(1, -1)" xml:space="preserve">
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="0" x="0 0.554166754 1.108333508 1.662500262 1.939583639 2.493750393 3.047917147" fill="rgb(128,128,128)">268,38 </svg:tspan>
+            </svg:text>
+            <svg:text transform="matrix(7.4518 10.9298 -10.9298 7.4518 642.2454 508.755) scale(1, -1)" xml:space="preserve">
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="0" x="0 0.2770831 0.8312493 1.3854155 1.9395817 2.2166648 2.770831 3.3249972" fill="rgb(128,128,128)"> 134,19 </svg:tspan>
+            </svg:text>
+            <svg:text transform="matrix(11.9739 5.6227 -5.6227 11.9739 406.0646 717.4412) scale(1, -1)" xml:space="preserve">
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="0" x="0 0.277076175 0.831228525 1.385380875 1.66245705 2.2166094 2.77076175 3.3249141 3.87906645 4.27917645" fill="rgb(128,128,128)"> 17,1429° </svg:tspan>
+            </svg:text>
+            <svg:text transform="matrix(24 0 0 24 411.9263 305.8386) scale(1, -1)" xml:space="preserve">
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="0" x="0" fill="rgb(0,0,0)">A</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-17.812" x="6.39" fill="rgb(0,0,0)">B</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="1.355" x="6.39" fill="rgb(0,0,0)">B</svg:tspan>
+            </svg:text>
+            <svg:text transform="matrix(11.4561 6.6142 -6.6142 11.4561 203.5002 169.1989) scale(1, -1)" xml:space="preserve">
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="0" x="0 0.277101105 0.88432266 1.43852487" fill="rgb(128,128,128)"> R7 </svg:tspan>
+            </svg:text>
+            <svg:text transform="matrix(16 0 0 16 215.4798 143.9088) scale(1, -1)" xml:space="preserve">
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="0" x="0 0.744318432 1.28054784 1.706730168 2.447046888 2.673143616 3.135341352 3.412459908" fill="rgb(0,0,0)">DETAIL A</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="1" x="-0.556 -0.058105078 0.754723379 1.494567239 1.956469757 2.492356661 2.769298214 3.32318132 3.600122873 3.877064426 4.154005979" fill="rgb(0,0,0)">SCALE 2 : 1</svg:tspan>
+            </svg:text>
+            <svg:text transform="matrix(0 13.2283 -13.2283 0 900.4492 469.6678) scale(1, -1)" xml:space="preserve">
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="0" x="0" fill="rgb(128,128,128)"></svg:tspan>
+            </svg:text>
+        </svg:g>
+        <svg:g transform="translate(895.5 485.4)">
+            <svg:path d="M 0 0 L -0.5 0 L -1 -0.1 L -1.4 -0.3 L -1.9 -0.5 L -2.3 -0.7 L -2.7 -1 L -3.1 -1.4 L -3.4 -1.7 L -3.7 -2.2 L -4 -2.6 L -4.1 -3.1 L -4.3 -3.6 L -4.3 -4.1 L -4.4 -4.6 L -4.3 -5.1 L -4.2 -5.6 L -4.1 -6 L -3.9 -6.5 L -3.6 -6.9 L -3.3 -7.3 L -2.9 -7.7 L -2.5 -8 L -2.1 -8.3 L -1.7 -8.5 L -1.2 -8.7 L -0.7 -8.8 L -0.2 -8.8 L 0.3 -8.8 L 0.8 -8.8 L 1.3 -8.7 L 1.8 -8.5 L 2.2 -8.3 L 2.6 -8 L 3 -7.7 L 3.4 -7.3 L 3.7 -6.9 L 3.9 -6.5 L 4.2 -6 L 4.3 -5.6 L 4.4 -5.1 L 4.5 -4.6 L 4.4 -4.1 L 4.4 -3.6 L 4.2 -3.1 L 4.1 -2.6 L 3.8 -2.2 L 3.5 -1.7 L 3.2 -1.4 L 2.8 -1 L 2.4 -0.7 L 2 -0.5 L 1.5 -0.3 L 1 -0.1 L 0.6 0 L 0 0 M 6.3 -7 L -6.3 -1.9" stroke-miterlimit="0" stroke-linecap="" stroke-linejoin="" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(128,128,128)"></svg:path>
+        </svg:g>
+        <svg:g transform="">
+            <svg:text transform="matrix(0 13.2283 -13.2283 0 900.4492 488.2957) scale(1, -1)" xml:space="preserve">
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="0" x="0 0.554166754 1.108333508" fill="rgb(128,128,128)">20 </svg:tspan>
+            </svg:text>
+            <svg:text transform="matrix(13.2283 0 0 13.2283 948.0905 727.0052) scale(1, -1)" xml:space="preserve">
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="0" x="0 0.277083377 0.831250131 1.385416885" fill="rgb(128,128,128)"> 40 </svg:tspan>
+            </svg:text>
+            <svg:text transform="matrix(16 0 0 16 913.2437 242.6354) scale(1, -1)" xml:space="preserve">
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="0" x="0 0.498023406 1.034048598 1.847086809 2.273106831 2.499117453 3.368158296 4.108193076 4.385206095 4.959233073 5.291248677" fill="rgb(0,0,0)">SECTION B-B</svg:tspan>
+            </svg:text>
+            <svg:text transform="matrix(18 0 0 18 950.2318 147.0948) scale(1, -1)" xml:space="preserve">
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="0" x="0 0.471297672 1.106865072 2.02403772 2.355510564 2.991077964 3.587533524 4.223100924 4.892891184 5.163740676 5.903932248 6.17478174 6.736036644 7.03035324 7.698187908 8.294643468 8.964433728" fill="rgb(0,0,0)">Jemtehed &amp; Brande</svg:tspan>
+            </svg:text>
+            <svg:text transform="matrix(5.664 0 0 5.664 789.4393 33.0694) scale(1, -1)" xml:space="preserve">
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="0" x="0 0.9366048 1.45954248 1.68003486 2.53078422 3.19713951 3.61275789 3.8830074" fill="rgb(0,0,0)">WEIGHT: </svg:tspan>
+            </svg:text>
+            <svg:text transform="matrix(9 0 0 9 798.3326 54.7657) scale(1, -1)" xml:space="preserve">
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="0" x="0 0.897479777 1.564485966 1.895547603 2.530326553 2.824278036 3.019594636 3.686600825 3.881917425 4.152430916 4.744240214 5.339955844 5.979617709 6.310679346 6.581192837 6.960107041 7.626136647 8.260915597 8.892764798 9.088081398 9.39472846 9.59004506 10.22482401 10.893783365" fill="rgb(0,0,0)">Material &lt;not specified&gt;</svg:tspan>
+            </svg:text>
+            <svg:text transform="matrix(11 0 0 11 1136.6924 61.2455) scale(1, -1)" xml:space="preserve">
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="0" x="0 0.73151738" fill="rgb(0,0,0)">A3</svg:tspan>
+            </svg:text>
+            <svg:text transform="matrix(5.6693 0 0 5.6693 1041.3273 32.9259) scale(1, -1)" xml:space="preserve">
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="0" x="0 0.482353836 1.143895342 1.663055294 2.182215246 2.594831178 2.863128392 3.39972282 3.668020034 4.509717792 4.979480062 5.247777276" fill="rgb(0,0,0)">SHEET 1 OF 1</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="0" x="-22.202 -21.720235298 -20.933739911 -20.217864651 -19.770926313 -19.252400449 -18.984430926 -18.44849188 -18.180522357" fill="rgb(0,0,0)">SCALE:1:2</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-5.984" x="-22.202 -21.473465528 -20.533421048 -19.679547312 -19.408305311 -18.683687691 -17.832751594" fill="rgb(0,0,0)">DWG NO.</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-16.689" x="-22.261 -21.848862892 -21.630217384 -21.218080276 -20.77111468 -20.252557192" fill="rgb(0,0,0)">TITLE:</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-24.717" x="4.425 5.014596703 5.535229047 6.217102005 6.436622359 6.920344201 7.139864555 7.983949456" fill="rgb(0,0,0)">REVISION</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-24.816" x="-15.931 -15.201438064 -14.349301878 -14.07767734 -13.35203778 -12.499901594 -12.08216855 -11.810544012 -11.3222082 -10.524985278 -9.799345718 -9.34631129 -8.820712906 -8.549088368 -7.819526432 -7.224305874 -6.498666314 -5.557296074 -5.33568183 -4.61004227" fill="rgb(0,0,0)">DO NOT SCALE DRAWING</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-6.543" x="-44.415 -43.517818898 -42.795387978 -42.37950207 -41.856227782 -41.263639176 -41.043004868 -40.320573948 -39.869542752" fill="rgb(0,0,0)">MATERIAL:</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-16.838" x="-48.631 -47.900081752 -47.173093172 -46.75458353" fill="rgb(0,0,0)">DATE</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-16.831" x="-57.222 -56.736247314 -56.515805332 -55.665250428 -54.943449248 -54.221648068 -53.806124686 -53.167233101 -52.575161052" fill="rgb(0,0,0)">SIGNATURE</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-16.801" x="-65.078 -64.35247218 -63.62694436 -62.725917243" fill="rgb(0,0,0)">NAME</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-25.552" x="-31.585 -30.858339664 -30.33483168 -29.774209324 -29.134474754 -28.541621496 -28.271077258 -27.548323698 -26.825570138 -26.098909802" fill="rgb(0,0,0)">DEBUR AND </svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-24.302" x="-31.585 -31.023374866 -30.429461179 -29.905016803 -29.180970463 -28.602711832 -28.331683675 -27.844420057 -27.176144854 -26.452098514 -25.858184827 -25.278947755" fill="rgb(0,0,0)">BREAK SHARP </svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-23.052" x="-31.585 -31.060927608 -30.33348384 -29.480888456 -28.956816064" fill="rgb(0,0,0)">EDGES</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-25.51" x="-55.054 -54.588757445 -54.371964007 -53.662109387 -53.445315949 -52.967602975 -52.312426346" fill="rgb(0,0,0)">FINISH:</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-25.511" x="-71.943 -71.305808795 -70.585928655 -70.136489973 -69.615063277 -69.130603399 -68.646143521 -68.376674874 -67.531302115 -67.116884629 -66.452454716 -65.93102802 -65.340531743 -64.406633183 -64.186777897 -63.702318019 -63.180891323 -62.911422676 -62.426962798 -61.851058686 -61.32963199 -60.538736647 -60.318881361 -59.847068026 -59.62721274 -59.105786044 -58.38201466" fill="rgb(0,0,0)">UNLESS OTHERWISE SPECIFIED:</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-24.261" x="-71.943 -71.218304568 -70.99816859 -70.103013883 -69.580921475 -68.860122255 -68.375043861 -68.154907883 -67.308455826 -66.587656606 -66.102578212 -65.832765531 -65.111966311 -64.52071614 -63.998623732 -63.728811051 -63.508675073 -62.787875853 -62.518063172 -61.622908465 -61.402772487 -60.952760001 -60.502747515 -60.282611537 -59.38745683 -58.865364422 -58.450417844 -57.928325436 -57.337075265" fill="rgb(0,0,0)">DIMENSIONS ARE IN MILLIMETERS</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-23.011" x="-71.943 -71.459769684 -70.824195674 -70.23519808 -69.76458221 -69.04652913 -68.257641084 -67.737537772 -67.468753038 -66.998137168 -66.778839876 -66.060786796 -65.841489504 -65.358259188 -64.695515602" fill="rgb(0,0,0)">SURFACE FINISH:</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-21.761" x="-71.943 -71.527061694 -70.678586605 -70.227498583 -69.704158367 -69.1114951 -68.38897316 -67.66645122 -66.872653467 -66.349313251 -65.863075513" fill="rgb(0,0,0)">TOLERANCES:</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-20.511" x="-71.943 -71.673214742 -71.403429484 -71.133644226 -70.683677478 -70.463563874 -69.742837914 -69.22079857 -68.50007261 -67.908882532" fill="rgb(0,0,0)">   LINEAR:</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-19.261" x="-71.943 -71.671731407 -71.400462814 -71.129194221 -70.404505561 -69.679816901 -68.825859453 -68.184412058 -67.7319713 -67.00728264 -66.412842077" fill="rgb(0,0,0)">   ANGULAR:</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-6.225" x="-71.905 -71.052612399 -70.781531612" fill="rgb(0,0,0)">Q.A</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-8.417" x="-72.012 -71.110492246 -70.634723736" fill="rgb(0,0,0)">MFG</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-10.582" x="-72.039 -71.3164788 -70.73846184 -70.16044488 -69.47502612 -69.28170288" fill="rgb(0,0,0)">APPV'D</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-12.627" x="-72.035 -71.244218477 -70.579884184 -70.005035623 -69.812446765" fill="rgb(0,0,0)">CHK'D</svg:tspan>
+                <svg:tspan font-family="g_d0_f1" font-size="1px" y="-14.765" x="-72.134 -71.404895624 -70.810048371 -70.084863911 -69.144084071" fill="rgb(0,0,0)">DRAWN</svg:tspan>
+            </svg:text>
+        </svg:g>
+        <svg:g transform="translate(486.3 321)">
+            <svg:path d="M 0 0 L 0 1.1 L -0.1 2.3 L -0.2 3.5 L -0.4 4.6 L -0.7 5.8 L -1 6.9 L -1.4 8 L -1.8 9.1 L -2.3 10.2 L -2.8 11.2 L -3.4 12.2 L -4 13.2 L -4.7 14.2 L -5.4 15.1 L -6.1 16 L -7 16.8 L -7.8 17.6 L -8.7 18.4 L -9.6 19.1 L -10.6 19.8 L -11.6 20.4 L -12.6 21 L -13.6 21.5 L -14.7 22 L -15.8 22.4 L -16.9 22.8 L -18 23.1 L -19.2 23.4 L -20.3 23.6 L -21.5 23.7 L -22.6 23.8 L -23.8 23.8 L -25 23.8 L -26.2 23.7 L -27.3 23.6 L -28.5 23.4 L -29.6 23.1 L -30.7 22.8 L -31.9 22.4 L -33 22 L -34 21.5 L -35.1 21 L -36.1 20.4 L -37.1 19.8 L -38 19.1 L -39 18.4 L -39.8 17.6 L -40.7 16.8 L -41.5 16 L -42.3 15.1 L -43 14.2 L -43.7 13.2 L -44.3 12.2 L -44.9 11.2 L -45.4 10.2 L -45.9 9.1 L -46.3 8 L -46.7 6.9 L -47 5.8 L -47.2 4.6 L -47.4 3.5 L -47.6 2.3 L -47.6 1.1 L -47.7 0 L -47.6 -1.2 L -47.6 -2.4 L -47.4 -3.5 L -47.2 -4.7 L -47 -5.8 L -46.7 -7 L -46.3 -8.1 L -45.9 -9.2 L -45.4 -10.2 L -44.9 -11.3 L -44.3 -12.3 L -43.7 -13.3 L -43 -14.3 L -42.3 -15.2 L -41.5 -16.1 L -40.7 -16.9 L -39.8 -17.7 L -39 -18.5 L -38 -19.2 L -37.1 -19.9 L -36.1 -20.5 L -35.1 -21.1 L -34 -21.6 L -33 -22.1 L -31.9 -22.5 L -30.7 -22.9 L -29.6 -23.2 L -28.5 -23.4 L -27.3 -23.6 L -26.2 -23.8 L -25 -23.9 L -23.8 -23.9 L -22.6 -23.9 L -21.5 -23.8 L -20.3 -23.6 L -19.2 -23.4 L -18 -23.2 L -16.9 -22.9 L -15.8 -22.5 L -14.7 -22.1 L -13.6 -21.6 L -12.6 -21.1 L -11.6 -20.5 L -10.6 -19.9 L -9.6 -19.2 L -8.7 -18.5 L -7.8 -17.7 L -7 -16.9 L -6.1 -16.1 L -5.4 -15.2 L -4.7 -14.3 L -4 -13.3 L -3.4 -12.3 L -2.8 -11.3 L -2.3 -10.2 L -1.8 -9.2 L -1.4 -8.1 L -1 -7 L -0.7 -5.8 L -0.4 -4.7 L -0.2 -3.5 L -0.1 -2.4 L 0 -1.2 L 0 0" stroke-miterlimit="0" stroke-linecap="" stroke-linejoin="" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(0,0,0)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(545 722.2)">
+            <svg:path d="M 0 0 L 17 4.2 L 17 -4.3 L 0 0 M 0 -460 L 17 -455.8 L 17 -464.3 L 0 -460" stroke-miterlimit="0" stroke-linecap="" stroke-linejoin="" stroke-width="0.992px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(0,0,0)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(284.4 212.8)">
+            <svg:path d="M 0 0 L 8.9 3.4 L 7.4 5.9 L 0 0" stroke-miterlimit="0" stroke-linecap="" stroke-linejoin="" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(128,128,128)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(468.4 740.7)">
+            <svg:path d="M 0 0 L 8.6 4 L 9.4 1.2 L 0 0 M -69.8 -33.6 L -76.6 -40.2 L -78.3 -37.9 L -69.8 -33.6 M 0 0 L -3.7 -1.2 L -7.4 -2.4 L -11.1 -3.7 L -14.7 -5 L -18.4 -6.4 L -22 -7.9 L -25.6 -9.4 L -29.1 -10.9 L -32.7 -12.5 L -36.2 -14.2 L -39.7 -15.9 L -43.1 -17.7 L -46.6 -19.5 L -50 -21.4 L -53.4 -23.3 L -56.7 -25.2 L -60 -27.3 L -63.3 -29.3 L -66.6 -31.4 L -69.8 -33.6 M 17.3 4.7 L 15.2 4.2 L 13 3.6 L 10.8 3.1 L 8.6 2.5 L 6.5 1.9 L 4.3 1.3 L 2.1 0.7 L 0 0 M -69.8 -33.6 L -71.7 -34.9 L -73.5 -36.2 L -75.4 -37.5 L -77.2 -38.8 L -79 -40.1 L -80.8 -41.5 L -82.6 -42.9 L -84.3 -44.3" stroke-miterlimit="0" stroke-linecap="" stroke-linejoin="" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(128,128,128)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(559.7 492.3)">
+            <svg:path d="M 0 0 L -1.5 -0.4 L -1.5 0.4 L 0 0 M -14.7 29.4 L -14.3 27.9 L -15.1 27.9 L -14.7 29.4" stroke-miterlimit="0" stroke-linecap="" stroke-linejoin="" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(0,0,255)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(960.1 492.3)">
+            <svg:path d="M 0 0 L 0 -0.4 L 0 0.4 L 0 0 M 0 29.4 L 0 27.9 L 0 29.4 M 0 0 L 0 -0.4 L 0 0.4 L 0 0 M 0 29.4 L 0 27.9 L 0 29.4" stroke-miterlimit="0" stroke-linecap="" stroke-linejoin="" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(0,0,255)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(495.8 676)">
+            <svg:path d="M 0 0 L -3.2 -0.9 L -6.4 -1.8 L -9.6 -2.8 L -12.7 -3.9 L -15.9 -5 L -19 -6.1 L -22.1 -7.4 L -25.1 -8.6 L -28.2 -9.9 L -31.2 -11.3 L -34.2 -12.8 L -37.2 -14.2 L -40.1 -15.8 L -43 -17.4 L -45.9 -19 L -48.8 -20.7 L -51.6 -22.4 L -54.4 -24.2 L -57.2 -26 L -59.9 -27.9 L -62.6 -29.8 L -65.3 -31.8 L -67.9 -33.8 L -70.5 -35.9 L -73.1 -38 L -75.6 -40.2 L -78.1 -42.4 L -80.5 -44.6 L -82.9 -46.9 L -85.3 -49.2 L -87.6 -51.6 L -89.9 -54 L -92.2 -56.4 L -94.4 -58.9 L -96.5 -61.5 L -98.6 -64 L -100.7 -66.6 L -102.7 -69.2 L -104.7 -71.9 L -106.6 -74.6 L -108.5 -77.4 L -110.3 -80.1 L -112.1 -82.9 L -113.8 -85.8 L -115.5 -88.6 L -117.2 -91.5 L -118.7 -94.4 L -120.3 -97.4 L -121.8 -100.3 L -123.2 -103.3 L -124.6 -106.4 L -125.9 -109.4 L -127.2 -112.5 L -128.4 -115.6 L -129.5 -118.7 L -130.6 -121.8 L -131.7 -124.9 L -132.7 -128.1 L -133.6 -131.3 L -134.5 -134.5 L -135.3 -137.7 L -136.1 -140.9 L -136.8 -144.2 L -137.5 -147.4 L -138.1 -150.7 L -138.7 -154 L -139.1 -157.2 M 237.1 -212.9 L 228.1 -210.1 L 227.7 -212.9 L 237.1 -212.9 M -138.7 -154.4 L -129.7 -157.3 L -129.3 -154.5 L -138.7 -154.4" stroke-miterlimit="0" stroke-linecap="" stroke-linejoin="" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(128,128,128)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(931.8 724.1)">
+            <svg:path d="M 0 0 L -9.4 -1.5 L -9.4 1.4 L 0 0 M 56.7 0 L 66 1.4 L 66 -1.5 L 56.7 0" stroke-miterlimit="0" stroke-linecap="" stroke-linejoin="" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(128,128,128)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(606.1 450.7)">
+            <svg:path d="M 0 0 L 4.1 8.5 L 6.5 6.9 L 0 0 M 107.1 157.1 L 103.1 148.6 L 100.7 150.2 L 107.1 157.1" stroke-miterlimit="0" stroke-linecap="" stroke-linejoin="" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(128,128,128)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(903.4 506.5)">
+            <svg:path d="M 0 0 L -1.4 9.3 L 1.5 9.3 L 0 0 M 0 -28.4 L 1.5 -37.7 L -1.4 -37.7 L 0 -28.4" stroke-miterlimit="0" stroke-linecap="" stroke-linejoin="" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(128,128,128)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(544 493.3)">
+            <svg:path d="M 0 0 L 2 -2 M 0 -2 L 2 0 M 1 -2.4 L 1 0.4 M 2.4 -1 L -0.4 -1" stroke-miterlimit="0" stroke-linecap="" stroke-linejoin="" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(128,128,128)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(959.1 493.3)">
+            <svg:path d="M 0 0 L 2 -2 M 0 -2 L 2 0 M 1 -2.4 L 1 0.4 M 2.4 -1 L -0.4 -1 M 0 0 L 2 -2 M 0 -2 L 2 0 M 1 -2.4 L 1 0.4 M 2.4 -1 L -0.4 -1" stroke-miterlimit="0" stroke-linecap="" stroke-linejoin="" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(128,128,128)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(545.0502 499.451)">
+            <svg:path d="M 0 0 L 0 10.63" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="43.2 3.6 3.6 3.6" stroke-dashoffset="0px" fill="none" stroke="rgb(0,0,0)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(537.9636 492.3644)">
+            <svg:path d="M 0 0 L -10.63 0" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="43.2 3.6 3.6 3.6" stroke-dashoffset="0px" fill="none" stroke="rgb(0,0,0)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(545.0502 485.2778)">
+            <svg:path d="M 0 0 L 0 -10.63" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="43.2 3.6 3.6 3.6" stroke-dashoffset="0px" fill="none" stroke="rgb(0,0,0)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(552.1368 492.3644)">
+            <svg:path d="M 0 0 L 10.63 0" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="43.2 3.6 3.6 3.6" stroke-dashoffset="0px" fill="none" stroke="rgb(0,0,0)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(545 492.3)">
+            <svg:path d="M 0 0 L 0 3.6 M 0 0 L -3.5 0 M 0 0 L 0 -3.5 M 0 0 L 3.5 0" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(0,0,0)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(579 722.2)">
+            <svg:path d="M 0 0 L -34 0 M 0 -460 L -34 -460" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.992px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(0,0,0)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(545.0502 727.9111)">
+            <svg:path d="M 0 0 L 0 -471.352" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.992px" stroke-dasharray="18 3.6 3.6 3.6 3.6 3.6" stroke-dashoffset="7.324px" fill="none" stroke="rgb(0,0,0)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(284.4 212.8)">
+            <svg:path d="M 0 0 L -79.5 -46.1 M 0 0 L 15.6 9" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(128,128,128)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(488.1 676.8)">
+            <svg:path d="M 0 0 L -20.6 66.6 M -51.8 -25 L -91.1 32.6" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(128,128,128)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(488.9905 674.1055)">
+            <svg:path d="M 0 0 L 56.06 -181.741" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="43.2 3.6 3.6 3.6" stroke-dashoffset="7.505px" fill="none" stroke="rgb(192,192,192)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(437.9119 649.5073)">
+            <svg:path d="M 0 0 L 107.138 -157.143" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="43.2 3.6 3.6 3.6" stroke-dashoffset="7.505px" fill="none" stroke="rgb(192,192,192)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(71 28.9)">
+            <svg:path d="M 0 0 L 0 785.2 M -70.8 -28.3 L 1119.7 -28.3 M -70.8 -28.3 L -70.8 813.5 M -70.8 813.5 L 1119.7 813.5 M 1119.7 -28.3 L 1119.7 813.5 M 0 785.2 L 1091.4 785.2 M 0 0 L 1091.4 0 M 1091.4 785.2 L 1091.4 0 M 560.7 12.1 L 1091.4 12.1 M 1091.4 108.4 L 560.7 108.4 M 560.7 156.6 L 1091.4 156.6 M 637.2 108.4 L 637.2 0 M 840.8 60.2 L 560.7 60.2 M 840.8 72.3 L 560.7 72.3 M 840.8 84.3 L 560.7 84.3 M 840.8 96.4 L 560.7 96.4 M 715.5 0 L 715.5 108.4 M 560.7 156.6 L 560.7 0 M 582.8 108.4 L 582.8 0 M 656.5 108.4 L 656.5 156.6 M 686.6 108.4 L 686.6 0 M 745 60.2 L 745 108.4 M 715.5 24.1 L 560.7 24.1 M 789.2 156.6 L 789.2 48.2 M 715.5 36.1 L 560.7 36.1 M 715.5 48.2 L 560.7 48.2 M 715.5 48.2 L 1091.4 48.2 M 840.8 156.6 L 840.8 0 M 966.1 0 L 966.1 12.1 M 988.2 138.5 L 988.2 156.6 M 1054.5 12.1 L 1054.5 48.2 M 1091.4 138.5 L 840.8 138.5 M 1091.4 24.1 L 1054.5 24.1" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.417px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(192,192,192)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(545 492.3)">
+            <svg:path d="M 0 0 L 14.7 0 M 0 0 L 0 29.4" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(0,0,255)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(960.1 492.3)">
+            <svg:path d="M 0 0 L 0 0 M 0 0 L 0 0" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(0,0,255)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(960.1 492.3)">
+            <svg:path d="M 0 0 L 0 29.4 M 0 0 L 0 29.4" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(0,0,255)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(357.1 521.6)">
+            <svg:path d="M 0 0 L -92.5 14.3 M 0 0 L 375.8 -58.5" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(128,128,128)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(931.8 685.1)">
+            <svg:path d="M 0 0 L 0 41.8 M 56.7 0 L 56.7 41.8 M 0 39 L -18 39 M 0 39 L 56.7 39 M 56.7 39 L 74.7 39" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(128,128,128)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(547.3 490.7)">
+            <svg:path d="M 0 0 L 61.1 -41.6 M 107.2 157.2 L 168.3 115.5 M 58.8 -40 L 165.9 117.1" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(128,128,128)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(928.9 506.5)">
+            <svg:path d="M 0 0 L -28.3 0 M 0 -28.4 L -28.3 -28.4 M -25.5 0 L -25.5 18 M -25.5 0 L -25.5 -28.4 M -25.5 -28.4 L -25.5 -46.4" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(128,128,128)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(545 722.2)">
+            <svg:path d="M 0 0 L 17 4.2 L 17 -4.3 M 0 -460 L 17 -455.8 L 17 -464.3" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="rgb(0,0,0)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(284.4 212.8)">
+            <svg:path d="M 0 0 L 8.9 3.4 L 7.4 5.9" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="rgb(128,128,128)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(468.4 740.7)">
+            <svg:path d="M 0 0 L 8.6 4 L 9.4 1.2 M -69.8 -33.6 L -76.6 -40.2 L -78.3 -37.9" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="rgb(128,128,128)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(559.7 492.3)">
+            <svg:path d="M 0 0 L -1.5 -0.4 L -1.5 0.4 M -14.7 29.4 L -14.3 27.9 L -15.1 27.9" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="rgb(0,0,255)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(960.1 492.3)">
+            <svg:path d="M 0 0 L 0 -0.4 L 0 0.4 M 0 29.4 L 0 27.9 M 0 0 L 0 -0.4 L 0 0.4 M 0 29.4 L 0 27.9" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="rgb(0,0,255)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(732.9 463.1)">
+            <svg:path d="M 0 0 L -9 2.8 L -9.4 0 M -375.8 58.5 L -366.8 55.6 L -366.4 58.4" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="rgb(128,128,128)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(931.8 724.1)">
+            <svg:path d="M 0 0 L -9.4 -1.5 L -9.4 1.4 M 56.7 0 L 66 1.4 L 66 -1.5" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="rgb(128,128,128)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(606.1 450.7)">
+            <svg:path d="M 0 0 L 4.1 8.5 L 6.5 6.9 M 107.1 157.1 L 103.1 148.6 L 100.7 150.2" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="rgb(128,128,128)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(903.4 506.5)">
+            <svg:path d="M 0 0 L -1.4 9.3 L 1.5 9.3 M 0 -28.4 L 1.5 -37.7 L -1.4 -37.7" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="rgb(128,128,128)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(559.2 492.3)">
+            <svg:path d="M 0 0 L -0.2 2.3 L -0.8 4.6 L -1.7 6.8 L -3 8.7 L -4.6 10.4 L -6.4 11.9 L -8.5 13 L -10.7 13.8 L -13 14.1 L -15.4 14.1 L -17.7 13.8 L -19.9 13 L -22 11.9 L -23.8 10.4 L -25.4 8.7 L -26.7 6.8 L -27.6 4.6 L -28.2 2.3 L -28.4 0 L -28.2 -2.3 L -27.6 -4.6 L -26.7 -6.7 L -25.4 -8.7 L -23.8 -10.4 L -22 -11.9 L -19.9 -13 L -17.7 -13.7 L -15.4 -14.1 L -13 -14.1 L -10.7 -13.7 L -8.5 -13 L -6.4 -11.9 L -4.6 -10.4 L -3 -8.7 L -1.7 -6.7 L -0.8 -4.6 L -0.2 -2.3 L 0 0 M 101 151.4 L 99.6 149.8 L 98 148.6 L 96.1 147.8 L 94.2 147.3 L 92.1 147.3 L 90.1 147.6 L 88.2 148.4 L 86.5 149.6 L 85.1 151 L 84 152.8 L 83.3 154.7 L 83 156.7 L 83.1 158.7 L 83.7 160.7 L 84.6 162.5 M 128.1 126.2 L 125 129.6 L 121.8 133 L 118.5 136.2 L 115.2 139.4 L 111.7 142.5 L 108.2 145.6 L 104.6 148.5 L 101 151.4 M 140.5 110.7 L 138.7 109.6 L 136.8 108.9 L 134.8 108.7 L 132.8 108.8 L 130.8 109.4 L 129 110.3 L 127.4 111.6 L 126.1 113.2 L 125.2 115.1 L 124.7 117 L 124.6 119.1 L 124.9 121.1 L 125.6 123 L 126.7 124.7 L 128.1 126.2 M 159 78.6 L 157 82.8 L 154.9 87 L 152.8 91.1 L 150.5 95.1 L 148.1 99.1 L 145.7 103 L 143.1 106.9 L 140.5 110.7 M 166.2 60.2 L 164.2 59.7 L 162.2 59.6 L 160.2 59.9 L 158.3 60.7 L 156.6 61.8 L 155.1 63.2 L 154 64.9 L 153.3 66.8 L 152.9 68.9 L 153 70.9 L 153.5 72.9 L 154.4 74.7 L 155.6 76.3 L 157.2 77.7 L 159 78.6 M 174.5 24.1 L 173.8 28.7 L 173.1 33.3 L 172.2 37.8 L 171.2 42.3 L 170.1 46.8 L 168.9 51.3 L 167.6 55.8 L 166.2 60.2 M 175.9 4.3 L 173.9 4.4 L 171.9 5 L 170.1 5.9 L 168.5 7.1 L 167.2 8.7 L 166.3 10.5 L 165.7 12.5 L 165.5 14.5 L 165.8 16.5 L 166.5 18.5 L 167.5 20.2 L 168.9 21.7 L 170.6 22.9 L 172.5 23.7 L 174.5 24.1 M 173.2 -32.6 L 173.9 -28 L 174.5 -23.4 L 175.1 -18.8 L 175.5 -14.2 L 175.7 -9.6 L 175.9 -4.9 L 176 -0.3 L 175.9 4.3 M 168.8 -51.9 L 166.8 -51.2 L 165.1 -50.1 L 163.6 -48.7 L 162.5 -47 L 161.7 -45.1 L 161.3 -43.1 L 161.4 -41.1 L 161.8 -39.1 L 162.7 -37.3 L 163.9 -35.6 L 165.4 -34.3 L 167.2 -33.2 L 169.1 -32.6 L 171.1 -32.4 L 173.2 -32.6 M 155.2 -86.4 L 157.3 -82.2 L 159.3 -78 L 161.1 -73.8 L 162.8 -69.5 L 164.5 -65.1 L 166 -60.8 L 167.4 -56.4 L 168.8 -51.9 M 145.3 -103.5 L 143.7 -102.3 L 142.4 -100.8 L 141.4 -99 L 140.8 -97 L 140.6 -95 L 140.8 -93 L 141.5 -91 L 142.5 -89.3 L 143.8 -87.7 L 145.5 -86.5 L 147.3 -85.7 L 149.3 -85.2 L 151.4 -85.2 L 153.4 -85.6 L 155.2 -86.4 M 122.3 -132.5 L 125.4 -129.1 L 128.5 -125.7 L 131.6 -122.2 L 134.5 -118.6 L 137.3 -114.9 L 140.1 -111.2 L 142.8 -107.4 L 145.3 -103.5 M 107.7 -146 L 106.5 -144.3 L 105.7 -142.4 L 105.3 -140.4 L 105.3 -138.4 L 105.7 -136.4 L 106.5 -134.5 L 107.7 -132.9 L 109.2 -131.5 L 110.9 -130.4 L 112.9 -129.8 L 114.9 -129.5 L 116.9 -129.6 L 118.9 -130.2 L 120.7 -131.2 L 122.3 -132.5 M 77.1 -166.8 L 81.2 -164.5 L 85.2 -162.2 L 89.1 -159.7 L 92.9 -157.1 L 96.7 -154.5 L 100.5 -151.7 L 104.1 -148.9 L 107.7 -146 M 59.3 -175.4 L 58.6 -173.5 L 58.4 -171.4 L 58.6 -169.4 L 59.2 -167.5 L 60.2 -165.7 L 61.5 -164.1 L 63.1 -162.9 L 65 -162 L 66.9 -161.5 L 69 -161.4 L 71 -161.8 L 72.9 -162.5 L 74.6 -163.7 L 76 -165.1 L 77.1 -166.8 M 23.9 -186.3 L 28.4 -185.3 L 32.9 -184.2 L 37.4 -183 L 41.9 -181.7 L 46.3 -180.3 L 50.6 -178.8 L 55 -177.1 L 59.3 -175.4 M 4.3 -189.3 L 4.3 -187.2 L 4.6 -185.2 L 5.4 -183.3 L 6.6 -181.7 L 8 -180.2 L 9.8 -179.2 L 11.7 -178.4 L 13.7 -178.1 L 15.7 -178.3 L 17.7 -178.8 L 19.5 -179.7 L 21.1 -181 L 22.4 -182.6 L 23.4 -184.4 L 23.9 -186.3 M -32.7 -189.3 L -28.1 -189.7 L -23.5 -190 L -18.8 -190.1 L -14.2 -190.2 L -9.6 -190.1 L -4.9 -190 L -0.3 -189.7 L 4.3 -189.3 M -52.3 -186.3 L -51.8 -184.4 L -50.8 -182.6 L -49.5 -181 L -47.9 -179.7 L -46.1 -178.8 L -44.1 -178.3 L -42.1 -178.1 L -40.1 -178.4 L -38.2 -179.2 L -36.4 -180.2 L -35 -181.7 L -33.8 -183.3 L -33 -185.2 L -32.7 -187.2 L -32.7 -189.3 M -87.7 -175.4 L -83.4 -177.1 L -79 -178.8 L -74.7 -180.3 L -70.3 -181.7 L -65.8 -183 L -61.3 -184.2 L -56.8 -185.3 L -52.3 -186.3 M -105.5 -166.8 L -104.4 -165.1 L -103 -163.7 L -101.3 -162.5 L -99.4 -161.8 L -97.4 -161.4 L -95.3 -161.5 L -93.4 -162 L -91.5 -162.9 L -89.9 -164.1 L -88.6 -165.7 L -87.6 -167.5 L -87 -169.4 L -86.8 -171.4 L -87 -173.5 L -87.7 -175.4 M -136.1 -146 L -132.5 -148.9 L -128.9 -151.7 L -125.1 -154.5 L -121.3 -157.1 L -117.5 -159.7 L -113.6 -162.2 L -109.6 -164.5 L -105.5 -166.8 M -150.7 -132.5 L -149.1 -131.2 L -147.3 -130.2 L -145.3 -129.6 L -143.3 -129.5 L -141.3 -129.8 L -139.3 -130.4 L -137.6 -131.5 L -136.1 -132.9 L -134.9 -134.5 L -134.1 -136.4 L -133.7 -138.4 L -133.7 -140.4 L -134.1 -142.4 L -134.9 -144.3 L -136.1 -146 M -173.7 -103.5 L -171.2 -107.4 L -168.5 -111.2 L -165.7 -114.9 L -162.9 -118.6 L -160 -122.2 L -156.9 -125.7 L -153.8 -129.1 L -150.7 -132.5 M -183.6 -86.4 L -181.8 -85.6 L -179.8 -85.2 L -177.7 -85.2 L -175.7 -85.7 L -173.9 -86.5 L -172.2 -87.7 L -170.9 -89.3 L -169.9 -91 L -169.2 -93 L -169 -95 L -169.2 -97 L -169.8 -99 L -170.8 -100.8 L -172.1 -102.3 L -173.7 -103.5 M -197.2 -51.9 L -195.8 -56.4 L -194.4 -60.8 L -192.9 -65.1 L -191.2 -69.5 L -189.5 -73.8 L -187.6 -78 L -185.7 -82.2 L -183.6 -86.4 M -201.6 -32.6 L -199.5 -32.4 L -197.5 -32.6 L -195.6 -33.2 L -193.8 -34.3 L -192.3 -35.6 L -191.1 -37.3 L -190.2 -39.1 L -189.8 -41.1 L -189.7 -43.1 L -190.1 -45.1 L -190.9 -47 L -192 -48.7 L -193.5 -50.1 L -195.2 -51.2 L -197.2 -51.9 M -204.3 4.3 L -204.4 -0.3 L -204.3 -4.9 L -204.1 -9.6 L -203.9 -14.2 L -203.5 -18.8 L -202.9 -23.4 L -202.3 -28 L -201.6 -32.6 M -202.9 24.1 L -200.9 23.7 L -199 22.9 L -197.3 21.7 L -195.9 20.2 L -194.9 18.5 L -194.2 16.5 L -193.9 14.5 L -194.1 12.5 L -194.7 10.5 L -195.6 8.7 L -196.9 7.1 L -198.5 5.9 L -200.3 5 L -202.3 4.4 L -204.3 4.3 M -194.6 60.2 L -196 55.8 L -197.3 51.3 L -198.5 46.8 L -199.6 42.3 L -200.6 37.8 L -201.5 33.3 L -202.2 28.7 L -202.9 24.1 M -187.4 78.6 L -185.6 77.7 L -184 76.3 L -182.8 74.7 L -181.9 72.9 L -181.4 70.9 L -181.3 68.9 L -181.7 66.8 L -182.4 64.9 L -183.5 63.2 L -185 61.8 L -186.7 60.7 L -188.6 59.9 L -190.6 59.6 L -192.6 59.7 L -194.6 60.2 M -168.9 110.7 L -171.5 106.9 L -174.1 103 L -176.5 99.1 L -178.9 95.1 L -181.2 91.1 L -183.3 87 L -185.4 82.8 L -187.4 78.6 M -156.5 126.2 L -155.1 124.7 L -154 123 L -153.3 121.1 L -153 119.1 L -153.1 117 L -153.6 115.1 L -154.5 113.2 L -155.8 111.6 L -157.4 110.3 L -159.2 109.4 L -161.2 108.8 L -163.2 108.7 L -165.2 108.9 L -167.1 109.6 L -168.9 110.7 M -129.4 151.4 L -133 148.5 L -136.6 145.6 L -140.1 142.5 L -143.6 139.4 L -146.9 136.2 L -150.2 133 L -153.4 129.6 L -156.5 126.2 M -113 162.5 L -112.1 160.7 L -111.5 158.7 L -111.4 156.7 L -111.7 154.7 L -112.4 152.8 L -113.5 151 L -114.9 149.6 L -116.6 148.4 L -118.5 147.6 L -120.5 147.3 L -122.6 147.3 L -124.5 147.8 L -126.4 148.6 L -128 149.8 L -129.4 151.4 M -79.7 178.6 L -84 176.9 L -88.3 175.2 L -92.5 173.3 L -96.7 171.4 L -100.9 169.3 L -105 167.1 L -109 164.9 L -113 162.5 M -60.7 184.4 L -60.4 182.4 L -60.4 180.4 L -60.9 178.4 L -61.8 176.6 L -63 174.9 L -64.6 173.6 L -66.4 172.6 L -68.3 172 L -70.4 171.8 L -72.4 172.1 L -74.3 172.7 L -76.1 173.7 L -77.6 175.1 L -78.8 176.7 L -79.7 178.6 M -24.1 189.9 L -28.7 189.6 L -33.4 189.2 L -38 188.7 L -42.5 188.1 L -47.1 187.3 L -51.7 186.5 L -56.2 185.5 L -60.7 184.4 M -4.3 189.9 L -4.5 187.9 L -5.2 186 L -6.3 184.2 L -7.7 182.8 L -9.3 181.6 L -11.2 180.8 L -13.2 180.3 L -15.2 180.3 L -17.2 180.8 L -19.1 181.6 L -20.7 182.8 L -22.1 184.2 L -23.2 186 L -23.9 187.9 L -24.1 189.9 M 32.3 184.4 L 27.8 185.5 L 23.3 186.5 L 18.7 187.3 L 14.1 188.1 L 9.6 188.7 L 5 189.2 L 0.3 189.6 L -4.3 189.9 M 51.3 178.6 L 50.4 176.7 L 49.2 175.1 L 47.7 173.7 L 45.9 172.7 L 44 172.1 L 42 171.8 L 39.9 172 L 38 172.6 L 36.2 173.6 L 34.6 174.9 L 33.4 176.6 L 32.5 178.4 L 32 180.4 L 32 182.4 L 32.3 184.4 M 84.6 162.5 L 80.6 164.9 L 76.6 167.1 L 72.5 169.3 L 68.3 171.4 L 64.1 173.3 L 59.9 175.2 L 55.6 176.9 L 51.3 178.6" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.709px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(0,0,0)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(933.2 478.1)">
+            <svg:path d="M 0 0 L -1.4 -1.4 M 12.7 0 L -1.4 -14.1 M 25.5 0 L -1.4 -26.9 M 38.2 0 L -1.4 -39.6 M 50.9 0 L -1.4 -52.3 M 55.3 -8.4 L -1.4 -65 M 55.3 -21.1 L -1.4 -77.8 M 55.3 -33.8 L -1.4 -90.5 M 55.3 -46.5 L -1.4 -103.2 M 55.3 -59.3 L -1.4 -116 M 55.3 -72 L -1.4 -128.7 M 55.3 -84.7 L -1.4 -141.4 M 55.3 -97.4 L -1.4 -154.1 M 55.3 -110.2 L -1.4 -166.9 M 55.3 -122.9 L 2.2 -176 M 55.3 -135.6 L 14.9 -176 M 55.3 -148.4 L 27.6 -176 M 55.3 -161.1 L 40.4 -176 M 55.3 -173.8 L 53.1 -176 M 3.5 194.5 L -1.4 189.5 M 16.3 194.5 L -1.4 176.8 M 29 194.5 L -1.4 164.1 M 41.7 194.5 L -1.4 151.3 M 54.5 194.5 L -1.4 138.6 M 55.3 182.6 L -1.4 125.9 M 55.3 169.8 L -1.4 113.1 M 55.3 157.1 L -1.4 100.4 M 55.3 144.4 L -1.4 87.7 M 55.3 131.7 L -1.4 75 M 55.3 118.9 L -1.4 62.2 M 55.3 106.2 L -1.4 49.5 M 55.3 93.5 L -1.4 36.8 M 55.3 80.7 L 2.9 28.4 M 55.3 68 L 15.6 28.4 M 55.3 55.3 L 28.4 28.4 M 55.3 42.6 L 41.1 28.4 M 55.3 29.8 L 53.8 28.4" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.51px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(0,0,0)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+        <svg:g transform="translate(931.8 672.6)">
+            <svg:path d="M 0 0 L 0 0.2 L 0 0.7 L 0 1.6 L 0 2.8 L 0 4.3 L 0 5.9 L 0 7.7 L 0 9.6 M 0 9.6 L 56.7 9.6 M 56.7 0 L 56.7 0.2 L 56.7 0.7 L 56.7 1.6 L 56.7 2.8 L 56.7 4.3 L 56.7 5.9 L 56.7 7.7 L 56.7 9.6 M 56.7 0 L 0 0 M 0 -370.5 L 56.7 -370.5 M 56.7 -194.5 L 0 -194.5 M 0 -166.1 L 0 -166.3 L 0 -166.7 L 0 -167.5 L 0 -168.6 L 0 -169.9 L 0 -171.4 L 0 -173.2 L 0 -175.1 L 0 -177.1 L 0 -179.2 L 0 -181.3 L 0 -183.4 L 0 -185.5 L 0 -187.4 L 0 -189.1 L 0 -190.7 L 0 -192 L 0 -193.1 L 0 -193.8 L 0 -194.3 L 0 -194.5 M 0 -166.1 L 56.7 -166.1 M 56.7 -166.1 L 56.7 -166.3 L 56.7 -166.7 L 56.7 -167.5 L 56.7 -168.6 L 56.7 -169.9 L 56.7 -171.4 L 56.7 -173.2 L 56.7 -175.1 L 56.7 -177.1 L 56.7 -179.2 L 56.7 -181.3 L 56.7 -183.4 L 56.7 -185.5 L 56.7 -187.4 L 56.7 -189.1 L 56.7 -190.7 L 56.7 -192 L 56.7 -193.1 L 56.7 -193.8 L 56.7 -194.3 L 56.7 -194.5 M 0 -370.5 L 0 -194.5 M 56.7 -370.5 L 56.7 -194.5 M 0 -166.1 L 0 0 M 56.7 -166.1 L 56.7 0" stroke-miterlimit="0" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.709px" stroke-dasharray="" stroke-dashoffset="0px" fill="none" stroke="rgb(0,0,0)"></svg:path>
+        </svg:g>
+        <svg:g transform=""></svg:g>
+    </svg:g>
+</svg:svg>

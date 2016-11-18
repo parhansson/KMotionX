@@ -11,10 +11,10 @@
 #include "utils.h"
 
 //Emits json resonse
-#define EMIT_RESPONSE_PARAM(fmt,...) w += json_emit(gp_response+w, MAX_LINE-w, fmt, ##__VA_ARGS__);
-#define EMIT_RESPONSE(fmt, ...) int w = 0; w = json_emit(gp_response+w, MAX_LINE, "{ s: s, s: s, s: ", "api", object,"func",func, "params"); \
+#define EMIT_RESPONSE_PARAM(fmt,...) w += json_emit(gp_response+w, MAX_RESPONSE-w, fmt, ##__VA_ARGS__);
+#define EMIT_RESPONSE(fmt, ...) int w = 0; w = json_emit(gp_response+w, MAX_RESPONSE, "{ s: s, s: s, s: ", "api", object,"func",func, "params"); \
     EMIT_RESPONSE_PARAM(fmt,##__VA_ARGS__)  \
-    w += json_emit(gp_response+w, MAX_LINE-w, ", s: i }", "ret",ret);
+    w += json_emit(gp_response+w, MAX_RESPONSE-w, ", s: i }", "ret",ret);
 
 //Check function signature
 #define FUNC_SIGP(name, nr_of_params) !strcmp(name,func) && params == nr_of_params
@@ -40,6 +40,7 @@ WebController::~WebController() {
 int WebController::Setup(){
   log_info("Initialize");
   char fileName[256];
+  char absolute_path[256];
   absolutePath("settings/setup.cnf", fileName);
   MappedFile mmFile;
   if(mmapNamedFile(mmFile, fileName)){
@@ -50,8 +51,13 @@ int WebController::Setup(){
   json_token *setup = NULL;
   setup = parse_json2(mmFile.addr, mmFile.filesize);
 
-  json_str(setup,"machine",settings_file_);
-  json_str(setup,"gcodefile",current_gcode_file_);
+  json_str(setup,"machine",fileName);
+  absolutePath(fileName, absolute_path);
+  settings_file->SetFile(absolute_path);
+
+  json_str(setup,"gcodefile",fileName);
+  absolutePath(fileName, absolute_path);
+  current_gcode_file->SetFile(absolute_path);
 
   free(setup);
   unmapFile(mmFile);
@@ -78,8 +84,8 @@ void WebController::PrintInfo(){
   fprintf(stdout, "Websockets   :%d\n", websockets);
   fprintf(stdout, "Connections  :%d\n", connections);
   fprintf(stdout, "State        :%s\n", this->interpreting ? "Interpreting" : "Stopped");
-  fprintf(stdout, "Config       :%s\n", this->settings_file_);
-  fprintf(stdout, "File         :%s\n", this->current_gcode_file_);
+  fprintf(stdout, "Config       :%s (%d)\n", this->settings_file->path, this->settings_file->timestamp);
+  fprintf(stdout, "File         :%s (%d)\n", this->current_gcode_file->path, this->current_gcode_file->timestamp);
   fprintf(stdout, "Line         :%d\n", this->currentLine);
   fprintf(stdout, "FeedHold     :%d\n", this->main_status.StopImmediateState);
   fprintf(stdout, "Simulating   :%d\n", this->simulate);
@@ -91,10 +97,10 @@ void WebController::PrintInfo(){
 void WebController::UpdateClient() {
 
   CCoordMotion *CM = Interpreter->CoordMotion;
-  int current_file_len = strlen(current_gcode_file_);
-  int current_machine_len = strlen(settings_file_);
+  int current_file_len = strlen(current_gcode_file->path);
+  int current_machine_len = strlen(settings_file->path);
   //copy struct and avoid padding wich may differ on platforms
-  size_t size = 456 + 6*8 + 4*4 + current_file_len+4 +current_machine_len+4;//sizeof(main_status);
+  size_t size = 456 + 6*8 + 4*4 + current_file_len+4 +current_machine_len+4 + 8;//sizeof(main_status);
   char * msg = (char*)malloc(size);
   char * msgPtr = msg;
   //client does not expect sizeof(int) but exaclyt 4 bytes for an int
@@ -182,9 +188,12 @@ void WebController::UpdateClient() {
   MEMCPY(msgPtr, &currentLine, 4);
 
   MEMCPY(msgPtr, &current_file_len, 4);
-  MEMCPY(msgPtr, &current_gcode_file_, current_file_len);
+  MEMCPY(msgPtr, current_gcode_file->path, current_file_len);
+  MEMCPY(msgPtr, &current_gcode_file->timestamp, 4);
+
   MEMCPY(msgPtr, &current_machine_len, 4);
-  MEMCPY(msgPtr, &settings_file_, current_machine_len);
+  MEMCPY(msgPtr, settings_file->path, current_machine_len);
+  MEMCPY(msgPtr, &settings_file->timestamp, 4);
 
 /*
   if (Interpreter->p_setup->distance_mode==MODE_ABSOLUTE)
@@ -225,6 +234,11 @@ int WebController::OnEventRequest(struct mg_connection *conn) {
   } else if (isApiRequest(conn)) {
     //Starts with /api but can be anything
     return HandleApiRequest(conn);
+  } else if(isRegisteredRoute(conn)){
+    const char * file = "ng2/index.html";
+    const char * headers ="";
+    mg_send_file(conn, file,headers);
+    return MG_MORE;
   }
   return MG_FALSE;
 }
@@ -289,6 +303,17 @@ bool WebController::isUploadRequest(struct mg_connection *conn){
 bool WebController::isApiRequest(struct mg_connection *conn){
   return strstr(conn->uri, "/api") == conn->uri;
 }
+bool WebController::isRegisteredRoute(struct mg_connection *conn){
+  if(strstr(conn->uri, "/ng2/gcode") == conn->uri || 
+      strstr(conn->uri, "/ng2/debug") == conn->uri || 
+      strstr(conn->uri, "/ng2/ccode") == conn->uri ||
+      strstr(conn->uri, "/ng2/laser-calc") == conn->uri ||
+      strstr(conn->uri, "/ng2/settings") == conn->uri){
+      //printf("%s\n", conn->uri);
+      return true;
+  }
+  return false;
+}
 
 int WebController::HandleUploadReceiveEvent(struct mg_connection *conn){
   FILE *fp = (FILE *) conn->connection_param;
@@ -302,6 +327,8 @@ int WebController::HandleUploadReceiveEvent(struct mg_connection *conn){
   return fwrite(conn->content, 1, conn->content_len, fp);
 }
 void WebController::HandleUploadRequest(struct mg_connection *conn){
+
+  char msg[256];
   FILE *fp = (FILE *) conn->connection_param;
   if (fp != NULL) {
 
@@ -321,22 +348,21 @@ void WebController::HandleUploadRequest(struct mg_connection *conn){
     size_t filesize=0;
 
     const char *data;
-    int data_len, ofs = 0;
-    char var_name[100], file_name[100];
-    while ((ofs = mg_parse_multipart(mmFile.addr + ofs, mmFile.mapsize - ofs,
+    int data_len, ofs = 0, mapOffset = 0;
+    char var_name[100], file_name[256];
+    char absoluteFile[256];
+    FILE * pFile; 
+    while ((ofs = mg_parse_multipart(mmFile.addr + mapOffset, mmFile.mapsize - mapOffset,
                                      var_name, sizeof(var_name),
                                      file_name, sizeof(file_name),
                                      &data, &data_len)) > 0) {
+      mapOffset += ofs;
+     
+      absolutePath(file_name, absoluteFile);
+      
+      //TODO open file only when file_name changes 
+      pFile = fopen (absoluteFile, "w+");
 
-      FILE * pFile;
-      //Add one to skip first slash and make path relative
-      if(file_name[0] == '/'){
-        pFile = fopen (file_name+1, "w+");
-      } else {
-        pFile = fopen (file_name, "w+");
-      }
-      //ConsoleHandler("Writing to file");
-      //ConsoleHandler(file_name);
       if(pFile){
         size_t written = fwrite (data , sizeof(char), data_len, pFile);
         if(written != data_len){
@@ -346,27 +372,32 @@ void WebController::HandleUploadRequest(struct mg_connection *conn){
           filesize += written;
         }
         if(fclose (pFile) == EOF){
-          this->DoErrorMessage("Error closing file");
+          snprintf(msg,sizeof(msg)-1, "Failed to close file %s\n",absoluteFile);
+          this->DoErrorMessage(msg);
+          this->DoErrorMessage(strerror(errno));
         }
       } else {
-        this->DoErrorMessage("Error saving file");
+        snprintf(msg,sizeof(msg)-1, "Failed to open file %s\n",absoluteFile);
+        this->DoErrorMessage(msg);
         this->DoErrorMessage(strerror(errno));
       }
-
     }
-
+    unmapFile(mmFile);
     if(filesize == 0 /*filesize != tmpfilesize*/){
-      char msg[256];
-      snprintf(msg,256, "Bytes written %ld of %ld",filesize, mmFile.filesize);
+      snprintf(msg,sizeof(msg)-1, "Bytes written %ld of %ld\n",filesize, mmFile.filesize);
       this->DoErrorMessage(msg);
+    }
+    //TODO updating timestamp should be made in poll loop to detect outside changes to file.
+    if(strcmp(absoluteFile, current_gcode_file->path) == 0){
+      current_gcode_file->Update();
     }
     //need to send response back to client to avoid wating connection
     mg_printf_data(conn,
         "Written %ld bytes to file: %s\n\n",
         filesize,
-        file_name);
+        absoluteFile);
   } else {
-    mg_printf_data(conn, "%s", "Had no data to write...");
+    mg_printf_data(conn, "%s", "Had no data to write...\n\n");
   }
   //MG_CLOSE event is not raised by mongoose as expected. Need to close file
   OnEventClose(conn);
@@ -445,26 +476,23 @@ int WebController::HandleJsonRequest(struct mg_connection *conn, const char *obj
 
   //Reset global response string
   gp_response[0] = '\0';
-  //gp_response = (char*) malloc(sizeof(char) * ( MAX_LINE));
+  //gp_response = (char*) malloc(sizeof(char) * ( MAX_RESPONSE));
   ret = 0;
   if (!strcmp("kmx", object)) {
-    if (FUNC_SIGP("loadGlobalFile", 2)) {
-      int fileType = -1;
+    if(FUNC_SIGP("setGcodeFile", 1)){
       char * file = NULL;
-      toki(paramtoken + 1, &fileType);
-      toks(paramtoken + 2, &file, 0);
-      if (file != NULL) {
-        if(strlen(file) > 0){
-          if(fileType == 1){
-            this->LoadGcode(file);
-          } else if(fileType == 2){
-            this->LoadMachineConfiguration(file);
-          }
-        }
-        free(file);
-      }
+      toks(paramtoken, &file, 0);
+      this->LoadGcode(file);
+      free(file);
+    } else if(FUNC_SIGP("setMachineFile", 1)){
+      char * file = NULL;
+      toks(paramtoken, &file, 0);
+      this->LoadMachineConfiguration(file);
+      free(file);
     } else if(FUNC_SIGP("listDir", 1)){
       ListDir(paramtoken);
+    } else if(FUNC_SIGP("openFile", 1)){
+      return OpenFile(conn, paramtoken);
     } else if (FUNC_SIGP("jog", 2)) {
       int axis;
       int speed;
@@ -490,7 +518,7 @@ int WebController::HandleJsonRequest(struct mg_connection *conn, const char *obj
     } else if (FUNC_SIGP("onInvokeAction", 1)) {
       BOOL FlushBeforeUnbufferedOperation = FALSE;
       int action;
-      toki(paramtoken + 1, &action);
+      toki(paramtoken, &action);
       ret = this->InvokeAction(action,FlushBeforeUnbufferedOperation);
     } else if (FUNC_SIGP("onDoErrorMessage", 1)) {
       char *p1 = NULL;
@@ -520,29 +548,44 @@ int WebController::HandleJsonRequest(struct mg_connection *conn, const char *obj
   return MG_TRUE;
 }
 
+int WebController::OpenFile(struct mg_connection *conn, struct json_token *paramtoken){
+    char * file = NULL;//"ng2/index.html";
+    toks(paramtoken, &file, 0);
+    if (file != NULL) {
+      const char * headers = "";
+      mg_send_file(conn, file, headers);
+      free(file);
+      return MG_MORE;
+    }
+  return MG_TRUE;
+}
 
 void WebController::ListDir(struct json_token *paramtoken){
     char *dir = NULL;
+    char absoluteDir[256];
     toks(paramtoken, &dir, 0);
     if (dir) {
       DIR *dp;
       struct dirent *ep;
       int w = 0,first=1;
-      dp = opendir (dir);
+      absolutePath(dir, absoluteDir);
+      dp = opendir (absoluteDir);
       if (dp != NULL){
-          w += snprintf(gp_response+w, MAX_LINE-w, "[");
+          w += json_emit(gp_response+w, MAX_RESPONSE-w, "{s: s, s: [", "dir", absoluteDir,"files");
+          //w += snprintf(gp_response+w, MAX_RESPONSE-w, "[");
           while ((ep = readdir(dp))){
             //printf("%d %s\n", ep->d_type, ep->d_name);
             if(first){
               first = 0;
-              w += json_emit(gp_response+w, MAX_LINE-w, "{s: s, s: i}", "name", ep->d_name,"type",ep->d_type );
+              w += json_emit(gp_response+w, MAX_RESPONSE-w, "{s: s, s: i}", "name", ep->d_name,"type",ep->d_type );
             } else {
-              w += json_emit(gp_response+w, MAX_LINE-w, ",{s: s, s: i}", "name", ep->d_name,"type",ep->d_type );
+              w += json_emit(gp_response+w, MAX_RESPONSE-w, ",{s: s, s: i}", "name", ep->d_name,"type",ep->d_type );
             }
           }
-          w += snprintf(gp_response+w, MAX_LINE-w, "]");
+          w += snprintf(gp_response+w, MAX_RESPONSE-w, "]}");
           (void) closedir (dp);
       } else {
+        w += json_emit(gp_response+w, MAX_RESPONSE-w, "{s: s, s: []}", "dir", absoluteDir,"files");
         this->DoErrorMessage(strerror(errno));
       }
     }
@@ -727,15 +770,9 @@ void WebController::setInterpreterActionParams(struct json_token *jsontoken, int
       if(file == NULL || action == 0){
         Interpreter->McodeActions[actionIndex].String[0] = 0;
       } else {
-        if(file[0]=='/'){
-          //path is absolute
-          strcpy(Interpreter->McodeActions[actionIndex].String, file);
-        } else {
-          //path is relative. make it absolute
-          char absoluteFile[256];
-          absolutePath(file, absoluteFile);
-          strcpy(Interpreter->McodeActions[actionIndex].String, absoluteFile);
-        }
+        char absoluteFile[256];
+        absolutePath(file, absoluteFile);
+        strcpy(Interpreter->McodeActions[actionIndex].String, absoluteFile);
       }
 
     } else {
@@ -746,9 +783,20 @@ void WebController::setInterpreterActionParams(struct json_token *jsontoken, int
   free(name);
 }
 
-int WebController::CreateMessageBoxCallbackData(const char *title, const char *msg, int options, bool blocking, char *buf, size_t buf_len) {
+#define MALLOC_CHAR_BUF(BUF, BUF_LEN) BUF = (char*) malloc (BUF_LEN * sizeof(char)); \
+  if(BUF == NULL) { \
+    printf("Error allocating memory"); \
+    exit (1); \
+  } \
+  BUF[0] = '\0';
+
+int WebController::CreateMessageBoxCallbackData(const char *title, const char *msg, int options, bool blocking, char **buf) {
+
+  int buf_len = 128 + strlen(title) + strlen(msg);
+  MALLOC_CHAR_BUF(*buf, buf_len);
+
   int id = callback_counter++;
-  json_emit(buf, buf_len, "{ s: i, s: { s: S, s: s, s: i, s: s, s: s }}",
+  json_emit(*buf, buf_len, "{ s: i, s: { s: S, s: s, s: i, s: s, s: s }}",
       "id", id,
       "payload",
       "block",blocking?"true":"false",
@@ -759,9 +807,13 @@ int WebController::CreateMessageBoxCallbackData(const char *title, const char *m
   return id;
 }
 
-int WebController::CreateCompleteCallbackData(int status, int line_no, int sequence_number,const char *err, bool blocking, char *buf, size_t buf_len){
+int WebController::CreateCompleteCallbackData(int status, int line_no, int sequence_number, const char *err, bool blocking, char **buf){
+
+  int buf_len = 128 + strlen(err);
+  MALLOC_CHAR_BUF(*buf, buf_len);
+
   int id = callback_counter++;
-  json_emit(buf, buf_len, "{ s: i, s: { s: S, s: s, s: i, s: i, s: i, s: s }}",
+  json_emit(*buf, buf_len, "{ s: i, s: { s: S, s: s, s: i, s: i, s: i, s: s }}",
       "id", id,
       "payload",
       "block",blocking?"true":"false",
@@ -773,9 +825,13 @@ int WebController::CreateCompleteCallbackData(int status, int line_no, int seque
   return id;
 
 }
-int WebController::CreateStatusCallbackData(int line_no, const char *msg, bool blocking, char *buf, size_t buf_len){
+int WebController::CreateStatusCallbackData(int line_no, const char *msg, bool blocking, char **buf){
+
+  int buf_len = 128 + strlen(msg);
+  MALLOC_CHAR_BUF(*buf, buf_len);
+
   int id = callback_counter++;
-  json_emit(buf, buf_len, "{ s: i, s: { s: S, s: s, s: i, s: s }}",
+  json_emit(*buf, buf_len, "{ s: i, s: { s: S, s: s, s: i, s: s }}",
       "id", id,
       "payload",
       "block", blocking?"true":"false",
@@ -785,9 +841,13 @@ int WebController::CreateStatusCallbackData(int line_no, const char *msg, bool b
   return id;
 }
 
-int WebController::CreateErrorMessageCallbackData(const char *msg, bool blocking, char *buf, size_t buf_len) {
+int WebController::CreateErrorMessageCallbackData(const char *msg, bool blocking, char **buf) {
+
+  int buf_len = 128 + strlen(msg);
+  MALLOC_CHAR_BUF(*buf, buf_len);
+
   int id = callback_counter++;
-  json_emit(buf, buf_len, "{ s: i, s: { s: S, s: s, s: s }}",
+  json_emit(*buf, buf_len, "{ s: i, s: { s: S, s: s, s: s }}",
       "id", id,
       "payload",
       "block",blocking?"true":"false",
@@ -795,9 +855,13 @@ int WebController::CreateErrorMessageCallbackData(const char *msg, bool blocking
       "message", msg);
   return id;
 }
-int WebController::CreateConsoleCallbackData(const char *msg, bool blocking, char *buf, size_t buf_len){
+int WebController::CreateConsoleCallbackData(const char *msg, bool blocking, char **buf){
+
+  int buf_len = 128 + strlen(msg);
+  MALLOC_CHAR_BUF(*buf, buf_len);
+
   int id = callback_counter++;
-  json_emit(buf, buf_len, "{ s: i, s: { s: S, s: s, s: s }}",
+  json_emit(*buf, buf_len, "{ s: i, s: { s: S, s: s, s: s }}",
       "id", id,
       "payload",
       "block",blocking?"true":"false",
@@ -806,9 +870,13 @@ int WebController::CreateConsoleCallbackData(const char *msg, bool blocking, cha
   return id;
 
 }
-int WebController::CreateUserCallbackData(const char *msg, bool blocking, char *buf, size_t buf_len){
+int WebController::CreateUserCallbackData(const char *msg, bool blocking, char **buf){
+  
+  int buf_len = 128 + strlen(msg);
+  MALLOC_CHAR_BUF(*buf, buf_len);
+
   int id = callback_counter++;
-  json_emit(buf, buf_len, "{ s: i, s: { s: S, s: s, s: s }}",
+  json_emit(*buf, buf_len, "{ s: i, s: { s: S, s: s, s: s }}",
       "id", id,
       "payload",
       "block",blocking?"true":"false",
@@ -817,9 +885,13 @@ int WebController::CreateUserCallbackData(const char *msg, bool blocking, char *
   return id;
 
 }
-int WebController::CreateMcodeUserCallbackData(int mCode, bool blocking, char *buf, size_t buf_len){
+int WebController::CreateMcodeUserCallbackData(int mCode, bool blocking, char **buf){
+
+  int buf_len = 128;
+  MALLOC_CHAR_BUF(*buf, buf_len);
+
   int id = callback_counter++;
-  json_emit(buf, buf_len,"{ s: i, s: { s: S, s: s, s: i }}",
+  json_emit(*buf, buf_len,"{ s: i, s: { s: S, s: s, s: i }}",
       "id", id,
       "payload",
       "block",blocking?"true":"false",

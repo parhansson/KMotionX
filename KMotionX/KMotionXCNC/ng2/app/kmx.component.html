@@ -1,0 +1,48 @@
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand">KMotionX</a>
+    </div>    
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <li><a routerLink="/gcode" routerLinkActive="active">GCode</a></li>
+        <li><a routerLink="/ccode" routerLinkActive="active">C programs</a></li>
+        <li><a routerLink="/settings" routerLinkActive="active">Settings</a></li>
+        <li><a routerLink="/debug" routerLinkActive="active">Debug</a></li>
+        <li><a routerLink="/laser-calc" routerLinkActive="active">Laser Calculator</a></li>
+        <!--
+        <li><a [routerLink]="['GCodeScreen']">GCode</a></li>
+        <li><a [routerLink]="['CCodeScreen']">C programs</a></li>
+        <li><a [routerLink]="['SettingsScreen']">Settings</a></li>
+        <li><a [routerLink]="['DebugScreen']">Debug</a></li>
+        
+        <li><a [routerLink]="['LaserCalculator']">Laser Calculator</a></li>
+        -->
+        <!--<li><a href="javascript:$('#aboutModal').modal();">About</a></li>-->
+          <li><a><slide-switch [state]="intStatus?.simulating" (switched)="onSimulate()"></slide-switch></a></li>
+        <!--
+          -->
+          <li><span>Uptime:&nbsp;{{intStatus.timeStamp}}</span></li>
+        </ul>
+        
+    </div>      
+  </div>
+</nav>
+<!--
+<div>{{intStatus | json}}</div>
+-->
+<!--
+
+<persistent-router-outlet></persistent-router-outlet>
+<router-outlet name="main"></router-outlet>
+-->
+<router-outlet></router-outlet>
+

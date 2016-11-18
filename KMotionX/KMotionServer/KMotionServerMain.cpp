@@ -244,10 +244,16 @@ static void daemonize(){
 }
 #endif
 
-int main(void) 
+int main(int argc, char **argv) 
 {
-
-    //printf("SHARE %d\n", *KMotionLocal.sharePtr);
+	if(argc == 2){
+		if(strcmp("-reset", argv[1])==0){
+    	printf("Shared memory references %d\n", *KMotionLocal.sharePtr);
+			*KMotionLocal.sharePtr = 1;
+			return 0;
+		}
+		
+	}
     /* SJH - modified to listen to a TCP socket in addition to the unix domain (local) socket.
        Listens at port KMOTION_PORT (defined in KMotionDLL.h).
        FIXME: need to make this an argc/argv parameter.

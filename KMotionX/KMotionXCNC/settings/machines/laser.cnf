@@ -1,0 +1,272 @@
+{
+  "name": "laser",
+  "description": "My cheap laser",
+  "dimX": 300,
+  "dimY": 200,
+  "dimZ": 60,
+  "initProgram": "KMX",
+  "initThread": 1,
+  "axes": [
+    {
+      "name": "X",
+      "countsPerUnit": 2540,
+      "maxAccel": 40,
+      "maxVel": 40,
+      "jogVel": 2000
+    },
+    {
+      "name": "Y",
+      "countsPerUnit": 2540,
+      "maxAccel": 40,
+      "maxVel": 40,
+      "jogVel": 2000
+    },
+    {
+      "name": "Z",
+      "countsPerUnit": 40640,
+      "maxAccel": 40,
+      "maxVel": 40,
+      "jogVel": 2000
+    },
+    {
+      "name": "A"
+    },
+    {
+      "name": "B"
+    },
+    {
+      "name": "C"
+    }
+  ],
+  "tplanner": {
+    "breakangle": 5,
+    "cornertolerance": 0.003,
+    "lookahead": 3,
+    "collineartolerance": 0.0005,
+    "facetangle": 0.5
+  },
+  "actions": [
+    {
+      "action": 0,
+      "name": "M0"
+    },
+    {
+      "action": 0,
+      "name": "M1"
+    },
+    {
+      "action": 0,
+      "name": "M2"
+    },
+    {
+      "action": 1,
+      "name": "M3",
+      "dParam1": 1,
+      "dParam0": 46
+    },
+    {
+      "action": 0,
+      "name": "M4",
+      "dParam0": 46,
+      "dParam1": 1
+    },
+    {
+      "action": 1,
+      "name": "M5",
+      "dParam0": 46,
+      "dParam1": 0
+    },
+    {
+      "action": 0,
+      "name": "M6"
+    },
+    {
+      "action": 0,
+      "name": "M7"
+    },
+    {
+      "action": 8,
+      "name": "M8"
+    },
+    {
+      "action": 0,
+      "name": "M9"
+    },
+    {
+      "action": 0,
+      "name": "S"
+    }
+  ],
+  "specialActions": [
+    {
+      "action": 0,
+      "name": "M30"
+    },
+    {
+      "action": 0,
+      "name": "Cycle Start"
+    },
+    {
+      "action": 0,
+      "name": "Halt",
+      "dParam0": 47,
+      "dParam1": 0
+    },
+    {
+      "action": 0,
+      "name": "Stop"
+    },
+    {
+      "action": 1,
+      "name": "Feedhold",
+      "dParam0": 46,
+      "dParam1": 0
+    },
+    {
+      "action": 1,
+      "name": "Resume",
+      "dParam0": 46,
+      "dParam1": 1
+    },
+    {
+      "action": 4,
+      "name": "Prog Start",
+      "file": "settings/c-programs/LaserInit.c",
+      "dParam0": 2
+    },
+    {
+      "action": 0,
+      "name": "Prog Exit"
+    }
+  ],
+  "extendedActions": [
+    {
+      "action": 4,
+      "name": "M100",
+      "dParam0": 6,
+      "dParam2": 5,
+      "dParam3": 5,
+      "dParam1": 0,
+      "file": "settings/c-programs/LaserPPI.c"
+    },
+    {
+      "action": 0,
+      "name": "M101",
+      "dParam0": 2
+    },
+    {
+      "action": 0,
+      "name": "M102",
+      "dParam0": 1
+    },
+    {
+      "action": 0,
+      "name": "M103"
+    },
+    {
+      "action": 0,
+      "name": "M104"
+    },
+    {
+      "action": 0,
+      "name": "M105"
+    },
+    {
+      "action": 0,
+      "name": "M106"
+    },
+    {
+      "action": 0,
+      "name": "M107"
+    },
+    {
+      "action": 0,
+      "name": "M108"
+    },
+    {
+      "action": 0,
+      "name": "M109"
+    },
+    {
+      "action": 0,
+      "name": "M110"
+    },
+    {
+      "action": 0,
+      "name": "M111"
+    },
+    {
+      "action": 0,
+      "name": "M112"
+    },
+    {
+      "action": 0,
+      "name": "M113"
+    },
+    {
+      "action": 0,
+      "name": "M114"
+    },
+    {
+      "action": 0,
+      "name": "M115"
+    },
+    {
+      "action": 0,
+      "name": "M116"
+    },
+    {
+      "action": 0,
+      "name": "M117"
+    },
+    {
+      "action": 0,
+      "name": "M118"
+    },
+    {
+      "action": 0,
+      "name": "M119"
+    }
+  ],
+  "userActions": [
+    {
+      "action": 4,
+      "name": "Init",
+      "dParam0": 2,
+      "file": "settings/c-programs/LaserInit.c"
+    },
+    {
+      "action": 0,
+      "name": "",
+      "dParam0": null,
+      "file": ""
+    },
+    {
+      "action": 4,
+      "dParam0": 2,
+      "file": "/Users/parhansson/git/KMotionX/C Programs/BlinkKFLOP.c",
+      "name": "Blinka3"
+    },
+    {
+      "action": 0
+    },
+    {
+      "action": 0
+    },
+    {
+      "action": 0
+    },
+    {
+      "action": 0
+    },
+    {
+      "action": 0
+    },
+    {
+      "action": 0
+    },
+    {
+      "action": 0
+    }
+  ]
+}

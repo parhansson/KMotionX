@@ -1,0 +1,51 @@
+{
+  "name": "kmx",
+  "description": "Web GUI for CNC",
+  "version": "1.0.0",
+  "jsnext:main": "esm/main.js",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "npm run typings install",
+    "tsc": "tsc",
+    "tsc:w": "tsc -w",
+    "start": "concurrently \"npm run tsc:w\" \"npm run copy:dist\" ",
+    "typings": "typings",
+    "copy:dist": "node sync-dist.js",
+    "copy": "npm run copy:dist",
+    "bundle": "node bundle.js",
+    "bundle:prod": "node bundle.js --prod"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@angular/common": "2.2.0",
+    "@angular/compiler": "2.2.0",
+    "@angular/compiler-cli": "2.2.0",
+    "@angular/core": "2.2.0",
+    "@angular/forms": "2.2.0",
+    "@angular/http": "2.2.0",
+    "@angular/platform-browser": "2.2.0",
+    "@angular/platform-browser-dynamic": "2.2.0",
+    "@angular/platform-server": "2.2.0",
+    "@angular/router": "3.2.0",
+    "@angular/upgrade": "2.2.0",
+    "systemjs": "0.19.41",
+    "core-js": "^2.4.1",
+    "reflect-metadata": "^0.1.8",
+    "rxjs": "5.0.0-beta.12",
+    "zone.js": "^0.6.26",
+    "bootstrap": "3.3.7",
+    "ng2-bootstrap": "1.1.16",
+    "intl": "1.2.5",
+    "three": "0.81.2",
+    "ace-min-noconflict": "1.1.9",
+    "opentype.js": "0.6.6",
+    "pdfjs-dist": "1.5.500"
+  },
+  "devDependencies": {
+    "chokidar": "1.6.1",
+    "concurrently": "3.1.0",
+    "systemjs-builder": "0.15.34",
+    "typescript": "2.0.10",
+    "typings": "1.4.0"
+  }
+}

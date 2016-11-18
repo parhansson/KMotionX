@@ -1,0 +1,173 @@
+<div class="well">
+
+  <!--
+  <a ng-click="showMachine($event)">Show machine configuration</a>
+  -->
+  <tabset>
+    <tab heading="General">
+      <h3 class="settings-header">General machine settings</h3>
+      <div class="form"><!--<form class="form">-->
+        <div class="row col-xs-12 col-sm-8 col-sm-offset-2">
+          <div class="form-group">
+            <label>Name</label>
+            <input class="form-control" [(ngModel)]="machine.name" type="text" placeholder="Name your machine">
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <input class="form-control" [(ngModel)]="machine.description" type="text" placeholder="Describe machine">
+          </div>
+          <div class="form-group">
+            <label>Machine dimensions</label>
+            <div class="row">
+              <div class="col-sm-4">
+                <div class="input-group">
+                  <span class="input-group-addon">X</span>
+                  <input class="form-control" [(ngModel)]="machine.dimX" type="number" min=0 placeholder="mm" />
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <div class="input-group">
+                  <span class="input-group-addon">Y</span>
+                  <input class="form-control" [(ngModel)]='machine.dimY' type="number" min=0 placeholder="mm">
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <div class="input-group">
+                  <span class="input-group-addon">Z</span>
+                  <input class="form-control" [(ngModel)]='machine.dimZ' type="number" min=0 placeholder="mm">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Bootstrap program and thread</label>
+            <input class="form-control" [(ngModel)]='machine.initProgram' type="text" placeholder="Path to c program">
+            <input class="form-control" [(ngModel)]='machine.initThread' type="number" min=1 max=7 placeholder="Thread number 1-7">
+          </div>
+        </div>
+      </div><!--</form>-->
+    </tab>
+    <tab heading="M0-M30">
+      <h3 class="settings-header">M-codes</h3>
+      <div class="">
+        <kmx-mcode-value *ngFor="let action of machine.actions" [action]="action"></kmx-mcode-value>
+        <kmx-mcode-value *ngFor="let action of machine.specialActions" [action]="action"></kmx-mcode-value>
+      </div>
+    </tab>
+
+    <tab heading="M100-M119">
+
+      <h3 class="settings-header">Extended M-codes</h3>
+      <div class="">
+        {{action | json}}
+        <kmx-mcode-value *ngFor="let action of machine.extendedActions" [action]="action"></kmx-mcode-value>
+      </div>
+    </tab>
+    <tab heading="User buttons">
+      <h3 class="settings-header">User defined buttons</h3>
+      <div class="">
+        <kmx-mcode-value *ngFor="let action of machine.userActions" [action]="action" userButton="true"></kmx-mcode-value>
+      </div>
+    </tab>
+
+    <tab heading="Motion Parameters">
+      <h3 class="settings-header">Trajectory Planner / Axis Settings</h3>
+      <div class="form"><!--<form class="form">-->
+        <div class="form-inline well">
+          <div class="form-group">
+            <label for="breakangleInput">Break Angle</label>
+            <p class="help-block">In degreees</p>
+            <input id="breakangleInput" class="form-control" [(ngModel)]="machine.tplanner.breakangle" min="0" type="number" step="any"
+            />
+          </div>
+          <div class="form-group">
+            <label for="lookaheadInput">Look Ahead</label>
+            <p class="help-block">In seconds</p>
+            <input id="lookaheadInput" class="form-control" [(ngModel)]="machine.tplanner.lookahead" min="0" type="number" step="any"
+            />
+          </div>
+          <div class="form-group">
+            <label for="collineartoleranceInput">Collinear Tolerance</label>
+            <p class="help-block">In inches</p>
+            <input id="collineartoleranceInput" class="form-control" [(ngModel)]="machine.tplanner.collineartolerance" min="0" type="number"
+              step="any" />
+          </div>
+          <div class="form-group">
+            <label for="cornertoleranceInput">Corner Tolerance</label>
+            <p class="help-block">In inches</p>
+            <input id="cornertoleranceInput" class="form-control" [(ngModel)]="machine.tplanner.cornertolerance" min="0" type="number"
+              step="any" />
+          </div>
+          <div class="form-group">
+            <label for="facetangleInput">Facet Angle</label>
+            <p class="help-block">In degrees</p>
+            <input id="facetangleInput" class="form-control" [(ngModel)]="machine.tplanner.facetangle" min="0" type="number" step="any"
+            />
+          </div>
+        </div>
+        <div class="well">
+          <div class="form-group">
+            <label>Jog speeds</label>
+            <div class="row">
+              <div class="col-sm-2" *ngFor="let axis of machine.axes">
+                <div class="input-group">
+                  <span class="input-group-addon">{{axis.name}}</span>
+                  <input class="form-control" [(ngModel)]="axis.jogVel" min="0" type="number" step="any" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="well">
+          <label>Axis parameters</label>
+          <div class="form-group row">
+            <div class="col-sm-2">
+              <label>Axis</label>
+            </div>
+            <div class="col-sm-10">
+              <div class="col-sm-3">
+                <label>Counts Per Inch</label>
+                <p class="help-block">pulses/in</p>
+              </div>
+              <div class="col-sm-3">
+                <label>Max Velocity</label>
+                <p class="help-block">in/sec</p>
+              </div>
+              <div class="col-sm-3">
+                <label>Max Accel</label>
+                <p class="help-block">in/sec2</p>
+              </div>
+            </div>
+          </div>
+          <div class="form-group row" *ngFor="let axis of machine.axes">
+            <div class="col-sm-2">
+              <label ng-bind="axis.name"></label>
+            </div>
+            <div class="col-sm-10">
+              <div class="col-sm-3">
+                <input class="form-control" [(ngModel)]="axis.countsPerUnit" min="0" type="number" step="any" />
+              </div>
+              <div class="col-sm-3">
+                <input class="form-control" [(ngModel)]="axis.maxVel" min="0" type="number" step="any" />
+              </div>
+              <div class="col-sm-3">
+                <input class="form-control" [(ngModel)]="axis.maxAccel" min="0" type="number" step="any" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!--</form>-->
+    </tab>
+    <tab heading="Import settings">
+        <transformer-settings></transformer-settings>
+    </tab>
+  </tabset>
+  <div class="row">
+    <div class="col-xs-4 col-xs-offset-5">
+      <button type="button" class='btn btn-default'>New machine</button>
+      <button type="button" class="btn btn-primary" (click)="save()">Save</button>
+    </div>
+    <div class="col-xs-2 col-xs-offset-7">
+    </div>
+  </div>
+</div>
