@@ -8453,7 +8453,7 @@ static int tcc_compile(TCCState *s1)
        symbols can be safely used */
     put_elf_sym(symtab_section, 0, 0, 
                 ELF32_ST_INFO(STB_LOCAL, STT_FILE), 0, 
-                SHN_ABS, file->filename);
+                SHN_ABS, fs1);
 #else
         put_stabs_r(file->filename, N_SO, 0, 0, 
                     text_section->data_offset, text_section, section_sym);
