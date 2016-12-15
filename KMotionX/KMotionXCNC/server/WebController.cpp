@@ -22,11 +22,12 @@
 static const char CB_NAMES[][24] = {"STATUS", "COMPLETE", "ERR_MSG", "CONSOLE",
     "USER", "USER_M_CODE", "MESSAGEBOX" };
 
-
+/*
+//Used for debugging.
 static const char ACTION_NAMES[][32] = { "M_Action_None", "M_Action_Setbit", "M_Action_SetTwoBits",
       "M_Action_DAC", "M_Action_Program", "M_Action_Program_wait", "M_Action_Program_wait_sync",
       "M_Action_Program_PC", "M_Action_Callback", "M_Action_Waitbit", "UNAVAILABLE" };
-
+*/
 
 WebController::WebController(CGCodeInterpreter *interpreter, mg_server *serv)
 :KmxController(interpreter) {
@@ -34,7 +35,7 @@ WebController::WebController(CGCodeInterpreter *interpreter, mg_server *serv)
 }
 
 WebController::~WebController() {
-  // TODO Auto-generated destructor stub
+
 }
 
 int WebController::Setup(){
@@ -281,17 +282,27 @@ int WebController::OnEventWsConnect(struct mg_connection *conn) {
   return MG_FALSE;
 }
 
-int WebController::PushClientData(int opCode, const char *data , size_t data_len){
+int WebController::PushClientData(int opCode, const char *data, size_t data_len){
   struct mg_connection *c = NULL;
   int nrOfClients = 0;
-  // Iterate over all connections, and push current time message to websocket ones.
+  char * dst = NULL;
+  const char * buf;
+  if(opCode == WEBSOCKET_OPCODE_TEXT){
+    //We need to ensure that client can decode as UTF-8
+    data_len = expand_non_ascii(&dst,data,data_len);
+    buf = dst;
+  } else {
+    buf = data;
+  }
 
+  // Iterate over all connections, and push current time message to websocket ones.
   for (c = mg_next(server, c); c != NULL; c = mg_next(server, c)) {
     if (c->is_websocket) {
-      mg_websocket_write(c, opCode, data, data_len);
+      mg_websocket_write(c, opCode, buf, data_len);
       nrOfClients++;
     }
   }
+  free(dst);
   return nrOfClients;
 }
 

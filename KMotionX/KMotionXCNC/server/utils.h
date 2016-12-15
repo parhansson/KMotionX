@@ -28,6 +28,7 @@ int mmapFile(MappedFile& mmFile, FILE *fp);
 void unmapFile(MappedFile& mmFile);
 
 void absolutePath(const char * relativePath, char * absolutePath);
+size_t expand_non_ascii(char ** dest, const char * source, size_t srclen);
 
 #ifdef __cplusplus
 }

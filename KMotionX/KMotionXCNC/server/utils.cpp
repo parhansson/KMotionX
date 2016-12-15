@@ -71,3 +71,26 @@ void absolutePath(const char * relativePath, char * actualpath){
     sprintf(actualpath, "%s",absolute);
   } 
 }
+
+size_t expand_non_ascii(char ** dest, const char * source, size_t srclen){
+    char * dstPtr;
+    unsigned char c;
+    int i = 0;
+    size_t dstlen;
+    dstlen = srclen*2;
+    //TODO This might have to be even bigger,
+    //malloc less than 2 times and realloc if needed
+    dstPtr = (char*) malloc(sizeof(char) * ( dstlen + 1));
+    *dest = dstPtr;
+
+    while (i < srclen) {
+        c = source[i++];
+        if (/*c > 0x1F &&*/ c < 0x80){  // singleton byte (high bit is 0, code is same as 7-bit ascii)
+            *dstPtr++ = c;
+        } else {
+            dstPtr += sprintf(dstPtr,"<%#x>", c & 0xff);
+        }
+    }
+    *dstPtr = 0;
+    return dstPtr-*dest;
+}
