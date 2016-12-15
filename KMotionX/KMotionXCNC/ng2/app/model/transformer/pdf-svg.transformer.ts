@@ -2,7 +2,6 @@ import {Observer} from 'rxjs/Rx';
 import {ModelSettingsService, ModelSettings} from '../model.settings.service';
 import {ModelTransformer} from './model.transformer';
 
-declare var PDFJS: any
 
 export class Pdf2SvgTransformer extends ModelTransformer<ArrayBuffer,SVGElement> {
   transformerSettings: ModelSettings
@@ -36,15 +35,15 @@ export class Pdf2SvgTransformer extends ModelTransformer<ArrayBuffer,SVGElement>
         if (transformerSettings.pdf.page != i) continue;
         // Using promise to fetch and render the next page
         promise = promise.then(function (pageNum, anchor) {
-          return pdf.getPage(pageNum).then(function (page) {
+          return pdf.getPage(pageNum).then(page => {
             let viewport = page.getViewport(scale);
 
             // var container = createContainer(pageNum,viewport.width,viewport.height);
             //  anchor.appendChild(container);
 
-            return page.getOperatorList().then(function (opList) {
-              let svgGfx = new PDFJS.SVGGraphics(page.commonObjs, page.objs);
-              return svgGfx.getSVG(opList, viewport).then(function (svg: SVGElement) {
+            return page.getOperatorList().then(opList => {
+              let svgGfx = <PDFJSExtra.SVGGraphics> new PDFJS.SVGGraphics(page.commonObjs, page.objs);
+              return svgGfx.getSVG(opList, viewport).then(svg => {
                 targetObserver.next(svg)
                 //svgObserver.complete()
                 pdf.destroy(); //Destroy worker

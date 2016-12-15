@@ -3,7 +3,7 @@ import {Observer} from 'rxjs/Rx';
 import {IGM, IgmObject} from '../igm';
 import {GCodeVector} from '../vector';
 import {ModelTransformer} from './model.transformer';
-declare var opentype
+
 /*
 if (typeof(String.prototype.strip) === "undefined") {
     String.prototype.strip = function() {
@@ -62,7 +62,7 @@ export class SvgNode {
 
 export class Svg2IgmTransformer extends ModelTransformer<SVGElement, IGM>{
 
-  font: any
+  font: opentypejs.Font
 
   constructor() {
     super()
@@ -98,8 +98,8 @@ export class Svg2IgmTransformer extends ModelTransformer<SVGElement, IGM>{
     node.stroke = [255, 0, 0];
     node.xformToWorld = [1, 0, 0, 1, 0, 0]
     let cssFilterAllowed = ['svg', 'g', 'defs', 'style', 'use'];
-    let cssFilter = function (tag: SVGElement) {
-      return cssFilterAllowed.indexOf(tag.localName) > -1
+    let cssFilter = (element: SVGElement) => {
+      return cssFilterAllowed.indexOf(element.localName) > -1
     }
     let igmText = new IGM()
     
@@ -155,8 +155,8 @@ export interface ElementFilter {
 */
 
 export interface ISVGParser {
-  font: any
-  addPath(d: any, node: SvgNode)
+  font: opentypejs.Font
+  addPath(d: string|any[], node: SvgNode)
   parseUnit(val: string)
   matrixMult(mA: number[], mB: number[])
   strip(val: string);
@@ -174,7 +174,7 @@ export class SvgParser implements ISVGParser {
   // max tollerance when tesselating curvy shapes
   tolerance_squared: number
 
-  constructor(private elementFilter: ElementFilter, public font: any) {
+  constructor(private elementFilter: ElementFilter, public font: opentypejs.Font) {
     this.tolerance_squared = Math.pow(this.tolerance, 2);
   }
 
@@ -724,7 +724,7 @@ export class SvgParser implements ISVGParser {
         
         if (tag.textContent !== null) {
           let path = parser.font.getPath(tag.textContent, 0, 0, 1, { kerning: true })
-          let dPath = path.toPathData()
+          let dPath = path.toPathData(undefined)
           //console.log(tag.textContent, dPath)
           if (dPath.length > 0) {
             parser.addPath(dPath, node);

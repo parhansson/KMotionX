@@ -70,9 +70,9 @@ export class GCodeScreenComponent extends ScreenComponent {
     if (this.machineBackground != null) {
       this.threeComp.auxiliaryGroup.remove(this.machineBackground);
     }
-    var x = machine.dimX;
-    var y = machine.dimY;
-    var z = machine.dimZ;
+    let x = machine.dimX;
+    let y = machine.dimY;
+    let z = machine.dimZ;
     this.machineBounds = this.createMachineBounds(x, y, z);
     this.machineBackground = this.renderBackground(x, y, z);
     this.threeComp.auxiliaryGroup.add(this.machineBounds);
@@ -82,17 +82,18 @@ export class GCodeScreenComponent extends ScreenComponent {
   }
   private createMachineBounds(x, y, z) {
 
-    var mesh = new THREE.Mesh(new THREE.BoxGeometry(x, y, z));
-    mesh.matrixWorld.makeTranslation(x / 2, y / 2, z / 2);
-    var edges = new THREE.EdgesHelper(mesh, 0x0000ff);
-    (edges.material as any).linewidth = 1;
+    let boxGeom = new THREE.BoxGeometry(x, y, z);
+    boxGeom.translate(x / 2, y / 2, z / 2);
+    let material = new THREE.LineBasicMaterial( { color: 0x000000,linewidth: 1,opacity:0.5 } );
+    let edges = new THREE.LineSegments(
+      new THREE.EdgesGeometry(boxGeom as any, undefined), 
+      material);
     return edges;
-
   }
 
   private renderBackground(x, y, z) {
 
-    console.log("why are we here twice?")
+    console.log("debounce?",x,y,z)
     var texture = new THREE.TextureLoader().load('/settings/textures/bghoneym.jpg');
 
 
@@ -104,17 +105,15 @@ export class GCodeScreenComponent extends ScreenComponent {
     //   which is probably why your example wasn't working
     //texture.repeat.set( 4, 4 ); 
 
-    var material = new THREE.MeshBasicMaterial({
+    let material = new THREE.MeshBasicMaterial({
       map: texture,
       side: THREE.DoubleSide,
       transparent: true,
       opacity: 0.3
     });
-    var geometry = new THREE.PlaneGeometry(x, y);
-    var mesh = new THREE.Mesh(geometry, material);
-    //mesh.matrixWorld.makeTranslation(10,10,0);
-    mesh.position.x = x / 2;
-    mesh.position.y = y / 2;
+    let geometry = new THREE.PlaneGeometry(x, y);
+    geometry.translate(x / 2, y / 2, 0);
+    let mesh = new THREE.Mesh(geometry, material);
     return mesh;
 
   }
