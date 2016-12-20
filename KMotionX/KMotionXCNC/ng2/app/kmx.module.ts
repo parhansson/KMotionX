@@ -21,7 +21,7 @@ import { GCodeModule} from './gcode/gcode.module'
 import { CCodeModule} from './ccode/ccode.module'
 import { LogModule} from './log/log.module';
 import { EditorModule } from './editor/editor.module';
-import { ResourceModule } from "./resources/resource.module"
+import { ResourceModule } from './resources/resource.module'
 import { SettingsModule } from './settings/settings.module'
 import { DebugModule } from './debug/debug.module'
 import { LaserModule } from './laser/laser.module'

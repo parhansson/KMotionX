@@ -1,5 +1,5 @@
 import {Component, Inject, Injectable} from '@angular/core';
-import {LogComponent} from "./log.component"
+import {LogComponent} from './log.component'
 
 interface StringToConsoleMap {
   [id: string]: LogComponent;
@@ -39,7 +39,7 @@ export class LogService {
         this.logs[id] = []
       }
       this.logs[id].push(fragment)
-      //console.log("Console %s is undefined",id);
+      //console.log('Console %s is undefined',id);
     } else {
       con.logFragment(fragment);
     }

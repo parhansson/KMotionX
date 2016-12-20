@@ -2,12 +2,12 @@
 import {Component, ElementRef,HostListener} from '@angular/core';
 
 @Component({
-  selector: "three-viewer",
+  selector: 'three-viewer',
   // template: `
   //     <div (window:resize)="onResize2($event)">
   //     </div>    
   //   `
-  template: ""
+  template: ''
 })
 export class ThreeViewComponent {
   private renderer: THREE.WebGLRenderer
@@ -181,7 +181,7 @@ element.on( 'mouseleave', function(){
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
     this.orientation.render(this.controls);
-    //console.log("animate");
+    //console.log('animate');
   }
 
   onResize(event) {
@@ -205,8 +205,8 @@ element.on( 'mouseleave', function(){
     let mouse = new THREE.Vector2();
     mouse.x = (elementXPosition / width) * 2 - 1;
     mouse.y = - (elementYPosition / height) * 2 + 1;
-    //console.info("mouse.x mouse.y %",mouse.x ,mouse.y);
-    //console.info("mouse.x mouse.y",elementXPosition ,elementYPosition);
+    //console.info('mouse.x mouse.y %',mouse.x ,mouse.y);
+    //console.info('mouse.x mouse.y',elementXPosition ,elementYPosition);
     /*
     var mouse3d = new THREE.Vector3(0,0,0);
     mouse3d.x = mouse.x;

@@ -1,5 +1,5 @@
 
-import {KMXUtil} from '../util/KMXUtil'
+import {KMXUtil} from '../util/kmxutil'
 
 export class Payload {
   value: string | ArrayBuffer = null

@@ -1,5 +1,5 @@
 import { Component, Inject, ViewChild } from '@angular/core';
-import { ScreenComponent } from "../screen.component"
+import { ScreenComponent } from '../screen.component'
 import { CCodeEditorComponent } from './ccode-editor.component'
 
 @Component({

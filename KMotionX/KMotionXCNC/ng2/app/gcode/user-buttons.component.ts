@@ -3,7 +3,7 @@ import {SettingsService, Machine} from '../settings/settings.service';
 import {BackendService} from '../backend/backend.service';
 
 @Component({
-  selector: "user-defined-buttons",
+  selector: 'user-defined-buttons',
   template: `
     <span *ngFor="let action of machine.userActions; let index = index">
       <button  

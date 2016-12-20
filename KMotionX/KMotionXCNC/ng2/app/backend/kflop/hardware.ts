@@ -11,14 +11,14 @@ export class KFlop {
     return KFlop._instance;
   }
 
-  jp7 = new Connector("JP7 - GPIO", [])
-  jp4 = new Connector("JP4 - Aux #0", [])
-  jp6 = new Connector("JP6 - Aux #1", [])
-  jp5 = new Connector("JP5 - GPIO #1", []);
+  jp7 = new Connector('JP7 - GPIO', [])
+  jp4 = new Connector('JP4 - Aux #0', [])
+  jp6 = new Connector('JP6 - Aux #1', [])
+  jp5 = new Connector('JP5 - GPIO #1', []);
 
   constructor() {
     if (KFlop._instance) {
-      throw new Error("Error: Instantiation failed: Use KFlop.getInstance() instead of new.");
+      throw new Error('Error: Instantiation failed: Use KFlop.getInstance() instead of new.');
     }
     KFlop._instance = this;
     this.jp7.pins.push(new IOPin('VDD33', '+3.3 Volts Output'))

@@ -68,7 +68,7 @@ export class Svg2IgmTransformer extends ModelTransformer<SVGElement, IGM>{
     super()
     // /settings/RawengulkPcs.otf
     //opentype.load(node.fontBlob, function(err, font) {  
-    opentype.load("/settings/RawengulkPcs.otf", (err, font) => {
+    opentype.load('/settings/RawengulkPcs.otf', (err, font) => {
       if (err) {
         alert('Could not load font: ' + err);
       } else {
@@ -255,8 +255,8 @@ export class SvgParser implements ISVGParser {
           // before adding all path data convert to world coordinates
           for (var k = 0; k < node.path.length; k++) {
             var igmObject = new IgmObject();
-            igmObject.type = "Linear interpolation"
-            igmObject.cmd = "G1"
+            igmObject.type = 'Linear interpolation'
+            igmObject.cmd = 'G1'
             var subpath = node.path[k];
             for (var l = 0; l < node.path[k].length; l++) {
               var tt = this.matrixApply(node.xformToWorld, subpath[l])
@@ -310,7 +310,7 @@ export class SvgParser implements ISVGParser {
       var xforms: number[][] = []
       var segs = val.match(/[a-z]+\s*\([^)]*\)/ig)
       for (var i = 0; i < segs.length; i++) {
-        var kv = segs[i].split("(");
+        var kv = segs[i].split('(');
         var xformKind = parser.strip(kv[0]);
         var paramsTemp = parser.strip(kv[1]).slice(0, -1);
         var params = paramsTemp.split(/[\s,]+/).map(parseFloat)
@@ -394,9 +394,9 @@ export class SvgParser implements ISVGParser {
       //          style="fill: red; stroke: blue; stroke-width: 3"/>
 
       // relay to parse style attributes the same as Presentation Attributes
-      var segs = val.split(";")
+      var segs = val.split(';')
       for (var i = 0; i < segs.length; i++) {
-        var kv = segs[i].split(":")
+        var kv = segs[i].split(':')
         var k = parser.strip(kv[0])
         if (this[k]) {
           var v = parser.strip(kv[1])
@@ -457,7 +457,7 @@ export class SvgParser implements ISVGParser {
         return a
 
       } else if (val.search(/^rgb\(/) != -1) {
-        var a = val.slice(4, -1).split(",")
+        var a = val.slice(4, -1).split(',')
         for (var i = 0; i < a.length; i++) {
           var c = parser.strip(a[i])
           if (c.charAt(c.length - 1) == '%')
@@ -468,7 +468,7 @@ export class SvgParser implements ISVGParser {
         return a
 
       } else if (val.search(/^rgba\(/) != -1) {
-        var a = val.slice(5, -1).split(",")
+        var a = val.slice(5, -1).split(',')
         for (var i = 0; i < 3; i++) {
           var c = parser.strip(a[i])
           if (c.charAt(c.length - 1) == '%')
@@ -484,7 +484,7 @@ export class SvgParser implements ISVGParser {
         return a
 
       } else if (val.search(/^url\(/) != -1) {
-        console.error('error', "defs are not supported at the moment");
+        console.error('error', 'defs are not supported at the moment');
       } else if (val == 'currentColor') {
         return currentColor
       } else if (val == 'none') {
@@ -554,7 +554,7 @@ export class SvgParser implements ISVGParser {
     __getPolyPath: function (parser: ISVGParser, tag: SVGElement) {
       // has transform and style attributes
       var subpath = []
-      var vertnums = parser.strip(tag.getAttribute("points").toString()).split(/[\s,]+/).map(parseFloat)
+      var vertnums = parser.strip(tag.getAttribute('points').toString()).split(/[\s,]+/).map(parseFloat)
       if (vertnums.length % 2 == 0) {
         var d = ['M']
         d.push(vertnums[0])
@@ -565,7 +565,7 @@ export class SvgParser implements ISVGParser {
         }
         return d
       } else {
-        console.error('error', "in __getPolyPath: odd number of verteces");
+        console.error('error', 'in __getPolyPath: odd number of verteces');
       }
     },
 
@@ -654,15 +654,15 @@ export class SvgParser implements ISVGParser {
     path: function (parser: ISVGParser, tag: SVGElement, node: SvgNode) {
       // http://www.w3.org/TR/SVG11/paths.html
       // has transform and style attributes
-      var d = tag.getAttribute("d")
+      var d = tag.getAttribute('d')
       parser.addPath(d, node)
     },
 
     image: function (parser: ISVGParser, tag: SVGElement, node: SvgNode) {
       // not supported
       // has transform and style attributes
-      var ns = "http://www.w3.org/1999/xlink";
-      var href = tag.getAttributeNS(ns, "href");
+      var ns = 'http://www.w3.org/1999/xlink';
+      var href = tag.getAttributeNS(ns, 'href');
       node.href = href;
     },
 
@@ -688,8 +688,8 @@ export class SvgParser implements ISVGParser {
     style: function (parser: ISVGParser, tag: SVGElement, node: SvgNode) {
       //node.unsupported = true;
 
-      var doc = document.implementation.createHTMLDocument(""),
-        styleElement = document.createElement("style");
+      var doc = document.implementation.createHTMLDocument(''),
+        styleElement = document.createElement('style');
 
       styleElement.textContent = tag.textContent;
       // the style will only be parsed once it is added to a document
@@ -795,7 +795,7 @@ export class SvgParser implements ISVGParser {
       if (d.length > 0) {
         return d.shift();  // pop first item
       } else {
-        console.error('error', "in addPath: not enough parameters");
+        console.error('error', 'in addPath: not enough parameters');
         return null;
       }
     }

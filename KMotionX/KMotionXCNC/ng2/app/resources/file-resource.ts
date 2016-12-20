@@ -15,20 +15,20 @@ export class FileResource {
     }
   }
   set dir(dir: string) {
-    this.paths = dir.split("/")
+    this.paths = dir.split('/')
   }
   get dir() {
-    return this.paths.join("/")
+    return this.paths.join('/')
   }
   append(path: string) {
     this.paths.push(path)
   }
 
   get canonical() {
-    return this.dir + "/" + this.file
+    return this.dir + '/' + this.file
   }
   set canonical(file) {
-    let parts = file.split("/");
+    let parts = file.split('/');
     this.file = parts.splice(parts.length - 1)[0]
     this.paths = parts
   }

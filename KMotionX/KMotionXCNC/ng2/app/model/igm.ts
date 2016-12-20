@@ -96,7 +96,7 @@ export class IGM {
 
   public applyModifications(settings: SVGModelSettings, ratio: number) {
     var paths = this.alllayers;
-    console.info("Nr of Shapes: ", paths.length);
+    console.info('Nr of Shapes: ', paths.length);
 
     this.scaleVectors(paths, ratio);
 
@@ -105,20 +105,20 @@ export class IGM {
 
     if (settings.removeSingularites) {
       var removed = this.removeSingularites(paths);
-      console.info("Removed single points: ", removed);
+      console.info('Removed single points: ', removed);
     }
 
     // cut the inside parts first
     if (settings.removeDuplicates) {
       //This function will change the order of the paths
       var removed = this.removeDuplicates(paths);
-      console.info("Removed duplicates: ", removed);
+      console.info('Removed duplicates: ', removed);
     }
 
 
     this.orderNearestNeighbour(paths);
     var joined = this.joinAdjacent(paths, settings.fractionalDigits);
-    console.info("Joined adjacents: ", joined);
+    console.info('Joined adjacents: ', joined);
     this.setBounds(paths);
 
     var maxBounds = this.getMaxBounds(paths);
@@ -133,7 +133,7 @@ export class IGM {
       this.translateVectors(paths, translateVec);
     }
 
-    console.info("Nr of Shapes after: ", paths.length);
+    console.info('Nr of Shapes after: ', paths.length);
 
     return paths;
 
@@ -160,7 +160,7 @@ export class IGM {
       var igmObj = paths[idx];
       var vectors = igmObj.vectors;
       if (vectors === undefined) {
-        console.info("what", idx);
+        console.info('what', idx);
       }
       var subidx = vectors.length;
       while (subidx--) {

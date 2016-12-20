@@ -37,7 +37,7 @@ export class FileDialogComponent {
 
   private files: FileEntry[] = []
   private showModal: boolean = false
-  private modalDisplay: string = "none"
+  private modalDisplay: string = 'none'
 
   constructor( @Inject(FileServiceToken) private fileBackend: IFileBackend) {
 
@@ -46,9 +46,9 @@ export class FileDialogComponent {
 
   selectFile(file: FileEntry) {
     if (file.type === 4) {
-      if (file.name === "..") {
+      if (file.name === '..') {
         this.resource.up(1)
-      } else if (file.name === ".") {
+      } else if (file.name === '.') {
         //Do nothing, same directory
       } else {
         this.resource.append(file.name)
@@ -62,21 +62,21 @@ export class FileDialogComponent {
 
   show() {
     this.showModal = true;
-    this.modalDisplay = "block"
+    this.modalDisplay = 'block'
     this.listDir()
   }
   hide() {
     this.showModal = false;
-    this.modalDisplay = "none"
+    this.modalDisplay = 'none'
   }
 
   saveAs(content: string) {
     //TODO implement
-    console.warn("Save as not yet implemented")
+    console.warn('Save as not yet implemented')
   }
   onPayload(payload: Payload) {
     //Dropped file
-    console.log("Imported file")
+    console.log('Imported file')
     this.selectedFile.emit(payload)
   }
   protected setFileResource(file: FileResource) {

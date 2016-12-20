@@ -1,7 +1,7 @@
 import { Component, Inject, Input, ViewChild} from '@angular/core';
-import { AceDirective} from "./ace.directive";
+import { AceDirective} from './ace.directive';
 import { FileStoreToken, FileStore } from './file-store';
-import { KMXUtil}    from '../util/KMXUtil'
+import { KMXUtil}    from '../util/kmxutil'
 import { DropZoneDirective,
   FileDialogComponent,
   FilePathComponent,
@@ -48,7 +48,7 @@ export class AceEditorComponent {
   dirty: boolean;
 
   constructor( @Inject(FileStoreToken) private fileStore: FileStore) {
-    this.resource = new FileResource("");
+    this.resource = new FileResource('');
 
     this.fileStore.textSubject.subscribe(text => {
       this.textContent = text;
@@ -67,7 +67,7 @@ export class AceEditorComponent {
   }
 
   onContentChange(change: AceAjax.EditorChangeEvent) {
-    //console.log("onContentChange", change);
+    //console.log('onContentChange', change);
     this.dirty = true;
   }
 

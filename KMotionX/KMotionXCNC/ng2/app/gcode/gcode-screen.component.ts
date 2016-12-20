@@ -1,6 +1,6 @@
 import {Component, ViewChild, SkipSelf, Inject} from '@angular/core';
 import {Subject} from 'rxjs/Rx'
-import {LogComponent} from "../log/log.component";
+import {LogComponent} from '../log/log.component';
 import {BackendService} from '../backend/backend.service';
 import {SocketService} from '../backend/socket.service';
 import {KmxStatus} from '../backend/shared'
@@ -8,7 +8,7 @@ import {DroComponent} from './dro.component';
 import {ThreeViewComponent} from './view.component';
 import {UserButtonsComponent} from './user-buttons.component';
 import {ControlButtonsComponent} from './control-buttons.component';
-import {ScreenComponent} from "../screen.component"
+import {ScreenComponent} from '../screen.component'
 import {StaticTransformer} from '../model/transformers'
 import {FileResource, Payload, FileServiceToken, IFileBackend} from '../resources'
 import {SettingsService, Machine} from '../settings/settings.service'
@@ -93,7 +93,7 @@ export class GCodeScreenComponent extends ScreenComponent {
 
   private renderBackground(x, y, z) {
 
-    console.log("debounce?",x,y,z)
+    console.log('debounce?',x,y,z)
     var texture = new THREE.TextureLoader().load('/settings/textures/bghoneym.jpg');
 
 

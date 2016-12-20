@@ -5,7 +5,7 @@ import {KmxStatus} from '../backend/shared'
 import {SettingsService, Machine} from '../settings/settings.service'
 
 @Component({
-    selector:"kmx-dro",
+    selector:'kmx-dro',
     template:`
       <div>
           <div *ngFor=" let name of droAxes; let index = index" class="input-group">

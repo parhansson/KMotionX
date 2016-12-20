@@ -48,9 +48,9 @@ export class Igm2GcodeTransformer extends ModelTransformer<IGM,GCodeSource>{
     var mmPerInch = 25.4;
 
     if (settings.dpi) {
-      if (settings.unit == "mm") {
+      if (settings.unit == 'mm') {
         dpiScale = mmPerInch / settings.dpi;
-      } else if (settings.unit == "in") {
+      } else if (settings.unit == 'in') {
         dpiScale = 1 / (settings.dpi);
       }
     }
@@ -63,8 +63,8 @@ export class Igm2GcodeTransformer extends ModelTransformer<IGM,GCodeSource>{
     var format = function (numb) {
       //fix fractional digits
       numb = +numb.toFixed(settings.fractionalDigits);
-      // Note the plus sign that drops any "extra" zeroes at the end.
-      // It changes the result (which is a string) into a number again (think "0 + foo"),
+      // Note the plus sign that drops any 'extra' zeroes at the end.
+      // It changes the result (which is a string) into a number again (think '0 + foo'),
       // which means that it uses only as many digits as necessary.
       return numb;
     }
@@ -88,9 +88,9 @@ export class Igm2GcodeTransformer extends ModelTransformer<IGM,GCodeSource>{
     gcode.push('(' + describe(maxBounds) + ')');
 
     gcode.push('G90'); //Absolute Coordinates
-    if (settings.unit == "mm") {
+    if (settings.unit == 'mm') {
       gcode.push('G21');
-    } else if (settings.unit == "in") {
+    } else if (settings.unit == 'in') {
       gcode.push('G22');
     }
     if (settings.initCode) {

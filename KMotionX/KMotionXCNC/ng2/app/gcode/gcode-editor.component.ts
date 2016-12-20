@@ -24,7 +24,7 @@ export class GCodeEditorComponent {
 
   }
   ngAfterViewInit() {
-    this.editorComponent.onFile(new FileResource("./gcode"));
+    this.editorComponent.onFile(new FileResource('./gcode'));
     this.socketService.gcodeFileSubject.subscribe(gcodeFile => {
       this.editorComponent.resource = gcodeFile;
       if (gcodeFile.file) {

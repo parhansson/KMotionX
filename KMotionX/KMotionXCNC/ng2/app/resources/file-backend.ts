@@ -2,7 +2,7 @@ import { OpaqueToken} from '@angular/core'
 import { Observable} from 'rxjs/Rx'
 import { Payload } from './payload'
 
-export const FileServiceToken = new OpaqueToken("fileservice");
+export const FileServiceToken = new OpaqueToken('fileservice');
 
 export interface FileEntry {
   name: string,

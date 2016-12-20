@@ -2,7 +2,7 @@ import { Directive, Component, Input, Output, EventEmitter, ElementRef } from '@
 import { FileResource } from './file-resource'
 import { Payload } from './payload'
 @Directive({
-  selector: "[file-dropzone]",
+  selector: '[file-dropzone]',
   host: {
     '(dragover)': 'processDragOverOrEnter($event)',
     '(dragenter)': 'processDragOverOrEnter($event)',
@@ -33,7 +33,7 @@ export class DropZoneDirective {
       //TODO break this out to utility class and make it optional to actually load or emit  file as payload in FileResource 
       let p:FilePropertyBag
       let reader = new FileReader();
-      reader.addEventListener("load", (evt) => {
+      reader.addEventListener('load', (evt) => {
         let payload = new Payload((evt as any).target.result, file.type);
         payload.name = file.name; 
         this.dropped.emit(payload);
@@ -72,7 +72,7 @@ export class DropZoneDirective {
     if (((_ref = attrs.maxFileSize) === (void 0) || _ref === '') || (size / 1024) / 1024 < attrs.maxFileSize) {
       return true;
     } else {
-      alert("File must be smaller than " + attrs.maxFileSize + " MB");
+      alert('File must be smaller than ' + attrs.maxFileSize + ' MB');
       return false;
     }
     */
@@ -84,7 +84,7 @@ export class DropZoneDirective {
     if ((validMimeTypes === (void 0) || validMimeTypes === '') || validMimeTypes.indexOf(type) > -1) {
       return true;
     } else {
-      alert("Invalid file type.  File must be one of following types " + validMimeTypes);
+      alert('Invalid file type.  File must be one of following types ' + validMimeTypes);
       return false;
     }
     */

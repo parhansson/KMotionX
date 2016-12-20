@@ -4,7 +4,7 @@ export class SVGModelSettings {
   scale: number = 1
   cutZ: number = 0 //20,
   safeZ: number = 0//10
-  unit: string = "mm"
+  unit: string = 'mm'
   dpi: number = 72
   fractionalDigits: number = 3
   translateToOrigo: boolean = true

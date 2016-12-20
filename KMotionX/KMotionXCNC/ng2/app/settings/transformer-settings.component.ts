@@ -1,6 +1,6 @@
 import {Component, Inject} from '@angular/core';
 import {SettingsService, Machine} from './settings.service';
-import {ScreenComponent} from "../screen.component"
+import {ScreenComponent} from '../screen.component'
 import {ModelSettings, ModelSettingsService} from '../model/model.settings.service';
 
 @Component({

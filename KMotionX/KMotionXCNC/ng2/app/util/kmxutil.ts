@@ -4,7 +4,7 @@ export class KMXUtil {
 
   static ab2str(buf: ArrayBuffer) {
     var arr = new Uint8Array(buf)
-    var str = "";
+    var str = '';
     for (var i = 0, l = arr.length; i < l; i++)
       str += String.fromCharCode(arr[i]);
     return str;
@@ -26,16 +26,16 @@ export class KMXUtil {
     return new Promise(function (resolve, reject) {
       if (loadedCondition === true) {
         //TODO check if script tag is present instead of external loaded condition 
-        resolve("Script already loaded:" + source);
+        resolve('Script already loaded:' + source);
       } else {
         var script = document.createElement('script');
         script.type = 'text/javascript';
         script.async = true;
         script.onload = function () {
           // remote script has loaded
-          resolve("Script loaded:" + source);
+          resolve('Script loaded:' + source);
         };
-        script.onerror = function () { reject(Error("Load script failed: " + source)); }
+        script.onerror = function () { reject(Error('Load script failed: ' + source)); }
         script.src = source;
         document.getElementsByTagName('head')[0].appendChild(script);
       }

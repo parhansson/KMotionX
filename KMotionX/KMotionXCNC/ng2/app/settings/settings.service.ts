@@ -8,7 +8,7 @@ import {Subject,BehaviorSubject} from 'rxjs/Rx'
 export class Machine {
   private static mcodes = ['M0', 'M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'S'];
   private static mcodesSpecial = ['M30', 'Cycle Start', 'Halt', 'Stop', 'Feedhold', 'Resume', 'Prog Start', 'Prog Exit'];
-  private static mcodesExtended = ["M100", "M101", "M102", "M103", "M104", "M105", "M106", "M107", "M108", "M109", "M110", "M111", "M112", "M113", "M114", "M115", "M116", "M117", "M118", "M119"];
+  private static mcodesExtended = ['M100', 'M101', 'M102', 'M103', 'M104', 'M105', 'M106', 'M107', 'M108', 'M109', 'M110', 'M111', 'M112', 'M113', 'M114', 'M115', 'M116', 'M117', 'M118', 'M119'];
 
   name: string
   dimX: number
@@ -135,7 +135,7 @@ export class SettingsService {
   @Inject(FileServiceToken)private fileBackend: IFileBackend) {
     this.machine = new Machine();
     this.subject = new BehaviorSubject<Machine>(this.machine)
-    this.load("./settings/machines/laser.cnf");
+    this.load('./settings/machines/laser.cnf');
   }
   public save(): void {
     var file = this.fileName();
@@ -157,7 +157,7 @@ export class SettingsService {
     );;
   }
   public fileName(): string {
-    return "settings/machines/" + this.machine.name + ".cnf";
+    return 'settings/machines/' + this.machine.name + '.cnf';
   }
 
 }

@@ -2,7 +2,7 @@
 import { NgModule }             from '@angular/core';
 import { FormsModule }          from '@angular/forms';
 import { NgClass }              from '@angular/common';
-import { SlideSwitchComponent } from "./slide-switch.component"
+import { SlideSwitchComponent } from './slide-switch.component'
 
 
 @NgModule({

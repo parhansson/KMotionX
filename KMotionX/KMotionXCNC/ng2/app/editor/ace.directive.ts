@@ -4,12 +4,12 @@ import {Component, Directive, EventEmitter, ElementRef} from '@angular/core';
 @Directive({
     selector: '[aceEditor]',
     inputs: [
-        "text",
-        "mode",
-        "theme"
+        'text',
+        'mode',
+        'theme'
     ],
     outputs: [
-        "textChanged"
+        'textChanged'
     ]
 })
 export class AceDirective {
@@ -26,12 +26,12 @@ export class AceDirective {
     }
     set theme(theme: string) {
         if (theme) {
-            this.editor.setTheme("ace/theme/" + theme);
+            this.editor.setTheme('ace/theme/' + theme);
         }
     }
     set mode(mode: string) {
         if (mode) {
-            this.editor.getSession().setMode("ace/mode/" + mode);
+            this.editor.getSession().setMode('ace/mode/' + mode);
         }
     }
 
@@ -39,19 +39,19 @@ export class AceDirective {
         this.textChanged = new EventEmitter<AceAjax.EditorChangeEvent>();
 
         let el = elementRef.nativeElement;
-        el.classList.add("editor");
-        //el.style.height = "250px";
-        //el.style.width = "300px";
-        el.style.height = "100%";
-        el.style.width = "100%";
+        el.classList.add('editor');
+        //el.style.height = '250px';
+        //el.style.width = '300px';
+        el.style.height = '100%';
+        el.style.width = '100%';
 
         this.editor = ace.edit(el);
         this.editor.$blockScrolling = Infinity; // Removes annoying scroll warning
         this.editor.resize(true);
-        this.editor.setTheme("ace/theme/chrome");
+        this.editor.setTheme('ace/theme/chrome');
 
 
-        this.editor.addEventListener("change", (e) => {
+        this.editor.addEventListener('change', (e) => {
             this.textChanged.next(e);
         });
     }

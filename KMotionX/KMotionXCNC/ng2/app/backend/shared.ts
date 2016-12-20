@@ -65,9 +65,9 @@ export class KmxStatus implements Status {
   simulating: boolean = true
   interpreting: boolean = false
   currentLine: number = 0
-  gcodeFile: string = ""
+  gcodeFile: string = ''
   gcodeFileTimestamp: number = 0;
-  machineSettingsFile: string = ""
+  machineSettingsFile: string = ''
   machineSettingsFileTimestamp: number  = 0;
 
   constructor() { }

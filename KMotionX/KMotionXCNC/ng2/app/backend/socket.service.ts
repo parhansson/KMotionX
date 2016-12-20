@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject ,BehaviorSubject } from 'rxjs/Rx';
-import { LogService, LogLevel } from "../log"
+import { LogService, LogLevel } from '../log'
 import { KMXUtil } from '../util/kmxutil';
 import { KmxStatus, Message, StatusMessage, LogMessage, TextMessage, JsonMessage } from './shared'
 import { FileResource } from '../resources'
@@ -33,11 +33,11 @@ export class SocketService {
     this.data.connected = false
     this.data.simulating = false
     this.data.currentLine = -1
-    this.data.gcodeFile = ""
-    this.data.machineSettingsFile = ""
+    this.data.gcodeFile = ''
+    this.data.machineSettingsFile = ''
 
     var url = 'ws://' + window.location.host + '/ws';
-    KMXUtil.getSingletonWorker("dist/app/backend/WorkerBootstrap.js", this.workerMessage.bind(this))
+    KMXUtil.getSingletonWorker('dist/app/backend/WorkerBootstrap.js', this.workerMessage.bind(this))
       .then(
       (worker) => this.socketWorker = worker,
       (reason) => console.error(reason)
@@ -55,7 +55,7 @@ export class SocketService {
   workerMessage(event: MessageEvent) {
     //messageCount++;
     //if(messageCount%5 == 0){
-    //console.info("Messages received", messageCount);
+    //console.info('Messages received', messageCount);
     //}
     var message = event.data as Message<any>;
     if (message.isText) {
@@ -77,7 +77,7 @@ export class SocketService {
     } else if (message.isStatus) {
       var raw = (message as StatusMessage).message
 
-      //  console.log("simulating", this.data.simulating)
+      //  console.log('simulating', this.data.simulating)
       // if(this.data.simulating !== raw.simulating){
       //   this.simulateSubject.next(this.data.simulating)
       // }
@@ -104,10 +104,10 @@ export class SocketService {
   }
 
   statusHandler(payload) {
-    this.kmxLogger.log('status', 'Line: ' + payload.line + " - " + payload.message);
+    this.kmxLogger.log('status', 'Line: ' + payload.line + ' - ' + payload.message);
   }
   completeHandler(payload) {
-    this.kmxLogger.log('status', 'Done Line: ' + payload.line + " Status: " + payload.status + " Sequence " + payload.sequence + " - " + payload.message);
+    this.kmxLogger.log('status', 'Done Line: ' + payload.line + ' Status: ' + payload.status + ' Sequence ' + payload.sequence + ' - ' + payload.message);
   }
   errorMessageHandler(payload) {
     this.kmxLogger.log('error', payload.message);
@@ -149,16 +149,16 @@ export class SocketService {
         var sp = document.createElement('span');
         if (type == LogLevel.SEND) {
           sp.style.color = 'green';
-          sp.appendChild(document.createTextNode("SENT: "));
+          sp.appendChild(document.createTextNode('SENT: '));
         } else if (type == LogLevel.RECEIVE) {
           sp.style.color = 'blue';
-          sp.appendChild(document.createTextNode("RECEIVED: "));
+          sp.appendChild(document.createTextNode('RECEIVED: '));
         } else if (type == LogLevel.ERROR) {
           sp.style.color = 'red';
-          sp.appendChild(document.createTextNode("ERROR: "));
+          sp.appendChild(document.createTextNode('ERROR: '));
         } else if (type == LogLevel.PING) {
           sp.style.color = 'blue';
-          sp.appendChild(document.createTextNode("PING..."));
+          sp.appendChild(document.createTextNode('PING...'));
         }
         div.appendChild(sp);
       }

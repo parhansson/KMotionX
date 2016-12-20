@@ -2,9 +2,9 @@ import {Injectable} from '@angular/core';
 import {Observable, Observer, Subject} from 'rxjs/Rx';
 import {ModelTransformer,Igm2GcodeTransformer, Gcode2ThreeTransformer, Pdf2SvgTransformer, Svg2IgmTransformer} from './transformer'
 import {IGM, GCodeSource} from './igm'
-import {KMXUtil}    from '../util/KMXUtil'
+import {KMXUtil}    from '../util/kmxutil'
 import {ModelSettingsService} from './model.settings.service';
-import {LogService} from "../log/log.service"
+import {LogService} from '../log/log.service'
 
 
 @Injectable()
@@ -62,7 +62,7 @@ export class StaticTransformer {
       } else if (source instanceof ArrayBuffer) {
         svgstring = KMXUtil.ab2str(source)
       } else {
-        console.error("Unsupported source", source);
+        console.error('Unsupported source', source);
       }
 
       if ((window as any).DOMParser) {
@@ -70,11 +70,11 @@ export class StaticTransformer {
         //svgstring = svgstring.replace(/^[\n\r \t]/gm, '');
         doc = new DOMParser().parseFromString(svgstring, 'image/svg+xml').documentElement as any as SVGElement;
       } else {
-        console.error("DOMParser not supported. Update your browser");
+        console.error('DOMParser not supported. Update your browser');
       }
     }
-    if (doc.localName !== "svg") {
-      this.logService.log("error", "Failed to parse SVG document: " + doc.textContent)
+    if (doc.localName !== 'svg') {
+      this.logService.log('error', 'Failed to parse SVG document: ' + doc.textContent)
       doc = null
     }
     return doc
@@ -103,8 +103,8 @@ export class StaticTransformer {
 export class IGM2GCodeTransformer extends ModelTransformer<IGM, string> {
 
   name: 'IGM to G-Code'
-  inputMime: ["application/x-kmx-gcode"]
-  outputMime: "application/x-gcode"
+  inputMime: ['application/x-kmx-gcode']
+  outputMime: 'application/x-gcode'
 
   //transformer.register(descriptor);
 
@@ -114,7 +114,7 @@ export class IGM2GCodeTransformer extends ModelTransformer<IGM, string> {
       //var gcode = new GCodeSource(new igm2gcode().transform(src, transformerSettings.svg));
       //resolve(gcode.text);
     } else {
-      targetObserver.error("Unsupported source: " + (typeof source));
+      targetObserver.error('Unsupported source: ' + (typeof source));
     }
     return null
   }

@@ -1,8 +1,8 @@
 import {Component, Inject,Input,ElementRef} from '@angular/core';
-import {LogService} from "./log.service"
+import {LogService} from './log.service'
 
 @Component({
-  selector:"kmx-log",
+  selector:'kmx-log',
     template: `
     <button class="btn btn-primary btn_wide" (click)="clearLog()">{{title}} (Clear)</button>
     <div class="status_message status_small"></div>
@@ -26,14 +26,14 @@ export class LogComponent{
   set consoleId(id:string){
     this.id = id;
     this.logService.registerConsole(this);
-    //this.logService.log(this.consoleId,"Testa loggen " + this.consoleId);
+    //this.logService.log(this.consoleId,'Testa loggen ' + this.consoleId);
   }
   get consoleId(){
     return this.id;
   }
   
   clearLog(){
-    console.log("Clear log" + this.consoleId);
+    console.log('Clear log' + this.consoleId);
        var element = this.elementRef.nativeElement.children[1];
        while (element.firstChild) {
         element.removeChild(element.firstChild);
