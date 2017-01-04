@@ -1,5 +1,5 @@
 
-import {Component, Directive, EventEmitter, ElementRef} from '@angular/core';
+import { Component, Directive, EventEmitter, ElementRef } from '@angular/core';
 import * as AceAjax from 'brace'
 
 
@@ -19,7 +19,7 @@ export class AceDirective {
     public textChanged: EventEmitter<AceAjax.EditorChangeEvent>;
 
     set text(s: string) {
-        if(s){
+        if (s) {
 
             this.editor.setValue(s);
         } else {
@@ -28,7 +28,7 @@ export class AceDirective {
         this.editor.clearSelection();
         //this.editor.focus();
     }
-    get text(){
+    get text() {
         return this.editor.getValue()
     }
     set theme(theme: string) {

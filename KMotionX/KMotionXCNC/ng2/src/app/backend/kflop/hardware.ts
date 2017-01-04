@@ -1,5 +1,5 @@
-import {Connector, IOPin} from '../hardware'
-import {KmxStatus} from '../shared'
+import { Connector, IOPin } from '../hardware'
+import { KmxStatus } from '../shared'
 
 export class KFlop {
 

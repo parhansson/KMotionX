@@ -1,9 +1,9 @@
-import {Observer} from 'rxjs/Rx';
-import {ModelSettingsService, ModelSettings} from '../model.settings.service';
-import {ModelTransformer} from './model.transformer';
+import { Observer } from 'rxjs/Rx';
+import { ModelSettingsService, ModelSettings } from '../model.settings.service';
+import { ModelTransformer } from './model.transformer';
 
 
-export class Pdf2SvgTransformer extends ModelTransformer<ArrayBuffer,SVGElement> {
+export class Pdf2SvgTransformer extends ModelTransformer<ArrayBuffer, SVGElement> {
   transformerSettings: ModelSettings
 
   constructor(private modelSettingsService: ModelSettingsService) {
@@ -11,7 +11,7 @@ export class Pdf2SvgTransformer extends ModelTransformer<ArrayBuffer,SVGElement>
     this.transformerSettings = modelSettingsService.settings;
   }
 
-  execute(source:ArrayBuffer,targetObserver: Observer<SVGElement>) {
+  execute(source: ArrayBuffer, targetObserver: Observer<SVGElement>) {
     var scale = 1.0;
     //this will use base64 encoded instead of bloburls for images
     //PDFJS.disableCreateObjectURL = true;
@@ -42,7 +42,7 @@ export class Pdf2SvgTransformer extends ModelTransformer<ArrayBuffer,SVGElement>
             //  anchor.appendChild(container);
 
             return page.getOperatorList().then(opList => {
-              let svgGfx = <PDFJSExtra.SVGGraphics> new PDFJS.SVGGraphics(page.commonObjs, page.objs);
+              let svgGfx = <PDFJSExtra.SVGGraphics>new PDFJS.SVGGraphics(page.commonObjs, page.objs);
               return svgGfx.getSVG(opList, viewport).then(svg => {
                 targetObserver.next(svg)
                 //svgObserver.complete()

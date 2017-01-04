@@ -68,7 +68,7 @@ export class KmxStatus implements Status {
   gcodeFile: string = ''
   gcodeFileTimestamp: number = 0;
   machineSettingsFile: string = ''
-  machineSettingsFileTimestamp: number  = 0;
+  machineSettingsFileTimestamp: number = 0;
 
   constructor() { }
 

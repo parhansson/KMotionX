@@ -1,1 +1,1 @@
-export {LaserCalculatorComponent} from './laser-calculator.component'
+export { LaserCalculatorComponent } from './laser-calculator.component'

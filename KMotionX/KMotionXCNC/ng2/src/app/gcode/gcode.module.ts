@@ -1,6 +1,6 @@
 
-import { NgModule }         from '@angular/core';
-import { CommonModule }    from '@angular/common';
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ControlButtonsComponent } from './control-buttons.component';
 import { DroComponent } from './dro.component';
 import { GCodeScreenComponent } from './gcode-screen.component';
@@ -15,12 +15,12 @@ import { ResourceModule } from '../resources/resource.module'
     LogModule,
     ResourceModule,
     EditorModule,
-    ],
+  ],
   declarations: [
     GCodeScreenComponent,
     ControlButtonsComponent,
     DroComponent,
-    GCodeEditorComponent, 
+    GCodeEditorComponent,
     UserButtonsComponent,
     ThreeViewComponent
   ], // directives, components, and pipes owned by this NgModule

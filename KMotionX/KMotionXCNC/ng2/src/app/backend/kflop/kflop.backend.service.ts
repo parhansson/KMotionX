@@ -1,8 +1,8 @@
-import {Injectable} from '@angular/core';
-import {Http, Response} from '@angular/http';
-import {Observable, Observer, Subject, AsyncSubject} from 'rxjs/Rx';
-import {FileResource, Payload, IFileBackend, DirList} from '../../resources'
-import {BackendService} from '../backend.service'
+import { Injectable } from '@angular/core';
+import { Http, Response } from '@angular/http';
+import { Observable, Observer, Subject, AsyncSubject } from 'rxjs/Rx';
+import { FileResource, Payload, IFileBackend, DirList } from '../../resources'
+import { BackendService } from '../backend.service'
 
 
 @Injectable()

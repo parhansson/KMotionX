@@ -8,11 +8,7 @@
 <body>
   Redirecting
   <script>
-      if(window.location.href.endsWith('/')){
-        window.location.replace(window.location.href + "dist/index.html");
-      } else {
-        window.location.replace(window.location.href + "/dist/index.html");
-      }
+        window.location.pathname = "ng2/dist/index.html";
   </script>
 </body>
 

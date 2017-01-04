@@ -2,16 +2,16 @@ import { SocketMessageBroker } from './app/backend/socket.message.broker'
 
 
 class Wrapper {
-    constructor(){}
+    constructor() { }
 
-    postMessage(message, ports,transfer ) {
-        postMessage(message, ports,transfer);
+    postMessage(message, ports, transfer) {
+        postMessage(message, ports, transfer);
     }
 }
 
-let smb =  new SocketMessageBroker(new Wrapper());
+let smb = new SocketMessageBroker(new Wrapper());
 
-onmessage = function(ev){
+onmessage = function (ev) {
     smb.onmessage(ev);
 }
 

@@ -1,10 +1,9 @@
 
-import {SocketConnector, SocketMessageHandler} from './socket.connector'
-import {KmxStatusStream} from './kmx.status'
-import {KmxStatus, StatusMessage, LogMessage, TextMessage, JsonMessage} from './shared'
+import { SocketConnector, SocketMessageHandler } from './socket.connector'
+import { KmxStatusStream } from './kmx.status'
+import { KmxStatus, StatusMessage, LogMessage, TextMessage, JsonMessage } from './shared'
 
-export class SocketMessageBroker implements SocketMessageHandler 
-{
+export class SocketMessageBroker implements SocketMessageHandler {
 
   socket: SocketConnector;
   kmxStatusStream: KmxStatusStream;

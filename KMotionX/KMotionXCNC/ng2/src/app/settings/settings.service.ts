@@ -1,9 +1,9 @@
-import {Injectable,Inject} from '@angular/core';
-import {Http} from '@angular/http';
-import {BackendService} from '../backend/backend.service';
-import {IFileBackend,FileServiceToken} from '../resources'
-import {KMXUtil} from '../util/kmxutil';
-import {Subject,BehaviorSubject} from 'rxjs/Rx'
+import { Injectable, Inject } from '@angular/core';
+import { Http } from '@angular/http';
+import { BackendService } from '../backend/backend.service';
+import { IFileBackend, FileServiceToken } from '../resources'
+import { KMXUtil } from '../util/kmxutil';
+import { Subject, BehaviorSubject } from 'rxjs/Rx'
 
 export class Machine {
   private static mcodes = ['M0', 'M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'S'];
@@ -130,9 +130,9 @@ export class TPlanner {
 export class SettingsService {
   private machine: Machine
   public subject: Subject<Machine>
-  constructor(private http: Http, 
-  private kmxBackend: BackendService, 
-  @Inject(FileServiceToken)private fileBackend: IFileBackend) {
+  constructor(private http: Http,
+    private kmxBackend: BackendService,
+    @Inject(FileServiceToken) private fileBackend: IFileBackend) {
     this.machine = new Machine();
     this.subject = new BehaviorSubject<Machine>(this.machine)
     this.load('./settings/machines/laser.cnf');
@@ -151,7 +151,7 @@ export class SettingsService {
       (payload) => {
         this.machine.update(payload.json())
         this.subject.next(this.machine)
-        },
+      },
       err => console.error(err),
       () => console.log('File loaded: ' + file)
     );;

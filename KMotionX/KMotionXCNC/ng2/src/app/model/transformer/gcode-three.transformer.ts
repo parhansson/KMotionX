@@ -1,11 +1,11 @@
 
-import {KMXUtil} from '../../util/kmxutil';
-import {GCodeVector, GCodeCurve3} from '../vector';
-import {GCodeParser} from '../gcode-parser';
-import {Block, Word, WordParameters, ControlWord} from '../gcode';
-import {Observable, Observer} from 'rxjs/Rx';
-import {GCodeSource} from '../igm'
-import {ModelTransformer} from './model.transformer';
+import { KMXUtil } from '../../util/kmxutil';
+import { GCodeVector, GCodeCurve3 } from '../vector';
+import { GCodeParser } from '../gcode-parser';
+import { Block, Word, WordParameters, ControlWord } from '../gcode';
+import { Observable, Observer } from 'rxjs/Rx';
+import { GCodeSource } from '../igm'
+import { ModelTransformer } from './model.transformer';
 
 //Copyright (c) 2014 par.hansson@gmail.com
 class ExtendedGCodeVector extends GCodeVector {

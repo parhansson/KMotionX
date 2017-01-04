@@ -1,15 +1,16 @@
-import { Component, Inject, Input, ViewChild} from '@angular/core';
-//import * as AceAjax from 'brace'
-import { AceDirective} from './ace.directive';
+import { Component, Inject, Input, ViewChild } from '@angular/core';
+import { AceDirective } from './ace.directive';
 import { FileStoreToken, FileStore } from './file-store';
-import { KMXUtil}    from '../util/kmxutil'
-import { DropZoneDirective,
+import { KMXUtil } from '../util/kmxutil'
+import {
+  DropZoneDirective,
   FileDialogComponent,
   FilePathComponent,
   FileResource,
   IFileBackend,
   FileServiceToken,
-  Payload }    from '../resources'
+  Payload
+} from '../resources'
 
 export interface OnFileEventHandler {
   (file: FileResource): void
@@ -66,7 +67,7 @@ export class AceEditorComponent {
   }
 
   onFile(file: FileResource | Payload) {
-    if(file instanceof FileResource){
+    if (file instanceof FileResource) {
       this.resource = file;
     } else {
       //Use imported name

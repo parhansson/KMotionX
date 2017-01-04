@@ -55,7 +55,7 @@ export abstract class BackendService implements IFileBackend {
   public onInvokeAction(action: number) {
     return this.onEvent('onInvokeAction', action);
   }
-  
+
   public onDoErrorMessage(message: string) {
     return this.onEvent('onDoErrorMessage', message);
   }

@@ -1,9 +1,9 @@
-import {Component, Injectable, Pipe, PipeTransform, Input, Attribute} from '@angular/core';
-import {SocketService} from '../backend/socket.service'
-import {KmxStatus} from '../backend/shared'
+import { Component, Injectable, Pipe, PipeTransform, Input, Attribute } from '@angular/core';
+import { SocketService } from '../backend/socket.service'
+import { KmxStatus } from '../backend/shared'
 
-import {KFlop} from '../backend/kflop/hardware'
-import {Connector, IOPin} from '../backend/hardware'
+import { KFlop } from '../backend/kflop/hardware'
+import { Connector, IOPin } from '../backend/hardware'
 
 
 
@@ -106,13 +106,13 @@ export class ConnectorComponent {
   intStatus: KmxStatus
   @Input() single: boolean
   kflop = KFlop.getInstance()
-  connector:Connector
+  connector: Connector
 
-  constructor(private socketService: SocketService, @Attribute('name')name:string) {
+  constructor(private socketService: SocketService, @Attribute('name') name: string) {
     this.intStatus = this.socketService.data
     this.connector = this.kflop.getConnector(name)
   }
-    
+
   getConnectorPins(even?: boolean) {
     //The modulus operation might seem backwards. 
     //But it is not the index but the pin number wich is index + 1 we are counting as even or not

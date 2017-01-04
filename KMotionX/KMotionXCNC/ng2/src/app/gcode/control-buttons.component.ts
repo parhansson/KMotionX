@@ -1,7 +1,7 @@
-import {Component} from '@angular/core';
-import {BackendService} from '../backend/backend.service';
-import {SocketService} from '../backend/socket.service';
-import {KmxStatus} from '../backend/shared'
+import { Component } from '@angular/core';
+import { BackendService } from '../backend/backend.service';
+import { SocketService } from '../backend/socket.service';
+import { KmxStatus } from '../backend/shared'
 
 @Component({
   selector: 'control-buttons',
@@ -24,13 +24,13 @@ import {KmxStatus} from '../backend/shared'
     </div>  
   `
 })
-export class ControlButtonsComponent{
+export class ControlButtonsComponent {
   kmxStatus: KmxStatus
 
-  constructor(private backendService: BackendService, 
+  constructor(private backendService: BackendService,
     private socketService: SocketService) {
     this.kmxStatus = socketService.data;
-    
+
   }
 
   onFeedhold() {

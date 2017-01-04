@@ -1,4 +1,4 @@
-import { Injectable, Inject, SkipSelf} from '@angular/core';
+import { Injectable, Inject, SkipSelf } from '@angular/core';
 import { Observable, Subject } from 'rxjs/Rx'
 import { FileResource, Payload, IFileBackend, FileServiceToken } from '../resources'
 import { BackendService } from '../backend/backend.service'
@@ -12,7 +12,7 @@ export class TransformingFileStore implements FileStore {
 
   constructor( @Inject(FileServiceToken) private fileBackend: BackendService,
     private staticTransformer: StaticTransformer
-    ) {
+  ) {
     this.payloadSubject.subscribe(
       payload => {
         this.staticTransformer.transform(payload.contentType, payload.arrayBuffer())

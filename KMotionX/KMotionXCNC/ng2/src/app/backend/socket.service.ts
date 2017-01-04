@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject ,BehaviorSubject } from 'rxjs/Rx';
+import { Subject, BehaviorSubject } from 'rxjs/Rx';
 import { LogService, LogLevel } from '../log'
 import { KMXUtil } from '../util/kmxutil';
 import { KmxStatus, Message, StatusMessage, LogMessage, TextMessage, JsonMessage } from './shared'
@@ -67,8 +67,8 @@ export class SocketService {
     //}
     var message = event.data as Message<any>;
     if (message.isText) {
-      if(message.message === 'WorkerReady')
-      var url = 'ws://' + window.location.host + '/ws';
+      if (message.message === 'WorkerReady')
+        var url = 'ws://' + window.location.host + '/ws';
       this.socketWorker.postMessage({ command: 'connect', url: url });
       return;
     } else if (message.isJson) {
@@ -92,10 +92,10 @@ export class SocketService {
       if (this.data.simulating !== raw.simulating) {
         console.log(raw.simulating);
       }
-      if (this.data.gcodeFileTimestamp !== raw.gcodeFileTimestamp  || this.data.gcodeFile !== raw.gcodeFile) {
+      if (this.data.gcodeFileTimestamp !== raw.gcodeFileTimestamp || this.data.gcodeFile !== raw.gcodeFile) {
         //timestamp in StatusMessage to detect file modifications
         this.data.gcodeFile = raw.gcodeFile;
-	      let gcodeResource = new FileResource();
+        let gcodeResource = new FileResource();
         gcodeResource.canonical = this.data.gcodeFile;
         this.gcodeFileSubject.next(gcodeResource)
       }

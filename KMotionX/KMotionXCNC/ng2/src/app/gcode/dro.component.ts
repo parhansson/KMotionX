@@ -1,12 +1,12 @@
-import {Component} from '@angular/core';
-import {BackendService} from '../backend/backend.service';
-import {SocketService} from '../backend/socket.service';
-import {KmxStatus} from '../backend/shared'
-import {SettingsService, Machine} from '../settings/settings.service'
+import { Component } from '@angular/core';
+import { BackendService } from '../backend/backend.service';
+import { SocketService } from '../backend/socket.service';
+import { KmxStatus } from '../backend/shared'
+import { SettingsService, Machine } from '../settings/settings.service'
 
 @Component({
-    selector:'kmx-dro',
-    template:`
+    selector: 'kmx-dro',
+    template: `
       <div>
           <div *ngFor=" let name of droAxes; let index = index" class="input-group">
               <span class="input-group-addon dro-axis">{{name}}</span>
@@ -21,34 +21,34 @@ import {SettingsService, Machine} from '../settings/settings.service'
       </div>    
     `
 })
-export class DroComponent { 
-    droAxes = ['X','Y','Z'];
-    intStatus:KmxStatus;
-    machine:Machine;
-    jogging:boolean = false;
+export class DroComponent {
+    droAxes = ['X', 'Y', 'Z'];
+    intStatus: KmxStatus;
+    machine: Machine;
+    jogging: boolean = false;
 
     constructor(
-        private backendService:BackendService, 
-        private socketService:SocketService,
-        private settingsService: SettingsService){
+        private backendService: BackendService,
+        private socketService: SocketService,
+        private settingsService: SettingsService) {
         this.intStatus = socketService.data;
     }
     ngAfterViewInit() {
-      this.settingsService.subject.subscribe((machine) => this.machine = machine);
+        this.settingsService.subject.subscribe((machine) => this.machine = machine);
     }
 
-    jogStartPos(axis:number){   
+    jogStartPos(axis: number) {
         this.backendService.jog(axis, this.machine.axes[axis].jogVel);
         this.jogging = true;
     }
 
-    jogStartNeg(axis:number){
+    jogStartNeg(axis: number) {
         this.backendService.jog(axis, -this.machine.axes[axis].jogVel);
         this.jogging = true;
     }
-    
-    jogStop(axis:number, speed:number){
-        if(this.jogging){
+
+    jogStop(axis: number, speed: number) {
+        if (this.jogging) {
             this.backendService.jog(axis, 0);
         }
         this.jogging = false;

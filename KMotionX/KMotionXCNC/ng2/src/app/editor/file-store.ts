@@ -4,8 +4,8 @@ import { FileResource, Payload } from '../resources'
 
 export const FileStoreToken = new OpaqueToken('editor-file-store');
 
-export interface FileStore{
-  textSubject:Subject<string>
+export interface FileStore {
+  textSubject: Subject<string>
   store(name: string, content: ArrayBuffer | ArrayBufferView | Blob | string);
   load(file: FileResource | Payload)
 }

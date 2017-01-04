@@ -5,7 +5,8 @@ import {
   FileResource,
   IFileBackend,
   FileServiceToken,
-  Payload } from '../resources';
+  Payload
+} from '../resources';
 
 @Injectable()
 export class DefaultFileStore implements FileStore {

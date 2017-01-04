@@ -126,7 +126,7 @@ export class GCodeParser {
         part.next(block, ParseValue.Comment, c)
       } else {
         if (c !== ' ' && c !== '\r') {
-          console.log('Strange unhandled character?', '"'+c+'"', c.charCodeAt(0))
+          console.log('Strange unhandled character?', '"' + c + '"', c.charCodeAt(0))
         }
       }
     }

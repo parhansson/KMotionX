@@ -11,7 +11,7 @@ import { BackendService } from '../backend/backend.service'
         <code-editor id="gcodeEditor" mode="gcode"></code-editor>
   `,
   viewProviders: [
-    { provide: FileStoreToken, useClass: TransformingFileStore }
+    { provide: FileStoreToken, useClass: TransformingFileStore }
   ]
 })
 export class GCodeEditorComponent {

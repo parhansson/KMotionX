@@ -1,12 +1,12 @@
 
-import {LogLevel} from '../log/log-level';
+import { LogLevel } from '../log/log-level';
 
 export interface SocketMessageHandler {
   onSocketLog(data: any, logType: number): void;
   onSocketMessage(data: any): void;
 }
 
-export class SocketConnector 
+export class SocketConnector
 //implements MessagePort
 {
 
@@ -14,7 +14,7 @@ export class SocketConnector
   websocket: WebSocket;
   connectTimeout: number = null;
   url: string;
-  constructor(private socketMessageHandler:SocketMessageHandler) {
+  constructor(private socketMessageHandler: SocketMessageHandler) {
   }
 
   connect(url: string) {
@@ -30,7 +30,7 @@ export class SocketConnector
 
   reconnect() {
     if (this.connectTimeout == null) {
-      this.connectTimeout = setInterval(this.connect.bind(this,this.url), this.reconnectDelayMs);
+      this.connectTimeout = setInterval(this.connect.bind(this, this.url), this.reconnectDelayMs);
     }
   }
 
@@ -68,7 +68,7 @@ export class SocketConnector
   }
 
   destroy() {
-    this.websocket.onclose = function() { }; // disable onclose handler first
+    this.websocket.onclose = function () { }; // disable onclose handler first
     this.websocket.close();
   }
 
@@ -76,7 +76,7 @@ export class SocketConnector
     this.log(message, LogLevel.SEND);
     this.websocket.send(message);
   }
-  private log(data:any, logType:number){
+  private log(data: any, logType: number) {
     this.socketMessageHandler.onSocketLog(data, LogLevel.SEND);
   }
 }

@@ -1,5 +1,5 @@
-import {BlockPart} from './block-part'
-import {Word} from './word'
+import { BlockPart } from './block-part'
+import { Word } from './word'
 
 export class Block {
   line: number

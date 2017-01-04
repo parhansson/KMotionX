@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 
 export class SVGModelSettings {
   scale: number = 1
@@ -13,9 +13,9 @@ export class SVGModelSettings {
   removeSingularites: boolean = true
   initCode: string = ''
   feedRate: number = 250
-  passes:number =  1;
-  materialWidth:number = 10
-  renderText:boolean = false
+  passes: number = 1;
+  materialWidth: number = 10
+  renderText: boolean = false
 }
 
 export class ModelSettings {

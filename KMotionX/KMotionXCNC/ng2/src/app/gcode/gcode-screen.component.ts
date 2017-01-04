@@ -1,18 +1,17 @@
-import {Component, ViewChild, SkipSelf, Inject} from '@angular/core';
-import {Subject} from 'rxjs/Rx'
-import {LogComponent} from '../log/log.component';
-import {BackendService} from '../backend/backend.service';
-import {SocketService} from '../backend/socket.service';
-import {KmxStatus} from '../backend/shared'
-import {DroComponent} from './dro.component';
-import {ThreeViewComponent} from './view.component';
-import {UserButtonsComponent} from './user-buttons.component';
-import {ControlButtonsComponent} from './control-buttons.component';
-import {ScreenComponent} from '../screen.component'
-import {StaticTransformer} from '../model/transformers'
-import {FileResource, Payload, FileServiceToken, IFileBackend} from '../resources'
-import {SettingsService, Machine} from '../settings/settings.service'
-import {GCodeEditorComponent} from './gcode-editor.component'
+import { Component, ViewChild, SkipSelf, Inject } from '@angular/core';
+import { Subject } from 'rxjs/Rx'
+import { LogComponent } from '../log/log.component';
+import { BackendService } from '../backend/backend.service';
+import { SocketService } from '../backend/socket.service';
+import { KmxStatus } from '../backend/shared'
+import { DroComponent } from './dro.component';
+import { ThreeViewComponent } from './view.component';
+import { UserButtonsComponent } from './user-buttons.component';
+import { ControlButtonsComponent } from './control-buttons.component';
+import { StaticTransformer } from '../model/transformers'
+import { FileResource, Payload, FileServiceToken, IFileBackend } from '../resources'
+import { SettingsService, Machine } from '../settings/settings.service'
+import { GCodeEditorComponent } from './gcode-editor.component'
 
 
 @Component({
@@ -39,7 +38,7 @@ import {GCodeEditorComponent} from './gcode-editor.component'
     </div>  
   `
 })
-export class GCodeScreenComponent extends ScreenComponent {
+export class GCodeScreenComponent {
   @ViewChild(ThreeViewComponent)
   threeComp: ThreeViewComponent;
   @ViewChild(GCodeEditorComponent)
@@ -50,7 +49,6 @@ export class GCodeScreenComponent extends ScreenComponent {
     private socketService: SocketService,
     private settingsService: SettingsService,
     private staticTransformer: StaticTransformer) {
-    super()
     this.kmxStatus = socketService.data;
 
   }
@@ -85,16 +83,16 @@ export class GCodeScreenComponent extends ScreenComponent {
 
     let boxGeom = new THREE.BoxGeometry(x, y, z);
     boxGeom.translate(x / 2, y / 2, z / 2);
-    let material = new THREE.LineBasicMaterial( { color: 0x000000,linewidth: 1,opacity:0.5 } );
+    let material = new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 1, opacity: 0.5 });
     let edges = new THREE.LineSegments(
-      new THREE.EdgesGeometry(boxGeom as any, undefined), 
+      new THREE.EdgesGeometry(boxGeom as any, undefined),
       material);
     return edges;
   }
 
   private renderBackground(x, y, z) {
 
-    console.log('debounce?',x,y,z)
+    console.log('debounce?', x, y, z)
     var texture = new THREE.TextureLoader().load('/settings/textures/bghoneym.jpg');
 
 

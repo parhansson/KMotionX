@@ -1,8 +1,8 @@
 
-import {Observer} from 'rxjs/Rx';
-import {IGM, IgmObject} from '../igm';
-import {GCodeVector} from '../vector';
-import {ModelTransformer} from './model.transformer';
+import { Observer } from 'rxjs/Rx';
+import { IGM, IgmObject } from '../igm';
+import { GCodeVector } from '../vector';
+import { ModelTransformer } from './model.transformer';
 import * as opentype from 'opentype.js'
 /*
 if (typeof(String.prototype.strip) === "undefined") {
@@ -102,7 +102,7 @@ export class Svg2IgmTransformer extends ModelTransformer<SVGElement, IGM>{
       return cssFilterAllowed.indexOf(element.localName) > -1
     }
     let igmText = new IGM()
-    
+
     this.font = null //disable text rendering
     new SvgParser(cssFilter, this.font).parse(svgRootElement, node, igmText)
     //console.log(igmText)
@@ -156,7 +156,7 @@ export interface ElementFilter {
 
 export interface ISVGParser {
   font: opentypejs.Font
-  addPath(d: string|any[], node: SvgNode)
+  addPath(d: string | any[], node: SvgNode)
   parseUnit(val: string)
   matrixMult(mA: number[], mB: number[])
   strip(val: string);
@@ -721,7 +721,7 @@ export class SvgParser implements ISVGParser {
     },
     tspan: function (parser: ISVGParser, tag: SVGTSpanElement, node: SvgNode) {
       if (parser.font) {
-        
+
         if (tag.textContent !== null) {
           let path = parser.font.getPath(tag.textContent, 0, 0, 1, { kerning: true })
           let dPath = path.toPathData(undefined)
@@ -1269,17 +1269,17 @@ export class SvgParser implements ISVGParser {
 
   matrixMult(mA: number[], mB: number[]) {
     return [mA[0] * mB[0] + mA[2] * mB[1],
-      mA[1] * mB[0] + mA[3] * mB[1],
-      mA[0] * mB[2] + mA[2] * mB[3],
-      mA[1] * mB[2] + mA[3] * mB[3],
-      mA[0] * mB[4] + mA[2] * mB[5] + mA[4],
-      mA[1] * mB[4] + mA[3] * mB[5] + mA[5]]
+    mA[1] * mB[0] + mA[3] * mB[1],
+    mA[0] * mB[2] + mA[2] * mB[3],
+    mA[1] * mB[2] + mA[3] * mB[3],
+    mA[0] * mB[4] + mA[2] * mB[5] + mA[4],
+    mA[1] * mB[4] + mA[3] * mB[5] + mA[5]]
   }
 
 
   matrixApply(mat: number[], vec: number[]) {
     return [mat[0] * vec[0] + mat[2] * vec[1] + mat[4],
-      mat[1] * vec[0] + mat[3] * vec[1] + mat[5]];
+    mat[1] * vec[0] + mat[3] * vec[1] + mat[5]];
   }
 
   matrixGetScale(mat) {

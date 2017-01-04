@@ -1,5 +1,4 @@
-import { Component, Inject, ViewChild } from '@angular/core';
-import { ScreenComponent } from '../screen.component'
+import { Component } from '@angular/core';
 import { CCodeEditorComponent } from './ccode-editor.component'
 
 @Component({
@@ -15,10 +14,9 @@ import { CCodeEditorComponent } from './ccode-editor.component'
     </tabset>
     `
 })
-export class CCodeScreenComponent extends ScreenComponent {
+export class CCodeScreenComponent {
 
   constructor() {
-    super()
   }
 
 }

@@ -1,5 +1,5 @@
-import {Component, Inject, Injectable} from '@angular/core';
-import {LogComponent} from './log.component'
+import { Component, Inject, Injectable } from '@angular/core';
+import { LogComponent } from './log.component'
 
 interface StringToConsoleMap {
   [id: string]: LogComponent;

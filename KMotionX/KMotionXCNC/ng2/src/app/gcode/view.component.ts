@@ -1,5 +1,5 @@
 
-import {Component, ElementRef,HostListener} from '@angular/core';
+import { Component, ElementRef, HostListener } from '@angular/core';
 
 @Component({
   selector: 'three-viewer',
@@ -23,10 +23,10 @@ export class ThreeViewComponent {
   private modelGroup = new THREE.Group()
   public auxiliaryGroup = new THREE.Group()
   private currentModelObject: THREE.Object3D = null
-  
+
 
   set model(model: THREE.Object3D) {
-    if(this.currentModelObject !== null){
+    if (this.currentModelObject !== null) {
       this.modelGroup.remove(this.currentModelObject)
     }
     this.currentModelObject = model
@@ -91,15 +91,15 @@ export class ThreeViewComponent {
     this.machineDetector = new RaycastDetector(cursor, this.camera, this.auxiliaryGroup);
     // Lights...
     [[0, 0, 1, 0xFFFFCC],
-      [0, 1, 0, 0xFFCCFF],
-      [1, 0, 0, 0xCCFFFF],
-      [0, 0, -1, 0xCCCCFF],
-      [0, -1, 0, 0xCCFFCC],
-      [-1, 0, 0, 0xFFCCCC]].forEach(function (position) {
-        var light = new THREE.DirectionalLight(position[3]);
-        light.position.set(position[0], position[1], position[2]).normalize();
-        this.scene.add(light);
-      }.bind(this));
+    [0, 1, 0, 0xFFCCFF],
+    [1, 0, 0, 0xCCFFFF],
+    [0, 0, -1, 0xCCCCFF],
+    [0, -1, 0, 0xCCFFCC],
+    [-1, 0, 0, 0xFFCCCC]].forEach(function (position) {
+      var light = new THREE.DirectionalLight(position[3]);
+      light.position.set(position[0], position[1], position[2]).normalize();
+      this.scene.add(light);
+    }.bind(this));
 
 
 
@@ -156,7 +156,7 @@ element.on( 'mouseleave', function(){
   }
 
 
-  onControlsEvent(event:THREE.Event) {
+  onControlsEvent(event: THREE.Event) {
     this.requestTick();
   }
 

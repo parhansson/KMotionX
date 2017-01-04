@@ -1,7 +1,7 @@
-import {IGM, GCodeSource} from '../igm';
-import {SVGModelSettings} from '../model.settings.service'
-import {ModelTransformer} from './model.transformer';
-import {Observer} from 'rxjs/Rx'
+import { IGM, GCodeSource } from '../igm';
+import { SVGModelSettings } from '../model.settings.service'
+import { ModelTransformer } from './model.transformer';
+import { Observer } from 'rxjs/Rx'
 
 
 class GCodeOutput {
@@ -30,14 +30,14 @@ class GCodeOutput {
   }
 }
 
-export class Igm2GcodeTransformer extends ModelTransformer<IGM,GCodeSource>{
+export class Igm2GcodeTransformer extends ModelTransformer<IGM, GCodeSource>{
 
-  constructor(private settings: SVGModelSettings){
+  constructor(private settings: SVGModelSettings) {
     super()
   }
 
-  execute(igm: IGM, targetObserver:Observer<GCodeSource>) {
-    
+  execute(igm: IGM, targetObserver: Observer<GCodeSource>) {
+
     let passWidth = this.settings.materialWidth / this.settings.passes;
     let settings = this.settings
     //settings.seekRate = settings.seekRate || 800;
@@ -186,9 +186,9 @@ export class Igm2GcodeTransformer extends ModelTransformer<IGM,GCodeSource>{
     gcode.push('G0 Z0 F300');
     gcode.push('G0 X0 Y0 F800');
     gcode.push('M2');
-    
+
     targetObserver.next(new GCodeSource(gcode.code))
-    
+
   }
 }
 

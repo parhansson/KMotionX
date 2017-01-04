@@ -1,5 +1,4 @@
 import { Component, Inject, ViewChild } from '@angular/core';
-import { ScreenComponent } from '../screen.component'
 import { AceEditorComponent, FileStoreToken, FileStore, DefaultFileStore } from '../editor'
 import { FileResource } from '../resources'
 
@@ -14,21 +13,19 @@ import { FileResource } from '../resources'
       </div>
     </code-editor>`,
   viewProviders: [
-    { provide: FileStoreToken,  useClass: DefaultFileStore }
+    { provide: FileStoreToken, useClass: DefaultFileStore }
   ]
 })
-export class CCodeEditorComponent{
+export class CCodeEditorComponent {
   @ViewChild(AceEditorComponent)
   editorComponent: AceEditorComponent;
 
-  constructor() {
-
-  }
+  constructor() { }
 
   ngAfterViewInit() {
-    this.editorComponent.onFile(new FileResource('./settings/c-programs')); 
+    this.editorComponent.onFile(new FileResource('./settings/c-programs'));
   }
-  onCompile(){
+  onCompile() {
     console.warn('Compile not implemented')
   }
 }

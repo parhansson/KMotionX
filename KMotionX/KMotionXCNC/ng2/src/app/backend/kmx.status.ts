@@ -1,5 +1,5 @@
-import {BufStreamReader} from './buffer.reader'
-import {KmxStatus} from './shared'
+import { BufStreamReader } from './buffer.reader'
+import { KmxStatus } from './shared'
 export class KmxStatusStream {
 
   readBuffer(arraybuffer: ArrayBuffer) {
@@ -13,7 +13,7 @@ export class KmxStatusStream {
     r.skip(32);
     //int PWM[N_PWMS+2*N_PWMS_SNAP]; //[16]*4
     r.skip(64);
-    
+
     //double Position[N_CHANNELS];   //[8]*8
     var positions: number[] = [];
     for (var i = 0; i < 8; i++) {
@@ -31,16 +31,16 @@ export class KmxStatusStream {
 
     var /*int*/ InputModes = r.int();         // 4 bits for each axis 
     var /*int*/ InputModes2 = r.int();        // 4 bits for each axis 
-    
+
     var /*int*/ OutputModes = r.int();        // 4 bits for each axis 
     var /*int*/ OutputModes2 = r.int();       // 4 bits for each axis 
     var /*int*/ Enables = r.int();            // 1 bit  for each axis 
     var /*int*/ AxisDone = r.int();           // 1 bit  for each axis
-    
+
     //int BitsDirection[2];// KMotion - 64 bits of I/O direction 1 = output
     var /*int*/ BitsDirection0 = r.int();
     var /*int*/ BitsDirection1 = r.int();
-    
+
     //int BitsState[2];    // KMotion - 64 bits of state lsb=I/O bit0
     var /*int*/ BitsState0 = r.int();
     var /*int*/ BitsState1 = r.int();
@@ -52,19 +52,19 @@ export class KmxStatusStream {
     var /*int*/ SnapBitsState1 = r.int();       // Snap - 32 bits of state  16-29 GPIO 0-7 Diff 8-15 OPTO, Card 1
     var /*int*/ KanalogBitsStateInputs = r.int();   // Kanalog - 16 bits 128-143
     var /*int*/ KanalogBitsStateOutputs = r.int();  // Kanalog - 24 bits 144-167
-    
+
     var /*int*/ RunOnStartUp = r.int();           // word Bits 1-7 selects which threads to execute on startup   
     var /*int*/ ThreadActive = r.int();           // one bit for each thread, 1=active, bit 0 - primary
     var /*int*/ StopImmediateState = r.int();     // Status of Stop Coordinated Motion Immediately
-    
+
     var /*double*/ TimeStamp = r.double();        // Time in seconds (since KFlop boot) this status was aquired
-    
+
     //int PC_comm[N_PC_COMM_PERSIST];// 8 persist Variables constantly uploaded to send misc commands/data to PC
     r.skip(32);
 
     var /*int*/ VirtualBits = r.int();           // Virtual I/O bits simulated in memory
     var /*int*/ VirtualBitsEx0 = r.int();         // only upload 32 1024 Expanded Virtual Bits 
-    
+
     //size = 464
     var ThreadActiveArr = this.toBitArr(ThreadActive, 8);
 

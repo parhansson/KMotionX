@@ -51,7 +51,7 @@ export class SVGBox {
     window.open(window.URL.createObjectURL(blob));
 
   }
-  
+
   MitrePanel(x, y, w, h, corner_size, div_x, div_y, thick, invertX, invertY) {
     var a, b, i, d, half_cut;
     x = x - w / 2 + (invertX ? thick : 0);
