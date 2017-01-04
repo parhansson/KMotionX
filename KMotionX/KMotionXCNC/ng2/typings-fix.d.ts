@@ -1,6 +1,6 @@
 
 
-declare var module: { id: string, exports: any };
+//declare var module: { id: string, exports: any };
 
 declare module 'three-trackballcontrols' { }
 
