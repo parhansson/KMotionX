@@ -1,5 +1,6 @@
-import { SocketMessageBroker } from './app/backend/socket.message.broker'
+import { SocketMessageBroker } from './app/backend/socket/socket.message.broker'
 
+const SocketWorker = self as any
 
 class Wrapper {
     constructor() { }
@@ -15,5 +16,5 @@ onmessage = function (ev) {
     smb.onmessage(ev);
 }
 
-
+export default SocketWorker
 

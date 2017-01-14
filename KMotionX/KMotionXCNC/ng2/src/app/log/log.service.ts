@@ -1,67 +1,41 @@
 import { Component, Inject, Injectable } from '@angular/core';
 import { LogComponent } from './log.component'
+import { LogSubject } from './log-subject'
 
-interface StringToConsoleMap {
-  [id: string]: LogComponent;
+interface LogIdToLogSubjectMap {
+  [id: string]: LogSubject<LogMessage>;
 }
-interface StringToLogMap {
-  [id: string]: DocumentFragment[];
+export class LogMessage {
+  constructor(public message: string, public styleClass?: string) {
+  }
 }
 
 @Injectable()
 export class LogService {
 
-  private consoles: StringToConsoleMap = {};
-  private logs: StringToLogMap = {};
+  private logs: LogIdToLogSubjectMap = {}
 
   constructor() {
 
   }
-  public registerConsole(console: LogComponent) {
-    this.consoles[console.consoleId] = console;
-    if (this.logs[console.consoleId] !== undefined) {
-      console.logFragment(this.logs[console.consoleId])
-      this.logs[console.consoleId] = []
 
+  public getLogSubject(logId: string) {
+    let subject = this.logs[logId];
+    if (subject === undefined) {
+      subject = this.logs[logId] = new LogSubject<LogMessage>();
     }
+    return subject;
   }
 
-  public clearLog(consoleId: string) {
-    this.consoles[consoleId].clearLog();
-  }
-  public logExist(id: string) {
-    return this.consoles[id] !== undefined;
-  }
-  public logFragment(id: string, fragment: DocumentFragment) {
-    var con = this.consoles[id];
-    if (con === undefined) {
-      if (this.logs[id] === undefined) {
-        this.logs[id] = []
-      }
-      this.logs[id].push(fragment)
-      //console.log('Console %s is undefined',id);
-    } else {
-      con.logFragment(fragment);
-    }
+  public clearLog(logId: string) {
+    this.logs[logId].prune();
   }
 
-  public log(id: string, message: string) {
-    var con = this.consoles[id];
-    let color = con === undefined ? 'black' : con.color
-    this.logFragment(id, this.createLogPost(message, color));
+  public logExist(logId: string) {
+    return this.logs[logId] !== undefined;
   }
 
-  private createLogPost(text: string, color: string): DocumentFragment {
-    var fragment = document.createDocumentFragment();
-    var div = document.createElement('div');
-    var sp = document.createElement('span');
-    sp.style.color = color;
-    sp.appendChild(document.createTextNode(text));
-    div.appendChild(sp);
-    fragment.appendChild(div);
-    return fragment;
-
+  public log(consoleId: string, message: string, styleClass?:string) {
+    this.getLogSubject(consoleId).next(new LogMessage(message, styleClass));
   }
-
-
 }

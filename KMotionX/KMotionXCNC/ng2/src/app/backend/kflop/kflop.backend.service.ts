@@ -15,7 +15,7 @@ export class KFlopBackendService extends BackendService implements IFileBackend 
 
   saveFile(name: string, content: ArrayBuffer | ArrayBufferView | Blob | string) {
     let url: string = '/upload'
-    let progressObserver: any;
+    let progressObserver: Observer<number>;
     //progress: number = 0;
     let progress$ = new Observable<number>(observer => { progressObserver = observer })
     let formData: FormData = new FormData()
@@ -64,26 +64,36 @@ export class KFlopBackendService extends BackendService implements IFileBackend 
 
   loadFile(path: string): Observable<Payload> {
 
-    let observable = new AsyncSubject<Payload>()
     let url = '/api/kmx/' + 'openFile';
     let data = { 'params': path };
-    let oReq = new XMLHttpRequest();
-    oReq.open('POST', url, true);
-    oReq.responseType = 'arraybuffer';
 
-    oReq.onload = (oEvent) => {
-      let arrayBuffer = oReq.response as ArrayBuffer; // Note: not oReq.responseText
-      if (arrayBuffer) {
-        observable.next(new Payload(arrayBuffer, oReq.getResponseHeader('Content-Type')))
-        observable.complete()
-      }
-    };
+    let builtin = false;
+    if (builtin) {
+      return this.http.post(url, JSON.stringify(data))
+        .map((res: Response) => { 
+          return new Payload(res.arrayBuffer(), res.headers.get('Content-Type'))
+        })
 
-    oReq.send(JSON.stringify(data));
+    } else {
+
+      let observable = new AsyncSubject<Payload>()
+      let oReq = new XMLHttpRequest();
+      oReq.open('POST', url, true);
+      oReq.responseType = 'arraybuffer';
+
+      oReq.onload = (oEvent) => {
+        let arrayBuffer = oReq.response as ArrayBuffer; // Note: not oReq.responseText
+        if (arrayBuffer) {
+          observable.next(new Payload(arrayBuffer, oReq.getResponseHeader('Content-Type')))
+          observable.complete()
+        }
+      };
+
+      oReq.send(JSON.stringify(data));
+      return observable;
+    }
 
 
-    //var obs = this.http.post(url, JSON.stringify(data));
-    return observable;
     //return this.onEvent('openFile', { 'params': path });
   }
 

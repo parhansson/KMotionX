@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 
 import { SocketService } from './backend/socket.service'
-import { KmxStatus } from './backend/shared'
+import { KmxStatus } from './hal/kflop'
 import { BackendService } from './backend/backend.service'
 
 @Component({

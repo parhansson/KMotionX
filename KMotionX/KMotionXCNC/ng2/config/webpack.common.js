@@ -69,10 +69,10 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: 'src/index.html'
     }),
+/*
     new webpack.ProvidePlugin({
       "StringView": "vendor/mozilla/stringview.js"
     }) 
-/*
     new webpack.ProvidePlugin({
       "THREE": "three"
     }) 

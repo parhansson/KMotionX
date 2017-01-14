@@ -1,5 +1,5 @@
 
-export class BufStreamReader {
+export class BufferReader {
   littleEndian = true;
   dv: DataView;
   off = 0;

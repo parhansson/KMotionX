@@ -1,56 +1,115 @@
-import { Component, Inject, Input, ElementRef } from '@angular/core';
-import { LogService } from './log.service'
+import {
+  Component,
+  Inject,
+  Input,
+  ElementRef,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  AfterViewChecked
+} from '@angular/core';
+import { Observable, Subscription } from 'rxjs'
+import { LogService, LogMessage } from './log.service'
+import { LogSubject } from './log-subject'
+import { LimitBuffer } from '../util'
 
 @Component({
   selector: 'kmx-log',
   template: `
-    <button class="btn btn-primary btn_wide" (click)="clearLog()">{{title}} (Clear)</button>
-    <div class="status_message status_small"></div>
+    <div [attr.class]="consoleId">
+    <ul class="list-inline">
+      <li><button class="btn btn-primary btn-block" (click)="prune()">{{title}} (Clear)</button></li>
+      <li><input class="form-control" type="number" [(ngModel)]="logLimit" (change)="updateLimit()" /></li>  
+      <li>
+        <label>
+          <input type="checkbox" [(ngModel)]="autoscroll" /> Auto scroll
+        </label>
+      </li>  
+    </ul>
+      <div #scrollContainer class="status_message status_small {{id}}">
+        <div class="log-post" *ngFor="let log of logs;">
+          <span [attr.class]="log.styleClass">{{log.message}}</span>
+        </div>
+      </div>
+    </div>
   `
-  //,providers:[LogService]
 })
-
-export class LogComponent {
+export class LogComponent implements OnInit, OnDestroy, AfterViewChecked {
   @Input()
-  title: string;
-
-  id: string;
-  @Input()
-  color: string;
-
-  constructor(private logService: LogService, private elementRef: ElementRef) {
-
-  }
+  title: string
 
   @Input()
-  set consoleId(id: string) {
-    this.id = id;
-    this.logService.registerConsole(this);
-    //this.logService.log(this.consoleId,'Testa loggen ' + this.consoleId);
+  consoleId: string
+
+  @Input()
+  logLimit: number
+
+  @Input()
+  autoscroll: boolean = true
+  logs: LogMessage[] = []
+  private buffer = new LimitBuffer<LogMessage>()
+
+  @ViewChild('scrollContainer')
+  private scrollContainer: ElementRef
+  private logSubject: LogSubject<LogMessage>
+  private subscription: Subscription
+
+  constructor(private logService: LogService) {
+    this.logLimit = 200;
   }
-  get consoleId() {
-    return this.id;
+  //http://stackoverflow.com/questions/35232731/angular2-scroll-to-bottom-chat-style
+  ngOnInit() {
+    this.logSubject = this.logService.getLogSubject(this.consoleId)
+    this.logLimit = this.logLimit < 1 ? 1 : this.logLimit;
+    this.updateLimit()
+    this.subscribe()
+    //this.logService.log(this.consoleId, 'Test log ' + this.consoleId);
   }
 
-  clearLog() {
-    console.log('Clear log' + this.consoleId);
-    var element = this.elementRef.nativeElement.children[1];
-    while (element.firstChild) {
-      element.removeChild(element.firstChild);
+  updateLimit() {
+    this.logSubject.setBufferSize(this.logLimit)
+    this.trimBufferToSize(this.logLimit)
+  }
+
+  ngAfterViewChecked() {
+    //TODO this is called all the time in this view
+    if (this.autoscroll) {
+      this.scrollToBottom();
     }
   }
+  scrollToBottom(): void {
+    let container = this.scrollContainer.nativeElement;
+    container.scrollTop = container.scrollHeight;
+  }
 
-  logFragment(fragment: DocumentFragment | DocumentFragment[]) {
-    //console.log(fragment);
-    var node = this.elementRef.nativeElement.children[1];
-    if (fragment instanceof Array) {
-      for (let f of fragment) {
-        node.appendChild(f);
-      }
-    } else {
-      node.appendChild(fragment);
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
+
+  prune() {
+    this.trimBufferToSize(0)
+    this.logSubject.prune();
+  }
+  private pruneLocal() {
+    this.logs.splice(0, this.logs.length)
+  }
+  private subscribe() {
+    this.subscription = this.logSubject.subscribe(logMessage => {
+      this.logs.push(logMessage)
+      this.trimBufferToSize(this.logLimit)
+    });
+  }
+
+  private trimBufferToSize(_bufferSize:number)  {
+    const _events = this.logs;
+
+    let eventsCount = _events.length;
+    let spliceCount = 0;
+
+    if (eventsCount > _bufferSize) {
+      spliceCount = eventsCount - _bufferSize;
+      _events.splice(0, spliceCount);
     }
-    node.scrollTop = node.scrollHeight;
   }
 
 }

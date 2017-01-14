@@ -1,37 +1,38 @@
 
-import { SocketConnector, SocketMessageHandler } from './socket.connector'
-import { KmxStatusStream } from './kmx.status'
-import { KmxStatus, StatusMessage, LogMessage, TextMessage, JsonMessage } from './shared'
+import { SocketConnector, SocketMessageHandler, JsonSerializer } from '../../util'
+import { KmxStatusParser, KmxStatus, ControlMessage } from '../../hal/kflop'
+import { LogMessage, TextMessage } from './messages'
 
 export class SocketMessageBroker implements SocketMessageHandler {
 
-  socket: SocketConnector;
-  kmxStatusStream: KmxStatusStream;
+  socket: SocketConnector
+  kmxStatusStream: KmxStatusParser
+  serializer: JsonSerializer
 
   constructor(private messagePort: any) {
     //messagePort.onmessage = this.onmessage.bind(this);
-
-    this.kmxStatusStream = new KmxStatusStream();
-    this.socket = new SocketConnector(this);
-    messagePort.postMessage(new TextMessage('WorkerReady'));
+    this.serializer = new JsonSerializer()
+    this.kmxStatusStream = new KmxStatusParser()
+    this.socket = new SocketConnector(this, 'KMotionX')
+    this.post(new TextMessage('WorkerReady'))
   }
 
-  onSocketMessage(data: any) {
+  onSocketMessage(data: ArrayBuffer | Blob | string) {
     if (data instanceof ArrayBuffer) {
       this.onBinaryMessage(data)
     } else if (data instanceof Blob) {
-      var reader = new FileReader();
+      let reader = new FileReader();
       // reader.result contains the contents of blob as a typed array
       reader.addEventListener('loadend', this.onBinaryMessage.bind(this, reader.result));
       reader.readAsArrayBuffer(data);
     } else {
       if (data !== 'KMotionX') {
         //try{ //try catch disables optimization in chrome
-        var obj = JSON.parse(data);
-        this.messagePort.postMessage(new JsonMessage(obj));
+        let ctrlMessage = JSON.parse(data) as ControlMessage;
+        this.post(new ControlMessage(ctrlMessage));
         //ack messages that don't require users answer here
-        if (obj.payload.block === false) {
-          this.acknowledge(obj.id, -1);
+        if (ctrlMessage.payload.block === false) {
+          this.acknowledge(ctrlMessage.id, -1);
         }
 
         //} catch(e){
@@ -43,31 +44,38 @@ export class SocketMessageBroker implements SocketMessageHandler {
     }
   }
 
-  onBinaryMessage(data: ArrayBuffer) {
-    let status = this.kmxStatusStream.readBuffer(data);
-    this.messagePort.postMessage(new StatusMessage(status));
-  }
 
-  onSocketLog(message: any, type: number) {
-    this.messagePort.postMessage(new LogMessage(message, type));
+
+  onSocketLog(message: string, type: number) {
+    this.post(new LogMessage(message, type));
 
   }
 
   onmessage(event: MessageEvent) {
     if (event.data.command == 'connect') {
-      var url = event.data.url;
+      let url = event.data.url;
       this.socket.connect(url);
     } else if (event.data.command == 'acknowledge') {
       this.acknowledge(event.data.id, event.data.ret);
     } else if (event.data.command == 'disconnect') {
       //no need to acually disconnect at the moment
       this.socket.destroy();
-      this.messagePort.postMessage(new TextMessage('done'));
+      this.post(new TextMessage('done'));
     }
 
   }
-  acknowledge(id, ret) {
+
+  private onBinaryMessage(data: ArrayBuffer) {
+    let status = this.kmxStatusStream.readBuffer(data);
+    this.post(status);
+  }
+
+  private acknowledge(id, ret) {
     this.socket.sendMessage(JSON.stringify({ type: 'CB_ACK', id: id, returnValue: ret }));
+  }
+
+  private post(payload: TextMessage | LogMessage | KmxStatus | ControlMessage) {
+    this.messagePort.postMessage(this.serializer.serialize(payload));
   }
 
 }

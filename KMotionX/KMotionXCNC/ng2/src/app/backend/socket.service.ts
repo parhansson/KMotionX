@@ -1,191 +1,171 @@
 import { Injectable } from '@angular/core';
 import { Subject, BehaviorSubject } from 'rxjs/Rx';
 import { LogService, LogLevel } from '../log'
-import { KMXUtil } from '../util/kmxutil';
-import { KmxStatus, Message, StatusMessage, LogMessage, TextMessage, JsonMessage } from './shared'
+import { SerializedObject } from '../util';
+import { KmxStatus, ControlMessagePayload, ControlMessage } from '../hal/kflop';
+import { LogMessage, TextMessage } from './socket/messages'
+
 import { FileResource } from '../resources'
 
-//let SocketWorker = require('worker-loader!../../socket.worker');
-let SocketWorker = require('../../socket.worker');
+import * as SocketWorker from '../../socket.worker';
+//import SocketWorker from '../../socket.worker';
 
 @Injectable()
 export class SocketService {
   gcodeFileSubject: Subject<FileResource> = new BehaviorSubject<FileResource>(new FileResource())
   simulateSubject: Subject<boolean> = new BehaviorSubject<boolean>(true)
   data: KmxStatus = new KmxStatus()
-  private socketHandlers = {
 
-    STATUS: this.statusHandler,// 0: Non blocking callback. Called from the interpreter in different thread
-    COMPLETE: this.completeHandler,// 1: Non blocking callback. Called from the interpreter in different thread
-    ERR_MSG: this.errorMessageHandler,// 2: Non blocking callback
-    CONSOLE: this.consoleHandler,// 3: Non blocking callback, event though it has return value??
-    USER: this.userHandler,// 4: Blocking callback. Called from the interpreter in different thread
-    USER_M_CODE: this.userMCodeHandler,// 5: Blocking callback. Called from the interpreter in different thread
-    MESSAGEBOX: this.messageHandler// 6: Blocking callback. However there is no need to block OK only boxes.
-  }
   private socketWorker: Worker;
 
   constructor(private kmxLogger: LogService) {
 
-    this.data.interpreting = false
-    this.data.feedHold = false
     this.data.dro = [0, 0, 0]
     this.data.timeStamp = -1
-    this.data.connected = false
     this.data.simulating = false
     this.data.currentLine = -1
-    this.data.gcodeFile = ''
-    this.data.machineSettingsFile = ''
-
-    var url = 'ws://' + window.location.host + '/ws';
-    //KMXUtil.getSingletonWorker('app/backend/WorkerBootstrap.js', this.workerMessage.bind(this))
-    /*
-    KMXUtil.getSingletonWorker('worker.js', this.workerMessage.bind(this))
-      .then(
-      (worker) => this.socketWorker = worker,
-      (reason) => console.error(reason)
-      );
-      */
-    //var MyWorker = require('worker-loader?inline!../../worker');
-    //var MyWorker = require('worker-loader!../../socket.worker');
-
-    //this.socketWorker = new MyWorker();
-    this.socketWorker = new SocketWorker();
-    this.socketWorker.onmessage = this.workerMessage.bind(this);
+    
+    //this.socketWorker = new SocketWorker()
+    this.socketWorker = new (SocketWorker as any)();
+    this.socketWorker.onmessage = this.onWorkerMessage.bind(this);
     //does not seem to work, at least not in chrome
     //      window.onbeforeunload = function(){
     //        socketWorker.postMessage({command:'disconnect'})
     //      }
   }
+  //Message type guards
+  private isText(payload: SerializedObject<any>): payload is SerializedObject<TextMessage> {
+    return payload.key === 'TextMessage';
+  }
 
+  private isControl(payload: SerializedObject<any>): payload is SerializedObject<ControlMessage> {
+    return payload.key === 'ControlMessage';
+  }
 
+  private isStatus(payload: SerializedObject<any>): payload is SerializedObject<KmxStatus> {
+    return payload.key === 'KmxStatus';
+  }
 
-  workerMessage(event: MessageEvent) {
-    //messageCount++;
-    //if(messageCount%5 == 0){
-    //console.info('Messages received', messageCount);
-    //}
-    var message = event.data as Message<any>;
-    if (message.isText) {
-      if (message.message === 'WorkerReady')
-        var url = 'ws://' + window.location.host + '/ws';
-      this.socketWorker.postMessage({ command: 'connect', url: url });
-      return;
-    } else if (message.isJson) {
-      var obj = message.message;
-      if (obj.KMX) {
-        return;
-      }
-      var handler = this.socketHandlers[obj.payload.type].bind(this);// || _this.defaultHandler;
-      var ret = handler(obj.payload);
-      if (obj.payload.block === true) {
-        //only ack messages that require users answer here
-        this.acknowledge(obj.id, ret);
-      }
-    } else if (message.isStatus) {
-      var raw = (message as StatusMessage).message
+  private isLog(payload: SerializedObject<any>): payload is SerializedObject<LogMessage> {
+    return payload.key === 'LogMessage';
+  }
 
-      //  console.log('simulating', this.data.simulating)
-      // if(this.data.simulating !== raw.simulating){
-      //   this.simulateSubject.next(this.data.simulating)
-      // }
-      if (this.data.simulating !== raw.simulating) {
-        console.log(raw.simulating);
-      }
-      if (this.data.gcodeFileTimestamp !== raw.gcodeFileTimestamp || this.data.gcodeFile !== raw.gcodeFile) {
-        //timestamp in StatusMessage to detect file modifications
-        this.data.gcodeFile = raw.gcodeFile;
-        let gcodeResource = new FileResource();
-        gcodeResource.canonical = this.data.gcodeFile;
-        this.gcodeFileSubject.next(gcodeResource)
-      }
-
-      this.data.copyFrom(raw)
-    } else if (message.isLog) {
-      let logMessage = message as LogMessage
-      this.logHandler(message.message, logMessage.type);
+  private onWorkerMessage(event: MessageEvent) {
+    let payload = event.data as SerializedObject<any>
+    if (this.isText(payload)) {
+      this.onTextMessage(payload.object)
+    } else if (this.isControl(payload)) {
+      this.onControlMessage(payload.object);
+    } else if (this.isStatus(payload)) {
+      this.onStatusMessage(payload.object)
+    } else if (this.isLog(payload)) {
+      this.onLogMessage(payload.object);
     }
   }
 
-  public acknowledge(id, ret) {
+  private acknowledge(id, ret) {
     this.socketWorker.postMessage({ command: 'acknowledge', id: id, ret: ret });
   }
 
-  statusHandler(payload) {
-    this.kmxLogger.log('status', 'Line: ' + payload.line + ' - ' + payload.message);
-  }
-  completeHandler(payload) {
-    this.kmxLogger.log('status', 'Done Line: ' + payload.line + ' Status: ' + payload.status + ' Sequence ' + payload.sequence + ' - ' + payload.message);
-  }
-  errorMessageHandler(payload) {
-    this.kmxLogger.log('error', payload.message);
-  }
-  consoleHandler(payload) {
-    this.kmxLogger.log('console', payload.message);
-  }
-
-  userHandler(payload) {
-    if (confirm('USR: ' + payload.message + ' ?')) {
-      return 0; // zero is true for this callback
-    } else {
-      return 1;
-    }
-  }
-  userMCodeHandler(payload) {
-    if (confirm('Are you sure you want to continue after M' + payload.code + ' ?')) {
-      return 0; // zero is true for this callback
-    } else {
-      return 1;
+  private onTextMessage(textMessage: TextMessage) {
+    if (textMessage.message === 'WorkerReady') {
+      let url = 'ws://' + window.location.host + '/ws';
+      this.socketWorker.postMessage({ command: 'connect', url: url });
     }
   }
 
-  messageHandler(payload) {
-    alert(payload.message);
-    return 0;
+  private onStatusMessage(raw: KmxStatus) {
+    //  console.log('simulating', this.data.simulating)
+    // if(this.data.simulating !== raw.simulating){
+    //   this.simulateSubject.next(this.data.simulating)
+    // }
+    if (this.data.simulating !== raw.simulating) {
+      console.log(raw.simulating);
+    }
+    if (this.data.gcodeFileTimestamp !== raw.gcodeFileTimestamp || this.data.gcodeFile !== raw.gcodeFile) {
+      //timestamp in StatusMessage to detect file modifications
+      this.data.gcodeFile = raw.gcodeFile;
+      let gcodeResource = new FileResource();
+      gcodeResource.canonical = this.data.gcodeFile;
+      this.gcodeFileSubject.next(gcodeResource)
+    }
+
+    this.data.copyFrom(raw)
   }
 
-  logHandler(message, type: number) {
-    let force = true;
-    if (this.kmxLogger.logExist('output') || force) {
-      var style = '';
-      var fragment = document.createDocumentFragment();
-      var div = document.createElement('div');
-      fragment.appendChild(div);
-      if (type == LogLevel.NONE.valueOf()) {
-
-      } else {
-        var sp = document.createElement('span');
-        if (type == LogLevel.SEND.valueOf()) {
-          sp.style.color = 'green';
-          sp.appendChild(document.createTextNode('SENT: '));
-        } else if (type as LogLevel == LogLevel.RECEIVE.valueOf()) {
-          sp.style.color = 'blue';
-          sp.appendChild(document.createTextNode('RECEIVED: '));
-        } else if (type as LogLevel == LogLevel.ERROR.valueOf()) {
-          sp.style.color = 'red';
-          sp.appendChild(document.createTextNode('ERROR: '));
-        } else if (type as LogLevel == LogLevel.PING.valueOf()) {
-          sp.style.color = 'blue';
-          sp.appendChild(document.createTextNode('PING...'));
+  private onControlMessage(obj: ControlMessage) {
+    let payload = obj.payload
+    let ret = undefined;
+    switch (payload.type) {
+      case 'STATUS': // 0: Non blocking callback. Called from the interpreter in different thread
+        {
+          this.kmxLogger.log('status', 'Line: ' + payload.line + ' - ' + payload.message);
+          return
         }
-        div.appendChild(sp);
-      }
-      div.appendChild(document.createTextNode(message));
-
-      this.kmxLogger.logFragment('output', fragment);
-    } else {
-      if (type == LogLevel.NONE) {
-        console.info('---', message);
-      } else if (type as LogLevel == LogLevel.SEND) {
-        console.info('SENT', message);
-      } else if (type as LogLevel == LogLevel.RECEIVE) {
-        console.info('RECEIVED', message);
-      } else if (type as LogLevel == LogLevel.ERROR) {
-        console.error('ERROR', message);
-      } else if (type as LogLevel == LogLevel.PING) {
-        console.info('PING...', message);
-      }
-
+      case 'COMPLETE':// 1: Non blocking callback. Called from the interpreter in different thread
+        {
+          this.kmxLogger.log('status', 'Done Line: ' + payload.line + ' Status: ' + payload.status + ' Sequence ' + payload.sequence + ' - ' + payload.message);
+          return
+        }
+      case 'ERR_MSG':// 2: Non blocking callback
+        {
+          this.kmxLogger.log('error', payload.message);
+          return
+        }
+      case 'CONSOLE':// 3: Non blocking callback, event though it has return value??
+        {
+          this.kmxLogger.log('console', payload.message);
+          return
+        }
+      case 'USER': // 4: Blocking callback. Called from the interpreter in different thread
+        {
+          if (confirm('USR: ' + payload.message + ' ?')) {
+            ret = 0; // zero is true for this callback
+          } else {
+            ret = 1;
+          }
+          break
+        }
+      case 'USER_M_CODE': // 5: Blocking callback. Called from the interpreter in different thread
+        {
+          if (confirm('Are you sure you want to continue after M' + payload.code + ' ?')) {
+            ret = 0; // zero is true for this callback
+          } else {
+            ret = 1;
+          }
+          break
+        }
+      case 'MESSAGEBOX': // 6: Blocking callback. However there is no need to block OK only boxes.
+        {
+          alert(payload.message);
+          ret = 0
+          break
+        }
     }
+
+    if (obj.payload.block === true) {
+      //only ack messages that require users answer here
+      this.acknowledge(obj.id, ret);
+    }
+  }
+
+
+  private onLogMessage(logMessage: LogMessage) {
+    let message = logMessage.message
+    let type = logMessage.type
+
+    let prefixClass = ''
+    if (type == LogLevel.INFO.valueOf()) {
+      prefixClass = 'info'
+    } else if (type == LogLevel.SEND.valueOf()) {
+      prefixClass = 'outgoing'
+    } else if (type as LogLevel == LogLevel.RECEIVE.valueOf()) {
+      prefixClass = 'incomming'
+    } else if (type as LogLevel == LogLevel.ERROR.valueOf()) {
+      prefixClass = 'error'
+    }
+
+    this.kmxLogger.log('output', message, prefixClass);
+
   }
 }

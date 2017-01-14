@@ -9,7 +9,7 @@ import { TransformerSettingsComponent } from './transformer-settings.component'
 @NgModule({
   imports: [CommonModule,
     FormsModule,
-    TabsModule.forRoot()
+    TabsModule
   ],
   declarations: [
     MCodeValueComponent,

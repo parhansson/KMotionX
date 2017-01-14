@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { BackendService } from '../backend/backend.service';
 import { SocketService } from '../backend/socket.service';
-import { KmxStatus } from '../backend/shared'
+import { KmxStatus } from '../hal/kflop'
 
 @Component({
   selector: 'control-buttons',

@@ -10,9 +10,7 @@ import { SettingsScreenComponent } from './settings';
 const appRoutes: Routes = [
   {
     path: 'gcode',
-    component: GCodeScreenComponent,
-    //outlet : 'main'
-    //, useAsDefault: true,
+    component: GCodeScreenComponent
   },
   {
     path: 'ccode',
@@ -32,7 +30,8 @@ const appRoutes: Routes = [
   },
   {
     path: '',
-    component: GCodeScreenComponent
+    redirectTo: '/gcode',
+    pathMatch: 'full'
   }
 ];
 

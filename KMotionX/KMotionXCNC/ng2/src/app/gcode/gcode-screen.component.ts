@@ -3,7 +3,7 @@ import { Subject } from 'rxjs/Rx'
 import { LogComponent } from '../log/log.component';
 import { BackendService } from '../backend/backend.service';
 import { SocketService } from '../backend/socket.service';
-import { KmxStatus } from '../backend/shared'
+import { KmxStatus } from '../hal/kflop'
 import { DroComponent } from './dro.component';
 import { ThreeViewComponent } from './view.component';
 import { UserButtonsComponent } from './user-buttons.component';
@@ -20,8 +20,8 @@ import { GCodeEditorComponent } from './gcode-editor.component'
     <div class="row  fill">
       <div class="hidden-xs col-md-3">
         <kmx-dro></kmx-dro>
-        <kmx-log title="Error log" consoleId="error" color="red"></kmx-log>
-        <kmx-log title="Console" consoleId="console" color="blue"></kmx-log>
+        <kmx-log title="Error log" consoleId="error"></kmx-log>
+        <kmx-log title="Console" consoleId="console"></kmx-log>
       </div>
       <div class="col-xs-9 col-md-6">
         <!-- WebGL rendering area -->

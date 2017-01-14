@@ -1,7 +1,7 @@
 
 import { NgModule }         from '@angular/core';
 import { CommonModule }     from '@angular/common';
-import { TabsModule }       from 'ng2-bootstrap';
+import { TabsModule }       from 'ng2-bootstrap/tabs';
 import { EditorModule }     from '../editor/editor.module';
 import { ResourceModule }   from '../resources/resource.module'
 import { CCodeScreenComponent } from './ccode-screen.component'

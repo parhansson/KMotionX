@@ -1,9 +1,7 @@
 import { Component, Injectable, Pipe, PipeTransform, Input, Attribute } from '@angular/core';
 import { SocketService } from '../backend/socket.service'
-import { KmxStatus } from '../backend/shared'
-
-import { KFlop } from '../backend/kflop/hardware'
-import { Connector, IOPin } from '../backend/hardware'
+import { KFlop, KmxStatus } from '../hal/kflop'
+import { Connector, IOPin } from '../hal'
 
 
 
