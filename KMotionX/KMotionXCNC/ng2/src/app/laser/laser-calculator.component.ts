@@ -1,8 +1,8 @@
 import { Component, Inject, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'laser-calc-screen',
-  templateUrl: './laser-calculator.html'
+  selector: 'laser-ppi-calculator',
+  templateUrl: './laser-calculator.component.html'
 })
 export class LaserCalculatorComponent {
   //@Input()

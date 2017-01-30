@@ -8,14 +8,17 @@ module.exports = webpackMerge(commonConfig, {
 
   output: {
     path: helpers.root('dist'),
-    pathinfo:true,
+    pathinfo: true,
     publicPath: "/ng2/dist/",
     filename: '[name].js',
     chunkFilename: '[id].chunk.js'
   },
 
   plugins: [
-    new ExtractTextPlugin('[name].css')
+    new ExtractTextPlugin({
+      filename: '[name].css',
+      allChunks: true
+    })
   ],
 
   devServer: {
@@ -24,10 +27,10 @@ module.exports = webpackMerge(commonConfig, {
     proxy: [
       {
         context: ['/ws'],
-        ws:true,
+        ws: true,
         target: 'ws://localhost:8080',
         secure: false
-      },      
+      },
       {
         context: ['/api/**', '/settings/**'],
         target: 'http://localhost:8080',

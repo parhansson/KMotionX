@@ -17,15 +17,8 @@
         <li><a routerLink="/ccode" routerLinkActive="active">C programs</a></li>
         <li><a routerLink="/settings" routerLinkActive="active">Settings</a></li>
         <li><a routerLink="/debug" routerLinkActive="active">Debug</a></li>
-        <li><a routerLink="/laser-calc" routerLinkActive="active">Laser Calculator</a></li>
-        <!--
-        <li><a [routerLink]="['GCodeScreen']">GCode</a></li>
-        <li><a [routerLink]="['CCodeScreen']">C programs</a></li>
-        <li><a [routerLink]="['SettingsScreen']">Settings</a></li>
-        <li><a [routerLink]="['DebugScreen']">Debug</a></li>
-        
-        <li><a [routerLink]="['LaserCalculator']">Laser Calculator</a></li>
-        -->
+        <li><a routerLink="/laser" routerLinkActive="active">Laser</a></li>
+
         <!--<li><a href="javascript:$('#aboutModal').modal();">About</a></li>-->
           <li><a><slide-switch [state]="intStatus?.simulating" (switched)="onSimulate()"></slide-switch></a></li>
         <!--
@@ -38,11 +31,6 @@
 </nav>
 <!--
 <div>{{intStatus | json}}</div>
--->
-<!--
-
-<persistent-router-outlet></persistent-router-outlet>
-<router-outlet name="main"></router-outlet>
 -->
 <router-outlet></router-outlet>
 

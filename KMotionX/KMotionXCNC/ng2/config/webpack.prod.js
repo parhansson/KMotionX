@@ -13,23 +13,29 @@ module.exports = webpackMerge(commonConfig, {
     path: helpers.root('dist'),
     //publicPath: '/',
     publicPath: "/ng2/dist/",
-    filename: '[name].[hash].js',
-    chunkFilename: '[id].[hash].chunk.js'
+    filename: '[name].[chunkhash].js',
+    chunkFilename: '[id].[chunkhash].chunk.js'
   },
-
-  htmlLoader: {
-    minimize: false // workaround for ng2
-  },
-
+  /*
+    htmlLoader: {
+      minimize: false // workaround for ng2
+    },
+  */
   plugins: [
-    new webpack.NoErrorsPlugin(),
-    new webpack.optimize.DedupePlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
+    //new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin({ // https://github.com/angular/angular/issues/10618
       mangle: {
         keep_fnames: true
+      },
+      compress: {
+        warnings: true
       }
     }),
-    new ExtractTextPlugin('[name].[hash].css'),
+    new ExtractTextPlugin({
+      filename: '[name].[contenthash].css',
+      allChunks: true
+    }),
     new webpack.DefinePlugin({
       'process.env': {
         'ENV': JSON.stringify(ENV)

@@ -4,7 +4,7 @@ import { enableProdMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpModule } from '@angular/http';
 import { RouteReuseStrategy } from '@angular/router';
-import { TabsModule } from 'ng2-bootstrap/tabs';
+import { TabsModule } from 'ng2-bootstrap';
 
 import { routing, appRoutingProviders } from './kmx.routing';
 import { BackendService } from './backend/backend.service';
@@ -31,7 +31,7 @@ import { CustomReuseStrategy } from './route-reuse.strategy'
   imports: [
     BrowserModule,
     HttpModule,
-    TabsModule,
+    TabsModule.forRoot(),
     FormsModule,
 
     SharedModule,

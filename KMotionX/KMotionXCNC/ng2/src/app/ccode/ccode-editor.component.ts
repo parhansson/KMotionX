@@ -8,8 +8,8 @@ import { FileResource } from '../resources'
   template: `
     <code-editor id="ccodeEditor" mode="c_cpp" >
       <div buttons>
-        <span class="btn btn-primary glyphicon glyphicon-pencil" title="Compile" (click)="onCompile()"></span>
-        <span class="btn btn-primary glyphicon glyphicon-pencil" title="Compile and Execute" (click)="onCompile()"></span>
+        <span class="btn btn-primary glyphicon glyphicon-link" title="Compile" (click)="onCompile()"></span>
+        <span class="btn btn-primary glyphicon glyphicon-transfer" title="Compile and Execute" (click)="onCompile()"></span>
       </div>
     </code-editor>`,
   viewProviders: [

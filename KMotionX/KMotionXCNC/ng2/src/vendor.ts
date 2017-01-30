@@ -11,7 +11,7 @@ import 'rxjs';
 // Other vendors for example jQuery, Lodash or Bootstrap
 // You can import js, ts, css, sass, ...
 
-import 'ng2-bootstrap/tabs'
+import 'ng2-bootstrap'
 
 import 'opentype.js'
 import 'pdfjs-dist/build/pdf.js'
@@ -23,6 +23,10 @@ import '../public/css/style.css'
 //import 'script-loader!three/build/three.module.js';
 import 'script-loader!three/build/three.js'
 import 'script-loader!three/examples/js/controls/TrackballControls.js'
+
+//import THREE from 'three/build/three.module.js';
+//import 'imports?THREE=three!three/examples/js/controls/DeviceOrientationControls';
+
 //Modular ace implementation
 import 'brace'
 import 'brace/mode/c_cpp'

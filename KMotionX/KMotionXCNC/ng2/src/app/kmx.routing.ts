@@ -1,6 +1,6 @@
 import { Routes, RouterModule } from '@angular/router';
 import { ModuleWithProviders } from '@angular/core';
-import { LaserCalculatorComponent } from './laser';
+import { LaserScreenComponent } from './laser';
 import { GCodeScreenComponent } from './gcode';
 import { CCodeScreenComponent } from './ccode';
 import { DebugScreenComponent } from './debug';
@@ -17,8 +17,8 @@ const appRoutes: Routes = [
     component: CCodeScreenComponent
   },
   {
-    path: 'laser-calc',
-    component: LaserCalculatorComponent
+    path: 'laser',
+    component: LaserScreenComponent
   },
   {
     path: 'settings',
