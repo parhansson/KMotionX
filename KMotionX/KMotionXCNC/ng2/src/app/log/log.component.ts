@@ -15,24 +15,7 @@ import { LimitBuffer } from '../util'
 
 @Component({
   selector: 'kmx-log',
-  template: `
-    <div [attr.class]="consoleId">
-    <ul class="list-inline">
-      <li><button class="btn btn-primary btn-block" (click)="prune()">{{title}} (Clear)</button></li>
-      <li><input class="form-control" type="number" [(ngModel)]="logLimit" (change)="updateLimit()" /></li>  
-      <li>
-        <label>
-          <input type="checkbox" [(ngModel)]="autoscroll" /> Auto scroll
-        </label>
-      </li>  
-    </ul>
-      <div #scrollContainer class="status_message status_small {{id}}">
-        <div class="log-post" *ngFor="let log of logs;">
-          <span [attr.class]="log.styleClass">{{log.message}}</span>
-        </div>
-      </div>
-    </div>
-  `
+  templateUrl: './log.component.html'
 })
 export class LogComponent implements OnInit, OnDestroy, AfterViewChecked {
   @Input()

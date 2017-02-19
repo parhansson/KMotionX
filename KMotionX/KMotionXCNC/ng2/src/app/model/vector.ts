@@ -1,4 +1,23 @@
 
+export interface MoveArcArguments {
+  I?: number
+  J?: number
+  K?: number
+  R?: number
+}
+export interface MoveAngularArguments {
+  A?: number
+  B?: number
+  C?: number
+}
+export interface MoveArguments extends MoveAngularArguments, MoveArcArguments {
+  X?: number
+  Y?: number
+  Z?: number
+
+
+}
+
 export class GCodeVector {
 
   constructor(public x?: number, public y?: number, public z?: number, public a?: number, public b?: number, public c?: number) {
@@ -54,12 +73,13 @@ export class GCodeCurve3 {
   aClockwise: boolean
   height: number
   sZ: number
-  constructor(startPoint: GCodeVector, endPoint: GCodeVector, args, clockWise) {
+  constructor(startPoint: GCodeVector, endPoint: GCodeVector, args: MoveArcArguments, clockWise) {
 
 
-    var centerX = startPoint.x + args.I;
-    var centerY = startPoint.y + args.J;
-    var centerZ = startPoint.z + args.K; // Helical not correct implemented yet, i guess...
+    var centerX = startPoint.x + (args.I || 0);
+    var centerY = startPoint.y + (args.J || 0);
+    // centerZ is only used in other planes
+    var centerZ = startPoint.z + (args.K || 0); //TODO Helical not correct implemented yet, i guess...
     var startAngle;
     var endAngle;
     var radius = Math.sqrt((args.I * args.I) + (args.J * args.J));  //should use pythagoras
@@ -102,12 +122,12 @@ export class GCodeCurve3 {
 
   getPoint(t: number, h: number) {
 
-    var deltaAngle = this.aEndAngle - this.aStartAngle;
+    let deltaAngle = this.aEndAngle - this.aStartAngle;
 
     if (deltaAngle < 0) deltaAngle += Math.PI * 2;
     if (deltaAngle > Math.PI * 2) deltaAngle -= Math.PI * 2;
 
-    var angle;
+    let angle;
 
     if (this.aClockwise === true) {
 
@@ -119,7 +139,7 @@ export class GCodeCurve3 {
 
     }
 
-    var vector = new GCodeVector();
+    const vector = new GCodeVector();
 
     vector.x = this.aX + this.xRadius * Math.cos(angle);
     vector.y = this.aY + this.yRadius * Math.sin(angle);

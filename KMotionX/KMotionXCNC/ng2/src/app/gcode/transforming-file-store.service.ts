@@ -15,7 +15,7 @@ export class TransformingFileStore implements FileStore {
   ) {
     this.payloadSubject.subscribe(
       payload => {
-        this.staticTransformer.transform(payload.contentType, payload.arrayBuffer())
+        this.staticTransformer.transform(payload.contentType || payload.name, payload.arrayBuffer())
       });
     this.staticTransformer.gcodeSubject.subscribe(
       gcode => {

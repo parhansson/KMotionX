@@ -1,67 +1,37 @@
-<div>
-  <div class="form"><!--<form class="form">-->
-    <div class="row col-xs-12 col-sm-6 col-sm-offset-3">
-      <div class="form-group">
-        <label>Width</label>
-        <div class="input-group">
-          <input class="form-control" [(ngModel)]="box.width" type="number" min=0 max=1000 placeholder="Box width X">
-          <span class="input-group-addon">mm</span>
-        </div>
+<div class="form">
+  <div class="row col-xs-12 col-sm-6 col-sm-offset-3">
+    <div class="form-group">
+      <label>Width</label>
+      <div class="input-group">
+        <input class="form-control" [(ngModel)]="box.width" type="number" min=0 max=1000 placeholder="Box width X">
+        <span class="input-group-addon">mm</span>
       </div>
-      <div class="form-group">
-        <label>Height</label>
-        <div class="input-group">
-          <input class="form-control" [(ngModel)]="box.height" type="number" min=0 max=1000 placeholder="Box height Y">
-          <span class="input-group-addon">mm</span>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Depth</label>
-        <div class="input-group">
-          <input class="form-control" [(ngModel)]="box.depth" type="number" min=0 max=1000 placeholder="Box depth Z">
-          <span class="input-group-addon">mm</span>
-        </div>
-
-      </div>
-      <div class="form-group">
-        <label>Thickness of material</label>
-        <div class="input-group">
-          <input class="form-control" [(ngModel)]="box.materialThickness" type="number" min=0 max=100 placeholder="Material thickness" />
-          <span class="input-group-addon">mm</span>
-        </div>
-      </div>
-      <button (click)="render()">Rnder</button>
-<!--
-      <div class="form-group">
-        <label>PPmm:</label>
-        <span>{{ppmm() | number:'1.1-4'}} pulses/mm</span>
-      </div>
-      <div class="form-group">
-        <label>PPs:</label>
-        <span>{{pps() | number:'1.1-4'}} pulses/s</span>
-      </div>
-      <div class="form-group">
-        <label>Pulse Period:</label>
-        <span><span [ngClass]="pulsePeriod() <= calc.pulseWidth?'alert-danger':''" >{{pulsePeriod() | number:'1.1-4'}}</span>        ms/pulse</span>
-      </div>
-      <div class="form-group">
-        <label>Duty Cycle</label>
-        <span><span [ngClass]="dutyCycle() > 100?'alert-danger':''">{{dutyCycle() | number:'1.1-4'}}</span> %</span>
-      </div>
-      <div class="form-group">
-        <label>~Energy/pulse</label>
-        <span>{{energyPerPulse() | number:'1.1-4'}} Joules/pulse</span>
-      </div>
-      <div class="form-group">
-        <label>Cut Energy Density</label>
-        <span>{{energyDensity() | number:'1.1-4'}} Joules/mm cut</span>
-      </div>
-      <div class="form-group">
-        <label>Power to Material</label>
-        <span>{{powerToMaterial() | number:'1.1-4'}} W</span>
-      </div>
-      -->
     </div>
-  </div><!--</form>-->
+    <div class="form-group">
+      <label>Height</label>
+      <div class="input-group">
+        <input class="form-control" [(ngModel)]="box.height" type="number" min=0 max=1000 placeholder="Box height Y">
+        <span class="input-group-addon">mm</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Depth</label>
+      <div class="input-group">
+        <input class="form-control" [(ngModel)]="box.depth" type="number" min=0 max=1000 placeholder="Box depth Z">
+        <span class="input-group-addon">mm</span>
+      </div>
 
+    </div>
+    <div class="form-group">
+      <label>Thickness of material</label>
+      <div class="input-group">
+        <input class="form-control" [(ngModel)]="box.materialThickness" type="number" min=0 max=100 placeholder="Material thickness"
+        />
+        <span class="input-group-addon">mm</span>
+      </div>
+    </div>
+    <button (click)="render()">Create</button>
+
+  </div>
+  <div #preview></div>
 </div>

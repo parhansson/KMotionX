@@ -54,6 +54,7 @@ export class AceEditorComponent {
 
   onContentChange(change: any /*AceAjax.EditorChangeEvent*/) {
     //console.log('onContentChange', change);
+    //TODO Gcode need to be aware of this in order update 3d view
     this.dirty = true;
   }
 

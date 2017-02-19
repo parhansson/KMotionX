@@ -35,7 +35,13 @@ module.exports = webpackMerge(commonConfig, {
         context: ['/api/**', '/settings/**'],
         target: 'http://localhost:8080',
         secure: false
-      }
+      },
+      {
+        context: ['/upload'],
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false
+      }      
     ]
   }
 });

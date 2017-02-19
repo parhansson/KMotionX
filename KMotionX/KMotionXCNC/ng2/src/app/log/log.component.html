@@ -1,0 +1,27 @@
+<div [attr.class]="consoleId">
+  <div class="btn-group" dropdown keyboardNav="true">
+    <button id="simple-btn-keyboard-nav" type="button" class="btn btn-primary btn-block" dropdownToggle>
+    {{title}} <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" dropdownMenu role="menu" aria-labelledby="simple-btn-keyboard-nav">
+      <li role="menuitem">
+        <a class="dropdown-item" href="#" (click)="prune();false">Prune log</a>
+      </li>
+      <li role="menuitem">
+        <a class="dropdown-item" href="#" (click)="false">
+          <input class="form-control" type="number" [(ngModel)]="logLimit" (change)="updateLimit()" />
+        </a>
+      </li>
+      <li role="menuitem">
+        <a class="dropdown-item" href="#">
+          <label><input type="checkbox" [(ngModel)]="autoscroll" /> Auto scroll</label>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div #scrollContainer class="status_message status_small {{id}}">
+    <div class="log-post" *ngFor="let log of logs;">
+      <span [attr.class]="log.styleClass">{{log.message}}</span>
+    </div>
+  </div>
+</div>

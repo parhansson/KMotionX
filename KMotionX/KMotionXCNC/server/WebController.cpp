@@ -343,9 +343,8 @@ void WebController::HandleUploadRequest(struct mg_connection *conn){
   FILE *fp = (FILE *) conn->connection_param;
   if (fp != NULL) {
 
-    mg_printf(conn, "HTTP/1.1 200 OK\r\n"
-              "Content-Type: text/plain\r\n"
-              "Connection: close\r\n");
+    //Sends HTTP/1.1 200 OK
+    mg_send_header(conn, "Content-Type", "text/plain");
 
     // Temp file will be destroyed after fclose(), do something with the
     // data here -- for example, parse it and extract uploaded files.
@@ -413,11 +412,6 @@ void WebController::HandleUploadRequest(struct mg_connection *conn){
   //MG_CLOSE event is not raised by mongoose as expected. Need to close file
   OnEventClose(conn);
 }
-
-
-
-
-
 
 int WebController::HandleApiRequest(struct mg_connection *conn) {
 

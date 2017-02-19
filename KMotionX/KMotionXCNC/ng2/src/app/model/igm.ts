@@ -1,6 +1,6 @@
 
-import {GCodeVector} from './vector';
-import {SVGModelSettings } from './model.settings.service'
+import { GCodeVector } from './vector';
+import { SVGModelSettings } from './model.settings.service'
 export class IgmPath {
 
 }
@@ -31,9 +31,9 @@ export class IgmObject {
     }
   }
   scale(ratio: number) {
-    var subidx = this.vectors.length;
+    let subidx = this.vectors.length;
     while (subidx--) {
-      var vec = this.vectors[subidx];
+      const vec = this.vectors[subidx];
       vec.scale(ratio);
     }
   }
@@ -48,12 +48,13 @@ export interface LayerMap {
 }
 // Intermediate Gcode Model
 export class IGM {
+
   layers: LayerMap = {}; // sort by stroke color
   layerKeys: any[] = []; // layerKey is a mapping to add unnamed layers, layer will get a generated name
   textLayer = []; // textpaths
   unsupported = []  // Unsupported nodes
   rawLine: string[] = []
-  constructor() {
+  constructor(public metric: boolean = true) {
 
   }
 
@@ -94,11 +95,12 @@ export class IGM {
 
   }
 
-  public applyModifications(settings: SVGModelSettings, ratio: number) {
+  public applyModifications(settings: SVGModelSettings) {
     var paths = this.alllayers;
     console.info('Nr of Shapes: ', paths.length);
 
-    this.scaleVectors(paths, ratio);
+    console.log('Scaling model', settings.scale);
+    this.scaleVectors(paths, settings.scale);
 
     //Bounds are needed by removeDuplicates
     this.setBounds(paths);
@@ -172,8 +174,8 @@ export class IGM {
   }
 
   public getMaxBounds(paths: IgmObject[]) {
-    var maxBounds = new BoundRect();
-    var idx = paths.length;
+    const maxBounds = new BoundRect();
+    let idx = paths.length;
     while (idx--) {
       var igmObj = paths[idx];
       var vectors = igmObj.vectors;
@@ -217,8 +219,8 @@ export class IGM {
   }
 
   removeSingularites(paths: IgmObject[]) {
-    var removed = 0;
-    var idx = paths.length;
+    let removed = 0;
+    let idx = paths.length;
     while (idx--) {
       if (paths[idx].vectors.length == 1) {
         removed++
@@ -258,6 +260,7 @@ export class IGM {
     return joined;
   }
   pointEquals(v1: GCodeVector, v2: GCodeVector, fractionalDigits: number) {
+    //TODO use distanceSquared and compare with toleranceSquared instead
     return (
       v1.x.toFixed(fractionalDigits) === v2.x.toFixed(fractionalDigits) &&
       v1.y.toFixed(fractionalDigits) === v2.y.toFixed(fractionalDigits)
@@ -274,7 +277,7 @@ export class IGM {
     //  mark V as visited.
     //  if all the vertices in domain are visited, then terminate.
     //  Go to step 2.
-    let orderedPaths: IgmObject[] = [];
+    const orderedPaths: IgmObject[] = [];
     let next = this.nearest(new GCodeVector(0, 0, 0), paths);
     if (next) { // next is undefined if paths is an empty array
       orderedPaths.push(next);
@@ -287,19 +290,19 @@ export class IGM {
   }
   private nearest(point: GCodeVector, paths: IgmObject[]) {
 
-    var dist = Infinity;
-    var index = -1;
-    var checkReversePath = true;
+    let dist = Infinity;
+    let index = -1;
+    const checkReversePath = true;
 
-    for (var pathIdx = 0, pathLength = paths.length; pathIdx < pathLength; pathIdx++) {
-      var path = paths[pathIdx]
-      var pathStartPoint = path.vectors[0]
-      var distanceSquared
-      var startDS = pathStartPoint.distanceSquared(point)
+    for (let pathIdx = 0, pathLength = paths.length; pathIdx < pathLength; pathIdx++) {
+      const path = paths[pathIdx]
+      const pathStartPoint = path.vectors[0]
+      let distanceSquared
+      const startDS = pathStartPoint.distanceSquared(point)
       if (checkReversePath) {
         //check endpoint as well and reverse path if endpoint is closer
-        var pathEndPoint = path.end()
-        var endDS = pathEndPoint.distanceSquared(point)
+        let pathEndPoint = path.end()
+        const endDS = pathEndPoint.distanceSquared(point)
         if (startDS < endDS) {
           distanceSquared = startDS
         } else {

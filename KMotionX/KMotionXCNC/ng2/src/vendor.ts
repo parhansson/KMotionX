@@ -24,6 +24,8 @@ import '../public/css/style.css'
 import 'script-loader!three/build/three.js'
 import 'script-loader!three/examples/js/controls/TrackballControls.js'
 
+import 'script-loader!dxf-parser/dist/dxf-parser.js'
+
 //import THREE from 'three/build/three.module.js';
 //import 'imports?THREE=three!three/examples/js/controls/DeviceOrientationControls';
 

@@ -2,6 +2,11 @@
 
 //declare var module: { id: string, exports: any };
 
+declare class DxfParser{
+  constructor(stream?:any)
+  parseSync(fileText:string)
+}
+
 declare module 'three-trackballcontrols' { }
 
 // Merge PDFJS typings

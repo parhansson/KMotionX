@@ -1,74 +1,71 @@
-<div>
-  <div class="form"><!--<form class="form">-->
-    <div class="row col-xs-12 col-sm-6 col-sm-offset-3">
-      <div class="form-group">
-        <label>Pulse Width:</label>
-        <div class="input-group">
-          <input class="form-control" [(ngModel)]="calc.pulseWidth" type="number" min=0 max=100 placeholder="Pulse length">
-          <span class="input-group-addon">ms</span>
-        </div>
+<div class="form">
+  <div class="row col-xs-12 col-sm-6 col-sm-offset-3">
+    <div class="form-group">
+      <label>Pulse Width:</label>
+      <div class="input-group">
+        <input class="form-control" [(ngModel)]="calc.pulseWidth" type="number" min=0 max=100 placeholder="Pulse length">
+        <span class="input-group-addon">ms</span>
       </div>
-      <div class="form-group">
-        <label>PPI:</label>
-        <div class="input-group">
-          <input class="form-control" [(ngModel)]="calc.ppi" type="number" min=0 max=5000 placeholder="PPI">
-          <span class="input-group-addon">pulses/inch</span>
-        </div>
+    </div>
+    <div class="form-group">
+      <label>PPI:</label>
+      <div class="input-group">
+        <input class="form-control" [(ngModel)]="calc.ppi" type="number" min=0 max=5000 placeholder="PPI">
+        <span class="input-group-addon">pulses/inch</span>
       </div>
-      <div class="form-group">
-        <label>Feed Rate:</label>
-        <div class="input-group">
-          <input class="form-control" [(ngModel)]="calc.feedRate" type="number" min=0 max=10000 placeholder="Feed rate mm/min">
-          <span class="input-group-addon">mm/min</span>
-        </div>
-
-      </div>
-      <div class="form-group">
-        <label>Power Setting:</label>
-        <div class="input-group">
-          <input class="form-control" [(ngModel)]="calc.powerSetting" type="number" min=0 max=100 placeholder="%" />
-          <span class="input-group-addon">%</span>
-        </div>
-
-      </div>
-      <div class="form-group">
-        <label>Ave Power/Pulse:</label>
-        <div class="input-group">
-          <input class="form-control" [(ngModel)]='calc.power' type="number" min=0 max=500 placeholder="W">
-          <span class="input-group-addon">W</span>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>PPmm:</label>
-        <span>{{ppmm() | number:'1.1-4'}} pulses/mm</span>
-      </div>
-      <div class="form-group">
-        <label>PPs:</label>
-        <span>{{pps() | number:'1.1-4'}} pulses/s</span>
-      </div>
-      <div class="form-group">
-        <label>Pulse Period:</label>
-        <span><span [ngClass]="pulsePeriod() <= calc.pulseWidth?'alert-danger':''" >{{pulsePeriod() | number:'1.1-4'}}</span>        ms/pulse</span>
-      </div>
-      <div class="form-group">
-        <label>Duty Cycle</label>
-        <span><span [ngClass]="dutyCycle() > 100?'alert-danger':''">{{dutyCycle() | number:'1.1-4'}}</span> %</span>
-      </div>
-      <div class="form-group">
-        <label>~Energy/pulse</label>
-        <span>{{energyPerPulse() | number:'1.1-4'}} Joules/pulse</span>
-      </div>
-      <div class="form-group">
-        <label>Cut Energy Density</label>
-        <span>{{energyDensity() | number:'1.1-4'}} Joules/mm cut</span>
-      </div>
-      <div class="form-group">
-        <label>Power to Material</label>
-        <span>{{powerToMaterial() | number:'1.1-4'}} W</span>
+    </div>
+    <div class="form-group">
+      <label>Feed Rate:</label>
+      <div class="input-group">
+        <input class="form-control" [(ngModel)]="calc.feedRate" type="number" min=0 max=10000 placeholder="Feed rate mm/min">
+        <span class="input-group-addon">mm/min</span>
       </div>
 
     </div>
-  </div><!--</form>-->
+    <div class="form-group">
+      <label>Power Setting:</label>
+      <div class="input-group">
+        <input class="form-control" [(ngModel)]="calc.powerSetting" type="number" min=0 max=100 placeholder="%" />
+        <span class="input-group-addon">%</span>
+      </div>
 
+    </div>
+    <div class="form-group">
+      <label>Ave Power/Pulse:</label>
+      <div class="input-group">
+        <input class="form-control" [(ngModel)]='calc.power' type="number" min=0 max=500 placeholder="W">
+        <span class="input-group-addon">W</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>PPmm:</label>
+      <span>{{ppmm() | number:'1.1-4'}} pulses/mm</span>
+    </div>
+    <div class="form-group">
+      <label>PPs:</label>
+      <span>{{pps() | number:'1.1-4'}} pulses/s</span>
+    </div>
+    <div class="form-group">
+      <label>Pulse Period:</label>
+      <span><span [ngClass]="pulsePeriod() <= calc.pulseWidth?'alert-danger':''" >{{pulsePeriod() | number:'1.1-4'}}</span>      ms/pulse</span>
+    </div>
+    <div class="form-group">
+      <label>Duty Cycle</label>
+      <span><span [ngClass]="dutyCycle() > 100?'alert-danger':''">{{dutyCycle() | number:'1.1-4'}}</span> %</span>
+    </div>
+    <div class="form-group">
+      <label>~Energy/pulse</label>
+      <span>{{energyPerPulse() | number:'1.1-4'}} Joules/pulse</span>
+    </div>
+    <div class="form-group">
+      <label>Cut Energy Density</label>
+      <span>{{energyDensity() | number:'1.1-4'}} Joules/mm cut</span>
+    </div>
+    <div class="form-group">
+      <label>Power to Material</label>
+      <span>{{powerToMaterial() | number:'1.1-4'}} W</span>
+    </div>
+
+  </div>
 </div>

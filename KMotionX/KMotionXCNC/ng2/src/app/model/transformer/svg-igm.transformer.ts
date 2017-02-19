@@ -3,6 +3,7 @@ import { Observer } from 'rxjs/Rx';
 import { IGM, IgmObject } from '../igm';
 import { GCodeVector } from '../vector';
 import { ModelTransformer } from './model.transformer';
+import { SVGModelSettings } from '../model.settings.service'
 import * as opentype from 'opentype.js'
 /*
 if (typeof(String.prototype.strip) === "undefined") {
@@ -20,9 +21,9 @@ function createAnchor(name, url) {
   document.body.appendChild(anchor);
   return anchor;
 }
-
-export class SvgNode {
-  path: Array<Array<Array<number>>>
+type Point = Array<number> //
+class SvgNode {
+  path: Array<Array<Point>>
   xformToWorld = [1, 0, 0, 1, 0, 0] //2d Transformation vector
   xform = [1, 0, 0, 1, 0, 0]//2d Transformation vector
   id: string
@@ -38,12 +39,15 @@ export class SvgNode {
   href: string
   fontBlob: string
   text: string = null
+  children: SvgNode[]
 
   constructor() {
     this.path = [];
+    this.children = []
   }
   inherit() {
-    var node = new SvgNode();
+    let node = new SvgNode();
+    this.children.push(node);
     node.path = [];
     node.xform = [1, 0, 0, 1, 0, 0];
     node.opacity = this.opacity;
@@ -64,7 +68,7 @@ export class Svg2IgmTransformer extends ModelTransformer<SVGElement, IGM>{
 
   font: opentypejs.Font
 
-  constructor() {
+  constructor(private settings: SVGModelSettings) {
     super()
     // /settings/RawengulkPcs.otf
     //opentype.load(node.fontBlob, function(err, font) {  
@@ -112,11 +116,53 @@ export class Svg2IgmTransformer extends ModelTransformer<SVGElement, IGM>{
       return contentFilterDissalowed.indexOf(element.localName) < 0;
     };
     new SvgParser(contentFilter, this.font).parse(svgRootElement, node, igm)
-
+    this.makeModel(node, igm);
     targetObserver.next(igm)
   }
+
+  private makeModel(node: SvgNode, igm: IGM) {
+    this.makeShape(node, igm);
+    for (let child of node.children) {
+      this.makeModel(child, igm);
+    }
+  }
+  private makeShape(node: SvgNode, igm: IGM) {
+    let unitsPerInch = {
+      'mm': 25.4,
+      'in': 1
+    }
+    const settings = this.settings;
+    let dpiScale
+    if (settings.dpi) {
+      if (unitsPerInch[settings.unit]) {
+        dpiScale = unitsPerInch[settings.unit] / settings.dpi;
+      } else {
+        dpiScale = 1
+        console.log('Invalid unit ' + settings.unit)
+      }
+    }
+
+    for (let subpath of node.path) {
+      let shape = new IgmObject();
+      shape.type = 'Linear interpolation'
+      shape.cmd = 'G1'
+      shape.node = node; //Not currently in use
+      for (let point of subpath) {
+        shape.vectors.push(new GCodeVector(point[0], point[1], 0));
+        //TODO clip on clipPath here. this will be extremely difficult
+      }
+      shape.scale(dpiScale);
+
+      if (node.unsupported === true) {
+        igm.unsupported.push(subpath);
+      } else {
+        //this.boundarys.allcolors.push(subpath);
+        igm.addToLayerObject(node.stroke, shape);
+      }
+    }
+  }
 }
-export interface ElementFilter {
+interface ElementFilter {
   (element: SVGElement): boolean
 }
 
@@ -154,7 +200,7 @@ export interface ElementFilter {
     * check for out of bounds geometry
 */
 
-export interface ISVGParser {
+interface ISVGParser {
   font: opentypejs.Font
   addPath(d: string | any[], node: SvgNode)
   parseUnit(val: string)
@@ -162,7 +208,7 @@ export interface ISVGParser {
   strip(val: string);
 }
 
-export class SvgParser implements ISVGParser {
+class SvgParser implements ISVGParser {
 
   // output path flattened (world coords)
   // hash of path by color
@@ -192,6 +238,7 @@ export class SvgParser implements ISVGParser {
       }
       if (tag.childNodes) {
 
+        let node: SvgNode
         // exclude textnodes, might check for tag.nodeName ===  "#text" or tag.nodeType === 3 instead
         // but that would include to check several types
         if (tag.localName) {
@@ -201,12 +248,12 @@ export class SvgParser implements ISVGParser {
 
           // 1.) setup a new node
           // and inherit from parent
-          var node = parentNode.inherit()
+          node = parentNode.inherit()
 
           // 2.) parse own attributes and overwrite
           if (tag.attributes) {
-            for (var j = 0; j < tag.attributes.length; j++) {
-              var attr = tag.attributes[j]
+            for (let j = 0; j < tag.attributes.length; j++) {
+              let attr = tag.attributes[j]
               if (attr.nodeName && attr.nodeValue && this.SVGAttributeMapping[attr.nodeName]) {
                 this.SVGAttributeMapping[attr.nodeName](this, node, attr.nodeValue)
               }
@@ -253,31 +300,19 @@ export class SvgParser implements ISVGParser {
           }
           // 5.) compile boundarys
           // before adding all path data convert to world coordinates
-          for (var k = 0; k < node.path.length; k++) {
-            var igmObject = new IgmObject();
-            igmObject.type = 'Linear interpolation'
-            igmObject.cmd = 'G1'
-            var subpath = node.path[k];
-            for (var l = 0; l < node.path[k].length; l++) {
-              var tt = this.matrixApply(node.xformToWorld, subpath[l])
-              var t = new GCodeVector(tt[0], tt[1], 0);
-              //t.matrixApply(node.xformToWorld);
-              igmObject.vectors.push(t);
-
-              //var tmp = this.matrixApply(node.xformToWorld, subpath[l]);
+          for (let subpath of node.path) {
+            for (let point of subpath) {
               //TODO clip on clipPath here. this will be extremely difficult
-              //subpath[l] = new Vec2(tmp[0], tmp[1]);
+              let transformed = this.matrixApply(node.xformToWorld, point);
+              point[0] = transformed[0] //new Vec2(tmp[0], tmp[1]);
+              point[1] = transformed[1]
             }
-            igmObject.node = node;
-
 
             if (node.unsupported === true) {
               igm.unsupported.push(subpath);
-            } else {
-              //this.boundarys.allcolors.push(subpath);
-              igm.addToLayerObject(node.stroke, igmObject);
             }
           }
+
           if (node.href) {
             //createAnchor('bulle',node.href);
             //console.log(node.href.length, node.href);
@@ -688,7 +723,7 @@ export class SvgParser implements ISVGParser {
     style: function (parser: ISVGParser, tag: SVGElement, node: SvgNode) {
       //node.unsupported = true;
 
-      var doc = document.implementation.createHTMLDocument(''),
+      let doc = document.implementation.createHTMLDocument(''),
         styleElement = document.createElement('style');
 
       styleElement.textContent = tag.textContent;
@@ -697,9 +732,9 @@ export class SvgParser implements ISVGParser {
 
       //@font-face
       //console.log('rules', styleElement.sheet.cssRules);
-      var style = tag.textContent;
-      var s = style.indexOf('url(') + 4;
-      var e = style.indexOf(')', s);
+      let style = tag.textContent;
+      let s = style.indexOf('url(') + 4;
+      let e = style.indexOf(')', s);
       node.fontBlob = tag.textContent.substring(s, e);
 
       //blob:
@@ -723,6 +758,8 @@ export class SvgParser implements ISVGParser {
       if (parser.font) {
 
         if (tag.textContent !== null) {
+          //opentype.parse()
+          //opentype.parseBuffer()
           let path = parser.font.getPath(tag.textContent, 0, 0, 1, { kerning: true })
           let dPath = path.toPathData(undefined)
           //console.log(tag.textContent, dPath)
@@ -743,9 +780,9 @@ export class SvgParser implements ISVGParser {
             }
           }
           */
-          node.text = tag.textContent
         }
       }
+      node.text = tag.textContent
       // not supported
       // http://www.w3.org/TR/SVG11/struct.html#Head
       // has transform and style attributes
@@ -805,7 +842,7 @@ export class SvgParser implements ISVGParser {
     var cmdPrev = '';
     var xPrevCp;
     var yPrevCp;
-    var subpath: number[][] = [];
+    var subpath: Point[] = [];
 
     while (d.length > 0) {
       var cmd = getNext();
@@ -1085,7 +1122,7 @@ export class SvgParser implements ISVGParser {
   }
 
 
-  addCubicBezier(subpath, x1, y1, x2, y2, x3, y3, x4, y4, level, tolerance2) {
+  addCubicBezier(subpath: Point[], x1, y1, x2, y2, x3, y3, x4, y4, level, tolerance2) {
     // for details see:
     // http://www.antigrain.com/research/adaptive_bezier/index.html
     // based on DeCasteljau Algorithm
@@ -1133,7 +1170,7 @@ export class SvgParser implements ISVGParser {
   }
 
 
-  addQuadraticBezier(subpath, x1, y1, x2, y2, x3, y3, level, tolerance2) {
+  addQuadraticBezier(subpath: Point[], x1, y1, x2, y2, x3, y3, level, tolerance2) {
     if (level > 18) {
       // protect from deep recursion cases
       // max 2**18 = 262144 segments
@@ -1164,7 +1201,7 @@ export class SvgParser implements ISVGParser {
   }
 
 
-  addArc(subpath, x1, y1, rx, ry, phi, large_arc, sweep, x2, y2, tolerance2) {
+  addArc(subpath: Point[], x1, y1, rx, ry, phi, large_arc, sweep, x2, y2, tolerance2) {
     // Implemented based on the SVG implementation notes
     // plus some recursive sugar for incrementally refining the
     // arc resolution until the requested tolerance is met.
@@ -1277,7 +1314,7 @@ export class SvgParser implements ISVGParser {
   }
 
 
-  matrixApply(mat: number[], vec: number[]) {
+  matrixApply(mat: number[], vec: number[]): Point {
     return [mat[0] * vec[0] + mat[2] * vec[1] + mat[4],
     mat[1] * vec[0] + mat[3] * vec[1] + mat[5]];
   }

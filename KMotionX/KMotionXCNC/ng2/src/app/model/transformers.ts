@@ -1,6 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Observable, Observer, Subject } from 'rxjs/Rx';
-import { ModelTransformer, Igm2GcodeTransformer, Gcode2ThreeTransformer, Pdf2SvgTransformer, Svg2IgmTransformer } from './transformer'
+import {
+  ModelTransformer,
+  Igm2GcodeTransformer,
+  Gcode2ThreeTransformer,
+  Gcode2IgmTransformer,
+  Pdf2SvgTransformer,
+  Svg2IgmTransformer,
+  Dxf2IgmTransformer
+} from './transformer'
 import { IGM, GCodeSource } from './igm'
 import { KMXUtil } from '../util/kmxutil'
 import { ModelSettingsService } from './model.settings.service';
@@ -17,40 +25,62 @@ export class StaticTransformer {
   img2gcodeTransformer: Igm2GcodeTransformer
   svg2IgmTransformer: Svg2IgmTransformer
 
+  gcode2IgmTransformer: Gcode2IgmTransformer
+  dxf2IgmTransformer: Dxf2IgmTransformer
+
   constructor(private logService: LogService, private modelSettings: ModelSettingsService) {
     this.pdf2svgTransformer = new Pdf2SvgTransformer(modelSettings)
     this.img2gcodeTransformer = new Igm2GcodeTransformer(modelSettings.settings.svg)
-    this.svg2IgmTransformer = new Svg2IgmTransformer()
+    this.svg2IgmTransformer = new Svg2IgmTransformer(modelSettings.settings.svg)
+    this.dxf2IgmTransformer = new Dxf2IgmTransformer()
+    this.gcode2IgmTransformer = new Gcode2IgmTransformer(true)
+
     this.igmSubject.subscribe(
       igm => this.img2gcodeTransformer.execute(igm, this.gcodeSubject),
       err => console.error(err))
+
     this.svgSubject.subscribe(
-      data => {
-        //console.log(KMXUtil.svgToString(data))
-        this.parseSVG(data)
-      },
-      err => console.error(err)
-    );
+      data => this.svg2IgmTransformer.execute(data, this.igmSubject),
+      err => console.error(err))
+
     this.gcodeSubject.subscribe(
       gcode => new Gcode2ThreeTransformer(true).execute(gcode, this.threeSubject),
       err => console.error(err))
   }
 
-  transform(contentType, payload: ArrayBuffer) {
-    if (contentType === 'application/pdf') {
-      this.parsePDF(payload)
-    } else if (contentType === 'image/svg+xml') {
-      this.parseSVG(payload)
+  transform(contentType: string, payload: ArrayBuffer | string | IGM) {
+    if (payload instanceof IGM) {
+      this.igmSubject.next(payload)
+    }
+    else if (contentType.toLowerCase().endsWith('.dxf')) {
+      this.dxf2IgmTransformer.execute(payload, this.igmSubject)
     } else {
-      this.parseGcode(payload)
+      if (contentType === 'application/pdf') {
+        this.pdf2svgTransformer.execute(payload as ArrayBuffer, this.svgSubject);
+      } else if (contentType === 'image/svg+xml') {
+        let svgElement = this.asSVGElement(payload)
+        this.svgSubject.next(svgElement)
+
+        /*
+            let html = (svgElement as any as HTMLElement).outerHTML    
+            var blob = new Blob([html], { type: 'image/svg+xml' });
+            window.open(window.URL.createObjectURL(blob));
+        */
+
+
+      } else {
+        const gcode = this.asGCodeSource(payload)
+        const testDoGcodeIGM = false
+        if (testDoGcodeIGM) {
+          this.gcode2IgmTransformer.execute(gcode, this.igmSubject)
+        } else {
+          this.gcodeSubject.next(gcode);
+        }
+      }
     }
   }
 
-  parsePDF(data: ArrayBuffer) {
-    this.pdf2svgTransformer.execute(data, this.svgSubject);
-  }
-
-  asSVGElement(source: string | SVGElement | ArrayBuffer) {
+  private asSVGElement(source: string | SVGElement | ArrayBuffer): SVGElement {
     let doc: SVGElement = null
 
     if (source instanceof SVGElement) {
@@ -86,36 +116,6 @@ export class StaticTransformer {
       return new GCodeSource(input);
     }
   }
-  parseSVG(source: string | SVGElement | ArrayBuffer) {
-    let doc: SVGElement = this.asSVGElement(source)
-    this.svg2IgmTransformer.execute(doc, this.igmSubject)
-
-  }
-
-  parseGcode(input: string | string[] | ArrayBuffer) {
-    let gcode = this.asGCodeSource(input)
-    this.gcodeSubject.next(gcode);
-  }
 
 
-}
-
-export class IGM2GCodeTransformer extends ModelTransformer<IGM, string> {
-
-  name: 'IGM to G-Code'
-  inputMime: ['application/x-kmx-gcode']
-  outputMime: 'application/x-gcode'
-
-  //transformer.register(descriptor);
-
-  execute(source: IGM, targetObserver: Observer<string>) {
-
-    if (source instanceof IGM) {
-      //var gcode = new GCodeSource(new igm2gcode().transform(src, transformerSettings.svg));
-      //resolve(gcode.text);
-    } else {
-      targetObserver.error('Unsupported source: ' + (typeof source));
-    }
-    return null
-  }
 }

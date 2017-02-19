@@ -5,6 +5,7 @@ import { TabsModule } from 'ng2-bootstrap';
 import { LaserCalculatorComponent } from './laser-calculator.component'
 import { LaserScreenComponent } from './laser-screen.component'
 import { BoxCreatorComponent } from './box-creator.component'
+import { MaterialSettingsComponent } from './material-settings.component'
 @NgModule({
   imports: [
     CommonModule,
@@ -14,7 +15,8 @@ import { BoxCreatorComponent } from './box-creator.component'
   declarations: [
     LaserScreenComponent,
     LaserCalculatorComponent,
-    BoxCreatorComponent
+    BoxCreatorComponent,
+    MaterialSettingsComponent
   ], // directives, components, and pipes owned by this NgModule
 })
 export class LaserModule {
