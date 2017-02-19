@@ -1,6 +1,5 @@
 import { Component, Inject, Input, Output, ViewChild, ElementRef } from '@angular/core';
 import { StaticTransformer } from '../model/transformers'
-import { SVGBox } from './svg-box'
 import { IGM } from '../model/IGM'
 import { MitreBox } from '../model/tool/mitre-box'
 
