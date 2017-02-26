@@ -1,12 +1,12 @@
 /*
- * incX.h
+ * KMotionDLLX.h
  *
- *  Created on: 19 sep 2014
+ *  Created on: 26 feb 2017
  *      Author: parhansson
  */
 
-#ifndef INCX_H_
-#define INCX_H_
+#ifndef KMOTIONDLLX_H_
+#define KMOTIONDLLX_H_
 
 #define timeBeginPeriod(x)
 #define timeEndPeriod(x)
@@ -42,7 +42,8 @@
 # define __throw_exception_again throw
 #endif
 */
-
+#include <math.h>
+#include "../KMotionX/include/KMotionX.h"
 #include <locale.h>
 #include <HiResTimer.h>
 
@@ -58,5 +59,5 @@
 #include "../DSP_KMotion/PC-DSP.h"
 
 
-#endif /* INCX_H_ */
+#endif /* KMOTIONDLLX_H_ */
 

@@ -38,8 +38,11 @@ either expressed or implied, of the FreeBSD Project.
 #define CMUTEX_
 #include <mutex>
 #include <chrono>
-#if __APPLE__
-#endif
+
+
+long int getThreadId(const char *callerId);
+
+
 #define TMUTEX
 class CMutex
 {
@@ -71,7 +74,5 @@ private:
 
 
 };
-
-
 
 #endif /* CMUTEX_ */

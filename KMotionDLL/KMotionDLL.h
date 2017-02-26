@@ -20,29 +20,6 @@
 #endif
 #include <vector>
 
-// The following ifdef block is the standard way of creating macros which make exporting 
-// from a DLL simpler. All files within this DLL are compiled with the KMOTIONDLL_EXPORTS
-// symbol defined on the command line. this symbol should not be defined on any project
-// that uses this DLL. This way any other project whose source files include this file see 
-// KMOTIONDLL_API functions as being imported from a DLL, wheras this DLL sees symbols
-// defined with this macro as being exported.
-
-// Generic helper definitions for shared library support http://gcc.gnu.org/wiki/Visibility
-#if defined _WIN32 || defined __CYGWIN__
-  #define KMOTIONDLL_HELPER_DLL_IMPORT __declspec(dllimport)
-  #define KMOTIONDLL_HELPER_DLL_EXPORT __declspec(dllexport)
-  #define KMOTIONDLL_HELPER_DLL_LOCAL
-#else
-  #if __GNUC__ >= 4
-    #define KMOTIONDLL_HELPER_DLL_IMPORT __attribute__ ((visibility ("default")))
-    #define KMOTIONDLL_HELPER_DLL_EXPORT __attribute__ ((visibility ("default")))
-    #define KMOTIONDLL_HELPER_DLL_LOCAL  __attribute__ ((visibility ("hidden")))
-  #else
-    #define KMOTIONDLL_HELPER_DLL_IMPORT
-    #define KMOTIONDLL_HELPER_DLL_EXPORT
-    #define KMOTIONDLL_HELPER_DLL_LOCAL
-#endif
-#endif
 
 // Now we use the generic helper definitions above to define KMOTIONDLL_API and KMOTIONDLL_LOCAL.
 // KMOTIONDLL_API is used for the public API symbols. It either DLL imports or DLL exports (or does nothing for static build)
@@ -50,11 +27,11 @@
 
 #ifdef KMOTIONDLL_DLL // defined if KMOTIONDLL is compiled as a DLL
   #ifdef KMOTIONDLL_EXPORTS // defined if we are building the KMOTIONDLL DLL (instead of using it)
-    #define KMOTIONDLL_API KMOTIONDLL_HELPER_DLL_EXPORT
+    #define KMOTIONDLL_API DLL_HELPER_API_EXPORT
   #else
-    #define KMOTIONDLL_API KMOTIONDLL_HELPER_DLL_IMPORT
+    #define KMOTIONDLL_API DLL_HELPER_API_IMPORT
   #endif // KMOTIONDLL_DLL_EXPORTS
-  #define KMOTIONDLL_LOCAL KMOTIONDLL_HELPER_DLL_LOCAL
+  #define KMOTIONDLL_LOCAL DLL_HELPER_API_LOCAL
 #else // KMOTIONDLL_DLL is not defined: this means KMOTIONDLL is a static lib.
   #define KMOTIONDLL_API
   #define KMOTIONDLL_LOCAL

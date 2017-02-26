@@ -3,7 +3,6 @@
 
 #include "mongoose.h"
 #include "frozen.h"
-#include "../../../GCodeInterpreter/StdAfx.h"
 
 extern struct mg_server * server;
 

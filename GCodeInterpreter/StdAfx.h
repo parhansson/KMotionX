@@ -8,6 +8,9 @@
 
 
 //#define DEBUG_DOWNLOAD  //enable this to capture download times
+#ifdef _KMOTIONX
+#include "GCodeInterpreterX.h"
+#else
 
 #if _MSC_VER > 1000
 #pragma once
@@ -43,9 +46,6 @@
 #include <math.h>
 #include <mmsystem.h>
 #include "../KMotionX/include/KMotionX.h"
-#ifdef _KMOTIONX
-#include "incX.h"
-#endif
 #include <locale.h>
 #include "canon.h"
 #include "rs274ngc.h"
@@ -57,6 +57,7 @@
 #include "Kinematics.h"
 #include "Kinematics3Rod.h"
 #include "GCodeInterpreter.h"
+#endif
 
 // TODO: reference additional headers your program requires here
 

@@ -8,22 +8,7 @@
 #ifndef _KMOTIONX
 #define GCODEINTERPRETER_DLL
 #endif
-// Generic helper definitions for shared library support http://gcc.gnu.org/wiki/Visibility
-#if defined _WIN32 || defined __CYGWIN__
-  #define GCODEINTERPRETER_HELPER_API_IMPORT __declspec(dllimport)
-  #define GCODEINTERPRETER_HELPER_API_EXPORT __declspec(dllexport)
-  #define GCODEINTERPRETER_HELPER_API_LOCAL
-#else
-  #if __GNUC__ >= 4
-    #define GCODEINTERPRETER_HELPER_API_IMPORT __attribute__ ((visibility ("default")))
-    #define GCODEINTERPRETER_HELPER_API_EXPORT __attribute__ ((visibility ("default")))
-    #define GCODEINTERPRETER_HELPER_API_LOCAL  __attribute__ ((visibility ("hidden")))
-  #else
-    #define GCODEINTERPRETER_HELPER_API_IMPORT
-    #define GCODEINTERPRETER_HELPER_API_EXPORT
-    #define GCODEINTERPRETER_HELPER_API_LOCAL
-#endif
-#endif
+
 
 // Now we use the generic helper definitions above to define KMOTIONDLL_API and KMOTIONDLL_LOCAL.
 // GCODEINTERPRETER_API is used for the public API symbols. It either DLL imports or DLL exports (or does nothing for static build)
@@ -31,11 +16,11 @@
 
 #ifdef GCODEINTERPRETER_DLL // defined if KMOTIONDLL is compiled as a DLL
   #ifdef GCODEINTERPRETER_EXPORTS // defined if we are building the KMOTIONDLL DLL (instead of using it)
-    #define GCODEINTERPRETER_API GCODEINTERPRETER_HELPER_API_EXPORT
+    #define GCODEINTERPRETER_API DLL_HELPER_API_EXPORT
   #else
-    #define GCODEINTERPRETER_API GCODEINTERPRETER_HELPER_API_IMPORT
+    #define GCODEINTERPRETER_API DLL_HELPER_API_IMPORT
   #endif // GCODEINTERPRETER_DLL_EXPORTS
-  #define GCODEINTERPRETER_LOCAL GCODEINTERPRETER_HELPER_API_LOCAL
+  #define GCODEINTERPRETER_LOCAL DLL_HELPER_API_LOCAL
 #else // GCODEINTERPRETER_DLL is not defined: this means KMOTIONDLL is a static lib.
   #define GCODEINTERPRETER_API
   #define GCODEINTERPRETER_LOCAL

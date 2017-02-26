@@ -235,7 +235,7 @@ int CKMotionIO::Connect()
 	// usually during boot the board comes and goes, since it appeared 
 	// to be there, try for a while to open it
 
-	DWORD t0=timeGetTime();
+	uint32_t t0=timeGetTime();
 
 	for (;;) 
 	{
@@ -526,7 +526,7 @@ int CKMotionIO::ReadLineTimeOutRaw(char *buf, int TimeOutms)
 {
 	BOOL Done=FALSE;
 	int TotalBytes, result;
-	DWORD NBytesRead;
+	uint32_t NBytesRead;
 	char *p;
 	char ReadBuffer[MAX_LINE];
 	int i,freespace;
@@ -542,7 +542,7 @@ int CKMotionIO::ReadLineTimeOutRaw(char *buf, int TimeOutms)
 	TotalBytes=strlen(buf);
 	m_SaveChars[0]=0; // remember we used them
 
-	DWORD t0=timeGetTime();
+	uint32_t t0=timeGetTime();
 
 	while (!Done)
 	{ 
@@ -745,7 +745,7 @@ int CKMotionIO::FlushInputBuffer()
 	}
 
 
-	DWORD t0=timeGetTime();
+	uint32_t t0=timeGetTime();
 #ifdef __APPLE__
 	//On OS X we need this ugly hack.
 	//Even if KMotionServer is shutdown, sending abort char only works on first connect since device is connected or power cycled.

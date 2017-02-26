@@ -418,7 +418,7 @@ void * InstanceThread(void *ptr){
 	int thread_socket = data->file_desc;
 	//pthread_t ct = pthread_self();
 	//printf("Thread %.8x %.8x: Current thread\n", ct);
-	syslog(LOG_ERR,"The ID of this of this thread is: %ld\n", syscall(SYS_gettid/*224*/));
+	syslog(LOG_ERR,"The ID of this of this thread is: %ld\n", ::getThreadId("KMotionServer InstanceThread"));
 
 	syslog(LOG_ERR,"Worker Thread. Nr of Clients when entered %d", nClients);
 	//vsyslog(LOG_INFO, "Inside Thread %d\n", thread_socket);

@@ -6,17 +6,16 @@
  */
 
 #include "MessageQueue.h"
+#include "CMutex.h"
 #include <stdlib.h>
 #include "dbg.h"
 
-//TODO fix in some non existing header file
-extern long int getThreadId();
 
 MessageQueue::MessageQueue(AbstractController *ctrl) {
   mut = PTHREAD_MUTEX_INITIALIZER;
   con = PTHREAD_COND_INITIALIZER;
   controller = ctrl;
-  poll_TID = ::getThreadId();
+  poll_TID = getThreadId("MessageQueue::MessageQueue");
 }
 
 MessageQueue::~MessageQueue() {
@@ -49,7 +48,7 @@ int MessageQueue::EnqueueCallback(int id, const char * payload, bool blocking) {
   //Callbacks are created here and sent to clients in next poll
 
   int result = 0;
-  bool sameThread = poll_TID == ::getThreadId();
+  bool sameThread = poll_TID == getThreadId("MessageQueue::EnqueueCallback");
   bool waitForResult = blocking;
 
   if (sameThread && waitForResult) {

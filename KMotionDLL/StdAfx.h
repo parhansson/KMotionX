@@ -6,6 +6,10 @@
 #if !defined(AFX_STDAFX_H__FB66C01F_579E_48D7_AEAB_9134F7125114__INCLUDED_)
 #define AFX_STDAFX_H__FB66C01F_579E_48D7_AEAB_9134F7125114__INCLUDED_
 
+#ifdef _KMOTIONX
+#include "KMotionDLLX.h"
+#else
+
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
@@ -32,9 +36,6 @@
 #include <math.h>
 #include <mmsystem.h>
 #include "../KMotionX/include/KMotionX.h"
-#ifdef _KMOTIONX
-#include "incX.h"
-#else
 #include <locale.h>
 #include "HiResTimer.h"
 #include "KMotionApp.h"

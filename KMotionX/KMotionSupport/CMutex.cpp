@@ -37,10 +37,14 @@ either expressed or implied, of the FreeBSD Project.
 #include <unistd.h>
 #include <sys/syscall.h>
 
+long int owner;
+int lockCount;
+
 CMutex::CMutex() {
 	lock = false;
 	name = 0;
-
+	owner = 0;
+	lockCount = 0;
 }
 
 CMutex::~CMutex() {
@@ -51,6 +55,7 @@ CMutex::~CMutex() {
 
 //CMutex(FALSE,"KMotionPipe",NULL)
 CMutex::CMutex(int initiallyOwn,const char *name ,int n){
+	//TODO malloc and strcpy name
 	this->name = name;
 	if(initiallyOwn){
 		Lock(/*n*/);
@@ -62,62 +67,76 @@ CMutex::CMutex(int initiallyOwn,const char *name ,int n){
 	//DWORD TimeOut_ms = INFINITE = 4294967295
 	int CMutex::Lock(int TimeOut_ms/* = 4294967295*/){
 		//std::condition_variable_any;
-		//printf("tid = %d\n", syscall(SYS_gettid));
-//		pthread_t t = pthread_self();
+
 //		printf("Thread %.8x %.8x: Waiting to get lock \n", t);
 
-		//printf("%s:%d Mutex: %s waiting max timout %d", __FILE__, __LINE__, name,TimeOut_ms);
-		int locked = 0;
-#if defined(TMUTEX)
-		using Ms = std::chrono::milliseconds;
-		bool success = mutex.try_lock_for(Ms(TimeOut_ms));
-		locked = success?1:0;
+		long int tid = ::getThreadId("CMutex:Lock (timeout)");
+		//printf("%s:%d Mutex: %s waiting max timout %d thread %ld lockCount %d", __FILE__, __LINE__, name,TimeOut_ms,tid,lockCount);
+		//using Ms = std::chrono::milliseconds;
+		bool success = mutex.try_lock_for(std::chrono::milliseconds(TimeOut_ms));
 		if(success){
-			lock = true;
+			owner = tid;
+			lockCount++;
 		}
-#else
-		if(lock){
-			//locked failed return false;
-			locked = 0;
-		} else {
-			lock = 1;
-			locked = 1;
-		}
-#endif
 
-		//printf(" %s\n",locked==1?"Success":"Failed");
-		return locked;
+		//printf(" %s\n",success?"Success":"Failed");
+		//printf(" %s lockCount %d \n",success?"Success":"Failed",lockCount);
+		return success?1:0;
 	}
 
 	void CMutex::Lock(){
+		long int tid = ::getThreadId("CMutex:Lock");
 		//return Lock(4294967295);
-		//printf("%s:%d Mutex: %s waiting", __FILE__, __LINE__, name);
-		int locked = 1;
-#if defined(TMUTEX)
+		//printf("%s:%d Mutex: %s thread %ld lockCount %d waiting", __FILE__, __LINE__, name,tid,lockCount);
 		mutex.lock();
-		lock = true;
-#else
-		if(lock){
-			//locked failed return false;
-			locked = 0;
-		} else {
-			lock = 1;
-			locked = 1;
-		}
-#endif
+		owner = tid;
+		lockCount++;
 
-		//printf(" %s\n",locked==1?"Success":"Failed");
+		//printf(" %s lockCount %d \n","Success",lockCount);
 	}
 
 	void CMutex::Unlock(){
-		//printf("%s:%d Mutex: %s unlock.....", __FILE__, __LINE__, name);
-#if defined(TMUTEX)
-		if(lock){
+		long int tid = ::getThreadId("CMutex::Unlock");
+
+		if(owner == tid && lockCount > 0){
+			//printf("%s:%d Mutex: %s thread %ld lockCount %d unlock.....", __FILE__, __LINE__, name, tid,lockCount);
+			lockCount--;
 			mutex.unlock();
-			lock = false;
+			//printf("unlocked\n");
 		}
-#else
-		lock = 0;
-#endif
-		//printf("unlocked\n");
+
 	}
+
+	long int getThreadId(const char *callerId){
+		long int tid;
+		//tid = syscall(SYS_gettid/*224*/);
+	#ifdef __APPLE__
+		
+		pthread_t t;
+		t = pthread_self();
+		//unsigned int
+		mach_port_t mt;
+		mt = pthread_mach_thread_np(t);
+
+		//tid = t->__sig;
+		tid = mt;
+	#else 
+		//assume linux. do syscall
+		tid = syscall(SYS_gettid/*224*/);
+		if(tid < 0){
+			//perror("syscall");
+		}
+
+		//pthread_id_np_t   tid;
+		//tid = pthread_getthreadid_np();
+
+	#endif
+		// if(callerId){
+		// 		printf("%s wants to know thread id: %lu\n",callerId, tid);
+		// } else {
+		// 	printf("Thread id: %lu\n", tid);
+		// }
+		return tid;
+	}
+
+
