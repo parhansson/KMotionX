@@ -1,5 +1,5 @@
 #include "handler.h"
-#include "../../../GCodeInterpreter/GCodeInterpreterX.h"
+#include "GCodeInterpreterX.h"
 #include "KmxController.h"
 #include "WebController.h"
 

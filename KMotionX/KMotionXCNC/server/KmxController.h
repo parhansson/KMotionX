@@ -8,7 +8,7 @@
 #ifndef KMOTIONX_KMOTIONXCNC_SERVER_KMXCONTROLLER_H_
 #define KMOTIONX_KMOTIONXCNC_SERVER_KMXCONTROLLER_H_
 
-#include "../../../GCodeInterpreter/GCodeInterpreterX.h"
+#include "GCodeInterpreterX.h"
 #include "MessageQueue.h"
 #include "FileStatus.h"
 

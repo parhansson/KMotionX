@@ -2,7 +2,7 @@
 
 #include "stdlib.h"
 #include <CMutex.h>
-#include "../../KMotionDLL/KMotionDLL.h"  // KMOtion DLL Header
+#include "KMotionDLL.h"  // KMOtion DLL Header
 
 CKMotionDLL *KM;                // one instance of the interface class
 

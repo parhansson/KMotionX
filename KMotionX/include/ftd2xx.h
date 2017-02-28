@@ -7,10 +7,10 @@
 
     #ifdef _WINDOWS
         #include <windows.h>
-        #include "windows/FTD2XX.H"
+        #include "ftdi/windows/FTD2XX.H"
 	#elif __APPLE__
-		#include "macosx/x86_64/ftd2xx.h"
+		#include "ftdi/macosx/x86_64/ftd2xx.h"
     #else
-		#include "linux/armhf/ftd2xx.h"
+		#include "ftdi/linux/armhf/ftd2xx.h"
     #endif
 #endif

@@ -8,7 +8,7 @@
 
 //#define BOOL int
 //#define FALSE 0
-#include "../../../GCodeInterpreter/StdAfx.h"
+#include "GCodeInterpreterX.h"
 
 
 

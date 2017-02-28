@@ -1,8 +1,6 @@
 include $(BUILD_ROOT)/config.mak
-IDIR+=$(BUILD_ROOT)/KMotionX/include
-IDIR+=$(BUILD_ROOT)/KMotionX/KMotionSupport/include
 
-LD_LIBS+=KMotionSupport
+LD_LIBS+=KMotionX
 LD_LIBS+=$(FTDILIB)
 
 
@@ -21,7 +19,7 @@ ifeq ($(OSNAME),Darwin)
 endif	
 endif
 
-EXECUTABLE=libKMotion.$(LIBEXT)
+EXECUTABLE=libKMotion$(LIBEXT)
 SHARED=-shared
 
 include $(BUILD_ROOT)/include.mk

@@ -1,11 +1,11 @@
 include $(BUILD_ROOT)/config.mak
-SOURCES=cli.cpp
+SOURCES=test.cpp
 IDIR+=$(BUILD_ROOT)/KMotionDLL
 
 LD_LIBS+=KMotionX
 LD_LIBS+=KMotion 
 
-EXECUTABLE=kflopConsole
+EXECUTABLE=testRunner
 SHARED=
 
 include $(BUILD_ROOT)/include.mk

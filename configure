@@ -1,9 +1,18 @@
 #!/bin/sh
 
 # default parameters
+prefix=""
+execprefix=""
+bindir=""
+libdir=""
+kmxdir=""
+includedir=""
+mandir=""
+infodir=""
+mingw32="no"
 use_libftdi="yes"
 use_ftd2xx="no"
-build_java_binding="yes"
+build_java_binding="no"
 simulate_load_coff="no"
 cc="gcc"
 libsuf=""
@@ -17,6 +26,10 @@ cpu=`uname -m`
 arch=$cpu
 # OS specific
 targetos=`uname -s`
+case $targetos in
+  MINGW32*)  mingw32=yes;;
+  *) ;;
+esac
 
 case "$cpu" in
   i386|i486|i586|i686|i86pc|BePC|i686-AT386)
@@ -62,13 +75,33 @@ esac
 for opt do
   eval opt=\"$opt\"
   case "$opt" in
+  --prefix=*) prefix=`echo $opt | cut -d '=' -f 2`
+  ;;
+  --exec-prefix=*) execprefix=`echo $opt | cut -d '=' -f 2`
+  ;;
+  --kmxdir=*) kmxdir=`echo $opt | cut -d '=' -f 2`
+  ;;
+  --bindir=*) bindir=`echo $opt | cut -d '=' -f 2`
+  ;;
+  --libdir=*) libdir=`echo $opt | cut -d '=' -f 2`
+  ;;
+  --includedir=*) includedir=`echo $opt | cut -d '=' -f 2`
+  ;;
+  --sharedir=*) sharedir=`echo $opt | cut -d '=' -f 2`
+  ;;
+  --mandir=*) mandir=`echo $opt | cut -d '=' -f 2`
+  ;;
+  --infodir=*) infodir=`echo $opt | cut -d '=' -f 2`
+  ;;
+  --docdir=*) docdir=`echo $opt | cut -d '=' -f 2`
+  ;;  
   --cc=*) cc=`echo $opt | cut -d '=' -f 2`
   ;;
   --ftd2xx) 
 		use_libftdi="no"
 		use_ftd2xx="yes"
   ;;
-  --disable-java) build_java_binding="no"
+  --java-binding) build_java_binding="yes"
   ;;
   --coffload) simulate_load_coff="no"
   ;;
@@ -79,6 +112,70 @@ for opt do
   esac
 done
 
+if test "$mingw32" = "yes" ; then
+    if test x"$kmxdir" = x""; then
+    kmxdir="KMotionX"
+    fi
+    if test -z "$prefix" ; then
+    prefix="C:/Program Files/${kmxdir}"
+    fi
+    if test -z "$sharedir" ; then
+    sharedir="${prefix}"
+    fi
+    execprefix="$prefix"
+    bindir="${prefix}"
+    kmxdir="${prefix}"
+    libdir="${prefix}/lib"
+    docdir="${sharedir}/doc"
+    mandir="${sharedir}/man"
+    infodir="${sharedir}/info"
+    LIBSUF=".lib"
+    EXESUF=".exe"
+else
+    if test -z "$prefix" ; then
+    prefix="/usr/local"
+    fi
+    if test -z "$sharedir" ; then
+    sharedir="${prefix}/share"
+    fi
+    if test x"$execprefix" = x""; then
+    execprefix="${prefix}"
+    fi
+    if test x"$libdir" = x""; then
+    libdir="${execprefix}/lib"
+    fi
+    if test x"$bindir" = x""; then
+    bindir="${execprefix}/bin"
+    fi
+    if test x"$kmxdir" = x""; then
+    kmxdir="kmx"
+    fi
+    if test x"$docdir" = x""; then
+    docdir="${sharedir}/doc/${kmxdir}"
+    fi
+    if test x"$mandir" = x""; then
+    mandir="${sharedir}/man"
+    fi
+    if test x"$infodir" = x""; then
+    infodir="${sharedir}/info"
+    fi
+    kmxdir="${libdir}/${kmxdir}"
+    #Configure library extension
+    case $targetos in
+      Linux)
+        libsuf=".so"
+      ;;
+      Darwin)
+        libsuf=".dylib"
+      ;;
+      *) ;;
+    esac    
+fi # mingw32
+
+if test x"$includedir" = x""; then
+includedir="${prefix}/include"
+fi
+
 if test x"$show_help" = "xyes" ; then
 cat << EOF
 Usage: configure [options]
@@ -86,7 +183,18 @@ Options: [defaults in brackets after descriptions]
 
 Standard options:
   --help                   print this message
-  --disable-java           Disable java binding
+  --prefix=PREFIX          install in PREFIX [$prefix]
+  --exec-prefix=EPREFIX    install architecture-dependent files in EPREFIX
+                           [same as prefix]
+  --bindir=DIR             user executables in DIR [EPREFIX/bin]
+  --libdir=DIR             object code libraries in DIR [EPREFIX/lib]
+  --kmxdir=DIR             installation directory [EPREFIX/lib/kmx]
+  --includedir=DIR         C header files in DIR [PREFIX/include]
+  --sharedir=DIR           documentation root DIR [PREFIX/share]
+  --docdir=DIR             documentation in DIR [SHAREDIR/doc/kmx]
+  --mandir=DIR             man documentation in DIR [SHAREDIR/man]
+  --infodir=DIR            info documentation in DIR [SHAREDIR/info]
+  --java-binding           Enables Java binding
 Advanced options (experts only):
   --coffload               Enables coff loading (disabled by default due to non tested functionality)
   --ftd2xx                 Use ftd2xx driver instead of libftdi
@@ -108,17 +216,6 @@ case $targetos in
   *) ;;
 esac
 fi
-
-#Configure library extension
-case $targetos in
-  Linux)
-  	libsuf="so"
-  ;;
-  Darwin)
-  	libsuf="dylib"
-  ;;
-  *) ;;
-esac
 
 #Configure os specific libraries
 if test "$targetos" = "Linux" ; then
@@ -189,24 +286,39 @@ fi
 
 
 cat <<EOF
-Lib suffix       	$libsuf
-Use libftdi      	$use_libftdi
-Use ftd2xx       	$use_ftd2xx
-FTDI driver      	$ftdi_lib
-Java binding     	$build_java_binding
-Simulate load coff	$simulate_load_coff
-Java Home        	$java_home
-C compiler       	$cc
-Target OS        	$targetos
-CPU              	$cpu
-MULTIARCH_TRIPLET  	$MULTIARCH_TRIPLET
-LD_LIB_PATH     	$LD_LIB_PATH
+Binary  directory     $bindir
+KMotionX directory    $kmxdir
+Library directory     $libdir
+Include directory     $includedir
+Manual directory      $mandir
+Info directory        $infodir
+Doc directory         $docdir
+C compiler            $cc
+Target OS        	    $targetos
+CPU              	    $cpu
+LD_LIB_PATH     	    $LD_LIB_PATH
+MULTIARCH_TRIPLET  	  $MULTIARCH_TRIPLET
+Lib suffix       	    $libsuf
+Use libftdi      	    $use_libftdi
+Use ftd2xx       	    $use_ftd2xx
+FTDI driver      	    $ftdi_lib
+Java binding     	    $build_java_binding
+Simulate load coff	  $simulate_load_coff
+Java Home        	    $java_home
 EOF
 
 echo "Creating config.mak and config.h"
 
 cat >config.mak <<EOF
 # Automatically generated by configure - do not modify
+prefix=$prefix
+bindir=\$(DESTDIR)$bindir
+kmxdir=\$(DESTDIR)$kmxdir
+libdir=\$(DESTDIR)$libdir
+includedir=\$(DESTDIR)$includedir
+mandir=\$(DESTDIR)$mandir
+infodir=\$(DESTDIR)$infodir
+docdir=\$(DESTDIR)$docdir
 CC=$cc
 GCC_MAJOR=$gcc_major
 GCC_MINOR=$gcc_minor

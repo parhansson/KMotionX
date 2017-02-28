@@ -61,8 +61,7 @@ CKMotionLocal::CKMotionLocal()
 CKMotionLocal::~CKMotionLocal()
 {
   (*sharePtr)--;
-  log_info("share= %d", *sharePtr);
-  //TODO if shared memory is not unmapped we get problems on next run
+  log_info("share = %d", *sharePtr);
   if((*sharePtr) < 1){
     log_info("DEMAPPING");
     if (munmap(ptr, region_size) != 0)
@@ -71,6 +70,9 @@ CKMotionLocal::~CKMotionLocal()
     if (shm_unlink(memname) != 0)
       perror("shm_unlink");
 
+  } else {
+    //if shared memory is not unmapped we might get problems on next run
+    log_info("To reset shared memory launch server with reset option 'KMotionServer -reset'");
   }
 }
 #else

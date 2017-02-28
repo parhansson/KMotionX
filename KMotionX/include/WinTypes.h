@@ -4,8 +4,8 @@
     #ifdef _WINDOWS
 
 	#elif __APPLE__
-		#include "macosx/x86_64/WinTypes.h"
+		#include "ftdi/macosx/x86_64/WinTypes.h"
     #else
-		#include "linux/armhf/WinTypes.h"
+		#include "ftdi/linux/armhf/WinTypes.h"
     #endif
 #endif

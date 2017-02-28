@@ -1,8 +1,8 @@
 ODIR=build
 BINDIR=$(BUILD_ROOT)/bin
 LD_LIB_PATH+=$(BINDIR)
-
-IFLAGS=-I$(BUILD_ROOT)/KMotionX/include/compatibility $(addprefix -I,$(IDIR))
+# add KMotionX include first
+IFLAGS=-I$(BUILD_ROOT)/KMotionX/include $(addprefix -I,$(IDIR))
 
 W_FLAGS=-Wall -Wno-unknown-pragmas
 
@@ -40,6 +40,9 @@ $(ODIR)/%.o: %.cpp
 $(ODIR)/%.o: %.CPP
 	$(CC) $(CFLAGS) $< -o $@
 	
-.PHONY: clean
+
 clean:
+	@echo "Cleaning... $(shell pwd)"
 	rm -rf $(ODIR) $(EXECUTABLE)
+
+.PHONY: clean

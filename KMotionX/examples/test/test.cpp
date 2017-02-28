@@ -3,7 +3,7 @@
 #include "stdlib.h"
 #include <string>
 #include <CMutex.h>
-#include "../../KMotionDLL/KMotionDLL.h"  // KMOtion DLL Header
+#include "KMotionDLL.h"  // KMOtion DLL Header
 
 #define BYTE_BIN_PAT "%d%d%d%d%d%d%d%d"
 #define BYTE_BIN(byte)  \
