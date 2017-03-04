@@ -21,7 +21,7 @@
 //#define min(X,Y) fmin(X,Y)
 #include <math.h>
 
-#include "KMotionX.h"
+#include <KMotionX.h>
 
 #include <locale.h>
 #include "canon.h"

@@ -43,7 +43,7 @@
 #endif
 */
 #include <math.h>
-#include "../KMotionX/include/KMotionX.h"
+#include <KMotionX.h>
 #include <locale.h>
 #include <HiResTimer.h>
 

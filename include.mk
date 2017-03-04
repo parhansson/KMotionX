@@ -1,6 +1,7 @@
 ODIR=build
 BINDIR=$(BUILD_ROOT)/bin
 LD_LIB_PATH+=$(BINDIR)
+#LD_LIB_PATH+=../bin
 # add KMotionX include first
 IFLAGS=-I$(BUILD_ROOT)/KMotionX/include $(addprefix -I,$(IDIR))
 
@@ -15,7 +16,11 @@ CFLAGS+=$(DEFS)
 LDFLAGS+=$(SHARED)
 LDFLAGS+=$(addprefix -l,$(LD_LIBS))
 LDFLAGS+=$(addprefix -L,$(LD_LIB_PATH))
-LDFLAGS+=-Wl,-rpath $(realpath $(BINDIR))
+LDFLAGS+=-Wl,-rpath,$(realpath $(kmxdir))
+#LDFLAGS+=-Wl,-rpath $(realpath $(BINDIR))
+#LDFLAGS+=-Wl,-rpath,$$ORIGIN
+#LDFLAGS+=-Wl,-z,origin
+
 
 
 

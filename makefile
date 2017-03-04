@@ -17,21 +17,15 @@ SUBDIRS+=KMotionX/JNI
 endif
 
 KMXPROGS+=KMotionServer$(EXESUF)
+KMXPROGS+=kmxWeb$(EXESUF)
 KMXLIBS+=libGCodeInterpreter$(LIBEXT)
 KMXLIBS+=libKMotion$(LIBEXT)
 KMXLIBS+=libKMotionX$(LIBEXT)
 
-DSP_HEADERS+=KMotionDef.h PC-DSP.h
-GCI_HEADERS+=canon.h CoordMotion.h driver.h GCodeInterpreter.h 
-GCI_HEADERS+=GCodeInterpreterX.h Kinematics.h Kinematics3Rod.h 
-GCI_HEADERS+=PT2D.h PT3D.h rs274ngc_errors.h rs274ngc_return.h
-GCI_HEADERS+=rs274ngc.h SetupTracker.h StdAfx.h TrajectoryPlanner.h
-
-KM_HEADERS+=CLOAD.h COFF.h KMotionDLL_Direct.h KMotionDLL.h
-KM_HEADERS+=KMotionDLLX.h KmotionIO.h KMotionLocal.h
-KM_HEADERS+=PARAMS.h StdAfx.h
-
-# KMX_HEADERS+=KMotionX.h StdAfx.h
+DSP_HEADERS:=$(wildcard DSP_KFLOP/*.h)
+GCI_HEADERS:= $(wildcard GCodeInterpreter/*.h)
+KM_HEADERS:=$(wildcard KMotionDLL/*.h)
+KMX_HEADERS:=$(notdir $(wildcard KMotionX/include/*.h))
 
 all: subdirs
 
@@ -51,9 +45,24 @@ install: subdirs
 	mkdir -p "$(includedir)/kmx/DSP_KLFOP"
 	mkdir -p "$(includedir)/kmx/GCodeInterpreter"
 	mkdir -p "$(includedir)/kmx/KMotion"
-	$(INSTALL) -m644 $(addprefix $(BUILD_ROOT)/DSP_KFLOP/,$(DSP_HEADERS)) "$(includedir)/kmx/DSP_KLFOP"
-	$(INSTALL) -m644 $(addprefix $(BUILD_ROOT)/GCodeInterpreter/,$(GCI_HEADERS)) "$(includedir)/kmx/GCodeInterpreter"
-	$(INSTALL) -m644 $(addprefix $(BUILD_ROOT)/KMotionDLL/,$(KM_HEADERS)) "$(includedir)/kmx/KMotion"
+	mkdir -p "$(includedir)/kmx/KMotionX"
+	$(INSTALL) -m644 $(addprefix $(BUILD_ROOT)/,$(DSP_HEADERS)) "$(includedir)/kmx/DSP_KLFOP"
+	$(INSTALL) -m644 $(addprefix $(BUILD_ROOT)/,$(GCI_HEADERS)) "$(includedir)/kmx/GCodeInterpreter"
+	$(INSTALL) -m644 $(addprefix $(BUILD_ROOT)/,$(KM_HEADERS)) "$(includedir)/kmx/KMotion"
+	$(INSTALL) -m644 $(addprefix $(BUILD_ROOT)/KMotionX/include/,$(KMX_HEADERS)) "$(includedir)/kmx/KMotionX"
+ifeq ($(OSNAME),Linux)
+	
+else ifeq ($(OSNAME),Darwin)
+	install_name_tool -change $(BUILD_ROOT)/bin/libKMotion$(LIBEXT) @rpath/libKMotion.dylib "$(kmxdir)/libGCodeInterpreter$(LIBEXT)"
+	install_name_tool -change $(BUILD_ROOT)/bin/libKMotionX$(LIBEXT) @rpath/libKMotionX$(LIBEXT) "$(kmxdir)/libGCodeInterpreter$(LIBEXT)"
+	install_name_tool -change $(BUILD_ROOT)/bin/libKMotionX$(LIBEXT) @rpath/libKMotionX$(LIBEXT) "$(kmxdir)/libKMotion$(LIBEXT)"
+	install_name_tool -change $(BUILD_ROOT)/bin/libKMotion$(LIBEXT) @rpath/libKMotion$(LIBEXT) "$(bindir)/KMotionServer$(EXESUF)"
+	install_name_tool -change $(BUILD_ROOT)/bin/libKMotionX$(LIBEXT) @rpath/libKMotionX$(LIBEXT) "$(bindir)/KMotionServer$(EXESUF)"
+	install_name_tool -change $(BUILD_ROOT)/bin/libKMotion$(LIBEXT) @rpath/libKMotion$(LIBEXT) "$(bindir)/kmxWeb$(EXESUF)"
+	install_name_tool -change $(BUILD_ROOT)/bin/libKMotionX$(LIBEXT) @rpath/libKMotionX$(LIBEXT) "$(bindir)/kmxWeb$(EXESUF)"
+	install_name_tool -change $(BUILD_ROOT)/bin/libGCodeInterpreter$(LIBEXT) @rpath/libGCodeInterpreter$(LIBEXT) "$(bindir)/kmxWeb$(EXESUF)"	
+endif
+
 
 uninstall:
 	rm -fv $(foreach P,$(KMXPROGS),"$(bindir)/$P")
@@ -75,5 +84,6 @@ distclean: clean
 config.mak:
 	@echo "Please run ./configure."
 	@exit 1
+
 
 .PHONY: install uninstall subdirs $(SUBDIRS) clean distclean testtcc
