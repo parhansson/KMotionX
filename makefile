@@ -17,7 +17,7 @@ SUBDIRS+=KMotionX/JNI
 endif
 
 KMXPROGS+=KMotionServer$(EXESUF)
-KMXPROGS+=kmxWeb$(EXESUF)
+KMXPROGS+=tcc67$(EXESUF)
 KMXLIBS+=libGCodeInterpreter$(LIBEXT)
 KMXLIBS+=libKMotion$(LIBEXT)
 KMXLIBS+=libKMotionX$(LIBEXT)
@@ -51,16 +51,13 @@ install: subdirs
 	$(INSTALL) -m644 $(addprefix $(BUILD_ROOT)/,$(KM_HEADERS)) "$(includedir)/kmx/KMotion"
 	$(INSTALL) -m644 $(addprefix $(BUILD_ROOT)/KMotionX/include/,$(KMX_HEADERS)) "$(includedir)/kmx/KMotionX"
 ifeq ($(OSNAME),Linux)
-	
+
 else ifeq ($(OSNAME),Darwin)
 	install_name_tool -change $(BUILD_ROOT)/bin/libKMotion$(LIBEXT) @rpath/libKMotion.dylib "$(kmxdir)/libGCodeInterpreter$(LIBEXT)"
 	install_name_tool -change $(BUILD_ROOT)/bin/libKMotionX$(LIBEXT) @rpath/libKMotionX$(LIBEXT) "$(kmxdir)/libGCodeInterpreter$(LIBEXT)"
 	install_name_tool -change $(BUILD_ROOT)/bin/libKMotionX$(LIBEXT) @rpath/libKMotionX$(LIBEXT) "$(kmxdir)/libKMotion$(LIBEXT)"
 	install_name_tool -change $(BUILD_ROOT)/bin/libKMotion$(LIBEXT) @rpath/libKMotion$(LIBEXT) "$(bindir)/KMotionServer$(EXESUF)"
 	install_name_tool -change $(BUILD_ROOT)/bin/libKMotionX$(LIBEXT) @rpath/libKMotionX$(LIBEXT) "$(bindir)/KMotionServer$(EXESUF)"
-	install_name_tool -change $(BUILD_ROOT)/bin/libKMotion$(LIBEXT) @rpath/libKMotion$(LIBEXT) "$(bindir)/kmxWeb$(EXESUF)"
-	install_name_tool -change $(BUILD_ROOT)/bin/libKMotionX$(LIBEXT) @rpath/libKMotionX$(LIBEXT) "$(bindir)/kmxWeb$(EXESUF)"
-	install_name_tool -change $(BUILD_ROOT)/bin/libGCodeInterpreter$(LIBEXT) @rpath/libGCodeInterpreter$(LIBEXT) "$(bindir)/kmxWeb$(EXESUF)"	
 endif
 
 
