@@ -7,5 +7,5 @@ LD_LIBS+=KMotionX
 LD_LIBS+=KMotion
 
 EXECUTABLE=libGCodeInterpreter$(LIBEXT)
-SHARED=-shared
+BIN_TYPE=$(LIBEXT)
 include $(BUILD_ROOT)/include.mk

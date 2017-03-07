@@ -24,7 +24,8 @@ KMXLIBS+=libKMotionX$(LIBEXT)
 DSP_HEADERS:=$(wildcard DSP_KFLOP/*.h)
 GCI_HEADERS:= $(wildcard GCodeInterpreter/*.h)
 KM_HEADERS:=$(wildcard KMotionDLL/*.h)
-KMX_HEADERS:=$(notdir $(wildcard KMotionX/include/*.h))
+KMX_HEADERS:=$(notdir $(wildcard KMotionX/include/*.h)) 
+#$(subst KMotionX/include/,,$(wildcard KMotionX/include/**/*.h))
 
 all: subdirs
 
@@ -41,23 +42,16 @@ install: subdirs
 	mkdir -p "$(kmxdir)"
 	$(INSTALL) -m755 $(addprefix $(BUILD_ROOT)/bin/,$(KMXLIBS)) "$(kmxdir)"
 	mkdir -p "$(includedir)/kmx"
-	mkdir -p "$(includedir)/kmx/DSP_KLFOP"
+	mkdir -p "$(includedir)/kmx/DSP_KFLOP"
 	mkdir -p "$(includedir)/kmx/GCodeInterpreter"
 	mkdir -p "$(includedir)/kmx/KMotion"
 	mkdir -p "$(includedir)/kmx/KMotionX"
-	$(INSTALL) -m644 $(addprefix $(BUILD_ROOT)/,$(DSP_HEADERS)) "$(includedir)/kmx/DSP_KLFOP"
+	$(INSTALL) -m644 $(addprefix $(BUILD_ROOT)/,$(DSP_HEADERS)) "$(includedir)/kmx/DSP_KFLOP"
 	$(INSTALL) -m644 $(addprefix $(BUILD_ROOT)/,$(GCI_HEADERS)) "$(includedir)/kmx/GCodeInterpreter"
 	$(INSTALL) -m644 $(addprefix $(BUILD_ROOT)/,$(KM_HEADERS)) "$(includedir)/kmx/KMotion"
 	$(INSTALL) -m644 $(addprefix $(BUILD_ROOT)/KMotionX/include/,$(KMX_HEADERS)) "$(includedir)/kmx/KMotionX"
-ifeq ($(OSNAME),Linux)
-
-else ifeq ($(OSNAME),Darwin)
-	install_name_tool -change $(BUILD_ROOT)/bin/libKMotion$(LIBEXT) @rpath/libKMotion.dylib "$(kmxdir)/libGCodeInterpreter$(LIBEXT)"
-	install_name_tool -change $(BUILD_ROOT)/bin/libKMotionX$(LIBEXT) @rpath/libKMotionX$(LIBEXT) "$(kmxdir)/libGCodeInterpreter$(LIBEXT)"
-	install_name_tool -change $(BUILD_ROOT)/bin/libKMotionX$(LIBEXT) @rpath/libKMotionX$(LIBEXT) "$(kmxdir)/libKMotion$(LIBEXT)"
-	install_name_tool -change $(BUILD_ROOT)/bin/libKMotion$(LIBEXT) @rpath/libKMotion$(LIBEXT) "$(bindir)/KMotionServer$(EXESUF)"
-	install_name_tool -change $(BUILD_ROOT)/bin/libKMotionX$(LIBEXT) @rpath/libKMotionX$(LIBEXT) "$(bindir)/KMotionServer$(EXESUF)"
-endif
+	cp -R $(BUILD_ROOT)/KMotionX/include/ftdi "$(includedir)/kmx/KMotionX"
+	cp -R $(BUILD_ROOT)/KMotionX/include/win "$(includedir)/kmx/KMotionX"
 
 
 uninstall:

@@ -6,7 +6,7 @@ LD_LIBS+=KMotionX
 LD_LIBS+=KMotion 
 
 EXECUTABLE=kflopConsole
-SHARED=
+BIN_TYPE=$(EXESUF)
 
 include $(BUILD_ROOT)/include.mk
 

@@ -10,12 +10,13 @@
 
 
 
-#include <afxmt.h>
-#include "../DSP_KFLOP/PC-DSP.h"
 #ifdef _KMOTIONX
+#include "PC-DSP.h"
 #include <SocketWrapper.h>
 #include <CMutex.h>
 #else
+#include <afxmt.h>
+#include "../DSP_KFLOP/PC-DSP.h"
 #define KMOTIONDLL_DLL
 #endif
 #include <vector>

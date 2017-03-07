@@ -20,6 +20,6 @@ endif
 endif
 
 EXECUTABLE=libKMotion$(LIBEXT)
-SHARED=-shared
+BIN_TYPE=$(LIBEXT)
 
 include $(BUILD_ROOT)/include.mk

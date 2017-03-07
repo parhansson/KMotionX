@@ -15,7 +15,7 @@ LD_LIBS+=KMotion
 LD_LIBS+=GCodeInterpreter
 
 EXECUTABLE=libKMotionXjni$(LIBEXT)
-SHARED=-shared
+BIN_TYPE=$(LIBEXT)
 
 include $(BUILD_ROOT)/include.mk
 

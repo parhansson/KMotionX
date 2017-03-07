@@ -8,7 +8,7 @@ LD_LIBS+=KMotion
 LD_LIBS+=GCodeInterpreter
 
 EXECUTABLE=executeGCode
-SHARED=
+BIN_TYPE=$(EXESUF)
 
 include $(BUILD_ROOT)/include.mk
 
