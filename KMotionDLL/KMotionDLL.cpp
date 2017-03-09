@@ -3,8 +3,8 @@
 /*         Copyright (c) 2003-2006  DynoMotion Incorporated          */
 /*********************************************************************/
 
-#include <vector>
 #include "StdAfx.h"
+#include <vector>
 
 #define KMotionBd 1
 
@@ -26,49 +26,11 @@ void CKMotionDLL::_init(int boardid)
 	PipeOpen=false;
 	ServerMessDisplayed=false;
 
-#ifdef _KMOTIONX
-
-    char* kmotionRoot;
-    char* kmotionBin;
-    char rootPath[MAX_PATH];
-    char resolved_root[MAX_PATH];
-
-    if(!(kmotionBin = getenv("KMOTION_BIN"))){
-    		//No KMOTION_ROOT environment variable set.
-    		//Assume user is in KMotion/bin directory
-        	sprintf(rootPath,"%s",getenv("PWD"));
-        	kmotionBin = realpath(rootPath, resolved_root);
-        	//printf("%s:%d Environment KMOTION_BIN resolved to %s\n",__FILE__,__LINE__,kmotionBin);
-    }
-    sprintf(MainPath, "%s", kmotionBin);
-
-    if(!(kmotionRoot = getenv("KMOTION_ROOT"))){
-    		//No KMOTION_ROOT environment variable set.
-    		//Assume user is in KMotion/bin directory
-        	sprintf(rootPath,"%s/..",getenv("PWD"));
-        	kmotionRoot = realpath(rootPath, resolved_root);
-        	//printf("%s:%d Environment KMOTION_ROOT resolved to %s\n",__FILE__,__LINE__,kmotionRoot);
-
-        	//Save resolved root, used by CoordMotion
-        	//This results in Segmentation faults when calling getenv later on
-        	//setenv("KMOTION_ROOT", kmotionRoot,0);
-    }
-    sprintf(MainPathRoot, "%s", kmotionRoot);
-    
-    strcpy(customCompiler, COMPILER);
-    if (OLD_COMPILER != 0)
-        strcpy(customOptions, "-g");
-    else
-        customOptions[0] = 0;
-    tcc_vers = OLD_COMPILER ? 16 : 26;
-
-#endif
-
 	PipeMutex = new CMutex(FALSE,"KMotionPipe",0);
 	ConsoleHandler=NULL;
 	ErrMsgHandler=NULL;
-    use_tcp = false;
-    remote_tcp = false;
+  use_tcp = false;
+  remote_tcp = false;
 
 }
 
@@ -584,7 +546,9 @@ int CKMotionDLL::Pipe(const char *s, int n, char *r, int *m)
 int CKMotionDLL::LaunchServer()
 {
 
-#ifndef _KMOTIONX
+#ifdef _KMOTIONX
+	return kmx::LaunchServer();
+#else
 	SECURITY_ATTRIBUTES sa          = {0};
 	STARTUPINFO         si          = {0};
 	PROCESS_INFORMATION pi          = {0};
@@ -648,28 +612,6 @@ int CKMotionDLL::LaunchServer()
 	// You don't want to read or write to them accidentally.
 	CloseHandle(hPipeOutputWrite);
 	CloseHandle(hPipeInputRead);
-#elif defined(__APPLE__)
-	//The daemon is currently not supported on Apple
-	char command[1024];
-#ifdef _DEAMON
-    //sprintf(command, "%s/%s", MainPath,"KMotionServer");
-	printf("%s:%d Launch KMotionServer first: %s\n",__FILE__,__LINE__,command);
-	PipeMutex->Unlock();
-	exit(1);
-#else
-    sprintf(command, "%s/%s", MainPath,"KMotionServer &");
-    system(command);
-#endif
-
-#else
-    char command[1024];
-#ifdef _DEAMON
-    sprintf(command, "%s/%s", MainPath,"KMotionServer");
-#else
-    sprintf(command, "%s/%s", MainPath,"KMotionServer &");
-#endif
-    printf("%s:%d Launching KMotionServer %s\n",__FILE__,__LINE__, command);
-    system(command);
 #endif
 
 	return 0;
@@ -711,22 +653,6 @@ int CKMotionDLL::CompileAndLoadCoff(const char *Name, int Thread, char *Err, int
 
 	return LoadCoff(Thread, OutFile);
 }
-
-#ifdef _KMOTIONX
-void CKMotionDLL::SetCustomCompiler(const char * compiler, const char * options, int tcc_minor_version)
-{
-    if (compiler)
-        strncpy(customCompiler, compiler, sizeof(customCompiler));
-    else
-        strcpy(customCompiler, COMPILER);
-    if (options)
-        strncpy(customOptions, options, sizeof(customOptions));
-    else
-        customOptions[0] = 0;
-    if (tcc_minor_version)
-        tcc_vers = tcc_minor_version;
-}
-#endif
 
 int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardType, int Thread, char *Err, int MaxErrLen)
 {
@@ -824,7 +750,7 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	cmd.Format(" -text %08X -g -nostdinc " + IncSrcPath1 + IncSrcPath2 + " -o ",GetLoadAddress(Thread,BoardType));
 	cmd = Compiler + cmd;
 	cmd += "\"" + OFile + "\" \"" + Name + "\" \"" + BindTo +"\"";
-
+	
 	CreateProcess (
 		NULL,
 		cmd.GetBuffer(0), 
@@ -895,92 +821,18 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	return exitcode;
 #else
 
-    if (Err)
-        *Err = 0;
+	if (Err) *Err = 0;
         
 	//normalize_slashes()
 
 	if (Thread==0) return 1;
-	char Compiler[MAX_PATH +1];
-    strcpy(Compiler, customCompiler);
-	if (Compiler[0] == '/') {
-	    FILE *f=fopen(Compiler,"r");  // try if compiler is on path
-	    if (f==NULL)
-	    {
-		    DoErrMsg("Error Locating custom compiler (given absolute path)");
-		    return 1;
-	    }
-	}
-	else {
-	    FILE *f=fopen(Compiler,"r");  // try if compiler is on path
-
-	    if (f==NULL)
-	    {
-		    sprintf(Compiler, "%s/%s", MainPath, customCompiler);
-		    f=fopen(Compiler,"r");  // try in the released directory next
-		    if (f==NULL)
-		    {
-		        if (tcc_vers < 26)
-			        sprintf(Compiler, "%s/TCC67/%s", MainPathRoot, customCompiler);
-			    else
-			        sprintf(Compiler, "%s/KMotionX/tcc-0.9.26/%s", MainPathRoot, customCompiler);
-			    f=fopen(Compiler,"r");  // try in the released directory next
-			    if (f==NULL)
-			    {
-				    DoErrMsg("Error Locating c67-tcc Compiler");
-				    return 1;
-			    }
-		    }
-	    }
-	    fclose(f);
-    }
-
-	char IncSrcPath1[MAX_PATH +1];
-	char IncSrcPath2[MAX_PATH +1];
-	char BindTo[MAX_PATH +1];
-	char path[MAX_PATH +1];
-
-	if (BoardType == BOARD_TYPE_KMOTION){
-		sprintf(IncSrcPath1,"-I\"%s%cDSP_KMotion\"", MainPathRoot, PATH_SEPARATOR) ;
-		sprintf(BindTo, "\"%s%cDSP_KMotion%cDSPKMotion.out\"", MainPathRoot,PATH_SEPARATOR,PATH_SEPARATOR);
-	} else {
-		sprintf(IncSrcPath1,"-I\"%s%cDSP_KFLOP\"", MainPathRoot, PATH_SEPARATOR) ;
-		sprintf(BindTo, "\"%s%cDSP_KFLOP%cDSPKFLOP.out\"", MainPathRoot, PATH_SEPARATOR, PATH_SEPARATOR);
-	}
-	ExtractPath(Name,path);
-	sprintf(IncSrcPath2,"-I\"%s\"", path) ;
-
 
 	char command[MAX_LINE +1];
+	if(kmx::getCompileCommand(Name, OutFile, GetLoadAddress(Thread,BoardType),BoardType != BOARD_TYPE_KMOTION, command, sizeof(command))){
+		DoErrMsg(command);
+		return 1;
+	}
 
-    if (tcc_vers < 26)
- 	    snprintf(command, sizeof(command), "%s -text %08X %s -nostdinc %s %s -o \"%s\" \"%s\" %s 2>&1",
-			Compiler,
-			GetLoadAddress(Thread,BoardType),
-			customOptions,
-			IncSrcPath1,
-			IncSrcPath2,
-			OutFile,
-			Name,
-			BindTo);
-    else
-	    snprintf(command, sizeof(command), "%s -Wl,-Ttext,%08X %s -Wl,--oformat,coff -static -nostdinc -nostdlib %s %s -o \"%s\" \"%s\" %s 2>&1",
-			Compiler,
-			GetLoadAddress(Thread,BoardType),
-			customOptions,
-			IncSrcPath1,
-			IncSrcPath2,
-			OutFile,
-			Name,
-			BindTo);
-
-	//Original TCC67 Windows version shipped with KMotion
-	//tcc -text 80050000 -g -nostdinc -I./DSP_KFLOP -I./ -o Gecko3Axis.out Gecko3Axis.c ./DSP_KFLOP/DSP_KFLOP.out
-	// -text replaced by -Wl,-Ttext,address
-	//http://manpages.ubuntu.com/manpages/lucid/man1/tcc.1.html
-
-	//compile with debug flag is currently not supported -g
-	//c67-tcc -Wl,-Ttext,80050000 -Wl,--oformat,coff -static -nostdinc -nostdlib -I./ -o ~/Desktop/Gecko3AxisOSX.out Gecko3Axis.c DSPKFLOP.out
 	debug("%s\n",command);
 	int exitCode = 0;
 
@@ -997,6 +849,7 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	  size_t len = fread(Err, 1, MaxErrLen-1, out);
 	  Err[len] = 0;
 	  if(len > 0){
+			DoErrMsg(command);
 	    debug("fread: %s\n",Err);
 	  }
 	}
@@ -1102,12 +955,12 @@ int CKMotionDLL::CheckKMotionVersion(int *type, bool GetBoardTypeOnly)
 		if(strstr(BoardVersion,"KFLOP") != NULL)
 		//if (BoardVersion.Find("KFLOP")==0)
 		{
-			sprintf(OutFile,"%s%cDSP_KFLOP%cDSPKFLOP.out",MainPathRoot,PATH_SEPARATOR,PATH_SEPARATOR);
+			kmx::getDspFile(OutFile, true);
 			if (type) *type = BOARD_TYPE_KFLOP;
 		}
 		else
 		{
-			sprintf(OutFile,"%s%cDSP_KMotion%cDSPKMotion.out",MainPathRoot,PATH_SEPARATOR,PATH_SEPARATOR);
+			kmx::getDspFile(OutFile, false);
 			if (type) *type = BOARD_TYPE_KMOTION;
 		}
 
@@ -1215,6 +1068,7 @@ int CKMotionDLL::CheckCoffSize(const char *InFile, int *size_text, int *size_bss
 	// read/process all the symbols
 
 	// seek back to symbols
+
 	if (file_hdr.f_nsyms) {
 
     	if (fseek(f,file_hdr.f_symptr,SEEK_SET)) {free(Coff_str_table); return 1;};
@@ -1511,11 +1365,4 @@ int CKMotionDLL::GetStatus(MAIN_STATUS& status, bool lock)
 	} 
 	if(lock)ReleaseToken(); 
 	return 0;
-
 }
-#ifdef _KMOTIONX
-const char* CKMotionDLL::getInstallRoot(){
-	return MainPathRoot;
-}
-#endif
-

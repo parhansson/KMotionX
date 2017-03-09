@@ -1,5 +1,5 @@
 include $(BUILD_ROOT)/config.mak
-SOURCES=MessageBox.cpp Functions.cpp HiResTimer.cpp CMutex.cpp SocketWrapper.cpp
+SOURCES=MessageBox.cpp KMotionX.cpp HiResTimer.cpp CMutex.cpp SocketWrapper.cpp
 IDIR =../include
 
 EXECUTABLE=libKMotionX$(LIBEXT)

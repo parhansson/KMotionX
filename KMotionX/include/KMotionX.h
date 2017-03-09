@@ -2,6 +2,14 @@
 #define KMOTIONX_CROSSOVER_H_
 #include "dbg.h"
 
+#define OLD_COMPILER 1              // Select default compiler: 1 to use 0.9.16 tcc, else 0 to use later version
+
+#if OLD_COMPILER
+#define KMX_COMPILER "tcc67"        // For now, port of the old compiler (based on 0.9.16) works properly
+#else
+#define KMX_COMPILER "c67-tcc"    // Later version (0.9.26) but not yet fully working.
+#endif
+
 
 // The following ifdef block is the standard way of creating macros which make exporting 
 // from a DLL simpler. All files within this DLL are compiled with the KMOTIONDLL_EXPORTS
@@ -54,8 +62,8 @@
 
 extern char* _strupr(char* s);
 extern char* _strlwr(char* s);
-extern long GetTickCount();
-extern unsigned int timeGetTime();
+extern uint32_t GetTickCount();
+extern uint32_t timeGetTime();
 #else // not _KMOTIONX Probably Windows
 
 //downloaded from http://msinttypes.googlecode.com/svn/trunk/stdint.h
@@ -65,5 +73,23 @@ extern unsigned int timeGetTime();
 #define LINE_BREAK "\r"
 
 #endif
+namespace kmx {
+  extern const char * getInstallPath();
+  extern const char * getBinPath();
+  extern int LaunchServer();
+  extern int getDspFile(char * OutFile, bool KFLOP_board);
+  extern int getCompiler(char * Compiler, int MaxCompilerLen);
+  extern int getCompileCommand(const char * Name, const char * OutFile, uint32_t LoadAddress, bool KFLOP_board, char * command, int cmd_len);
+  
+  // Use to override default compiler executable.  options controls whether -g (and other) option supplied.
+	// tcc_minor_version should be set to e.g. 26 for tcc version 0.9.26 (controls options), or 0 to
+	// not change the version.
+	// If compiler is absolute path, then that exact compiler is used.  Otherwise, it should just be the
+	// name of the compiler without any path, and it will be searched for in standard locations.
+	// If NULL, compiler is set back to default.
+
+	extern void SetCustomCompiler(const char * compiler = NULL, const char * options = NULL, int tcc_minor_version = 0);   
+  extern void getPath(const char * file, char * path);
+}
 
 #endif //KMOTIONX_CROSSOVER_H_

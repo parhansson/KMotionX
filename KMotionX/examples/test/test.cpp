@@ -3,6 +3,7 @@
 #include "stdlib.h"
 #include <string>
 #include <CMutex.h>
+#include "KMotionX.h"  // KMOtion DLL Header
 #include "KMotionDLL.h"  // KMOtion DLL Header
 
 #define BYTE_BIN_PAT "%d%d%d%d%d%d%d%d"
@@ -164,7 +165,7 @@ void testCheckForReady(){
 }
 void testCompile(){
 	char file[256];
-	strcpy(file,KM->getInstallRoot());
+	strcpy(file,kmx::getInstallPath());
 	strcat(file,"/C Programs/FanOFF.c");
 	char err[1024];
 	//KM->CompileAndLoadCoff(file, 1, err, sizeof(err));
@@ -176,7 +177,7 @@ void testCompile(){
 }
 void testExtractCoffVersion(){
 	char file[256];
-		strcpy(file,KM->getInstallRoot());
+		strcpy(file,kmx::getInstallPath());
 		strcat(file,"/DSP_KFLOP/DSPKFLOP.out");
 	char Version[81];
 	if(KM->ExtractCoffVersionString(file, Version)){

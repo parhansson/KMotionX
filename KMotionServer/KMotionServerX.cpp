@@ -65,6 +65,23 @@ either expressed or implied, of the FreeBSD Project.
 #include "KMotionLocal.h"
 
 #ifdef DEBUG
+const char LOCK_CODES[][22]={"KMOTION_LOCKED","KMOTION_IN_USE","KMOTION_NOT_CONNECTED"};
+const char ENUM_NAMES[][35]={
+		"ENUM_WriteLineReadLine",
+		"ENUM_WriteLine",
+		"ENUM_WriteLineWithEcho",
+		"ENUM_ReadLineTimeOut",
+		"ENUM_ListLocations",
+		"ENUM_Failed",
+		"ENUM_Disconnect",
+		"ENUM_FirmwareVersion",
+		"ENUM_CheckForReady",
+		"ENUM_KMotionLock",
+		"ENUM_USBLocation",
+		"ENUM_KMotionLockRecovery",
+		"ENUM_ReleaseToken",
+		"ENUM_ServiceConsole",
+		"ENUM_SetConsole"};
 #define SYSLOGD(M, ...) syslog(LOG_ERR,M,##__VA_ARGS__);
 #else
 #define SYSLOGD(M, ...)
@@ -91,26 +108,6 @@ typedef struct str_thdata
 int ConsolePipeHandle[MAX_BOARDS];
 
 std::list<char*> ConsoleList[MAX_BOARDS];
-const char LOCK_CODES[][22]={"KMOTION_LOCKED","KMOTION_IN_USE","KMOTION_NOT_CONNECTED"};
-const char ENUM_NAMES[][35]={
-		"ENUM_WriteLineReadLine",
-		"ENUM_WriteLine",
-		"ENUM_WriteLineWithEcho",
-		"ENUM_ReadLineTimeOut",
-		"ENUM_ListLocations",
-		"ENUM_Failed",
-		"ENUM_Disconnect",
-		"ENUM_FirmwareVersion",
-		"ENUM_CheckForReady",
-		"ENUM_KMotionLock",
-		"ENUM_USBLocation",
-		"ENUM_KMotionLockRecovery",
-		"ENUM_ReleaseToken",
-		"ENUM_ServiceConsole",
-		"ENUM_SetConsole"};
-
-
-
 
 void MyErrExitThread(const char *s, int thread_socket){
 	syslog(LOG_ERR, "%s", s);

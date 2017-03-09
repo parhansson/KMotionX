@@ -61,8 +61,8 @@ CCoordMotion::CCoordMotion(CKMotionDLL *KM)
 	// Save for everybody what directory we are installed in
 #ifdef _KMOTIONX
 
-	sprintf(MainPath,"%s/KMotion",KM->getInstallRoot());
-	sprintf(MainPathRoot,"%s",KM->getInstallRoot());
+	sprintf(MainPath,"%s/KMotion",kmx::getInstallPath());
+	sprintf(MainPathRoot,"%s",kmx::getInstallPath());
 
 #else
 	CString Path;
