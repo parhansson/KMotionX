@@ -26,7 +26,6 @@
 //#include <ctype.h>
 
 //#include <CString.h>
-#include <WinTypes.h>
 #include <CMutex.h>
 
 /*

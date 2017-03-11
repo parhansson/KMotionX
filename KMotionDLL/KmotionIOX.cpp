@@ -297,9 +297,9 @@ int CKMotionIO::NumberBytesAvailToRead(int *navail, bool ShowMessage)
 {
 	/*
 	int ftStatus;
-	DWORD EventDWord;
-	DWORD RxBytes;
-	DWORD TxBytes;
+	uint32_t EventDWord;
+	uint32_t RxBytes;
+	uint32_t TxBytes;
 
 	*navail = strlen(m_SaveChars);  // take into account any already read in
 	
@@ -327,7 +327,7 @@ int CKMotionIO::NumberBytesAvailToRead(int *navail, bool ShowMessage)
 }
 
 
-int CKMotionIO::ReadBytesAvailable(char *RxBuffer, int maxbytes, DWORD *BytesReceived, int timeout_ms)
+int CKMotionIO::ReadBytesAvailable(char *RxBuffer, int maxbytes, uint32_t *BytesReceived, int timeout_ms)
 {
 	int ftStatus;
 	int RxBytes;
@@ -524,7 +524,7 @@ int CKMotionIO::ReadLineTimeOut(char *buf, int TimeOutms)
 
 int CKMotionIO::ReadLineTimeOutRaw(char *buf, int TimeOutms)
 {
-	BOOL Done=FALSE;
+	bool Done=false;
 	int TotalBytes, result;
 	uint32_t NBytesRead;
 	char *p;
@@ -610,7 +610,7 @@ int CKMotionIO::ReadLineTimeOutRaw(char *buf, int TimeOutms)
 				*(p+1) = 0;
 			}
 
-			Done=TRUE;
+			Done=true;
 		}
 
 		if (!NO_KMOTION_TIMEOUT && !Done && (int)(timeGetTime()-t0) > TimeOutms) 
@@ -656,7 +656,7 @@ int CKMotionIO::WriteLineWithEcho(const char *s)
 	return 0;
 }
 
-int CKMotionIO::SetLatency(UCHAR LatencyTimer)
+int CKMotionIO::SetLatency(uint8_t LatencyTimer)
 {
 	int ftStatus;
 		

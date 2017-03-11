@@ -42,6 +42,13 @@
 	#include <assert.h>
 	#define ASSERT(f) assert((f))
 #endif
+#ifndef TRUE
+#define TRUE	1
+#endif
+#ifndef FALSE
+#define FALSE	0
+#endif
+typedef unsigned int			BOOL;
 
 
 
@@ -73,6 +80,8 @@ extern uint32_t timeGetTime();
 #define LINE_BREAK "\r"
 
 #endif
+
+
 namespace kmx {
   extern const char * getInstallPath();
   extern const char * getBinPath();

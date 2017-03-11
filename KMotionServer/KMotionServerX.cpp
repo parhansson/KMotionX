@@ -35,7 +35,6 @@ either expressed or implied, of the FreeBSD Project.
 #include <ftd2xx.h>
 #include <MessageBox.h>
 #include <CMutex.h>
-#include <WinTypes.h>
 #include <unistd.h>     /* Symbolic Constants */
 #include <sys/types.h>  /* Primitive System Data Types */
 #include <errno.h>      /* Errors */

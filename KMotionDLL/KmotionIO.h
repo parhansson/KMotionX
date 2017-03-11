@@ -54,7 +54,7 @@ public:
 	bool RequestedDeviceAvail(char *reason);
 	int ReadLineTimeOut(char *buf, int TimeOutms);
 	int ReadLineTimeOutRaw(char *buf, int TimeOutms);
-	int SetLatency(UCHAR LatencyTimer);
+	int SetLatency(uint8_t LatencyTimer);
 	int WriteLineWithEcho(const char * s);
 	int WriteLine(const char *s);
 	int ReadBytesAvailable(char *RxBuffer, int maxbytes, uint32_t *BytesReceived, int timeout_ms);

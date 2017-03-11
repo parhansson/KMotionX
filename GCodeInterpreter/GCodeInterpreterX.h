@@ -9,7 +9,6 @@
 #define GCODEINTERPRETERX_H_
 
 #include <pthread.h>
-#include <WinTypes.h>
 
 //#include <CString.h>
 #include <sys/time.h>
