@@ -35,7 +35,6 @@
 #endif
 
 #ifdef _KMOTIONX
-
 #include <ctype.h>
 #include <MessageBox.h>
 #ifndef ASSERT
@@ -64,6 +63,9 @@ typedef unsigned int			BOOL;
 #define _hypot hypot
 
 #define MAX_PATH 256
+//This gives segmentation fault ???
+//#include <limits.h>
+//#define MAX_PATH PATH_MAX
 #define PATH_SEPARATOR '/'
 #define LINE_BREAK "\n"
 

@@ -8,7 +8,7 @@
 </listAttribute>
 <mapAttribute key="org.eclipse.debug.core.environmentVariables">
 <mapEntry key="KMOTION_BIN" value="${project_loc:/KMotionJNI}/../bin"/>
-<mapEntry key="KMOTION_ROOT" value="${project_loc:/KMotionJNI}/.."/>
+<mapEntry key="KMOTIONX_HOME" value="${project_loc:/KMotionJNI}/.."/>
 </mapAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.dynomotion.kmotionx.viewer.GCodeViewer"/>
