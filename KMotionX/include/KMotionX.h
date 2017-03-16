@@ -1,7 +1,7 @@
 #ifndef KMOTIONX_CROSSOVER_H_
 #define KMOTIONX_CROSSOVER_H_
 #include "dbg.h"
-
+#include <stdint.h>
 #define OLD_COMPILER 1              // Select default compiler: 1 to use 0.9.16 tcc, else 0 to use later version
 
 #if OLD_COMPILER
