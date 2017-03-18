@@ -1241,6 +1241,8 @@ char *get_tok_str(int v, CValue *cv)
     case TOK_GT:
         v = '>';
         goto addv;
+    case TOK_DOTS:
+        return strcpy(p, "...");
     case TOK_A_SHL:
         return strcpy(p, "<<=");
     case TOK_A_SAR:

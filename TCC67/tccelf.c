@@ -915,6 +915,9 @@ int tcc_output_file(TCCState *s1, const char *filename)
         relocate_common_syms();
 
 #if (DO_C67)
+        // PH this is not needed if tcc_add_runtime(s1) is executed
+        // after relocate_common_syms()
+        // problem seems to be that .bss section data_offset is faulty
 		// now that we have allocated global .bss symbols
 		// update end symbol so user can calc space for bss
 
