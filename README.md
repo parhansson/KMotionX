@@ -60,6 +60,10 @@ Build project
 ```
 make
 ```
+Install project (some platforms require 'sudo make install')
+```
+make install
+```
 
 ###### 2. Install KFLOP device rules (Linux only)
 This will install a rule that tell your system to grant read and write access to the kflop device for users in group "plugdev"
