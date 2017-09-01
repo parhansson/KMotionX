@@ -1,4 +1,4 @@
-###Mac OS X
+### Mac OS X
 This is a really nice platform. Almost everything is installed already. Given that you are a developer and have the latest XCode installed.
 
 libftdi is available to OS X in at least to ways where HomeBrew currently provides latest version. 

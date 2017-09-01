@@ -1,6 +1,6 @@
-###Raspberry Pi
+### Raspberry Pi
 
-######1. Install Raspbian
+###### 1. Install Raspbian
 Install latest Rasbian download zip image (current version 2014-01-07-wheezy-raspbian)
 Follow installation guide README.md
 
@@ -13,7 +13,7 @@ sudo apt-get upgrade
 sudo apt-get dist-upgrade
 ```
 
-######2. Install gcc 4.8
+###### 2. Install gcc 4.8
 It might work with gcc 4.6 but it will not tested by me. On Raspberry Pi it seems to have more options for different ARM processors.
 And why not just use the newer stuff?
 Skip this step if ”gcc --version” is 4.7 or later. The current latest version available is 4.8
@@ -21,7 +21,7 @@ Install gcc and g++ 4.8. This command installs gcc and g++ 4.8 but does not chan
 ```
 sudo apt-get install gcc-4.8 g++-4.8
 ```
-######3. Install libftdi
+###### 3. Install libftdi
 Skip this step if you will be using ftd2xx driver. However libftdi works a lot better on linux libftdi is an open source ftdi driver that might be used as replacement when running on Linux or MacOSX
 ```
 sudo apt-get install libftdi-dev

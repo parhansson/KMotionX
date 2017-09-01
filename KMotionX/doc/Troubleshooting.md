@@ -1,4 +1,4 @@
-####Troubleshooting
+#### Troubleshooting
 executeGCode example says "Operation not permitted"
   Check device permissions
 ```
