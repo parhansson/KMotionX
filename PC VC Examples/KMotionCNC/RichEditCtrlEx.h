@@ -48,11 +48,11 @@ public:
 	bool CtrlIsDown;
 	int  ModeCode;
 	void SetupForCCode();
-	void SetupForGCode();
+	void SetupForGCode(int size, CString FontName);
 	void SetupForCMD();
 	void SetAStyle(int style, COLORREF fore, COLORREF back=RGB(0xff, 0xff, 0xff), int size=-1, const char *face=0);
 	virtual ~CRichEditCtrlEx();
-
+	int ReadWriteVar; // -1=normal 0=Read Only (changeable using context memu), 1=Read Write, 2=forced Read Only
 
 
 	void AdjustFindDialogPosition();
@@ -116,6 +116,7 @@ protected:
 	afx_msg void OnTransformSel();
 	afx_msg void OnToggleBlock();
 	afx_msg void OnShowLineNumbers();
+	afx_msg void OnMakeReadWrite();
     afx_msg LONG OnFindReplaceCmd(WPARAM wParam, LPARAM lParam);
 	//}}AFX_MSG
 

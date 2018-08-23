@@ -18,7 +18,9 @@ main()
 //	DoPCFloat(PC_COMM_SET_X,0.0);
 //	DoPCFloat(PC_COMM_SET_Y,0.0);
 //	DoPCFloat(PC_COMM_SET_FRO,1.1);
-//	DoPCFloat(PC_COMM_SET_FRO_INC,-0.1);
+//	DoPCFloat(PC_COMM_SET_RRO,1.1);
+//	DoPCFloat(PC_COMM_SET_FRO_INC,0.90);
+//	DoPCFloat(PC_COMM_SET_RRO_INC,1.10);
 //	DoPCFloat(PC_COMM_SET_Z,1.25);
 //	DoPCInt(PC_COMM_USER_BUTTON,3);
 //	DoPCInt(PC_COMM_MCODE,3);

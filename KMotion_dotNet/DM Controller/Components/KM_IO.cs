@@ -115,13 +115,13 @@ namespace KMotion_dotNet
                 _IOType = value;
                 UpdateIOType();
             }
-        } 
+        }
         #endregion
- 
+
         /// <summary>
         /// Primary Construtor for IO object
         /// </summary>
-        /// <param name="controller"></param>
+        /// <param name="controller">KM_Controller object to associate the I Owith</param>
         /// <param name="id">Bit Number</param>
         /// <param name="name">Call Name</param>
         /// <param name="iotype">Sets the IO direction</param>

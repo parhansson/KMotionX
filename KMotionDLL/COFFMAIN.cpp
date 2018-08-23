@@ -217,13 +217,14 @@ int mem_write(unsigned char *buffer, int nbytes, T_ADDR addr, int page)
 #ifdef SIMULATE_LOADCOFF
 	printf("%s:%d %s\n",__FILE__,__LINE__,s);
 #else
-	if (KMotionDLL->WaitToken()) return 0;
+	if (KMotionDLL->WaitToken("memwritecoff")) return 0;
 	if (KMotionDLL->WriteLine(s))
 	{
 		KMotionDLL->ReleaseToken();
 		return 0;
 	}
 #endif
+
 
 
 	for (i=0; i<nbytes; i+=BytesPerLine)

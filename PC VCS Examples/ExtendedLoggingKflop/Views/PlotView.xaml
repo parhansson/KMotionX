@@ -1,0 +1,148 @@
+﻿<catel:Window x:Class="ExtendedLoggingKflop.Views.PlotView"
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:catel="http://catel.codeplex.com"
+                   xmlns:models="clr-namespace:ExtendedLoggingKflop.Models"
+                   xmlns:viewModels="clr-namespace:ExtendedLoggingKflop.ViewModels"
+                   xmlns:myConverters="clr-namespace:ExtendedLoggingKflop.Converters"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+                   xmlns:orc="http://www.wildgums.net.au/orc"
+                   xmlns:oxy="http://oxyplot.org/wpf" mc:Ignorable="d" 
+                   d:DesignHeight="480" d:DesignWidth="640" Title="{Binding PlotModel.PlotConfiguration.PlotName}" Icon="/ExtendedLoggingKflop;component/Resources/browser.png">
+
+    <DockPanel>
+        <DockPanel.Resources>
+            <catel:BooleanToOppositeBooleanConverter x:Key="BooleanToOppositeBooleanConverter" />
+            <Style x:Key="changeColorOnExpanded" TargetType="Expander">
+                <Setter Property="BorderBrush" Value="DarkGray"/>
+                <Setter Property="Margin" Value="10,5"/>
+                <Style.Triggers>
+                    <Trigger Property="IsExpanded" Value="True">
+                        <Setter Property="BorderBrush" Value="Crimson"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </DockPanel.Resources>
+
+        <StackPanel DockPanel.Dock="Top" Orientation="Vertical">
+            <Expander Header="Plot Configuration" IsExpanded="True" Style="{StaticResource changeColorOnExpanded}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                    </Grid.RowDefinitions>
+            <!--<StackPanel Grid.Column="0" Grid.Row="0" Orientation="Vertical">-->
+                    <Grid Grid.Column="0" Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Top">
+                            <Label Content="Axes and Series: "/>
+                            <Button Content="Configure" Command="{Binding ConfigCommand}"  Margin="5" ></Button>
+                            <Label Content="Max Points Per Series:"/>
+                            <TextBox Text="{Binding MaxPlotPoints}" ToolTip="Max points per series" MinWidth="100">
+                                <i:Interaction.Behaviors>
+                                    <catel:NumericTextBox IsDecimalAllowed="False" IsNegativeAllowed="False" />
+                                </i:Interaction.Behaviors>
+                            </TextBox>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1"  Orientation="Horizontal" VerticalAlignment="Top" >
+                            
+                        <Label Content="Log ID:"></Label>
+                        <TextBox Text="{Binding LogID}" ToolTip="This should be a value of 0 to 15, increase for each unique printf log statement." MinWidth="50">
+                            <i:Interaction.Behaviors>
+                                    <catel:NumericTextBox IsDecimalAllowed="False" IsNegativeAllowed="False" />
+                            </i:Interaction.Behaviors>
+                        </TextBox>
+                
+                        <Label Content="Log Format:"></Label>
+                            <TextBox Text="{Binding LogFormat}" IsEnabled="{Binding Started,Converter={StaticResource BooleanToOppositeBooleanConverter}}" IsHitTestVisible="False"  ToolTip="This format should match your pritnf statement!" MinWidth="120">
+                        <i:Interaction.Behaviors>
+                            <catel:UpdateBindingOnTextChanged UpdateDelay="500" />
+                        </i:Interaction.Behaviors>
+                            
+                    </TextBox>
+                                        
+                        
+                        </StackPanel>
+                    <!--</StackPanel>-->
+                        <StackPanel Grid.Row="2" Orientation="Horizontal">
+                            <Label Content="Full log statement:"></Label>
+                            <TextBox Background="Transparent"                             
+                             BorderThickness="0"
+                             Text="{Binding PrintfLogString, Mode=OneWay}"
+                             IsReadOnly="True"
+                             FontWeight="Bold"
+                             ToolTip="You can select this text and cut and paste into your C program."/>
+
+                        </StackPanel>
+                    </Grid>
+
+                    <!--<StackPanel Grid.Column="1" Grid.RowSpan="2" Orientation="Vertical">
+                            
+                        </StackPanel>-->
+                        
+            
+                </Grid>
+            </Expander>
+
+
+        </StackPanel>
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
+            <ToggleButton Margin="10,10,0,0" Command="{Binding StartStopCommand}" CommandParameter="{Binding IsChecked,RelativeSource={RelativeSource Self}, Mode=OneWay}">
+                <ToggleButton.Style>
+                    <Style TargetType="ToggleButton">
+                        <Style.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Content" Value="Stop" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter Property="Content" Value="Start" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ToggleButton.Style>
+            </ToggleButton>
+            <Button  Command="{Binding Clear}" Content="Clear"  Margin="10,10,0,0"></Button>
+            <Button  Command="{Binding ZeroCommand}" Content="Zero X" ToolTip="Normalize X axis to 0 seconds" Margin="10,10,0,0"></Button>
+            <Button Command="{Binding SaveCommand}" Content="Save" ToolTip="Save to CSV file" Margin="10,10,0,0"></Button>
+            <Button Command="{Binding LoadCommand}" Content="Load" ToolTip="Load CSV file" Margin="10,10,0,0"></Button>
+            <Button Command="{Binding ExportPngCommand}" Content="Export" ToolTip="Save to image as .png" Margin="10,10,0,0"></Button>
+
+        </StackPanel>
+
+        <DockPanel LastChildFill="True">
+        <oxy:PlotView Name="_oxyPlot"  Model="{Binding OxyPlotModel}" ></oxy:PlotView>
+        </DockPanel>
+        <!--<Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <DockPanel Grid.Column="0" >
+                
+                <oxy:PlotView Name="_PosVsTimePlot"  Model="{Binding PosVsTimePlotModel}" >
+            </oxy:PlotView>
+            </DockPanel>
+            <GridSplitter Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center" ShowsPreview="True" Width="5"/>
+            <oxy:PlotView Name="_ErrorPlot" Grid.Column="2" Model="{Binding ErrorPlotModel}" >
+            </oxy:PlotView>
+        </Grid>-->
+        
+
+   
+    </DockPanel>
+</catel:Window>

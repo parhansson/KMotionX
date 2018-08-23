@@ -235,7 +235,7 @@ void GetAnswerToRequest(char *chRequest, DWORD nInBytes, char *chReply, DWORD *c
 		break;
 
 	case ENUM_KMotionLock:	
-		result = KMotionDLL.KMotionLock(board);
+		result = KMotionDLL.KMotionLock(board, chRequest + 8);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;
 		break;

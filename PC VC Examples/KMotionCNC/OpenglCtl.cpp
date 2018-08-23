@@ -37,11 +37,15 @@ COpenglCtl::COpenglCtl()
 	m_PolygonOffset = -1.0f;
 	m_Mode = GL_FILL;
 
+	m_Ortho = false;
+
 	OpenGLMutex = new CMutex(FALSE,"OpenGL",NULL);
 
 	InitGeometry();
 
 	Parent=RenderCallback=NULL;
+
+	m_cx = m_cy = 100;
 }
 
 void COpenglCtl::InitGeometry(void)
@@ -62,6 +66,8 @@ void COpenglCtl::InitGeometry(void)
 	m_SpeedTranslation = 1.0f / 50.0f;
 
 	m_xyRotation = 0;
+
+	m_aspect = 1.0f;
 }
 
 
@@ -97,6 +103,7 @@ void COpenglCtl::OnLButtonDown(UINT nFlags, CPoint point)
 	m_LeftButtonDown = TRUE;
 	m_LeftDownPos = point;
 	SetCapture();
+	SetFocus(); // set focus so scroll wheel works
 	MouseTimer.Start();
 	CStatic::OnLButtonDown(nFlags, point);
 }
@@ -115,6 +122,7 @@ void COpenglCtl::OnRButtonDown(UINT nFlags, CPoint point)
 	m_RightButtonDown = TRUE;
 	m_RightDownPos = point;
 	SetCapture();
+	SetFocus(); // set focus so scroll wheel works
 	MouseTimer.Start();
 	
 	CStatic::OnRButtonDown(nFlags, point);
@@ -147,7 +155,6 @@ void COpenglCtl::OnMouseMove(UINT nFlags, CPoint point)
 		else
 		{
 			m_zRotation -= (float)(m_LeftDownPos.x - point.x) * m_SpeedRotation * TimeFactor;
-//			m_xRotation -= (float)(m_LeftDownPos.y - point.y) * m_SpeedRotation;
 		}
 		m_LeftDownPos = point;
 		m_RightDownPos = point;
@@ -175,6 +182,22 @@ void COpenglCtl::OnMouseMove(UINT nFlags, CPoint point)
 		InvalidateRect(NULL,FALSE);
 	}
 
+	CString s;
+	if (m_Ortho && m_xRotation == 0.0f && m_yRotation == 0.0f && m_yRotation == 0.0f)
+	{
+		float x = ((point.x - m_cx/2.0f) / ((float)m_cx/m_aspect) *  2.0f - m_xTranslation) / m_xScaling;
+		float y = ((point.y - m_cy/2.0f) / ((float)m_cy )         * -2.0f - m_yTranslation) / m_yScaling;
+
+		x = TheFrame->GCodeDlg.Interpreter->InchesToUserUnitsX(x);
+		y = TheFrame->GCodeDlg.Interpreter->InchesToUserUnits(y);
+		s.Format("G Code Viewer  xy = %.4f %.4f",x,y);
+	}
+	else
+	{
+		s.Format("G Code Viewer");
+	}
+
+	if (TheFrame->GViewDlg.m_hWnd) TheFrame->GViewDlg.SetWindowText(s);
 
 	
 	CStatic::OnMouseMove(nFlags, point);
@@ -185,7 +208,7 @@ void COpenglCtl::PreSubclassWindow()
 	HWND hWnd = GetSafeHwnd();
 	HDC hDC = ::GetDC(hWnd);
 
-	TheFrame->GViewDlg.m_view.OpenGLMutex->Lock();
+	TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Lock();
 
 	if(SetWindowPixelFormat(hDC)==FALSE)
 		return;
@@ -203,10 +226,13 @@ void COpenglCtl::PreSubclassWindow()
 	glEnable(GL_NORMALIZE);
 	
 	// Lights properties
-	float	ambientProperties[]  = {0.7f, 0.7f, 0.7f, 1.0f};
-	float	diffuseProperties[]  = {0.8f, 0.8f, 0.8f, 1.0f};
-	float	specularProperties[] = {1.0f, 1.0f, 1.0f, 1.0f};
+	GLfloat	ambientProperties[]  = {0.7f, 0.7f, 0.7f, 1.0f};
+	GLfloat	diffuseProperties[]  = {0.8f, 0.8f, 0.8f, 1.0f};
+	GLfloat	specularProperties[] = {1.0f, 1.0f, 1.0f, 1.0f};
 	
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+
 	glLightfv( GL_LIGHT0, GL_AMBIENT, ambientProperties);
 	glLightfv( GL_LIGHT0, GL_DIFFUSE, diffuseProperties);
 	glLightfv( GL_LIGHT0, GL_SPECULAR, specularProperties);
@@ -223,28 +249,14 @@ void COpenglCtl::PreSubclassWindow()
 	gluPerspective(45,aspect,0.01,1000.0);
 	
 
-	float position[] = { 1000.0f, 1000.0f, -1000.0f, 1.0f };
+	GLfloat position[] = { 1000.0f, 1000.0f, -1000.0f, 1.0f };
 	glLightfv(GL_LIGHT0, GL_POSITION, position);
 
 
-	// Default : lighting
-	glEnable(GL_LIGHT0);
-
-
-	
+		
 	// Default : blending
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
-	
-	// Default : material
-	float	MatAmbient[]	= {0.0f, 0.33f, 0.50f, 1.0f};
-	float	MatDiffuse[]	= {0.5f, 0.5f, 0.5f, 1.0f};
-	float	MatSpecular[]	= {0.1f, 0.1f, 0.1f, 1.0f};
-	float	MatShininess[]  = { 84 };
-	float	MatEmission[]	= {0.0f, 0.0f, 0.0f, 1.0f};
-	
-	// Back : green
-	float MatAmbientBack[]  = {0.0f, 0.5f, 0.0f, 1.0f};
 	
 	glEnable(GL_DEPTH_TEST);
 	
@@ -258,9 +270,10 @@ void COpenglCtl::PreSubclassWindow()
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
+	SetupOpenGL();
 	
-	TheFrame->GViewDlg.m_view.OpenGLMutex->Unlock();
-
+	TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Unlock();
+	
 	SetTimer(1,150,NULL);
 	
 	CStatic::PreSubclassWindow();
@@ -273,7 +286,7 @@ void COpenglCtl::PreSubclassWindow()
 BOOL COpenglCtl::SetWindowPixelFormat(HDC hDC)
 {
 	PIXELFORMATDESCRIPTOR pixelDesc;
-	
+
 	pixelDesc.nSize = sizeof(PIXELFORMATDESCRIPTOR);
 	pixelDesc.nVersion = 1;
 	
@@ -372,16 +385,31 @@ void COpenglCtl::OnPaint()
 	
 	glPushMatrix();
 	
-	// Position / translation / scale
-	glTranslated(m_xTranslation,m_yTranslation,m_zTranslation);
-	glRotatef(m_xRotation, 1.0, 0.0, 0.0);
-	glRotatef(m_yRotation, 0.0, 1.0, 0.0);
-	glRotatef(m_zRotation, 0.0, 0.0, 1.0);
-	glScalef(m_xScaling,m_yScaling,m_zScaling);
+	if (m_Ortho)
+	{
+		// Position / rotation / scale
+		glTranslated(m_xTranslation, m_yTranslation, m_zTranslation);
+		glRotatef(m_xRotation, 1.0, 0.0, 0.0);
+		glRotatef(m_yRotation, 0.0, 1.0, 0.0);
+		glRotatef(m_zRotation, 0.0, 0.0, 1.0);
+
+		if (m_zTranslation!=0.0f)
+			m_xScaling = m_yScaling = m_zScaling = m_Scaling0 * m_zTranslation0 / m_zTranslation;
+
+		glScalef(m_xScaling, m_yScaling, m_zScaling);
+	}
+	else
+	{
+		// Position / rotation / scale
+		glTranslated(m_xTranslation, m_yTranslation, m_zTranslation);
+		glRotatef(m_xRotation, 1.0, 0.0, 0.0);
+		glRotatef(m_yRotation, 0.0, 1.0, 0.0);
+		glRotatef(m_zRotation, 0.0, 0.0, 1.0);
+	}
 
 	// Start rendering...
 	RenderScene();
-	
+
 	glPopMatrix();
 
 	// Double buffer
@@ -400,39 +428,20 @@ void COpenglCtl::OnPaint()
 
 void COpenglCtl::OnSize(UINT nType, int cx, int cy) 
 {
-	HWND hWnd = GetSafeHwnd();
-	HDC hDC = ::GetDC(hWnd);
-
-	OpenGLMutex->Lock();
-	// Activate view, set active OpenGL rendering context
-	wglMakeCurrent(hDC,m_hGLContext);
-
-	// Set OpenGL perspective, viewport and mode
-
-	double aspect = (cy == 0) ? cx : (double)cx/(double)cy;
-	
-	glViewport(0,0,cx,cy);
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	gluPerspective(45,aspect,0.01,1000.0);
-
-	glMatrixMode(GL_MODELVIEW);
-
-	glLoadIdentity();
-
-	glDrawBuffer(GL_BACK);
-
-	// Release
-	::ReleaseDC(hWnd,hDC);
-	OpenGLMutex->Unlock();
+	SetupOpenGL();
 
 	CStatic::OnSize(nType, cx, cy);
 }
 
 
 void COpenglCtl::OnMove(int x, int y)
+{
+	SetupOpenGL();
+
+	CStatic::OnMove(x, y);
+}
+
+void COpenglCtl::SetupOpenGL()
 {
 	HWND hWnd = GetSafeHwnd();
 	HDC hDC = ::GetDC(hWnd);
@@ -445,19 +454,22 @@ void COpenglCtl::OnMove(int x, int y)
 
 	GetClientRect(&rect);
 
-	int cx = rect.right;
-	int cy = rect.bottom;
+	m_cx = rect.right;
+	m_cy = rect.bottom;
 
 	// Set OpenGL perspective, viewport and mode
 
-	double aspect = (cy == 0) ? cx : (double)cx/(double)cy;
+	m_aspect = (m_cy == 0) ? m_cx : (double)m_cx/(double)m_cy;
 	
-	glViewport(0,0,cx,cy);
+	glViewport(0,0,m_cx,m_cy);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	gluPerspective(45,aspect,0.01,1000.0);
+	if (m_Ortho)
+		glOrtho(-1 * m_aspect, 1 * m_aspect, -1, 1, 0.01, 1000.0);
+	else
+		gluPerspective(45, m_aspect, 0.01, 1000.0);
 
 	glMatrixMode(GL_MODELVIEW);
 
@@ -468,8 +480,6 @@ void COpenglCtl::OnMove(int x, int y)
 	// Release
 	::ReleaseDC(hWnd,hDC);
 	OpenGLMutex->Unlock();
-
-	CStatic::OnMove(x, y);
 }
 
 
@@ -517,7 +527,8 @@ void COpenglCtl::OnTimer(UINT nIDEvent)
 
 BOOL COpenglCtl::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
-	m_zTranslation += (float)(zDelta) * m_SpeedTranslation;
+	m_zTranslation += (float)(zDelta)* m_SpeedTranslation;
+
 	InvalidateRect(NULL,FALSE);
 
 	return CStatic::OnMouseWheel(nFlags, zDelta, pt);

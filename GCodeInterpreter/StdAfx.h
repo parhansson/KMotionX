@@ -16,12 +16,15 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#define WINVER 0x0600 // define as XP
-#define _WIN32_IE 0x0600 
+#define WINVER _WIN32_WINNT_WINXP 
+#define _WIN32_WINNT _WIN32_WINNT_WINXP 
+#define _WIN32_IE _WIN32_WINNT_WINXP 
+#define NTDDI_VERSION NTDDI_WINXP
 
 // Insert your headers here
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 #define _CRT_SECURE_NO_DEPRECATE 1
+#define NO_WARN_MBCS_MFC_DEPRECATION
 
 #if _MSC_VER > 1000
 #pragma once
@@ -56,6 +59,12 @@
 #include "TrajectoryPlanner.h"
 #include "Kinematics.h"
 #include "Kinematics3Rod.h"
+#include "KinematicsGeppetto.h"
+#include "KinematicsGeppettoExtrude.h"
+#include "Kinematics5AxisGimbalAB.h"
+#include "Kinematics5AxisGimbalCB.h"
+#include "Kinematics5AxisTableAC.h"
+#include "Kinematics5AxisTableBC.h"
 #include "GCodeInterpreter.h"
 #endif
 

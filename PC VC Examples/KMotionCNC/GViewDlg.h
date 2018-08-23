@@ -8,11 +8,9 @@
 #include "DlgX.h"
 #include "dlgbars.h"
 #include "OpenglCtl.h"
+#include "GViewParent.h"
 
 
-#define NBOXPATHS 4
-
-enum ViewDir { VIEWXY, VIEWYZ, VIEWXZ };
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -22,36 +20,27 @@ class CGViewDlg : public CDlgX
 {
 // Construction
 public:
+	CGViewParent GViewParent;
 	void ChangeToolPosition();
 	int FindExtents();
 	
 	CString m_ToolShapeFile;
-	CString m_AxisShapeFile;
-	CString m_ToolFileDisplayed;
-
-	float m_minx;
-	float m_maxx;
-	float m_miny;
-	float m_maxy;
-	float m_minz;
-	float m_maxz;
-	
 	float m_BoxX;
 	float m_BoxY;
 	float m_BoxZ;
 	float m_BoxOffsetX;
 	float m_BoxOffsetY;
 	float m_BoxOffsetZ;
-
-	float m_AxisSize;
 	float m_ToolSize;
 	float m_ToolOffX;
 	float m_ToolOffY;
 	float m_ToolOffZ;
-
+	float m_AxisSize;
+	BOOL m_ShowAxis, m_ShowBox, m_ShowTool, m_Ortho;
 	BOOL m_IncludeA;
 	BOOL m_IncludeB;
 	BOOL m_IncludeC;
+	BOOL m_IncludeToolAngles;
 
 	~CGViewDlg(); 
 	void SaveOnExit(FILE * f);
@@ -60,37 +49,17 @@ public:
 	int LoadConfig();
 	int SaveConfig();
 	void RefreshTitle(); 
-	void SetViewDistance(ViewDir View);
-
-	CColor m_ColorBox;
 
     CDlgToolBar *m_GViewTools;
 
-	bool m_SceneIsInitialized;
-	bool m_SceneIsDirty;
-	bool m_FirstScreenDisplay;
-
 
 	CGViewDlg(CWnd* pParent = NULL);   // standard constructor
-	void ClearPaths();
-	void AddBox();
-	void AddAxisToScene();
-	void AddToolToScene();
 	
-	CPath3d *m_Path;
-	CPath3d *m_PathBox[NBOXPATHS];
-
-	void InitializeScene();
-	void DeleteAllScene();
-	int StartIndexAxis,EndIndexAxis;
-	int StartIndexTool,EndIndexTool;
-
 
 	
 // Dialog Data
 	//{{AFX_DATA(CGViewDlg)
 	enum { IDD = IDD_GView };
-	COpenglCtl	m_view;
 	//}}AFX_DATA
 
 
@@ -105,7 +74,6 @@ public:
 // Implementation
 
 
-	BOOL m_ShowAxis,m_ShowBox,m_ShowTool;
 
 protected:
 
@@ -120,9 +88,11 @@ protected:
 	afx_msg void OnYz();
 	afx_msg void OnClearPaths();
 	afx_msg void OnShowAxis();
+	afx_msg void OnOrtho();
 	afx_msg void OnBox();
 	afx_msg void OnUpdateBox(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateShowAxis(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateOrtho(CCmdUI* pCmdUI);
 	afx_msg void OnRotXY();
 	afx_msg void OnUpdateRotXY(CCmdUI* pCmdUI);
 	afx_msg void OnGViewerSetup();

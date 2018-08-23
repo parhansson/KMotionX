@@ -1098,8 +1098,8 @@ void C67_asm(const char *s,int a, int b, int c)
 			  (0                 <<29) |    //creg
 			  (0                 <<28) |    //inv
 			  (C67_map_regn(c)   <<23) |    //dst
-		      ((C67_map_regn(b)+1)<<18)|    //src2   WEIRD CPU must specify odd reg for some reason
-		      (0     		     <<13) |    //src1 NA
+		      ((C67_map_regn(b)+1)<<18)|    //src2   odd reg MSW
+		      (C67_map_regn(b)   <<13) |    //src1   even reg LSW
 		      (xpath			 <<12) |    //x cross path if opposite sides
 		      (0x1               << 5) |    //opcode
 		      (0x6               << 2) |    //opcode fixed
@@ -1162,7 +1162,7 @@ void C67_asm(const char *s,int a, int b, int c)
 			  (0                 <<29) |    //creg
 			  (0                 <<28) |    //inv
 			  (C67_map_regn(c)   <<23) |    //dst
-		      ((C67_map_regn(b)+1)<<18)|    //src2   WEIRD CPU must specify odd reg for some reason
+		      (C67_map_regn(b)   <<18) |    //src2  
 		      (0     		     <<13) |    //src1 NA
 		      (xpath			 <<12) |    //x cross path if opposite sides
 		      (0x3b              << 5) |    //opcode
@@ -1194,12 +1194,12 @@ void C67_asm(const char *s,int a, int b, int c)
 			  (0                  <<29) |    //creg
 			  (0                  <<28) |    //inv
 			  (C67_map_regn(c)    <<23) |    //dst
-		      ((C67_map_regn(b)+1)<<18) |    //src2 WEIRD CPU must specify odd reg for some reason
-		      (0     		      <<13) |    //src1 NA
-		      (0   			      <<12) |    //x cross path if opposite sides
+			  ((C67_map_regn(b)+1)<<18) |    //src2   odd reg MSW
+			  (C67_map_regn(b)    <<13) |    //src1   even reg LSW
+			  (0   			      <<12) |    //x cross path if opposite sides
 		      (0x9                << 5) |    //opcode
 		      (0x6                << 2) |    //opcode fixed
-		      (C67_map_regs(c)    << 1) |	//side of dest
+		      (C67_map_regs(c)    << 1) |	 //side of dest
 		      (0                  << 0));    //parallel
 	}
 	else if (strstr(s,"ADD.L")==s)
@@ -3883,7 +3883,7 @@ void gen_cvt_itof(int t)
 
 	if ((t & VT_BTYPE) == VT_DOUBLE)
 	{
-		if (t & VT_UNSIGNED)
+		if (vtop->type.t & VT_UNSIGNED)
 			C67_INTDPU(r, r);
 		else
 			C67_INTDP(r, r);
@@ -3893,7 +3893,7 @@ void gen_cvt_itof(int t)
 	}
 	else
 	{
-		if (t & VT_UNSIGNED)
+		if (vtop->type.t & VT_UNSIGNED)
 			C67_INTSPU(r, r);
 		else
 			C67_INTSP(r, r);

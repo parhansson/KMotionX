@@ -74,6 +74,15 @@ namespace KMotion_dotNet
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern void KM_dotnet_Interop_GCodeInterpreter_InitializeInterpreter(IntPtr handle);
 
+        [DllImport("KMotion_dotNet_Interop.dll")]
+        static extern int KM_dotnet_Interop_GCodeInterpreter_GetInterpretThreadID(IntPtr handle);
+
+        [DllImport("KMotion_dotNet_Interop.dll")]
+        static extern int KM_dotnet_Interop_GCodeInterpreter_GetInvokeThreadID(IntPtr handle);
+
+        [DllImport("KMotion_dotNet_Interop.dll")]
+        static extern int KM_dotnet_Interop_GCodeInterpreter_GetCurrentWin32ThreadID();
+
         [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern bool KM_dotnet_Interop_GCodeInterpreter_GetInitializeOnExecute(IntPtr handle);

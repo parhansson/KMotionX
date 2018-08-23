@@ -22,89 +22,89 @@ Partial Class Form1
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.components = New System.ComponentModel.Container
-        Me.txtXAxisCommanded = New System.Windows.Forms.TextBox
-        Me.Label1 = New System.Windows.Forms.Label
-        Me.Label2 = New System.Windows.Forms.Label
-        Me.txtYAxisCommanded = New System.Windows.Forms.TextBox
-        Me.Label3 = New System.Windows.Forms.Label
-        Me.txtZAxisCommanded = New System.Windows.Forms.TextBox
-        Me.grpAxisPositions = New System.Windows.Forms.GroupBox
-        Me.chkEnableZ = New System.Windows.Forms.CheckBox
-        Me.btnStopAll = New System.Windows.Forms.Button
-        Me.btnMoveZ = New System.Windows.Forms.Button
-        Me.chkEnableY = New System.Windows.Forms.CheckBox
-        Me.btnMoveY = New System.Windows.Forms.Button
-        Me.chkEnableX = New System.Windows.Forms.CheckBox
-        Me.btnMoveX = New System.Windows.Forms.Button
-        Me.GroupBox1 = New System.Windows.Forms.GroupBox
-        Me.lblZJogPercent = New System.Windows.Forms.Label
-        Me.Label9 = New System.Windows.Forms.Label
-        Me.sldJogZ = New System.Windows.Forms.TrackBar
-        Me.lblYJogPercent = New System.Windows.Forms.Label
-        Me.Label7 = New System.Windows.Forms.Label
-        Me.sldJogY = New System.Windows.Forms.TrackBar
-        Me.lblXJogPercent = New System.Windows.Forms.Label
-        Me.Label4 = New System.Windows.Forms.Label
-        Me.sldJogX = New System.Windows.Forms.TrackBar
-        Me.GroupBox2 = New System.Windows.Forms.GroupBox
-        Me.Label10 = New System.Windows.Forms.Label
-        Me.Label11 = New System.Windows.Forms.Label
-        Me.txtXAxisPos = New System.Windows.Forms.TextBox
-        Me.txtZAxisPos = New System.Windows.Forms.TextBox
-        Me.txtYAxisPos = New System.Windows.Forms.TextBox
-        Me.Label12 = New System.Windows.Forms.Label
-        Me.GroupBox3 = New System.Windows.Forms.GroupBox
-        Me.chkToggleLED_1 = New System.Windows.Forms.CheckBox
-        Me.chkToggleLED_0 = New System.Windows.Forms.CheckBox
+        Me.components = New System.ComponentModel.Container()
+        Me.txtXAxisCommanded = New System.Windows.Forms.TextBox()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.txtYAxisCommanded = New System.Windows.Forms.TextBox()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.txtZAxisCommanded = New System.Windows.Forms.TextBox()
+        Me.grpAxisPositions = New System.Windows.Forms.GroupBox()
+        Me.chkEnableZ = New System.Windows.Forms.CheckBox()
+        Me.btnStopAll = New System.Windows.Forms.Button()
+        Me.btnMoveZ = New System.Windows.Forms.Button()
+        Me.chkEnableY = New System.Windows.Forms.CheckBox()
+        Me.btnMoveY = New System.Windows.Forms.Button()
+        Me.chkEnableX = New System.Windows.Forms.CheckBox()
+        Me.btnMoveX = New System.Windows.Forms.Button()
+        Me.GroupBox1 = New System.Windows.Forms.GroupBox()
+        Me.lblZJogPercent = New System.Windows.Forms.Label()
+        Me.Label9 = New System.Windows.Forms.Label()
+        Me.sldJogZ = New System.Windows.Forms.TrackBar()
+        Me.lblYJogPercent = New System.Windows.Forms.Label()
+        Me.Label7 = New System.Windows.Forms.Label()
+        Me.sldJogY = New System.Windows.Forms.TrackBar()
+        Me.lblXJogPercent = New System.Windows.Forms.Label()
+        Me.Label4 = New System.Windows.Forms.Label()
+        Me.sldJogX = New System.Windows.Forms.TrackBar()
+        Me.GroupBox2 = New System.Windows.Forms.GroupBox()
+        Me.Label10 = New System.Windows.Forms.Label()
+        Me.Label11 = New System.Windows.Forms.Label()
+        Me.txtXAxisPos = New System.Windows.Forms.TextBox()
+        Me.txtZAxisPos = New System.Windows.Forms.TextBox()
+        Me.txtYAxisPos = New System.Windows.Forms.TextBox()
+        Me.Label12 = New System.Windows.Forms.Label()
+        Me.GroupBox3 = New System.Windows.Forms.GroupBox()
+        Me.chkToggleLED_1 = New System.Windows.Forms.CheckBox()
+        Me.chkToggleLED_0 = New System.Windows.Forms.CheckBox()
         Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
-        Me.GroupBox4 = New System.Windows.Forms.GroupBox
-        Me.Button1 = New System.Windows.Forms.Button
-        Me.SyncPositions = New System.Windows.Forms.Button
-        Me.Label23 = New System.Windows.Forms.Label
-        Me.Label21 = New System.Windows.Forms.Label
-        Me.txtFeedRate = New System.Windows.Forms.TextBox
-        Me.btnClearCoordLog = New System.Windows.Forms.Button
-        Me.lblCoordStatus = New System.Windows.Forms.TextBox
-        Me.GroupBox8 = New System.Windows.Forms.GroupBox
-        Me.Label20 = New System.Windows.Forms.Label
-        Me.txtArcCX = New System.Windows.Forms.TextBox
-        Me.txtArcCY = New System.Windows.Forms.TextBox
-        Me.Label22 = New System.Windows.Forms.Label
-        Me.btnExecuteArc = New System.Windows.Forms.Button
-        Me.Label17 = New System.Windows.Forms.Label
-        Me.Label18 = New System.Windows.Forms.Label
-        Me.txtArcEX = New System.Windows.Forms.TextBox
-        Me.txtArcEZ = New System.Windows.Forms.TextBox
-        Me.txtArcEY = New System.Windows.Forms.TextBox
-        Me.Label19 = New System.Windows.Forms.Label
-        Me.GroupBox7 = New System.Windows.Forms.GroupBox
-        Me.btnExecuteStraight = New System.Windows.Forms.Button
-        Me.Label14 = New System.Windows.Forms.Label
-        Me.Label15 = New System.Windows.Forms.Label
-        Me.txtStraightX = New System.Windows.Forms.TextBox
-        Me.txtStraightZ = New System.Windows.Forms.TextBox
-        Me.txtStraightY = New System.Windows.Forms.TextBox
-        Me.Label16 = New System.Windows.Forms.Label
-        Me.GroupBox6 = New System.Windows.Forms.GroupBox
-        Me.btnExecuteTraverse = New System.Windows.Forms.Button
-        Me.Label6 = New System.Windows.Forms.Label
-        Me.Label13 = New System.Windows.Forms.Label
-        Me.txtTraverseX = New System.Windows.Forms.TextBox
-        Me.txtTraverseZ = New System.Windows.Forms.TextBox
-        Me.txtTraverseY = New System.Windows.Forms.TextBox
-        Me.Label8 = New System.Windows.Forms.Label
-        Me.GroupBox5 = New System.Windows.Forms.GroupBox
-        Me.Panel1 = New System.Windows.Forms.Panel
-        Me.lblInterpreterFeedBack = New System.Windows.Forms.TextBox
-        Me.btnRunInterpreter = New System.Windows.Forms.Button
-        Me.chkSimInterpreter = New System.Windows.Forms.CheckBox
-        Me.btnPauseInterpreter = New System.Windows.Forms.Button
-        Me.btnHaltInterpreter = New System.Windows.Forms.Button
-        Me.btnGetInterpreterFileName = New System.Windows.Forms.Button
-        Me.txtInterpreterFileName = New System.Windows.Forms.TextBox
-        Me.Label5 = New System.Windows.Forms.Label
-        Me.RealtimeLine = New System.Windows.Forms.Label
+        Me.GroupBox4 = New System.Windows.Forms.GroupBox()
+        Me.Button1 = New System.Windows.Forms.Button()
+        Me.SyncPositions = New System.Windows.Forms.Button()
+        Me.Label23 = New System.Windows.Forms.Label()
+        Me.Label21 = New System.Windows.Forms.Label()
+        Me.txtFeedRate = New System.Windows.Forms.TextBox()
+        Me.btnClearCoordLog = New System.Windows.Forms.Button()
+        Me.lblCoordStatus = New System.Windows.Forms.TextBox()
+        Me.GroupBox8 = New System.Windows.Forms.GroupBox()
+        Me.Label20 = New System.Windows.Forms.Label()
+        Me.txtArcCX = New System.Windows.Forms.TextBox()
+        Me.txtArcCY = New System.Windows.Forms.TextBox()
+        Me.Label22 = New System.Windows.Forms.Label()
+        Me.btnExecuteArc = New System.Windows.Forms.Button()
+        Me.Label17 = New System.Windows.Forms.Label()
+        Me.Label18 = New System.Windows.Forms.Label()
+        Me.txtArcEX = New System.Windows.Forms.TextBox()
+        Me.txtArcEZ = New System.Windows.Forms.TextBox()
+        Me.txtArcEY = New System.Windows.Forms.TextBox()
+        Me.Label19 = New System.Windows.Forms.Label()
+        Me.GroupBox7 = New System.Windows.Forms.GroupBox()
+        Me.btnExecuteStraight = New System.Windows.Forms.Button()
+        Me.Label14 = New System.Windows.Forms.Label()
+        Me.Label15 = New System.Windows.Forms.Label()
+        Me.txtStraightX = New System.Windows.Forms.TextBox()
+        Me.txtStraightZ = New System.Windows.Forms.TextBox()
+        Me.txtStraightY = New System.Windows.Forms.TextBox()
+        Me.Label16 = New System.Windows.Forms.Label()
+        Me.GroupBox6 = New System.Windows.Forms.GroupBox()
+        Me.btnExecuteTraverse = New System.Windows.Forms.Button()
+        Me.Label6 = New System.Windows.Forms.Label()
+        Me.Label13 = New System.Windows.Forms.Label()
+        Me.txtTraverseX = New System.Windows.Forms.TextBox()
+        Me.txtTraverseZ = New System.Windows.Forms.TextBox()
+        Me.txtTraverseY = New System.Windows.Forms.TextBox()
+        Me.Label8 = New System.Windows.Forms.Label()
+        Me.GroupBox5 = New System.Windows.Forms.GroupBox()
+        Me.RealtimeLine = New System.Windows.Forms.Label()
+        Me.Panel1 = New System.Windows.Forms.Panel()
+        Me.lblInterpreterFeedBack = New System.Windows.Forms.TextBox()
+        Me.btnRunInterpreter = New System.Windows.Forms.Button()
+        Me.chkSimInterpreter = New System.Windows.Forms.CheckBox()
+        Me.btnPauseInterpreter = New System.Windows.Forms.Button()
+        Me.btnHaltInterpreter = New System.Windows.Forms.Button()
+        Me.btnGetInterpreterFileName = New System.Windows.Forms.Button()
+        Me.txtInterpreterFileName = New System.Windows.Forms.TextBox()
+        Me.Label5 = New System.Windows.Forms.Label()
         Me.grpAxisPositions.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
         CType(Me.sldJogZ, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -813,7 +813,7 @@ Partial Class Form1
         Me.btnExecuteTraverse.Name = "btnExecuteTraverse"
         Me.btnExecuteTraverse.Size = New System.Drawing.Size(85, 23)
         Me.btnExecuteTraverse.TabIndex = 13
-        Me.btnExecuteTraverse.Text = "Execute Now"
+        Me.btnExecuteTraverse.Text = "Add to Buffer"
         Me.btnExecuteTraverse.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         Me.btnExecuteTraverse.UseVisualStyleBackColor = False
         '
@@ -889,6 +889,15 @@ Partial Class Form1
         Me.GroupBox5.TabIndex = 11
         Me.GroupBox5.TabStop = False
         Me.GroupBox5.Text = "Interpreter"
+        '
+        'RealtimeLine
+        '
+        Me.RealtimeLine.AutoSize = True
+        Me.RealtimeLine.Location = New System.Drawing.Point(6, 17)
+        Me.RealtimeLine.Name = "RealtimeLine"
+        Me.RealtimeLine.Size = New System.Drawing.Size(78, 13)
+        Me.RealtimeLine.TabIndex = 14
+        Me.RealtimeLine.Text = "RealTime Line "
         '
         'Panel1
         '
@@ -981,15 +990,6 @@ Partial Class Form1
         Me.Label5.Size = New System.Drawing.Size(63, 13)
         Me.Label5.TabIndex = 0
         Me.Label5.Text = "File Name ::"
-        '
-        'RealtimeLine
-        '
-        Me.RealtimeLine.AutoSize = True
-        Me.RealtimeLine.Location = New System.Drawing.Point(6, 17)
-        Me.RealtimeLine.Name = "RealtimeLine"
-        Me.RealtimeLine.Size = New System.Drawing.Size(78, 13)
-        Me.RealtimeLine.TabIndex = 14
-        Me.RealtimeLine.Text = "RealTime Line "
         '
         'Form1
         '

@@ -12,6 +12,7 @@
 
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 #define _CRT_SECURE_NO_DEPRECATE
+#define NO_WARN_MBCS_MFC_DEPRECATION
 #define WINVER 0x0600 
 #define _WIN32_IE 0x0600 
 

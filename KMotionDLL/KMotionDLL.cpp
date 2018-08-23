@@ -25,6 +25,7 @@ void CKMotionDLL::_init(int boardid)
 	BoardID = boardid;
 	PipeOpen=false;
 	ServerMessDisplayed=false;
+	ErrMessageDisplayed=false;
 
 	PipeMutex = new CMutex(FALSE,"KMotionPipe",0);
 	ConsoleHandler=NULL;
@@ -77,7 +78,7 @@ int CKMotionDLL::WriteLineReadLine(const char *s, char *response)
 	char r[MAX_LINE+1];
 	int result, m, code = ENUM_WriteLineReadLine;
 	
-	result = WaitToken();
+	result = WaitToken("WriteLineReadLine");
 
 	if (result) return result;
 
@@ -167,9 +168,9 @@ int CKMotionDLL::CheckForReady()
 	return PipeCmd(ENUM_CheckForReady);
 }
 
-int CKMotionDLL::KMotionLock()
+int CKMotionDLL::KMotionLock(const char *CallerID)
 {
-	return PipeCmd(ENUM_KMotionLock);
+	return PipeCmdStr(ENUM_KMotionLock, CallerID);
 }
 
 int CKMotionDLL::USBLocation()
@@ -190,10 +191,12 @@ int CKMotionDLL::KMotionLockRecovery()
 //    display a message (return value = KMOTION_NOT_CONNECTED)
 
 
-int CKMotionDLL::WaitToken(bool display_msg, int TimeOut_ms)
+int CKMotionDLL::WaitToken(bool display_msg, int TimeOut_ms, const char *CallerID)
 {
 	CHiResTimer Timer;
 	int result;
+
+	if (ErrMessageDisplayed) return KMOTION_NOT_CONNECTED;
 
 	Timer.Start();
 
@@ -208,12 +211,12 @@ int CKMotionDLL::WaitToken(bool display_msg, int TimeOut_ms)
 		
 		if (!PipeMutex->Lock(TimeOut_ms))
 		{
-		  return KMOTION_IN_USE;
+			return KMOTION_IN_USE;
 		}
 
 		if (Timer.Elapsed_Seconds() > 2.0 * TimeOut_ms * 0.001)
 		{
-		  PipeMutex->Unlock();
+			PipeMutex->Unlock();
 			return KMOTION_IN_USE;
 		}
 
@@ -222,7 +225,7 @@ int CKMotionDLL::WaitToken(bool display_msg, int TimeOut_ms)
 			Sleep(10);
 		}
 
-		result = KMotionLock();
+		result = KMotionLock(CallerID);
 
 		if (result == KMOTION_IN_USE)
 			PipeMutex->Unlock();
@@ -279,16 +282,6 @@ void CKMotionDLL::Console(const char *buf)
     if (ConsoleHandler)
         ConsoleHandler(buf);
 }
-
-void CKMotionDLL::ErrMsg(const char *buf)
-{
-    if (ErrMsgHandler)
-        ErrMsgHandler(buf);
-    else
-		AfxMessageBox(buf, MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
-
-}
-
 
 // Note: ALL User Thread Numbers start with 1
 
@@ -352,9 +345,17 @@ int CKMotionDLL::PipeCmdStr(int code, const char *s)
 
 	memcpy(d,&code,4); 
 	memcpy(d+4,&BoardID,4); 
-	strcpy(d+8,s); 
 
-	Pipe(d, strlen(s)+1+8 ,r, &m);
+	if (s == NULL)
+	{
+		d[8] = 0;
+		Pipe(d, 1 + 8, r, &m);
+	}
+	else
+	{
+		strcpy(d + 8, s);
+		Pipe(d, strlen(s) + 1 + 8, r, &m);
+	}
 
 	memcpy(&result,r+1,4);
 	
@@ -644,14 +645,16 @@ int CKMotionDLL::CompileAndLoadCoff(const char *Name, int Thread, char *Err, int
 	// Compile the C File
 
 	result = Compile(Name,OutFile,BoardType,Thread,Err,MaxErrLen);
-    if (Err && MaxErrLen) 
-        Err[MaxErrLen-1]='\0'; 
-	if (result)
-	    return result;
+	if (Err && MaxErrLen) Err[MaxErrLen-1]='\0'; 
+	if (result) return result;
 
 	// Download the .out File
 
-	return LoadCoff(Thread, OutFile);
+	result = LoadCoff(Thread, OutFile);
+	if (result) return result;
+
+
+	return 0;
 }
 
 int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardType, int Thread, char *Err, int MaxErrLen)
@@ -849,7 +852,8 @@ int CKMotionDLL::Compile(const char *Name, const char *OutFile, const int BoardT
 	  size_t len = fread(Err, 1, MaxErrLen-1, out);
 	  Err[len] = 0;
 	  if(len > 0){
-			DoErrMsg(command);
+			DoErrMsg(Err);
+			DoErrMsg(command); //Show command that failed. Lazy me, should concat messages
 	    debug("fread: %s\n",Err);
 	  }
 	}
@@ -939,7 +943,7 @@ int CKMotionDLL::CheckKMotionVersion(int *type, bool GetBoardTypeOnly)
 
 	if (type) *type = BOARD_TYPE_UNKNOWN;
 
-	if (KMotionLock() == KMOTION_LOCKED)  // see if we can get access
+	if (KMotionLock("CheckKMotionVersion") == KMOTION_LOCKED)  // see if we can get access
 	{
 		// Get the firmware date from the KMotion Card which
 		// will be in PT (Pacific Time)
@@ -1271,6 +1275,29 @@ int CKMotionDLL::ExtractCoffVersionString(const char *InFile, char *Version)
 	return 0;
 }
 
+void CKMotionDLL::ErrMsg(const char *buf)
+{
+	if (!ErrMessageDisplayed)
+	{
+		ErrMessageDisplayed=true;
+		if (ErrMsgHandler)
+		{
+			try
+			{
+				ErrMsgHandler(buf);
+			}
+			catch (...)
+			{
+				ErrMessageDisplayed=false;
+			}
+		}
+		else
+		{
+			AfxMessageBox(buf,MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		}
+		ErrMessageDisplayed=false;
+	}
+}
 
 void CKMotionDLL::DoErrMsg(const char *s)
 {
@@ -1290,7 +1317,7 @@ int CKMotionDLL::GetStatus(MAIN_STATUS& status, bool lock)
 
 	if(lock)
 	{
-		token = WaitToken( false, 100);
+		token = WaitToken( false, 100, "GetStatus");
 		if (token != KMOTION_LOCKED) return 1;
 	}
 

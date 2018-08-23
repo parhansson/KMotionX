@@ -25,11 +25,11 @@ const char * _rs274ngc_errors[] = {
 /*  23 */ "Bug code not g4 g10 g28 g30 g53 or g92 series", // convert_modal_0
 /*  24 */ "Bug code not g61 g61 1 or g64", // convert_control_mode
 /*  25 */ "Bug code not g90 or g91", // convert_distance_mode
-/*  26 */ "Bug code not g93 or g94", // convert_feed_mode
+/*  26 */ "Bug code not g93 or g94 or g95", // convert_feed_mode
 /*  27 */ "Bug code not g98 or g99", // convert_retract_mode
 /*  28 */ "Bug code not in g92 series", // convert_axis_offsets
 /*  29 */ "Bug code not in range g54 to g593", // convert_coordinate_system
-/*  30 */ "Bug code not m0 m1 m2 m30 m60", // convert_stop
+/*  30 */ "Bug code not m0 m1 m2 m30 m47 m60", // convert_stop
 /*  31 */ "Bug distance mode not g90 or g91", // convert_cycle_xy, convert_cycle_yz, convert_cycle_zx
 /*  32 */ "Bug function should not have been called", // convert_cycle_xy, convert_cycle_yz, convert_cycle_zx, read_a, read_b, read_c, read_comment, read_d, read_f, read_g, read_h, read_i, read_j, read_k, read_l, read_line_number, read_m, read_p, read_parameter, read_parameter_setting, read_q, read_r, read_real_expression, read_s, read_t, read_x, read_y, read_z
 /*  33 */ "Bug in tool radius comp", // arc_data_comp_r
@@ -84,7 +84,7 @@ const char * _rs274ngc_errors[] = {
 /*  82 */ "File name too long", // rs274ngc_open
 /*  83 */ "File not open", // rs274ngc_read
 /*  84 */ "G code out of range", // read_g
-/*  85 */ "H word with no g43", // check_other_codes
+/*  85 */ "H word with no g43 or g43.4", // check_other_codes
 /*  86 */ "I word given for arc in yz plane", // convert_arc
 /*  87 */ "I word missing with g87", // convert_cycle_xy, convert_cycle_yz, convert_cycle_zx
 /*  88 */ "I word with no g2 or g3 or g87 to use it", // check_other_codes
@@ -143,7 +143,7 @@ const char * _rs274ngc_errors[] = {
 /* 141 */ "Parameter file out of order", // rs274ngc_restore_parameters, rs274ngc_save_parameters
 /* 142 */ "Parameter number out of range", // read_parameter, read_parameter_setting, rs274ngc_restore_parameters, rs274ngc_save_parameters
 /* 143 */ "Q word missing with g83", // convert_cycle_xy, convert_cycle_yz, convert_cycle_zx
-/* 144 */ "Q word with no g83 or M98 or M100-119", // check_other_codes
+/* 144 */ "Q word with no g83, g94, M98, or M100-119", // check_other_codes
 /* 145 */ "Queue is not empty after probing", // rs274ngc_read
 /* 146 */ "R clearance plane unspecified in cycle", // convert_cycle
 /* 147 */ "R i j k words all missing for arc", // convert_arc
@@ -208,6 +208,11 @@ const char * _rs274ngc_errors[] = {
 /* 206 */ "Cannot use g32 with cutter radius comp", // convert_thread
 /* 207 */ "Tool ID not found in Tool Table", // convert_tool_select
 /* 208 */ "Tool Slot not found in Tool Table", // convert_tool_select
+/* 209 */ "Cannot put a u in canned cycle", // check_other_codes
+/* 210 */ "Cannot put a v in canned cycle", // check_other_codes
+/* 211 */ "Multiple u words on one line", // read_u
+/* 212 */ "Multiple v words on one line", // read_v
+
 "The End"};
 
 

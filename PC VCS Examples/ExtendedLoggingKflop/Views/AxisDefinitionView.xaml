@@ -1,0 +1,55 @@
+﻿<catel:DataWindow
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:catel="http://catel.codeplex.com"
+                   xmlns:models="clr-namespace:ExtendedLoggingKflop.Models"
+                   xmlns:viewModels="clr-namespace:ExtendedLoggingKflop.ViewModels"
+                   xmlns:views="clr-namespace:ExtendedLoggingKflop.Views"
+                   xmlns:myConverters="clr-namespace:ExtendedLoggingKflop.Converters"
+                   xmlns:local="clr-namespace:ExtendedLoggingKflop"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="ExtendedLoggingKflop.Views.AxisDefinitionView"
+                   d:DesignWidth="555" d:DesignHeight="327"
+                   >
+
+    <catel:StackGrid>
+        <catel:StackGrid.Resources>
+            <myConverters:MyEnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
+        </catel:StackGrid.Resources>
+        <catel:StackGrid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </catel:StackGrid.RowDefinitions>
+        <catel:StackGrid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" MinWidth="300" />
+        </catel:StackGrid.ColumnDefinitions>
+
+
+        <Label Content="Title" />
+        <TextBox Text="{Binding AxisTitle, NotifyOnValidationError=True, ValidatesOnDataErrors=True}" />
+
+
+        <Label Content="Units" />
+        <TextBox Text="{Binding Unit, NotifyOnValidationError=True, ValidatesOnDataErrors=True}" />
+
+
+        <Label Content="Key" />
+        <TextBox Text="{Binding Key, NotifyOnValidationError=True, ValidatesOnDataErrors=True}" ToolTip="Unique value to identify axis." />
+
+        <Label Content="Y Axis Position" />
+        <StackPanel Orientation="Horizontal">
+
+            <RadioButton IsChecked="{Binding AxisPosition, ConverterParameter={x:Static models:PlotAxisPositionEnum.YAxisLeft}, Converter={StaticResource EnumToBooleanConverter}}" Content="Left" />
+            <RadioButton IsChecked="{Binding AxisPosition, ConverterParameter={x:Static models:PlotAxisPositionEnum.YAxisRight}, Converter={StaticResource EnumToBooleanConverter}}" Content="Right" />
+        </StackPanel>
+
+
+
+
+
+    </catel:StackGrid>
+
+</catel:DataWindow>

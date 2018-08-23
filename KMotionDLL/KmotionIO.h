@@ -37,7 +37,7 @@ public:
 	bool SendAbortOnConnect;
 	int LogToConsole(char *s);
 	int HandleDiskIO(char *s);
-	int KMotionLock();
+	int KMotionLock(const char *CallerID);
 	int USBLocation();
 	int KMotionLockRecovery();
 	int MakeSureConnected();
@@ -69,6 +69,8 @@ public:
 	int USB_Loc_ID;
 	bool m_Connected;
 	char ErrMsg[MAX_LINE];
+
+	char m_LastCallerID[256];
 
 protected:
 	int Token;

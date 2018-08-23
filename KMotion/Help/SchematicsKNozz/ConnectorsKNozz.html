@@ -1,0 +1,230 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>KNozz Connector Descriptions</title>
+<style type="text/css">
+body,td,th {
+	font-family: Arial;
+}
+</style>
+   
+</head>
+
+<body>
+<p><em><strong><font size="5" face="Arial">KNozz - Connector Pinouts</font></strong></em></p>
+<p><font face="Arial"><img border="0" src="images/KNozz500Labels.png"></font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><font size="4" face="Arial"><b><i>KNozz Connection to KFLOP JP1</i></b></font></p>
+<p><img border="0" src="images/KNozz-to-KFLOP-JP1.png"></p>
+<p><font face="Arial">JP1 provides all internal signal and power connections to KFLOP. This 
+  16 pin ribbon connection should be as short as possible to avoid noise and 
+  crosstalk as the cable forms a high speed communication link.&nbsp; It can be connected to either KFLOP JP4 or JP6.  However for the Analog Output to be functional JP6 must be used which has KFLOP's PWM Outputs.</font></p>
+<p><font face="Arial">PWMIN is used for the isolated Analog Output. &nbsp;BED HEAT and NOZ Heat control the two High power FET outputs. &nbsp;The ADC signals are SPI signals to the dual channel ADC for reading the Thermistor Temperature readings.  See KNozz C Program Examples.</font></p>
+<table border="2" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="39%" id="table5" height="200">
+  <tr>
+    <td width="12%" height="24" align="center" bgcolor="#C0C0C0"><b><font face="Arial" size="2">
+    Pin</font></b></td>
+    <td width="32%" align="center" bgcolor="#C0C0C0"><p><b><font face="Arial" size="2">KFLOP Name (</font></b><b><font size="2" face="Arial">JP4</font></b>)</p></td>
+    <td width="32%" height="24" align="center" bgcolor="#C0C0C0"><p><b><font face="Arial" size="2">
+    KFLOP Name (</font></b><b><font size="2" face="Arial">JP6</font></b>)</p></td>
+    <td width="24%" height="24" align="center" bgcolor="#C0C0C0">
+	  <p><b><font face="Arial" size="2">KNozz
+  </font></b><b><font face="Arial" size="2"> Name</font></b></p></td>
+  </tr>
+  <tr>
+    <td width="12%" height="19" align="center">
+      <b>
+    <font face="Arial" size="2">1</font></b></td>
+    <td width="32%" align="center"><b><font face="Arial" size="2">VDD5</font></b></td>
+    <td width="32%" height="19" align="center">
+    <b><font face="Arial" size="2">VDD5</font></b></td>
+    <td width="24%" height="19" align="center">
+	<p style="margin-left: 0px; margin-top:0; margin-bottom:0"><b>
+	<font face="Arial" size="2">VDD5</font></b></td>
+  </tr>
+  <tr>
+    <td width="12%" height="19" align="center">
+      <b>
+    <font face="Arial" size="2">2</font></b></td>
+    <td width="32%" align="center"><b><font face="Arial" size="2">VDD12</font></b></td>
+    <td width="32%" height="19" align="center">
+    <b><font face="Arial" size="2">VDD12</font></b></td>
+    <td width="24%" height="19" align="center"><p style="margin-left: 0px; margin-top:0; margin-bottom:0">&nbsp;</p></td>
+  </tr>
+  <tr>
+    <td width="12%" height="19" align="center">
+      <b>
+    <font face="Arial" size="2">3</font></b></td>
+    <td width="32%" align="center"><b><font face="Arial" size="2">VDD33</font></b></td>
+    <td width="32%" height="19" align="center">
+    <b><font face="Arial" size="2">VDD33</font></b></td>
+    <td width="24%" height="19" align="center">
+	<p style="margin-left: 0px; margin-top:0; margin-bottom:0"><b>
+	<font face="Arial" size="2">VDD33</font></b></td>
+  </tr>
+  <tr>
+    <td width="12%" height="19" align="center">
+      <b>
+    <font face="Arial" size="2">4</font></b></td>
+    <td width="32%" align="center"><b><font face="Arial" size="2">RESET#</font></b></td>
+    <td width="32%" height="19" align="center">
+    <b><font face="Arial" size="2">RESET#</font></b></td>
+    <td width="24%" height="19" align="center"><p style="margin-left: 0px; margin-top:0; margin-bottom:0">&nbsp;</p></td>
+  </tr>
+  <tr>
+    <td width="12%" height="19" align="center">
+      <b>
+    <font face="Arial" size="2">5</font></b></td>
+    <td width="32%" align="center"><b> <font face="Arial" size="2">IO16</font></b></td>
+    <td width="32%" height="19" align="center">
+      <b>
+    <font face="Arial" size="2">IO26</font></b></td>
+    <td width="24%" height="19" align="center">
+	<p style="margin-left: 0px; margin-top:0; margin-bottom:0"><b>
+	<font face="Arial" size="2">PWMIN</font></b></td>
+  </tr>
+  <tr>
+    <td width="12%" height="19" align="center">
+      <b>
+    <font face="Arial" size="2">6</font></b></td>
+    <td width="32%" align="center"><b> <font face="Arial" size="2">IO17</font></b></td>
+    <td width="32%" height="19" align="center">
+      <b>
+    <font face="Arial" size="2">IO27</font></b></td>
+    <td width="24%" height="19" align="center"><p style="margin-left: 0px; margin-top:0; margin-bottom:0">&nbsp;</p></td>
+  </tr>
+  <tr>
+    <td width="12%" height="8" align="center"><b><font face="Arial" size="2">
+    7</font></b></td>
+    <td width="32%" align="center"><b> <font face="Arial" size="2">IO18</font></b></td>
+    <td width="32%" height="19" align="center">
+      <b>
+    <font face="Arial" size="2">IO28</font></b></td>
+    <td width="24%" height="19" align="center"><p style="margin-left: 0px; margin-top:0; margin-bottom:0">&nbsp;</p></td>
+  </tr>
+  <tr>
+    <td width="12%" height="20" align="center">
+      <b>
+    <font face="Arial" size="2">8</font></b></td>
+    <td width="32%" align="center"><b><font face="Arial" size="2">GND</font></b></td>
+    <td width="32%" height="19" align="center">
+    <b><font face="Arial" size="2">GND</font></b></td>
+    <td width="24%" height="19" align="center">
+	<p style="margin-left: 0px; margin-top:0; margin-bottom:0"><b>
+	<font face="Arial" size="2">GND</font></b></td>
+  </tr>
+  <tr>
+    <td width="12%" height="20" align="center">
+    <b><font face="Arial" size="2">9</font></b></td>
+    <td width="32%" align="center"><b><font face="Arial" size="2">GND</font></b></td>
+    <td width="32%" height="19" align="center">
+    <b><font face="Arial" size="2">GND</font></b></td>
+    <td width="24%" height="19" align="center">
+	<b><font face="Arial" size="2">GND</font></b></td>
+  </tr>
+  <tr>
+    <td width="12%" height="20" align="center">
+    <b><font face="Arial" size="2">10</font></b></td>
+    <td width="32%" align="center"><b><font face="Arial" size="2">IO19</font></b></td>
+    <td width="32%" height="19" align="center">
+    <b><font face="Arial" size="2">IO29</font></b></td>
+    <td width="24%" height="19" align="center">&nbsp;
+	</td>
+  </tr>
+  <tr>
+    <td width="12%" height="20" align="center">
+    <b><font face="Arial" size="2">11</font></b></td>
+    <td width="32%" align="center"><b><font face="Arial" size="2">IO20</font></b></td>
+    <td width="32%" height="19" align="center">
+    <b><font face="Arial" size="2">IO30</font></b></td>
+    <td width="24%" height="19" align="center"><strong><font face="Arial" size="2">BED HEAT</font></strong></td>
+  </tr>
+  <tr>
+    <td width="12%" height="20" align="center">
+    <b><font face="Arial" size="2">12</font></b></td>
+    <td width="32%" align="center"><b><font face="Arial" size="2">IO21</font></b></td>
+    <td width="32%" height="19" align="center">
+    <b><font face="Arial" size="2">IO31</font></b></td>
+    <td width="24%" height="19" align="center"><strong><font face="Arial" size="2">NOZ HEAT</font></strong></td>
+  </tr>
+  <tr>
+    <td width="12%" height="20" align="center">
+    <b><font face="Arial" size="2">13</font></b></td>
+    <td width="32%" align="center"><b><font face="Arial" size="2">IO22</font></b></td>
+    <td width="32%" height="19" align="center">
+    <b><font face="Arial" size="2">IO32</font></b></td>
+    <td width="24%" height="19" align="center"><strong><font face="Arial" size="2">ADC DIN</font></strong></td>
+  </tr>
+  <tr>
+    <td width="12%" height="20" align="center">
+    <b><font face="Arial" size="2">14</font></b></td>
+    <td width="32%" align="center"><b><font face="Arial" size="2">IO23</font></b></td>
+    <td width="32%" height="19" align="center">
+    <b><font face="Arial" size="2">IO33</font></b></td>
+    <td width="24%" height="19" align="center"><strong><font face="Arial" size="2">ADC #CS</font></strong></td>
+  </tr>
+  <tr>
+    <td width="12%" height="20" align="center">
+    <b><font face="Arial" size="2">15</font></b></td>
+    <td width="32%" align="center"><b><font face="Arial" size="2">IO24</font></b></td>
+    <td width="32%" height="19" align="center">
+    <b><font face="Arial" size="2">IO34</font></b></td>
+    <td width="24%" height="19" align="center"><strong><font face="Arial" size="2">ADC DOUT</font></strong></td>
+  </tr>
+  <tr>
+    <td width="12%" height="20" align="center">
+    <b><font face="Arial" size="2">16</font></b></td>
+    <td width="32%" align="center"><b><font face="Arial" size="2">IO25</font></b></td>
+    <td width="32%" height="19" align="center">
+    <b><font face="Arial" size="2">IO35</font></b></td>
+    <td width="24%" height="19" align="center"><font face="Arial" size="2"><strong>ADC CLK</strong></font></td>
+  </tr>
+</table>
+<p><img src="images/KNozz-JP1.jpg" alt=""/></p>
+<p><em><strong><font face="Arial" size="4"> <br><br>KNozz J1 and J2 High Power FET Outputs</font></strong></em></p>
+<p>KNozz provides two independent opto isolated high current FET switch outputs. &nbsp;Although 3D Printer Bed Heaters are often driven with a 24V supply and Nozzle Heaters are often driven by a 12V supply any voltage from 12 to 48V can be applied and switched.</p>
+<p>Connect the + Supply Voltage to Bed24V (or Noz12V) and the Supply GND to BedGND (or NozGND).  Connect the Heater Element between Bed24V (or Noz12V) and the BedNeg (or NozNeg) terminals.  The &quot;Neg&quot; terminals are driven the Supply GND when active and open circuit when inactive.</p>
+<p>Both Outputs have an associated LED to indicate when Voltage is applied to the Output. The Output and LED will only be active when the WatchDog is active, the associated input is being driven, and a power supply is attached and providing power.</p>
+<p>The BED HEAT (or NOZ HEAT) inputs are active high (they must be driven &gt; 2.0V to enable the FET Outputs).</p>
+<p><img src="images/KNozzJ1.png" width="307" height="151" alt=""/></p>
+<p><img src="images/KNozz-J1.jpg" width="210" height="130" alt=""/></p>
+<p><img src="images/KNozzJ2.png" width="293" height="144" alt=""/></p>
+<p><img src="images/KNozz-J2.jpg" alt=""/></p>
+<p><em><strong><font face="Arial" size="4"><br><br>KNozz J3 Analog Output</font></strong></em></p>
+<font face="Arial"><p>KNozz provides one opto isolated Analog output. &nbsp;A   positive isolated supply voltage should be applied across AnalogVcc and   AnalogGnd.&nbsp; The AnalogOut voltage will then be a function of the PWM   duty cycle.&nbsp; Note the Output is normally isolated from KFLOP GND so make   sure to use the AnalogGnd as the voltage reference.</p>
+<p>The PWM input pin is Pin5 of JP1.&nbsp; KFLOP JP6 Aux1 connector has   PWM0 output on this pin.&nbsp; The AnalogOut function will only work when   KNozz is connected to KFLOP JP6 Aux1. </p>
+<p>The PWM to Analog Circuit used is the same as for KStep. See the KStep documentation for more information.</p>
+<p>See the Spindle_S_KNozz.c example for how to interface KMotionCNC's S command to the Analog Output.</p>
+<p>A Terminal with +5V connected to KFLOP +5V is also provided.</p>
+<p><img src="images/KNozzJ3.png"  alt=""/></p><p><img src="images/KNozz-J3.jpg" alt=""/></p>
+
+<p><em><strong><font face="Arial" size="4"><br><br>
+  KNozz J4 Thermistor Analog Inputs</font></strong></em></p>
+<p>KNozz provides two 12-bit analog inputs normally used for Nozzle and Bed Temperature measurement.  A C Program running in KFLOP is normally used to bit-bang SPI to read the ADC values, determine the temperatures, and control the Heaters. See the C Program KNozz Examples.</p>
+<p>A single 3.3V (+/-1%) Reference is also provided that is also used for the Internal ADC Converter. Normally Thermistors used with 3D Printers change resistance from ~100K ohms at room temperature to ~5K ohms at build temperature.  The external Themistor should be connected between the VREF terminal and the NOZZ (or BED) Terminals.</p>
+<p>A Thermistor and internal 10K ohm (+/- 1%) resistor form a Voltage divider.  See the circuit below. </p>
+<p>The relationship between input Voltage to ADC reading in counts is:</p>
+<p><strong><em>ADC = 4097 x Vin / VREF</em></strong></p>
+<p>The relationship between Thermistor resistance R and ADC reading in counts is:</p>
+<p><strong><em>ADC = 4097 x 10K / (10K + R)</em></strong></p>
+<p>&nbsp;</p>
+<p><img src="images/KNozzJ4.png"  alt=""/></p>
+<p>
+<p><img src="images/KNozz-J4.jpg"  alt=""/></p>
+<p>Each Thermistor input circuit includes a filter capacitor (0.1uF) that will slow response and reduce noise. The response time will change depending how the input is driven but at high resistance the input response will be: </p>
+<p><em><strong>Tau = RC = 10K x 0.1uF = 1ms</strong></em></p>
+
+<p style="margin-top: 0; margin-bottom: 0"><img src="images/Themistor.png" width="426" height="243" alt=""/></p>
+<p>&nbsp;</p>
+<p><strong><em>WatchDog</em></strong></p>
+<p>KNozz includes a WatchDog Circuit to help avoid thermal runaway of the Heaters if the FET Outputs are somehow turned on while the temperatures are not being actively monitored.   To read the temperatures the ADC CLK input must be toggled. If the ADC Clock stops togging, then the WatchDog Circuit trips and disables both FET Outputs after approximately 3ms. The WatchDog LED illuminates when the ADC Clock is toggling and the Outputs are enabled to be turned on.</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+
+</body>
+
+</html>

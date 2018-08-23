@@ -9,7 +9,7 @@ Please raise an issue if you find something.
 The complicated features found in CNC control applications such as KMotionCNC is not in this repository. 
 See [KMotionXCNC](https://github.com/parhansson/KMotionXCNC "CNC application")
 
-#### Current status KMotion 433
+#### Current status KMotion 4.34
 
 Runs on Linux and Mac OS.
 
@@ -44,8 +44,6 @@ sudo apt-get install git
 
 Clone repository
 ```
-mkdir git
-cd git
 git clone https://github.com/parhansson/KMotionX.git
 ```
 
@@ -60,9 +58,9 @@ Build project
 ```
 make
 ```
-Install project (some platforms require 'sudo make install')
+Install project (some platforms (MacOS) do not require 'sudo' just make install')
 ```
-make install
+sudo make install
 ```
 
 ###### 2. Install KFLOP device rules (Linux only)
@@ -72,13 +70,14 @@ If your user is not in that group fix users groups or change the rule before plu
 sudo cp KMotionX/usb/etc/udev/rules.d/10.kflop.rules /etc/udev/rules.d/
 ```
 
-###### 3. Execute examples
+###### 3. Execute examples or install [KMotionXCNC](https://github.com/parhansson/KMotionXCNC "CNC application")
 Plug in your KFlop to an available USB port.
 KMotionServer will start automatically in background when needed.
 When KMotionDLL is rebuilt make sure to kill running server 'killall KMotionServer'
 
 Start executeGCode example
 ```
+cd bin
 ./executeGCode
 ```
 

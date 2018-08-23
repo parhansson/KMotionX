@@ -91,14 +91,14 @@
 #define CSTRING_PATH(x,p)					\
 	if (save)						\
 	{								\
-		fprintf(f,#x "=%s\n",StripPathMatch(x,p));  \
+		fprintf(f,#x "=%s\n",StripPathMatch(x,p).GetBuffer());  \
 	}								\
 	else							\
 	{								\
 		if (LookForCString(s,#x"=",&x) ==0)	\
 		{                                           \
-			if (!x.IsEmpty() && x.Find('\\') == -1)                 \
-				x = p + x;                          \
+			if (!x.IsEmpty() && x.Find(':') == -1 && x.Find("\\\\") == -1)                 \
+				x = TheFrame->MainPathRoot + p + x;                          \
 		}											\
 	}							
 
@@ -117,7 +117,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CDlgX dialog
 
-class CDlgX : public CDialog
+class CDlgX : public CDialogEx
 {
 // Construction
 public:
@@ -134,7 +134,8 @@ public:
 	void AFXAPI DDX_Text(CDataExchange* pDX, int nIDC, CString &value);
 	void AFXAPI DDX_Text(CDataExchange* pDX, int nIDC, float& value);
 	
-	CString CDlgX::StripPathMatch(CString FileName, CString DefaultPath);
+	CString StripPathMatch(CString FileName, CString DefaultPath);
+	CString InitialFile(CString FileName, CString DefaultPath, CString DefaultName);
 
 	int LastMoveX;
 	int LastMoveY;

@@ -100,10 +100,9 @@ void CTransform::make_matrix(float *a)
 				  GetRotation()->y(),
 				  GetRotation()->z());
 
-	if (GetValueRotationXY()!=0.0f) glRotatef(GetValueRotationXY(),0.0f,0.0f,1.0f);
-	if (GetValueRotationYZ()!=0.0f) glRotatef(GetValueRotationYZ(),1.0f,0.0f,0.0f);
-	if (GetValueRotationZX()!=0.0f) glRotatef(GetValueRotationZX(),0.0f,1.0f,0.0f);
-
+	if (GetValueRotationXY() != 0.0f) glRotatef(GetValueRotationXY(), 0.0f, 0.0f, 1.0f);
+	if (GetValueRotationZX() != 0.0f) glRotatef(GetValueRotationZX(), 0.0f, 1.0f, 0.0f);
+	if (GetValueRotationYZ() != 0.0f) glRotatef(GetValueRotationYZ(), 1.0f, 0.0f, 0.0f);
 
 	::glGetFloatv(GL_MODELVIEW_MATRIX,a);
 	::glPopMatrix();

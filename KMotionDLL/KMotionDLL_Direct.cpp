@@ -97,102 +97,46 @@ int CKMotionDLL_Direct::MapBoardToIndex(int BoardID)
 }
 
 
+
 int CKMotionDLL_Direct::ListLocations(int *nlocations, int *list)
 {
 #ifndef LIB_FTDI
-
-	FT_HANDLE ftHandle;
-	FT_DEVICE ftDevice;
-	DWORD deviceID;
-	char SerialNumber[16]; 
-	char Description[64]; 
+	FT_DEVICE_LIST_INFO_NODE *devInfo;
 	FT_STATUS ftStatus;
+	DWORD numDevs;  
 	int i;
 
-	for (i=0; i<MAX_BOARDS; i++) list[i]=-1;
+	list[0]=-1;
+	*nlocations=0;
 
-	*nlocations=-1;
-
-	ftStatus = FT_ListDevices(list,nlocations,FT_LIST_ALL|FT_OPEN_BY_LOCATION);
+	// create the device information list
+	ftStatus = FT_CreateDeviceInfoList(&numDevs);
 	
-	if ((ftStatus == FT_OK || *nlocations!=-1) &&  *nlocations <= MAX_BOARDS)
-	{
-		// go through the list and remove any non-dynomotion boards
-		for (i=0; i<*nlocations; i++)
-		{
-			if (list[i] != -1)
+	if (ftStatus == FT_OK) 
+	{ 
+		if (numDevs > 0) 
+		{ 
+			// allocate storage for list based on numDevs 
+			devInfo = (FT_DEVICE_LIST_INFO_NODE*)malloc(sizeof(FT_DEVICE_LIST_INFO_NODE)*numDevs); // get the device information list 
+			// get the device information list
+			ftStatus = FT_GetDeviceInfoList(devInfo,&numDevs);
+
+			// go through the list and copy Dynomotion USB IDs to User's list
+			for (i=0; i<(int)numDevs; i++)
 			{
-				ftStatus = FT_OpenEx((void *)list[i], FT_OPEN_BY_LOCATION, &ftHandle); 
-
-				if(ftStatus != FT_OK)
-				{ 
-				   // FT_Open failed 
-				   list[i] = -1;  // mark as unusable 
-				} 
-				else
+				if (strstr(devInfo[i].Description,"KFLOP")!= NULL ||
+					strstr(devInfo[i].Description,"KMotion")!= NULL ||
+					strstr(devInfo[i].Description,"Dynomotion")!= NULL)
 				{
-					ftStatus = FT_GetDeviceInfo( 
-						  ftHandle, 
-						  &ftDevice, 
-						  &deviceID, 
-						  SerialNumber, 
-						  Description, 
-						  NULL 
-						  ); 
-
-					if (ftStatus == FT_OK) 
-					{
-						FT_Close(ftHandle);
-
-						if (strstr(Description,"KFLOP")== NULL &&
-							strstr(Description,"KMotion")== NULL &&
-							strstr(Description,"Dynomotion")== NULL)
-						{
-							// remove it from the list
-							for (int k=i+1; k<*nlocations; k++)
-								list[k-1] = list[k];  // shift up
-							(*nlocations)--;
-							i--; // redo this slot since it was deleted and things shifted up
-						}
-					}
+					list[(*nlocations)++] = devInfo[i].LocId;
 				}
 			}
+			delete (devInfo);
 		}
-
-		// note ListDevices fails if all devices are open,
-		// so if it changed the nlocations and it is reasonable
-		// assume it is valid
-
-		int k=0;
-
-		// go through and if there were any -1 that indicates
-		// that device is in use (connected) search and substitute
-		// with any assigned and connected boards
-
-		for (i=0; i<*nlocations; i++)
-		{
-			if (list[i] == -1)
-			{
-				for (;k<MAX_BOARDS;k++)
-				{
-					if (KMotionLocal.KMotionIO[k].BoardIDAssigned &&
-						KMotionLocal.KMotionIO[k].m_Connected &&
-						KMotionLocal.KMotionIO[k].USB_Loc_ID != -1)
-					{
-						list[i]=KMotionLocal.KMotionIO[k++].USB_Loc_ID;
-						break;
-					}
-				}
-			}
-		}
-
-		return 0;
 	}
-	else 
+	else
 	{
-		// FT_ListDevices failed
-		*nlocations=0;
-		return 1;
+		return 1;  // Create List Failed
 	}
 #else
 	struct ftdi_context *ftdi;
@@ -291,6 +235,8 @@ int CKMotionDLL_Direct::ListLocations(int *nlocations, int *list)
 
 
 
+
+
 int CKMotionDLL_Direct::WriteLineReadLine(int board, const char *s, char *response)
 {
 	return KMotionLocal.KMotionIO[board].WriteLineReadLine(s, response);
@@ -332,9 +278,9 @@ int CKMotionDLL_Direct::CheckForReady(int board)
 	return KMotionLocal.KMotionIO[board].CheckForReady();
 }
 
-int CKMotionDLL_Direct::KMotionLock(int board)
+int CKMotionDLL_Direct::KMotionLock(int board, const char *CallerID)
 {
-	return KMotionLocal.KMotionIO[board].KMotionLock();
+	return KMotionLocal.KMotionIO[board].KMotionLock(CallerID);
 }
 
 int CKMotionDLL_Direct::USBLocation(int board)

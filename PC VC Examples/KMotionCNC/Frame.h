@@ -31,6 +31,8 @@ public:
 
 	CString MainPathRoot;
 	CString MainPath;
+	CString config_file;
+	CString config_file_backup;
 
 	CKMotionDLL *KMotionDLL;
 

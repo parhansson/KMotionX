@@ -1,0 +1,29 @@
+Attribute				Value		Other Possible Values
+
+axis_offset_x			0.0			any real number
+axis_offset_y			0.0			any real number
+axis_offset_z			0.0			any real number
+block_delete			ON			OFF
+current_x				0.0			any real number
+current_y				0.0			any real number
+current_z				0.0			any real number
+cutter_radius_comp		OFF			LEFT, RIGHT
+cycle_r					0.0			any real number
+cycle_z					0.0			any real number not less than cycle_r
+distance_mode			ABSOLUTE	INCREMENTAL
+feed_mode				PER_MINUTE	INVERSE_TIME
+feed_rate				5.0			any positive real number
+flood					OFF			ON
+length_units			INCHES		MILLIMETERS
+mist					OFF			ON
+motion_mode				80			0,1,2,3,81,82,83,84,85,86,97,88,89
+plane					XY			YZ, ZX
+slot_for_length_offset	1			any unsigned integer less than 69
+slot_for_radius_comp	1			any unsigned integer less than 69
+slot_in_use				1			any unsigned integer less than 69
+slot_selected			1			any unsigned integer less than 69
+speed_feed_mode			INDEPENDENT SYNCHED
+spindle_speed			1000.0		any non-negative real number
+spindle_turning			STOPPED		CLOCKWISE, COUNTERCLOCKWISE
+tool_length_offset		0.0			any non-negative real number
+traverse_rate			199.0		any positive real number

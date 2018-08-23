@@ -47,7 +47,7 @@ CCoordMotion::CCoordMotion(CKMotionDLL *KM)
 
 	KMotionDLL=KM;
 
-	current_x=current_y=current_z=current_a=current_b=current_c=0;
+	current_x=current_y=current_z=current_a=current_b=current_c=current_u=current_v=0;
 
 	m_FeedRateOverride=1.0;
 	m_FeedRateRapidOverride=1.0;
@@ -55,6 +55,10 @@ CCoordMotion::CCoordMotion(CKMotionDLL *KM)
 	m_SpindleRateOverride=1.0;
 	m_DisableSoftLimits=m_Simulate=false;
 	m_DefineCS_valid=false;
+	m_TCP_affects_actuators = true;  // assume Tool Center Point has effects except for simple cases
+
+	m_TapCycleInProgress = false;
+
 
 	m_NumLinearNotDrawn=0;
 
@@ -112,7 +116,7 @@ CCoordMotion::CCoordMotion(CKMotionDLL *KM)
 	DownloadInit();
 
 	tp_init();
-
+	//TODO The following line is removed in 4.34. Check if initialised elsewhere 
 	current_x = current_y = current_z = current_a = current_b = current_c = 0.0;
 
 	m_SegmentsStartedExecuting = m_Abort = m_Halt = false;
@@ -120,7 +124,7 @@ CCoordMotion::CCoordMotion(CKMotionDLL *KM)
 	m_PreviouslyStopped = m_Stopping = STOPPED_NONE;
 	m_PreviouslyStoppedType = SEG_UNDEFINED;
 	m_PreviouslyStoppedID = -1;
-
+	m_TCP_affects_actuators = true;  // assume Tool Center Point has effects except for simple cases
 	// check for a special Kinematics File
 	char kinFile[MAX_PATH];
 	sprintf(kinFile, "%s%cData%cKinematics.txt",MainPath,PATH_SEPARATOR,PATH_SEPARATOR);
@@ -129,13 +133,30 @@ CCoordMotion::CCoordMotion(CKMotionDLL *KM)
 
 	if (f)
 	{
-		// one exists, assume it is the 3Rod
+		char s[81];
+		fgets(s, 80, f);
+		// one exists, check if it is calling for Geppetto otherwise assume it is the 3Rod
 
-		Kinematics = new CKinematics3Rod;
+		if (strstr(s, "5AxisTableAC") != NULL)
+			Kinematics = new CKinematics5AxisTableAC;
+		else if (strstr(s, "5AxisTableBC") != NULL)
+			Kinematics = new CKinematics5AxisTableBC;
+		else if (strstr(s, "5AxisGimbalAB") != NULL)
+			Kinematics = new CKinematics5AxisGimbalAB;
+		else if (strstr(s, "5AxisGimbalCB") != NULL)
+			Kinematics = new CKinematics5AxisGimbalCB;
+		else if (strstr(s, "GeppettoExtruder") != NULL)
+			Kinematics = new CKinematicsGeppettoExtrude;
+		else if (strstr(s, "Geppetto") != NULL)
+			Kinematics = new CKinematicsGeppetto;
+		else
+			Kinematics = new CKinematics3Rod;
+		
 		fclose(f);
 	}
 	else
 	{
+		m_TCP_affects_actuators = false;
 		Kinematics = new CKinematics;
 	}
 
@@ -166,7 +187,7 @@ int CCoordMotion::CheckSoftLimitsArc(double XC, double YC, double z,
 					   double SoftLimitPosX,double SoftLimitNegX,
 					   double SoftLimitPosY,double SoftLimitNegY,
 					   double SoftLimitPosZ,double SoftLimitNegZ,
-					   double a, double b, double c, BOOL DirIsCCW, 
+					   double a, double b, double c, double u, double v, BOOL DirIsCCW, 
 					   double radius, double theta0, double dtheta, 
 					   int x_axis,int y_axis,int z_axis,
 					   char XSTR, char YSTR, char ZSTR, char *errmsg)
@@ -242,11 +263,21 @@ int CCoordMotion::CheckSoftLimitsArc(double XC, double YC, double z,
 		if (c > MP->SoftLimitPosC) {strcpy(errmsg,"C+"); return 1;}
 		if (c < MP->SoftLimitNegC) {strcpy(errmsg,"C-"); return 1;}
 	}
+	if (u_axis>=0)
+	{
+		if (u > MP->SoftLimitPosU) {strcpy(errmsg,"U+"); return 1;}
+		if (u < MP->SoftLimitNegU) {strcpy(errmsg,"U-"); return 1;}
+	}
+	if (v_axis>=0)
+	{
+		if (v > MP->SoftLimitPosV) {strcpy(errmsg,"V+"); return 1;}
+		if (v < MP->SoftLimitNegV) {strcpy(errmsg,"V-"); return 1;}
+	}
 	return 0;
 }
 
 
-int CCoordMotion::CheckSoftLimits(double x, double y, double z, double a, double b, double c, char *errmsg)
+int CCoordMotion::CheckSoftLimits(double x, double y, double z, double a, double b, double c, double u, double v, char *errmsg)
 {
 	if (m_DisableSoftLimits) return 0;
 
@@ -282,13 +313,27 @@ int CCoordMotion::CheckSoftLimits(double x, double y, double z, double a, double
 		if (c > MP->SoftLimitPosC) {strcpy(errmsg,"C+"); return 1;}
 		if (c < MP->SoftLimitNegC) {strcpy(errmsg,"C-"); return 1;}
 	}
+	if (u_axis >= 0)
+	{
+		if (u > MP->SoftLimitPosU) {strcpy(errmsg,"U+"); return 1;}
+		if (u < MP->SoftLimitNegU) {strcpy(errmsg,"U-"); return 1;}
+	}
+	if (v_axis >= 0)
+	{
+		if (v > MP->SoftLimitPosV) {strcpy(errmsg,"V+"); return 1;}
+		if (v < MP->SoftLimitNegV) {strcpy(errmsg,"V-"); return 1;}
+	}
 	return 0;
 }
 
-
 int CCoordMotion::StraightTraverse(double x, double y, double z, double a, double b, double c, bool NoCallback, int sequence_number, int ID)
 {
-	double tdx,tdy,tdz,tda,tdb,tdc,rate,AccelToUse,JerkToUse;
+	return StraightTraverse(x, y, z, a, b, c, current_u, current_v, NoCallback, sequence_number, ID);
+}
+
+int CCoordMotion::StraightTraverse(double x, double y, double z, double a, double b, double c, double u, double v, bool NoCallback, int sequence_number, int ID)
+{
+	double tdx, tdy, tdz, tda, tdb, tdc, tdu, tdv, rate, AccelToUse, JerkToUse;
 
 	if (m_Abort) return 1;
 
@@ -299,7 +344,7 @@ int CCoordMotion::StraightTraverse(double x, double y, double z, double a, doubl
 		if (CommitPendingSegments(false)) return 1;
 		if (nsegs>0)GetSegPtr(nsegs-1)->StopRequiredNextSeg=TRUE;  // stop in case FRO changes
 		if (DoKMotionBufCmd("BegRapidBuf",sequence_number)) return 1;
-		int result = StraightFeedAccelRapid(1e99, 1e99, true, NoCallback, x, y, z, a, b, c, sequence_number, ID);
+		int result = StraightFeedAccelRapid(1e99, 1e99, true, NoCallback, x, y, z, a, b, c, u, v, sequence_number, ID);
 		// commit any segments waiting to potentially be combined
 		if (CommitPendingSegments(true)) return 1;
 		if (nsegs>0)GetSegPtr(nsegs-1)->StopRequiredNextSeg=TRUE;  // stop in case FRO changes
@@ -312,7 +357,7 @@ int CCoordMotion::StraightTraverse(double x, double y, double z, double a, doubl
 	
 	// if exceeding limits trigger Halt
 	char errmsg[10];
-	if (CheckSoftLimits(x,y,z,a,b,c,errmsg)) 
+	if (CheckSoftLimits(x,y,z,a,b,c,u,v,errmsg)) 
 	{
 		char message[200];
 		if (m_Simulate)
@@ -340,12 +385,14 @@ int CCoordMotion::StraightTraverse(double x, double y, double z, double a, doubl
 	double da = a - current_a;
 	double db = b - current_b;
 	double dc = c - current_c;
+	double du = u - current_u;
+	double dv = v - current_v;
 
 	BOOL pure_angle;
 
 	// compute total distance tool will move by considering both linear and angular movements  
 
-	double d = FeedRateDistance(dx, dy, dz, da, db, dc, &pure_angle);
+	double d = FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &pure_angle);
 
 
 	// commit any segments waiting to potentially be combined
@@ -367,24 +414,26 @@ int CCoordMotion::StraightTraverse(double x, double y, double z, double a, doubl
 							 current_z, 
 							 current_a,
 							 current_b,
-							 current_c, 
-							 x, y, z, a, b, c,
+							 current_c,
+							 current_u,
+							 current_v,
+							 x, y, z, a, b, c, u, v,
 							 sequence_number, ID);
 
 		if (DoKMotionBufCmd("EndRapidBuf",sequence_number)) return 1;
 
 		if (result==1) {SetAbort(); return 1;}
 
-		CalcBegDirectionOfSegment(GetSegPtr(nsegs-1), tdx, tdy, tdz, tda, tdb, tdc);
+		CalcBegDirectionOfSegment(GetSegPtr(nsegs-1), tdx, tdy, tdz, tda, tdb, tdc, tdu, tdv);
 		
 		// limit Vel based on proportion in that direction
-		if (Kinematics->MaxRapidRateInDirection(tdx,tdy,tdz,tda,tdb,tdc,&rate)) return 1;
+		if (Kinematics->MaxRapidRateInDirection(tdx, tdy, tdz, tda, tdb, tdc, tdu, tdv, &rate)) return 1;
 		
 		// limit accel based on proportion in that direction
-		if (Kinematics->MaxRapidAccelInDirection(tdx,tdy,tdz,tda,tdb,tdc,&AccelToUse)) return 1;
+		if (Kinematics->MaxRapidAccelInDirection(tdx, tdy, tdz, tda, tdb, tdc, tdu, tdv, &AccelToUse)) return 1;
 		
 		// limit Jerk based on proportion in that direction
-		if (Kinematics->MaxRapidJerkInDirection(tdx,tdy,tdz,tda,tdb,tdc,&JerkToUse)) return 1;
+		if (Kinematics->MaxRapidJerkInDirection(tdx, tdy, tdz, tda, tdb, tdc, tdu, tdv, &JerkToUse)) return 1;
 		
 		SetSegmentVelAccelJerk(nsegs-1, rate, AccelToUse, JerkToUse);
 	
@@ -399,27 +448,51 @@ int CCoordMotion::StraightTraverse(double x, double y, double z, double a, doubl
 	current_a  = a;
 	current_b  = b;
 	current_c  = c;
+	current_u  = u;
+	current_v  = v;
 
 	return 0;
 }
+
+// 6-axes ArcFeed (using max possible Acceeration)
+
+int CCoordMotion::ArcFeed(double DesiredFeedRate_in_per_sec, CANON_PLANE plane,
+	double first_end, double second_end,
+	double first_axis, double second_axis, int rotation,
+	double axis_end_point, double a, double b, double c, int sequence_number, int ID)
+{
+	return ArcFeedAccel(DesiredFeedRate_in_per_sec, 1e99, plane, first_end, second_end,
+		first_axis, second_axis, rotation, axis_end_point, a, b, c, 0.0, 0.0, sequence_number, ID);
+}
+
 
 // ArcFeed (using max possible Acceeration)
 
 int CCoordMotion::ArcFeed(double DesiredFeedRate_in_per_sec, CANON_PLANE plane,
 				double first_end, double second_end, 
 		        double first_axis, double second_axis, int rotation,
-				double axis_end_point, double a, double b, double c, int sequence_number, int ID)
+				double axis_end_point, double a, double b, double c, double u, double v, int sequence_number, int ID)
 {
 	return ArcFeedAccel(DesiredFeedRate_in_per_sec, 1e99, plane, first_end, second_end, 
-		        first_axis, second_axis, rotation, axis_end_point, a, b, c, sequence_number, ID);
+		        first_axis, second_axis, rotation, axis_end_point, a, b, c, u, v, sequence_number, ID);
 }
-				
+
+// 6-axes Arc Feed with Specified Acceleration
+
+int CCoordMotion::ArcFeedAccel(double DesiredFeedRate_in_per_sec, double DesiredAccel, CANON_PLANE plane,
+	double first_end, double second_end,
+	double first_axis, double second_axis, int rotation,
+	double axis_end_point, double a, double b, double c, int sequence_number, int ID)
+{
+	return ArcFeedAccel(DesiredFeedRate_in_per_sec, DesiredAccel, plane, first_end, second_end,
+		        first_axis, second_axis, rotation, axis_end_point, a, b, c, 0.0, 0.0, sequence_number, ID);
+}
 // Arc Feed with Specified Acceleration
 
 int CCoordMotion::ArcFeedAccel(double DesiredFeedRate_in_per_sec, double DesiredAccel, CANON_PLANE plane,
 				double first_end, double second_end, 
 		        double first_axis, double second_axis, int rotation,
-				double axis_end_point, double a, double b, double c, int sequence_number, int ID)
+				double axis_end_point, double a, double b, double c, double u, double v, int sequence_number, int ID)
 {
 	double HW,SW,radius,theta0,dtheta,MaxLength, cur_first,cur_second,cur_third,dcircle;
 
@@ -463,7 +536,7 @@ int CCoordMotion::ArcFeedAccel(double DesiredFeedRate_in_per_sec, double Desired
 	double d=CalcLengthAlongHelix(cur_first,cur_second,cur_third,
 		                          first_end,second_end,axis_end_point,first_axis,second_axis,
 								  rotation,&radius,&theta0,&dtheta,
-								  a-current_a,b-current_b,c-current_c, &Kinematics->m_MotionParams, &dcircle);  // total length
+								  a-current_a,b-current_b,c-current_c,u-current_u,v-current_v, &Kinematics->m_MotionParams, &dcircle);  // total length
 
 
 
@@ -509,11 +582,11 @@ int CCoordMotion::ArcFeedAccel(double DesiredFeedRate_in_per_sec, double Desired
 		// use straight line
 
 		if (plane == CANON_PLANE_XY)
-			return StraightFeedAccel(DesiredFeedRate_in_per_sec,DesiredAccel,first_end, second_end, axis_end_point, a, b, c, sequence_number, ID);
+			return StraightFeedAccel(DesiredFeedRate_in_per_sec,DesiredAccel,first_end, second_end, axis_end_point, a, b, c, u, v, sequence_number, ID);
 		else if (plane == CANON_PLANE_XZ) // actually ZX
-			return StraightFeedAccel(DesiredFeedRate_in_per_sec,DesiredAccel,second_end,axis_end_point, first_end,  a, b, c, sequence_number, ID);
+			return StraightFeedAccel(DesiredFeedRate_in_per_sec,DesiredAccel,second_end,axis_end_point, first_end,  a, b, c, u, v, sequence_number, ID);
 		else // YZ
-			return StraightFeedAccel(DesiredFeedRate_in_per_sec,DesiredAccel,axis_end_point, first_end, second_end, a, b, c, sequence_number, ID);
+			return StraightFeedAccel(DesiredFeedRate_in_per_sec,DesiredAccel,axis_end_point, first_end, second_end, a, b, c, u, v, sequence_number, ID);
 	}
 
 
@@ -540,13 +613,15 @@ int CCoordMotion::ArcFeedAccel(double DesiredFeedRate_in_per_sec, double Desired
 																first_axis, second_axis, rotation, 
 																(cur_third+axis_end_point)/2.0, 
 																(current_a + a)/2.0, 
-																(current_b + b)/2.0, 
-																(current_c + c)/2.0, 
+																(current_b + b) / 2.0,
+																(current_c + c) / 2.0,
+																(current_u + u) / 2.0,
+																(current_v + v) / 2.0,
 																sequence_number, ID);
 		if (result) return result;
 		
 		return ArcFeedAccel(DesiredFeedRate_in_per_sec, DesiredAccel, plane, first_end, second_end, 
-		        first_axis, second_axis, rotation, axis_end_point, a, b, c, sequence_number, ID);
+		        first_axis, second_axis, rotation, axis_end_point, a, b, c, u, v, sequence_number, ID);
 	}
 
 	// commit any segments waiting to potentially be combined
@@ -582,7 +657,7 @@ int CCoordMotion::ArcFeedAccel(double DesiredFeedRate_in_per_sec, double Desired
 					   MP->SoftLimitPosX, MP->SoftLimitNegX,
 					   MP->SoftLimitPosY, MP->SoftLimitNegY,
 					   MP->SoftLimitPosZ, MP->SoftLimitNegZ,
-					   a, b, c, rotation, radius, theta0, dtheta, 
+					   a, b, c, u, v, rotation, radius, theta0, dtheta, 
 					   x_axis,y_axis,z_axis,
 					   'X', 'Y', 'Z', errmsg);
 	else if (plane == CANON_PLANE_XZ) // actually ZX
@@ -590,7 +665,7 @@ int CCoordMotion::ArcFeedAccel(double DesiredFeedRate_in_per_sec, double Desired
 					   MP->SoftLimitPosZ, MP->SoftLimitNegZ,
 					   MP->SoftLimitPosX, MP->SoftLimitNegX,
 					   MP->SoftLimitPosY, MP->SoftLimitNegY,
-					   a, b, c, rotation, radius, theta0, dtheta, 
+					   a, b, c, u, v, rotation, radius, theta0, dtheta, 
 					   z_axis,x_axis,y_axis,
 					   'Z', 'X', 'Y', errmsg);
 	else // YZ
@@ -598,7 +673,7 @@ int CCoordMotion::ArcFeedAccel(double DesiredFeedRate_in_per_sec, double Desired
 					   MP->SoftLimitPosY, MP->SoftLimitNegY,
 					   MP->SoftLimitPosZ, MP->SoftLimitNegZ,
 					   MP->SoftLimitPosX, MP->SoftLimitNegX,
-					   a, b, c, rotation, radius, theta0, dtheta, 
+					   a, b, c, u, v, rotation, radius, theta0, dtheta, 
 					   y_axis,z_axis,x_axis,
 					   'Y', 'Z', 'X', errmsg);
 	
@@ -633,12 +708,16 @@ int CCoordMotion::ArcFeedAccel(double DesiredFeedRate_in_per_sec, double Desired
 						  cur_second, 
 						  cur_third, 
 						  current_a, 
-						  current_b, 
-						  current_c, 
-						  first_end, second_end, axis_end_point,
+						  current_b,
+						  current_c,
+						  current_u,
+						  current_v,
+			first_end, second_end, axis_end_point,
 						  a,
 						  b,
 						  c,
+						  u,
+						  v,
 						  first_axis, second_axis, rotation,
 						  FeedRateToUse, 
 						  DesiredAccel, 
@@ -682,9 +761,11 @@ int CCoordMotion::ArcFeedAccel(double DesiredFeedRate_in_per_sec, double Desired
 		current_x = axis_end_point;
 	}
 
-	current_a  = a;
-	current_b  = b;
-	current_c  = c;
+	current_a = a;
+	current_b = b;
+	current_c = c;
+	current_u = u;
+	current_v = v;
 
 	return 0;
 }
@@ -722,26 +803,42 @@ int CCoordMotion::CommitPendingSegments(bool RapidMode)
 	return 0;
 }
 
+// 6-axes Straight Feed (using Max possible Acceleration)
+
+int CCoordMotion::StraightFeed(double DesiredFeedRate_in_per_sec,
+	double x, double y, double z, double a, double b, double c, int sequence_number, int ID)
+{
+	return StraightFeedAccel(DesiredFeedRate_in_per_sec, 1e99, x, y, z, a, b, c, 0.0, 0.0, sequence_number, ID);
+}
+
 // Straight Feed (using Max possible Acceleration)
 
 int CCoordMotion::StraightFeed(double DesiredFeedRate_in_per_sec,
-							   double x, double y, double z, double a, double b, double c, int sequence_number, int ID)
+	double x, double y, double z, double a, double b, double c, double u, double v, int sequence_number, int ID)
 {
-	return StraightFeedAccel(DesiredFeedRate_in_per_sec, 1e99, x, y, z, a, b, c, sequence_number, ID);
+	return StraightFeedAccel(DesiredFeedRate_in_per_sec, 1e99, x, y, z, a, b, c, u, v, sequence_number, ID);
 }
 	
+// 6-axes Straight Feed with specified Acceleration	
+
+int CCoordMotion::StraightFeedAccel(double DesiredFeedRate_in_per_sec, double DesiredAccel,
+	double x, double y, double z, double a, double b, double c, int sequence_number, int ID)
+{
+	return StraightFeedAccelRapid(DesiredFeedRate_in_per_sec, DesiredAccel, false, false, x, y, z, a, b, c, 0.0, 0.0, sequence_number, ID);
+}
+
 // Straight Feed with specified Acceleration	
 
 int CCoordMotion::StraightFeedAccel(double DesiredFeedRate_in_per_sec, double DesiredAccel,
-							   double x, double y, double z, double a, double b, double c, int sequence_number, int ID)
+	double x, double y, double z, double a, double b, double c, double u, double v, int sequence_number, int ID)
 {
-	return StraightFeedAccelRapid(DesiredFeedRate_in_per_sec, 1e99, false, false, x, y, z, a, b, c, sequence_number, ID);
+	return StraightFeedAccelRapid(DesiredFeedRate_in_per_sec, DesiredAccel, false, false, x, y, z, a, b, c, u, v, sequence_number, ID);
 }
 
 // Straight Feed with specified Acceleration and RapidMode	
 
 int CCoordMotion::StraightFeedAccelRapid(double DesiredFeedRate_in_per_sec, double DesiredAccel, bool RapidMode, bool NoCallback,
-							   double x, double y, double z, double a, double b, double c, int sequence_number, int ID)
+							   double x, double y, double z, double a, double b, double c, double u, double v, int sequence_number, int ID)
 {
 	MOTION_PARAMS *MP=&Kinematics->m_MotionParams;
 	double HW,SW;
@@ -776,14 +873,17 @@ int CCoordMotion::StraightFeedAccelRapid(double DesiredFeedRate_in_per_sec, doub
 	if (GetRapidSettings()) return 1;
 
 	char errmsg[5];
-	if (CheckSoftLimits(x,y,z,a,b,c,errmsg)) 
+	if (CheckSoftLimits(x,y,z,a,b,c,u,v,errmsg)) 
 	{
-	//TODO fuctiotye
+		char FunctionType[32];
+		if (RapidMode) strcpy(FunctionType, "Straight Traverse");
+		else strcpy(FunctionType, "Straight Feed");
+
 		char message[200];
 		if (m_Simulate)
 		{
-			sprintf(message, "Soft Limit %s Straight Feed\r\r"
-					"Soft Limits disabled for remainder of Simulation",errmsg);
+			sprintf(message, "Soft Limit %s %s\r\r"
+					"Soft Limits disabled for remainder of Simulation",errmsg, FunctionType);
 			KMotionDLL->DoErrMsg(message);
 			m_DisableSoftLimits=true;
 		}
@@ -792,7 +892,7 @@ int CCoordMotion::StraightFeedAccelRapid(double DesiredFeedRate_in_per_sec, doub
 			SetHalt();
 			CheckMotionHalt(true);
 			SetAbort();
-			sprintf(message, "Soft Limit %s Straight Feed Job Halted",errmsg);
+			sprintf(message, "Soft Limit %s %s Job Halted",errmsg, FunctionType);
 			KMotionDLL->DoErrMsg(message);
 			return 1;
 		}
@@ -806,12 +906,14 @@ int CCoordMotion::StraightFeedAccelRapid(double DesiredFeedRate_in_per_sec, doub
 	double da = a - current_a;
 	double db = b - current_b;
 	double dc = c - current_c;
+	double du = u - current_u;
+	double dv = v - current_v;
 
 	BOOL pure_angle;
 
 	// compute total distance tool will move by considering both linear and angular movements  
 
-	double d = FeedRateDistance(dx, dy, dz, da, db, dc, &pure_angle);
+	double d = FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &pure_angle);
 
 	if (d==0.0 && !RapidMode) return 0;  // ignore zero length moves
 
@@ -821,13 +923,16 @@ int CCoordMotion::StraightFeedAccelRapid(double DesiredFeedRate_in_per_sec, doub
 	MaxLength = FeedRateToUse * MP->TPLookahead/2.0;
 	if (MP->MaxLinearLength < MaxLength) MaxLength = MP->MaxLinearLength;
 
-	if (!m_Simulate && !pure_angle && d > MaxLength)
+	if (!m_Simulate && ((!pure_angle && d > MaxLength) || 
+		(MP->DegreesA && fabs(da) > MP->MaxAngularChange) || 
+		(MP->DegreesB && fabs(db) > MP->MaxAngularChange) || 
+		(MP->DegreesC && fabs(dc) > MP->MaxAngularChange)))
 	{
 		int result = StraightFeedAccelRapid(DesiredFeedRate_in_per_sec, DesiredAccel, RapidMode, NoCallback,current_x+dx/2.0, current_y+dy/2.0, current_z+dz/2.0, 
-																				 current_a+da/2.0, current_b+db/2.0, current_c+dc/2.0, sequence_number, ID);
+														current_a+da/2.0, current_b+db/2.0, current_c+dc/2.0, current_u+du/2.0, current_v+dv/2.0, sequence_number, ID);
 		if (result) return result;
 		
-		return StraightFeedAccelRapid(DesiredFeedRate_in_per_sec, DesiredAccel, RapidMode, NoCallback, x, y, z, a, b, c, sequence_number, ID);
+		return StraightFeedAccelRapid(DesiredFeedRate_in_per_sec, DesiredAccel, RapidMode, NoCallback, x, y, z, a, b, c, u, v, sequence_number, ID);
 	}
 
 
@@ -851,6 +956,8 @@ int CCoordMotion::StraightFeedAccelRapid(double DesiredFeedRate_in_per_sec, doub
 		current_a  = a;
 		current_b  = b;
 		current_c  = c;
+		current_u  = u;
+		current_v  = v;
 		return 0;  // exit if we are simulating
 	}
 
@@ -865,7 +972,9 @@ int CCoordMotion::StraightFeedAccelRapid(double DesiredFeedRate_in_per_sec, doub
 						 current_a,
 						 current_b,
 						 current_c, 
-						 x, y, z, a, b, c,
+						 current_u,
+						 current_v, 
+						 x, y, z, a, b, c, u, v,
 						 FeedRateToUse, 
 						 DesiredAccel,
 						 MaxLength, sequence_number, ID, m_NumLinearNotDrawn);
@@ -914,6 +1023,8 @@ int CCoordMotion::StraightFeedAccelRapid(double DesiredFeedRate_in_per_sec, doub
 	current_a  = a;
 	current_b  = b;
 	current_c  = c;
+	current_u  = u;
+	current_v  = v;
 
 	if (DownloadDoneSegments()) {SetAbort(); return 1;}
 
@@ -968,22 +1079,25 @@ void CCoordMotion::DoSegmentCallbacksRapid(int i0, int i1)
 
 int CCoordMotion::DoRateAdjustments(int i0, int i1)
 {
-	double tdx,tdy,tdz,tda,tdb,tdc,rate,FeedRateToUse,Accel,AccelToUse;
+	double tdx,tdy,tdz,tda,tdb,tdc,tdu,tdv,rate,FeedRateToUse,Accel,AccelToUse;
 	
 	for (int i = i0; i<=i1; i++)
 	{
 		if (i>=0)
 		{
 			SEGMENT *s=GetSegPtr(i);
-			CalcBegDirectionOfSegment(s, tdx, tdy, tdz, tda, tdb, tdc);
+
+			if (Kinematics->ComputeAnglesOption(i)) return 1;
+
+			CalcBegDirectionOfSegment(s, tdx, tdy, tdz, tda, tdb, tdc, tdu, tdv);
 			
-			if (Kinematics->MaxRateInDirection(tdx,tdy,tdz,tda,tdb,tdc,&rate)) return 1;
+			if (Kinematics->MaxRateInDirection(tdx, tdy, tdz, tda, tdb, tdc, tdu, tdv, &rate)) return 1;
 			
 			FeedRateToUse = GetSegPtr(i)->OrigVel;
 			if (rate < FeedRateToUse) FeedRateToUse = rate;
 
 			// limit accel based on proportion in that direction
-			if (Kinematics->MaxAccelInDirection(tdx,tdy,tdz,tda,tdb,tdc,&Accel)) return 1;
+			if (Kinematics->MaxAccelInDirection(tdx, tdy, tdz, tda, tdb, tdc, tdu, tdv, &Accel)) return 1;
 
 			AccelToUse = GetSegPtr(i)->OrigAccel;
 			if (Accel < AccelToUse) AccelToUse = Accel;
@@ -1002,7 +1116,7 @@ int CCoordMotion::DoRateAdjustments(int i0, int i1)
 
 int CCoordMotion::DoRateAdjustmentsArc(int i, double radius, double theta0, double dtheta, double dcircle)
 {
-	double dx,dy,dz,da,db,dc,rate,FeedRateToUse,Accel,AccelToUse;
+	double dx,dy,dz,da,db,dc,du,dv,rate,FeedRateToUse,Accel,AccelToUse;
 	double end_theta, next_theta, quadrant, SIGMA = radius*1e-12;
 	double AccelCentripedal=1e99;
 	
@@ -1063,6 +1177,8 @@ int CCoordMotion::DoRateAdjustmentsArc(int i, double radius, double theta0, doub
 		da = p->a1 - p->a0;
 		db = p->b1 - p->b0;
 		dc = p->c1 - p->c0;
+		du = p->u1 - p->u0;
+		dv = p->v1 - p->v0;
 
 		// we did everything as if we were in the xy plane
 		// if we were in a different axis then switch them
@@ -1100,16 +1216,16 @@ int CCoordMotion::DoRateAdjustmentsArc(int i, double radius, double theta0, doub
 		}
 
 		// limit accel based on proportion in that direction
-		if (Kinematics->MaxRateInDirection(dx,dy,dz,da,db,dc,&rate)) return 1;
+		if (Kinematics->MaxRateInDirection(dx,dy,dz,da,db,dc,du,dv,&rate)) return 1;
 		if (rate < FeedRateToUse) FeedRateToUse = rate;
 
 		// limit accel based on proportion in that direction
-		if (Kinematics->MaxAccelInDirection(dx,dy,dz,da,db,dc,&Accel)) return 1;
+		if (Kinematics->MaxAccelInDirection(dx,dy,dz,da,db,dc,du,dv,&Accel)) return 1;
 		if (Accel < AccelToUse) AccelToUse = Accel;
 
 		// also determine centripedal acceleration which is perpindicular to
 		// the motion and determines the max velocity through the curve
-		if (Kinematics->MaxAccelInDirection(dxc,dyc,dzc,0.0,0.0,0.0,&Accel)) return 1;
+		if (Kinematics->MaxAccelInDirection(dxc,dyc,dzc,0.0,0.0,0.0,0.0,0.0,&Accel)) return 1;
 		if (Accel < AccelCentripedal) AccelCentripedal = Accel;
 
 		if (p->DirIsCCW)
@@ -1140,7 +1256,7 @@ int CCoordMotion::Dwell(double seconds, int sequence_number)
 	if (!m_Simulate)
 	{
 		// add in the segment to the planner
-		int result = tp_insert_dwell(seconds, current_x, current_y, current_z, current_a, current_b, current_c, sequence_number, 0);
+		int result = tp_insert_dwell(seconds, current_x, current_y, current_z, current_a, current_b, current_c, current_u, current_v, sequence_number, 0);
 
 		if (result==1) {SetAbort(); return 1;}
 
@@ -1374,7 +1490,7 @@ int CCoordMotion::CheckMotionHalt(bool Coord)
 		if (KMotionDLL->WriteLine("StopImmediate2"))  {SetAbort(); return 1;}
 
 		// save the raw machine positions
-		if (ReadCurAbsPosition(&m_StoppedMachinex,&m_StoppedMachiney,&m_StoppedMachinez,&m_StoppedMachinea,&m_StoppedMachineb,&m_StoppedMachinec,true)) return 1;
+		if (ReadCurAbsPosition(&m_StoppedMachinex,&m_StoppedMachiney,&m_StoppedMachinez,&m_StoppedMachinea,&m_StoppedMachineb,&m_StoppedMachinec,&m_StoppedMachineu,&m_StoppedMachinev,true)) return 1;
 
 		if (Coord)
 		{
@@ -1550,6 +1666,8 @@ void CCoordMotion::SetPreviouslyStoppedAtSeg(SEGMENT *segs_to_check,int i)
 			m_StoppedMida = p->a0;
 			m_StoppedMidb = p->b0;
 			m_StoppedMidc = p->c0;
+			m_StoppedMidu = p->u0;
+			m_StoppedMidv = p->v0;
 		}
 	}
 }
@@ -1665,7 +1783,7 @@ int CCoordMotion::LaunchCoordMotion()
 
 	if (m_ThreadingMode)  // Launch coordinated motion in spindle sync mode ?
 	{
-		if (m_ThreadingBaseSpeedRPS < 1e-9)
+		if (fabs(m_ThreadingBaseSpeedRPS) < 1e-9)
 		{
 			AfxMessageBox("Error Threading with Zero Speed");
 			SetAbort();
@@ -1770,6 +1888,24 @@ int CCoordMotion::OutputSegment(int iseg)
 
 	tp_calc_seg_trip_states(iseg);
 
+
+#if 0 
+	// Output Segment buffer to a file
+	FILE *f;
+	
+	if (iseg==0)
+		f = fopen("c:\\Temp\\data.txt", "wt");
+	else
+		f = fopen("c:\\Temp\\data.txt", "at");
+
+	int k = iseg;
+	fprintf(f, "segment,%d,type,%d,Done,%d,StopRequired,%d,ChangeInDirection,%.6f,vel,%.6f,MaxVel,%.6f,dx,%.6f,x,%.6f,y,%.6f,T,%.6f\n",
+			k, GetSegPtr(k)->type, GetSegPtr(k)->Done, GetSegPtr(k)->StopRequired,
+			GetSegPtr(k)->ChangeInDirection, GetSegPtr(k)->vel, GetSegPtr(k)->MaxVel, GetSegPtr(k)->dx,
+			GetSegPtr(k)->x1, GetSegPtr(k)->y1, GetSegPtr(k)->C[0].t + GetSegPtr(k)->C[1].t + GetSegPtr(k)->C[2].t);
+	fclose(f);
+#endif
+
 	// keep track of total Done time
 	// and which segment
 	SegsDone[SegBufToggle] = iseg;
@@ -1792,11 +1928,13 @@ int CCoordMotion::OutputSegment(int iseg)
 				double da = p->a1-p->a0;
 				double db = p->b1-p->b0;
 				double dc = p->c1-p->c0;
+				double du = p->u1-p->u0;
+				double dv = p->v1-p->v0;
 				
 				double d,invd;
 				BOOL pure_angle;
 				
-				d = FeedRateDistance(dx, dy, dz, da, db, dc, &pure_angle);
+				d = FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &pure_angle);
 				
 				if (d>0.0)
 					invd = 1.0/d; // inverse total length
@@ -1806,10 +1944,10 @@ int CCoordMotion::OutputSegment(int iseg)
 				//  send as hex binary 32 bit floats
 
 
-				float FloatArray[17];
+				float FloatUVArray[4],FloatArray[17];
 				double Acts[MAX_ACTUATORS];
 				
-				if (Kinematics->TransformCADtoActuators(p->x0,p->y0,p->z0,p->a0,p->b0,p->c0,Acts)) return 1;
+				if (Kinematics->TransformCADtoActuators(p->x0,p->y0,p->z0,p->a0,p->b0,p->c0,p->u0,p->v0,Acts)) return 1;
 
 				FloatArray[0]  = (float)Acts[0];
 				FloatArray[1]  = (float)Acts[1];
@@ -1817,8 +1955,10 @@ int CCoordMotion::OutputSegment(int iseg)
 				FloatArray[3]  = (float)Acts[3];
 				FloatArray[4]  = (float)Acts[4];
 				FloatArray[5]  = (float)Acts[5];
+				FloatUVArray[0] = (float)Acts[6];
+				FloatUVArray[1] = (float)Acts[7];
 
-				if (Kinematics->TransformCADtoActuators(p->x1,p->y1,p->z1,p->a1,p->b1,p->c1,Acts)) return 1;
+				if (Kinematics->TransformCADtoActuators(p->x1,p->y1,p->z1,p->a1,p->b1,p->c1,p->u1,p->v1,Acts)) return 1;
 				
 				FloatArray[6]  = (float)Acts[0];
 				FloatArray[7]  = (float)Acts[1];
@@ -1826,6 +1966,8 @@ int CCoordMotion::OutputSegment(int iseg)
 				FloatArray[9]  = (float)Acts[3];
 				FloatArray[10] = (float)Acts[4];
 				FloatArray[11] = (float)Acts[5];
+				FloatUVArray[2] = (float)Acts[6];
+				FloatUVArray[3] = (float)Acts[7];
 
 				FloatArray[12] = (float)(p->C[i].a*invd);
 				FloatArray[13] = (float)(p->C[i].b*invd);
@@ -1834,6 +1976,7 @@ int CCoordMotion::OutputSegment(int iseg)
 				FloatArray[16] = (float)(p->C[i].t);
 
 				int *Int = (int *)FloatArray;
+				int *IntUV = (int *)FloatUVArray;
 
 #ifdef DEBUG_DOWNLOAD
 				sprintf(ds, "Linear %f %d %d\n",DTimer.Elapsed_Seconds(),iseg,i);
@@ -1843,16 +1986,22 @@ int CCoordMotion::OutputSegment(int iseg)
 
 				if (!LastWasLinear)  // must specify all if first or there was an arc
 				{
-					sprintf(s, "LinearHex %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
-						Int[0],Int[1],Int[2],Int[3],Int[4],Int[5],Int[6],Int[7],Int[8],Int[9],Int[10],Int[11],Int[12],Int[13],Int[14],Int[15],Int[16]); 
-					
+					if (u_axis >= 0 || v_axis >= 0)
+						sprintf(s, "LinearHexEx %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
+							Int[0], Int[1], Int[2], Int[3], Int[4], Int[5], IntUV[0], IntUV[1], Int[6], Int[7], Int[8], Int[9], Int[10], Int[11], IntUV[2], IntUV[3], Int[12], Int[13], Int[14], Int[15], Int[16]);
+					else
+						sprintf(s, "LinearHex %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
+							Int[0], Int[1], Int[2], Int[3], Int[4], Int[5], Int[6], Int[7], Int[8], Int[9], Int[10], Int[11], Int[12], Int[13], Int[14], Int[15], Int[16]);
+
 					DidThisLinear=LastWasLinear=true;
 				}
 				else if (!DidThisLinear) // new linear so we must specify the new endpoint
 				{
-					sprintf(s, "LHex1 %X %X %X %X %X %X %X %X %X %X %X",
-						Int[6],Int[7],Int[8],Int[9],Int[10],Int[11],Int[12],Int[13],Int[14],Int[15],Int[16]); 
-					
+					if (u_axis >= 0 || v_axis >= 0)
+						sprintf(s, "LHexEx1 %X %X %X %X %X %X %X %X %X %X %X %X %X", Int[6], Int[7], Int[8], Int[9], Int[10], Int[11], IntUV[2], IntUV[3], Int[12], Int[13], Int[14], Int[15], Int[16]);
+					else
+						sprintf(s, "LHex1 %X %X %X %X %X %X %X %X %X %X %X", Int[6], Int[7], Int[8], Int[9], Int[10], Int[11], Int[12], Int[13], Int[14], Int[15], Int[16]);
+							
 					DidThisLinear=true;
 				}
 				else
@@ -1890,29 +2039,20 @@ int CCoordMotion::OutputSegment(int iseg)
 				}
 
 				
-//				dxy = d_theta * radius;  // path length along circle                                   
-				
-//				sum2 = dxy*dxy + dz*dz;
-									  
-//				if (sum2>0.0f)                      
-//					invd = 1.0f/sqrt(sum2); // inverse total length
-//				else
-//					sum2=0.0f;
-
 				if (p->dx > 0.0)
 					invd = 1.0/p->dx;
 				else
 					invd = 0.0;
 			
 
-				float FloatArray[19];
+				float FloatArray[19],FloatUVArray[4];
 				int *Int = (int *)FloatArray;
+				int *IntUV = (int *)FloatUVArray;
 				double Acts[MAX_ACTUATORS];
 
 				if (p->plane == CANON_PLANE_XY)
 				{
-					if (Kinematics->TransformCADtoActuators(p->xc,p->yc,p->z0,
-															p->a0,p->b0,p->c0,Acts)) return 1;
+					if (Kinematics->TransformCADtoActuators(p->xc, p->yc, p->z0, p->a0, p->b0, p->c0, p->u0, p->v0, Acts)) return 1;
 
 					FloatArray[0]  = (float)Acts[0];
 					FloatArray[1]  = (float)Acts[1];
@@ -1926,21 +2066,30 @@ int CCoordMotion::OutputSegment(int iseg)
 					FloatArray[7]  = (float)Acts[3];
 					FloatArray[8]  = (float)Acts[4];
 					FloatArray[9]  = (float)Acts[5];
+					FloatUVArray[0] = (float)Acts[6];
+					FloatUVArray[1] = (float)Acts[7];
 
-					if (Kinematics->TransformCADtoActuators(p->xc,p->yc,p->z1,
-															p->a1,p->b1,p->c1,Acts)) return 1;
+					if (Kinematics->TransformCADtoActuators(p->xc, p->yc, p->z1, p->a1, p->b1, p->c1, p->u1, p->v1, Acts)) return 1;
 					
 					FloatArray[10]  = (float)Acts[2];
 					FloatArray[11]  = (float)Acts[3];
 					FloatArray[12]  = (float)Acts[4];
 					FloatArray[13]  = (float)Acts[5];
+					FloatUVArray[2] = (float)Acts[6];
+					FloatUVArray[3] = (float)Acts[7];
+
 					FloatArray[14]  = (float)(p->C[i].a * invd);
 					FloatArray[15]  = (float)(p->C[i].b * invd);
 					FloatArray[16]  = (float)(p->C[i].c * invd);
 					FloatArray[17]  = (float)(p->C[i].d * invd);
 					FloatArray[18]  = (float)(p->C[i].t);
-					sprintf(s, "ArcHex %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
-						Int[0],Int[1],Int[2],Int[3],Int[4],Int[5],Int[6],Int[7],Int[8],Int[9],Int[10],Int[11],Int[12],Int[13],Int[14],Int[15],Int[16],Int[17],Int[18]); 
+
+					if (u_axis >= 0 || v_axis >= 0)
+						sprintf(s, "ArcHexEx %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
+							Int[0], Int[1], Int[2], Int[3], Int[4], Int[5], Int[6], Int[7], Int[8], Int[9], IntUV[0], IntUV[1], Int[10], Int[11], Int[12], Int[13], IntUV[2], IntUV[3], Int[14], Int[15], Int[16], Int[17], Int[18]);
+					else
+						sprintf(s, "ArcHex %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
+						Int[0], Int[1], Int[2], Int[3], Int[4], Int[5], Int[6], Int[7], Int[8], Int[9], Int[10], Int[11], Int[12], Int[13], Int[14], Int[15], Int[16], Int[17], Int[18]);
 				}
 				else if (p->plane == CANON_PLANE_XZ)
 				{
@@ -1959,6 +2108,8 @@ int CCoordMotion::OutputSegment(int iseg)
 					FloatArray[7]  = (float)Acts[3];
 					FloatArray[8]  = (float)Acts[4];
 					FloatArray[9]  = (float)Acts[5];
+					FloatUVArray[0] = (float)Acts[6];
+					FloatUVArray[1] = (float)Acts[7];
 
 					if (Kinematics->TransformCADtoActuators(p->yc,p->z1,p->xc,
 															p->a1,p->b1,p->c1,Acts)) return 1;
@@ -1967,13 +2118,21 @@ int CCoordMotion::OutputSegment(int iseg)
 					FloatArray[11]  = (float)Acts[3];
 					FloatArray[12]  = (float)Acts[4];
 					FloatArray[13]  = (float)Acts[5];
+					FloatUVArray[2] = (float)Acts[6];
+					FloatUVArray[3] = (float)Acts[7];
+
 					FloatArray[14]  = (float)(p->C[i].a * invd);
 					FloatArray[15]  = (float)(p->C[i].b * invd);
 					FloatArray[16]  = (float)(p->C[i].c * invd);
 					FloatArray[17]  = (float)(p->C[i].d * invd);
 					FloatArray[18]  = (float)(p->C[i].t);
-					sprintf(s, "ArcHexZX %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
-						Int[0],Int[1],Int[2],Int[3],Int[4],Int[5],Int[6],Int[7],Int[8],Int[9],Int[10],Int[11],Int[12],Int[13],Int[14],Int[15],Int[16],Int[17],Int[18]); 
+
+					if (u_axis >= 0 || v_axis >= 0)
+						sprintf(s, "ArcHexZXEx %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
+							Int[0], Int[1], Int[2], Int[3], Int[4], Int[5], Int[6], Int[7], Int[8], Int[9], IntUV[0], IntUV[1], Int[10], Int[11], Int[12], Int[13], IntUV[2], IntUV[3], Int[14], Int[15], Int[16], Int[17], Int[18]);
+					else
+						sprintf(s, "ArcHexZX %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
+							Int[0], Int[1], Int[2], Int[3], Int[4], Int[5], Int[6], Int[7], Int[8], Int[9], Int[10], Int[11], Int[12], Int[13], Int[14], Int[15], Int[16], Int[17], Int[18]);
 				}
 				else // YZ
 				{
@@ -1992,6 +2151,8 @@ int CCoordMotion::OutputSegment(int iseg)
 					FloatArray[7]  = (float)Acts[3];
 					FloatArray[8]  = (float)Acts[4];
 					FloatArray[9]  = (float)Acts[5];
+					FloatUVArray[0] = (float)Acts[6];
+					FloatUVArray[1] = (float)Acts[7];
 
 					if (Kinematics->TransformCADtoActuators(p->z1,p->xc,p->yc,
   									                        p->a0,p->b0,p->c0,Acts)) return 1;
@@ -2000,13 +2161,21 @@ int CCoordMotion::OutputSegment(int iseg)
 					FloatArray[11]  = (float)Acts[3];
 					FloatArray[12]  = (float)Acts[4];
 					FloatArray[13]  = (float)Acts[5];
+					FloatUVArray[2] = (float)Acts[6];
+					FloatUVArray[3] = (float)Acts[7];
+
 					FloatArray[14]  = (float)(p->C[i].a * invd);
 					FloatArray[15]  = (float)(p->C[i].b * invd);
 					FloatArray[16]  = (float)(p->C[i].c * invd);
 					FloatArray[17]  = (float)(p->C[i].d * invd);
 					FloatArray[18]  = (float)(p->C[i].t);
-					sprintf(s, "ArcHexYZ %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
-						Int[0],Int[1],Int[2],Int[3],Int[4],Int[5],Int[6],Int[7],Int[8],Int[9],Int[10],Int[11],Int[12],Int[13],Int[14],Int[15],Int[16],Int[17],Int[18]); 
+
+					if (u_axis >= 0 || v_axis >= 0)
+						sprintf(s, "ArcHexYZEx %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
+							Int[0], Int[1], Int[2], Int[3], Int[4], Int[5], Int[6], Int[7], Int[8], Int[9], IntUV[0], IntUV[1], Int[10], Int[11], Int[12], Int[13], IntUV[2], IntUV[3], Int[14], Int[15], Int[16], Int[17], Int[18]);
+					else
+						sprintf(s, "ArcHexYZ %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
+							Int[0], Int[1], Int[2], Int[3], Int[4], Int[5], Int[6], Int[7], Int[8], Int[9], Int[10], Int[11], Int[12], Int[13], Int[14], Int[15], Int[16], Int[17], Int[18]);
 				}
 
 
@@ -2029,7 +2198,7 @@ int CCoordMotion::OutputSegment(int iseg)
 
 
 
-#if 0 //  tktkt sanity check.  Sum times in buffer must be equal to Downloaded times
+#if 0 //  sanity check.  Sum times in buffer must be equal to Downloaded times
 	{
 		int i;
 		double BufTime=SegsDoneTime[SegBufToggle];
@@ -2263,13 +2432,32 @@ int CCoordMotion::DownloadDoneSegments()
 
 int CCoordMotion::SetAxisDefinitions(int x, int y, int z, int a, int b, int c)
 {
-	if (KMotionDLL->WriteLine("DefineCS %d %d %d %d %d %d")) return 1;
+	char s[MAX_LINE];
+	sprintf(s, "DefineCS %d %d %d %d %d %d", x, y, z, a, b, c);
+	if (KMotionDLL->WriteLine(s)) return 1;
 	x_axis=x;
 	y_axis=y;
 	z_axis=z;
 	a_axis=a;
 	b_axis=b;
 	c_axis=c;
+
+	m_DefineCS_valid=true;
+	return 0;
+}
+int CCoordMotion::SetAxisDefinitions(int x, int y, int z, int a, int b, int c, int u, int v)
+{
+	char s[MAX_LINE];
+	sprintf(s, "DefineCSEx %d %d %d %d %d %d %d %d", x, y, z, a, b, c, u, v);
+	if (KMotionDLL->WriteLine(s)) return 1;
+	x_axis=x;
+	y_axis=y;
+	z_axis=z;
+	a_axis=a;
+	b_axis=b;
+	c_axis=c;
+	u_axis=u;
+	v_axis=v;
 
 	m_DefineCS_valid=true;
 	return 0;
@@ -2298,6 +2486,30 @@ int CCoordMotion::GetAxisDefinitions(int *x, int *y, int *z, int *a, int *b, int
 	return 0;
 }
 
+int CCoordMotion::GetAxisDefinitions(int *x, int *y, int *z, int *a, int *b, int *c, int *u, int *v)
+{
+	char response[MAX_LINE];
+	int result;
+
+	if (!m_DefineCS_valid)
+	{
+		if (KMotionDLL->WriteLineReadLine("DefineCSEx",response)) return 1;
+		result = sscanf(response, "%d%d%d%d%d%d%d%d", &x_axis, &y_axis, &z_axis, &a_axis, &b_axis, &c_axis, &u_axis, &v_axis);
+		if (result != 8) return 1;
+	}
+
+	*x = x_axis;
+	*y = y_axis;
+	*z = z_axis;
+	*a = a_axis;
+	*b = b_axis;
+	*c = c_axis;
+	*u = u_axis;
+	*v = v_axis;
+
+	return 0;
+}
+
 // Get motion profile settings for all Axes in the Coordinated Motion System
 
 int CCoordMotion::GetRapidSettings()
@@ -2311,7 +2523,7 @@ int CCoordMotion::GetRapidSettings()
 
 	if (m_Simulate)
 	{
-		int result=KMotionDLL->WaitToken(false,100);
+		int result=KMotionDLL->WaitToken(false,100,"GetRapidSettings");
 		if (result != KMOTION_LOCKED)
 		{
 			RapidParamsDirty=false;
@@ -2321,9 +2533,9 @@ int CCoordMotion::GetRapidSettings()
 	}
 
 
-	if (GetAxisDefinitions(&x_axis,&y_axis,&z_axis,&a_axis,&b_axis,&c_axis)) {SetAbort(); return 1;}
+	if (GetAxisDefinitions(&x_axis,&y_axis,&z_axis,&a_axis, &b_axis, &c_axis, &u_axis, &v_axis)) {SetAbort(); return 1;}
 
-	KMotionDLL->WaitToken();  // lock the Token while we get all the parameters
+	KMotionDLL->WaitToken("GetRapidSettings2");  // lock the Token while we get all the parameters
 
 	if (GetRapidSettingsAxis(x_axis,&MP->MaxRapidVelX,
 									&MP->MaxRapidAccelX,
@@ -2397,7 +2609,36 @@ int CCoordMotion::GetRapidSettings()
 		return 1;
 	}
 
+	if (GetRapidSettingsAxis(u_axis, &MP->MaxRapidVelU,
+		&MP->MaxRapidAccelU,
+		&MP->MaxRapidJerkU,
+		&MP->SoftLimitPosU,
+		&MP->SoftLimitNegU,
+		MP->CountsPerInchU))
+	{
+		KMotionDLL->ReleaseToken();
+		m_Abort = true;
+		return 1;
+	}
+
+	if (GetRapidSettingsAxis(v_axis, &MP->MaxRapidVelV,
+		&MP->MaxRapidAccelV,
+		&MP->MaxRapidJerkV,
+		&MP->SoftLimitPosV,
+		&MP->SoftLimitNegV,
+		MP->CountsPerInchV))
+	{
+		KMotionDLL->ReleaseToken();
+		m_Abort = true;
+		return 1;
+	}
+
+
 	KMotionDLL->ReleaseToken();
+
+	if (Kinematics->GetSoftLimits(&MP->SoftLimitNegX, &MP->SoftLimitPosX, &MP->SoftLimitNegY, &MP->SoftLimitPosY, &MP->SoftLimitNegZ, &MP->SoftLimitPosZ,
+		&MP->SoftLimitNegA, &MP->SoftLimitPosA, &MP->SoftLimitNegB, &MP->SoftLimitPosB, &MP->SoftLimitNegC, &MP->SoftLimitPosC,
+		&MP->SoftLimitNegU, &MP->SoftLimitPosU, &MP->SoftLimitNegV, &MP->SoftLimitPosV)) return 1;
 
 	RapidParamsDirty=false;
 	return 0;
@@ -2421,39 +2662,50 @@ int CCoordMotion::GetRapidSettingsAxis(int axis,double *Vel,double *Accel,double
 	if (KMotionDLL->ReadLineTimeOut(response)) return 1;
 	result=sscanf(response, "%lf",&temp);
 	if (result != 1) return 1;
-	*Vel = temp/CountsPerInch;
+	*Vel = fabs(temp/CountsPerInch);
 
 	if (KMotionDLL->ReadLineTimeOut(response)) return 1;
 	result=sscanf(response, "%lf",&temp);
 	if (result != 1) return 1;
-	*Accel = temp/CountsPerInch;
+	*Accel = fabs(temp/CountsPerInch);
 
 	if (KMotionDLL->ReadLineTimeOut(response)) return 1;
 	result=sscanf(response, "%lf",&temp);
 	if (result != 1) return 1;
-	*Jerk = temp/CountsPerInch;
+	*Jerk = fabs(temp/CountsPerInch);
 
 	if (KMotionDLL->ReadLineTimeOut(response)) return 1;
 	result=sscanf(response, "%lf",&temp);
 	if (result != 1) return 1;
-	*SoftLimitPos = temp/CountsPerInch;
+	if (CountsPerInch >= 0.0)
+		*SoftLimitPos = temp / CountsPerInch;
+	else
+		*SoftLimitNeg = temp / CountsPerInch;
 
 	if (KMotionDLL->ReadLineTimeOut(response)) return 1;
 	result=sscanf(response, "%lf",&temp);
 	if (result != 1) return 1;
-	*SoftLimitNeg = temp/CountsPerInch;
+	if (CountsPerInch >= 0.0)
+		*SoftLimitNeg = temp / CountsPerInch;
+	else
+		*SoftLimitPos = temp / CountsPerInch;
 	return 0;
 }
 
-
-
-int CCoordMotion::ReadCurAbsPosition(double *x, double *y, double *z, double *a, double *b, double *c, bool snap)
+int CCoordMotion::ReadCurAbsPosition(double *x, double *y, double *z, double *a, double *b, double *c, bool snap, bool NoGeo)
 {
-	double tx,ty,tz,ta,tb,tc;
+	double dummyu, dummyv;
+	return ReadCurAbsPosition(x, y, z, a, b, c, &dummyu, &dummyv, snap, NoGeo);
+}
+
+
+int CCoordMotion::ReadCurAbsPosition(double *x, double *y, double *z, double *a, double *b, double *c, double *u, double *v, bool snap,  bool NoGeo)
+{
+	double tx,ty,tz,ta,tb,tc,tu,tv;
 
 	// find out which axis is which
 
-	if (GetAxisDefinitions(&x_axis,&y_axis,&z_axis,&a_axis,&b_axis,&c_axis)) {SetAbort(); return 1;}
+	if (GetAxisDefinitions(&x_axis,&y_axis,&z_axis,&a_axis,&b_axis,&c_axis,&u_axis,&v_axis)) {SetAbort(); return 1;}
 
 	// read and set all axis (if undefined return interpreter)
 
@@ -2467,8 +2719,10 @@ int CCoordMotion::ReadCurAbsPosition(double *x, double *y, double *z, double *a,
 	if (a_axis >=0)	if (GetDestination(a_axis,&Acts[3])) {SetAbort(); return 1;}
 	if (b_axis >=0)	if (GetDestination(b_axis,&Acts[4])) {SetAbort(); return 1;}
 	if (c_axis >=0)	if (GetDestination(c_axis,&Acts[5])) {SetAbort(); return 1;}
+	if (u_axis >=0)	if (GetDestination(u_axis,&Acts[6])) {SetAbort(); return 1;}
+	if (v_axis >=0)	if (GetDestination(v_axis,&Acts[7])) {SetAbort(); return 1;}
 
-	Kinematics->TransformActuatorstoCAD(Acts,&tx,&ty,&tz,&ta,&tb,&tc);
+	Kinematics->TransformActuatorstoCAD(Acts,&tx,&ty,&tz,&ta,&tb,&tc,&tu,&tv, NoGeo);
 
 	// if the measured positions are really close to the interpreter positions
 	// then there was probably some slight roundoff so set them exactly equal
@@ -2490,6 +2744,8 @@ int CCoordMotion::ReadCurAbsPosition(double *x, double *y, double *z, double *a,
 	if (a_axis < 0 || (snap && fabs(ta - current_a) < fabs(FLOAT_TOL * ta))) *a = current_a; else *a = ta;
 	if (b_axis < 0 || (snap && fabs(tb - current_b) < fabs(FLOAT_TOL * tb))) *b = current_b; else *b = tb;
 	if (c_axis < 0 || (snap && fabs(tc - current_c) < fabs(FLOAT_TOL * tc))) *c = current_c; else *c = tc;
+	if (u_axis < 0 || (snap && fabs(tu - current_u) < fabs(FLOAT_TOL * tu))) *u = current_u; else *u = tu;
+	if (v_axis < 0 || (snap && fabs(tv - current_v) < fabs(FLOAT_TOL * tv))) *v = current_v; else *v = tv;
 	return 0;    
 }
 
@@ -2825,8 +3081,8 @@ int CCoordMotion::MeasurePointAppendToFile(const char *name)
 
 	fclose(f);
 
-
-	if (ReadCurAbsPosition(&x,&y,&z,&a,&b,&c)) return 1;
+	double u, v;
+	if (ReadCurAbsPosition(&x,&y,&z,&a, &b, &c, &u, &v)) return 1;
 	
 	f = fopen(name,"at");
 
@@ -2899,7 +3155,13 @@ int CCoordMotion::ClearWriteLineBuffer()
 
 double CCoordMotion::FeedRateDistance(double dx, double dy, double dz, double da, double db, double dc, BOOL *PureAngle)
 {
-	return ::FeedRateDistance(dx, dy, dz, da, db, dc,&Kinematics->m_MotionParams,PureAngle);
+	return ::FeedRateDistance(dx, dy, dz, da, db, dc, 0.0, 0.0, &Kinematics->m_MotionParams, PureAngle);
+
+}
+
+double CCoordMotion::FeedRateDistance(double dx, double dy, double dz, double da, double db, double dc, double du, double dv, BOOL *PureAngle)
+{
+	return ::FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &Kinematics->m_MotionParams, PureAngle);
 }
 
 int CCoordMotion::ConfigSpindle(int type, int axis, double UpdateTime, double Tau, double CountsPerRev)

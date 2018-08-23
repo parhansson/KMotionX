@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="amp_pwms.asm">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="FastMath.asm">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="fpga_boot.asm">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="lnk.cmd">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="pwms.asm">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="TestAndSet.asm">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="TimeSec.asm">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="vectors.asm">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="DspKFLOP.pjt" />
+    <None Include="KFLOP.mak" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="autoinit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Bits.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Bode.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="boot.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BootLoader.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Decompress.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DspKMotion.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="edma.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fast.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fcvt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Int.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Interpolate.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="KMotionVersion.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PC.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PC2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Print.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ProgFlash.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sine100.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SuperFast.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="task.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="bode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BootLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Decompress.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DspKMotion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="edma.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fast.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="int.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpolate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KMotionDef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PC-DSP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Print.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ProgFlash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sine100.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SuperFast.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="task.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="readme.txt" />
+  </ItemGroup>
+</Project>

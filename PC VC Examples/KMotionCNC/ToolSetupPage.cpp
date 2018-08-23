@@ -190,6 +190,7 @@ void CToolSetupPage::SetAction(MCODE_ACTION *M, int ID_Action,
 		GetDlgItem(ID_Dir)->ShowWindow(SW_SHOW);
 		break;
 	case M_Action_Program_PC:
+	case M_Action_ScreenScript:
 		SetDlgItemText(ID_S1,"Thread");
 		SetDlgItemText(ID_S2,"VAR");
 		SetDlgItemText(ID_S3,"File");
@@ -217,15 +218,39 @@ void CToolSetupPage::OnCloseupAction()
 
 void CToolSetupPage::DoDirectoryBrowse(MCODE_ACTION *m)
 {
+	CString Ext, Types, DefaultDir;
+
 	if (!UpdateData()) return;
 
-	CPersistOpenDlg FileDlg (TRUE, ".tbl", NULL, 
-		OFN_FILEMUSTEXIST | OFN_ENABLESIZING, 
-		"C Files (*.c)|*.c|GCode Files (*.ngc)|*.ngc|All Files (*.*)|*.*||");
+	switch (m->Action)
+	{
+	case M_Action_Program_PC:
+		Ext = ".bat";
+		Types = "Batch Files (*.bat)|*.bat|Program Files (*.exe)|*.exe|All Files (*.*)|*.*||";
+		DefaultDir = SCREEN_SCRIPTS_DIR;
+		break;
+	case M_Action_ScreenScript:
+		Ext = ".scr";
+		Types = "ScreenScript Files (*.scr)|*.scr|All Files (*.*)|*.*||";
+		DefaultDir = SCREEN_SCRIPTS_DIR;
+		break;
+	default:
+		Ext = ".c";
+		Types = "C Files (*.c)|*.c|GCode Files (*.ngc)|*.ngc|Coff object Files (*.out)|*.out|All Files (*.*)|*.*||";
+		DefaultDir = C_PROGRAMS_DIR;
+	}
+
+	CPersistOpenDlg FileDlg (TRUE, Ext,
+		TheFrame->GCodeDlg.InitialFile(m->String, DefaultDir, Ext),
+		OFN_FILEMUSTEXIST | OFN_ENABLESIZING, Types);
 	
 	if (FileDlg.DoModal() == IDOK)
 	{
-		strncpy(m->String,FileDlg.GetPathName(), 255);
+		CString FileName = FileDlg.GetPathName();
+
+		FileName = TheFrame->GCodeDlg.StripPathMatch(FileName, DefaultDir);
+
+		strncpy(m->String, FileName, 255);
 		UpdateData(FALSE);
 	}
 }

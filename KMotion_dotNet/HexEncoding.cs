@@ -42,7 +42,7 @@ namespace KMotion_dotNet
         /// Counts the byte length of a Hex value
         /// </summary>
         /// <param name="hexString">Hex number in string format</param>
-        /// <returns></returns>
+        /// <returns>The length in bytes</returns>
 		public static int GetByteCount(string hexString)
 		{
 			int numHexChars = 0;
@@ -121,8 +121,8 @@ namespace KMotion_dotNet
 		/// <summary>
 		/// Determines if given string is in proper hexadecimal string format
 		/// </summary>
-		/// <param name="hexString"></param>
-		/// <returns></returns>
+		/// <param name="hexString">the hexidecimal string</param>
+		/// <returns>true if in proper format</returns>
 		public static bool InHexFormat(string hexString)
 		{
 			bool hexFormat = true;

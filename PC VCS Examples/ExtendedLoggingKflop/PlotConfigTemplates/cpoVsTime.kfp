@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<PlotConfigurationModel graphid="1" xmlns:ctl="http://catel.codeplex.com" xmlns:arr="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+  <Axes xmlns:arr="http://schemas.microsoft.com/2003/10/Serialization/Arrays" graphid="2" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <AxisDefinitionModel xmlns="http://schemas.datacontract.org/2004/07/ExtendedLoggingKflop.Models">
+      <AxisPosition>YAxisLeft</AxisPosition>
+      <AxisTitle>Position</AxisTitle>
+      <Key>94d3e702-1953-443e-b68c-a812ac5f943b</Key>
+      <Unit>Counts</Unit>
+    </AxisDefinitionModel>
+    <AxisDefinitionModel xmlns="http://schemas.datacontract.org/2004/07/ExtendedLoggingKflop.Models">
+      <AxisPosition>YAxisRight</AxisPosition>
+      <AxisTitle>DAC</AxisTitle>
+      <Key>7f7ca74c-6741-43f9-997a-c0409c630995</Key>
+      <Unit>Counts</Unit>
+    </AxisDefinitionModel>
+  </Axes>
+  <Series xmlns:arr="http://schemas.microsoft.com/2003/10/Serialization/Arrays" graphid="3" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <SeriesDefinitionModel xmlns="http://schemas.datacontract.org/2004/07/ExtendedLoggingKflop.Models">
+      <SeriesTitle>Command</SeriesTitle>
+      <YAxisKey>94d3e702-1953-443e-b68c-a812ac5f943b</YAxisKey>
+      <Color type="System.String">255|0|0|255</Color>
+      <ResultIndex1 type="System.String">2</ResultIndex1>
+      <ResultIndex2 IsNull="true" />
+      <ResultOperator>None</ResultOperator>
+    </SeriesDefinitionModel>
+    <SeriesDefinitionModel xmlns="http://schemas.datacontract.org/2004/07/ExtendedLoggingKflop.Models">
+      <SeriesTitle>Position</SeriesTitle>
+      <YAxisKey>94d3e702-1953-443e-b68c-a812ac5f943b</YAxisKey>
+      <Color type="System.String">255|255|0|0</Color>
+      <ResultIndex1 type="System.String">3</ResultIndex1>
+      <ResultIndex2 IsNull="true" />
+      <ResultOperator>None</ResultOperator>
+    </SeriesDefinitionModel>
+    <SeriesDefinitionModel xmlns="http://schemas.datacontract.org/2004/07/ExtendedLoggingKflop.Models">
+      <SeriesTitle>Output</SeriesTitle>
+      <YAxisKey>7f7ca74c-6741-43f9-997a-c0409c630995</YAxisKey>
+      <Color type="System.String">255|0|128|0</Color>
+      <ResultIndex1 type="System.String">4</ResultIndex1>
+      <ResultIndex2 IsNull="true" />
+      <ResultOperator>None</ResultOperator>
+    </SeriesDefinitionModel>
+  </Series>
+  <PlotName>Command, Position, Output vs Time</PlotName>
+  <Notes>my first plot</Notes>
+  <SavePath></SavePath>
+</PlotConfigurationModel>

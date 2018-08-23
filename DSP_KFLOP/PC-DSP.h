@@ -6,7 +6,7 @@
 #ifndef __PCDSP_H
 #define __PCDSP_H
 
-#define KMOTION_VER "4.33"  
+#define KMOTION_VER "4.34"  
 
 #define ABORT_CHAR 0x03  // ctrl-c clears/aborts any command
 
@@ -203,6 +203,31 @@
 
 #define PC_COMM_ENABLE_JOG_KEYS 37   // Allow User to Push Jog Buttons while JOB is running
 #define PC_COMM_DISABLE_JOG_KEYS 38  // Disable allowing User to Push Jog Buttons while Job is Running
+
+#define PC_COMM_RELOAD_GEOCORRECTION 39  // Reload Geometric Corretion File
+
+
+#define PC_COMM_GET_JOG_OVERRIDE_X 40  // Persist+1 is the is the speed override value (32-bit float) returned
+#define PC_COMM_GET_JOG_OVERRIDE_Y 41  // Persist+1 is the is the speed override value (32-bit float) returned
+#define PC_COMM_GET_JOG_OVERRIDE_Z 42  // Persist+1 is the is the speed override value (32-bit float) returned
+#define PC_COMM_GET_JOG_OVERRIDE_A 43  // Persist+1 is the is the speed override value (32-bit float) returned
+#define PC_COMM_GET_JOG_OVERRIDE_B 44  // Persist+1 is the is the speed override value (32-bit float) returned
+#define PC_COMM_GET_JOG_OVERRIDE_C 45  // Persist+1 is the is the speed override value (32-bit float) returned
+
+#define PC_COMM_SET_JOG_OVERRIDE_X 46  // Persist+1 is the value (32-bit float) to set the speed override to
+#define PC_COMM_SET_JOG_OVERRIDE_Y 47  // Persist+1 is the value (32-bit float) to set the speed override to
+#define PC_COMM_SET_JOG_OVERRIDE_Z 48  // Persist+1 is the value (32-bit float) to set the speed override to
+#define PC_COMM_SET_JOG_OVERRIDE_A 49  // Persist+1 is the value (32-bit float) to set the speed override to
+#define PC_COMM_SET_JOG_OVERRIDE_B 50  // Persist+1 is the value (32-bit float) to set the speed override to
+#define PC_COMM_SET_JOG_OVERRIDE_C 51  // Persist+1 is the value (32-bit float) to set the speed override to
+
+#define PC_COMM_RECREATE_DIALOG_FACE 52 // Recreate Appication Dialog Face
+
+// GetEditCell Persist+1 = gather buffer offset (32-bit words) to where to place Edit string
+#define PC_GET_EDIT_CELL 53   // MessageBox Persist+1=string offset,+2=result
+
+#define PC_COMM_SET_RRO 54 // Persist+1 is the RRO (Rapid Rate Override) as a float
+#define PC_COMM_SET_RRO_INC 55 // Persist+1 is RRO (Rapid Rate Override) the factor to change it as float
 
 
 

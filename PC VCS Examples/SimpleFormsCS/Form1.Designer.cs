@@ -52,6 +52,7 @@
             this.MoveTo = new System.Windows.Forms.Button();
             this.MoveToValue = new System.Windows.Forms.TextBox();
             this.TestBoard2 = new System.Windows.Forms.Button();
+            this.TestKMotionCNCOPen = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -110,9 +111,9 @@
             this.JogXPos.TabIndex = 5;
             this.JogXPos.Text = "X +";
             this.JogXPos.UseVisualStyleBackColor = true;
-            this.JogXPos.MouseLeave += new System.EventHandler(this.JogXStop);
             this.JogXPos.Click += new System.EventHandler(this.JogXStop);
             this.JogXPos.MouseDown += new System.Windows.Forms.MouseEventHandler(this.JogXPosMouseDown);
+            this.JogXPos.MouseLeave += new System.EventHandler(this.JogXStop);
             // 
             // JogXNeg
             // 
@@ -122,9 +123,9 @@
             this.JogXNeg.TabIndex = 5;
             this.JogXNeg.Text = "X -";
             this.JogXNeg.UseVisualStyleBackColor = true;
-            this.JogXNeg.MouseLeave += new System.EventHandler(this.JogXStop);
             this.JogXNeg.Click += new System.EventHandler(this.JogXStop);
             this.JogXNeg.MouseDown += new System.Windows.Forms.MouseEventHandler(this.JogXNegMouseDown);
+            this.JogXNeg.MouseLeave += new System.EventHandler(this.JogXStop);
             // 
             // timer1
             // 
@@ -280,7 +281,7 @@
             // 
             // TestBoard2
             // 
-            this.TestBoard2.Location = new System.Drawing.Point(493, 12);
+            this.TestBoard2.Location = new System.Drawing.Point(481, 15);
             this.TestBoard2.Name = "TestBoard2";
             this.TestBoard2.Size = new System.Drawing.Size(74, 21);
             this.TestBoard2.TabIndex = 12;
@@ -288,12 +289,23 @@
             this.TestBoard2.UseVisualStyleBackColor = true;
             this.TestBoard2.Click += new System.EventHandler(this.TestBoard2_click);
             // 
+            // TestKMotionCNCOPen
+            // 
+            this.TestKMotionCNCOPen.Location = new System.Drawing.Point(462, 42);
+            this.TestKMotionCNCOPen.Name = "TestKMotionCNCOPen";
+            this.TestKMotionCNCOPen.Size = new System.Drawing.Size(105, 21);
+            this.TestKMotionCNCOPen.TabIndex = 12;
+            this.TestKMotionCNCOPen.Text = "TestKMCNC Open";
+            this.TestKMotionCNCOPen.UseVisualStyleBackColor = true;
+            this.TestKMotionCNCOPen.Click += new System.EventHandler(this.TestOpenKMotionCNC_click);
+            // 
             // Form1
             // 
             this.AcceptButton = this.SendCommand;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(579, 549);
+            this.Controls.Add(this.TestKMotionCNCOPen);
             this.Controls.Add(this.TestBoard2);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.TestResults1);
@@ -308,6 +320,7 @@
             this.Controls.Add(this.groupBox1);
             this.Name = "Form1";
             this.Text = "Dynomotion C# Forms App";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormClosingEvent);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -344,6 +357,7 @@
         private System.Windows.Forms.Button MoveTo;
         private System.Windows.Forms.TextBox MoveToValue;
         private System.Windows.Forms.Button TestBoard2;
+        private System.Windows.Forms.Button TestKMotionCNCOPen;
     }
 }
 

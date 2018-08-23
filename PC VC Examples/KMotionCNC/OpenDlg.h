@@ -70,9 +70,14 @@ public:
 protected:
 	CListViewShellWnd m_wndListViewShell;
 	BOOL m_bFirstTime;
+	bool m_bFileNameRestored;
 
 	virtual BOOL OnInitDialog();			 // handle init dialog
 	afx_msg LRESULT OnPostInit(WPARAM wp, LPARAM lp); // the REAL initialization
+
+	afx_msg void OnFileNameChange();
+
+	BOOL Is_Version_Greater_Then_WinXP_SP3();
 
 	DECLARE_DYNAMIC(CPersistOpenDlg)
 	DECLARE_MESSAGE_MAP()

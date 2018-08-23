@@ -5,6 +5,7 @@
 <title>Analog IO Screen</title>
 <meta name="GENERATOR" content="Microsoft FrontPage 6.0">
 <meta name="ProgId" content="FrontPage.Editor.Document">
+
 </head>
 
 <body>
@@ -61,31 +62,30 @@ an ADC input the corresponding InputChannel(s) (0 and 1) for the axis must be
 set appropriately.&nbsp; Additionally, the corresponding Input Gains and Offsets 
 for the axis may be used to correct for scale and offsets in either the ADC 
 channels or the sensor itself.</p>
-<p>&nbsp;</p>
 <p>Of <i><b>KMotion's</b></i> <i>eight</i> on-board ADC channels, <i>four</i> of 
 the channels are dedicated to measuring current flow through each axis of the 
 on-board power amplifiers.&nbsp; ADC Channels 4-7 normally corresponding to axis 
 0-3 (if default <i>output channel</i> mapping is used).&nbsp; Since each axis 
 consists of two full-bridge power amplifiers, the measured current per axis is 
-the sum of <i>both</i> full bridges.<font face="Times New Roman">&nbsp; This 
+the sum of <i>both</i> full bridges.&nbsp; This 
 provides a convenient means to determine abnormal conditions such as stalled 
 motors or open motor coils.&nbsp; This feature is designed to make an 
 approximate measurement of axis current, not a precise measurement of axis 
-current.</font></p>
-<p><font face="Times New Roman">The range of current measurement is fixed at 
-nominally 0 - 4.85 Amps. Since each of </font><i><b>KMotion's </b></i>
-<font face="Times New Roman">full bridge power amplifiers are rated for 3 Amps 
-continuous (per full bridge) and are normally utilized to drive a 4 phase motor 
-(such as a stepper motor), a worst case current per axis occurs when <i>both</i> 
-coils are conducting 0.707 of 3 Amps or&nbsp; 4.24 amps.&nbsp; The 4.85 Amp 
-range provides some margin beyond this.&nbsp; An zero current corresponds to an 
-ADC reading in counts of -2048 and 4.85Amps corresponds to an reading of +2047 
-counts.</font></p>
-<p><font face="Times New Roman"><a name="Small_bar_charts">Small bar charts</a> on the screen also provide an 
+current.</p>
+<p>The range of current measurement is fixed at 
+  nominally 0 - 4.85 Amps. Since each of <i><b>KMotion's </b></i>
+  full bridge power amplifiers are rated for 3 Amps 
+    continuous (per full bridge) and are normally utilized to drive a 4 phase motor 
+    (such as a stepper motor), a worst case current per axis occurs when <i>both</i> 
+  coils are conducting 0.707 of 3 Amps or&nbsp; 4.24 amps.&nbsp; The 4.85 Amp 
+    range provides some margin beyond this.&nbsp; An zero current corresponds to an 
+    ADC reading in counts of -2048 and 4.85Amps corresponds to an reading of +2047 
+counts.</p>
+<p><a name="Small_bar_charts">Small bar charts</a> on the screen also provide an 
 indication of current in each axis, see below.&nbsp; The graph displays a green 
 bar from 0 to 100% full which corresponds to 0 to 3A of current.&nbsp; Currents 
 higher than 3A show a full red bar which may indicate an over current situation 
-if more than 3A is flowing in any one of the two full bridge circuits.</font></p>
+if more than 3A is flowing in any one of the two full bridge circuits.</p>
 <p><img border="0" src="Analog1.gif"></p>
 <p>&nbsp;</p>
 <p><u><b><a name="DACs">DAC's</a></b></u></p>
@@ -188,7 +188,7 @@ this case the position value is meaningless and ignored.</p>
 or not.&nbsp; Clicking on the Enabled checkbox will enable the axis if disabled 
 or disable the axis if enabled.</p>
 <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0"><u><a name="Modes"><b>Mode</b>s</a></u></p>
+<p style="margin-top: 0; margin-bottom: 0"><u><a name="Modes"><b>Modes</b></a></u></p>
 <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
 <p style="margin-top: 0; margin-bottom: 0">Displays the currently configured 
 input and output modes for each axis.&nbsp; The input mode determines what 

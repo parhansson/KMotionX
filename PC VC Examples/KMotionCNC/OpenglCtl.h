@@ -54,6 +54,8 @@ public:
 	CPoint m_RightDownPos;
 	HCURSOR m_CursorRotation;
 
+	bool m_Ortho;
+
 	// Position, rotation ,scaling
 	void InitGeometry(void);
 
@@ -65,10 +67,15 @@ public:
 	float m_xTranslation;
 	float m_yTranslation;
 	float m_zTranslation;
+	float m_zTranslation0;  // nominal distance where Ortho should be at Scale0
 
 	float m_xScaling;
 	float m_yScaling;
 	float m_zScaling;
+	float m_Scaling0;  // nominal distance where Ortho should be at Scale=1.0
+
+	float m_aspect;
+	int m_cx, m_cy;
 
 	float m_SpeedTranslation;
 	float m_SpeedRotation;
@@ -97,6 +104,7 @@ public:
 
 	void *Parent;
 	RENDERCALLBACK *RenderCallback;
+	void SetupOpenGL();
 
 
 	// Generated message map functions

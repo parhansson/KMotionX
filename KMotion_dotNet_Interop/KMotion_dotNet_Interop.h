@@ -223,6 +223,7 @@ extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_Wa
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_WaitForMoveXYZABCFinished(int *handle);
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_DoKMotionCmd(int *handle, const char *s, BOOL FlushBeforeUnbufferedOperation);
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_DoKMotionBufCmd(int *handle, const char *s);
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_KinematicsReadGeoTable(int *handle, const char *filename);
 
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_MeasurePointAppendToFile(int *handle, const char *name);
 
@@ -299,6 +300,10 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 
 //Setup Parameters
 //Acutator Origins, Positions and Offsets
+
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_GetInterpretThreadID(int *handle);
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_GetInvokeThreadID(int *handle);
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_GetCurrentThreadID(int *handle);
 
 extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_GetInitializeOnExecute(int *handle);
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_SetInitializeOnExecute(int *handle, bool value);

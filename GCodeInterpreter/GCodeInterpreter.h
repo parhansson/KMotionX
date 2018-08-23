@@ -78,9 +78,13 @@ typedef void G_COMPLETE_CALLBACK(int status, int lineno, int sequence_number, co
 typedef void G_STATUS_CALLBACK(int line_no, const char *msg);
 typedef int G_USER_CALLBACK(const char *msg);
 typedef int G_M_USER_CALLBACK(int mCode);
+typedef int G_SCREENSCRIPT_CALLBACK(const char *FileName);
 
-
-
+#ifdef _KMOTIONX
+#define C_PROGRAMS_DIR                  "/C Programs/"
+#else
+#define C_PROGRAMS_DIR                  "\\C Programs\\"
+#endif
 // Misc Commands (M Code) within GCode are normally used
 // for spindle on/off and such.  In general any M Code
 // may be mapped to various KMotion "Actions" such as
@@ -97,6 +101,7 @@ enum {
 	M_Action_Program_PC = 7,		// run a Windows program wait til finished
 	M_Action_Callback = 8,		    // Callback to the User Application
 	M_Action_Waitbit = 9,			// Wait/Hold until a bit is high or low
+	M_Action_ScreenScript = 10,		// Execute a Screen Script File
 };
 
 #define MAX_MCODE_ACTIONS_M1 11        // actually only 2-10  are used
@@ -128,7 +133,9 @@ public:
 	
 	int SetOrigin(int index, double x, double y, double z, double a, double b, double c);
 	int GetOrigin(int index, double *x, double *y, double *z, double *a, double *b, double *c);
- 
+	int SetOrigin(int index, double x, double y, double z, double a, double b, double c, double u, double v);
+	int GetOrigin(int index, double *x, double *y, double *z, double *a, double *b, double *c, double *u, double *v);
+
 	double InchesToUserUnits(double inches);
 	double InchesToUserUnitsX(double inches);
 	double InchesOrDegToUserUnitsA(double inches);
@@ -145,18 +152,28 @@ public:
 	double ConvertAbsToUserUnitsA(double a);
 	double ConvertAbsToUserUnitsB(double b);
 	double ConvertAbsToUserUnitsC(double c);
+	double ConvertAbsToUserUnitsU(double u);
+	double ConvertAbsToUserUnitsV(double v);
 	void ConvertAbsoluteToInterpreterCoord(double x,double y,double z,double a,double b,double c, 
 										double *gx,double *gy,double *gz,double *ga,double *gb,double *gc, setup_pointer psetup=NULL);
-	void ConvertAbsoluteToMachine(double x,double y,double z,double a,double b,double c, 
-									double *gx,double *gy,double *gz,double *ga,double *gb,double *gc);
-	
-	int ReadAndSyncCurPositions(double *x, double *y, double *z, double *a, double *b, double *c);
+	void ConvertAbsoluteToInterpreterCoord(double x,double y,double z,double a,double b,double c, double u, double v, 
+										double *gx,double *gy,double *gz,double *ga,double *gb,double *gc,double *gu,double *gv, setup_pointer psetup=NULL);
+	void ConvertAbsoluteToMachine(double x, double y, double z, double a, double b, double c, double u, double v,
+		double *gx, double *gy, double *gz, double *ga, double *gb, double *gc, double *gu, double *gv);
+
+	void ConvertAbsoluteToMachine(double x, double y, double z, double a, double b, double c,
+		double *gx, double *gy, double *gz, double *ga, double *gb, double *gc);
+
+	int ReadAndSyncCurPositions(double *x, double *y, double *z, double *a, double *b, double *c, double *u=NULL, double *v=NULL);
 
 	void SetFeedRate(double);
 
 	int InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation=TRUE);
+	int InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation, MCODE_ACTION *p);
+	int InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOperation, MCODE_ACTION *p);
 
 	int rs274ngc_save_parameters();	// save interpreter vars
+	bool rs274ngc_save_parameters_changed(void);	// check for changes
 
 	int DoReverseSearch(const char * InFile, int CurrentLine); // search backward to try to set Interpreter State
 
@@ -190,9 +207,16 @@ public:
 	int m_GCodeReads;
 	char m_InFile[MAX_PATH];
 	int m_exitcode;
+	int m_InvokeExitcode;
 	int DoExecute();
 	int DoExecuteComplete();
-
+#ifdef _KMOTIONX
+	volatile long int m_InterpretThreadID;
+	volatile long int m_InvokeThreadID;
+#else
+	DWORD m_InterpretThreadID;
+	DWORD m_InvokeThreadID;
+#endif
 	void SetToolFile(char *f);
 	void SetSetupFile(char *f);
 	void SetVarsFile(char *f);
@@ -253,10 +277,12 @@ public:
 		
 	G_USER_CALLBACK *m_UserFn;
     G_M_USER_CALLBACK *m_UserFnMCode;
+	G_SCREENSCRIPT_CALLBACK *m_ScreenScriptCallback;
 	setup m_StoppedInterpState;
 	int InitializeInterp(void);
 	void SetUserCallback(G_USER_CALLBACK *UserFn);
 	void SetUserMCodeCallback(G_M_USER_CALLBACK *UserFn);
+	void SetScreenScriptCallback(G_SCREENSCRIPT_CALLBACK *UserFn);
 
 	int ReadToolFile();
 };

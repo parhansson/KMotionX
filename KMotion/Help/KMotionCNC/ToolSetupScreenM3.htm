@@ -3,10 +3,10 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <title>Tool Setup Screen M3-M9</title>
+
 </head>
 
 <body>
-
 <p><i><b><font size="5" face="Arial">Tool Setup Screen - M0 - M</font></b></i><b><i><font face="Arial" size="5">30</font></i></b></p>
 <p>
 <map name="FPMap0">
@@ -16,7 +16,7 @@
 <area href="ToolSetupScreenFiles.htm" shape="rect" coords="169, 23, 257, 46">
 <area href="ToolSetupScreenTP.htm" shape="rect" coords="255, 24, 349, 43">
 </map>
-<img border="0" src="KMotionCNCfiles/ToolSetupM3.PNG" width="700" height="477" usemap="#FPMap0"></p>
+<img border="0" src="KMotionCNCfiles/ToolSetupM3.PNG" width="700" height="449" usemap="#FPMap0"></p>
 
 <p><font face="Arial"><i>(Click on Image to Jump to 
 		related help)</i></font></p>
@@ -97,6 +97,8 @@ Exits</font></p>
 	<li><font face="Arial">Execute a C Program in the KMotion Control Board + 
 	wait for it to terminate + resync Interpreter positions</font></li>
 	<li><font face="Arial">Execute a Windows Program</font></li>
+	<li><font face="Arial">PC App Callback</font></li>
+	<li><font face="Arial">Screen Script File</font></li>
 </ul>
 <p><font face="Arial">To specify a particular action first select the Action Type.&nbsp; Each 
 Action Type requires a different number and type of parameters.&nbsp; Next fill 
@@ -106,7 +108,7 @@ they are exactly synchronized with any motion before or after the I/O commands.&
 This is useful in systems where a fast shutter or other operation is required at 
 precise times relative to the motion.&nbsp; </font> </p>
 <p>&nbsp;</p>
-<p><font face="Arial">The five Action Types are described below:</font></p>
+<p><font face="Arial">The seven Action Types are described below:</font></p>
 <p><font face="Arial">For <b>one I/O</b> bit specify the I/O bit number and the state 0 or 1 to set 
 it to.&nbsp; </font> </p>
 <p><font face="Arial"><img border="0" src="KMotionCNCfiles/OneBit.png"></font></p>
@@ -128,19 +130,22 @@ how to scale and offset the associated variable, and the minimum and maximum
 allowed DAC settings.&nbsp; This command is primarily designed for use with the 
 S (Spindle speed) G Code Command</font></p>
 <p><font face="Arial"><img border="0" src="KMotionCNCfiles/DAC.png"></font></p>
-<p>&nbsp;</p>
-<p><font face="Arial">For <b>Execute Prog</b> specify the program Thread (1 through 7) where the 
-program is to be downloaded and executed, a Persist Variable (1-99)&nbsp; that 
-will be set before the program executes, and the name of the C Program to be 
-Compiled, Downloaded, And Executed.&nbsp; If the Filename is left blank, then it 
-will be assumed that a program has been previously downloaded and will just be 
-re-executed.&nbsp; This method is very powerful in that anything that may be 
-programmed in C may be invoked.&nbsp;&nbsp; See the KMotion documentation for 
-information on writing C Programs for the KMotion Motion Control Board.&nbsp; 
-There are a number of example C programs in the &lt;Install Dir&gt;\C Programs folder.&nbsp;&nbsp; 
-The Example &quot;\KStep\InitKStep3Axis.c&quot; s an example which completely configures all 
-necessary parameters in the KFLOP Board to drive 3 stepping motors using KSTEP's amplifiers.</font></p>
+<p><font face="Arial">For <strong>Execute Prog</strong> specify the program        Thread (1 through 7) where the program is to be downloaded and        executed, a Persist Variable (0-199) that will be set before the        program executes, and the name of the C Program to be Compiled,        Downloaded, and Executed.&nbsp; This method is very powerful in that        anything that may be programmed in C may be invoked.&nbsp;&nbsp; See the        KMotion documentation and <a href="http://www.dynomotion.com/wiki/index.php?title=KFLOP_C_Programs">wiki</a>  for        information on writing C Programs for the KMotion Motion Control        Board.&nbsp; There are a number of example C programs in the        &lt;Install Dir&gt;\C Programs folder.&nbsp;&nbsp; The Example        "\KStep\InitKStep3Axis.c" s an example which completely configures        all necessary parameters in the KFLOP Board to drive 3 stepping        motors using KSTEP's amplifiers.<br>
+  <br>
+Persist Variables are used for passing parameters and information        to KFLOP before executing the C Program.&nbsp; The parameters are        Action Specific.&nbsp; The 'S' Action will pass the Speed as a 32-bit        Floating point value.&nbsp; The 'M6" Tool Change Action will pass the        Tool Slot and Tool ID as 32-bit integer values in consecutive        Persist Variables.&nbsp;&nbsp; MCodes can pass GCode PQR Parameters.&nbsp; See        <a href="http://dynomotion.com/Help/KMotionCNC/MCodesWithParams.htm">here</a>         for an example.&nbsp; If no parameter is associated with the Action,        then the Action Table Index will be passed that can be used to        inform the C Program which Action invoked it. Specifying a Var value as &quot;-1&quot; will not write anything into any variable.<br>
+<br>
+Note that normally the *.c Source Program File is specified,      which simplifies making any changes as they will automatically be      re-compiled and have effect.&nbsp; C Source programs are also independent      of KFLOP Version as they are always Compiled to the current version      before use.&nbsp; However it is possible to specify an *.out binary file      that has already been compiled for faster operation since it has      already been compiled and only needs to be downloaded.&nbsp; When a file      is compiled into binary executable code it is compiled to run in a      particular Thread space (memory specific) and also for a particular      KFLOP Version.&nbsp; The compiler automatically marks the filename with      (N).out.&nbsp; Where N is the Thread number that the code has been      compiled to run in.<br>
+<br>
+If the Filename is left blank,          then it will be assumed that a program has been previously          downloaded to the specified Thread&nbsp; and will just be          re-executed.&nbsp; It is up to the designer to make sure a valid          program has been downloaded and still exists in the specified          Thread Space.<br>
+<br>
+Additionally a program filename specified with a *.ngc extension          will be treated as GCode and the GCode Interpreter will be          invoked to execute the GCode file.&nbsp; Note that the GCode          Interpreter is not re-entrant (Interpreter can not call          itself).&nbsp; This means that MCodes and other Actions invoked by          the Interpreter can not Invoke GCode.&nbsp; This restriction also          applies to C Programs that may in turn execute GCodeThis          essentially limits User Buttons and Special Commands (ie Program          Start) to specifying GCode for execution.&nbsp; This functionality          should be limited to simple GCode operations that should execute          quickly.<br>
+</font></p>
 <p><font face="Arial"><img border="0" src="KMotionCNCfiles/ExecuteProg.png"></font></p>
+<p><font face="Arial"><b>PC App Callback</b> allows a user-compiled Callback Function to be called as an Action. However,  this is a feature not commonly used unless you are modifying/recompiling  KMotionCNC.</font></p>
+<p><img src="KMotionCNCfiles/pc-callback.png" width="510" height="32" alt=""/></p>
+ <p><font face="Arial"><b>Screen Script File</b> allows users to change/select different screen script files.</font></p>
+<p><img src="KMotionCNCfiles/screen script file.png" width="800" height="24" alt=""/></p>
+<br clear="all">
 <p>&nbsp;</p>
 
 </body>

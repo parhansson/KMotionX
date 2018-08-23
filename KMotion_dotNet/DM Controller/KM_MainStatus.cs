@@ -348,13 +348,15 @@ namespace KMotion_dotNet
             {
                 return _TicksAtUpdate;
             }
-        } 
+        }
         #endregion
 
 
         /// <summary>
         /// Bulk status record ADC values (Kanalog)
         /// </summary>
+        /// <param name="index">channel number to get</param>
+        /// <returns>value</returns>
         public int GetADC(int index)
         {
             if (index < _ADC.Length)
@@ -369,6 +371,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Bulk status record DAC values (Kanalog)
         /// </summary>
+        /// <param name="index">channel number to get</param>
+        /// <returns>value</returns>
         public int GetDAC(int index)
         {
             if (index < _DAC.Length)
@@ -383,6 +387,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Bulk status record PWM values (SnapAmp)
         /// </summary>
+        /// <param name="index">channel number to get</param>
+        /// <returns>value</returns>
         public int GetPWM(int index)
         {
             if (index < _PWM.Length)
@@ -399,6 +405,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Bulk status record Axis Measured positions (Encoder or other sensing device)
         /// </summary>
+        /// <param name="index">Axis Number</param>
+        /// <returns>value</returns>
         public double GetPosition(int index)
         {
             if (index < _Position.Length)
@@ -413,6 +421,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Bulk status record Axis Commanded Destinations
         /// </summary>
+        /// <param name="index">Axis Number</param>
+        /// <returns>value</returns>
         public double GetDestination(int index)
         {
             if (index < _Destination.Length)
@@ -428,6 +438,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Bulk status record Axis First output channel specified
         /// </summary>
+        /// <param name="index">Axis Number</param>
+        /// <returns>value</returns>
         public double GetOutputChannel0(int index)
         {
             if (index < _OutputChan0.Length)
@@ -444,6 +456,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Bulk status record feedback selected input mode
         /// </summary>
+        /// <param name="axischannel">Axis Number</param>
+        /// <returns>value</returns>
         public int GetInputMode(int axischannel)
         {
             int channel = FourBitAxisIndex(axischannel);
@@ -459,6 +473,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Bulk status record feedback selected output mode
         /// </summary>
+        /// <param name="axischannel">Axis Number</param>
+        /// <returns>value</returns>
         public int GetOutputMode(int axischannel)
         {
             int channel = FourBitAxisIndex(axischannel);
@@ -474,6 +490,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Bulk status record Current axis enables
         /// </summary>
+        /// <param name="axischannel">Axis Number</param>
+        /// <returns>value</returns>
         public int GetAxisEnabled(int axischannel)
         {
             return GetValue(_Enables, axischannel, 1);
@@ -481,6 +499,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Bulk status record Current axis completes
         /// </summary>
+        /// <param name="axischannel">Axis Number</param>
+        /// <returns>value</returns>
         public int GetAxisComplete(int axischannel)
         {
             return GetValue(_AxisDone, axischannel, 1);
@@ -488,6 +508,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Bulk status record Current KFLOP IO Bit directions (inputs vs outputs)
         /// </summary>
+        /// <param name="index">IO Bit Number</param>
+        /// <returns>value 0=input 1=output</returns>
         public int GetKFlopBitDirection(int index)
         {
             if (index > 31)
@@ -503,6 +525,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Bulk status record Current IO Bit states
         /// </summary>
+        /// <param name="index">IO Bit Number</param>
+        /// <returns>value</returns>
         public int GetKFlopBitState(int index)
         {
             if (index > 31)
@@ -519,6 +543,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Bulk status record Current SnapAmp #0 IO Bit directions (inputs vs outputs)
         /// </summary>
+        /// <param name="index">IO Bit Number</param>
+        /// <returns>value</returns>
         public int GetSnapBitsDirection0(int index)
         {
             return GetValue(_SnapBitsDirection0, index, 1);
@@ -526,6 +552,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Bulk status record Current SnapAmp #1 IO Bit directions (inputs vs outputs)
         /// </summary>
+        /// <param name="index">IO Bit Number</param>
+        /// <returns>value 0=input 1=output</returns>
         public int GetSnapBitsDirection1(int index)
         {
             return GetValue(_SnapBitsDirection1, index, 1);
@@ -533,6 +561,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Bulk status record Current SnapAmp #0 IO Bit States
         /// </summary>
+        /// <param name="index">IO Bit Number</param>
+        /// <returns>value</returns>
         public int GetSnapBitsState0(int index)
         {
             return GetValue(_SnapBitsState0, index, 1);
@@ -540,6 +570,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Bulk status record Current SnapAmp #1 IO Bit States
         /// </summary>
+        /// <param name="index">IO Bit Number</param>
+        /// <returns>value</returns>
         public int GetSnapBitsState1(int index)
         {
             return GetValue(_SnapBitsState1, index, 1);
@@ -547,6 +579,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Bulk status record Current Kanalog Input Bit States
         /// </summary>
+        /// <param name="index">IO Bit Number</param>
+        /// <returns>value</returns>
         public int GetKanalogBitsStateInputs(int index)
         {
             return GetValue(_KanalogBitsStateInputs, index, 1);
@@ -554,6 +588,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Bulk status record Current Kanalog Output Bit States
         /// </summary>
+        /// <param name="index">IO Bit Number</param>
+        /// <returns>value</returns>
         public int GetKanalogBitsStateOutputs(int index)
         {
             return GetValue(_KanalogBitsStateOutputs, index, 1);
@@ -561,6 +597,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Bulk status record Current Boot Thread Startup Enables 
         /// </summary>
+        /// <param name="index">Thread Number</param>
+        /// <returns>value</returns>
         public int GetRunOnStartUp(int index)
         {
             return GetValue(_RunOnStartUp, index, 1);
@@ -568,6 +606,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Bulk status record Current Thread Execution State 
         /// </summary>
+        /// <param name="index">Thread Number</param>
+        /// <returns>value</returns>
         public int GetThreadActive(int index)
         {
             return GetValue(_ThreadActive, index, 1);
@@ -575,6 +615,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Bulk status record Current PC-KFLOP Comm regs 
         /// </summary>
+        /// <param name="index">Comm Register Index</param>
+        /// <returns>value</returns>
         public int GetPC_comm(int index)
         {
             if (PC_comm.Length > index)
@@ -590,6 +632,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Bulk status record Current Virtual Bit States 
         /// </summary>
+        /// <param name="index">Bit Offset</param>
+        /// <returns>value</returns>
         public int GetVirtualBits(int index)
         {
             return GetValue(_VirtualBits, index, 1);
@@ -597,6 +641,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Bulk status record Current Extended Virtual Bit States 
         /// </summary>
+        /// <param name="index">Bit Offset</param>
+        /// <returns>value</returns>
         public int GetVirtualBitsEx0(int index)
         {
             return GetValue(_VirtualBitsEx0, index, 1);
@@ -634,6 +680,35 @@ namespace KMotion_dotNet
         /// <summary>
         /// Create Bulk status record  
         /// </summary>
+        /// <param name="versionandsize">packed Version and size</param>
+        /// <param name="adc">adc value array</param>
+        /// <param name="dac">dac value array</param>
+        /// <param name="pwm">Snap Amp PWM value array</param>
+        /// <param name="position">position value array</param>
+        /// <param name="destination">destination value array</param>
+        /// <param name="outputchan0">packed output channel 0 array</param>
+        /// <param name="inputmodes">packed input modes channels 0-3</param>
+        /// <param name="inputmodes2">packed input modes channels 4-7</param>
+        /// <param name="outputmodes">packed output modes channels 0-3</param>
+        /// <param name="outputmodes2">packed output modes channels 4-7</param>
+        /// <param name="enables">packed Enables</param>
+        /// <param name="axisdone">packed axisdone</param>
+        /// <param name="bitsdirection">packed bit direction array</param>
+        /// <param name="bitsstate">packed bit state array</param>
+        /// <param name="snapbitsdirection0">packed bit directions for SnapAmp 0</param>
+        /// <param name="snapbitsdirection1">packed bit directions for SnapAmp 1</param>
+        /// <param name="snapbitsstate0">packed bit states for SnapAmp 0</param>
+        /// <param name="snapbitsstate1">packed bit states for SnapAmp 1</param>
+        /// <param name="kanalgobitsstateinputs">packed input bit states for Kanalog</param>
+        /// <param name="kanalogbitsstateoutputs">packed output bit states for Kanalo</param>
+        /// <param name="runonstartup">packed startup bits for User Threads</param>
+        /// <param name="threadactive">packed Thread Active bits for User Threads</param>
+        /// <param name="stopimmediatestate">Feed Hold Status State</param>
+        /// <param name="timestamp">Timestamp - time since KFLOP boot of Status capture</param>
+        /// <param name="pccomm">KFLOP Persist variables included in Status for communication</param>
+        /// <param name="virtualbits">packed bit states for Virtual bits</param>
+        /// <param name="virtualbitsex0">packed bit states for first 32 Extended Virtual bits</param>
+        /// <returns>0=successful</returns>
         public static KM_MainStatus GetStatus
     (
     int versionandsize,

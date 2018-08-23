@@ -404,21 +404,24 @@ namespace KMotion_dotNet
                 }
             }
 
-            
-            
-            #endregion 
+
+
+            #endregion
 
             /// <summary>
             /// Returns direction to move for homing
             /// </summary>
+            /// <returns>HOMING_DIRECTION.NEGATIVE or HOMING_DIRECTION.POSITIVE</returns>
             public HOMING_DIRECTION GetDirection()
             {
                 return (_HomeNegative) ? HOMING_DIRECTION.NEGATIVE : HOMING_DIRECTION.POSITIVE;
             }
 
             /// <summary>
-            /// 
+            /// State (polarity) when Input is actively in sensor - optionally inverted
             /// </summary>
+            /// <param name="reverse">whether the polarity should be returned inverted</param>
+            /// <returns>Limit State Polarity</returns>
             public int GetPolarity(bool reverse)
             {
                 if (reverse)

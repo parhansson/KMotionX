@@ -49,6 +49,7 @@ protected:
 
 	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
 	virtual void OnFileNameChange();
+	void OnFileNameChange(bool FolderChanged);
 	virtual void OnFolderChange();
 	virtual void OnInitDone();
 
@@ -56,6 +57,7 @@ protected:
 	CAbstractPreview *m_pPreview;
 
 	BOOL m_bChanged;
+	bool FirstFolderChange;
 
 	int FindExtents();
 	int FindAxisExtents();

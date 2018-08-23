@@ -1,0 +1,680 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\MachIncludes">
+      <UniqueIdentifier>{7d4bbf0c-5d0d-4466-9800-7bb5e94dc0e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ConfigDLG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dynomtn.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Excel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExternalMovement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HiResTimer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MachDevice.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MachDevImplementation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MACHGUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TrajQueue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="XMLProfile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MachDevice.def">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\MachDevice.rc2">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="MachDevice.idl">
+      <Filter>Source Files</Filter>
+    </Midl>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ConfigDLG.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dynomtn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Excel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternalMovement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HiResTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MachDevice.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MachDevImplementation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MACHGUI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TrajQueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="XMLProfile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\3dmath.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\_collection.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\_Font.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\_Picture.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\activdbg.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\activscp_plus.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\AddonDlg.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\AppFuncs.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\AxisMotor.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Backlash.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\BallController.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\BugReport.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ButtonFunctions.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\canon.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\CaptureVideo.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\CDXFReader.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\cimage.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\cimagebufferxctrl1.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\circinterp.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ConfCheck.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ControlRect.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\CSimpleDib.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\devintf.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\DoHelp.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\DRO2.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\DROValues.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\EmergButton.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Enable.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\EncCal.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Encoders.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Engine.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\FileList.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\FileOperations.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Fixtures.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\font.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\FontSelect.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\FormelParser.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\FormulaSet.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Ftd2xx.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\G100Buffer.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\G100Machine.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\GeckoExchange.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\GeckoIP.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\GeckoMonitor.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\GeckoMonitoring.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\GeckoThread.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\GenUDPSocket.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\GetCoords.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\GodeList.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\GrandDog.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\GREXMotor.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\GState.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Helper.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\HomanConf.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\HotKeys.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\IMapi.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\InputSignals.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\JMatrixCtrl.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Labels.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\LathePath.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\LayerControl.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\LedButton.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\LEDConditions.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\LeftView.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\LocalIPQuery.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\LogicControl.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Mach1Button.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Mach1Joystick.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Mach1Static.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Mach3Image.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Mach3Video.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Mach4.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Mach4_h.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Mach4Doc.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Mach4View.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\MacroControl.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\MacroRun.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Macros.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\MainFrm.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Maintenance.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\MDI.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\MDIEdit.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\MemDC.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Memmap.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\MillOptions.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ModBusConfig.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ModBusCtrl.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ModBusStatus.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ModBusThread.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\MosBusPoll.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\MotorOuts.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\MotorSetup.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\MotorTuning.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\MPGCalibrate.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\MPGControl.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\MRUDialog.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\MyAbout.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\MyConfSheet.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\MyScriptObject.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\MySplitterWnd.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\MyStatic.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\MyToolBar.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ompensation.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\OpenGLView.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\OutputSignals.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\PathProgress.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\PhysConst.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\picture.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\PrepPosition.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Processor.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ProfileDialog.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\PropPorts.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\QuestionDouble.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\RealTimeMacro.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\reateProfile.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Reprocessor.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ReProcessView.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ReProcessWin.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ResetWarning.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\resource.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\rs274ngc.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\SafeMoveYesNo.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\sapi.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ScewMap.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ScrewMapCurve.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ScriptControl.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ScriptView.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\SDIEdit.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\serialport.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\SerialRing.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\SerialRingThread.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\SetHotKey.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\SlabSockets.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Slave.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\SMRL.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\SocketComm.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\spindgraph.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\SpindleCal.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\SpindleFM.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\SpindleSetup.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Splash.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\stdafx.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\SystemTray.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\TCPThread.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\TextFile.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\TextQuestion.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\TitleTip.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ToolCabinet.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ToolPath.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ToolPathConfig.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ToolTable.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\TorchVoltage.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Traj.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\TrajectoryControl.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Tserial_event.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\TurnOptions.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\TWScriptEdit.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\UDPSocket.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\Units.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\VariJogDisplay.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\VBEditThread.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\VBFrame.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\videoocxctrl1.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\videoocxtoolsctrl2.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\xfile.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ximabmp.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ximacfg.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ximadef.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ximage.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ximagif.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ximaico.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ximaiter.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ximaj2k.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ximajas.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ximajbg.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ximajpg.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ximamng.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ximapcx.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ximapng.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ximatga.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ximath.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ximatif.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ximawbmp.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\ximawmf.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\xiofile.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MachIncludes\xmemfile.h">
+      <Filter>Header Files\MachIncludes</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\KMotion.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MachDevice.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

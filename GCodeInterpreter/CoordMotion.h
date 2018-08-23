@@ -84,29 +84,51 @@ public:
 
 	int MeasurePointAppendToFile(const char *name);
 	int StraightTraverse(double x, double y, double z, double a, double b, double c, bool NoCallback=false, int sequence_number=-1, int ID=0);
+	int StraightTraverse(double x, double y, double z, double a, double b, double c, double u, double v, bool NoCallback=false, int sequence_number=-1, int ID=0);
+	
 	int ArcFeed(double DesiredFeedRate_in_per_sec, CANON_PLANE plane,
 				double first_end, double second_end, 
 		        double first_axis, double second_axis, int rotation,
 				double axis_end_point, double a, double b, double c, int sequence_number, int ID);
+	
+	int ArcFeed(double DesiredFeedRate_in_per_sec, CANON_PLANE plane,
+				double first_end, double second_end, 
+		        double first_axis, double second_axis, int rotation,
+				double axis_end_point, double a, double b, double c, double u, double v, int sequence_number, int ID);
 
 	int ArcFeedAccel(double DesiredFeedRate_in_per_sec, double DesiredAccel, CANON_PLANE plane,
 				double first_end, double second_end, 
 		        double first_axis, double second_axis, int rotation,
 				double axis_end_point, double a, double b, double c, int sequence_number, int ID);
+	
+	int ArcFeedAccel(double DesiredFeedRate_in_per_sec, double DesiredAccel, CANON_PLANE plane,
+				double first_end, double second_end, 
+		        double first_axis, double second_axis, int rotation,
+				double axis_end_point, double a, double b, double c, double u, double v, int sequence_number, int ID);
 
 	int StraightFeed(double DesiredFeedRate_in_per_sec,
 				     double x, double y, double z, double a, double b, double c, int sequence_number, int ID);
+	
+	int StraightFeed(double DesiredFeedRate_in_per_sec,
+				     double x, double y, double z, double a, double b, double c, double u, double v, int sequence_number, int ID);
 
 	int StraightFeedAccel(double DesiredFeedRate_in_per_sec, double DesiredAccel,
 				     double x, double y, double z, double a, double b, double c, int sequence_number, int ID);
+	
+	int StraightFeedAccel(double DesiredFeedRate_in_per_sec, double DesiredAccel,
+				     double x, double y, double z, double a, double b, double c, double u, double v, int sequence_number, int ID);
 
 	int StraightFeedAccelRapid(double DesiredFeedRate_in_per_sec, double DesiredAccel, bool RapidMode, bool NoCallback,
 							   double x, double y, double z, double a, double b, double c, int sequence_number, int ID);
 
+	int StraightFeedAccelRapid(double DesiredFeedRate_in_per_sec, double DesiredAccel, bool RapidMode, bool NoCallback,
+							   double x, double y, double z, double a, double b, double c, double u, double v, int sequence_number, int ID);
+
 
 	int /*CCoordMotion::*/Dwell(double seconds, int sequence_number=0);
 
-	int ReadCurAbsPosition(double *x, double *y, double *z, double *a, double *b, double *c, bool snap=false);
+	int ReadCurAbsPosition(double *x, double *y, double *z, double *a, double *b, double *c, bool snap=false, bool NoGeo = false);
+	int ReadCurAbsPosition(double *x, double *y, double *z, double *a, double *b, double *c, double *u, double *v, bool snap=false, bool NoGeo = false);
 
 	void SetStraightTraverseCallback(STRAIGHT_TRAVERSE_CALLBACK *p);
 	void SetStraightTraverseCallback(STRAIGHT_TRAVERSE_SIX_AXIS_CALLBACK *p);
@@ -123,12 +145,12 @@ public:
 	int DoRateAdjustments(int i0, int i1);
 	int DoRateAdjustmentsArc(int i, double radius, double theta0, double dtheta, double dcircle);
 
-	int CheckSoftLimits(double x, double y, double z, double a, double b, double c, char *errmsg);
+	int CheckSoftLimits(double x, double y, double z, double a, double b, double c, double u, double v, char *errmsg);
 	int CheckSoftLimitsArc(double XC, double YC, double Z1,
 						   double SoftLimitPosX,double SoftLimitNegX,
 						   double SoftLimitPosY,double SoftLimitNegY,
 						   double SoftLimitPosZ,double SoftLimitNegZ,
-						   double a, double b, double c, BOOL DirIsCCW, 
+						   double a, double b, double c, double u, double v, BOOL DirIsCCW, 
 						   double radius, double theta0, double dtheta, 
 						   int x_axis,int y_axis,int z_axis,
 						   char XSTR, char YSTR, char ZSTR, char *errmsg);
@@ -156,19 +178,23 @@ public:
 
 	bool m_AxisDisabled;
 
+	bool m_TCP_affects_actuators;
+
 	int m_Stopping;
 	int m_PreviouslyStopped,m_PreviouslyStoppedType,m_PreviouslyStoppedID,m_PreviouslyStoppedSeqNo;
 
-	double m_Stoppedx, m_Stoppedy, m_Stoppedz, m_Stoppeda, m_Stoppedb, m_Stoppedc;
-	double m_StoppedMidx, m_StoppedMidy, m_StoppedMidz, m_StoppedMida, m_StoppedMidb, m_StoppedMidc;
-	double m_StoppedMachinex, m_StoppedMachiney, m_StoppedMachinez, m_StoppedMachinea, m_StoppedMachineb, m_StoppedMachinec;
+	double m_Stoppedx, m_Stoppedy, m_Stoppedz, m_Stoppeda, m_Stoppedb, m_Stoppedc, m_Stoppedu, m_Stoppedv;
+	double m_StoppedMidx, m_StoppedMidy, m_StoppedMidz, m_StoppedMida, m_StoppedMidb, m_StoppedMidc, m_StoppedMidu, m_StoppedMidv;
+	double m_StoppedMachinex, m_StoppedMachiney, m_StoppedMachinez, m_StoppedMachinea, m_StoppedMachineb, m_StoppedMachinec, m_StoppedMachineu, m_StoppedMachinev;
 
 	int SetAxisDefinitions(int x, int y, int z, int a, int b, int c);
+	int SetAxisDefinitions(int x, int y, int z, int a, int b, int c, int u, int v);
 	int GetAxisDefinitions(int *x, int *y, int *z, int *a, int *b, int *c);
+	int GetAxisDefinitions(int *x, int *y, int *z, int *a, int *b, int *c, int *u, int *v);
 	bool m_DefineCS_valid;
-	int x_axis,y_axis,z_axis,a_axis,b_axis,c_axis;  // map board channel number to interperter axis 
+	int x_axis,y_axis,z_axis,a_axis,b_axis,c_axis,u_axis,v_axis;  // map board channel number to interperter axis 
 
-	double current_x, current_y, current_z, current_a, current_b, current_c;
+	double current_x, current_y, current_z, current_a, current_b, current_c, current_u, current_v;
 
 	STRAIGHT_TRAVERSE_CALLBACK *m_StraightTraverseCallback;
 	STRAIGHT_TRAVERSE_SIX_AXIS_CALLBACK *m_StraightTraverseSixAxisCallback;
@@ -182,10 +208,14 @@ public:
 	bool RapidParamsDirty;
 
 	void SetPreviouslyStoppedAtSeg(SEGMENT *segs_to_check,int i);
-
+	
 	double FeedRateDistance(double dx, double dy, double dz, double da, double db, double dc, BOOL *PureAngle);
+	double FeedRateDistance(double dx, double dy, double dz, double da, double db, double dc, double du, double dv, BOOL *PureAngle);
 	int ConfigSpindle(int type, int axis, double UpdateTime, double Tau, double CountsPerRev);
 	int GetSpindleRPS(float &speed);
+
+	bool m_TapCycleInProgress;
+
 
 
 private:

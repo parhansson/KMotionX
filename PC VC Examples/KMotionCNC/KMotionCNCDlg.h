@@ -19,21 +19,36 @@
 #include "easysize.h"
 #include "AllToolSetupSheet.h"
 #include "HiResTimer.h"
+#include "Screen.h"
+#include "GViewParent.h"
 
 #define N_USER_GCODE_FILES 7
-#define GCODE_SUB_DIR                   "\\GCode Programs"
-#define TOOL_IMAGE_SUB_DIR              "\\KMotion\\Data\\ToolImages"
-#define CONFIG_FILE						"\\KMotion\\Data\\GCodeConfigCNC.txt"
-#define CONFIG_FILE_BACKUP				"\\KMotion\\Data\\GCodeConfigCNC.txt.bak"
+#define GCODE_SUB_DIR                   "\\GCode Programs\\"
+#define C_PROGRAMS_DIR                  "\\C Programs\\"
+#define SCREEN_BITMAPS_DIR              "\\PC VC Examples\\KMotionCNC\\res\\"
+#define SCREEN_SCRIPTS_DIR              "\\PC VC Examples\\KMotionCNC\\Screens\\"
+#define DATA_SUB_DIR					"\\KMotion\\Data\\"
+#define TOOL_IMAGE_SUB_DIR              "\\KMotion\\Data\\ToolImages\\"
+#define DEFAULT_CONFIG_FILE				"\\KMotion\\Data\\GCodeConfigCNC.txt"
+#define DEFAULT_CONFIG_FILE_BACKUP		"\\KMotion\\Data\\GCodeConfigCNC.txt.bak"
 #define PERSISTANT_FILE					"\\KMotion\\Data\\persistCNC.ini"
 #define PERSISTANT_FILE_BACKUP			"\\KMotion\\Data\\persistCNC.ini.bak"
 #define TEMP_GCODE_FILE					"\\KMotion\\Data\\Temp_Gcode_Temp_.ngc"
 #define LOG_RUNTIME_FILE				"\\KMotion\\Data\\RunLog.txt"
+#define EDIT_CONTROL_PERSIST_FILE		"\\KMotion\\Data\\EditControlPersist.txt"
 
 
 #define NCOMMAND_HISTORY 10
 
+#define ACTUATORS_CONTROLLED 6
+
+
 #define NSTEP_SIZES 6
+
+#define MAX_USER_BUTTONS 50
+#define MAX_EDIT_CONTROLS 40
+
+#define CUSTOM_DLG_FACE 7
 
 /////////////////////////////////////////////////////////////////////////////
 // CKMotionCNCDlg dialog
@@ -46,11 +61,13 @@ public:
 	void SetStepText(int i,double v,int ID);
 	double CurAbsX,CurAbsY,CurAbsZ,CurAbsA,CurAbsB,CurAbsC;
 	float m_JogSpeedFactor;
-	double m_Joyvx,m_Joyvy,m_Joyvz,m_Joyva,m_Joyvb,m_Joyvc;
+	double m_Joyvx, m_Joyvy, m_Joyvz, m_Joyva, m_Joyvb, m_Joyvc;
+	double m_JoyExtvx, m_JoyExtvy, m_JoyExtvz, m_JoyExtva, m_JoyExtvb, m_JoyExtvc;
 	double m_Joyx0,m_Joyy0,m_Joyz0,m_Joya0,m_Joyb0,m_Joyc0;
 	bool m_JoyMovedx,m_JoyMovedy,m_JoyMovedz,m_JoyMoveda,m_JoyMovedb,m_JoyMovedc;
 	bool PersistRestored;
 	bool FirstStartup;
+	bool FirstInitDlg;
 	bool m_PerformPostHaltCommand;
 	CString CommandHistory[NCOMMAND_HISTORY];
 	int board;
@@ -65,7 +82,7 @@ public:
 	double PrevDROx,PrevDROy,PrevDROz,PrevDROa,PrevDROb,PrevDROc;
 	int prev_length_units;
 	int m_BulkStatusCount;
-	int CS_axis[6];
+	int CS_axis[MAX_ACTUATORS];
 	int SetExecutionPoint(int line);
 	CString CurrentDirectory;
 	int m_ThreadThatWasLaunched;
@@ -78,6 +95,7 @@ public:
 	CString m_SetupFile;
 	CString m_GeoFile;
 	CString m_VarsFile;
+	CString m_ScreenScriptFile;
 	CString m_ToolFile;
 	double	m_BreakAngle;
 	double	m_CollinearTol;
@@ -93,22 +111,31 @@ public:
 	double	m_MaxAccelX;
 	double	m_MaxAccelY;
 	double	m_MaxAccelZ;
+	double	m_MaxAccelU;
+	double	m_MaxAccelV;
 	double	m_MaxVelC;
 	double	m_MaxVelB;
 	double	m_MaxVelA;
 	double	m_MaxVelX;
 	double	m_MaxVelY;
 	double	m_MaxVelZ;
+	double	m_MaxVelU;
+	double	m_MaxVelV;
 	double	m_CountsPerInchC;
 	double	m_CountsPerInchB;
 	double	m_CountsPerInchA;
 	double	m_CountsPerInchX;
 	double	m_CountsPerInchY;
 	double	m_CountsPerInchZ;
-	double  m_JogSpeed[6];
+	double	m_CountsPerInchU;
+	double	m_CountsPerInchV;
+	double  m_JogSpeed[MAX_ACTUATORS];
+	double  m_JogSpeedOverride[MAX_ACTUATORS];
 	double  m_JogSlowPercent;
 	double  m_HardwareFRORange;
 	double  m_MaxRapidFRO;
+	double  m_ArcRadiusTol;
+	double  m_ArcRSmallTol;
 	double	m_Step0;
 	double	m_Step1;
 	double	m_Step2;
@@ -120,11 +147,13 @@ public:
 	double m_SpindleUpdateTime;
 	double m_SpindleTau;
 	double m_SpindleCntsPerRev;
+
 	BOOL	m_ReverseRZ;
 	BOOL	m_EnableGamePad;
 	BOOL	m_ZeroUsingFixtures;
 	BOOL	m_ToolLengthImmediately;
 	BOOL	m_ToolTableDoM6;
+	BOOL	m_ConfirmExit;
 	BOOL	m_ArcsToSegs;
 	BOOL	m_DisplayEncoder;
 	BOOL	m_DegreesA;
@@ -135,12 +164,27 @@ public:
 	BOOL	m_DiameterMode;
 	BOOL	m_XPosFront;
 	int		m_DialogFace;
+	int		m_DialogFaceInUse;
 	int		m_ConfigCheckWord;
 	bool	m_ConfigCheckWordVersion;
 	double  m_SafeZ;
 	int		m_SafeRelAbs;
 	bool m_ConnectedForStatus;
+
+	bool m_PrevABCPlotValid;
+	double m_PrevPlotA, m_PrevPlotB, m_PrevPlotC, m_PrevPlotX, m_PrevPlotY, m_PrevPlotZ;
 	
+	#define OFFSET_SAVE_TIME 1.0  // seconds between checks for changes
+	BOOL m_SaveFixtureOnOK;
+	bool m_OffsetTimerStarted;
+	CHiResTimer m_OffsetSaveTimer;
+
+	bool m_EditScreenTimerStarted;
+	CHiResTimer m_EditScreenSaveTimer;
+
+	CGViewParent *ActualGViewParent;
+	CGViewParent GViewControlParent;  // handles GView Parent actions when Control is on Main Dialog
+
 	int m_UserButtonKeys[NUSERBUTTONS];
 
 	CString	m_Button0;
@@ -191,18 +235,24 @@ public:
 	int SaveFile(int thread, bool ForceSave);
 	void RefreshTitle(); 
 	CString FileNames[N_USER_GCODE_FILES];
-	void CreateDlgOrBringToTop(UINT ID, CDialog *Dlg);
+	void CreateDlgOrBringToTop(UINT ID, CDialogEx *Dlg);
 	int ProcessChangeInJogVelocity();
 	int DoActPosition(int i, double p);
+	int DoActPositionExp(int i, double p, double tau);
 	bool AxisInputModeNone(int axis);
 	int GetAxisDRO(int axis, double *Act, double *Dest, bool *DisplayedEnc);
 	int SendOneDouble(int i, double d);
 	int SendCoordinates(int i, bool MachineCoords);
 	int ConvertToolToIndex(int number,int *index);
+	int OnGetPositions2(UINT nID, bool NoGeo);
+	BOOL GetDefaultToolTipTextFromID(UINT ID, LPWSTR Tip);
+
+	COLORREF m_DlgBackgroundColor;
+	CBrush m_DlgBackgroundBrush;
 
 
 	CString m_ErrorOutput;
-	CString ToolTipText;
+	CStringW ToolTipText;
     CDlgToolBar *m_GCodeTools;
 
 	CHiResTimer ElapsedTimer;
@@ -213,22 +263,24 @@ public:
 	bool m_DoingSimulationRun;
 
 	BOOL m_DisplayGViewer;
+	int m_LastToolDisplayed;
+	int m_LastFixtureDisplayed;
 
 
 // Dialog Data
 	//{{AFX_DATA(CKMotionCNCDlg)
 	enum { IDD = IDD_KMOTIONCNC_DIALOG };
-	CComboBox	m_Command;
-	CComboBox	m_tool;
-	CComboBox	m_FixtureOffset;
+	CComboBoxScreen	m_Command;
+	CComboBoxScreen	m_tool;
+	CComboBoxScreen m_FixtureOffset;
 	CRichEditCtrlEx	m_Editor;
 	int		m_Thread;
 	int		m_Rapid;
 	BOOL	m_Simulate;
 	BOOL	m_ShowLineNumbers;
 	BOOL	m_ShowMach;
-	CEdit	m_FeedRateEdit;
-	CEdit	m_SpindleRateEdit;
+	CEditScreen	m_FeedRateEdit;
+	CEditScreen	m_SpindleRateEdit;
 	CDisplay	m_PosC;
 	CDisplay	m_PosB;
 	CDisplay	m_PosA;
@@ -281,12 +333,130 @@ public:
 	CImageButton	m_StopStep;
 	CImageButton	m_KeyJogMode;
 
+	CImageButton m_UserImageBut[MAX_USER_BUTTONS];
+	CImageButton m_ZeroX;
+	CImageButton m_ZeroY;
+	CImageButton m_ZeroZ;
+	CImageButton m_ZeroA;
+	CImageButton m_ZeroB;
+	CImageButton m_ZeroC;
+	CImageButton m_SetX;
+	CImageButton m_SetY;
+	CImageButton m_SetZ;
+	CImageButton m_SetA;
+	CImageButton m_SetB;
+	CImageButton m_SetC;
+	CImageButton m_EditToolFile;
+	CImageButton m_EditFixtures;
+	CImageButton m_SetFixture;
+	CImageButton m_SpindleOnCW;
+	CImageButton m_SpindleOnCCW;
+	CImageButton m_SpindleOff;
+	CImageButton m_FeedRateApply;
+	CImageButton m_SpindleRateApply;
+	CImageButton m_RunSimulate;
+	CImageButton m_KMotion_HELP;
+	CImageButton m_Send;
+	CImageButton m_ZeroAll;
+	CImageButton m_Measure;
+
+	CEditScreen m_UserEditCtrls[MAX_EDIT_CONTROLS];
+
+	CImageButton m_StaticLabelX;
+	CImageButton m_StaticLabelY;
+	CImageButton m_StaticLabelZ;
+	CImageButton m_StaticLabelA;
+	CImageButton m_StaticLabelB;
+	CImageButton m_StaticLabelC;
+	CImageButton m_StaticTool;
+	CImageButton m_StaticThread;
+	CImageButton m_SimulateStatic;
+	CImageButton m_BlockDeleteStatic;
+	CImageButton m_BlockDeleteStatic2;
+	CImageButton m_StaticUnits;  
+	CImageButton m_StaticCoord;
+	CImageButton m_StaticStepSize;
+	CImageButton m_Static_Fixture;
+
+	CImageButton m_FeedRateCmd;
+	CImageButton m_FeedRateLabel;
+	CImageButton m_SpindleRateCmd;
+	CImageButton m_SpindleRateLabel;
+	CImageButton m_STATIC10;
+	CImageButton m_STATIC15;
+	CImageButton m_STATIC20;
+	CImageButton m_STATIC30;
+	CImageButton m_STATIC40;
+	CImageButton m_STATIC50;
+	CImageButton m_STATIC75;
+	CImageButton m_STATIC100;
+	CImageButton m_STATIC150;
+	CImageButton m_STATIC200;
+
+
+	CImageButton m_RadioStep0;
+	CImageButton m_RadioStep1;
+	CImageButton m_RadioStep2;
+	CImageButton m_RadioStep3;
+	CImageButton m_RadioStep4;
+	CImageButton m_RadioStep5;
+
+	CImageButton m_RapidRadio;
+	CImageButton m_Feed;
+	CImageButton m_mm;
+	CImageButton m_inch;
+	CImageButton m_Rel;
+	CImageButton m_Abs;
+	CImageButton m_Thread1;
+	CImageButton m_Thread2;
+	CImageButton m_Thread3;
+	CImageButton m_Thread4;
+	CImageButton m_Thread5;
+	CImageButton m_Thread6;
+	CImageButton m_Thread7;
+
+	CImageButton m_ShowMachButton;
+	CImageButton m_SimulateButton;
+	CImageButton m_BlockDeleteButton;
+
+	CImageButton m_GVXY;
+	CImageButton m_GVYZ;
+	CImageButton m_GVXZ;
+	CImageButton m_GVRotXY;
+	CImageButton m_GVClearPaths;
+	CImageButton m_GVShowAxis;
+	CImageButton m_GVBox;
+	CImageButton m_GVShowTool;
+	CImageButton m_GVOrtho;
+	CImageButton m_GVGViewerSetup;
+
+	CImageButton m_GCNew;
+	CImageButton m_GCOpenFile;
+	CImageButton m_GCSaveFile;
+	CImageButton m_GCSaveAs;
+	CImageButton m_GCRestart;
+	CImageButton m_GCSingleStep;
+	CImageButton m_GCToolSetup;
+	CImageButton m_GView;
+
+
+
+	int dpiX;
+	int dpiY;
+	int dpi_standard = 96;
+	double m_dpi_scale;
+
 	double	m_FeedRateValue;
 	double	m_FeedRateRapidValue;
 	double	m_SpindleRateValue;
 	CString	m_CommandString;
 	int		m_StepSize;
+
+	HBRUSH CreateDIBrush(CWnd* pWnd);
+
 	//}}AFX_DATA
+
+	CScreen Screen;
 
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CKMotionCNCDlg)
@@ -298,6 +468,7 @@ public:
 
 // Implementation
 protected:
+	void CKMotionCNCDlg::MakeUnicode(int ID, CImageButton &I);
 	void SetBigValues(CDisplay *Disp0, CDisplay *Disp1, CDisplay *Disp2, CDisplay *Disp3, CDisplay *Disp4, CDisplay *Disp5, bool KMotionPresent);
 	void SetBigValueColor(CDisplay *Disp0,int axis, bool KMotionPresent, bool DisplayedEnc);
 	CString LastTitleText;
@@ -305,12 +476,15 @@ protected:
 	CImageButton m_EmergencyStop;
 	CImageButton m_GO;
 	CImageButton m_FeedHold;
+	CImageButton m_FR;
+	CImageButton m_SR;
 	CForRevButton m_Forward;
 	CForRevButton m_Reverse;
 	HICON m_hIcon;
 	int GetStatus();
 	void KillMinusZero(CString &s);
-
+	HGLOBAL hDIB;
+	HBRUSH hBrush;
 	// Generated message map functions
 	//{{AFX_MSG(CKMotionCNCDlg)
 	virtual BOOL OnInitDialog();
@@ -351,7 +525,18 @@ protected:
 	afx_msg void OnHalt();
 	afx_msg void OnToolSetup();
 	afx_msg void OnReloadGeoCorrection();
+	afx_msg void OnReloadGCodeFile();
+	afx_msg void OnOpenGCodeFile();
+	afx_msg int OnScreenScript(UINT nID);
+	afx_msg int OnGetControlInfo(UINT nID);
+	afx_msg int OnMainDlgInfo(UINT nID);
+	afx_msg int OnDoJog(UINT nID);
+	afx_msg int OnDoMove(UINT nID);
+	afx_msg int OnDoMoveExp(UINT nID);
+	afx_msg int OnGetPositions(UINT nID);
+	afx_msg int OnGetPositionsNoGeo(UINT nID);
 	afx_msg void OnExecuteComplete();
+	afx_msg BOOL OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct);
 	afx_msg void OnSingleStep();
 	afx_msg void OnRestart();
 	afx_msg void OnUpdateHalt(CCmdUI* pCmdUI);
@@ -401,8 +586,8 @@ protected:
 	afx_msg void OnRel();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	//}}AFX_MSG
-	afx_msg BOOL OnToolTipNotify( UINT id, NMHDR * pTTTStruct, LRESULT * pResult );
 	afx_msg BOOL OnToolTipText(UINT nID, NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg LRESULT OnNotifyFormat(WPARAM wParam, LPARAM lParam);
 	DECLARE_MESSAGE_MAP()
 private:
 	void SetStepSizes();
@@ -412,18 +597,15 @@ private:
 	void SetMotionParams();
 	void SetAUserButton(int ID, CString s);
 	void SetUserButtons();
+	void SetDefaultHotKeys();
 	void FillComboWithTools(CComboBox *Box);
 	void FillComboWithCountFixture(int i0, int i1, CComboBox *Box);
-	int m_LastToolDisplayed;
-	int m_LastFixtureDisplayed;
 	void MakeSureFileIsntReadOnly(CString FN);
 	int DoJoyStick();
 	int ReadInterpPos(double *x, double *y, double *z, double *a, double *b, double *c);
 	int UpdateScreen(bool KMotionPresent);
 	void ServiceKFLOPCommands();
 	int SetKFLOPCommandResult(int r);
-	int GetStringFromGather(int WordOffset, CString *msg, int nWords);
-	int GetVar(int Var, int *value);
 	int DoGCodeLine(CString G);
 	CBrush *GreenBrush;
 	CBrush *TealBrush;
@@ -437,9 +619,21 @@ private:
 	bool G32_BitmapValid;
 	bool G32_BitmapDisplayed;
 	void LogJobEndTime(double seconds);
+	void setMainPathAndRoot(LPWSTR arg0);
+	void RoundReasonable(double &v);
 
+	CStringW InterprocessString;
+	
+	HWND HWndClient;
 
 public:
+	int GetStringFromGather(int WordOffset, CString *msg, int nWords);
+	int SetStringToGather(int WordOffset, CString msg);
+	int GetVar(int Var, int *value);
+	int SetVar(int Var, int value);
+
+	void WhenIdle();  // called by Ap pclass when message queue Idle
+
 	void HandleToolTableClose();
 
 	afx_msg void OnBnClickedFeedhold();
@@ -463,6 +657,17 @@ public:
 	afx_msg void OnBnClickedSpindleonccw();
 	afx_msg void OnBnClickedSpindleoff();
 	afx_msg BOOL OnNcActivate(BOOL bActive);
+
+	afx_msg void OnXy();
+	afx_msg void OnXz();
+	afx_msg void OnYz();
+	afx_msg void OnClearPaths();
+	afx_msg void OnShowAxis();
+	afx_msg void OnOrtho();
+	afx_msg void OnBox();
+	afx_msg void OnRotXY();
+	afx_msg void OnGViewerSetup();
+	afx_msg void OnShowTool();
 };
 
 

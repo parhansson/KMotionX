@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<FT_EEPROM>
+  <Chip_Details>
+    <Type>FT245R</Type>
+  </Chip_Details>
+  <USB_Device_Descriptor>
+    <VID_PID>1</VID_PID>
+    <idVendor>0403</idVendor>
+    <idProduct>F231</idProduct>
+    <bcdUSB>USB 2.0</bcdUSB>
+  </USB_Device_Descriptor>
+  <USB_Config_Descriptor>
+    <bmAttributes>
+      <RemoteWakeupEnabled>false</RemoteWakeupEnabled>
+      <SelfPowered>false</SelfPowered>
+      <BusPowered>true</BusPowered>
+    </bmAttributes>
+    <IOpullDown>false</IOpullDown>
+    <MaxPower>500</MaxPower>
+  </USB_Config_Descriptor>
+  <USB_String_Descriptors>
+    <Manufacturer>Dynomotion</Manufacturer>
+    <Product_Description>KFLOP - Motion Controller</Product_Description>
+    <SerialNumber_Enabled>true</SerialNumber_Enabled>
+    <SerialNumber>
+    </SerialNumber>
+    <SerialNumberPrefix>KF</SerialNumberPrefix>
+  </USB_String_Descriptors>
+  <Hardware_Specific>
+    <HighIO>false</HighIO>
+    <D2XXDriver>true</D2XXDriver>
+    <ExternalOscillator>false</ExternalOscillator>
+  </Hardware_Specific>
+</FT_EEPROM>

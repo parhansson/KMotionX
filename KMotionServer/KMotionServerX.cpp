@@ -62,6 +62,7 @@ either expressed or implied, of the FreeBSD Project.
 #include <KmotionIO.h>
 #include <KMotionDLL_Direct.h>
 #include "KMotionLocal.h"
+#include "KMotionX.h"
 
 #ifdef DEBUG
 const char LOCK_CODES[][22]={"KMOTION_LOCKED","KMOTION_IN_USE","KMOTION_NOT_CONNECTED"};
@@ -414,7 +415,7 @@ void * InstanceThread(void *ptr){
 	int thread_socket = data->file_desc;
 	//pthread_t ct = pthread_self();
 	//printf("Thread %.8x %.8x: Current thread\n", ct);
-	syslog(LOG_ERR,"The ID of this of this thread is: %ld\n", ::getThreadId("KMotionServer InstanceThread"));
+	syslog(LOG_ERR,"The ID of this of this thread is: %ld\n", kmx::getThreadId("KMotionServer InstanceThread"));
 
 	syslog(LOG_ERR,"Worker Thread. Nr of Clients when entered %d", nClients);
 	//vsyslog(LOG_INFO, "Inside Thread %d\n", thread_socket);
@@ -600,7 +601,7 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 		break;
 
 	case ENUM_KMotionLock:	
-		result = KMotionDLL.KMotionLock(board);
+		result = KMotionDLL.KMotionLock(board, chRequest + 8);
 		SYSLOGD("GetAnswerToRequest %s %s\n",ENUM_NAMES[code],LOCK_CODES[result]);
 		memcpy(chReply+1, &result,4);
 		*cbReplyBytes=1+4;

@@ -94,30 +94,43 @@ void CEditFixtures::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_GlobalA, m_Global[3]);
 	DDX_Text(pDX, IDC_GlobalB, m_Global[4]);
 	DDX_Text(pDX, IDC_GlobalC, m_Global[5]);
+
+	DDX_Check(pDX, IDC_SaveFixtureOnOK, m_SaveFixtureOnOK);
+
 }
 
 
 BEGIN_MESSAGE_MAP(CEditFixtures, CDialog)
-	ON_BN_CLICKED(ID_Save, &CEditFixtures::OnBnClickedSave)
-	ON_BN_CLICKED(ID_ClearAll, &CEditFixtures::OnBnClickedClearall)
-	ON_BN_CLICKED(ID_HelpFixture, &CEditFixtures::OnBnClickedHelpfixture)
-	ON_BN_CLICKED(ID_Clear0, &CEditFixtures::OnBnClickedClear0)
-	ON_BN_CLICKED(ID_Clear1, &CEditFixtures::OnBnClickedClear1)
-	ON_BN_CLICKED(ID_Clear2, &CEditFixtures::OnBnClickedClear2)
-	ON_BN_CLICKED(ID_Clear3, &CEditFixtures::OnBnClickedClear3)
-	ON_BN_CLICKED(ID_Clear4, &CEditFixtures::OnBnClickedClear4)
-	ON_BN_CLICKED(ID_Clear5, &CEditFixtures::OnBnClickedClear5)
-	ON_BN_CLICKED(ID_Clear6, &CEditFixtures::OnBnClickedClear6)
-	ON_BN_CLICKED(ID_Clear7, &CEditFixtures::OnBnClickedClear7)
-	ON_BN_CLICKED(ID_Clear8, &CEditFixtures::OnBnClickedClear8)
-	ON_BN_CLICKED(ID_Clear9, &CEditFixtures::OnBnClickedClear9)
-	ON_BN_CLICKED(ID_ClearG, &CEditFixtures::OnBnClickedClearG)
+	ON_BN_CLICKED(IDC_Save, &CEditFixtures::OnBnClickedSave)
+	ON_BN_CLICKED(IDC_ClearAll, &CEditFixtures::OnBnClickedClearall)
+	ON_BN_CLICKED(IDC_HelpFixture, &CEditFixtures::OnBnClickedHelpfixture)
+	ON_BN_CLICKED(IDC_Clear0, &CEditFixtures::OnBnClickedClear0)
+	ON_BN_CLICKED(IDC_Clear1, &CEditFixtures::OnBnClickedClear1)
+	ON_BN_CLICKED(IDC_Clear2, &CEditFixtures::OnBnClickedClear2)
+	ON_BN_CLICKED(IDC_Clear3, &CEditFixtures::OnBnClickedClear3)
+	ON_BN_CLICKED(IDC_Clear4, &CEditFixtures::OnBnClickedClear4)
+	ON_BN_CLICKED(IDC_Clear5, &CEditFixtures::OnBnClickedClear5)
+	ON_BN_CLICKED(IDC_Clear6, &CEditFixtures::OnBnClickedClear6)
+	ON_BN_CLICKED(IDC_Clear7, &CEditFixtures::OnBnClickedClear7)
+	ON_BN_CLICKED(IDC_Clear8, &CEditFixtures::OnBnClickedClear8)
+	ON_BN_CLICKED(IDC_Clear9, &CEditFixtures::OnBnClickedClear9)
+	ON_BN_CLICKED(IDC_ClearG, &CEditFixtures::OnBnClickedClearG)
 END_MESSAGE_MAP()
 
 
 // CEditFixtures message handlers
 
 
+
+
+void CEditFixtures::OnOK()
+{
+	if (m_SaveFixtureOnOK)
+	{
+		OnBnClickedSave();
+	}
+	CDialog::OnOK();
+}
 
 
 void CEditFixtures::OnBnClickedSave()

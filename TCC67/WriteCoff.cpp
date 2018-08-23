@@ -5,6 +5,7 @@
 //
 //
 #define _CRT_SECURE_NO_DEPRECATE
+#define NO_WARN_MBCS_MFC_DEPRECATION
 #define WINVER 0x0600 
 #define _WIN32_IE 0x0600 
 
@@ -29,7 +30,7 @@
 #endif
 
 
-#include "COFF.H"
+#include "COFF.h"
 #include "tcc.h"
 #include "libtcc.h"
 #include "WriteCoff.h"

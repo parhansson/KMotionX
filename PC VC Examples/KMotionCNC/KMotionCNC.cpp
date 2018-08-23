@@ -87,9 +87,10 @@ BOOL CKMotionCNCApp::InitInstance()
 
 	TheFrame->Create(IDD_Frame);
 
+
 	TheFrame->GCodeDlg.ExternalRestore();
 
-	int n = TheFrame->GCodeDlg.m_DialogFace;
+	int n = TheFrame->GCodeDlg.m_DialogFaceInUse;
 
 	TheFrame->GCodeDlg.Create(IDD_KMOTIONCNC_0_ORIGINAL+n);  // put up the real main window
 
@@ -112,6 +113,7 @@ BOOL CKMotionCNCApp::OnIdle(LONG lCount)
 	if (TheFrame->GCodeDlg.m_hWnd != NULL)
 	{
 		TheFrame->GCodeDlg.m_GCodeTools->SendMessage(WM_IDLEUPDATECMDUI);
+		TheFrame->GCodeDlg.WhenIdle();
 	}
 	
 	return CWinApp::OnIdle(lCount);

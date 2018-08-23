@@ -42,7 +42,7 @@ CKinematics3Rod::~CKinematics3Rod()
 
 }
 
-int CKinematics3Rod::TransformCADtoActuators(double x, double y, double z, double a, double b, double c, double *Acts)
+int CKinematics3Rod::TransformCADtoActuators(double x, double y, double z, double a, double b, double c, double *Acts, bool NoGeo)
 {
 	// find lengths of each actuator
 
@@ -66,7 +66,7 @@ int CKinematics3Rod::TransformCADtoActuators(double x, double y, double z, doubl
 
 // perform Inversion to go the other way
 
-int CKinematics3Rod::TransformActuatorstoCAD(double *Acts, double *xr, double *yr, double *zr, double *ar, double *br, double *cr)
+int CKinematics3Rod::TransformActuatorstoCAD(double *Acts, double *xr, double *yr, double *zr, double *ar, double *br, double *cr, bool NoGeo)
 {
 	return InvertTransformCADtoActuators(Acts, xr, yr, zr, ar, br, cr);
 }

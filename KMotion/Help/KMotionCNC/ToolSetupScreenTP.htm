@@ -3,6 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <title>Tool Setup Trajectory Planner</title>
+
 </head>
 
 <body>
@@ -10,25 +11,28 @@
 <p><i><b><font size="5" face="Arial">Tool Setup Screen - Trajectory Planner</font></b></i></p>
 <p>
 <map name="FPMap0">
-<area href="#Trajectory_Planner" shape="rect" coords="23, 45, 701, 88">
-<area href="#Jog_Speeds" shape="rect" coords="28, 98, 629, 120">
-<area href="#Step_Increments" shape="rect" coords="36, 121, 625, 152">
-<area href="#Axis_Motion_Parameters" shape="rect" coords="22, 154, 456, 340">
-<area href="ToolSetupScreenM3.htm" shape="rect" coords="8, 23, 55, 45">
-<area href="ToolSetupScreenM100.htm" shape="rect" coords="55, 21, 101, 44">
-<area href="ToolSetupScreenButtons.htm" shape="rect" coords="102, 23, 162, 42">
-<area href="ToolSetupScreenFiles.htm" shape="rect" coords="163, 23, 245, 45">
-<area href="#Display_Encoders" shape="rect" coords="459, 295, 632, 317">
-<area href="#Threading/Spindle_Settings" shape="rect" coords="16, 342, 402, 420">
-<area href="#Zero_Using_Fixture_Offsets" shape="rect" coords="464, 314, 633, 338">
-<area coords="460, 157, 632, 213" shape="rect" href="#Lathe_Options">
-<area href="#Feed_Rate_Override" shape="rect" coords="460, 215, 632, 248">
-<area href="#Tool_Length/Offset_Immediately" shape="rect" coords="465, 333, 637, 358">
-<area href="#M6onToolTableChanges" shape="rect" coords="468, 360, 626, 378">
-<area href="#Max_Rapid_FRO" shape="rect" coords="462, 249, 635, 267">
-<area href="#Rapids_as_Feeds" shape="rect" coords="459, 267, 634, 288">
+<area href="#Trajectory_Planner" shape="rect" coords="26,51,815,101">
+<area href="#Jog_Speeds" shape="rect" coords="32,112,732,137">
+<area href="#Step_Increments" shape="rect" coords="41,139,727,174">
+<area href="#Axis_Motion_Parameters" shape="rect" coords="25,177,530,390">
+<area href="ToolSetupScreenM3.htm" shape="rect" coords="9,26,64,51">
+<area href="ToolSetupScreenM100.htm" shape="rect" coords="64,24,117,50">
+<area href="ToolSetupScreenButtons.htm" shape="rect" coords="118,26,188,48">
+<area href="ToolSetupScreenFiles.htm" shape="rect" coords="189,26,285,51">
+<area href="#Display_Encoders" shape="rect" coords="540,339,735,359">
+<area href="#Threading/Spindle_Settings" shape="rect" coords="25,393,529,512">
+<area href="#Zero_Using_Fixture_Offsets" shape="rect" coords="540,361,737,379">
+<area coords="535,180,735,244" shape="rect" href="#Lathe_Options">
+<area href="#Feed_Rate_Override" shape="rect" coords="535,247,735,285">
+<area href="#Tool_Length/Offset_Immediately" shape="rect" coords="541,382,738,400">
+<area href="#M6onToolTableChanges" shape="rect" coords="539,405,700,420">
+<area href="#Max_Rapid_FRO" shape="rect" coords="534,286,734,303">
+<area href="#Rapids_as_Feeds" shape="rect" coords="534,310,733,331">
+<area shape="rect" coords="536,456,768,474" href="#arc-beg-end">
+<area shape="rect" coords="536,476,769,496" href="#arc-radius-small">
+<area shape="rect" coords="538,423,687,439" href="#confirm-program-exit">
 </map>
-<img border="0" src="KMotionCNCfiles/ToolSetupTP.PNG" usemap="#FPMap0" width="738" height="481"></p>
+<img border="0" src="KMotionCNCfiles/ToolSetupTP.PNG" usemap="#FPMap0" width="859" height="553"></p>
 
 <p><font face="Arial"><i>(Click on Image to Jump to 
 		related help)</i></font></p>
@@ -147,22 +151,18 @@ and Corner Tolerance and Facet Angle see <a href="TrajectoryPlanner.htm">here</a
 </font></p>
 <p>&nbsp;</p>
 <p><i><b><font size="4" face="Arial"><a name="Jog_Speeds">Jog Speeds</a></font></b></i></p>
-<p><font face="Arial"><img border="0" src="KMotionCNCfiles/JogSpeeds.png" align="left" hspace="15"></font></p>
-<p>&nbsp;</p>
+<p><font face="Arial"><img border="0" src="KMotionCNCfiles/Slow Percentage.png" align="left" hspace="15"></font></p>
 <p>&nbsp;</p>
 <p><font face="Arial">Defines the Jog Speeds for both the Jog Buttons and any attached Gamepad 
-controller.&nbsp; These speed are the maximum Jog speed which is the double 
-arrow jog button or the GamePad joystick fully depressed.&nbsp; See Also
-<a href="KMotionCNC.htm#Jog_Buttons">Jog Buttons</a>.&nbsp; The Reverse R/Z may 
-be selected if the GamePad Z motion is reversed on a particular GamePad device.</font></p>
+controller.&nbsp;These  speeds are the maximum Jog speeds which are indicated by the outer jog arrow  buttons (Jog Fast) or the GamePad joystick fully depressed. The user can define  a slower speed as a percentage of the fast speed. &nbsp; See Also
+<a href="KMotionCNC.htm#Jog_Buttons">Jog Buttons</a>.&nbsp;</font></p>
 <p>&nbsp;</p>
 <p><i><b><font face="Arial" size="4"><a name="Step_Increments">Step Increments</a></font></b></i></p>
 <p>
 <img border="0" src="KMotionCNCfiles/StepIncrements.PNG"></p>
 <p><font face="Arial">Defines the step size distances for the Step Buttons that are displayed on 
 the main <i>KMotionCNC</i> Screen.&nbsp; Setting a step size to zero will hide 
-the size selection.&nbsp; See Also
-<a href="KMotionCNC.htm#Jog_Buttons">Jog Buttons</a>.</font></p>
+the size selection.&nbsp; The <em>Enable Gamepad</em> checkbox allows you to enable or disable a gamepad. Some systems falsely indicate that they have a gamepad installed, which may cause errors. In these cases, uncheck the<em> Enable Gamepad</em> checkbox. See Also <a href="KMotionCNC.htm#Jog_Buttons">Jog Buttons</a>.</font></p>
 <p>&nbsp;</p>
 <p><i><b><font face="Arial" size="4"><a name="Lathe_Options">Lathe Options</a></font></b></i></p>
 <p>
@@ -180,8 +180,8 @@ the back as X increases.&nbsp; This is more suitable for read mounted tools.</fo
 <p style="margin-top: 0; margin-bottom: 0">
 <font face="Arial">
 <img border="0" src="KMotionCNCfiles/LathePosBack.png" width="154" height="181"></font></p>
-<p style="margin-top: 0; margin-bottom: 0">
-&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;
+</p>
 <p style="margin-top: 0; margin-bottom: 0"><font face="Arial">X Positive Front</font></p>
 <p style="margin-top: 0; margin-bottom: 0">
 <font face="Arial">
@@ -328,8 +328,15 @@ Table Changes</a></font></i></b></p>
 operation after the Tool Table has been edited to re-select the specified Tool 
 so the selected Tool ID, slot, offsets, image all reflect the current state of 
 the Tool Table.</font></p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
+<p><b><i><font face="Arial" size="4"><a name="confirm-program-exit" id="confirm-program-exit">Confirm Program Exit</a></font></i></b></p>
+<p> <img src="KMotionCNCfiles/ConfirmProgramExit.png" width="184" height="29" alt=""/></p>
+<p><font face="Arial">By default checked, this option prompts  a confirmation that a user wants to exit KMotionCNC.</font></p>
+<p><b><i><font face="Arial" size="4"><a name="arc-beg-end" id="arc-beg-end">Arc beg/end radius Tol</a></font></i></b></p>
+<p> <img src="KMotionCNCfiles/ArcBegEndRadiusTol.png" width="297" height="33" border="0"></p>
+<p><font face="Arial">The GCode indirectly specifies the Start of the Arc (previous      position), the End of the Arc (Specified Position), and the Arc      Center Point (Previous Position + IJK offset).&nbsp; The distance between      the Start to the Center and the End to the Center should be the      same.&nbsp; Specifies the allowed Tolerance the GCode Interpreter will      allow between the beginning and ending radius of an arc.&nbsp; This      should be a very small number within the rounding tolerance of the      numbers.</font></p>
+<p><b><i><font face="Arial" size="4"><a name="arc-radius-small" id="arc-beg-end2">Arc radius small Tol</a></font></i></b></p>
+<p> <img src="KMotionCNCfiles/ArcRadiusSmallTol.png" width="295" height="28" border="0"></p>
+<p><font face="Arial">Tolerance parameter for allowing Arc Radius being smaller than half      the distance from the start of Arc to End of Arc when specifying      Arcs using R mode.</font></p>
 <p><i><b><font size="4" face="Arial"><a name="Axis_Motion_Parameters">Axis Motion Parameters</a></font></b></i></p>
 <p>
 <font face="Arial">

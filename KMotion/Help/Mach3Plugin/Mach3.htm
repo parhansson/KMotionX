@@ -6,6 +6,12 @@
 <meta name="ProgId" content="FrontPage.Editor.Document">
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <title>Mach3 Plugin + KMotion</title>
+    <style type="text/css">
+        .auto-style1 {
+            font-size: small;
+        }
+    </style>
+    
 </head>
 
 <body>
@@ -48,11 +54,11 @@ Mach3 and KMotion to play together.</font></p>
 	<div style="font-size: 10pt; font-family: arial, helvetica, sans-serif; margin: 0px">
 		<font face="Arial" size="3">5.&nbsp;Within Mach3 - configure plugin (enter name of KMotion Init program )</font></div>
 	<div style="font-size: 10pt; font-family: arial, helvetica, sans-serif; margin: 0px">
-		<font face="Arial" size="3">6. Within Mach3 - configure motor tuning (set resolution, speeds, and 
-		acceleration)</font></div>
 	<div style="font-size: 10pt; font-family: arial, helvetica, sans-serif; margin: 0px">
-		<font face="Arial" size="3">7. Within Mach3 - configure IO Bits.&nbsp;
+		<font face="Arial" size="3">6. Within Mach3 - configure IO Bits.&nbsp;
 		</font> </div>
+		<font face="Arial" size="3">7. Within Mach3 - configure motor tuning (set resolution, speeds, and 
+		acceleration)</font></div>
 	<div style="font-size: 10pt; font-family: arial, helvetica, sans-serif; margin: 0px">
 		<div style="font-size: 10pt; font-family: arial, helvetica, sans-serif; margin: 0px">
 		&nbsp;<p><font size="3">Note: when using encoder feedback see also:
@@ -303,18 +309,54 @@ Mach3 and KMotion to play together.</font></p>
 		Reset button will now execute the Initialize program.</font></p>
 		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
 		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-		<p style="margin-top: 0; margin-bottom: 0"><b>
-		<font face="Arial" size="3">6. Within Mach3 - configure motor tuning (set resolution, speeds, and 
-		acceleration)</font></b></div>
-	<div style="font-size: 10pt; font-family: arial, helvetica, sans-serif; margin: 0px">
-		&nbsp;<p style="margin-top: 0; margin-bottom: 0">
-		<font size="3" face="Arial">Select <b>Config|Motor Tuning</b> to bring up the 
+		<p style="margin-top: 0; margin-bottom: 0">
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;<p style="margin-top: 0; margin-bottom: 0">&nbsp;<p style="margin-top: 0; margin-bottom: 0">
+		<font face="Arial" size="3">
+		<b>6. Within Mach3 - configure IO Bits</b>.&nbsp; </font>
+        <p style="margin-top: 0; margin-bottom: 0">
+		    &nbsp;<p style="margin-top: 0; margin-bottom: 0"><font size="3" face="Arial">
+		    Mach3 was originally designed to directly control Step/Dir drives connected to a PC Parallel Port.&nbsp;&nbsp;When using KFLOP this is no longer the case.&nbsp; Select the Menu <b>Config|Ports &amp; Pins</b> to bring 
+		up the Dialogs shown below.&nbsp; When using the KMotion Plugin, Pin 
+		Numbers now correspond to <i>KMotion IO Bit Numbers</i> rather than 
+		Parallel port Pins.&nbsp; Some of the terminology on the screen may be 
+		misleading as it was designed expecting to use a PC Parallel Port.&nbsp; 
+		For IO bit numbers less than 128 specify <b>Port#1 </b>and use the IO Bit number as the<b> Pin</b>.&nbsp; For IO bit numbers 128 or larger, subtract 128 from the bit number and 
+		specify <b>Port #2</b> instead of Port #1.&nbsp; Extended Virtual IO 
+		bits 1024-1151 may also be accessed by specifying <b>Port #3</b> and subtracting 1024 from the bit number (note:&nbsp; the first 32 Virtual IO will consume less USB bandwidth because they are uploaded in the KFLOP Bulk Status record so use the first 32 if possible).</font><p style="margin-top: 0; margin-bottom: 0" class="auto-style1">
+		    &nbsp;<p style="margin-top: 0; margin-bottom: 0"><font size="3" face="Arial">
+		    KFLOP handles all real-time I/O (Step/Dir, Analog, Limits, etc...) and is configured within KFLOP.&nbsp; So within Mach3 Step/Dir Outputs are not used and should all be configured to non-KFLOP Outputs (ie Port 0 Pin 0).&nbsp; See below.&nbsp; Note that the Enable for each axis in your system must be enabled otherwise Mach3 will not generate motion for the axis.<p style="margin-top: 0; margin-bottom: 0" class="auto-style1">
+		    &nbsp;<p style="margin-top: 0; margin-bottom: 0" class="auto-style1">
+		&nbsp;
+            <img alt="" height="420" src="Motor%20Outputs.png" /><p style="margin-top: 0; margin-bottom: 0" class="auto-style1">
+		    &nbsp;<p style="margin-top: 0; margin-bottom: 0" class="auto-style1">
+		    &nbsp;<p style="margin-top: 0; margin-bottom: 0"><font size="3" face="Arial">
+		    Mach3 has an EStop (Emergency Stop) Input to allow the hardware to inform Mach3 that an EStop has occurred so that it will stop any running Job and enter Emergency Stop Mode.&nbsp; If your system is continuously in Emergency Stop Mode and can not be Reset out of Emergency Stop Mode, then it is likely that the configured EStop Input is continuously Active.&nbsp; If your hardware has a EStop signal interfaced to a KFLOP Input configure the corresponding KFLOP input IO number and the appropriate polarity.&nbsp; If your system does not have an EStop signal configure the EStop Input to an unused IO bit that wil never be active.&nbsp; See below for how to configure to KFLOP IO Bit 46 (a KFLOP LED) which is normally always high. <p style="margin-top: 0; margin-bottom: 0" class="auto-style1">
+		    &nbsp;<p style="margin-top: 0; margin-bottom: 0" class="auto-style1">
+		    <img alt="" height="420" src="Estop.png" /></div>
+        <p>&nbsp;<p style="margin-top: 0; margin-bottom: 0"><font size="3" face="Arial">Various M Codes may be used within Mach3 to activate 
+		IO bits on KFLOP.&nbsp; Note 
+		Mach3 typically defaults after an initial install with Output #1 enabled 
+		for spindle control on Pin0 (as shown below).&nbsp; Bit 0 is often used 
+		on a KMotion board as an Encoder input.&nbsp; Having Mach configure the 
+		IO bit as an output will cause the encoder to be inoperable.&nbsp; 
+		Disable the output if this is the case.&nbsp;
+		<p><img border="0" src="PortsAndPins.PNG" width="713" height="423"></font></div>
+</div>
+
+<p>&nbsp;</p>
+		<b>7. Within Mach3 - configure motor tuning (set resolution, speeds, and 
+		acceleration)</b>
+	
+		&nbsp;<p style="margin-top: 0; margin-bottom: 0">&nbsp;
+		</p>
+    <p style="margin-top: 0; margin-bottom: 0">
+		Select <b>Config|Motor Tuning</b> to bring up the 
 		Motor Tuning Dialog.&nbsp; This screen allows the setting of Machine 
 		resolution, Max Velocity, and Max Acceleration for each axis in use.&nbsp; 
 		Note that the sliders are typically not very useful since the max step 
 		rates are much higher using a KMotion Motion Controller than with the 
 		original PC Generated Steps.&nbsp; It's usually best to just enter 
-		values directly into the cells. </font></p>
+		values directly into the cells. </p>
 		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
 		<p style="margin-top: 0; margin-bottom: 0">
 		<font face="Arial">
@@ -324,37 +366,19 @@ Mach3 and KMotion to play together.</font></p>
 		<p style="margin-top: 0; margin-bottom: 0"><font size="3" face="Arial">After the 
 		parameters have been entered and saved, Press OK to return to the main 
 		screen. </font></p>
-		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-		<p style="margin-top: 0; margin-bottom: 0">&nbsp;<p style="margin-top: 0; margin-bottom: 0">&nbsp;<p style="margin-top: 0; margin-bottom: 0">
-		<font face="Arial" size="3">
-		<b>7. Within Mach3 - configure IO Bits</b>.&nbsp; </font> </div>
-		<p><font face="Arial"><font size="3">Various M Codes may be used within Mach3 to activate 
-		IO bits on KMotion.&nbsp; Select the Menu <b>Config|Ports &amp; Pins</b> to bring 
-		up the Dialog shown below.&nbsp; When using the KMotion Plugin, Pin 
-		Numbers now correspond to <i>KMotion IO Bit Numbers</i> rather than 
-		Parallel port Pins.&nbsp; Some of the terminology on the screen may be 
-		misleading as it was designed expecting to use a parallel port.&nbsp; 
-		For IO bit numbers less than 128 specify <b>Port#1</b>.&nbsp; For IO bit numbers 128 or larger, subtract 128 from the bit number and 
-		specify <b>Port #2</b> instead of Port #1.&nbsp; Extended Virtual IO 
-		bits 1024-1151 may also be accessed by specifying <b>Port #3</b> and 
-		subtracting 1024 from the bit number (note:&nbsp; the first 32 Virtual 
-		IO will consume less USB bandwidth because they are uploaded in the 
-		KFLOP Bulk Status record so use the first 32 if possible).&nbsp; <p>Note 
-		Mach3 typically defaults after an initial install with Output #1 enabled 
-		for spindle control on Pin0 (as shown below).&nbsp; Bit 0 is often used 
-		on a KMotion board as an Encoder input.&nbsp; Having Mach configure the 
-		IO bit as an output will cause the encoder to be inoperable.&nbsp; 
-		Disable the output if this is the case.&nbsp; </font>
-		<p><img border="0" src="PortsAndPins.PNG" width="713" height="423"></font></div>
-</div>
 
-<p>&nbsp;</p>
-<p><font face="Arial">That's it!&nbsp; Reset should now properly initialize the machine.&nbsp; 
-Jogging and G Code should now be functional.&nbsp; </font> </p>
+
+    <br />
+    <br />
+
+
+That's it!&nbsp; Reset should now properly initialize the machine.&nbsp; 
+Jogging and G Code should now be functional.&nbsp; 
 <p>&nbsp;</p>
 <p><font face="Arial">Refer to the Mach3 documentation for more information on advanced features.&nbsp; 
 </font> </p>
-<p><font face="Arial">Here is how a GCode file appears on Mach3 Mill.</font></p>
+<p>&nbsp;</p>
+    <p><font face="Arial">Here is how a GCode file appears on Mach3 Mill.</font></p>
 <p><font face="Arial"><img border="0" src="Mach3Screen.PNG" width="522" height="397"></font></p>
 
 <p>&nbsp;</p>

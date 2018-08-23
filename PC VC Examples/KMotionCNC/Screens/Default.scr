@@ -1,0 +1,188 @@
+﻿Main:CX:1611,CY:1045,BackColor:E0E0E0
+ID:IDC_ZeroAll,Type:PUSHBUTTON,X:16,Y:169,CX:81,CY:35,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:zero all,ToolTipText:Shift Axis Offsets to Zero All Axis,Script:
+ID:IDC_ZeroX,Type:PUSHBUTTON,X:367,Y:8,CX:68,CY:35,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:zero,ToolTipText:Shift Axis Offset to Zero X,Script:
+ID:IDC_SetX,Type:PUSHBUTTON,X:439,Y:8,CX:68,CY:35,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:set,ToolTipText:Shift Axis Offset to Set Current X to specified position,Script:
+ID:IDC_ShowMach,Type:CONTROL,X:529,Y:23,CX:153,CY:23,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Machine Coord,ToolTipText:Display Machine Coordinates (G53) instead of Floating Origin (G92/G54+),Script:
+ID:IDC_ZeroY,Type:PUSHBUTTON,X:367,Y:60,CX:68,CY:35,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:zero,ToolTipText:Shift Axis Offset to Zero Y,Script:
+ID:IDC_SetY,Type:PUSHBUTTON,X:439,Y:60,CX:68,CY:35,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:set,ToolTipText:Shift Axis Offset to Set Current Y to specified position,Script:
+ID:IDC_ZeroZ,Type:PUSHBUTTON,X:367,Y:113,CX:68,CY:35,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:zero,ToolTipText:Shift Axis Offset to Zero Z,Script:
+ID:IDC_SetZ,Type:PUSHBUTTON,X:439,Y:113,CX:68,CY:35,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:set,ToolTipText:Shift Axis Offset to Set Current Z to specified position,Script:
+ID:IDC_ZeroA,Type:PUSHBUTTON,X:367,Y:165,CX:68,CY:35,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:zero,ToolTipText:Shift Axis Offset to Zero A,Script:
+ID:IDC_SetA,Type:PUSHBUTTON,X:439,Y:165,CX:68,CY:35,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:set,ToolTipText:Shift Axis Offset to Set Current A to specified position,Script:
+ID:IDC_ZeroB,Type:PUSHBUTTON,X:367,Y:62,CX:68,CY:35,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:zero,ToolTipText:Shift Axis Offset to Zero B,Script:
+ID:IDC_SetB,Type:PUSHBUTTON,X:439,Y:62,CX:68,CY:35,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:set,ToolTipText:Shift Axis Offset to Set Current B to specified position,Script:
+ID:IDC_ZeroC,Type:PUSHBUTTON,X:367,Y:114,CX:68,CY:35,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:zero,ToolTipText:Shift Axis Offset to Zero C,Script:
+ID:IDC_SetC,Type:PUSHBUTTON,X:439,Y:114,CX:68,CY:35,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:set,ToolTipText:Shift Axis Offset to Set Current C to specified position,Script:
+ID:IDC_Measure,Type:PUSHBUTTON,X:16,Y:209,CX:79,CY:35,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:measure,ToolTipText:Record Current Position to file: <Install Dir>\Data\Measurements.txt,Script:
+ID:IDC_mm,Type:RADIOBUTTON,X:542,Y:85,CX:68,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:mm,ToolTipText:Click to change to mm Mode (G21),Script:
+ID:IDC_inch,Type:RADIOBUTTON,X:542,Y:110,CX:68,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:inch,ToolTipText:Click to change to Inch Mode (G20),Script:
+ID:IDC_Rel,Type:RADIOBUTTON,X:542,Y:185,CX:68,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:rel,ToolTipText:Click set to Relative Motions (G91),Script:
+ID:IDC_Abs,Type:RADIOBUTTON,X:542,Y:210,CX:68,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:abs,ToolTipText:Click set to Absolute Motions (G90),Script:
+ID:IDC_fixture,Type:COMBOBOX,X:450,Y:404,CX:113,CY:28,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:Offsets X:0.0000 Y:0.0000 Z:0.0000,Script:
+ID:IDC_EditFixtures,Type:PUSHBUTTON,X:439,Y:444,CX:65,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:edit,ToolTipText:Open Edit/Save Fixture Offset Screen...,Script:
+ID:IDC_SetFixture,Type:PUSHBUTTON,X:511,Y:444,CX:65,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:set,ToolTipText:Set Fixture Offset to move Origin here,Script:
+ID:IDC_tool,Type:COMBOBOX,X:513,Y:292,CX:104,CY:28,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText: Slot:1 ID:110 Length:1.0000,Script:
+ID:IDC_Step0,Type:CONTROL,X:396,Y:184,CX:90,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:0.0001,ToolTipText:,Script:
+ID:IDC_Step1,Type:CONTROL,X:396,Y:212,CX:68,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:0.001,ToolTipText:,Script:
+ID:IDC_Step2,Type:CONTROL,X:396,Y:239,CX:68,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:0.01,ToolTipText:,Script:
+ID:IDC_Step3,Type:CONTROL,X:396,Y:267,CX:68,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:0.1,ToolTipText:,Script:
+ID:IDC_Step4,Type:CONTROL,X:396,Y:294,CX:68,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:1,ToolTipText:,Script:
+ID:IDC_Step5,Type:CONTROL,X:396,Y:322,CX:68,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:10,ToolTipText:,Script:
+ID:IDC_Up2,Type:CONTROL,X:173,Y:214,CX:61,CY:63,Show:1,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:38,Bold:0,Italic:0,Text:^,ToolTipText:Jog Fast Up(+Y),Script:
+ID:IDC_Up,Type:CONTROL,X:173,Y:279,CX:61,CY:63,Show:1,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:38,Bold:0,Italic:0,Text:^,ToolTipText:Jog Up(+Y),Script:
+ID:IDC_UpStep,Type:CONTROL,X:173,Y:342,CX:61,CY:25,Show:1,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:38,Bold:0,Italic:0,Text:^,ToolTipText:Step Up (+Y),Script:
+ID:IDC_DownStep,Type:CONTROL,X:173,Y:439,CX:61,CY:25,Show:1,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:40,Bold:0,Italic:0,Text:v,ToolTipText:Step Down (-Y),Script:
+ID:IDC_Down,Type:CONTROL,X:173,Y:464,CX:61,CY:63,Show:1,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:40,Bold:0,Italic:0,Text:v,ToolTipText:Jog Down(-Y),Script:
+ID:IDC_Down2,Type:CONTROL,X:173,Y:527,CX:61,CY:63,Show:1,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:40,Bold:0,Italic:0,Text:v,ToolTipText:Jog Fast Down(-Y),Script:
+ID:IDC_Left2,Type:CONTROL,X:25,Y:369,CX:61,CY:63,Show:1,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:37,Bold:0,Italic:0,Text:<,ToolTipText:Jog Fast Left(-X),Script:
+ID:IDC_Left,Type:CONTROL,X:88,Y:369,CX:61,CY:63,Show:1,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:37,Bold:0,Italic:0,Text:<,ToolTipText:Jog Left(-X),Script:
+ID:IDC_LeftStep,Type:CONTROL,X:151,Y:369,CX:23,CY:63,Show:1,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:37,Bold:0,Italic:0,Text:<,ToolTipText:Step Left (-X),Script:
+ID:IDC_RightStep,Type:CONTROL,X:236,Y:369,CX:23,CY:63,Show:1,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:39,Bold:0,Italic:0,Text:<,ToolTipText:Step Right (+X),Script:
+ID:IDC_Right,Type:CONTROL,X:259,Y:369,CX:61,CY:63,Show:1,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:39,Bold:0,Italic:0,Text:>,ToolTipText:Jog Right(+X),Script:
+ID:IDC_Right2,Type:CONTROL,X:322,Y:369,CX:61,CY:63,Show:1,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:39,Bold:0,Italic:0,Text:>,ToolTipText:Jog Fast Right(+X),Script:
+ID:IDC_Zplus2,Type:CONTROL,X:286,Y:199,CX:61,CY:63,Show:1,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:33,Bold:0,Italic:0,Text:^,ToolTipText:Jog Fast (+Z) Keyboard Shift Page Up,Script:
+ID:IDC_Zplus,Type:CONTROL,X:286,Y:262,CX:61,CY:63,Show:1,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:33,Bold:0,Italic:0,Text:^,ToolTipText:Jog (+Z) Keyboard Page Up,Script:
+ID:IDC_ZplusStep,Type:CONTROL,X:286,Y:327,CX:61,CY:25,Show:1,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:33,Bold:0,Italic:0,Text:^,ToolTipText:Step (+Z) Keyboard Ctrl Page Up,Script:
+ID:IDC_ZminusStep,Type:CONTROL,X:286,Y:449,CX:61,CY:25,Show:1,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:34,Bold:0,Italic:0,Text:v,ToolTipText:Step (-Z)  Keyboard Ctrl Page Down,Script:
+ID:IDC_Zminus,Type:CONTROL,X:286,Y:474,CX:61,CY:63,Show:1,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:34,Bold:0,Italic:0,Text:v,ToolTipText:Jog (-Z) Keyboard Page Down,Script:
+ID:IDC_Zminus2,Type:CONTROL,X:286,Y:539,CX:61,CY:63,Show:1,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:34,Bold:0,Italic:0,Text:v,ToolTipText:Jog Fast (-Z) Keyboard Shift Page Down,Script:
+ID:IDC_Aminus2,Type:CONTROL,X:23,Y:627,CX:61,CY:63,Show:0,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:109,Bold:0,Italic:0,Text:<,ToolTipText:Jog Fast (-A) Num Key Shift -,Script:
+ID:IDC_Aminus,Type:CONTROL,X:86,Y:627,CX:61,CY:63,Show:0,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:109,Bold:0,Italic:0,Text:<,ToolTipText:Jog (-A) Num Key -,Script:
+ID:IDC_AminusStep,Type:CONTROL,X:149,Y:627,CX:23,CY:63,Show:0,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:109,Bold:0,Italic:0,Text:<,ToolTipText:Step (-A) Num Key Ctrl -,Script:
+ID:IDC_AplusStep,Type:CONTROL,X:234,Y:627,CX:23,CY:63,Show:0,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:107,Bold:0,Italic:0,Text:<,ToolTipText:Step (+A)  Num Key Ctrl +,Script:
+ID:IDC_Aplus,Type:CONTROL,X:257,Y:627,CX:61,CY:63,Show:0,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:107,Bold:0,Italic:0,Text:>,ToolTipText:Jog (+A) Num Key +,Script:
+ID:IDC_Aplus2,Type:CONTROL,X:320,Y:627,CX:61,CY:63,Show:0,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:107,Bold:0,Italic:0,Text:>,ToolTipText:Jog Fast (+A) Num Key Shift +,Script:
+ID:IDC_EmergencyStop,Type:CONTROL,X:37,Y:694,CX:126,CY:118,Show:1,Var:-1,Style:1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:27,Bold:0,Italic:0,Text:EmergencyStop,ToolTipText:ESC - Abort All Motion - Disable all Axes,Script:
+ID:IDC_Command,Type:COMBOBOX,X:689,Y:884,CX:734,CY:28,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Send,Type:DEFPUSHBUTTON,X:1438,Y:876,CX:56,CY:40,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Send,ToolTipText:,Script:
+ID:IDC_Editor,Type:CONTROL,X:659,Y:137,CX:783,CY:721,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:C,ToolTipText:,Script:
+ID:IDC_Thread1,Type:CONTROL,X:1456,Y:285,CX:52,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:1,ToolTipText:,Script:
+ID:IDC_Thread2,Type:CONTROL,X:1456,Y:315,CX:52,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:2,ToolTipText:,Script:
+ID:IDC_Thread3,Type:CONTROL,X:1456,Y:343,CX:52,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:3,ToolTipText:,Script:
+ID:IDC_Thread4,Type:CONTROL,X:1456,Y:373,CX:52,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:4,ToolTipText:,Script:
+ID:IDC_Thread5,Type:CONTROL,X:1456,Y:403,CX:52,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:5,ToolTipText:,Script:
+ID:IDC_Thread6,Type:CONTROL,X:1456,Y:433,CX:52,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:6,ToolTipText:,Script:
+ID:IDC_Thread7,Type:CONTROL,X:1456,Y:463,CX:52,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:7,ToolTipText:,Script:
+ID:IDC_Simulate,Type:CONTROL,X:1469,Y:560,CX:25,CY:23,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:When checked selects Simulate mode for Running/Single Stepping in Simuation Mode,Script:
+ID:IDC_RunSimulate,Type:PUSHBUTTON,X:1449,Y:593,CX:65,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:run,ToolTipText:Runs GCode in Simulation Mode for GCode Viewing/Plotting and Limit Checking,Script:
+ID:IDC_KMotion_HELP,Type:PUSHBUTTON,X:1460,Y:815,CX:56,CY:40,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Help,ToolTipText:,Script:
+ID:IDC_STATICX,Type:CTEXT,X:385,Y:384,CX:23,CY:28,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:X,ToolTipText:,Script:
+ID:IDC_STATICZ,Type:CTEXT,X:299,Y:167,CX:23,CY:28,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Z,ToolTipText:,Script:
+ID:IDC_STATICY,Type:CTEXT,X:191,Y:182,CX:23,CY:28,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Y,ToolTipText:,Script:
+ID:IDC_STATICA,Type:CTEXT,X:185,Y:649,CX:23,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:A,ToolTipText:,Script:
+ID:IDC_STATICTOOL,Type:CTEXT,X:542,Y:262,CX:27,CY:20,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:tool,ToolTipText:,Script:
+ID:IDC_STATICUNITS,Type:GROUPBOX,X:531,Y:65,CX:88,CY:83,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:units,ToolTipText:,Script:
+ID:IDC_STATICCOORD,Type:GROUPBOX,X:531,Y:165,CX:88,CY:83,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:coord,ToolTipText:,Script:
+ID:IDC_PosX,Type:CONTROL,X:2,Y:3,CX:356,CY:50,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_PosY,Type:CONTROL,X:2,Y:55,CX:356,CY:50,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_PosZ,Type:CONTROL,X:2,Y:108,CX:356,CY:50,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_PosA,Type:CONTROL,X:2,Y:160,CX:356,CY:50,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_PosB,Type:CONTROL,X:2,Y:57,CX:356,CY:50,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_PosC,Type:CONTROL,X:2,Y:109,CX:356,CY:50,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Thread,Type:LTEXT,X:1460,Y:253,CX:32,CY:20,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:File:,ToolTipText:,Script:
+ID:IDC_SimulateStatic,Type:LTEXT,X:1447,Y:530,CX:63,CY:20,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Simulate,ToolTipText:,Script:
+ID:IDC_STATICSTEP_SIZE,Type:GROUPBOX,X:383,Y:164,CX:106,CY:195,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:step size,ToolTipText:,Script:
+ID:IDC_StopStep,Type:CONTROL,X:182,Y:379,CX:45,CY:50,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:X,ToolTipText:,Script:
+ID:IDC_STATIC_REF,Type:CONTROL,X:0,Y:0,CX:45,CY:50,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_FeedHold,Type:CONTROL,X:233,Y:694,CX:126,CY:118,Show:1,Var:-1,Style:1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:114,Bold:0,Italic:0,Text:Feed Hold,ToolTipText:Immediate FeedHold Stops/Starts Current Motion (F3),Script:
+ID:IDC_EditToolFile,Type:PUSHBUTTON,X:529,Y:335,CX:65,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:edit,ToolTipText:Open Edit Tool Table Screen...,Script:
+ID:IDC_KeyJogMode,Type:CONTROL,X:11,Y:282,CX:149,CY:65,Show:1,Var:-1,Style:3,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:113,Bold:0,Italic:0,Text:Keyboard Jog,ToolTipText:Enables Arrow Keys for Jogging (F2 Toggles),Script:
+ID:IDC_Bminus2,Type:CONTROL,X:53,Y:549,CX:61,CY:63,Show:0,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:<,ToolTipText:,Script:
+ID:IDC_Bminus,Type:CONTROL,X:116,Y:549,CX:61,CY:63,Show:0,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:<,ToolTipText:,Script:
+ID:IDC_BminusStep,Type:CONTROL,X:179,Y:549,CX:23,CY:63,Show:0,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:<,ToolTipText:,Script:
+ID:IDC_BplusStep,Type:CONTROL,X:264,Y:549,CX:23,CY:63,Show:0,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:<,ToolTipText:,Script:
+ID:IDC_Bplus,Type:CONTROL,X:287,Y:549,CX:61,CY:63,Show:0,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:>,ToolTipText:,Script:
+ID:IDC_Bplus2,Type:CONTROL,X:320,Y:699,CX:61,CY:63,Show:0,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:>,ToolTipText:,Script:
+ID:IDC_Cminus2,Type:CONTROL,X:53,Y:619,CX:61,CY:63,Show:0,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:<,ToolTipText:,Script:
+ID:IDC_Cminus,Type:CONTROL,X:116,Y:619,CX:61,CY:63,Show:0,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:<,ToolTipText:,Script:
+ID:IDC_CminusStep,Type:CONTROL,X:179,Y:619,CX:23,CY:63,Show:0,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:<,ToolTipText:,Script:
+ID:IDC_CplusStep,Type:CONTROL,X:264,Y:619,CX:23,CY:63,Show:0,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:<,ToolTipText:,Script:
+ID:IDC_Cplus,Type:CONTROL,X:287,Y:619,CX:61,CY:63,Show:0,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:>,ToolTipText:,Script:
+ID:IDC_Cplus2,Type:CONTROL,X:320,Y:769,CX:61,CY:63,Show:0,Var:-1,Style:2,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:>,ToolTipText:,Script:
+ID:IDC_STATICB,Type:CTEXT,X:217,Y:564,CX:23,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:B,ToolTipText:,Script:
+ID:IDC_STATICC,Type:CTEXT,X:217,Y:632,CX:23,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:C,ToolTipText:,Script:
+ID:IDC_But0,Type:PUSHBUTTON,X:691,Y:5,CX:162,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:120,Bold:0,Italic:0,Text:INIT,ToolTipText:,Script:
+ID:IDC_But1,Type:PUSHBUTTON,X:857,Y:5,CX:162,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:121,Bold:0,Italic:0,Text:HOME,ToolTipText:,Script:
+ID:IDC_But2,Type:PUSHBUTTON,X:1024,Y:5,CX:162,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Tighten,ToolTipText:,Script:
+ID:IDC_But3,Type:PUSHBUTTON,X:1190,Y:5,CX:162,CY:30,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:123,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_But4,Type:PUSHBUTTON,X:1357,Y:5,CX:162,CY:30,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_But5,Type:PUSHBUTTON,X:691,Y:38,CX:162,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Load,ToolTipText:,Script:
+ID:IDC_But6,Type:PUSHBUTTON,X:857,Y:38,CX:162,CY:30,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_But7,Type:PUSHBUTTON,X:1024,Y:38,CX:162,CY:30,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_But8,Type:PUSHBUTTON,X:1190,Y:38,CX:162,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:116,Bold:0,Italic:0,Text:46 on,ToolTipText:,Script:
+ID:IDC_But9,Type:PUSHBUTTON,X:1357,Y:38,CX:162,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:117,Bold:0,Italic:0,Text:46 off,ToolTipText:,Script:
+ID:IDC_GO,Type:CONTROL,X:25,Y:472,CX:126,CY:118,Show:1,Var:-1,Style:1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:116,Bold:0,Italic:0,Text:Halt,ToolTipText:Save File & Cycle Start / Halt G Code (F5),Script:
+ID:IDC_BlockDeleteStatic,Type:CTEXT,X:1458,Y:673,CX:52,CY:48,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Block Delete,ToolTipText:,Script:
+ID:IDC_BlockDelete,Type:CONTROL,X:1472,Y:728,CX:25,CY:23,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:When checked Blocks beginning with the '/' character are skipped,Script:
+ID:IDC_STATICFIXTURE_GROUP,Type:GROUPBOX,X:432,Y:372,CX:155,CY:115,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:fixture offset,ToolTipText:,Script:
+ID:IDC_FeedRateEdit,Type:EDITTEXT,X:403,Y:577,CX:56,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_FeedRateApply,Type:PUSHBUTTON,X:461,Y:574,CX:56,CY:35,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:apply,ToolTipText:Apply Entered Feedrate Override Now,Script:
+ID:IDC_SpindleRateEdit,Type:EDITTEXT,X:520,Y:577,CX:56,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_SpindleRateApply,Type:PUSHBUTTON,X:578,Y:574,CX:56,CY:35,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:apply,ToolTipText:Apply Entered Spindle Speed Override Now,Script:
+ID:IDC_Rapid,Type:CONTROL,X:412,Y:609,CX:63,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:rapid,ToolTipText:,Script:
+ID:IDC_Feed,Type:CONTROL,X:484,Y:609,CX:137,CY:30,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:feed override,ToolTipText:,Script:
+ID:IDC_FeedSlider,Type:CONTROL,X:412,Y:634,CX:52,CY:318,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_SpindleSlider,Type:CONTROL,X:515,Y:634,CX:52,CY:318,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_SpindleOnCW,Type:PUSHBUTTON,X:574,Y:657,CX:65,CY:60,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:on cw,ToolTipText:M3 - Spindle On Clockwise (F9),Script:
+ID:IDC_SpindleOnCCW,Type:PUSHBUTTON,X:574,Y:754,CX:65,CY:60,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:on ccw,ToolTipText:M4 - Spindle On Counter Clockwise (F10),Script:
+ID:IDC_SpindleOff,Type:PUSHBUTTON,X:574,Y:849,CX:65,CY:60,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:off,ToolTipText:M5 - Spindle Off (F11),Script:
+ID:IDC_STATICFSGROUP,Type:GROUPBOX,X:394,Y:499,CX:252,CY:455,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_STATIC200,Type:LTEXT,X:470,Y:644,CX:34,CY:20,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:2.00,ToolTipText:,Script:
+ID:IDC_STATIC100,Type:LTEXT,X:470,Y:707,CX:34,CY:20,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:1.00,ToolTipText:,Script:
+ID:IDC_STATIC50,Type:LTEXT,X:470,Y:769,CX:34,CY:20,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:0.50,ToolTipText:,Script:
+ID:IDC_STATIC75,Type:LTEXT,X:470,Y:737,CX:34,CY:20,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:0.75,ToolTipText:,Script:
+ID:IDC_STATIC150,Type:LTEXT,X:470,Y:669,CX:34,CY:20,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:1.50,ToolTipText:,Script:
+ID:IDC_STATIC40,Type:LTEXT,X:470,Y:794,CX:34,CY:20,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:0.40,ToolTipText:,Script:
+ID:IDC_STATIC30,Type:LTEXT,X:470,Y:822,CX:34,CY:20,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:0.30,ToolTipText:,Script:
+ID:IDC_STATIC20,Type:LTEXT,X:470,Y:859,CX:34,CY:20,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:0.20,ToolTipText:,Script:
+ID:IDC_STATIC15,Type:LTEXT,X:470,Y:884,CX:34,CY:20,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:0.15,ToolTipText:,Script:
+ID:IDC_STATIC10,Type:LTEXT,X:470,Y:922,CX:34,CY:20,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:0.10,ToolTipText:,Script:
+ID:IDC_FeedRateLabel,Type:RTEXT,X:452,Y:549,CX:61,CY:23,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:      0,ToolTipText:,Script:
+ID:IDC_FeedRateCmd,Type:RTEXT,X:452,Y:522,CX:61,CY:23,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:      5,ToolTipText:,Script:
+ID:IDC_SpindleRateLabel,Type:RTEXT,X:569,Y:544,CX:61,CY:23,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:    0.0,ToolTipText:,Script:
+ID:IDC_SpindleRateCmd,Type:RTEXT,X:569,Y:519,CX:61,CY:23,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text: 1000.0,ToolTipText:,Script:
+ID:IDC_Cust2,Type:CONTROL,X:529,Y:522,CX:20,CY:28,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Cust3,Type:CONTROL,X:407,Y:522,CX:20,CY:28,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Forward,Type:CONTROL,X:326,Y:844,CX:61,CY:118,Show:0,Var:-1,Style:1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:>,ToolTipText:,Script:
+ID:IDC_Reverse,Type:CONTROL,X:172,Y:694,CX:61,CY:118,Show:0,Var:-1,Style:1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:<,ToolTipText:,Script:
+ID:IDC_But11,Type:PUSHBUTTON,X:1568,Y:165,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But12,Type:PUSHBUTTON,X:1568,Y:215,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But13,Type:PUSHBUTTON,X:1568,Y:265,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But14,Type:PUSHBUTTON,X:1568,Y:315,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But15,Type:PUSHBUTTON,X:1568,Y:365,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But16,Type:PUSHBUTTON,X:1568,Y:415,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But17,Type:PUSHBUTTON,X:1568,Y:465,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But18,Type:PUSHBUTTON,X:1568,Y:515,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But19,Type:PUSHBUTTON,X:1568,Y:565,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But20,Type:PUSHBUTTON,X:1568,Y:615,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But21,Type:PUSHBUTTON,X:1568,Y:665,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But22,Type:PUSHBUTTON,X:1568,Y:715,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But23,Type:PUSHBUTTON,X:1568,Y:765,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But24,Type:PUSHBUTTON,X:1568,Y:815,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But25,Type:PUSHBUTTON,X:1568,Y:865,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But26,Type:PUSHBUTTON,X:1568,Y:915,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But27,Type:PUSHBUTTON,X:1568,Y:965,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But28,Type:PUSHBUTTON,X:1568,Y:1015,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But29,Type:PUSHBUTTON,X:1568,Y:1065,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But30,Type:PUSHBUTTON,X:1634,Y:115,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But31,Type:PUSHBUTTON,X:1634,Y:165,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But32,Type:PUSHBUTTON,X:1634,Y:215,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But33,Type:PUSHBUTTON,X:1634,Y:265,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But34,Type:PUSHBUTTON,X:1634,Y:315,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But35,Type:PUSHBUTTON,X:1634,Y:365,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But36,Type:PUSHBUTTON,X:1634,Y:415,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But37,Type:PUSHBUTTON,X:1634,Y:465,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But38,Type:PUSHBUTTON,X:1634,Y:515,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But39,Type:PUSHBUTTON,X:1634,Y:565,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But40,Type:PUSHBUTTON,X:1634,Y:615,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But41,Type:PUSHBUTTON,X:1634,Y:665,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But42,Type:PUSHBUTTON,X:1634,Y:715,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But43,Type:PUSHBUTTON,X:1634,Y:765,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But44,Type:PUSHBUTTON,X:1634,Y:815,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But45,Type:PUSHBUTTON,X:1634,Y:865,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But46,Type:PUSHBUTTON,X:1634,Y:915,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But47,Type:PUSHBUTTON,X:1634,Y:965,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But48,Type:PUSHBUTTON,X:1634,Y:1015,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But49,Type:PUSHBUTTON,X:1634,Y:1065,CX:52,CY:28,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
+ID:IDC_But10,Type:PUSHBUTTON,X:111,Y:867,CX:193,CY:75,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:;;;,Font:,FontSize:30,HotKey:-1,Bold:1,Italic:0,Text:New Screen,ToolTipText:,Script:SScript:Screen.scr
+ID:IDC_TOOLBAR,Type:TOOLBAR,X:669,Y:88,CX:783,CY:37,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:

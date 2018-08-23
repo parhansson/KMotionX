@@ -1,0 +1,60 @@
+﻿<catel:DataWindow x:Class="ExtendedLoggingKflop.Views.SeriesDefinitionView"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:models="clr-namespace:ExtendedLoggingKflop.Models"
+                  xmlns:viewModels="clr-namespace:ExtendedLoggingKflop.ViewModels"
+                  xmlns:views="clr-namespace:ExtendedLoggingKflop.Views"
+                  xmlns:myConverters="clr-namespace:ExtendedLoggingKflop.Converters"
+                  xmlns:local="clr-namespace:ExtendedLoggingKflop"
+                  xmlns:wpfToolkit="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+                  xmlns:wpfToolkitConverters="clr-namespace:Xceed.Wpf.Toolkit.Core.Converters;assembly=Xceed.Wpf.Toolkit"
+                  xmlns:catel="http://catel.codeplex.com">
+
+    <catel:StackGrid>
+        <catel:StackGrid.Resources>
+            <myConverters:EnumToCollectionConverter x:Key="EnumToCollectionConverter"/>
+            <wpfToolkitConverters:ColorToSolidColorBrushConverter x:Key="colorToSolidColorBrushConverter" />
+        </catel:StackGrid.Resources>
+        <catel:StackGrid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </catel:StackGrid.RowDefinitions>
+        <catel:StackGrid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" MinWidth="300" />
+        </catel:StackGrid.ColumnDefinitions>
+
+
+        <Label Content="Title" />
+        <TextBox Text="{Binding SeriesTitle, NotifyOnValidationError=True, ValidatesOnDataErrors=True}" />
+
+
+        <Label Content="Color" />
+        <wpfToolkit:ColorPicker SelectedColor="{Binding Color}" DisplayColorAndName="True"/>
+
+
+        <Label Content="Y Axis" />
+        <ComboBox ItemsSource="{Binding Path=AvailableAxis}" SelectedValuePath="Key" DisplayMemberPath="AxisTitle" SelectedValue="{Binding YAxisKey}" />
+
+        <Label Content="Result Index 1" />
+        <TextBox Text="{Binding ResultIndex1, NotifyOnValidationError=True, ValidatesOnDataErrors=True}" />
+
+        <Label Content="Result Index 2" />
+        <TextBox Text="{Binding ResultIndex2, NotifyOnValidationError=True, ValidatesOnDataErrors=True}" />
+
+        <Label Content="Operator" />
+             
+
+            <ComboBox ItemsSource="{Binding Path=ResultOperator, Converter={myConverters:EnumToCollectionConverter}, Mode=OneTime}"
+                      SelectedValuePath="Value"
+                      DisplayMemberPath="Description"
+                      SelectedValue="{Binding Path=ResultOperator}" />
+        
+
+    </catel:StackGrid>
+    
+</catel:DataWindow>

@@ -44,6 +44,7 @@ protected:
 	afx_msg void OnCommandStateChangeExplorer1(long Command, BOOL Enable);
 	afx_msg void OnPaint();
 	afx_msg void OnContents();
+	int TryToSetIEVersionToUse(int Version, bool Silent);
 	virtual BOOL OnInitDialog();
 	DECLARE_EVENTSINK_MAP()
 	//}}AFX_MSG

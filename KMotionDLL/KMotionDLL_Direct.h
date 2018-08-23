@@ -45,8 +45,8 @@ public:
 	int WriteLineWithEcho(int board, const char *s);
 	int ReadLineTimeOut(int board,char *buf, int TimeOutms);
 	int ListLocations(int *nlocations, int *list);
-	void WaitToken(int board);
-	int KMotionLock(int board);
+	void WaitToken(int board, const char *CallerID=NULL);
+	int KMotionLock(int board, const char *CallerID=NULL);
 	int USBLocation(int board);
 	int KMotionLockRecovery(int board);
 	void ReleaseToken(int board);

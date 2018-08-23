@@ -14,12 +14,16 @@ CKinematics::CKinematics()
 {
 	m_MotionParams.BreakAngle = 30.0;
 	m_MotionParams.TPLookahead = 3.0;
+	m_MotionParams.MaxAccelV = 1.0;
+	m_MotionParams.MaxAccelU = 1.0;
 	m_MotionParams.MaxAccelC = 1.0;
 	m_MotionParams.MaxAccelB = 1.0;
 	m_MotionParams.MaxAccelA = 1.0;
 	m_MotionParams.MaxAccelX = 1.0;
 	m_MotionParams.MaxAccelY = 1.0;
 	m_MotionParams.MaxAccelZ = 1.0;
+	m_MotionParams.MaxVelV = 1.0;
+	m_MotionParams.MaxVelU = 1.0;
 	m_MotionParams.MaxVelC = 1.0;
 	m_MotionParams.MaxVelB = 1.0;
 	m_MotionParams.MaxVelA = 1.0;
@@ -27,18 +31,24 @@ CKinematics::CKinematics()
 	m_MotionParams.MaxVelY = 1.0;
 	m_MotionParams.MaxVelZ = 1.0;
 
+	m_MotionParams.MaxRapidJerkV = 10.0;
+	m_MotionParams.MaxRapidJerkU = 10.0;
 	m_MotionParams.MaxRapidJerkC = 10.0;
 	m_MotionParams.MaxRapidJerkB = 10.0;
 	m_MotionParams.MaxRapidJerkA = 10.0;
 	m_MotionParams.MaxRapidJerkX = 10.0;
 	m_MotionParams.MaxRapidJerkY = 10.0;
 	m_MotionParams.MaxRapidJerkZ = 10.0;
+	m_MotionParams.MaxRapidAccelV = 1.0;
+	m_MotionParams.MaxRapidAccelU = 1.0;
 	m_MotionParams.MaxRapidAccelC = 1.0;
 	m_MotionParams.MaxRapidAccelB = 1.0;
 	m_MotionParams.MaxRapidAccelA = 1.0;
 	m_MotionParams.MaxRapidAccelX = 1.0;
 	m_MotionParams.MaxRapidAccelY = 1.0;
 	m_MotionParams.MaxRapidAccelZ = 1.0;
+	m_MotionParams.MaxRapidVelV = 1.0;
+	m_MotionParams.MaxRapidVelU = 1.0;
 	m_MotionParams.MaxRapidVelC = 1.0;
 	m_MotionParams.MaxRapidVelB = 1.0;
 	m_MotionParams.MaxRapidVelA = 1.0;
@@ -46,6 +56,8 @@ CKinematics::CKinematics()
 	m_MotionParams.MaxRapidVelY = 1.0;
 	m_MotionParams.MaxRapidVelZ = 1.0;
 
+	m_MotionParams.CountsPerInchV = 100.0;
+	m_MotionParams.CountsPerInchU = 100.0;
 	m_MotionParams.CountsPerInchC = 100.0;
 	m_MotionParams.CountsPerInchB = 100.0;
 	m_MotionParams.CountsPerInchA = 100.0;
@@ -53,6 +65,7 @@ CKinematics::CKinematics()
 	m_MotionParams.CountsPerInchY = 100.0;
 	m_MotionParams.CountsPerInchZ = 100.0;
 	m_MotionParams.MaxLinearLength = 1e30;  //Infinity for default case
+	m_MotionParams.MaxAngularChange = 1e30;  // limit the segment angle change for nonlinear systems
 	m_MotionParams.MaxRapidFRO = 1;
 	m_MotionParams.CollinearTol = 0.0002;
 	m_MotionParams.CornerTol = 0.0002;
@@ -67,15 +80,24 @@ CKinematics::CKinematics()
 	m_MotionParams.SoftLimitNegY=
 	m_MotionParams.SoftLimitNegZ=
 	m_MotionParams.SoftLimitNegA=
-	m_MotionParams.SoftLimitNegB=
-	m_MotionParams.SoftLimitNegC=1e-30;
+	m_MotionParams.SoftLimitNegB =
+	m_MotionParams.SoftLimitNegC = 
+	m_MotionParams.SoftLimitNegU =
+	m_MotionParams.SoftLimitNegV = -1e30;
 
 	m_MotionParams.SoftLimitPosX=
 	m_MotionParams.SoftLimitPosY=
 	m_MotionParams.SoftLimitPosZ=
 	m_MotionParams.SoftLimitPosA=
-	m_MotionParams.SoftLimitPosB=
-	m_MotionParams.SoftLimitPosC=1e30;
+	m_MotionParams.SoftLimitPosB =
+	m_MotionParams.SoftLimitPosC = 
+	m_MotionParams.SoftLimitPosU =
+	m_MotionParams.SoftLimitPosV = 1e30;
+
+	m_MotionParams.TCP_Active = false;
+	m_MotionParams.TCP_X = 0.0;
+	m_MotionParams.TCP_Y = 0.0;
+	m_MotionParams.TCP_Z = 0.0;
 
 	GeoTableValid=false;
 	GeoTable = NULL;
@@ -87,9 +109,9 @@ CKinematics::~CKinematics()
 	if (GeoTable) delete [] GeoTable;
 }
 
-int CKinematics::TransformCADtoActuators(double x, double y, double z, double a, double b, double c, double *Acts)
+int CKinematics::TransformCADtoActuators(double x, double y, double z, double a, double b, double c, double *Acts, bool NoGeo)
 {
-	GeoCorrect(x,y,z,&x,&y,&z);
+	GeoCorrect(x, y, z, &x, &y, &z);
 
 	Acts[0] = x*m_MotionParams.CountsPerInchX;
 	Acts[1] = y*m_MotionParams.CountsPerInchY;
@@ -101,7 +123,24 @@ int CKinematics::TransformCADtoActuators(double x, double y, double z, double a,
 	return 0;
 }
 
-int CKinematics::InvertTransformCADtoActuators(double *Acts, double *xr, double *yr, double *zr, double *ar, double *br, double *cr)
+// by default the 8 axis functions call the 6 axis functions for the case where 6-axis overrides exist but no 8 axis ovverrides
+
+int CKinematics::TransformCADtoActuators(double x, double y, double z, double a, double b, double c, double u, double v, double *Acts, bool NoGeo)
+{
+	Acts[6] = u*m_MotionParams.CountsPerInchU;
+	Acts[7] = v*m_MotionParams.CountsPerInchV;
+
+	return TransformCADtoActuators(x, y, z, a, b, c, Acts, NoGeo);
+}
+
+// as default do nothing
+int CKinematics::RemapForNonStandardAxes(double *x, double *y, double *z, double *a, double *b, double *c)
+{
+	return 0;
+}
+
+
+int CKinematics::InvertTransformCADtoActuators(double *Acts, double *xr, double *yr, double *zr, double *ar, double *br, double *cr, bool NoGeo)
 {
 	double Tol=1e-6;
 	double d=0.1;					// should be linear over this range
@@ -200,9 +239,18 @@ int CKinematics::InvertTransformCADtoActuators(double *Acts, double *xr, double 
 	return 1;
 }
 
+// by default the 8 axis functions call the 6 axis functions for the case where 6-axis overrides exist but no 8 axis ovverrides
+
+int CKinematics::TransformActuatorstoCAD(double *Acts, double *x, double *y, double *z, double *a, double *b, double *c, double *u, double *v, bool NoGeo)
+{
+	*u = Acts[6] / m_MotionParams.CountsPerInchU;
+	*v = Acts[7] / m_MotionParams.CountsPerInchV;
+	
+	return TransformActuatorstoCAD(Acts, x, y, z, a, b, c, NoGeo);
+}
 
 
-int CKinematics::TransformActuatorstoCAD(double *Acts, double *x, double *y, double *z, double *a, double *b, double *c)
+int CKinematics::TransformActuatorstoCAD(double *Acts, double *x, double *y, double *z, double *a, double *b, double *c, bool NoGeo)
 {
 	if (GeoTableValid)
 	{
@@ -223,7 +271,12 @@ int CKinematics::TransformActuatorstoCAD(double *Acts, double *x, double *y, dou
 	}
 }
 
-int CKinematics::MaxRateInDirection(double dx, double dy, double dz, double da, double db, double dc, double *rate)
+int CKinematics::ComputeAnglesOption(int is)
+{
+	return 0;
+}
+
+int CKinematics::MaxRateInDirection(double dx, double dy, double dz, double da, double db, double dc, double du, double dv, double *rate)
 {
 	double Max,FeedRateToUse = 1e99;
 
@@ -233,12 +286,14 @@ int CKinematics::MaxRateInDirection(double dx, double dy, double dz, double da, 
 	double fda = fabs(da);
 	double fdb = fabs(db);
 	double fdc = fabs(dc);
+	double fdu = fabs(du);
+	double fdv = fabs(dv);
 
 	BOOL pure_angle;
 
 	// compute total distance tool will move by considering both linear and angular movements  
 
-	double d = FeedRateDistance(dx, dy, dz, da, db, dc, &m_MotionParams, &pure_angle);
+	double d = FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &m_MotionParams, &pure_angle);
 
 	// limit speeds based on proportion in that direction
 
@@ -251,8 +306,11 @@ int CKinematics::MaxRateInDirection(double dx, double dy, double dz, double da, 
 	else
 	{
 		if (fdx>0 && m_MotionParams.MaxVelX < FeedRateToUse * fdx/d) FeedRateToUse = m_MotionParams.MaxVelX * d/fdx;
-		if (fdy>0 && m_MotionParams.MaxVelY < FeedRateToUse * fdy/d) FeedRateToUse = m_MotionParams.MaxVelY * d/fdy;
-		if (fdz>0 && m_MotionParams.MaxVelZ < FeedRateToUse * fdz/d) FeedRateToUse = m_MotionParams.MaxVelZ * d/fdz;
+		if (fdy>0 && m_MotionParams.MaxVelY < FeedRateToUse * fdy / d) FeedRateToUse = m_MotionParams.MaxVelY * d / fdy;
+		if (fdz>0 && m_MotionParams.MaxVelZ < FeedRateToUse * fdz / d) FeedRateToUse = m_MotionParams.MaxVelZ * d / fdz;
+		if (fdu>0 && m_MotionParams.MaxVelU < FeedRateToUse * fdu / d) FeedRateToUse = m_MotionParams.MaxVelU * d / fdu;
+		if (fdv>0 && m_MotionParams.MaxVelV < FeedRateToUse * fdv / d) FeedRateToUse = m_MotionParams.MaxVelV * d / fdv;
+
 		if (fda>0)
 		{
 			Max = m_MotionParams.MaxVelA;
@@ -275,7 +333,7 @@ int CKinematics::MaxRateInDirection(double dx, double dy, double dz, double da, 
 	return 0;
 }
 
-int CKinematics::MaxRapidRateInDirection(double dx, double dy, double dz, double da, double db, double dc, double *rate)
+int CKinematics::MaxRapidRateInDirection(double dx, double dy, double dz, double da, double db, double dc, double du, double dv, double *rate)
 {
 	BOOL pure_angle;
 	double Max,FeedRateToUse = 1e99;
@@ -286,8 +344,10 @@ int CKinematics::MaxRapidRateInDirection(double dx, double dy, double dz, double
 	double fda = fabs(da);
 	double fdb = fabs(db);
 	double fdc = fabs(dc);
+	double fdu = fabs(du);
+	double fdv = fabs(dv);
 
-	double d = FeedRateDistance(dx, dy, dz, da, db, dc, &m_MotionParams, &pure_angle);
+	double d = FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &m_MotionParams, &pure_angle);
 
 	// limit speeds based on proportion in that direction
 
@@ -300,8 +360,11 @@ int CKinematics::MaxRapidRateInDirection(double dx, double dy, double dz, double
 	else
 	{
 		if (fdx>0 && m_MotionParams.MaxRapidVelX < FeedRateToUse * fdx/d) FeedRateToUse = m_MotionParams.MaxRapidVelX * d/fdx;
-		if (fdy>0 && m_MotionParams.MaxRapidVelY < FeedRateToUse * fdy/d) FeedRateToUse = m_MotionParams.MaxRapidVelY * d/fdy;
-		if (fdz>0 && m_MotionParams.MaxRapidVelZ < FeedRateToUse * fdz/d) FeedRateToUse = m_MotionParams.MaxRapidVelZ * d/fdz;
+		if (fdy>0 && m_MotionParams.MaxRapidVelY < FeedRateToUse * fdy / d) FeedRateToUse = m_MotionParams.MaxRapidVelY * d / fdy;
+		if (fdz>0 && m_MotionParams.MaxRapidVelZ < FeedRateToUse * fdz / d) FeedRateToUse = m_MotionParams.MaxRapidVelZ * d / fdz;
+		if (fdu>0 && m_MotionParams.MaxRapidVelU < FeedRateToUse * fdu / d) FeedRateToUse = m_MotionParams.MaxRapidVelU * d / fdu;
+		if (fdv>0 && m_MotionParams.MaxRapidVelV < FeedRateToUse * fdv / d) FeedRateToUse = m_MotionParams.MaxRapidVelV * d / fdv;
+
 		if (fda>0)
 		{
 			Max = m_MotionParams.MaxRapidVelA;
@@ -324,7 +387,7 @@ int CKinematics::MaxRapidRateInDirection(double dx, double dy, double dz, double
 }
 
 
-int CKinematics::MaxAccelInDirection(double dx, double dy, double dz, double da, double db, double dc, double *accel)
+int CKinematics::MaxAccelInDirection(double dx, double dy, double dz, double da, double db, double dc, double du, double dv, double *accel)
 {
 	double Max,AccelToUse = 1e99;
 
@@ -334,12 +397,14 @@ int CKinematics::MaxAccelInDirection(double dx, double dy, double dz, double da,
 	double fda = fabs(da);
 	double fdb = fabs(db);
 	double fdc = fabs(dc);
+	double fdu = fabs(du);
+	double fdv = fabs(dv);
 
 	BOOL pure_angle;
 
 	// compute total distance tool will move by considering both linear and angular movements  
 
-	double d = FeedRateDistance(dx, dy, dz, da, db, dc, &m_MotionParams, &pure_angle);
+	double d = FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &m_MotionParams, &pure_angle);
 
 	// limit accel based on proportion in that direction
 	if (pure_angle)
@@ -351,8 +416,11 @@ int CKinematics::MaxAccelInDirection(double dx, double dy, double dz, double da,
 	else
 	{
 		if (fdx>0 && m_MotionParams.MaxAccelX < AccelToUse * fdx/d) AccelToUse = m_MotionParams.MaxAccelX * d/fdx;
-		if (fdy>0 && m_MotionParams.MaxAccelY < AccelToUse * fdy/d) AccelToUse = m_MotionParams.MaxAccelY * d/fdy;
-		if (fdz>0 && m_MotionParams.MaxAccelZ < AccelToUse * fdz/d) AccelToUse = m_MotionParams.MaxAccelZ * d/fdz;
+		if (fdy>0 && m_MotionParams.MaxAccelY < AccelToUse * fdy / d) AccelToUse = m_MotionParams.MaxAccelY * d / fdy;
+		if (fdz>0 && m_MotionParams.MaxAccelZ < AccelToUse * fdz / d) AccelToUse = m_MotionParams.MaxAccelZ * d / fdz;
+		if (fdu>0 && m_MotionParams.MaxAccelU < AccelToUse * fdu / d) AccelToUse = m_MotionParams.MaxAccelU * d / fdu;
+		if (fdv>0 && m_MotionParams.MaxAccelV < AccelToUse * fdv / d) AccelToUse = m_MotionParams.MaxAccelV * d / fdv;
+
 		if (fda>0)
 		{
 			Max = m_MotionParams.MaxAccelA;
@@ -376,7 +444,7 @@ int CKinematics::MaxAccelInDirection(double dx, double dy, double dz, double da,
 }
 
 
-int CKinematics::MaxRapidAccelInDirection(double dx, double dy, double dz, double da, double db, double dc, double *accel)
+int CKinematics::MaxRapidAccelInDirection(double dx, double dy, double dz, double da, double db, double dc, double du, double dv, double *accel)
 {
 	double Max,AccelToUse = 1e99;
 
@@ -386,12 +454,14 @@ int CKinematics::MaxRapidAccelInDirection(double dx, double dy, double dz, doubl
 	double fda = fabs(da);
 	double fdb = fabs(db);
 	double fdc = fabs(dc);
+	double fdu = fabs(du);
+	double fdv = fabs(dv);
 
 	BOOL pure_angle;
 
 	// compute total distance tool will move by considering both linear and angular movements  
 
-	double d = FeedRateDistance(dx, dy, dz, da, db, dc, &m_MotionParams, &pure_angle);
+	double d = FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &m_MotionParams, &pure_angle);
 
 	// limit accel based on proportion in that direction
 	if (pure_angle)
@@ -403,8 +473,11 @@ int CKinematics::MaxRapidAccelInDirection(double dx, double dy, double dz, doubl
 	else
 	{
 		if (fdx>0 && m_MotionParams.MaxRapidAccelX < AccelToUse * fdx/d) AccelToUse = m_MotionParams.MaxRapidAccelX * d/fdx;
-		if (fdy>0 && m_MotionParams.MaxRapidAccelY < AccelToUse * fdy/d) AccelToUse = m_MotionParams.MaxRapidAccelY * d/fdy;
-		if (fdz>0 && m_MotionParams.MaxRapidAccelZ < AccelToUse * fdz/d) AccelToUse = m_MotionParams.MaxRapidAccelZ * d/fdz;
+		if (fdy>0 && m_MotionParams.MaxRapidAccelY < AccelToUse * fdy / d) AccelToUse = m_MotionParams.MaxRapidAccelY * d / fdy;
+		if (fdz>0 && m_MotionParams.MaxRapidAccelZ < AccelToUse * fdz / d) AccelToUse = m_MotionParams.MaxRapidAccelZ * d / fdz;
+		if (fdu>0 && m_MotionParams.MaxRapidAccelU < AccelToUse * fdu / d) AccelToUse = m_MotionParams.MaxRapidAccelU * d / fdu;
+		if (fdv>0 && m_MotionParams.MaxRapidAccelV < AccelToUse * fdv / d) AccelToUse = m_MotionParams.MaxRapidAccelV * d / fdv;
+
 		if (fda>0)
 		{
 			Max = m_MotionParams.MaxRapidAccelA;
@@ -427,7 +500,7 @@ int CKinematics::MaxRapidAccelInDirection(double dx, double dy, double dz, doubl
 	return 0;
 }
 
-int CKinematics::MaxRapidJerkInDirection(double dx, double dy, double dz, double da, double db, double dc, double *jerk)
+int CKinematics::MaxRapidJerkInDirection(double dx, double dy, double dz, double da, double db, double dc, double du, double dv, double *jerk)
 {
 	double Max,JerkToUse = 1e99;
 
@@ -437,12 +510,14 @@ int CKinematics::MaxRapidJerkInDirection(double dx, double dy, double dz, double
 	double fda = fabs(da);
 	double fdb = fabs(db);
 	double fdc = fabs(dc);
+	double fdu = fabs(du);
+	double fdv = fabs(dv);
 
 	BOOL pure_angle;
 
 	// compute total distance tool will move by considering both linear and angular movements  
 
-	double d = FeedRateDistance(dx, dy, dz, da, db, dc, &m_MotionParams, &pure_angle);
+	double d = FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &m_MotionParams, &pure_angle);
 
 	// limit Jerk based on proportion in that direction
 	if (pure_angle)
@@ -454,8 +529,11 @@ int CKinematics::MaxRapidJerkInDirection(double dx, double dy, double dz, double
 	else
 	{
 		if (fdx>0 && m_MotionParams.MaxRapidJerkX < JerkToUse * fdx/d) JerkToUse = m_MotionParams.MaxRapidJerkX * d/fdx;
-		if (fdy>0 && m_MotionParams.MaxRapidJerkY < JerkToUse * fdy/d) JerkToUse = m_MotionParams.MaxRapidJerkY * d/fdy;
-		if (fdz>0 && m_MotionParams.MaxRapidJerkZ < JerkToUse * fdz/d) JerkToUse = m_MotionParams.MaxRapidJerkZ * d/fdz;
+		if (fdy>0 && m_MotionParams.MaxRapidJerkY < JerkToUse * fdy / d) JerkToUse = m_MotionParams.MaxRapidJerkY * d / fdy;
+		if (fdz>0 && m_MotionParams.MaxRapidJerkZ < JerkToUse * fdz / d) JerkToUse = m_MotionParams.MaxRapidJerkZ * d / fdz;
+		if (fdu>0 && m_MotionParams.MaxRapidJerkU < JerkToUse * fdu / d) JerkToUse = m_MotionParams.MaxRapidJerkU * d / fdu;
+		if (fdv>0 && m_MotionParams.MaxRapidJerkV < JerkToUse * fdv / d) JerkToUse = m_MotionParams.MaxRapidJerkV * d / fdv;
+
 		if (fda>0)
 		{
 			Max = m_MotionParams.MaxRapidJerkA;
@@ -657,11 +735,12 @@ int CKinematics::GeoCorrect(double x, double y, double z, double *cx, double *cy
 int CKinematics::Solve(double *A, int N)
 {
 	int i,j,l,m,k,N1=N+1;
+	int NN=N*N1;
 	double y;
 	
 	for (i=0; i<N; i++)   // reduce all the rows
 	{
-		ASSERT(i*N1+i >=0 && i*N1+i <12);
+		ASSERT(i*N1+i >=0 && i*N1+i <NN);
 		if (A[i*N1+i]==0.0)     // check if diagonal has a zero
 		{
 			l=i+1;            // it does, try and switch rows
@@ -670,16 +749,16 @@ int CKinematics::Solve(double *A, int N)
 			for (m=0; m<=N; m++)  // swap the row
 			{
 				y=A[i*N1+m];
-				ASSERT(i*N1+m >=0 && i*N1+m <12);
+				ASSERT(i*N1+m >=0 && i*N1+m <NN);
 				A[i*N1+m]=A[l*N1+m];
-				ASSERT(l*N1+m >=0 && l*N1+m <12);
+				ASSERT(l*N1+m >=0 && l*N1+m <NN);
 				A[l*N1+m]=y;
 			}
 		}
 		
 		for (j=N; j>=i; j--)
 		{
-			ASSERT(i*N1+j >=0 && i*N1+j <12);
+			ASSERT(i*N1+j >=0 && i*N1+j <NN);
 			A[i*N1+j]/=A[i*N1+i];    // divide row so that it starts with 1
 		}
 
@@ -687,7 +766,7 @@ int CKinematics::Solve(double *A, int N)
 			if (j!=i && A[j*N1+i]!=0.0)
 				for (k=N; k>=i; k--)
 				{
-					ASSERT(j*N1+k >=0 && j*N1+k <12);
+					ASSERT(j*N1+k >=0 && j*N1+k <NN);
 					A[j*N1+k]-=A[i*N1+k]*A[j*N1+i];
 				}
 	}

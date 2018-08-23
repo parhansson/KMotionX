@@ -40,9 +40,6 @@ either expressed or implied, of the FreeBSD Project.
 #include <chrono>
 
 
-long int getThreadId(const char *callerId);
-
-
 #define TMUTEX
 class CMutex
 {

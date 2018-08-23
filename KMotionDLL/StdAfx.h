@@ -18,8 +18,11 @@
 // Insert your headers here
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 #define _CRT_SECURE_NO_DEPRECATE
-#define WINVER 0x0600 
-#define _WIN32_IE 0x0600 
+#define NO_WARN_MBCS_MFC_DEPRECATION
+#define WINVER _WIN32_WINNT_WINXP 
+#define _WIN32_WINNT _WIN32_WINNT_WINXP 
+#define _WIN32_IE _WIN32_WINNT_WINXP 
+#define NTDDI_VERSION NTDDI_WINXP
 
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions

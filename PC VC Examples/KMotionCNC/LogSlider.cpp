@@ -17,6 +17,7 @@ static char THIS_FILE[] = __FILE__;
 
 CLogSlider::CLogSlider()
 {
+	m_bkcolor = m_bkcolorLast = -1;
 }
 
 CLogSlider::~CLogSlider()
@@ -273,6 +274,9 @@ void CLogSlider::PlotInstant(double f)
 	double Bot=CtrlRect.bottom-13;
 	double Mid=Bot+(Top-Bot)*linear;
 
+	if (Mid < Top) Mid = Top;
+	if (Mid > Bot) Mid = Bot;
+
 	CPoint start_point(CtrlRect.right+m_offset,Top);
 	CPoint mid_point(CtrlRect.right+m_offset,Mid);
 	CPoint end_point(CtrlRect.right+m_offset,Bot);
@@ -286,6 +290,16 @@ void CLogSlider::PlotInstant(double f)
 	cdc.LineTo(end_point);
 
 	cdc.SelectObject(SavePen);
+
+	if (m_bkcolorLast != m_bkcolor || m_bkbitmap != m_bkbitmapLast
+	)
+	{
+		//workaround microsoft bug that caches background
+		EnableWindow(FALSE);
+		EnableWindow(TRUE);
+		m_bkcolorLast = m_bkcolor;
+		m_bkbitmapLast = m_bkbitmap;
+	}
 }
 
 // Gets rid of the focus box

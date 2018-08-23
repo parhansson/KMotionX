@@ -15,6 +15,7 @@ public:
 	double y;
 	double x;
 	double z;
+	double c;
 	CPT3D();
 	virtual ~CPT3D();
 

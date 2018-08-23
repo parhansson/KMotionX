@@ -333,6 +333,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Creates group of axes
         /// </summary>
+        /// <param name="controller">KM_Controller to associate the group with</param>
+        /// <param name="axislist">List of Axes</param>
         public KM_AxisGroup(KM_Controller controller, params KM_Axis[] axislist)
         {
             _Controller = controller;
@@ -436,6 +438,7 @@ namespace KMotion_dotNet
         /// Perform Rapid Move (independent motion) of multiple axis to a desired destination
         /// and wait until motion is completed
         /// </summary>
+        /// <param name="position">XYZABC position to Rapid to</param>
         public void RapidTo(double[] position)
         {
             double[] pos = new double[] { 0, 0, 0, 0, 0, 0 };
@@ -453,6 +456,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Perform Start of Rapid Move (independent motion) of multiple axis to a desired destination
         /// </summary>
+        /// <param name="position">XYZABC position to Rapid to</param>
         public void StartRapidTo(double[] position)
         {
             double[] pos = new double[] { 0, 0, 0, 0, 0, 0 };
@@ -479,6 +483,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Add a linear motion to the coordinated motion buffer
         /// </summary>
+        /// <param name="nextpoint">XYZABC point to feed to</param>
         public void AddLine(double[] nextpoint)
         {
             double[] pos = new double[] { 0, 0, 0, 0, 0, 0 };
@@ -497,6 +502,12 @@ namespace KMotion_dotNet
         /// <summary>
         /// Perform Coordinated Arc Move of multiple axis to a desired destination
         /// </summary>
+        /// <param name="endx">X end point of arc</param>
+        /// <param name="endy">Y end point of arc</param>
+        /// <param name="centerx">X center of rotation of arc</param>
+        /// <param name="centery">Y center of rotation of arc</param>
+        /// <param name="clockwise">CW or ACW</param>
+        /// <param name="finalz">End point of perpindicular axis(for helical motion)</param>
         public void AddArc(double endx, double endy, double centerx, double centery, 
             bool clockwise, double finalz)
         {
@@ -506,8 +517,15 @@ namespace KMotion_dotNet
                 (int)direction, finalz, 0, 0, 0, 0, 0);
         }
         /// <summary>
-        /// Perform Coordinated Arc Move (in specified plane) of multiple axis to a desired destination
+        /// Perform Coordinated Arc Move (in specified plane - replace xyz as appropriate) of multiple axis to a desired destination
         /// </summary>
+        /// <param name="endx">X end point of arc</param>
+        /// <param name="endy">Y end point of arc</param>
+        /// <param name="centerx">X center of rotation of arc</param>
+        /// <param name="centery">Y center of rotation of arc</param>
+        /// <param name="plane">CANON_PLANE of arc</param>
+        /// <param name="clockwise">CW or ACW</param>
+        /// <param name="finalz">End point of perpindicular axis(for helical motion)</param>
         public void AddArc(double endx, double endy, double centerx, double centery,
            CANON_PLANE plane, bool clockwise, double finalz)
         {
@@ -520,6 +538,16 @@ namespace KMotion_dotNet
         /// Perform Coordinated Arc Move (in specified plane) of multiple axis to a desired destination
         /// with aditional a,b,c, axes linearly interpolated
         /// </summary>
+        /// <param name="endx">X end point of arc</param>
+        /// <param name="endy">Y end point of arc</param>
+        /// <param name="centerx">X center of rotation of arc</param>
+        /// <param name="centery">Y center of rotation of arc</param>
+        /// <param name="plane">CANON_PLANE of arc</param>
+        /// <param name="clockwise">CW or ACW</param>
+        /// <param name="finalz">End point of perpindicular axis(for helical motion)</param>
+        /// <param name="a">a Axis final position</param>
+        /// <param name="b">b Axis final position</param>
+        /// <param name="c">c Axis final position</param>
         public void AddArc(double endx, double endy, double centerx, double centery,
             CANON_PLANE plane, bool clockwise, double finalz, double a, double b, double c)
         {
@@ -531,6 +559,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Insert special embedded IO commaand into the Coordinated moition buffer
         /// </summary>
+        /// <param name="command">index of command to be added</param>
         public void AddCommand(int command)
         {
             _Controller.CoordMotion.DoSpecialCommand(command);

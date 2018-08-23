@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{803ecc1e-8b96-4291-9866-f9b61e4fabb6}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{1f339896-f103-45e9-ab90-4b3a12f87f20}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{7a8f54a3-db92-49b1-9ad5-998dde4e2bde}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="i386-gen.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tcc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WriteCoff.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="COFF.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="elf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="i386-asm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libtcc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stab.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tcc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tcctok.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WriteCoff.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

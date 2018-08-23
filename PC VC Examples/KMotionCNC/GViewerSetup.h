@@ -38,6 +38,7 @@ public:
 	BOOL m_IncludeA;
 	BOOL m_IncludeB;
 	BOOL m_IncludeC;
+	BOOL m_IncludeToolAngles;
 	//}}AFX_DATA
 
 
