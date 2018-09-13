@@ -20,6 +20,7 @@ stdout to a file.
   24-Feb-2000  FMP added CANON_UPDATE_POSITION()
 */
 #define _CRT_SECURE_NO_DEPRECATE 1
+#define NO_WARN_MBCS_MFC_DEPRECATION
 
 #include "StdAfx.h"
 #include "rs274ngc_return.h"
@@ -32,12 +33,14 @@ stdout to a file.
 #define OR               ||
 #define SET_TO           =
 
+int HandleThreading(double *FeedRate);
 int CheckIfThreadingInProgress(void);
 
 
 char Output[MAX_LINE];
 char ErrorOutput[MAX_LINE];
 CGCodeInterpreter *GC;
+CCoordMotion *CM;;
 
 
 void print_nc_line_number()
@@ -147,7 +150,7 @@ static CANON_PLANE active_plane = CANON_PLANE_XY;
 /* Representation */
 
 void SET_ORIGIN_OFFSETS(double x, double y, double z,
-			double a, double b, double c)
+			double a, double b, double c, double u, double v)
 {PRINT3("SET_ORIGIN_OFFSETS(%.4f, %.4f, %.4f)\n", x, y, z);
   program_origin.x SET_TO x;
   program_origin.y SET_TO y;
@@ -165,7 +168,7 @@ void SET_TRAVERSE_RATE(double rate)
 {PRINT1("SET_TRAVERSE_RATE(%.4f)\n", rate);}
 
 void STRAIGHT_TRAVERSE (double x, double y, double z,
-                        double a, double b , double c)
+                        double a, double b, double c, double u, double v)
 {
 	PRINT4("STRAIGHT_TRAVERSE(%.4f, %.4f, %.4f, %.4f)\n", x, y, z, a);
 
@@ -173,13 +176,15 @@ void STRAIGHT_TRAVERSE (double x, double y, double z,
 
 	GC->SaveStateOnceOnly();  // save the state here before creating any motion segments
 
-	GC->CoordMotion->StraightTraverse(GC->UserUnitsToInchesX(x+_setup.axis_offset_x+_setup.origin_offset_x+_setup.tool_xoffset),
-						 GC->UserUnitsToInches(y+_setup.axis_offset_y+_setup.origin_offset_y+_setup.tool_yoffset),
-						 GC->UserUnitsToInches(z+_setup.axis_offset_z+_setup.origin_offset_z+_setup.tool_length_offset),
-						 GC->UserUnitsToInchesOrDegA(a+_setup.AA_axis_offset+_setup.AA_origin_offset),
-						 GC->UserUnitsToInchesOrDegB(b+_setup.BB_axis_offset+_setup.BB_origin_offset),
-						 GC->UserUnitsToInchesOrDegC(c+_setup.CC_axis_offset+_setup.CC_origin_offset),
-						 false,_setup.sequence_number,0);
+	CM->StraightTraverse(GC->UserUnitsToInchesX(x+_setup.axis_offset_x+_setup.origin_offset_x+_setup.tool_xoffset),
+						GC->UserUnitsToInches(y+_setup.axis_offset_y+_setup.origin_offset_y+_setup.tool_yoffset),
+						GC->UserUnitsToInches(z+_setup.axis_offset_z+_setup.origin_offset_z+_setup.tool_length_offset),
+						GC->UserUnitsToInchesOrDegA(a+_setup.AA_axis_offset+_setup.AA_origin_offset),
+						GC->UserUnitsToInchesOrDegB(b + _setup.BB_axis_offset + _setup.BB_origin_offset),
+						GC->UserUnitsToInchesOrDegC(c + _setup.CC_axis_offset + _setup.CC_origin_offset),
+						GC->UserUnitsToInches(u + _setup.UU_axis_offset + _setup.UU_origin_offset),
+						GC->UserUnitsToInches(v + _setup.VV_axis_offset + _setup.VV_origin_offset),
+		false,_setup.sequence_number,0);
 }
 
 /* Machining Attributes */
@@ -248,19 +253,28 @@ void SELECT_SPINDLE_MODE(CANON_SPINDLE_MODE mode)
 void ARC_FEED(double first_end, double second_end,
               double first_axis, double second_axis, int rotation,
               double axis_end_point,
-			  double a, double b, double c, int ID)
+			  double a, double b, double c, double u, double v, int ID)
 {
+	double FeedRate;
+
 	PRINT6("ARC_FEED(%.4f, %.4f, %.4f, %.4f, %d, %.4f)\n",
         first_end, second_end, first_axis, second_axis, rotation,
         axis_end_point);
 
-	if (CheckIfThreadingInProgress()) return;
+	if (HandleThreading(&FeedRate)) return;
+
+	if (!CM->m_ThreadingMode)  // Threading?
+	{
+		if (CheckIfThreadingInProgress()) return;
+		FeedRate = GC->UserUnitsToInches(_setup.feed_rate) / 60.0;
+	}
+
 
 	GC->SaveStateOnceOnly();  // save the state here before creating any motion segments
 
 	if (_setup.plane == CANON_PLANE_XY)
 	{
-		GC->CoordMotion->ArcFeed(GC->UserUnitsToInches(_setup.feed_rate)/60.0, _setup.plane,
+		CM->ArcFeed(FeedRate, _setup.plane,
 					GC->UserUnitsToInchesX(first_end+_setup.axis_offset_x+_setup.origin_offset_x+_setup.tool_xoffset), 
 					GC->UserUnitsToInches(second_end+_setup.axis_offset_y+_setup.origin_offset_y+_setup.tool_yoffset), 
 					GC->UserUnitsToInchesX(first_axis+_setup.axis_offset_x+_setup.origin_offset_x+_setup.tool_xoffset), 
@@ -270,12 +284,14 @@ void ARC_FEED(double first_end, double second_end,
 					GC->UserUnitsToInchesOrDegA(a + _setup.AA_axis_offset + _setup.AA_origin_offset),
 					GC->UserUnitsToInchesOrDegB(b + _setup.BB_axis_offset + _setup.BB_origin_offset),
 					GC->UserUnitsToInchesOrDegC(c + _setup.CC_axis_offset + _setup.CC_origin_offset),
+					GC->UserUnitsToInches(u + _setup.UU_axis_offset + _setup.UU_origin_offset),
+					GC->UserUnitsToInches(v + _setup.VV_axis_offset + _setup.VV_origin_offset),
 					_setup.sequence_number, ID);
 	}
 	else if (_setup.plane == CANON_PLANE_XZ)
 	{
 		// Actually more like ZX plane
-		GC->CoordMotion->ArcFeed(GC->UserUnitsToInches(_setup.feed_rate)/60.0, _setup.plane,
+		CM->ArcFeed(FeedRate, _setup.plane,
 					GC->UserUnitsToInches(first_end+_setup.axis_offset_z+_setup.origin_offset_z+_setup.tool_length_offset), 
 					GC->UserUnitsToInchesX(second_end+_setup.axis_offset_x+_setup.origin_offset_x+_setup.tool_xoffset), 
 					GC->UserUnitsToInches(first_axis+_setup.axis_offset_z+_setup.origin_offset_z+_setup.tool_length_offset), 
@@ -285,11 +301,13 @@ void ARC_FEED(double first_end, double second_end,
 					GC->UserUnitsToInchesOrDegA(a + _setup.AA_axis_offset + _setup.AA_origin_offset),
 					GC->UserUnitsToInchesOrDegB(b + _setup.BB_axis_offset + _setup.BB_origin_offset),
 					GC->UserUnitsToInchesOrDegC(c + _setup.CC_axis_offset + _setup.CC_origin_offset),
+					GC->UserUnitsToInches(u + _setup.UU_axis_offset + _setup.UU_origin_offset),
+					GC->UserUnitsToInches(v + _setup.VV_axis_offset + _setup.VV_origin_offset),
 					_setup.sequence_number, ID);
 	}
 	else
 	{
-		GC->CoordMotion->ArcFeed(GC->UserUnitsToInches(_setup.feed_rate)/60.0, _setup.plane,
+		CM->ArcFeed(FeedRate, _setup.plane,
 					GC->UserUnitsToInches(first_end+_setup.axis_offset_y+_setup.origin_offset_y+_setup.tool_yoffset), 
 					GC->UserUnitsToInches(second_end+_setup.axis_offset_z+_setup.origin_offset_z+_setup.tool_length_offset), 
 					GC->UserUnitsToInches(first_axis+_setup.axis_offset_y+_setup.origin_offset_y+_setup.tool_yoffset), 
@@ -299,39 +317,22 @@ void ARC_FEED(double first_end, double second_end,
 					GC->UserUnitsToInchesOrDegA(a + _setup.AA_axis_offset + _setup.AA_origin_offset),
 					GC->UserUnitsToInchesOrDegB(b + _setup.BB_axis_offset + _setup.BB_origin_offset),
 					GC->UserUnitsToInchesOrDegC(c + _setup.CC_axis_offset + _setup.CC_origin_offset),
+					GC->UserUnitsToInches(u + _setup.UU_axis_offset + _setup.UU_origin_offset),
+					GC->UserUnitsToInches(v + _setup.VV_axis_offset + _setup.VV_origin_offset),
 					_setup.sequence_number, ID);
 	}
 }
 
 void STRAIGHT_FEED (double x, double y, double z,
-		            double a, double b, double c, int ID)
+		            double a, double b, double c, double u, double v, int ID)
 {
 	PRINT4("STRAIGHT_FEED(%.4f, %.4f, %.4f, %.4f)\n", x, y, z, a);
 
 	double FeedRate;
 
-	if (_setup.motion_mode == G_32)  // Threading?
-	{
-		double InchesPerRev = GC->UserUnitsToInches(_setup.feed_rate);
-		double RevsPerSec = _setup.speed/60.0;
+	if (HandleThreading(&FeedRate)) return;
 
-		FeedRate = InchesPerRev * RevsPerSec;
-
-		CCoordMotion *CM=GC->CoordMotion;
-
-		// if not already in threading mode, then wait for anything that
-		// may already be in progress to complete so when we re-launch motion
-		// we will be in sychronized mode
-		if (!CM->m_ThreadingMode)  
-		{
-			if (CM->FlushSegments()) {CM->SetAbort(); return;}  
-			if (CM->WaitForSegmentsFinished(TRUE)) {CM->SetAbort(); return;}
-		}
-
-		GC->CoordMotion->m_ThreadingBaseSpeedRPS=RevsPerSec;
-		GC->CoordMotion->m_ThreadingMode=true;
-	}
-	else
+	if (!CM->m_ThreadingMode)  // Threading?
 	{
 		if (CheckIfThreadingInProgress()) return;
 
@@ -343,10 +344,12 @@ void STRAIGHT_FEED (double x, double y, double z,
 		double da = a - _setup.AA_current;
 		double db = b - _setup.BB_current;
 		double dc = c - _setup.CC_current;
-		
+		double du = u - _setup.UU_current;
+		double dv = v - _setup.VV_current;
+
 		BOOL pure_angle;
 
-		GC->CoordMotion->FeedRateDistance(dx, dy, dz, da, db, dc, &pure_angle);
+		CM->FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &pure_angle);
 
 		if (pure_angle)
 			FeedRate = _setup.feed_rate/60.0;  // convert to degrees/sec
@@ -356,15 +359,54 @@ void STRAIGHT_FEED (double x, double y, double z,
 
 	GC->SaveStateOnceOnly();  // save the state here before creating any motion segments
 
-	GC->CoordMotion->StraightFeed(FeedRate,
+	CM->StraightFeed(FeedRate,
 					 GC->UserUnitsToInchesX(x+_setup.axis_offset_x+_setup.origin_offset_x+_setup.tool_xoffset),
 					 GC->UserUnitsToInches(y+_setup.axis_offset_y+_setup.origin_offset_y+_setup.tool_yoffset),
 					 GC->UserUnitsToInches(z+_setup.axis_offset_z+_setup.origin_offset_z+_setup.tool_length_offset),
 					 GC->UserUnitsToInchesOrDegA(a+_setup.AA_axis_offset+_setup.AA_origin_offset),
-					 GC->UserUnitsToInchesOrDegB(b+_setup.BB_axis_offset+_setup.CC_origin_offset),
-					 GC->UserUnitsToInchesOrDegC(c+_setup.CC_axis_offset+_setup.CC_origin_offset),
+					 GC->UserUnitsToInchesOrDegB(b + _setup.BB_axis_offset + _setup.BB_origin_offset),
+					 GC->UserUnitsToInchesOrDegC(c + _setup.CC_axis_offset + _setup.CC_origin_offset),
+				 	 GC->UserUnitsToInches(u + _setup.UU_axis_offset + _setup.UU_origin_offset),
+					 GC->UserUnitsToInches(v + _setup.VV_axis_offset + _setup.VV_origin_offset),
 					 _setup.sequence_number,ID);
 }
+
+// determine if we are to be in Threading mode based on Feed and Motion Modes
+// if Threading return calculated feedrate
+// if transitioning to Threading mode Flush any previous motion
+
+int HandleThreading(double *FeedRate)
+{
+	if (_setup.motion_mode == G_32 ||
+		((_setup.feed_mode == UNITS_PER_REV) 
+			&& (_setup.motion_mode == G_1 || _setup.motion_mode == G_2 || _setup.motion_mode == G_3)))  // Threading?
+	{
+		double InchesPerRev = GC->UserUnitsToInches(_setup.feed_rate);
+		double RevsPerSec = _setup.speed / 60.0;
+
+		*FeedRate = InchesPerRev * RevsPerSec;
+
+		// if not already in threading mode, then wait for anything that
+		// may already be in progress to complete so when we re-launch motion
+		// we will be in sychronized mode
+		if (!CM->m_ThreadingMode)
+		{
+			if (CM->FlushSegments()) { CM->SetAbort(); return 1; }
+			if (CM->WaitForSegmentsFinished(TRUE)) { CM->SetAbort(); return 1; }
+		}
+
+		if (GC->p_setup->spindle_turning == CANON_COUNTERCLOCKWISE)
+			CM->m_ThreadingBaseSpeedRPS = -RevsPerSec;
+		else
+			CM->m_ThreadingBaseSpeedRPS = RevsPerSec;
+		
+		CM->m_ThreadingMode = true;
+	}
+	return 0;
+}
+
+
+
 
 // whenever a new motion is to be initiated that is not spindle synchronized
 // and spindle synchronized mode had been in progress then make sure it finishes
@@ -372,8 +414,6 @@ void STRAIGHT_FEED (double x, double y, double z,
 
 int CheckIfThreadingInProgress(void)
 {
-	CCoordMotion *CM=GC->CoordMotion;
-
 	if (CM->m_ThreadingMode)  
 	{
 		if (CM->FlushSegments()) {CM->SetAbort(); return 1;}  
@@ -386,7 +426,7 @@ int CheckIfThreadingInProgress(void)
 
 
 void STRAIGHT_PROBE (double x, double y, double z,
-		     double a, double b, double c)
+		     double a, double b, double c, double u, double v)
 {PRINT3("STRAIGHT_PROBE(%.4f, %.4f, %.4f)\n", x, y, z);}
 
 
@@ -408,7 +448,7 @@ void DWELL(double seconds)
 
 	GC->SaveStateOnceOnly();  // save the state here before creating any motion segments
 
-	GC->CoordMotion->Dwell(seconds,_setup.sequence_number);
+	CM->Dwell(seconds,_setup.sequence_number);
 }
 
 /* Spindle Functions */
@@ -453,8 +493,37 @@ void USE_NO_SPINDLE_FORCE()
 
 /* Tool Functions */
 
-void USE_TOOL_LENGTH_OFFSET(double length)
-{PRINT1("USE_TOOL_LENGTH_OFFSET(%.4f)\n", length);}
+void USE_TOOL_LENGTH_OFFSET(double length_units, double xoffset_units, double yoffset_units)
+{
+    double Acts[MAX_ACTUATORS];
+
+    PRINT1("USE_TOOL_LENGTH_OFFSET(%.4f)\n", length_units);
+
+    double xoffset = GC->UserUnitsToInchesX(xoffset_units);
+    double yoffset = GC->UserUnitsToInches(yoffset_units);
+    double length  = GC->UserUnitsToInches(length_units);
+
+    // Things get complicated if Tool Center point changes on-the-fly
+    // for non-linear Kineamtics.  So if tool offset changes Flush
+    // KFLOP buffer before changes.  For optimization
+    // only flush when some offset changed and TCP is used
+
+    if (CM->m_TCP_affects_actuators && 
+        (CM->GetMotionParams()->TCP_X != xoffset ||
+         CM->GetMotionParams()->TCP_Y != yoffset ||
+         CM->GetMotionParams()->TCP_Z != length))
+    {
+        if (CM->FlushSegments()) { CM->SetAbort(); return; }
+        if (CM->WaitForSegmentsFinished(TRUE)) { CM->SetAbort(); return; }
+        CM->Kinematics->TransformCADtoActuators(CM->current_x, CM->current_y, CM->current_z, CM->current_a, CM->current_b, CM->current_c, CM->current_u, CM->current_v, Acts);
+        CM->GetMotionParams()->TCP_X = xoffset;
+        CM->GetMotionParams()->TCP_Y = yoffset;
+        CM->GetMotionParams()->TCP_Z = length;
+        CM->Kinematics->TransformActuatorstoCAD(Acts, &CM->current_x, &CM->current_y, &CM->current_z, &CM->current_a, &CM->current_b, &CM->current_c, &CM->current_u, &CM->current_v);
+        GC->ConvertAbsoluteToInterpreterCoord(CM->current_x, CM->current_y, CM->current_z, CM->current_a, CM->current_b, CM->current_c, CM->current_u, CM->current_v,
+            &_setup.current_x, &_setup.current_y, &_setup.current_z, &_setup.AA_current, &_setup.BB_current, &_setup.CC_current, &_setup.UU_current, &_setup.VV_current, &_setup);
+    }
+}
 
 void CHANGE_TOOL(int slot)
 {
@@ -498,9 +567,10 @@ int CheckForPassThroughCommand(char *comment)
     if ((item != 'D') && (item != 'd')) return 0;
     for (m++; ((item = comment[m]) == ' ') || (item == '\t'); m++);
     if (item != ',') return 0;
-	
-	PRINT1("COMMAND(\"%s\")\n", comment + m + 1);
-	GC->CoordMotion->DoKMotionCmd(comment + m + 1, TRUE);
+	for (m++; ((item = comment[m]) == ' ') || (item == '\t'); m++);
+
+	PRINT1("COMMAND(\"%s\")\n", comment + m);
+	CM->DoKMotionCmd(comment + m, TRUE);
     return 1; 
 }
 
@@ -518,9 +588,10 @@ int CheckForBufferedCommand(char *comment)
     if ((item != 'F') && (item != 'f')) return 0;
     for (m++; ((item = comment[m]) == ' ') || (item == '\t'); m++);
     if (item != ',') return 0;
-	
-	PRINT1("BUFFER(\"%s\")\n", comment + m + 1);
-	GC->CoordMotion->DoKMotionBufCmd(comment + m + 1,GC->p_setup->sequence_number);
+	for (m++; ((item = comment[m]) == ' ') || (item == '\t'); m++);
+
+	PRINT1("BUFFER(\"%s\")\n", comment + m);
+	CM->DoKMotionBufCmd(comment + m,GC->p_setup->sequence_number);
     return 1; 
 }
 
@@ -537,20 +608,21 @@ int CheckForUserCallback(char *comment)
     if ((item != 'R') && (item != 'r')) return 0;
     for (m++; ((item = comment[m]) == ' ') || (item == '\t'); m++);
     if (item != ',') return 0;
-	
-	PRINT1("USR(\"%s\")\n", comment + m + 1);
+	for (m++; ((item = comment[m]) == ' ') || (item == '\t'); m++);
+
+	PRINT1("USR(\"%s\")\n", comment + m);
 	if (GC->m_UserFn)
 	{
-		if (GC->CoordMotion->FlushSegments()) {GC->CoordMotion->SetAbort(); return 1;}  
-		if (GC->CoordMotion->WaitForSegmentsFinished(TRUE)) {GC->CoordMotion->SetAbort(); return 1;}
-		if (GC->m_UserFn(comment + m + 1)){GC->CoordMotion->SetAbort(); return 1;}
+		if (CM->FlushSegments()) {CM->SetAbort(); return 1;}  
+		if (CM->WaitForSegmentsFinished(TRUE)) {CM->SetAbort(); return 1;}
+		if (GC->m_UserFn(comment + m)){CM->SetAbort(); return 1;}
 
 		// don't sample positions until everything is stopped 
-		if (GC->CoordMotion->WaitForSegmentsFinished()) return 1;
-		if (GC->CoordMotion->WaitForMoveXYZABCFinished()) return 1;
+		if (CM->WaitForSegmentsFinished()) return 1;
+		if (CM->WaitForMoveXYZABCFinished()) return 1;
 
-		if (!GC->CoordMotion->m_Simulate && GC->ReadAndSyncCurPositions(&_setup.current_x,&_setup.current_y,&_setup.current_z,
-			                                               &_setup.AA_current,&_setup.BB_current,&_setup.CC_current))
+		if (!CM->m_Simulate && GC->ReadAndSyncCurPositions(&_setup.current_x,&_setup.current_y,&_setup.current_z,
+			                                               &_setup.AA_current, &_setup.BB_current, &_setup.CC_current, &_setup.UU_current, &_setup.VV_current))
 			return 1;
 	}
     return 1; 
@@ -592,8 +664,8 @@ void FLOOD_ON()
 
 void MESSAGE(char *s)
 {
-	if (GC->CoordMotion->FlushSegments()) {GC->CoordMotion->SetAbort(); return;}  
-	if (GC->CoordMotion->WaitForSegmentsFinished(TRUE)) {GC->CoordMotion->SetAbort(); return;}
+	if (CM->FlushSegments()) {CM->SetAbort(); return;}  
+	if (CM->WaitForSegmentsFinished(TRUE)) {CM->SetAbort(); return;}
 
 	PRINT1("MESSAGE(\"%s\")\n", s);
 	if (AfxMessageBox(s,MB_OKCANCEL|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL)==IDCANCEL)
@@ -649,7 +721,7 @@ void PROGRAM_END(int MCode)
 {
 	PRINT0("PROGRAM_END()\n");
 
-	GC->CoordMotion->FlushSegments();
+	CM->FlushSegments();
 	if (MCode==30)
 		GC->InvokeAction(24,TRUE);  // M30 Special Operation
 	else if (MCode==2)
@@ -725,8 +797,10 @@ CANON_POSITION GET_EXTERNAL_POSITION()
                         _setup.current_y,
                         _setup.current_z,
                         0.0,
-                        0.0,
-                        0.0);
+					    0.0,
+					    0.0,
+					    0.0,
+					    0.0);
 }
 
 /*********************************************************************/
@@ -736,9 +810,11 @@ CANON_POSITION GET_EXTERNAL_PROBE_POSITION()
   return CANON_POSITION(_setup.current_x,
                         _setup.current_y,
                         _setup.current_z,
-                        0.0,
-                        0.0,
-                        0.0);
+						0.0,
+						0.0,
+						0.0,
+						0.0,
+						0.0);
 }
 
 /*********************************************************************/
@@ -905,7 +981,7 @@ CANON_SPINDLE_MODE GET_EXTERNAL_SPINDLE_MODE()
 void GET_EXTERNAL_PARAMETER_FILE_NAME(char *filename, int max_size)
 {
 	if (GC->VarsFile[0] == 0)
-		sprintf(filename, "%s%cGCode Programs%cemc.var",GC->CoordMotion->MainPathRoot,PATH_SEPARATOR,PATH_SEPARATOR);
+		sprintf(filename, "%s%cData%cemc.var",GC->CoordMotion->MainPathRoot, PATH_SEPARATOR, PATH_SEPARATOR);
 	else
 		strcpy(filename, GC->VarsFile);
 }
@@ -917,10 +993,16 @@ CANON_PLANE GET_EXTERNAL_PLANE()  { return CANON_PLANE_XY; };
 double GET_EXTERNAL_POSITION_A()  { return 0.0; };
 
 // returns the current b-axis position
-double GET_EXTERNAL_POSITION_B()  { return 0.0; };
+double GET_EXTERNAL_POSITION_B() { return 0.0; };
 
 // returns the current c-axis position
-double GET_EXTERNAL_POSITION_C()  { return 0.0; };
+double GET_EXTERNAL_POSITION_C() { return 0.0; };
+
+// returns the current u-axis position
+double GET_EXTERNAL_POSITION_U() { return 0.0; };
+
+// returns the current v-axis position
+double GET_EXTERNAL_POSITION_V() { return 0.0; };
 
 // returns the current x-axis position
 double GET_EXTERNAL_POSITION_X()  { return 0.0; };
@@ -935,10 +1017,16 @@ double GET_EXTERNAL_POSITION_Z()  { return 0.0; };
 double GET_EXTERNAL_PROBE_POSITION_A()  { return 0.0; };
 
 // Returns the machine B-axis position at the last probe trip.
-double GET_EXTERNAL_PROBE_POSITION_B()  { return 0.0; };
+double GET_EXTERNAL_PROBE_POSITION_B() { return 0.0; };
 
 // Returns the machine C-axis position at the last probe trip.
-double GET_EXTERNAL_PROBE_POSITION_C()  { return 0.0; };
+double GET_EXTERNAL_PROBE_POSITION_C() { return 0.0; };
+
+// Returns the machine U-axis position at the last probe trip.
+double GET_EXTERNAL_PROBE_POSITION_U() { return 0.0; };
+
+// Returns the machine V-axis position at the last probe trip.
+double GET_EXTERNAL_PROBE_POSITION_V() { return 0.0; };
 
 // Returns the machine X-axis position at the last probe trip.
 double GET_EXTERNAL_PROBE_POSITION_X()  { return 0.0; };
@@ -982,7 +1070,7 @@ int CHECK_INIT_ON_EXE()
 }
 int CHECK_PREVIOUS_STOP(double mx, double my, int log)
 {
-	if (!GC->CoordMotion->m_PreviouslyStopped || GC->CoordMotion->m_PreviouslyStoppedID==1)
+	if (!CM->m_PreviouslyStopped || CM->m_PreviouslyStoppedID==1)
 	{ 
        return 1;
 	}
@@ -990,8 +1078,8 @@ int CHECK_PREVIOUS_STOP(double mx, double my, int log)
 	{
 		if(log)
 		{
-		  GC->CoordMotion->m_StoppedMidx = mx;
-		  GC->CoordMotion->m_StoppedMidy = my;
+		  CM->m_StoppedMidx = mx;
+		  CM->m_StoppedMidy = my;
 		} 
 		return 0;
 	}

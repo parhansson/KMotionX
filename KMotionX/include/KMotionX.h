@@ -101,6 +101,7 @@ namespace kmx {
 
 	extern void SetCustomCompiler(const char * compiler = NULL, const char * options = NULL, int tcc_minor_version = 0);   
   extern void getPath(const char * file, char * path);
+  extern long int getThreadId(const char *callerId = NULL);
 }
 
 #endif //KMOTIONX_CROSSOVER_H_

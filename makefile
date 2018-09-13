@@ -47,7 +47,7 @@ install: subdirs
 	mkdir -p "$(kmxhome)/bin"
 	$(INSTALL) -m755 $(addprefix $(BUILD_ROOT)/bin/,$(KMXPROGS)) "$(kmxhome)/bin"
 	mkdir -p $(kmxhome)
-	mkdir -p "$(kmxhome)/GCode Programs"
+	mkdir -p "$(kmxhome)/Data"
 	$(INSTALL) -m644 $(addprefix $(BUILD_ROOT)/,$(DSP_HEADERS)) "$(includedir)/kmx/DSP_KFLOP"
 	$(INSTALL) -m644 $(addprefix $(BUILD_ROOT)/,$(GCI_HEADERS)) "$(includedir)/kmx/GCodeInterpreter"
 	$(INSTALL) -m644 $(addprefix $(BUILD_ROOT)/,$(KM_HEADERS)) "$(includedir)/kmx/KMotion"
@@ -56,7 +56,7 @@ install: subdirs
 	cp -R $(BUILD_ROOT)/KMotionX/include/win "$(includedir)/kmx/KMotionX"
 	cp -R $(BUILD_ROOT)/DSP_KFLOP/ $(kmxhome)/DSP_KFLOP
 	cp -R $(BUILD_ROOT)/DSP_KMotion/ $(kmxhome)/DSP_KMotion
-	cp "$(BUILD_ROOT)/GCode Programs/emc.var" "$(kmxhome)/GCode Programs/"
+	cp "$(BUILD_ROOT)/KMotion/Data/emc.var" "$(kmxhome)/Data/"
 
 
 uninstall:

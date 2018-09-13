@@ -80,6 +80,7 @@ main()
 
 	DoEllipse();  // Trajectory Plan the ellipse
 
+	CS0_Flushed=TRUE;	// Allow Motion to run to end
 	ExecBuf();  // launch the motion
 	
 	while (!CheckDoneBuf()) ;  // wait till finished

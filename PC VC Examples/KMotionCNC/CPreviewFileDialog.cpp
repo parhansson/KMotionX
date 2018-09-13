@@ -69,13 +69,13 @@ CPreviewFileDialog::CPreviewFileDialog(CAbstractPreview *pPreview,BOOL bOpenFile
 BEGIN_MESSAGE_MAP(CPreviewFileDialog, CFileDialog)
 	//{{AFX_MSG_MAP(CPreviewFileDialog)
 	ON_BN_CLICKED(IDC_CHECK_PREVIEW,OnClickedPreview)
-	ON_COMMAND(ID_XY, OnXy)
-	ON_COMMAND(ID_XZ, OnXz)
-	ON_COMMAND(ID_YZ, OnYz)
-	ON_COMMAND(ID_ShowAxis, OnShowAxis)
-	ON_UPDATE_COMMAND_UI(ID_ShowAxis, OnUpdateShowAxis)
-	ON_COMMAND(ID_RotXY, OnRotXY)
-	ON_UPDATE_COMMAND_UI(ID_RotXY, OnUpdateRotXY)
+	ON_COMMAND(IDC_XY, OnXy)
+	ON_COMMAND(IDC_XZ, OnXz)
+	ON_COMMAND(IDC_YZ, OnYz)
+	ON_COMMAND(IDC_ShowAxis, OnShowAxis)
+	ON_UPDATE_COMMAND_UI(IDC_ShowAxis, OnUpdateShowAxis)
+	ON_COMMAND(IDC_RotXY, OnRotXY)
+	ON_UPDATE_COMMAND_UI(IDC_RotXY, OnUpdateRotXY)
 	ON_WM_DESTROY()
 	ON_WM_ERASEBKGND()
 	ON_WM_CREATE()
@@ -132,7 +132,7 @@ BOOL CPreviewFileDialog::OnInitDialog()
 	m_GViewTools->GetWindowRect(&rect_tools);
 	rect.top = 0;
 	rect.bottom = 50;
-	rect.left = 20;
+	rect.left = 20 * TheFrame->GCodeDlg.dpiX/ TheFrame->GCodeDlg.dpi_standard;  // fixup for dpi awareness
 	rect.right = 400;
 	m_GViewTools->MoveWindow(&rect);
 
@@ -147,6 +147,8 @@ BOOL CPreviewFileDialog::OnInitDialog()
 			pObject3d->InvalidateDisplayList();
 		}
 	}
+
+	FirstFolderChange = true;
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 }
@@ -180,6 +182,11 @@ void CPreviewFileDialog::OnInitDone()
 
 void CPreviewFileDialog::OnFileNameChange()
 {
+	OnFileNameChange(false);
+}
+
+void CPreviewFileDialog::OnFileNameChange(bool FolderChanged)
+{
 	if(m_bPreview)
 	{
 		CString Path=GetFolderPath();
@@ -187,7 +194,7 @@ void CPreviewFileDialog::OnFileNameChange()
 		CString FullName= GetPathName();
 
 		CString Comb=Path+"\\"+FName;
-		if (Comb != FullName && FName!="")  // must have selected a directory
+		if ((Comb != FullName && FName!="") || FolderChanged)  // must have selected a directory
 			m_pPreview->SetPreviewFile("");
 		else
 			m_pPreview->SetPreviewFile(FullName);
@@ -206,7 +213,8 @@ void CPreviewFileDialog::OnFileNameChange()
 
 void CPreviewFileDialog::OnFolderChange()
 {
-	OnFileNameChange();
+	OnFileNameChange(!FirstFolderChange);
+	FirstFolderChange = false;
 }
 
 void CPreviewFileDialog::OnClickedPreview()

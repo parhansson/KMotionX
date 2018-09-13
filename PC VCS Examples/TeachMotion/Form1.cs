@@ -210,14 +210,14 @@ namespace TeachMotion
 
 
             GL.Color3(Color.Red);
-            GL.Begin(BeginMode.LineStrip);
+            GL.Begin(PrimitiveType.LineStrip);
             for (int i = 0; i < Npts; i++)
                 VertexTran(Y[i], X[i]);
             GL.End();
 
 
             GL.Color3(Color.White);
-            GL.Begin(BeginMode.LineStrip);
+            GL.Begin(PrimitiveType.LineStrip);
             for (int i = 0; i < Npts; i++)
                 VertexTran(Y[i], X2[i]);
             GL.End();
@@ -225,7 +225,7 @@ namespace TeachMotion
             if (ShowData.Checked)
             {
                 GL.Color3(Color.Violet);
-                GL.Begin(BeginMode.LineStrip);
+                GL.Begin(PrimitiveType.LineStrip);
                 foreach (CPoint c in CapList)
                     VertexTran(c.x, c.y);
                 GL.End();
@@ -240,7 +240,7 @@ namespace TeachMotion
 
             // Draw Tool
             GL.Color3(Color.Black);
-            GL.Begin(BeginMode.Polygon);
+            GL.Begin(PrimitiveType.Polygon);
             VertexTran(x,        y);
             VertexTran(x - 0.05, y + 0.05);
             VertexTran(x - 0.05, y + 0.20);

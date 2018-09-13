@@ -9,7 +9,8 @@
 //#define BOOL int
 //#define FALSE 0
 #include "GCodeInterpreterX.h"
-
+#include <limits.h>
+#include <stdlib.h>
 
 
 /*
@@ -82,28 +83,36 @@ int main(int argc, char* argv[])
 {
 	int DisplayedLineNo,BoardType;
 	BoardType = BOARD_TYPE_KFLOP;
-	char InFile[256];
-	char m4_cfile[256];
-	char setup_cfile[256];
+	char InFile[MAX_PATH];
+	char m4_cfile[MAX_PATH];
+	char setup_cfile[MAX_PATH];
 	int setup_thread = 1;
 	int m4_thread = 3;
 	char command[MAX_LINE];
 
-    char* rootDir;
+  char* rootDir;
 	rootDir = getenv("PWD");
 
-	sprintf(setup_cfile,"%s/../KMotionX/examples/ExecuteGCode/Stepper3Axis.c",rootDir);
-	sprintf(m4_cfile,"%s/../C Programs/BlinkKFLOP.c",rootDir);
+	char tmp_path[MAX_PATH];
+
+	sprintf(tmp_path,"%s/../KMotionX/examples/ExecuteGCode/Stepper3Axis.c",rootDir);
+  realpath(tmp_path, setup_cfile);
+
+	sprintf(tmp_path,"%s/../C Programs/BlinkKFLOP.c",rootDir);
+	realpath(tmp_path, m4_cfile);
+
 	//strcpy(setup_cfile,m4_cfile);
-	sprintf(InFile,"%s/../GCode Programs/SimpleCircle.ngc",rootDir);
+	sprintf(tmp_path,"%s/../GCode Programs/SimpleCircle.ngc",rootDir);
+	realpath(tmp_path, InFile);
 
 
 	CKMotionDLL *KM = new CKMotionDLL(0);
 
+	char errMsg[MAX_LINE];
 
 	printf("Loading file %s to thread %d\n", setup_cfile, setup_thread);
-	if(KM->CompileAndLoadCoff(setup_cfile,setup_thread)){
-		printf("Loading file %s to thread %d failed. Exiting.\n", setup_cfile, setup_thread);
+	if(KM->CompileAndLoadCoff(setup_cfile, setup_thread, errMsg, MAX_LINE)){
+		printf("Loading file %s to thread %d failed.\n%s\nExiting.\n", setup_cfile, setup_thread, errMsg);
 		exit(1);
 	} else {
 		sprintf(command,"Execute%d",setup_thread);

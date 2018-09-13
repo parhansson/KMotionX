@@ -499,10 +499,10 @@ int CKMotionIO::ReadLineTimeOut(char *buf, int TimeOutms)
 			{
 				// it is!  
 				
-				// if next character is 1-6
+				// if next character is 1-7
 				// handle it as a write file command
 				
-				if (buf[1] >=1 && buf[1] <=6)
+				if (buf[1] >=1 && buf[1] <=7)
 				{
 					// it is a disk command
 					HandleDiskIO(buf+1);
@@ -897,7 +897,7 @@ int CKMotionIO::USBLocation()
 
 // stronger than a Mutex lock because it protects against the same thread
 
-int CKMotionIO::KMotionLock()
+int CKMotionIO::KMotionLock(const char *CallerID)
 {
 	int result;
 	char reason[256];
@@ -927,6 +927,11 @@ int CKMotionIO::KMotionLock()
 	if (Token==0)
 	{
 		Token++;
+		if (CallerID==NULL)
+			m_LastCallerID[0] = '\0';
+		else
+			strcpy(m_LastCallerID, CallerID);
+
 		result=KMOTION_LOCKED;
 	}
 	else
@@ -949,7 +954,7 @@ int CKMotionIO::KMotionLockRecovery()
 	int result;
 
 	SendAbortOnConnect=false;
-	result = KMotionLock();
+	result = KMotionLock("KMotionLockRecovery");
 	SendAbortOnConnect=true;
 	
 	return result;
@@ -959,6 +964,7 @@ int CKMotionIO::KMotionLockRecovery()
 void CKMotionIO::ReleaseToken()
 {
 	Mutex->Lock();
+	m_LastCallerID[0] = '\0';
 	Token--;
 	if (Token < 0) Token=0; // ADDED THIS LINE TO ENFORCE Token >= 0
 	Mutex->Unlock();
@@ -990,6 +996,7 @@ int CKMotionIO::HandleDiskIO(char *s)
 // esc code 4 = fopen rt
 // esc code 5 = read next
 // esc code 6 = fclose read
+// esc code 7 = fopen wt
 
 	if (s[0] == 1)  // file open
 	{
@@ -1032,6 +1039,11 @@ int CKMotionIO::HandleDiskIO(char *s)
 	{
 		if (fr) fclose(fr);
 		fr=NULL;
+	}
+	else if (s[0] == 7)  // file open append text mode
+	{
+		if (f) fclose(f);
+		f = fopen(s + 1, "at");
 	}
 
 	return 0;
@@ -1120,7 +1132,7 @@ int CKMotionIO::ServiceConsole()
 	int timeout;
 	char buf[MAX_LINE];
 
-	if (KMotionLock() == KMOTION_LOCKED)  // quick check if it is available
+	if (KMotionLock("Service Console") == KMOTION_LOCKED)  // quick check if it is available
 	{
 		//if (!NumberBytesAvailToRead(&nbytes, false) && nbytes>0)
 	  //Instead of making one call with a long time out we first make a call with a short time out,

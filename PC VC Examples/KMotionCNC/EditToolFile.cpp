@@ -554,27 +554,27 @@ BEGIN_MESSAGE_MAP(CEditToolFile, CDialog)
 	ON_BN_CLICKED(IDC_Page3, &CEditToolFile::OnBnClickedPage3)
 	ON_BN_CLICKED(IDC_Page4, &CEditToolFile::OnBnClickedPage4)
 	ON_BN_CLICKED(IDC_Page5, &CEditToolFile::OnBnClickedPage5)
-	ON_BN_CLICKED(ID_SORT, &CEditToolFile::OnBnClickedSort)
-	ON_BN_CLICKED(ID_ImageDir0, &CEditToolFile::OnBnClickedImagedir0)
-	ON_BN_CLICKED(ID_ImageDir1, &CEditToolFile::OnBnClickedImagedir1)
-	ON_BN_CLICKED(ID_ImageDir2, &CEditToolFile::OnBnClickedImagedir2)
-	ON_BN_CLICKED(ID_ImageDir3, &CEditToolFile::OnBnClickedImagedir3)
-	ON_BN_CLICKED(ID_ImageDir4, &CEditToolFile::OnBnClickedImagedir4)
-	ON_BN_CLICKED(ID_ImageDir5, &CEditToolFile::OnBnClickedImagedir5)
-	ON_BN_CLICKED(ID_ImageDir6, &CEditToolFile::OnBnClickedImagedir6)
-	ON_BN_CLICKED(ID_ImageDir7, &CEditToolFile::OnBnClickedImagedir7)
-	ON_BN_CLICKED(ID_ImageDir8, &CEditToolFile::OnBnClickedImagedir8)
-	ON_BN_CLICKED(ID_ImageDir9, &CEditToolFile::OnBnClickedImagedir9)
-	ON_BN_CLICKED(ID_ImageDir10, &CEditToolFile::OnBnClickedImagedir10)
-	ON_BN_CLICKED(ID_ImageDir11, &CEditToolFile::OnBnClickedImagedir11)
-	ON_BN_CLICKED(ID_ImageDir12, &CEditToolFile::OnBnClickedImagedir12)
-	ON_BN_CLICKED(ID_ImageDir13, &CEditToolFile::OnBnClickedImagedir13)
-	ON_BN_CLICKED(ID_ImageDir14, &CEditToolFile::OnBnClickedImagedir14)
-	ON_BN_CLICKED(ID_ImageDir15, &CEditToolFile::OnBnClickedImagedir15)
-	ON_BN_CLICKED(ID_ImageDir16, &CEditToolFile::OnBnClickedImagedir16)
-	ON_BN_CLICKED(ID_ImageDir17, &CEditToolFile::OnBnClickedImagedir17)
-	ON_BN_CLICKED(ID_ImageDir18, &CEditToolFile::OnBnClickedImagedir18)
-	ON_BN_CLICKED(ID_ImageDir19, &CEditToolFile::OnBnClickedImagedir19)
+	ON_BN_CLICKED(IDC_SORT, &CEditToolFile::OnBnClickedSort)
+	ON_BN_CLICKED(IDC_ImageDir0, &CEditToolFile::OnBnClickedImagedir0)
+	ON_BN_CLICKED(IDC_ImageDir1, &CEditToolFile::OnBnClickedImagedir1)
+	ON_BN_CLICKED(IDC_ImageDir2, &CEditToolFile::OnBnClickedImagedir2)
+	ON_BN_CLICKED(IDC_ImageDir3, &CEditToolFile::OnBnClickedImagedir3)
+	ON_BN_CLICKED(IDC_ImageDir4, &CEditToolFile::OnBnClickedImagedir4)
+	ON_BN_CLICKED(IDC_ImageDir5, &CEditToolFile::OnBnClickedImagedir5)
+	ON_BN_CLICKED(IDC_ImageDir6, &CEditToolFile::OnBnClickedImagedir6)
+	ON_BN_CLICKED(IDC_ImageDir7, &CEditToolFile::OnBnClickedImagedir7)
+	ON_BN_CLICKED(IDC_ImageDir8, &CEditToolFile::OnBnClickedImagedir8)
+	ON_BN_CLICKED(IDC_ImageDir9, &CEditToolFile::OnBnClickedImagedir9)
+	ON_BN_CLICKED(IDC_ImageDir10, &CEditToolFile::OnBnClickedImagedir10)
+	ON_BN_CLICKED(IDC_ImageDir11, &CEditToolFile::OnBnClickedImagedir11)
+	ON_BN_CLICKED(IDC_ImageDir12, &CEditToolFile::OnBnClickedImagedir12)
+	ON_BN_CLICKED(IDC_ImageDir13, &CEditToolFile::OnBnClickedImagedir13)
+	ON_BN_CLICKED(IDC_ImageDir14, &CEditToolFile::OnBnClickedImagedir14)
+	ON_BN_CLICKED(IDC_ImageDir15, &CEditToolFile::OnBnClickedImagedir15)
+	ON_BN_CLICKED(IDC_ImageDir16, &CEditToolFile::OnBnClickedImagedir16)
+	ON_BN_CLICKED(IDC_ImageDir17, &CEditToolFile::OnBnClickedImagedir17)
+	ON_BN_CLICKED(IDC_ImageDir18, &CEditToolFile::OnBnClickedImagedir18)
+	ON_BN_CLICKED(IDC_ImageDir19, &CEditToolFile::OnBnClickedImagedir19)
 END_MESSAGE_MAP()
 
 
@@ -622,6 +622,15 @@ int CEditToolFile::LoadFile(CString File)
 	int ID,Slot;
 	double Diameter,Length,Xoffset,Yoffset;
 	CStdioFile f;
+
+	// check if there is no path specified, then add in default
+
+	if (File.Find(':') == -1 && File.Find("\\\\") == -1)
+	{
+		File = TheFrame->MainPathRoot + DATA_SUB_DIR + File;
+	}
+
+
 	if(!f.Open(File, CFile::modeRead|CFile::typeText))
 	{
 		AfxMessageBox("Unable to open Tool Table file:\r\r" + File);
@@ -929,7 +938,7 @@ int CEditToolFile::SaveFile(CString File)
 	for (int i=0; i<MAX_TOOLS; i++)
 	{
 		GetTool(i,Slot,ID,Length,Diameter,Xoffset,Yoffset,Comment,Image);
-		if (Slot || ID) fprintf(f,"%3d %6d %15.6f %15.6f %15.6f %15.6f \"%s\" \"%s\"\n",Slot,ID,Length,Diameter,Xoffset,Yoffset,Comment,Image);
+		if (Slot || ID) fprintf(f,"%3d %6d %15.6f %15.6f %15.6f %15.6f \"%s\" \"%s\"\n",Slot,ID,Length,Diameter,Xoffset,Yoffset,Comment.GetBuffer(),Image.GetBuffer());
 	}
 	fclose(f);
 	return 0;
@@ -1118,7 +1127,7 @@ void CEditToolFile::OnBnClickedImagedir19()
 
 void CEditToolFile::DoImageDir(CString &Image)
 {
-	CString s, FullPath,ImagePath=TheFrame->MainPathRoot + TOOL_IMAGE_SUB_DIR + '\\';
+	CString s, FullPath,ImagePath=TheFrame->MainPathRoot + TOOL_IMAGE_SUB_DIR;
 	
 	if (!UpdateData(TRUE)) return;
 
@@ -1128,7 +1137,7 @@ void CEditToolFile::DoImageDir(CString &Image)
 		FullPath="";
 	else 
 	{
-		if (Image.Find("\\")==-1)
+		if (Image.Find(':') == -1 && Image.Find("\\\\") == -1)
 			FullPath=ImagePath+Image;
 		else
 			FullPath=Image;
@@ -1142,8 +1151,10 @@ void CEditToolFile::DoImageDir(CString &Image)
 	if(FileDlg.DoModal() == IDOK)
 	{
 		Image = FileDlg.GetPathName();
-		CurrentDirectory = TheFrame->GCodeDlg.ExtractDirectory(Image);
-		Image = TheFrame->GCodeDlg.StripPathMatch(Image,ImagePath);
+		if (Image.Find(ImagePath) == 0)
+		{
+			Image.Delete(0, ImagePath.GetLength());
+		}
 	}
 
 	UpdateData(FALSE);

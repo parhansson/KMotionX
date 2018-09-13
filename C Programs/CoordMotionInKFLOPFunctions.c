@@ -81,6 +81,7 @@ void tp_calc_seg_trip_states(int Arc)
     {
         // we need const vel phase
         tc = (X-da-dd)/VM;
+        VMp = VM;
     }
     else
     {
@@ -346,6 +347,7 @@ void ExecBuf(void)
     	CS0_t=0.0;
 		CS0_TimeBase=TIMEBASE;
 	    CoordSystem0 = LastCoordSystem0;  
+   		CS0_Flushed=TRUE;	// Allow Motion to run to end
 	}
 }
 

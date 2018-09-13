@@ -37,6 +37,7 @@ CGViewerSetup::CGViewerSetup(CWnd* pParent /*=NULL*/)
 	m_IncludeA = FALSE;
 	m_IncludeB = FALSE;
 	m_IncludeC = FALSE;
+	m_IncludeToolAngles = FALSE;
 	//}}AFX_DATA_INIT
 }
 
@@ -74,6 +75,7 @@ void CGViewerSetup::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_IncludeA, m_IncludeA);
 	DDX_Check(pDX, IDC_IncludeB, m_IncludeB);
 	DDX_Check(pDX, IDC_IncludeC, m_IncludeC);
+	DDX_Check(pDX, IDC_IncludeToolAngles, m_IncludeToolAngles);
 	//}}AFX_DATA_MAP
 
 
@@ -92,9 +94,10 @@ END_MESSAGE_MAP()
 
 void CGViewerSetup::OnBrowseToolShapeFile() 
 {
-	CString IDir=TheFrame->MainPathRoot + "\\KMotion\\Data\\";
+	CString IDir=TheFrame->MainPathRoot + TOOL_IMAGE_SUB_DIR;
 
-	CPersistOpenDlg FileDlg (TRUE, ".wrl", NULL, 
+	CPersistOpenDlg FileDlg (TRUE, ".wrl", 
+		TheFrame->GCodeDlg.InitialFile(m_ToolShapeFile, TOOL_IMAGE_SUB_DIR, "Tool.wrl"),
 		OFN_FILEMUSTEXIST | OFN_ENABLESIZING, 
 		"Tool Shape VRML Files (*.wrl)|*.wrl|All Files (*.*)|*.*||");
 
@@ -103,13 +106,7 @@ void CGViewerSetup::OnBrowseToolShapeFile()
 
 	if (FileDlg.DoModal() == IDOK)
 	{
-		m_ToolShapeFile = FileDlg.GetPathName();
-
-		if (m_ToolShapeFile.Find(IDir) == 0)
-		{
-			m_ToolShapeFile.Delete(0,IDir.GetLength());
-		}
-			
+		m_ToolShapeFile=TheFrame->GCodeDlg.StripPathMatch(FileDlg.GetPathName(), TOOL_IMAGE_SUB_DIR);
 		UpdateData(FALSE);
 	}
 }

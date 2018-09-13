@@ -19,9 +19,9 @@ public:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
-
 	DECLARE_MESSAGE_MAP()
 public:
+	BOOL m_SaveFixtureOnOK;
 	double m_Fixture[NFIXAXES][NFIXTURES];
 	double m_Global[NFIXAXES];
 	CGCodeInterpreter *m_Interpreter;
@@ -40,4 +40,5 @@ public:
 	afx_msg void OnBnClickedClear9();
 	afx_msg void OnBnClickedClearG();
 	virtual BOOL OnInitDialog();
+	virtual void OnOK();
 };

@@ -1,4 +1,7 @@
-﻿using System;
+﻿/*********************************************************************/
+/*         Copyright (c) 2003-2016  DynoMotion Incorporated          */
+/*********************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -15,7 +18,7 @@ namespace MeasureFiducials
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new MainForm());
         }
     }
 }

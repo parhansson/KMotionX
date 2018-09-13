@@ -162,8 +162,8 @@ namespace kmx
 		strncpy(Compiler, customCompiler,MaxCompilerLen);
 		if (Compiler[0] == '/')
 		{
-			FILE *f = fopen(Compiler, "r"); // try if compiler is on path
-			if (f == NULL)
+			int result = access(Compiler, F_OK | X_OK); // try if compiler is accessible on absolute path
+			if (result)
 			{
 				snprintf(Compiler,MaxCompilerLen,"Error Locating custom compiler (given absolute path) %s",customCompiler);
 				return 1;
@@ -171,30 +171,26 @@ namespace kmx
 		}
 		else
 		{
-			FILE *f = fopen(Compiler, "r"); // try if compiler is on path
+			int result = access(Compiler, F_OK | X_OK);  // try if compiler is on path
+			if(result == 0 ) return 0;
 
-			if (f == NULL)
-			{
-				sprintf(Compiler, "%s/%s", getBinPath(), customCompiler);
-				f = fopen(Compiler, "r"); // try in the released directory next
-				if (f == NULL)
-				{
-					if (tcc_vers < 26)
-						sprintf(Compiler, "%s/TCC67/%s", getInstallPath(), customCompiler);
-					else
-						sprintf(Compiler, "%s/KMotionX/tcc-0.9.26/%s", getInstallPath(), customCompiler);
-					f = fopen(Compiler, "r"); // try in the released directory next
-					if (f == NULL)
-					{
-						snprintf(Compiler,MaxCompilerLen,"Error Locating c67-tcc Compiler %s",customCompiler);
-						return 1;
-					}
-				}
+			sprintf(Compiler, "%s/%s", getBinPath(), customCompiler);
+			result = access(Compiler, F_OK | X_OK); // try in the released directory next
+			if(result == 0 ) return 0;
+
+			sprintf(Compiler, "%s/TCC67/%s", getInstallPath(), customCompiler);
+			result = access(Compiler, F_OK | X_OK); // try in the released directory next
+			if(result == 0 ) return 0;
+
+			if(Compiler[0] != '.'){ // check if compiler is present in current dir
+				sprintf(Compiler, "./%s", customCompiler);
+				result = access(Compiler, F_OK | X_OK);
+				if(result == 0 ) return 0;
 			}
-			fclose(f);
 		}
+		snprintf(Compiler,MaxCompilerLen,"Error Locating c67-tcc Compiler %s",customCompiler);
+		return 1;
 		
-		return 0;
 	}
 
 	void SetCustomCompiler(const char * compiler, const char * options, int tcc_minor_version)
@@ -265,8 +261,8 @@ namespace kmx
 		int error = verifySubpath(root, "bin/", true) |
 		verifySubpath(root, "bin/tcc67", false) |
 		verifySubpath(root, "bin/KMotionServer", false) |
-		verifySubpath(root, "GCode Programs/", true) |
-		verifySubpath(root, "GCode Programs/emc.var", false) |
+		verifySubpath(root, "Data/", true) |
+		verifySubpath(root, "Data/emc.var", false) |
 		//verifySubpath(root, "GCode Programs/Default.set", false) |
 		//verifySubpath(root, "GCode Programs/Default.tbl", false) |
 		verifySubpath(root, "DSP_KFLOP/", true) |
@@ -323,4 +319,37 @@ namespace kmx
 				*p = '/';
 		return path;
 	}
-}
+
+	long int getThreadId(const char *callerId){
+		long int tid;
+		//tid = syscall(SYS_gettid/*224*/);
+	#ifdef __APPLE__
+		
+		pthread_t t;
+		t = pthread_self();
+		//unsigned int
+		mach_port_t mt;
+		mt = pthread_mach_thread_np(t);
+
+		//tid = t->__sig;
+		tid = mt;
+	#else 
+		//assume linux. do syscall
+		tid = syscall(SYS_gettid/*224*/);
+		if(tid < 0){
+			//perror("syscall");
+		}
+
+		//pthread_id_np_t   tid;
+		//tid = pthread_getthreadid_np();
+
+	#endif
+		// if(callerId){
+		// 		printf("%s wants to know thread id: %lu\n",callerId, tid);
+		// } else {
+		// 	printf("Thread id: %lu\n", tid);
+		// }
+		return tid;
+	}
+
+} //kmx namespace

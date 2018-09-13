@@ -47,15 +47,22 @@ public:
 		BOOL CalcLinear(double pos, double &linear, int &L, int &H);
 
 		afx_msg void CLogSlider::OnSetFocus(CWnd* pOldWnd);
+		int m_bkcolor, m_bkcolorLast;
+		CString m_bkbitmap;
+		CString m_bkbitmapLast;
 
 
         // Generated message map functions
 protected:
+
+
+
         double low; // low end of range
         double high; // high end of range
 
 		int m_offset;
 		int m_color;
+
 
         //{{AFX_MSG(CLogSlider)
                 // NOTE - the ClassWizard will add and remove member functions here.

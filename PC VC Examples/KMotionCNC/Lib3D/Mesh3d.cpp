@@ -124,8 +124,8 @@ int CMesh3d::glBuildList()
 			      m_Transform.GetRotation()->z());
 
 	if (m_Transform.GetValueRotationXY()!=0.0f) glRotatef(m_Transform.GetValueRotationXY(),0.0f,0.0f,1.0f);
-	if (m_Transform.GetValueRotationYZ()!=0.0f) glRotatef(m_Transform.GetValueRotationYZ(),1.0f,0.0f,0.0f);
 	if (m_Transform.GetValueRotationZX()!=0.0f) glRotatef(m_Transform.GetValueRotationZX(),0.0f,1.0f,0.0f);
+	if (m_Transform.GetValueRotationYZ()!=0.0f) glRotatef(m_Transform.GetValueRotationYZ(),1.0f,0.0f,0.0f);
 
 	// Init color
 	pFace = m_ArrayFace[0];

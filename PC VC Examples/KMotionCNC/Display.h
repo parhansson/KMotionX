@@ -11,6 +11,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+class CDisplay;
+typedef CDisplay *LPCDisplay;
+
 /////////////////////////////////////////////////////////////////////////////
 // CDisplay window
 
@@ -33,9 +36,21 @@ public:
 
 // Implementation
 public:
+	void Reset();
 	void SetTextColor(int color);
 	void SetText(CString OutText);
+	void SetFont(const char *szFaceName, int height, bool Bold, bool Italic);
+	void SetBackColor(int Color);
 	virtual ~CDisplay();
+	static CList <LPCDisplay, LPCDisplay> Displays;
+
+	CString m_FaceName;
+	bool m_Bold;
+	bool m_Italic;
+	int m_fheight;
+	int m_BackColor;
+
+
 
 	// Generated message map functions
 protected:
@@ -52,6 +67,7 @@ private:
 	void DrawBackGrnd();
 	RECT m_rect;
 	CDC *m_MemDC;
+	CFont m_font;
 };
 
 /////////////////////////////////////////////////////////////////////////////

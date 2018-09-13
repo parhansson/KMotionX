@@ -62,8 +62,8 @@ void SimpleHome(int axis,float speed,int dir,int bit,int polarity, float offset)
 	DisableAxis(axis);
 	
 	// disable the limits (first save how they were set) 
-	SaveLimits = chan[axis]->LimitSwitchOptions;
-	chan[axis]->LimitSwitchOptions = 0;
+	SaveLimits = chan[axis].LimitSwitchOptions;
+	chan[axis].LimitSwitchOptions = 0;
 	
 	EnableAxis(axis);	// enable axis and begin servoing where we are 
 
@@ -79,5 +79,5 @@ void SimpleHome(int axis,float speed,int dir,int bit,int polarity, float offset)
 	EnableAxis(axis);			// re-enable
 	Move(axis,-dir * offset);	// move some amount inside the limits
 	while (!CheckDone(axis)) ; 	// loop until motion completes 
-	chan[axis]->LimitSwitchOptions = SaveLimits;  // restore limit settings
+	chan[axis].LimitSwitchOptions = SaveLimits;  // restore limit settings
 }

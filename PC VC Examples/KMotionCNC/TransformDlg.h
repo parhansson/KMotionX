@@ -20,7 +20,10 @@ class CTransformDlg : public CDialog
 // Construction
 public:
 	int DoTransform(CString &s);
+	int DoSmooth(double *Values, int n, CString &r);
+	int AntiGouge(double *Values, double *IJValues, int n, CString &r);
 	CTransformDlg(CWnd* pParent = NULL);   // standard constructor
+	int PutValue(double Value, CString &news);
 
 // Dialog Data
 	//{{AFX_DATA(CTransformDlg)
@@ -32,6 +35,7 @@ public:
 	double	m_ScaleY;
 	double	m_ScaleZ;
 	UINT	m_Digits;
+	UINT	m_6AxesSmooth;
 	BOOL	m_ScaleIJ;
 	//}}AFX_DATA
 
@@ -46,7 +50,7 @@ public:
 // Implementation
 protected:
 
-	int ProcessVar(CString &t, CString v, double scale, double offset);
+	int ProcessVar(CString &t, CString v, double &value, double &PrevValue, double scale, double offset);
 	// Generated message map functions
 	//{{AFX_MSG(CTransformDlg)
 	virtual void OnOK();

@@ -316,8 +316,9 @@ namespace KMotion_dotNet
             }
         }
         /// <summary>
-        /// pecifies if the Z should then be fed down to some height 
+        /// specifies if the Z should then be fed down to some height 
         /// </summary>
+        /// <returns>true if feed should be performed</returns>
         public bool ResumeDoSafeFeedZ
         {
             get
@@ -332,6 +333,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Specifies height Z should be fed down to 
         /// </summary>
+        /// <returns>height in inches</returns>
         public double ResumeFeedSafeZ
         {
             get
@@ -344,8 +346,9 @@ namespace KMotion_dotNet
             }
         }
         /// <summary>
-        /// Specifies Rate at which feed rate should be restored to
+        /// Specifies Rate at which feed rate should be restored to before continuing GCode
         /// </summary>
+        /// <returns>Rate in ips</returns>
         public double ResumeFeedRate
         {
             get
@@ -358,8 +361,9 @@ namespace KMotion_dotNet
             }
         }
         /// <summary>
-        /// Specifies Rate at which feed rate should be restored to
+        /// Specifies Rate at which Z feed rate should be set at
         /// </summary>
+        /// <returns>Rate in ips</returns>
         public double ResumeZFeedRate
         {
             get
@@ -374,6 +378,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Specifies whether or not the specified feed rate should be restored 
         /// </summary>
+        /// <returns>true if feed should be restored</returns>
         public bool ResumeRestoreFeedRate
         {
             get
@@ -389,6 +394,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Specifies whether or not the Interpreter should be intialized before execution 
         /// </summary>
+        /// <returns>true if the Interpreter should be initialized</returns>
         public bool InitializeOnExecute
         {
             get
@@ -398,6 +404,28 @@ namespace KMotion_dotNet
             set
             {
                 Set_InitializeOnExecute(value);
+            }
+        }
+
+        /// <summary>
+        /// The Worker Thread ID of the GCode Interpreter 
+        /// </summary>
+        public int InterpretThreadID
+        {
+            get
+            {
+                return Get_InterpretThreadID();
+            }
+        }
+
+        /// <summary>
+        /// The Worker Thread ID of the GCode Interpreter Invoke Action 
+        /// </summary>
+        public int InvokeThreadID
+        {
+            get
+            {
+                return Get_InvokeThreadID();
             }
         }
 
@@ -466,6 +494,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Primary constructor for the KM_Interpreter object
         /// </summary>
+        /// <param name="coordmotion">KM_CoordMotion object to associate the Interpreter with</param>
         public KM_Interpreter(KM_CoordMotion coordmotion)
         {
             try
@@ -498,6 +527,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// KM_Interpreter Abort Condition
         /// </summary>
+        /// <returns>true if Aborted</returns>
         protected bool GetIsAbort()
         {
             bool abort = false;
@@ -526,6 +556,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// KM_Interpreter Halt Condition
         /// </summary>
+        /// <returns>true if Halted</returns>
         protected bool GetIsHalt()
         {
             bool halt = false;
@@ -557,6 +588,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Get KM_Interpreter possible to resume after a halt
         /// </summary>
+        /// <returns>true if resume sequence should be executed before beginning GCode</returns>
         protected bool Get_CanResume()
         {
             bool resume = false;
@@ -585,6 +617,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Set KM_Interpreter possible to resume after a halt
         /// </summary>
+        /// <param name="value">true if possible to resume</param>
         protected void Set_CanResume(bool value)
         {
             try
@@ -611,6 +644,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Get KM_Interpreter Safe Z height for Resume sequence
         /// </summary>
+        /// <returns>true if Safe Z Motion is to be performed</returns>
         protected double Get_ResumeSafeZ()
         {
             double retval = 0.0;
@@ -639,6 +673,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Set KM_Interpreter Safe Z height for Resume sequence
         /// </summary>
+        /// <param name="value">true if Safe Z Motion is to be performed</param>
         protected void Set_ResumeSafeZ(double value)
         {
             try
@@ -666,6 +701,7 @@ namespace KMotion_dotNet
         /// Get KM_Interpreter Safe Z Motion Relative vs Absolute setting
         /// 1=abs 0=rel
         /// </summary>
+        /// <returns>1=abs 0=rel</returns>
         protected int Get_ResumeSafeRelAbs()
         {
             int retval = 0;
@@ -695,6 +731,7 @@ namespace KMotion_dotNet
         /// Set KM_Interpreter Safe Z Motion Relative vs Absolute setting
         /// 1=abs 0=rel
         /// </summary>
+        /// <param name="value">1=abs 0=rel</param>
         protected void Set_ResumeSafeRelAbs(int value)
         {
             try
@@ -719,8 +756,9 @@ namespace KMotion_dotNet
         }
 
         /// <summary>
-        /// Get KM_Interpreter Safe Z Motion to be performed
+        /// Get KM_Interpreter Safe Z Motion to be performed or not
         /// </summary>
+        /// <returns>true if motion is to be performed</returns>
         protected bool Get_ResumeMoveToSafeZ()
         {
             bool retval = false;
@@ -749,6 +787,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Set KM_Interpreter Safe Z Motion to be performed
         /// </summary>
+        /// <param name="value">true to perform Z feed</param>
         protected void Set_ResumeMoveToSafeZ(bool value)
         {
             try
@@ -775,6 +814,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Get KM_Interpreter XY Traverse Motion to be performed
         /// </summary>
+        /// <returns>true to perform Traverse Motion</returns>
         protected bool Get_ResumeTraverseXY()
         {
             bool retval = false;
@@ -803,6 +843,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Set KM_Interpreter XY Traverse Safe Motion to be performed
         /// </summary>
+        /// <param name="value">true to perform Traverse Motion</param>
         protected void Set_ResumeTraverseXY(bool value)
         {
             try
@@ -829,6 +870,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Get KM_Interpreter XY Traverse Safe Motion to be performed
         /// </summary>
+        /// <returns>x position in inches</returns>
         protected double Get_ResumeTraverseSafeX()
         {
             double retval = 0.0;
@@ -857,6 +899,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Set KM_Interpreter Traverse Safe Motion X Position
         /// </summary>
+        /// <param name="value">X Position in inches</param>
         protected void Set_ResumeTraverseSafeX(double value)
         {
             try
@@ -883,6 +926,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Get KM_Interpreter Traverse Safe Motion Y Position
         /// </summary>
+        /// <returns>Y position in inches</returns>
         protected double Get_ResumeTraverseSafeY()
         {
             double retval = 0.0;
@@ -911,6 +955,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Set KM_Interpreter Traverse Safe Motion Y Position
         /// </summary>
+        /// <param name="value">Y Position in inches</param>
         protected void Set_ResumeTraverseSafeY(double value)
         {
             try
@@ -937,6 +982,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Get KM_Interpreter Safe Resume Start Spindle to be performed
         /// </summary>
+        /// <returns>true to perform Start Spindle</returns>
         protected bool Get_ResumeSafeStartSpindle()
         {
             bool retval = false;
@@ -965,6 +1011,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Set KM_Interpreter Safe Resume Start Spindle to be performed
         /// </summary>
+        /// <param name="value">true if Spindle Start should be performed</param>
         protected void Set_ResumeSafeStartSpindle(bool value)
         {
             try
@@ -991,6 +1038,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Get KM_Interpreter Safe Resume Start Spindle Direction to be performed
         /// </summary>
+        /// <returns>0=CW 1=CCW</returns>
         protected int Get_ResumeSafeSpindleCWCCW()
         {
             int retval = 0;
@@ -1019,6 +1067,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Set KM_Interpreter Safe Resume Start Spindle Direction to be performed
         /// </summary>
+        /// <param name="value">0=CW 1=CCW</param>
         protected void Set_ResumeSafeSpindleCWCCW(int value)
         {
             try
@@ -1045,6 +1094,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Get KM_Interpreter Safe Resume Z Feed to be performed
         /// </summary>
+        /// <returns>true if to be performed</returns>
         protected bool Get_ResumeDoSafeFeedZ()
         {
             bool retval = false;
@@ -1073,6 +1123,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Set KM_Interpreter Safe Resume Z Feed to be performed
         /// </summary>
+        /// <param name="value">true to perform Z feed</param>
         protected void Set_ResumeDoSafeFeedZ(bool value)
         {
             try
@@ -1099,6 +1150,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Get KM_Interpreter Safe Resume Z Feed Rate to be used
         /// </summary>
+        /// <returns>Feed Rate in ips</returns>
         protected double Get_ResumeFeedSafeZ()
         {
             double retval = 0.0;
@@ -1127,6 +1179,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Set KM_Interpreter Safe Resume Z Feed Rate to be used
         /// </summary>
+        /// <param name="value">Rate in ips</param>
         protected void Set_ResumeFeedSafeZ(double value)
         {
             try
@@ -1153,6 +1206,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Get KM_Interpreter Safe Resume Feed Rate to be used
         /// </summary>
+        /// <returns>Rate ips</returns>
         protected double Get_ResumeFeedRate()
         {
             double retval = 0.0;
@@ -1181,6 +1235,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Set KM_Interpreter Safe Resume Feed Rate to be used
         /// </summary>
+        /// <param name="value">rate ips</param>
         protected void Set_ResumeFeedRate(double value)
         {
             try
@@ -1207,6 +1262,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Get KM_Interpreter Safe Resume Z Feed Rate to be used
         /// </summary>
+        /// <returns>Feed Rate in ips</returns>
         protected double Get_ResumeZFeedRate()
         {
             double retval = 0.0;
@@ -1235,6 +1291,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Set KM_Interpreter Safe Resume Z Feed Rate to be used
         /// </summary>
+        /// <param name="value">rate ips</param>
         protected void Set_ResumeZFeedRate(double value)
         {
             try
@@ -1261,6 +1318,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Get KM_Interpreter Safe Resume Feed Rate to be restored or not
         /// </summary>
+        /// <returns>true if to be restored</returns>
         protected bool Get_ResumeRestoreFeedRate()
         {
             bool retval = false;
@@ -1289,6 +1347,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Set KM_Interpreter Safe Resume Feed Rate to be restored or not
         /// </summary>
+        /// <param name="value">rate ips</param>
         protected void Set_ResumeRestoreFeedRate(bool value)
         {
             try
@@ -2119,6 +2178,80 @@ namespace KMotion_dotNet
             {
                 throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
                   this.ToString(), "ConvertAbsoluteToInterpreterCoord"));
+            }
+        }
+
+        private int Get_InterpretThreadID()
+        {
+            try
+            {
+                return KM_dotnet_Interop_GCodeInterpreter_GetInterpretThreadID(_InstanceHandle);
+            }
+            catch (DllNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                    this.ToString(), "Get_InterpretThreadID"));
+            }
+            catch (EntryPointNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                   this.ToString(), "Get_InterpretThreadID"));
+            }
+            catch (Exception e)
+            {
+                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                  this.ToString(), "Get_InterpretThreadID"));
+            }
+        }
+
+        private int Get_InvokeThreadID()
+        {
+            try
+            {
+                return KM_dotnet_Interop_GCodeInterpreter_GetInvokeThreadID(_InstanceHandle);
+            }
+            catch (DllNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                    this.ToString(), "Get_InvokeThreadID"));
+            }
+            catch (EntryPointNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                   this.ToString(), "Get_InvokeThreadID"));
+            }
+            catch (Exception e)
+            {
+                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                  this.ToString(), "Get_InvokeThreadID"));
+            }
+        }
+
+        /// <summary>
+        /// Return the current Thread ID as a Win32 Identifier
+        /// useful in comparing Thead IDs with Interpreter Worker Thread
+        /// </summary>
+        /// <returns>Returns the current Thread ID</returns>
+        public int Get_InterpretWin32ThreadID()
+        {
+            try
+            {
+                return KM_dotnet_Interop_GCodeInterpreter_GetCurrentWin32ThreadID();
+            }
+            catch (DllNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                    this.ToString(), "GetCurrentWin32ThreadID"));
+            }
+            catch (EntryPointNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                   this.ToString(), "GetCurrentWin32ThreadID"));
+            }
+            catch (Exception e)
+            {
+                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                  this.ToString(), "GetCurrentWin32ThreadID"));
             }
         }
 

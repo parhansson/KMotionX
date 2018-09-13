@@ -66,6 +66,12 @@ CKMotionApp::CKMotionApp()
 	
 	// Save for everybody what directory we are installed in
 
+	// Avoid strange relative paths
+	CString s;
+	_fullpath(s.GetBufferSetLength(MAX_PATH), MainPath, MAX_PATH);
+	s.ReleaseBuffer();
+	MainPath = s;
+
 
 	MainPath.Replace("\"","");  // remove quotes
 	MainPath.TrimRight();

@@ -665,6 +665,8 @@ namespace KMotion_dotNet
             /// <summary>
             /// Associate KFLOP Axis Channel with Parameters
             /// </summary>
+            /// <param name="controller">KM_Controller object to axxociate the Axis with</param>
+            /// <param name="id">Axis ID</param>
             public KM_Axis_TuningParams(KM_Controller controller, int id)
             {
                 _Controller = controller;
@@ -675,6 +677,11 @@ namespace KMotion_dotNet
             /// <summary>
             /// Set or get IIR Z domain servo filter #0
             /// </summary>
+            /// <param name="p1">A1 Coefficient</param>
+            /// <param name="p2">A2 Coefficient</param>
+            /// <param name="p3">B0 Coefficient</param>
+            /// <param name="p4">B1 Coefficient</param>
+            /// <param name="p5">B2 Coefficient</param>
             public void SetIIR0(double p1, double p2, double p3, double p4, double p5)
             {
                 _Controller.WriteLine(String.Format("IIR{0} 0={1} {2} {3} {4} {5}",
@@ -683,6 +690,11 @@ namespace KMotion_dotNet
             /// <summary>
             /// Set or get IIR Z domain servo filter #1
             /// </summary>
+            /// <param name="p1">A1 Coefficient</param>
+            /// <param name="p2">A2 Coefficient</param>
+            /// <param name="p3">B0 Coefficient</param>
+            /// <param name="p4">B1 Coefficient</param>
+            /// <param name="p5">B2 Coefficient</param>
             public void SetIIR1(double p1, double p2, double p3, double p4, double p5)
             {
                 _Controller.WriteLine(String.Format("IIR{0} 1={1} {2} {3} {4} {5}",
@@ -691,6 +703,11 @@ namespace KMotion_dotNet
             /// <summary>
             /// Set or get IIR Z domain servo filter #2
             /// </summary>
+            /// <param name="p1">A1 Coefficient</param>
+            /// <param name="p2">A2 Coefficient</param>
+            /// <param name="p3">B0 Coefficient</param>
+            /// <param name="p4">B1 Coefficient</param>
+            /// <param name="p5">B2 Coefficient</param>
             public void SetIIR2(double p1, double p2, double p3, double p4, double p5)
             {
                 _Controller.WriteLine(String.Format("IIR{0} 2={1} {2} {3} {4} {5}",

@@ -48,8 +48,8 @@
 #define RS274NGC_TEXT_SIZE 256
 
 /* numerical constants */
-#define TOLERANCE_INCH 0.0005
-#define TOLERANCE_MM 0.005
+#define TOLERANCE_INCH_DEFAULT 0.0005
+#define TOLERANCE_RSMALL_INCH_DEFAULT 1e-12
 #define TOLERANCE_CONCAVE_CORNER 0.05	/* angle threshold for concavity for
 					   cutter compensation, in radians */
 #define TINY 1e-12		/* for arc_data_r */
@@ -87,11 +87,16 @@
 // feed_mode
 #define UNITS_PER_MINUTE 0
 #define INVERSE_TIME 1
+#define UNITS_PER_REV 2
 
 // cutter radius compensation mode, OFF already defined to 0
 // not using CANON_SIDE since interpreter handles cutter radius comp
 #define RIGHT 1
 #define LEFT 2
+
+// cutter radius compensation Entry Style
+#define EMC_COMP_ENTRY_STYLE 0
+#define FANUC_COMP_ENTRY_STYLE 1
 
 // number of parameters in parameter table
 #define RS274NGC_MAX_PARAMETERS 5400
@@ -117,6 +122,7 @@
 #define SIN 11
 #define SQRT 12
 #define TAN 13
+#define UNEGATIVE 14
 
 // binary operations
 #define NO_OPERATION 0
@@ -158,6 +164,7 @@
 #define G_41   410
 #define G_42   420
 #define G_43   430
+#define G_43_4 434
 #define G_49   490
 #define G_52   520
 #define G_53   530
@@ -191,6 +198,7 @@
 #define G_92_3 923
 #define G_93   930
 #define G_94   940
+#define G_95   950
 #define G_96   960
 #define G_97   970
 #define G_98   980
@@ -210,14 +218,20 @@ typedef enum { R_PLANE, OLD_Z } RETRACT_MODE;
 
 typedef int ON_OFF;
 
+typedef int COMP_ENTRY_STYLE;
+
 typedef struct block_struct {
     ON_OFF a_flag;
     double a_number;
     ON_OFF b_flag;
     double b_number;
-    ON_OFF c_flag;
-    double c_number;
-    char comment[256];
+	ON_OFF c_flag;
+	double c_number;
+	ON_OFF u_flag;
+	double u_number;
+	ON_OFF v_flag;
+	double v_number;
+	char comment[256];
     int d_number;
     double f_number;
     int g_modes[15];
@@ -271,13 +285,19 @@ typedef struct setup_struct {
     double AA_axis_offset;	// A-axis g92 offset
     double AA_current;		// current A-axis position
     double AA_origin_offset;	// A-axis origin offset
-    double BB_axis_offset;	// B-axis g92offset
-    double BB_current;		// current B-axis position
-    double BB_origin_offset;	// B-axis origin offset
-    double CC_axis_offset;	// C-axis g92offset
-    double CC_current;		// current C-axis position
-    double CC_origin_offset;	// C-axis origin offset
-    int active_g_codes[RS274NGC_ACTIVE_G_CODES];	// array of active G
+	double BB_axis_offset;	// B-axis g92offset
+	double BB_current;		// current B-axis position
+	double BB_origin_offset;	// B-axis origin offset
+	double CC_axis_offset;	// C-axis g92offset
+	double CC_current;		// current C-axis position
+	double CC_origin_offset;	// C-axis origin offset
+	double UU_axis_offset;	// U-axis g92offset
+	double UU_current;		// current U-axis position
+	double UU_origin_offset;	// U-axis origin offset
+	double VV_axis_offset;	// V-axis g92offset
+	double VV_current;		// current V-axis position
+	double VV_origin_offset;	// V-axis origin offset
+	int active_g_codes[RS274NGC_ACTIVE_G_CODES];	// array of active G
     // codes
     int active_m_codes[RS274NGC_ACTIVE_M_CODES];	// array of active M
     // codes
@@ -304,7 +324,7 @@ typedef struct setup_struct {
     double cycle_q;		// q-value for canned cycles
     double cycle_r;		// r-value for canned cycles
     DISTANCE_MODE distance_mode;	// absolute or incremental
-    int feed_mode;		// G_93 (inverse time) or G_94 units/min
+    int feed_mode;		// G_93 (inverse time) or G_94 units/min or G_95 units/rev
     ON_OFF feed_override;	// whether feed override is enabled
     double feed_rate;		// feed rate in current units/min
     ON_OFF flood;		// whether flood coolant is on
@@ -318,10 +338,20 @@ typedef struct setup_struct {
     double origin_offset_z;	// origin offset z
     ON_OFF percent_flag;	// ON means first line was percent sign
     CANON_PLANE plane;		// active plane, XY-, YZ-, or XZ-plane
+	COMP_ENTRY_STYLE CompEntryStyle;  // cutter radius compensation Entry Style
     ON_OFF probe_flag;		// flag indicating probing done
-    double program_x;		// program x, used when cutter comp on
-    double program_y;		// program y, used when cutter comp on
-    RETRACT_MODE retract_mode;	// for cycles, old_z or r_plane
+	double program_x;		// program x, used when cutter comp on
+	double program_y;		// program y, used when cutter comp on
+	double pending_comp_move_type;	// either G_0 or G_1
+	double pending_comp_x;	// starting point x of contour used with fanuc style Comp Entry Style
+	double pending_comp_y;	// starting point y of contour used with fanuc style Comp Entry Style
+	double pending_comp_z;	// starting point z of contour used with fanuc style Comp Entry Style
+	double pending_comp_AA;	// starting point A of contour used with fanuc style Comp Entry Style
+	double pending_comp_BB;	// starting point B of contour used with fanuc style Comp Entry Style
+	double pending_comp_CC;	// starting point C of contour used with fanuc style Comp Entry Style
+	double pending_comp_UU;	// starting point U of contour used with fanuc style Comp Entry Style
+	double pending_comp_VV;	// starting point V of contour used with fanuc style Comp Entry Style
+	RETRACT_MODE retract_mode;	// for cycles, old_z or r_plane
     int selected_tool_slot;	// tool slot selected but not active
     int sequence_number;	// sequence number of line last read
     double speed;		// current spindle speed in rpm
@@ -341,6 +371,8 @@ typedef struct setup_struct {
 	int cutter_radius_compensation;
 	double cycle_z;
 	int current_line;
+	double arc_radius_tol; //allowed radius difference from beginning to end of arc (inches)
+	double arc_radius_small_tol; //allowed radius small from beginning to end of arc (inches)
 
 	fpos_t sub_stack_pos[MAX_SUB_STACK];
 	fpos_t sub_stack_sub_start_pos[MAX_SUB_STACK];
@@ -417,6 +449,9 @@ extern int rs274ngc_restore_parameters(const char *filename);
 // save interpreter variables to file
 extern int rs274ngc_save_parameters(const char *filename,
     const double parameters[]);
+
+extern bool rs274ngc_save_parameters_changed(void);
+
 
 // synchronize your internal model with the external world
 extern int rs274ngc_synch();

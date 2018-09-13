@@ -10,7 +10,7 @@
 #endif
 
 
-// Now we use the generic helper definitions above to define KMOTIONDLL_API and KMOTIONDLL_LOCAL.
+// Now we use the generic helper definitions above to define GCODEINTERPRETER_API and GCODEINTERPRETER_LOCAL.
 // GCODEINTERPRETER_API is used for the public API symbols. It either DLL imports or DLL exports (or does nothing for static build)
 // GCODEINTERPRETER_LOCAL is used for non-api symbols.
 
@@ -36,7 +36,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#define MAX_ACTUATORS 6
+#define MAX_ACTUATORS 8
 
 
 
@@ -45,20 +45,28 @@ class GCODEINTERPRETER_API CKinematics
 {
 public:
 	int Solve(double *A, int N);
-	int MaxAccelInDirection(double dx, double dy, double dz, double da, double db, double dc, double *accel);
+	int MaxAccelInDirection(double dx, double dy, double dz, double da, double db, double dc, double du, double dv, double *accel);
+	int MaxRateInDirection(double dx, double dy, double dz, double da, double db, double dc, double du, double dv, double *rate);
 	int MaxRateInDirection(double dx, double dy, double dz, double da, double db, double dc, double *rate);
-	int MaxRapidRateInDirection(double dx, double dy, double dz, double da, double db, double dc, double *rate);
-	int MaxRapidJerkInDirection(double dx, double dy, double dz, double da, double db, double dc, double *jerk);
-	int MaxRapidAccelInDirection(double dx, double dy, double dz, double da, double db, double dc, double *accel);
-	virtual int TransformCADtoActuators(double x, double y, double z, double a, double b, double c, double *Acts);
-	virtual int TransformActuatorstoCAD(double *Acts, double *x, double *y, double *z, double *a, double *b, double *c);
-	int InvertTransformCADtoActuators(double *Acts, double *xr, double *yr, double *zr, double *ar, double *br, double *cr);
+	int MaxRapidRateInDirection(double dx, double dy, double dz, double da, double db, double dc, double du, double dv, double *rate);
+	int MaxRapidJerkInDirection(double dx, double dy, double dz, double da, double db, double dc, double du, double dv, double *jerk);
+	int MaxRapidAccelInDirection(double dx, double dy, double dz, double da, double db, double dc, double du, double dv, double *accel);
+	virtual int TransformCADtoActuators(double x, double y, double z, double a, double b, double c, double u, double v, double *Acts, bool NoGeo = false);
+	virtual int TransformCADtoActuators(double x, double y, double z, double a, double b, double c, double *Acts, bool NoGeo = false);
+	virtual int TransformActuatorstoCAD(double *Acts, double *x, double *y, double *z, double *a, double *b, double *c, bool NoGeo = false);
+	virtual int TransformActuatorstoCAD(double *Acts, double *x, double *y, double *z, double *a, double *b, double *c, double *u, double *v, bool NoGeo = false);
+	virtual int ComputeAnglesOption(int is);
+	int InvertTransformCADtoActuators(double *Acts, double *xr, double *yr, double *zr, double *ar, double *br, double *cr, bool NoGeo = false);
+	virtual int RemapForNonStandardAxes(double *x, double *y, double *z, double *a, double *b, double *c);
 
 	int IntersectionTwoCircles(CPT2D c0, double r0, CPT2D c1, double r1, CPT2D *q);
 
-	int ReadGeoTable(const char *name);
-	int GeoCorrect(double x, double y, double z, double *cx, double *cy, double *cz);
-
+	virtual int ReadGeoTable(const char *name);
+	virtual int GeoCorrect(double x, double y, double z, double *cx, double *cy, double *cz);
+	virtual int GetSoftLimits(double *xm, double *xp, double *ym, double *yp, double *zm, double *zp,
+		double *am, double *ap, double *bm, double *bp, double *cm, double *cp, double *um, double *up, double *vm, double *vp) {
+		return 0;
+	}
 	
 	CKinematics();
 	virtual ~CKinematics();

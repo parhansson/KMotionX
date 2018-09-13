@@ -1,0 +1,13 @@
+G20
+#100 = 1  (Variable to determine if we should Run/Halt)
+
+M98 P1 L1000000000  (Loop forever until Halted)
+
+O1      (main loop)
+G0X0    (Some G Code)
+G0X1
+M98 P2 L[#100 = 0] (Conditionally call a Subroutine to Halts)
+M99
+
+O2  (Calling this subroutine will Halt the GCode)
+M30 (Halt)

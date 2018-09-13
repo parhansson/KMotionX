@@ -383,6 +383,15 @@ int read_setup_file(     /* ARGUMENT VALUES             */
 			else
 				DRIVER_ERROR_CF("Bad value %s for length_units in setup file", value);
 		}
+		else if (strcmp(attribute, "comp_entry_style") IS 0)
+		{
+			if (strcmp(value, "EMC_COMP_ENTRY_STYLE") IS 0)
+				settings->CompEntryStyle SET_TO EMC_COMP_ENTRY_STYLE;
+			else if (strcmp(value, "FANUC_COMP_ENTRY_STYLE") IS 0)
+				settings->CompEntryStyle SET_TO FANUC_COMP_ENTRY_STYLE;
+			else
+				DRIVER_ERROR_CF("Bad value %s for comp_entry_style in setup file", value);
+		}
 		else if (strcmp(attribute, "mist") IS 0)
 		{
 			if (strcmp(value, "OFF") IS 0)
@@ -481,6 +490,8 @@ int read_setup_file(     /* ARGUMENT VALUES             */
 	Vars[5204+index*20] = settings->AA_origin_offset;
 	Vars[5205+index*20] = settings->BB_origin_offset;
 	Vars[5206+index*20] = settings->CC_origin_offset;
+	Vars[5207+index*20] = settings->UU_origin_offset;
+	Vars[5208+index*20] = settings->VV_origin_offset;
 
 	return RS274NGC_OK;
 }
@@ -570,26 +581,26 @@ int read_tool_file(      /* ARGUMENT VALUES             */
 				&tool_id, &offset, &diameter, &xoffset, &yoffset, &n) IS 0)
 				DRIVER_ERROR_CF2("Bad input line \"%s\" in tool file", buffer);
 
-      char s[256+60];
-      strcpy(s,buffer+n);
-      Image[0] = 0;
-      Comment[0] = 0;
-      BOOL bImageSuccess = TRUE;
-      BOOL bCommentSuccess = TRUE;
-      if(strstr(s," \"\"") != s){
-        if(sscanf(s, " \"%[^\"]\"%n", Comment,&n) != 1){
-          bCommentSuccess = FALSE;
-        }
-      } else {
-        n = 3;
-      }
+			//TODO check toofile parsing /PH
+			char s[256+60];
+			strcpy(s,buffer+n);
+			Image[0] = 0;
+			Comment[0] = 0;
+			BOOL bImageSuccess = TRUE;
+			BOOL bCommentSuccess = TRUE;
+			if(strstr(s," \"\"") != s){
+        		if(sscanf(s, " \"%[^\"]\"%n", Comment,&n) != 1){
+          			bCommentSuccess = FALSE;
+        		}
+			} else {
+        		n = 3;
+			}
 
-      if(strstr(s+n," \"\"") != s+n){
-        if(sscanf(s+n, " \"%[^\"]\"", Image) != 1){
-          bCommentSuccess = FALSE;
-        }
-      }
-
+			if(strstr(s+n," \"\"") != s+n){
+				if(sscanf(s+n, " \"%[^\"]\"", Image) != 1){
+					bCommentSuccess = FALSE;
+				}
+			}
 			if(!bImageSuccess)
 			{
 				DRIVER_ERROR_CF2("Bad input line \"%s\" in tool file, no quotation marks for comment", buffer);

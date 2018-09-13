@@ -1,16 +1,18 @@
-﻿Public Class Form1
+﻿
+Public Class Form1
     Dim device As New DynoMotionVBnetProvider
     Dim updating As Boolean = False
 
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Timer1.Enabled = True
+        System.Threading.Thread.CurrentThread.CurrentCulture = New System.Globalization.CultureInfo("en-US")
     End Sub
 
     Private Sub Timer1_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer1.Tick
- 
+
         updating = True
 
- 
+
         device.UpdateVaules()
         txtXAxisPos.Text = FormatNumber(device.XPosition, 3)
         txtYAxisPos.Text = FormatNumber(device.YPosition, 3)
@@ -29,6 +31,7 @@
 
         If device.InterpreterStatus <> "" Then
             lblInterpreterFeedBack.Text &= device.InterpreterStatus
+            LimitLines(lblInterpreterFeedBack, 100) ' limit log to last n lines
             Dim pos As Integer = lblInterpreterFeedBack.Text.LastIndexOf(vbCrLf)
             lblInterpreterFeedBack.Select(pos + 2, 0)
             lblInterpreterFeedBack.ScrollToCaret()
@@ -37,6 +40,7 @@
 
         If device.CoordMotionStatus <> "" Then
             lblCoordStatus.Text &= device.CoordMotionStatus
+            LimitLines(lblCoordStatus, 100) ' limit log to last n lines
             Dim pos As Integer = lblCoordStatus.Text.LastIndexOf(vbCrLf)
             lblCoordStatus.Select(pos + 2, 0)
             lblCoordStatus.ScrollToCaret()
@@ -51,14 +55,22 @@
 
     End Sub
 
+    Private Sub LimitLines(ByRef MyBox As TextBox, n As Integer)
+        If MyBox.Lines.Count > n Then
+            Dim newList As List(Of String) = MyBox.Lines.ToList
+            newList.RemoveRange(0, MyBox.Lines.Count - n)
+            MyBox.Lines = newList.ToArray
+        End If
+    End Sub
+
 
 
     'Jogging  
     Private Sub sldJogX_Scroll(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles sldJogX.Scroll
         If updating = False Then
             device.XJogValue = sldJogX.Value / 100.0
-            lblXJogPercent.Text = String.Format("{0} %", sldJogX.Value) 
-        End If 
+            lblXJogPercent.Text = String.Format("{0} %", sldJogX.Value)
+        End If
     End Sub
 
     Private Sub sldJogY_Scroll(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles sldJogY.Scroll
@@ -176,7 +188,7 @@
     End Sub
 
 
- 
+
     Private Sub chkSimInterpreter_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkSimInterpreter.CheckedChanged
         If updating = False Then
             device.SimulateInterpreter = chkSimInterpreter.Checked
@@ -274,7 +286,7 @@
             cy = Convert.ToDouble(txtArcCY.Text)
         End If
 
-        device.DoArc(ex, ey, ez, cx, cy) 
+        device.DoArc(ex, ey, ez, cx, cy)
     End Sub
 
     Private Sub btnClearCoordLog_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnClearCoordLog.Click
@@ -284,7 +296,7 @@
 
     End Sub
 
-    
+
     Private Sub txtFeedRate_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtFeedRate.TextChanged
         If IsNumeric(txtFeedRate.Text.ToString()) Then
             device.FeedRate = Convert.ToDouble(txtFeedRate.Text)

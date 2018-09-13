@@ -22,8 +22,8 @@ public:
 	double Act2Off;
 	CKinematics3Rod();
 	virtual ~CKinematics3Rod();
-	virtual int TransformCADtoActuators(double x, double y, double z, double a, double b, double c, double *Acts);
-	virtual int TransformActuatorstoCAD(double *Acts, double *x, double *y, double *z, double *a, double *b, double *c);
+	virtual int TransformCADtoActuators(double x, double y, double z, double a, double b, double c, double *Acts, bool NoGeo = false);
+	virtual int TransformActuatorstoCAD(double *Acts, double *x, double *y, double *z, double *a, double *b, double *c, bool NoGeo = false);
 };
 
 #endif // !defined(AFX_KINEMATICS3ROD_H__876A0A72_6EC3_48D0_9040_60AE3DA2F3C7__INCLUDED_)

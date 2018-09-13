@@ -14,7 +14,6 @@ static char THIS_FILE[]=__FILE__;
 #endif
 
 
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -46,108 +45,94 @@ CKMotionIO::~CKMotionIO()
 	delete Mutex;
 }
 
+
+
 bool CKMotionIO::RequestedDeviceAvail(char *Reason)
 {
+	FT_DEVICE_LIST_INFO_NODE *devInfo;
 	FT_STATUS ftStatus;
-	FT_DEVICE ftDevice;
-	DWORD deviceID;
-	int i, numDevs, list[MAX_BOARDS];
-	char SerialNumber[16]; 
-	char Description[64]; 
+	DWORD numDevs;  
+	int i;
 
 	Mutex->Lock();
+
+	// create the device information list
+	ftStatus = FT_CreateDeviceInfoList(&numDevs);
 	
-	// fill the list with -1 because driver
-	// leaves the entries for open drivers unchanged
+	if (ftStatus == FT_OK) 
+	{ 
+		if (numDevs > 0) 
+		{ 
+			// allocate storage for list based on numDevs 
+			devInfo = (FT_DEVICE_LIST_INFO_NODE*)malloc(sizeof(FT_DEVICE_LIST_INFO_NODE)*numDevs); // get the device information list 
+			// get the device information list
+			ftStatus = FT_GetDeviceInfoList(devInfo,&numDevs);
 
-	for (i=0; i<16; i++) list[i]=-1;
-
-	numDevs=-1;
-
-	ftStatus = FT_ListDevices(list,&numDevs,FT_LIST_ALL|FT_OPEN_BY_LOCATION);
-	
-	if (numDevs==0)
-	{
-		Mutex->Unlock();
-		if (Reason) strcpy(Reason,"No KMotion devices available");
-		return false;
-	}
-
-	if (numDevs < 1 || numDevs >= MAX_BOARDS) 
-	{
-		Mutex->Unlock();
-		if (Reason) strcpy(Reason,"No KMotion devices available");
-		return false;
-	}
-
-	// go through the list and remove any non-dynomotion boards
-	for (i=0; i<numDevs; i++)
-	{
-		if (list[i] != -1)
-		{
-			ftStatus = FT_OpenEx((void *)list[i], FT_OPEN_BY_LOCATION, &ftHandle); 
-
-			if(ftStatus != FT_OK)
-			{ 
-			   // FT_Open failed 
-			   list[i] = -1;  // mark as unusable 
-			} 
-			else
+			for (i=0; i<(int)numDevs; i++)
 			{
-				ftStatus = FT_GetDeviceInfo( 
-					  ftHandle, 
-					  &ftDevice, 
-					  &deviceID, 
-					  SerialNumber, 
-					  Description, 
-					  NULL 
-					  ); 
-
-				if (ftStatus == FT_OK) 
+				if (strstr(devInfo[i].Description,"KFLOP")== NULL &&
+					strstr(devInfo[i].Description,"KMotion")== NULL &&
+					strstr(devInfo[i].Description,"Dynomotion")== NULL)
 				{
-					FT_Close(ftHandle);
+					// remove it from the list
+					for (int k=i+1; k<(int)numDevs; k++)
+						devInfo[k-1] = devInfo[k];  // shift up
+					
+					numDevs--;
+					i--; // redo this slot since it was deleted and things shifted up
+				}
+			}
 
-					if (strstr(Description,"KFLOP")== NULL &&
-						strstr(Description,"KMotion")== NULL &&
-						strstr(Description,"Dynomotion")== NULL)
+			// if USB Location is undefined select the first from
+			// the list that is not already taken
+
+			if (!BoardIDAssigned)
+			{
+				for (i=0; i<(int)numDevs && !BoardIDAssigned; i++)
+				{
+					int k;
+					// make sure nobody is already using this one
+					for (k=0; k<MAX_BOARDS; k++)
 					{
-						// remove it from the list
-						for (int k=i+1; k<numDevs; k++)
-							list[k-1] = list[k];  // shift up
-						
-						numDevs--;
-						i--; // redo this slot since it was deleted and things shifted up
+						if (devInfo[i].LocId==KMotionLocal.KMotionIO[k].USB_Loc_ID)
+							break;
+					}
+					if (k==MAX_BOARDS)
+					{
+						BoardIDAssigned=true;
+						USB_Loc_ID=devInfo[i].LocId;  // assign it
 					}
 				}
+
+				if (!BoardIDAssigned)
+				{
+					Mutex->Unlock();
+					if (Reason) strcpy(Reason,"No KMotion devices available");
+					return false;
+				}
 			}
-		}
-	}
 
+			// user wants a specific usb location
+			// so see if it is available
 
-	// if USB Location is undefined select the first from
-	// the list that is not already taken
-
-	if (!BoardIDAssigned)
-	{
-		for (i=0; i<numDevs && !BoardIDAssigned; i++)
-		{
-			if (list[i] != -1)
+			for (i=0; i<(int)numDevs; i++)
 			{
-				int k;
-				// make sure nobody is already using this one
-				for (k=0; k<MAX_BOARDS; k++)
-				{
-					if (list[i]==KMotionLocal.KMotionIO[k].USB_Loc_ID)
-						break;
-				}
-				if (k==MAX_BOARDS)
-				{
-					BoardIDAssigned=true;
-					USB_Loc_ID=list[i];  // assign it
-				}
+				if (devInfo[i].LocId==USB_Loc_ID)
+					break;
 			}
+
+			if (i==numDevs)
+			{
+				Mutex->Unlock();
+				if (Reason) sprintf(Reason,"KMotion not found on USB Location %08X\r\r"
+										   "Unable to open device",USB_Loc_ID);
+				return false;
+			}
+
+
+			delete (devInfo);
 		}
-		if (!BoardIDAssigned)
+		else
 		{
 			Mutex->Unlock();
 			if (Reason) strcpy(Reason,"No KMotion devices available");
@@ -155,26 +140,10 @@ bool CKMotionIO::RequestedDeviceAvail(char *Reason)
 		}
 	}
 
-	// user wants a specific usb location
-	// so see if it is available
-
-	for (i=0; i<numDevs; i++)
-	{
-		if (list[i]==USB_Loc_ID)
-			break;
-	}
-
-	if (i==numDevs)
-	{
-		Mutex->Unlock();
-		if (Reason) sprintf(Reason,"KMotion not found on USB Location %08X\r\r"
-								   "Unable to open device",USB_Loc_ID);
-		return false;
-	}
-
 	Mutex->Unlock();
 	return true;
 }
+
 
 
  
@@ -455,10 +424,10 @@ int CKMotionIO::ReadLineTimeOut(char *buf, int TimeOutms)
 			{
 				// it is!  
 				
-				// if next character is 1-6
+				// if next character is 1-7
 				// handle it as a write file command
 				
-				if (buf[1] >=1 && buf[1] <=6)
+				if (buf[1] >=1 && buf[1] <=7)
 				{
 					// it is a disk command
 					HandleDiskIO(buf+1);
@@ -865,7 +834,7 @@ int CKMotionIO::USBLocation()
 
 // stronger than a Mutex lock because it protects against the same thread
 
-int CKMotionIO::KMotionLock()
+int CKMotionIO::KMotionLock(const char *CallerID)
 {
 	int result;
 	int board = this - KMotionLocal.KMotionIO;
@@ -894,6 +863,11 @@ int CKMotionIO::KMotionLock()
 	if (Token==0)
 	{
 		Token++;
+		if (CallerID==NULL)
+			m_LastCallerID[0] = '\0';
+		else
+			strcpy(m_LastCallerID, CallerID);
+
 		result=KMOTION_LOCKED;
 	}
 	else
@@ -915,7 +889,7 @@ int CKMotionIO::KMotionLockRecovery()
 	int result;
 
 	SendAbortOnConnect=false;
-	result = KMotionLock();
+	result = KMotionLock("KMotionLockRecovery");
 	SendAbortOnConnect=true;
 	
 	return result;
@@ -925,6 +899,7 @@ int CKMotionIO::KMotionLockRecovery()
 void CKMotionIO::ReleaseToken()
 {
 	Mutex->Lock();
+	m_LastCallerID[0] = '\0';
 	Token--;
 	if (Token < 0) Token=0; // ADDED THIS LINE TO ENFORCE Token >= 0
 	Mutex->Unlock();
@@ -955,6 +930,7 @@ int CKMotionIO::HandleDiskIO(char *s)
 // esc code 4 = fopen rt
 // esc code 5 = read next
 // esc code 6 = fclose read
+// esc code 7 = fopen wt
 
 	if (s[0] == 1)  // file open
 	{
@@ -997,6 +973,11 @@ int CKMotionIO::HandleDiskIO(char *s)
 	{
 		if (fr) fclose(fr);
 		fr=NULL;
+	}
+	else if (s[0] == 7)  // file open append text mode
+	{
+		if (f) fclose(f);
+		f = fopen(s + 1, "at");
 	}
 
 	return 0;
@@ -1084,7 +1065,7 @@ int CKMotionIO::ServiceConsole()
 	int nbytes, timeout;
 	char b[MAX_LINE];
 
-	if (KMotionLock() == KMOTION_LOCKED)  // quick check if it is available
+	if (KMotionLock("Service Console") == KMOTION_LOCKED)  // quick check if it is available
 	{
 		if (!NumberBytesAvailToRead(&nbytes, false) && nbytes>0)
 		{

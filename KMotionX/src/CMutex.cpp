@@ -34,8 +34,7 @@ either expressed or implied, of the FreeBSD Project.
  */
 
 #include <CMutex.h>
-#include <unistd.h>
-#include <sys/syscall.h>
+#include "KMotionX.h"
 
 long int owner;
 int lockCount;
@@ -70,7 +69,7 @@ CMutex::CMutex(int initiallyOwn,const char *name ,int n){
 
 //		printf("Thread %.8x %.8x: Waiting to get lock \n", t);
 
-		long int tid = ::getThreadId("CMutex:Lock (timeout)");
+		long int tid = kmx::getThreadId("CMutex:Lock (timeout)");
 		//printf("%s:%d Mutex: %s waiting max timout %d thread %ld lockCount %d", __FILE__, __LINE__, name,TimeOut_ms,tid,lockCount);
 		//using Ms = std::chrono::milliseconds;
 		bool success = mutex.try_lock_for(std::chrono::milliseconds(TimeOut_ms));
@@ -85,7 +84,7 @@ CMutex::CMutex(int initiallyOwn,const char *name ,int n){
 	}
 
 	void CMutex::Lock(){
-		long int tid = ::getThreadId("CMutex:Lock");
+		long int tid = kmx::getThreadId("CMutex:Lock");
 		//return Lock(4294967295);
 		//printf("%s:%d Mutex: %s thread %ld lockCount %d waiting", __FILE__, __LINE__, name,tid,lockCount);
 		mutex.lock();
@@ -96,7 +95,7 @@ CMutex::CMutex(int initiallyOwn,const char *name ,int n){
 	}
 
 	void CMutex::Unlock(){
-		long int tid = ::getThreadId("CMutex::Unlock");
+		long int tid = kmx::getThreadId("CMutex::Unlock");
 
 		if(owner == tid && lockCount > 0){
 			//printf("%s:%d Mutex: %s thread %ld lockCount %d unlock.....", __FILE__, __LINE__, name, tid,lockCount);
@@ -107,36 +106,5 @@ CMutex::CMutex(int initiallyOwn,const char *name ,int n){
 
 	}
 
-	long int getThreadId(const char *callerId){
-		long int tid;
-		//tid = syscall(SYS_gettid/*224*/);
-	#ifdef __APPLE__
-		
-		pthread_t t;
-		t = pthread_self();
-		//unsigned int
-		mach_port_t mt;
-		mt = pthread_mach_thread_np(t);
-
-		//tid = t->__sig;
-		tid = mt;
-	#else 
-		//assume linux. do syscall
-		tid = syscall(SYS_gettid/*224*/);
-		if(tid < 0){
-			//perror("syscall");
-		}
-
-		//pthread_id_np_t   tid;
-		//tid = pthread_getthreadid_np();
-
-	#endif
-		// if(callerId){
-		// 		printf("%s wants to know thread id: %lu\n",callerId, tid);
-		// } else {
-		// 	printf("Thread id: %lu\n", tid);
-		// }
-		return tid;
-	}
 
 

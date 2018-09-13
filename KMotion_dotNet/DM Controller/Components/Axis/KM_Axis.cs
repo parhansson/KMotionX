@@ -229,9 +229,9 @@ namespace KMotion_dotNet
         /// <summary>
         /// Default constructor for the Axis Object
         /// </summary>
-        /// <param name="controller"></param>
-        /// <param name="id"></param>
-        /// <param name="name"></param>
+        /// <param name="controller">KM_Controller object to associate the axis</param>
+        /// <param name="id">identifier</param>
+        /// <param name="name">friendly name</param>
         public KM_Axis(KM_Controller controller, int id, string name)
         {
             _Controller = controller;
@@ -503,6 +503,7 @@ namespace KMotion_dotNet
         /// Bring an axis to an enabled state and specify the commanded destination for the axis
         /// dest is multiplied by CPU and sent to KFLOP
         /// </summary>
+        /// <param name="dest">Target Destination for the axis</param>
         public void EnableDest(double dest)
         {
             try

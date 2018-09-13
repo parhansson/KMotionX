@@ -20,7 +20,7 @@ Module Module1
     Private Declare Sub KMViaVB_ReleaseToken Lib "KMViaVB" (ByVal handle As Integer)
     Private Declare Function KMViaVB_Failed Lib "KMViaVB" (ByVal handle As Integer) As Integer
     Private Declare Function KMViaVB_CheckForReady Lib "KMViaVB" (ByVal handle As Integer) As Integer
-    Private Declare Function KMViaVB_LoadCoff Lib "KMViaVB" (ByVal handle As Integer, ByVal Thread As Integer, ByVal Name As String, ByVal Thread As Integer) As Integer
+    Private Declare Function KMViaVB_LoadCoff Lib "KMViaVB" (ByVal handle As Integer, ByVal Thread As Integer, ByVal Name As String, ByVal PackToFlash As Integer) As Integer
     Private Declare Function KMViaVB_CompileAndLoadCoff Lib "KMViaVB" (ByVal handle As Integer, ByVal Thread As Integer, ByVal Name As String, ByRef Err As String, ByVal MaxErrLen As Integer) As Integer
     Private Declare Function KMViaVB_ServiceConsole Lib "KMViaVB" (ByVal handle As Integer) As Integer
     Private Declare Function KMViaVB_ListLocations Lib "KMViaVB" (ByVal handle As Integer, ByRef nlocations As Integer, ByRef List As Integer) As Integer

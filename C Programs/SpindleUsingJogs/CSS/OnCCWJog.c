@@ -27,6 +27,8 @@ main()
 	// turn spindle on CCW and ramp to new speed
 	SetBit(SPINDLECCW_BIT);
 	
+	LastState = -1;
+	
 	if (*css_mode != 2)
 	{
 		// spindle is already on, so ramp to new speed

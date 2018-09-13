@@ -327,12 +327,13 @@ namespace KMotion_dotNet
             }
         }
 
-    #endregion
+        #endregion
 
         /// <summary>
-    /// Primary constructor for KM_CoordMotion object
+        /// Primary constructor for KM_CoordMotion object
         /// </summary>
-    public KM_CoordMotion(KM_Controller controller)
+        /// <param name="controller">KM_Controller object to associate the CoodMotion object with</param>
+        public KM_CoordMotion(KM_Controller controller)
         {
             try
             {
@@ -1112,6 +1113,39 @@ namespace KMotion_dotNet
                   this.ToString(), "DoKMotionCmd"));
             }
         }
+
+
+        /// <summary>
+        /// Loads Coordinated Motion Kinematics Geo Correction Table
+        /// </summary>
+        /// <param name="filename">Geo Correction File Name to load</param>
+        public void KinematicsReadGeoTable(string filename)
+        {
+            try
+            {
+                var returnvalue = KM_dotnet_Interop_CoordMotion_KinematicsReadGeoTable(_InstanceHandle, filename);
+                //process return value
+            }
+            catch (DllNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                    this.ToString(), "KinematicsReadGeoTable"));
+            }
+            catch (EntryPointNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                   this.ToString(), "KinematicsReadGeoTable"));
+            }
+            catch (Exception e)
+            {
+                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                  this.ToString(), "KinematicsReadGeoTable"));
+            }
+        }
+
+
+
+
         /// <summary>
         /// Inserts a console script command in the buffer
         /// </summary>
@@ -1239,7 +1273,7 @@ namespace KMotion_dotNet
             }
         }
         /// <summary>
-        /// Perform arc motion at a specified feed rate
+        /// Perform arc motion at a specified feed rate (in/sec)
         /// </summary>
         /// <param name="feedrate">Desired feed rate</param>
         /// <param name="plane">plane to perform arc (determines axis pair to use)</param>
@@ -1279,7 +1313,7 @@ namespace KMotion_dotNet
             }
         }
         /// <summary>
-        /// Perform arc motion at a specified feed rate and Acceleration
+        /// Perform arc motion at a specified feed rate (in/sec) and Acceleration (in/sec2)
         /// </summary>
         /// <param name="feedrate">Desired feed rate</param>
         /// <param name="accel">Desired acceleration rate</param>
@@ -1320,7 +1354,7 @@ namespace KMotion_dotNet
             }
         }
         /// <summary>
-        /// Perform linear motion at a specified feed rate
+        /// Perform linear motion at a specified feed rate (in/sec)
         /// </summary>
         /// <param name="feedrate">Desired feed rate</param>
         /// <param name="x">X end point</param>
@@ -1355,7 +1389,7 @@ namespace KMotion_dotNet
             }
         }
         /// <summary>
-        /// Perform linear motion at a specified feed rate and Acceleration
+        /// Perform linear motion at a specified feed rate (in/sec) and Acceleration (in/sec2)
         /// </summary>
         /// <param name="feedrate">Desired feed rate</param>
         /// <param name="accel">Desired acceleration rate</param>
@@ -1470,9 +1504,9 @@ namespace KMotion_dotNet
         /// <summary>
         /// Update the Trajectory Planner's segment feedrates.
         /// </summary>
-        /// <param name="i0"></param>
-        /// <param name="i1"></param>
-        /// <param name="feedrate"></param>
+        /// <param name="i0">starting segment</param>
+        /// <param name="i1">ending segment (inclusive)</param>
+        /// <param name="feedrate">Desired Feedrate in in/sec</param>
         public void DoRateAdjustments(int i0, int i1, double feedrate)
         {
             try
@@ -1498,12 +1532,12 @@ namespace KMotion_dotNet
         /// <summary>
         /// Set the assignment of KFLOP axis Channels to GCode Axes XYZABC, -1 indicates unused/unassigned axis
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="z"></param>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <param name="c"></param>
+        /// <param name="x">KFLOP Axis number for x axis</param>
+        /// <param name="y">KFLOP Axis number for y axis</param>
+        /// <param name="z">KFLOP Axis number for z axis</param>
+        /// <param name="a">KFLOP Axis number for a axis</param>
+        /// <param name="b">KFLOP Axis number for b axis</param>
+        /// <param name="c">KFLOP Axis number for c axis</param>
         public void SetAxisDefinitions(int x, int y, int z, int a, int b, int c)
         {
             try
@@ -1529,12 +1563,12 @@ namespace KMotion_dotNet
         /// <summary>
         /// Get the assignment of KFLOP axis Channels to GCode Axes XYZABC, -1 indicates unused/unassigned axis
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="z"></param>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <param name="c"></param>
+        /// <param name="x">KFLOP Axis number for x axis</param>
+        /// <param name="y">KFLOP Axis number for y axis</param>
+        /// <param name="z">KFLOP Axis number for z axis</param>
+        /// <param name="a">KFLOP Axis number for a axis</param>
+        /// <param name="b">KFLOP Axis number for b axis</param>
+        /// <param name="c">KFLOP Axis number for c axis</param>
         public void GetAxisDefinitions(ref int x, ref int y, ref int z, ref int a, ref int b, ref int c)
         {
             try

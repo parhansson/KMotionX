@@ -520,6 +520,7 @@ Public Class DynoMotionVBnetProvider
         End If
 
         If System.IO.File.Exists(_InterpreterFileName) = True Then
+            _Controller.CoordMotion.ClearAbort()
             _Controller.CoordMotion.Interpreter.Interpret(_InterpreterFileName)
         End If
     End Sub
@@ -549,6 +550,7 @@ Public Class DynoMotionVBnetProvider
     End Sub
 
     Private Sub InterpreterStatusUpdated(ByVal lineno As Integer, ByVal msg As String)
+        msg = msg.Replace(vbCr & vbCrLf, vbCrLf) ' get rid of redundant CR
         MessageMutex.WaitOne()
         _InterpreterStatus &= String.Format("[Interp Stat]  Line = {0} Data = {1}", lineno, msg)
         MessageMutex.ReleaseMutex()

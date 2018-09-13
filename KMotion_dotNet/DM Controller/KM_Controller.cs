@@ -31,6 +31,8 @@ using System.IO;
 using System.Windows.Forms;
 using System.Configuration;
 using System.Diagnostics;
+
+
 //GAC Post Build = "$(FrameworkSDKDir)bin\gacutil.exe"  /i "$(TargetPath)" /f
 namespace KMotion_dotNet
 {
@@ -115,7 +117,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Special Dynomotion USB Error Exception
         /// </summary>
-       public DM_USB_Exception(string message)
+        /// <param name="message">Exception description</param>
+        public DM_USB_Exception(string message)
             : base(message)
         {
 
@@ -129,6 +132,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Special Dynomotion KmotionServer Error Exception
         /// </summary>
+        /// <param name="message">Exception description</param>
         public DM_Firmware_Exception(string message)
             : base(message)
         {
@@ -143,6 +147,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Special Dynomotion Compiler Error Exception
         /// </summary>
+        /// <param name="message">Exception description</param>
+
         public DM_Compiler_Exception(string message)
             : base(message)
         {
@@ -157,6 +163,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Special Dynomotion Board Disconnected Exception
         /// </summary>
+        /// <param name="message">Exception description</param>
         public DM_Disconnected_Exception(string message)
             : base(message)
         {
@@ -720,7 +727,7 @@ namespace KMotion_dotNet
             {
                 if (throwexception)
                 {
-                    throw new Exception(String.Format("Could not convert command return value ( {0} = {1} ) to requested type ( {2} )", value, typeof(T).ToString()), ex);
+                    throw new Exception(String.Format("Could not convert command return value ( {0} = {1} ) to requested type ( {2} )", command, value, typeof(T).ToString()), ex);
                 }
                 else
                 {
@@ -763,6 +770,11 @@ namespace KMotion_dotNet
         /// Prevents outside access to the board
         /// This function is similar to the WaitToken function, except that it returns immediately (instead of waiting) if the board is already locked
         /// </summary>
+        /// <returns>
+        /// KMOTION_LOCKED=0,        // (and token is locked) if KMotion is available for use
+        /// KMOTION_IN_USE=1,        // if already in use
+	    /// KMOTION_NOT_CONNECTED=2, // if error or not able to connect
+        /// </returns>
         public int KMotionLock()
         { 
             try
@@ -1231,6 +1243,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Checks whether a User Program Thread is currently executing.  
         /// </summary>
+        /// <param name="thread">Which User Thread 1-7 to check</param>
         /// <returns>Returns true if executing, false if not executing</returns>
         public bool ThreadExecuting(int thread)
         {
@@ -1250,6 +1263,8 @@ namespace KMotion_dotNet
         /// <summary>
         /// Waits for a User Program Thread to finish executing.  
         /// </summary>
+        /// <param name="thread">Which User Thread 1-7 to check</param>
+        /// <param name="timeout">time to wait in milliseconds</param>
         /// <returns>Returns true if successful, false if timed out</returns>
         public bool WaitForThreadComplete(int thread, int timeout)
         {
@@ -1283,7 +1298,7 @@ namespace KMotion_dotNet
                 throw new Exception(String.Format("Problem waiting for thread to complete [{0}]", thread), ex);
             }
         }
- 
+
         #endregion
 
         #region Program Compiling and Loading
@@ -1320,6 +1335,7 @@ namespace KMotion_dotNet
         /// <param name="thread">thread address to load into(must match the thread the C program was compiled to)</param>
         /// <param name="programname">file name of the C program</param>
         /// <param name="PackToFlash">flag for packing in special format for bootup firmware</param>
+        /// <returns>Returns 0 if successful</returns>
         public int LoadCoff(int thread, string programname, int PackToFlash)
         {
             try
@@ -1358,7 +1374,7 @@ namespace KMotion_dotNet
                 {
                     MarshalPre(ref error);
                     int result=KM_dotnet_Interop_CompileAndLoadCoff(_InstanceHandle, thread, programname, ref error, _ErrorLength);
-                    if (result!=0 && error=="") error="Error Compiling and Loading Program";
+                    if (result!=0 && (error=="" || !error.Contains((char)0))) error="Error Compiling and Loading Program";
                     MarshalPost(ref error);
                 }
                 else
@@ -1577,15 +1593,15 @@ namespace KMotion_dotNet
         /// <returns>double data from the array</returns>
         public double GetUserDataDouble(int index)
         {
-            UInt32 ival0 = 0;
-            UInt32 ival1 = 0;
+            Int32 ival0 = 0;
+            Int32 ival1 = 0;
             var val0 = WriteLineReadLine(String.Format("GetPersistDec {0}", index*2));
             var val1 = WriteLineReadLine(String.Format("GetPersistDec {0}", index*2+1));
 
-            UInt32.TryParse(val0, out ival0);
-            UInt32.TryParse(val1, out ival1);
+            Int32.TryParse(val0, out ival0);
+            Int32.TryParse(val1, out ival1);
 
-            Byte[] bytes = BitConverter.GetBytes(((UInt64)ival1<<32) | (UInt64)ival0);
+            Byte[] bytes = BitConverter.GetBytes((((UInt64)((UInt32)ival1))<<32) | (UInt64)((UInt32)ival0));
             return BitConverter.ToDouble(bytes, 0);
         }
 
@@ -1702,7 +1718,9 @@ namespace KMotion_dotNet
             }
             if (_ThrowExceptions)
             {
-                throw new Exception(error);
+                if (CoordMotion.Interpreter.InterpretThreadID != CoordMotion.Interpreter.Get_InterpretWin32ThreadID() &&
+                    CoordMotion.Interpreter.InvokeThreadID    != CoordMotion.Interpreter.Get_InterpretWin32ThreadID())
+                	throw new Exception(error);
             }
         }
         /// <summary>
@@ -1861,7 +1879,7 @@ namespace KMotion_dotNet
         /// <param name="bit">nit index</param>
         /// <param name="type">IO type for bit</param>
         /// <param name="name">Name of bit</param>
-        /// <returns></returns>
+        /// <returns>Created KM_IO</returns>
         public KM_IO GetIO(int bit, IO_TYPE type, string name)
         {
             return new KM_IO(this, bit, name, type);
@@ -1872,7 +1890,7 @@ namespace KMotion_dotNet
         /// </summary>
         /// <param name="channel">KFLOP Axis Channel</param>
         /// <param name="name">descriptive name</param>
-        /// <returns></returns>
+        /// <returns>Created Axis</returns>
         public KM_Axis GetAxis(int channel, string name)
         {
             return new KM_Axis(this, channel, name);

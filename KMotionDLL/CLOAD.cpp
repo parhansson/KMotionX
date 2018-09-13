@@ -632,10 +632,10 @@ int sym_read(unsigned int index, SYMENT *sym, AUXENT *aux)
 	  /* IT UP IN AN EXTERNAL SYMBOL TABLE.  IF THE SYMBOL IS DEFINED,    */
 	  /* RELOCATE IT ACCORDING TO THE SECTION IT IS DEFINED IN.           */
 	  /*------------------------------------------------------------------*/
-#pragma message("\n" __FILE__ " Fix this (short)0/*aux*/\n")
           if (sym->n_scnum == 0) 
-	     lookup_sym((struct syment *)index, (union auxent *)sym, (short)0/*aux*/);  // tktk ?? //TODO specialare
-          else if (sym->n_scnum > 0) 
+//			  lookup_sym((struct syment *)index, (union auxent *)sym, (short)aux);  // tktk ??
+		  lookup_sym((struct syment *)index, (union auxent *)sym, 0);  // tktk ??
+		  else if (sym->n_scnum > 0)
 	     sym->n_value += reloc_amount[sym->n_scnum - 1];
     }
     return (index + sym->n_numaux + 1);

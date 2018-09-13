@@ -189,6 +189,38 @@ int MsgBox(char *s, int Flags)
 	return persist.UserData[PC_COMM_PERSIST+3];
 }
 
+
+// returns both result of communication and if communication
+// successful the User Response;
+int MsgBoxGetResponse(int *response)
+{
+	*response=-1;
+	int result=persist.UserData[PC_COMM_PERSIST];
+	if (result==0)
+		*response=persist.UserData[PC_COMM_PERSIST+3];
+
+	return result;
+}
+
+// Trigger a message box on the PC to be displayed
+// defines for MS Windows message box styles and Operator
+// response IDs are defined in the KMotionDef.h file 
+// (Don't wait for response)
+int MsgBoxNoWait(char *s, int Flags)
+{
+	char *p=(char *)gather_buffer+GATH_OFF*sizeof(int);
+	int i;
+	
+	do // copy to gather buffer w offset 0
+	{
+		*p++ = *s++;
+	}while (s[-1]);
+	
+	persist.UserData[PC_COMM_PERSIST+2] = Flags;  // set options
+	DoPCIntNoWait(PC_COMM_MSG,GATH_OFF);
+	return 0;
+}
+
 // Trigger a dialog box on the PC to request a floating point
 // value to be entered by Operator.  returns 1 if the Operator
 // selected cancel.  returns 0 if the operator selected "Set" 
@@ -205,6 +237,77 @@ int InputBox(char *s, float *value)
 	DoPCInt(PC_COMM_INPUT,GATH_OFF);
 	*value = *(float *)&persist.UserData[PC_COMM_PERSIST+2];  // return the value
 	return persist.UserData[PC_COMM_PERSIST+3];
+}
+
+
+// Write a string to a DRO Label on the screen.
+// Put the string into the gather buffer at the specified offset (in words)
+// Then place the offset in the specified persit variable
+// KMotionCNC will upload and display the message and then
+// clear the persist variable.
+//
+// in order to avoid any possibility of an unterminated message
+// write the message in reverse so the termination is added first
+
+void DROLabel(int gather_offset, int persist_var, char *s)
+{
+	char *p=(char *)gather_buffer+gather_offset*sizeof(int);
+	int i,n;
+	
+	// first find length of string
+	for (n=0; n<256; n++) if (s[n]==0) break;
+
+	// now copy string backwards
+	for (i=n; i>=0; i--) p[i]=s[i]; 
+	
+	persist.UserData[persist_var] = gather_offset; // set gather offset
+	return;
+}
+
+// Write a float to a Persist Variable
+
+void WriteVarFloat(int persist_var, float v)
+{
+	float f=v;
+	persist.UserData[persist_var] = *(int *)&f;
+}
+
+
+// Read String from a KMotionCNC Edit Control
+// Persist Var identifies the Control and specifies 
+// where the string data should be placed in the 
+// Gather Buffer as an offset in words
+int GetEditControl(char *s, int Var, int offset)
+{
+	char *p=(char *)gather_buffer+offset*sizeof(int);
+	int result;
+	
+	persist.UserData[Var]=offset;
+	if (DoPCInt(PC_GET_EDIT_CELL,Var)<0)
+	{
+		return -1;
+	}
+	
+	do // copy from gather buffer 
+	{
+		*s++ = *p++;
+	}while (s[-1]);
+	
+	return 0;
+}
+
+// Read String from a KMotionCNC Edit Control and convert to a double
+// Persist Var identifies the Control and specifies 
+// where the string data should be placed in the 
+// Gather Buffer as an offset in words
+int GetEditControlDouble(double *d, int Var, int offset)
+{
+	int result;
+	char s[80];
+	if (GetEditControl(s, Var, offset)) return 1;
+	result = sscanf(s,"%lf",d);
+	if (result!=1) return 1;
+	return 0;
 }
 
 // put the MDI string (Manual Data Input - GCode) in the 
@@ -251,10 +354,34 @@ int DoPC(int cmd)
 	
 	do
 	{
-		WaitNextTimeSlice();	
-	}while (result=persist.UserData[PC_COMM_PERSIST]>0);
+		WaitNextTimeSlice();
+		result=persist.UserData[PC_COMM_PERSIST];
+	}while (result>0);
 	
 //	printf("Result = %d\n",result);
 
 	return result;
+}
+
+// Put an integer as a parameter and pass the command to the App
+// (Don't wait for response)
+int DoPCIntNoWait(int cmd, int i)
+{
+	int result;
+	persist.UserData[PC_COMM_PERSIST+1] = i;
+	return DoPCNoWait(cmd);
+}
+
+// Pass a command to the PC and wait for it to handshake
+// that it was received by either clearing the command
+// or changing it to a negative error code
+// (Don't wait for response)
+
+int DoPCNoWait(int cmd)
+{
+	int result;
+	
+	persist.UserData[PC_COMM_PERSIST]=cmd;
+	
+	return 0;
 }

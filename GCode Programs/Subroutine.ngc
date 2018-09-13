@@ -1,0 +1,12 @@
+G20 G0 X0 Y0 Z0
+M98 P100 L3(Call the Subroutine 3 times)
+M2 (Stop)
+
+O100 (Subroutine Label of 100)
+F40
+G1 X1 Y0
+G1 X1 Y1
+G1 X0 Y1
+G1 X0 Y0
+M99
+

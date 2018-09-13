@@ -13,7 +13,7 @@ namespace sandbox
 {
     class Program
     {
- //       static bool complete = false;
+        static bool complete = false;
         static KMotion_dotNet.KM_Controller _Controller;
 
         #region Controller Example
@@ -65,7 +65,7 @@ namespace sandbox
 
             //Get Firmware version
             Console.WriteLine(_Controller.GetCommandValue<string>("Version", false));
-            
+
 
             RunMain_StatusExample();
             //RunHomingRoutineExample();
@@ -219,6 +219,11 @@ namespace sandbox
             _Controller.CoordMotion.MotionParams.DegreesC = false;
             double speed = 15;
 
+            // Sync Coordinated Motion Library with Current Position of Machine
+            double x=0, y=0, z=0, a=0, b=0, c=0;
+            _Controller.CoordMotion.ReadAndSyncCurPositions(ref x, ref y, ref z, ref a, ref b, ref c);
+
+
             _Controller.CoordMotion.StraightTraverse(6.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, false);
             int isCCW = 1;
             _Controller.CoordMotion.StraightFeed(speed, 5.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0, 0);
@@ -277,7 +282,7 @@ namespace sandbox
             _Controller.WriteLine(String.Format("EnableAxis{0}", 0));
             _Controller.WriteLine(String.Format("EnableAxis{0}", 1));
             _Controller.WriteLine(String.Format("EnableAxis{0}", 2));
- //           complete = false;
+            complete = false;
             _Controller.CoordMotion.Abort();
             _Controller.CoordMotion.ClearAbort();
             _Controller.CoordMotion.MotionParams.BreakAngle = 30;
@@ -343,7 +348,7 @@ namespace sandbox
             _Controller.CoordMotion.Interpreter.SetupParams.SpindleDirection = KMotion_dotNet.CANON_DIRECTION.CANON_STOPPED;
             _Controller.CoordMotion.Interpreter.SetupParams.ToolLengthOffset = 0.0;
  
- //           complete = false;
+            complete = false;
 
             // Figure out what directory we are installed into
             string codeBase = Assembly.GetExecutingAssembly().CodeBase;
@@ -359,17 +364,14 @@ namespace sandbox
             _Controller.CoordMotion.Interpreter.Interpret(TheGFile);
 
 
-            //while (!complete)
-            //{
+            while (!complete)  // wait till finished before exit
+            {
             //    var modals = _Controller.Interpreter.SetupParams.Active_GCodes;
             //    var miscs = _Controller.Interpreter.SetupParams.Active_MCodes;
             //    Console.WriteLine(String.Format("Active G-Codes :: {0}", string.Join(",", modals.Select(s => s.ToString()).ToArray())));
             //    Console.WriteLine(String.Format("Active M-Codes :: {0}", string.Join(",", miscs.Select(s => s.ToString()).ToArray())));
-            //    Thread.Sleep(150);
-            //}
-
-
-
+                Thread.Sleep(150);
+            }
         }
 
         static void Interpreter_Interpreter_CoordMotionStraightTranverse(double x, double y, double z, int sequence_number)
@@ -403,7 +405,7 @@ namespace sandbox
         static void Interpreter_InterpreterCompleted(int status, int lineno, int sequence_number, string err)
         {
             Console.WriteLine(String.Format("Interpreter Completed::  {0} | {1} | {2} | {3}", status, lineno, sequence_number, err));
-//            complete = true;
+            complete = true;
         }
 
         static void Interpreter_InterpreterStatusUpdated(int lineno, string msg)

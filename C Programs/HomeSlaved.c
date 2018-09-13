@@ -40,7 +40,7 @@ void main()
 		MoveRel(X0_AXIS,X_FAST_SPEED);  // move inside the limits a small amount
 		MoveRel(X1_AXIS,X_FAST_SPEED);
 
-		while (!CheckDone(0) || !CheckDone(1))  ;  // wait till 
+		while (!CheckDone(X0_AXIS) || !CheckDone(X1_AXIS))  ;  // wait till 
 	}
 
 	SquareX(X_FAST_SPEED); // square up fast 

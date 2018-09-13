@@ -80,21 +80,8 @@ main()
 	DefineCoordSystem(0,-1,-1,-1);
 	
 
-	#define COUNTS_PER_MM 200.0
 	for (;;)
 	{
-		if (ch0->Position < 10.0 * COUNTS_PER_MM)
-			SetBit(150);
-		else
-			ClearBit(150);
-		
-		if (ch0->Position > 300.0 * COUNTS_PER_MM)
-			SetBit(151);
-		else
-			ClearBit(151);
-		
-
-
 		// convert quadrature to 2 bit binary
 		BitA = ReadBit(QA);   
 		PosNoWrap = (ReadBit(QB) ^ BitA) | (BitA<<1);

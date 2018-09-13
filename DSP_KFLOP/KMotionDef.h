@@ -62,6 +62,11 @@ extern int volatile HostStatus;
 
 #define JOB_ACTIVE (HostStatus & HOST_JOB_ACTIVE_BIT)
 
+// incremented by PC whenever any Edit Control Changes.  Count sent to KFLOP with 
+// each Global Status request.  Sample this value the read any Edit Controls from
+// the Screen.  If this value changes then the values may be dirty and need to be
+// re-acquired
+extern int volatile EditChangeCount;  
 
 
 // standard math funtions
@@ -278,7 +283,6 @@ extern float CS0_NomDecel2TB2;			// Nominal Decel Time/(2 TIMEBASE^2) = Factor t
 
 extern int CS0_StoppingState; 			// emergency stop in progress, 0 = not stopping, 1=stopping coord motion, 2=stopping indep, 3=fully stopped, 4=ind stopped
 extern PARAMETRIC_COEFF *CoordSystem0;  // current pointer into Coordinated Motion
-extern PARAMETRIC_COEFF *LastCoordSystem0;
 extern int ParametricIndex;				// Index of where to put next downloaded Coord Motion Segment or command
 extern BOOL ParametricIndexWrapped;		// Indicates that Coord Motion Buffer has wrapped and additional segments will cause segments to be lost
 extern PARAMETRIC_COEFF *ParametricCoeffs;  // Points to beginning of Coord Motion Buffer
@@ -334,7 +338,7 @@ extern TRIP_COEFF TripCoeffs[N_CHANNELS][MAX_TRIP];  // Trip Coeff lists for eac
 
 typedef struct
 {   
-    int ChanNumber;                 // channel number 0-3
+    int ChanNumber;                 // channel number 0-7
     int Enable;                     // enables feedback
     int InputMode;                  // sets position input mode (See Axis Input Modes)
     int OutputMode;					// sets servo/motor mode    (See Axis Output Modes)
@@ -411,6 +415,16 @@ extern short int DAC_Buffer[N_DACS];   //  format    12 bits data
 extern int ADC_BufferIn[N_ADCS];     //  format   12 bits data 
 #define ADC(ch) (ADC_BufferIn[ch]-2048)   // return ADC reading of specified channel (range -2048/2047)extern int ADC_BufferIn[N_ADCS];     //  format   4-dummy bits 12 bits data 16 dummy 
 
+// SNAP AMP 0 ADC values
+// 0,1 Side A Coils Currents A and C
+// 2,3 Side B Coils Currents A and C
+// 4,5 = Supply Voltages side A and B
+// 6,7 = Temperature side A and B
+// SNAP AMP 1 ADC values
+// 8,9 Side A Coils Currents A and C
+// 10,11 Side B Coils Currents A and C
+// 12,13 = Supply Voltages side A and B
+// 14,15 = Temperature side A and B
 extern int ADC_BufferInSnap[2*N_ADCS_SNAP];   //  Snap Amp Current ADC format  16-bits data 
 
 #define FULL_RANGE_CURRENT 4.85f
@@ -708,7 +722,8 @@ int ReadBit(int bit);                   // read the state of an I/O bit
 #define FLASH_BLOCK_SIZE (0x10000)  // FLASH erases in 64KByte Blocks 
 #define IRAM  ((volatile char *)0x10000000)
 #define SDRAM ((volatile char *)0x80000000)
-int ProgramFlash(volatile char *src, int Length, volatile char *dest, char *message);  //Programs Flash source address of data, length in 16-bit words, dest add must be on 64KByte block, optional \n terminated message
+int ProgramFlash(volatile char *src, int Length, volatile char *dest, char *message);  //Programs Flash source address of data, length in 16-bit words, dest add must be on 64KByte block, optional \n terminated message (return 0 success)
+int ProgramFlashNoMessages(volatile char *src0, int Length, volatile char *dest0); //Quietly Programs Flash source address of data, length in 16-bit words, dest add must be on 64KByte block (returns 0 success)
 void SetFlashBank(volatile unsigned short *add);  // sets the currently addressable flash bank (address bits 14-19)
 
 
@@ -754,6 +769,8 @@ void AddKonnect_Aux0(int BoardAddress, int *OutputAddress, int *InputAddress); /
 
 #define MAX_STRING 128                    
 #define MAX_NSTRINGS 256  // must be binary    
+extern volatile int NextAvailIn;  // when these are equal the queue is empty
+extern volatile int NextAvailOut;
 
 // Note: standard C language printf 
 
@@ -761,7 +778,7 @@ int printf(const char *format, ...);     		// Print formatted string to console
 int sprintf(char *s, const char *format, ...); 	// Print formatted string to string
 
 typedef int FILE;
-FILE *fopen(const char*, const char*);		   // Open a text file for writing on the PC (2nd param = "rt" or "wt") 
+FILE *fopen(const char*, const char*);		   // Open a text file for writing on the PC 2nd param = "rt" or "wt" or "at"(append write text mode) 
 int fprintf(FILE *f, const char * format, ...);		   // Print formatted string to the PC's Disk File
 int fclose(FILE *f);                           // Close the disk file on the PC
 
@@ -946,12 +963,13 @@ extern char * volatile pRS232RecIn;  // Buffered Receive Pointer Head
 extern char *pRS232RecOut;           // Buffered Receive Pointer Tail
 extern char *pRS232TxIn;             // Buffered Transmit Pointer Head
 extern char * volatile pRS232TxOut;  // Buffered Transmit Pointer Tail
-extern int DoRS232Cmds;              // Enables/disables KFLOP Command processor to/from RS232
+extern int volatile DoRS232Cmds;     // Enables/disables KFLOP Command processor to/from RS232
+#define RS232BUFSZ 1000
+extern char RS232RecBuf[RS232BUFSZ];
+extern char RS232TxBuf[RS232BUFSZ];
 
 char RS232_GetChar(void);   // Get Internally Buffered (1000 chars) RS232 received Data 
 void RS232_PutChar(char c); // Put Internally Buffered (1000 chars) RS232 transmit Data
-
-
 
 #endif
 

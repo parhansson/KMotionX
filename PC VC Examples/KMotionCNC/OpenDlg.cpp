@@ -28,6 +28,7 @@ END_MESSAGE_MAP()
 #pragma warning(disable:4355)  
 CPersistOpenDlg::CPersistOpenDlg() : CFileDialog(TRUE),m_wndListViewShell(this)
 {
+	m_bFileNameRestored = false;
 	m_ofn.lpstrTitle = _T("Select a file or folder");
 }
 
@@ -41,6 +42,7 @@ CPersistOpenDlg::CPersistOpenDlg(
    CWnd* pParentWnd,
    DWORD dwSize) : CFileDialog(bOpenFileDialog,lpszDefExt,lpszFileName,dwFlags,lpszFilter,pParentWnd,dwSize),m_wndListViewShell(this)
 {
+	m_bFileNameRestored = false;
 }
 
 
@@ -174,4 +176,186 @@ LRESULT CListViewShellWnd::WindowProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		UnsubclassWindow();							// unsubclass myself
 	}
 	return Default(); // all message: pass to default WndProc, avoid MFC/CWnd
+}
+
+
+// Unmanaged Code Workaround :
+
+// The problem is that the initial size of edit control for FileName is too small to accommodate the string, 
+// resulting in truncation.The initial size of the OpenFileDialog and child edit controls occurs before the 
+// dialog is visually displayed on screen.After the edit control gets resized, the string position doesn't get updated. 
+// Dev found the following workaround for unmanaged code (C++). The workaround is to set the FileName text after the 
+// OpenFileDialog and child edit controls have been resized. One method is to use an event hook for the TextSelectionChanged 
+// event and set the FileName text. The FileName text can be the same as the text set initially."
+
+// By using this information from Microsoft we came to this solution for C++ : We subclass CFileSelect, add a flag 
+// m_bFileNameRestored which is initialized with false, and override OnFileNameChange as follows :
+
+typedef struct _COMDLG_FILTERSPEC
+{
+	LPCWSTR pszName;
+	LPCWSTR pszSpec;
+} 	COMDLG_FILTERSPEC;
+
+enum _FILEOPENDIALOGOPTIONS
+{
+	FOS_OVERWRITEPROMPT = 0x2,
+	FOS_STRICTFILETYPES = 0x4,
+	FOS_NOCHANGEDIR = 0x8,
+	FOS_PICKFOLDERS = 0x20,
+	FOS_FORCEFILESYSTEM = 0x40,
+	FOS_ALLNONSTORAGEITEMS = 0x80,
+	FOS_NOVALIDATE = 0x100,
+	FOS_ALLOWMULTISELECT = 0x200,
+	FOS_PATHMUSTEXIST = 0x800,
+	FOS_FILEMUSTEXIST = 0x1000,
+	FOS_CREATEPROMPT = 0x2000,
+	FOS_SHAREAWARE = 0x4000,
+	FOS_NOREADONLYRETURN = 0x8000,
+	FOS_NOTESTFILECREATE = 0x10000,
+	FOS_HIDEMRUPLACES = 0x20000,
+	FOS_HIDEPINNEDPLACES = 0x40000,
+	FOS_NODEREFERENCELINKS = 0x100000,
+	FOS_DONTADDTORECENT = 0x2000000,
+	FOS_FORCESHOWHIDDEN = 0x10000000,
+	FOS_DEFAULTNOMINIMODE = 0x20000000,
+	FOS_FORCEPREVIEWPANEON = 0x40000000
+};
+typedef DWORD FILEOPENDIALOGOPTIONS;
+
+typedef /* [v1_enum] */
+enum FDAP
+{
+	FDAP_BOTTOM = 0,
+	FDAP_TOP = 1
+} 	FDAP;
+
+//MIDL_INTERFACE("42f85136-db7e-439c-85f1-e4075d135fc8")
+class IFileDialogVista2 : public IModalWindow
+{
+public:
+	virtual HRESULT STDMETHODCALLTYPE SetFileTypes(
+		/* [in] */ UINT cFileTypes,
+		/* [size_is][in] */ __RPC__in_ecount_full(cFileTypes) const COMDLG_FILTERSPEC *rgFilterSpec) = 0;
+
+	virtual HRESULT STDMETHODCALLTYPE SetFileTypeIndex(
+		/* [in] */ UINT iFileType) = 0;
+
+	virtual HRESULT STDMETHODCALLTYPE GetFileTypeIndex(
+		/* [out] */ __RPC__out UINT *piFileType) = 0;
+
+	virtual HRESULT STDMETHODCALLTYPE Advise(
+		/* [in] */ __RPC__in_opt IFileDialogEvents *pfde,
+		/* [out] */ __RPC__out DWORD *pdwCookie) = 0;
+
+	virtual HRESULT STDMETHODCALLTYPE Unadvise(
+		/* [in] */ DWORD dwCookie) = 0;
+
+	virtual HRESULT STDMETHODCALLTYPE SetOptions(
+		/* [in] */ FILEOPENDIALOGOPTIONS fos) = 0;
+
+	virtual HRESULT STDMETHODCALLTYPE GetOptions(
+		/* [out] */ __RPC__out FILEOPENDIALOGOPTIONS *pfos) = 0;
+
+	virtual HRESULT STDMETHODCALLTYPE SetDefaultFolder(
+		/* [in] */ __RPC__in_opt IShellItem *psi) = 0;
+
+	virtual HRESULT STDMETHODCALLTYPE SetFolder(
+		/* [in] */ __RPC__in_opt IShellItem *psi) = 0;
+
+	virtual HRESULT STDMETHODCALLTYPE GetFolder(
+		/* [out] */ __RPC__deref_out_opt IShellItem **ppsi) = 0;
+
+	virtual HRESULT STDMETHODCALLTYPE GetCurrentSelection(
+		/* [out] */ __RPC__deref_out_opt IShellItem **ppsi) = 0;
+
+	virtual HRESULT STDMETHODCALLTYPE SetFileName(
+		/* [string][in] */ __RPC__in_string LPCWSTR pszName) = 0;
+
+	virtual HRESULT STDMETHODCALLTYPE GetFileName(
+		/* [string][out] */ __RPC__deref_out_opt_string LPWSTR *pszName) = 0;
+
+	virtual HRESULT STDMETHODCALLTYPE SetTitle(
+		/* [string][in] */ __RPC__in_string LPCWSTR pszTitle) = 0;
+
+	virtual HRESULT STDMETHODCALLTYPE SetOkButtonLabel(
+		/* [string][in] */ __RPC__in_string LPCWSTR pszText) = 0;
+
+	virtual HRESULT STDMETHODCALLTYPE SetFileNameLabel(
+		/* [string][in] */ __RPC__in_string LPCWSTR pszLabel) = 0;
+
+	virtual HRESULT STDMETHODCALLTYPE GetResult(
+		/* [out] */ __RPC__deref_out_opt IShellItem **ppsi) = 0;
+
+	virtual HRESULT STDMETHODCALLTYPE AddPlace(
+		/* [in] */ __RPC__in_opt IShellItem *psi,
+		/* [in] */ FDAP fdap) = 0;
+
+	virtual HRESULT STDMETHODCALLTYPE SetDefaultExtension(
+		/* [string][in] */ __RPC__in_string LPCWSTR pszDefaultExtension) = 0;
+
+	virtual HRESULT STDMETHODCALLTYPE Close(
+		/* [in] */ HRESULT hr) = 0;
+
+	virtual HRESULT STDMETHODCALLTYPE SetClientGuid(
+		/* [in] */ __RPC__in REFGUID guid) = 0;
+
+	virtual HRESULT STDMETHODCALLTYPE ClearClientData(void) = 0;
+
+	virtual HRESULT STDMETHODCALLTYPE SetFilter(
+		/* [in] */ __RPC__in_opt IShellItemFilter *pFilter) = 0;
+
+};
+
+BOOL CPersistOpenDlg::Is_Version_Greater_Then_WinXP_SP3()
+{
+	OSVERSIONINFOEX osvi;
+	DWORDLONG dwlConditionMask = 0;
+	int op = VER_GREATER;
+
+	// Initialize the OSVERSIONINFOEX structure.
+
+	ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
+	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	osvi.dwMajorVersion = 5;
+	osvi.dwMinorVersion = 1;
+	osvi.wServicePackMajor = 3;
+	osvi.wServicePackMinor = 0;
+
+	// Initialize the condition mask.
+
+	VER_SET_CONDITION(dwlConditionMask, VER_MAJORVERSION, op);
+	VER_SET_CONDITION(dwlConditionMask, VER_MINORVERSION, op);
+	VER_SET_CONDITION(dwlConditionMask, VER_SERVICEPACKMAJOR, op);
+	VER_SET_CONDITION(dwlConditionMask, VER_SERVICEPACKMINOR, op);
+
+	// Perform the test.
+
+	return VerifyVersionInfo(
+		&osvi,
+		VER_MAJORVERSION | VER_MINORVERSION |
+		VER_SERVICEPACKMAJOR | VER_SERVICEPACKMINOR,
+		dwlConditionMask);
+}
+
+void CPersistOpenDlg::OnFileNameChange()
+{
+	CFileDialog::OnFileNameChange();
+	// Do not call Default() if you override
+	// no default processing needed
+
+	// Reset FileName only the first time after opening the FileOpenDialog.
+	if (!m_bFileNameRestored)
+	{
+		CString strFileName = GetFileName();
+		if (Is_Version_Greater_Then_WinXP_SP3())
+		{
+			IFileDialogVista2* pIFileDialog = (IFileDialogVista2*)m_pIFileDialog;
+
+			// First set filename to empty, then setting it to the original name will do it.
+			pIFileDialog->SetFileName(L"");
+			pIFileDialog->SetFileName(CStringW(strFileName));
+			m_bFileNameRestored = true;
+		}
+	}
 }

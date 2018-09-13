@@ -24,6 +24,31 @@ CToolSetupFilesPage::~CToolSetupFilesPage()
 {
 }
 
+BOOL CToolSetupFilesPage::OnInitDialog()
+{
+	CToolSetupPage::OnInitDialog();
+
+	SetAllShowHide();
+	return TRUE;
+}
+
+void CToolSetupFilesPage::SetAllShowHide()
+{
+	if (m_DialogFace == CUSTOM_DLG_FACE)
+	{
+		GetDlgItem(IDC_StaticScreenScript)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_BrowseScreenScriptFile)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_ScreenScriptFile)->ShowWindow(SW_SHOW);
+	}
+	else
+	{
+		GetDlgItem(IDC_StaticScreenScript)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_BrowseScreenScriptFile)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_ScreenScriptFile)->ShowWindow(SW_HIDE);
+	}
+}
+
+
 void CToolSetupFilesPage::DoDataExchange(CDataExchange* pDX)
 {
 	//{{AFX_DATA_MAP(CToolSetupFilesPage)
@@ -31,6 +56,7 @@ void CToolSetupFilesPage::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_SetupFile, m_SetupFile);
 	DDX_Text(pDX, IDC_GeoFile, m_GeoFile);
 	DDX_Text(pDX, IDC_VarsFile, m_VarsFile);
+	DDX_Text(pDX, IDC_ScreenScriptFile, m_ScreenScriptFile);
 	DDX_CBIndex(pDX, IDC_DialogFace, m_DialogFace);
 }
 
@@ -41,9 +67,17 @@ BEGIN_MESSAGE_MAP(CToolSetupFilesPage, CToolSetupPage)
 	ON_BN_CLICKED(IDC_BrowseSetupFile, OnBrowseSetupFile)
 	ON_BN_CLICKED(IDC_BrowseGeoFile, OnBrowseGeoFile)
 	ON_BN_CLICKED(IDC_BrowseVarsFile, OnBrowseVarsFile)
+	ON_BN_CLICKED(IDC_BrowseScreenScriptFile, OnBrowseScreenScriptFile)
 	ON_BN_CLICKED(IDC_EditToolFile, &OnBnClickedEdittoolfile)
+	ON_CBN_CLOSEUP(IDC_DialogFace, OnCloseupDialogFace)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
+
+void CToolSetupFilesPage::OnCloseupDialogFace()
+{
+	if (!UpdateData()) return;
+	SetAllShowHide();
+}
 
 void CToolSetupFilesPage::OnIhelp() 
 {
@@ -52,26 +86,28 @@ void CToolSetupFilesPage::OnIhelp()
 
 void CToolSetupFilesPage::OnBrowseToolFile() 
 {
-	CPersistOpenDlg FileDlg (TRUE, ".tbl", NULL, 
+	CPersistOpenDlg FileDlg (TRUE, ".tbl", 
+		TheFrame->GCodeDlg.InitialFile(m_ToolFile, DATA_SUB_DIR, "Default.tbl"),
 		OFN_FILEMUSTEXIST | OFN_ENABLESIZING, 
 		"Tool Files (*.tbl)|*.tbl|All Files (*.*)|*.*||");
 	
 	if (FileDlg.DoModal() == IDOK)
 	{
-		m_ToolFile = FileDlg.GetPathName();
+		m_ToolFile = TheFrame->GCodeDlg.StripPathMatch(FileDlg.GetPathName(), DATA_SUB_DIR);
 		UpdateData(FALSE);
 	}
 }
 
 void CToolSetupFilesPage::OnBrowseSetupFile() 
 {
-	CPersistOpenDlg FileDlg (TRUE, ".set", NULL, 
+	CPersistOpenDlg FileDlg (TRUE, ".set", 
+		TheFrame->GCodeDlg.InitialFile(m_SetupFile, DATA_SUB_DIR, "Default.set"),
 		OFN_FILEMUSTEXIST | OFN_ENABLESIZING, 
 		"Setup Files (*.set)|*.set|All Files (*.*)|*.*||");
 	
 	if (FileDlg.DoModal() == IDOK)
 	{
-		m_SetupFile = FileDlg.GetPathName();
+		m_SetupFile = TheFrame->GCodeDlg.StripPathMatch(FileDlg.GetPathName(), DATA_SUB_DIR);
 		UpdateData(FALSE);
 	}
 }
@@ -79,8 +115,9 @@ void CToolSetupFilesPage::OnBrowseSetupFile()
 
 void CToolSetupFilesPage::OnBrowseGeoFile() 
 {
-	CPersistOpenDlg FileDlg (TRUE, ".txt", NULL, 
-		OFN_FILEMUSTEXIST | OFN_ENABLESIZING, 
+	CPersistOpenDlg FileDlg (TRUE, ".txt", 
+		TheFrame->GCodeDlg.InitialFile(m_GeoFile, DATA_SUB_DIR, "Measurements.txt"),
+		OFN_FILEMUSTEXIST | OFN_ENABLESIZING,
 		"Geo Files (*.txt)|*.txt|All Files (*.*)|*.*||");
 	
 	if (FileDlg.DoModal() == IDOK)
@@ -92,13 +129,29 @@ void CToolSetupFilesPage::OnBrowseGeoFile()
 
 void CToolSetupFilesPage::OnBrowseVarsFile() 
 {
-	CPersistOpenDlg FileDlg (TRUE, ".var", NULL, 
-		OFN_FILEMUSTEXIST | OFN_ENABLESIZING, 
+	CPersistOpenDlg FileDlg (TRUE, ".var", 
+		TheFrame->GCodeDlg.InitialFile(m_VarsFile, DATA_SUB_DIR, "emc.var"),
+				OFN_FILEMUSTEXIST | OFN_ENABLESIZING, 
 		"Variables Files (*.var)|*.var|All Files (*.*)|*.*||");
 	
 	if (FileDlg.DoModal() == IDOK)
 	{
 		m_VarsFile = FileDlg.GetPathName();
+		UpdateData(FALSE);
+	}
+}
+
+void CToolSetupFilesPage::OnBrowseScreenScriptFile()
+{
+	CPersistOpenDlg FileDlg (TRUE, ".scr", 
+		TheFrame->GCodeDlg.InitialFile(m_ScreenScriptFile, SCREEN_SCRIPTS_DIR, "Default.scr"),
+		OFN_FILEMUSTEXIST | OFN_ENABLESIZING, 
+		"ScreenScript Files (*.scr)|*.scr|All Files (*.*)|*.*||");
+
+	
+	if (FileDlg.DoModal() == IDOK)
+	{
+		m_ScreenScriptFile = TheFrame->GCodeDlg.StripPathMatch(FileDlg.GetPathName(), SCREEN_SCRIPTS_DIR);
 		UpdateData(FALSE);
 	}
 }

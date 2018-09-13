@@ -47,6 +47,7 @@ CRichEditCtrlEx::CRichEditCtrlEx()
 	m_esc_pushed=FALSE;
 	CtrlIsDown=ShiftIsDown=FALSE;
 	ModeCode=-1;
+	ReadWriteVar = -1;
 }
 
 CRichEditCtrlEx::~CRichEditCtrlEx()
@@ -73,6 +74,7 @@ BEGIN_MESSAGE_MAP(CRichEditCtrlEx, CScintillaCtrl)
 	ON_COMMAND(ID_TransformSel, OnTransformSel)
 	ON_COMMAND(ID_ToggleBlock, OnToggleBlock)
 	ON_COMMAND(ID_ShowLineNumbers, OnShowLineNumbers)
+	ON_COMMAND(ID_MakeReadWrite, OnMakeReadWrite)
     ON_REGISTERED_MESSAGE( WM_FINDREPLACE, OnFindReplaceCmd )
 	//}}AFX_MSG_MAP
 	ON_WM_SETFOCUS()
@@ -565,11 +567,23 @@ void CRichEditCtrlEx::OnContextMenu(CWnd* pWnd, CPoint point)
 		Menu.AppendMenu(0,ID_ToggleBlock,"Toggle Block Delete \'\\\'");
 		if (TheFrame->GCodeDlg.m_ShowLineNumbers)
 		{
-			Menu.AppendMenu(0,ID_ShowLineNumbers,"Hide Line Numbers");
+			Menu.AppendMenu(0, ID_ShowLineNumbers, "Hide Line Numbers");
 		}
 		else
 		{
-			Menu.AppendMenu(0,ID_ShowLineNumbers,"Show Line Numbers");
+			Menu.AppendMenu(0, ID_ShowLineNumbers, "Show Line Numbers");
+		}
+
+		if (ReadWriteVar != 2)
+		{
+			if (GetReadOnly())
+			{
+				Menu.AppendMenu(0, ID_MakeReadWrite, "Allow Read/Write");
+			}
+			else
+			{
+				Menu.AppendMenu(0, ID_MakeReadWrite, "Make Read Only");
+			}
 		}
 	}
 
@@ -578,12 +592,12 @@ void CRichEditCtrlEx::OnContextMenu(CWnd* pWnd, CPoint point)
 	{
 		if (TheFrame->ProgramDlg.m_ShowLineNumbers)
 		{
-		Menu.AppendMenu(0,ID_ShowLineNumbers,"Hide Line Numbers");
-	}
-	else
-	{
-		Menu.AppendMenu(0,ID_ShowLineNumbers,"Show Line Numbers");
-	}
+			Menu.AppendMenu(0,ID_ShowLineNumbers,"Hide Line Numbers");
+		}
+		else
+		{
+			Menu.AppendMenu(0,ID_ShowLineNumbers,"Show Line Numbers");
+		}
 	}
 #endif
 
@@ -603,7 +617,7 @@ void CRichEditCtrlEx::SetAStyle(int style, COLORREF fore, COLORREF back, int siz
 		StyleSetFont(style, face);
 }
 
-void CRichEditCtrlEx::SetupForGCode() 
+void CRichEditCtrlEx::SetupForGCode(int size, CString FontName) 
 {
 	ModeCode=MODE_G;
 
@@ -615,7 +629,8 @@ void CRichEditCtrlEx::SetupForGCode()
 	SetKeyWords(0, GKeyWords);
 
 	//Setup styles
-	SetAStyle(STYLE_DEFAULT, RGB(0, 0, 0), RGB(0xff, 0xff, 0xff), 10, "Courier New");
+	SetAStyle(STYLE_DEFAULT, RGB(0, 0, 0), RGB(0xff, 0xff, 0xff), size, FontName);
+	SetAStyle(STYLE_LINENUMBER, RGB(0, 0, 0), RGB(0xff, 0xff, 0xff), size, FontName);
 	StyleClearAll();
 
 		
@@ -946,6 +961,15 @@ void CRichEditCtrlEx::OnShowLineNumbers()
 #endif
 }
 
+
+void CRichEditCtrlEx::OnMakeReadWrite()
+{
+	if (ModeCode == MODE_G)
+	{
+		SetReadOnly(GetReadOnly() == FALSE);
+	}
+}
+
 void CRichEditCtrlEx::OnTransformSel() 
 {
 	CString s;
@@ -1066,7 +1090,7 @@ void CRichEditCtrlEx::OnFindNext(LPCTSTR lpszFind, BOOL bNext, BOOL bCase, BOOL 
 void CRichEditCtrlEx::OnReplaceSel(LPCTSTR lpszFind, BOOL bNext, BOOL bCase,	BOOL bWord, BOOL bRegularExpression, LPCTSTR lpszReplace)
 {
 	ASSERT_VALID(this);
-	
+
 	m_strFind = lpszFind;
 	m_strReplace = lpszReplace;
 	m_bCase = bCase;

@@ -18,7 +18,7 @@ static char THIS_FILE[] = __FILE__;
 
 
 CDlgX::CDlgX(CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgX::IDD, pParent)
+	: CDialogEx(CDlgX::IDD, pParent)
 {
 	LastMoveX=LastMoveY=100;
 	LastSizeX=LastSizeY=500;
@@ -122,10 +122,10 @@ int CDlgX::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// if so, then set the position and size, otherwise just
 	// the position
 
-	if ((lpCreateStruct->style & WS_THICKFRAME) == 0)   
-		SetWindowPos(NULL,LastMoveX,LastMoveY,0,0,SWP_NOZORDER|SWP_NOSIZE);
+	if ((lpCreateStruct->style & WS_THICKFRAME) != 0 && LastSizeX >= OrigWindowRect.Width() && LastSizeY >= OrigWindowRect.Height())
+		SetWindowPos(NULL,LastMoveX,LastMoveY,LastSizeX,LastSizeY,SWP_NOZORDER);  //Resizeing type, set last size
 	else
-		SetWindowPos(NULL,LastMoveX,LastMoveY,LastSizeX,LastSizeY,SWP_NOZORDER);
+		SetWindowPos(NULL,LastMoveX,LastMoveY,0,0,SWP_NOZORDER|SWP_NOSIZE);
 	
 	return 0;
 }
@@ -336,19 +336,37 @@ CString CDlgX::StripPathMatch(CString FileName, CString DefaultPath)
 {
 	CString FileNameUpper;
 
+	DefaultPath = TheFrame->MainPathRoot + DefaultPath;
 	DefaultPath.MakeUpper();
 
 	FileNameUpper = FileName;
 	FileNameUpper.MakeUpper();
 
-	if (FileNameUpper.Find(DefaultPath) == 0 && 	
-		FileNameUpper.Right(FileNameUpper.GetLength() - DefaultPath.GetLength()).Find('\\') == -1)
+	if (FileNameUpper.Find(DefaultPath) == 0)
 	{
 		FileName.Delete(0,DefaultPath.GetLength());
 	}
 	return FileName;
 }
 
+// Determine from the Previous FileName (if any), the default subdirectory path, and a default name
+// return the full path to be used to divert the Open Dialog to the right place
+
+CString CDlgX::InitialFile(CString FileName, CString DefaultPath, CString DefaultName)
+{
+	CString DefaultDir = TheFrame->MainPathRoot + DefaultPath;
+
+	if (FileName == "")  //current file empty?
+	{
+		FileName = DefaultDir + DefaultName;
+	}
+	else
+	{
+		if (FileName.Find(':') == -1 && FileName.Find("\\\\") == -1)  // no Path in it?
+			FileName = DefaultDir + FileName; // yes, add in the default path
+	}
+	return FileName;
+}
 
 
 

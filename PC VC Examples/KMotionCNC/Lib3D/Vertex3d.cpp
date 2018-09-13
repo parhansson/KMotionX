@@ -666,9 +666,8 @@ void CVertex3d::glDrawHighlight(const float radius,
 						  pTransform->GetRotation()->z());
 
 			if (pTransform->GetValueRotationXY()!=0.0f) glRotatef(pTransform->GetValueRotationXY(),0.0f,0.0f,1.0f);
-			if (pTransform->GetValueRotationYZ()!=0.0f) glRotatef(pTransform->GetValueRotationYZ(),1.0f,0.0f,0.0f);
 			if (pTransform->GetValueRotationZX()!=0.0f) glRotatef(pTransform->GetValueRotationZX(),0.0f,1.0f,0.0f);
-
+			if (pTransform->GetValueRotationYZ()!=0.0f) glRotatef(pTransform->GetValueRotationYZ(),1.0f,0.0f,0.0f);
 		}
 
 	// Main vertex
@@ -765,9 +764,8 @@ void CVertex3d::glDraw(const float radius,
 						  pTransform->GetRotation()->z());
 
 			if (pTransform->GetValueRotationXY()!=0.0f) glRotatef(pTransform->GetValueRotationXY(),0.0f,0.0f,1.0f);
-			if (pTransform->GetValueRotationYZ()!=0.0f) glRotatef(pTransform->GetValueRotationYZ(),1.0f,0.0f,0.0f);
 			if (pTransform->GetValueRotationZX()!=0.0f) glRotatef(pTransform->GetValueRotationZX(),0.0f,1.0f,0.0f);
-
+			if (pTransform->GetValueRotationYZ()!=0.0f) glRotatef(pTransform->GetValueRotationYZ(),1.0f,0.0f,0.0f);
 		}
 
 	// Main vertex

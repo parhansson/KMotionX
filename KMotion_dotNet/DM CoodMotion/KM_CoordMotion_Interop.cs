@@ -211,6 +211,9 @@ namespace KMotion_dotNet
         static extern int KM_dotnet_Interop_CoordMotion_DoKMotionCmd(IntPtr handle, string command, bool FlushBeforeUnbufferedOperation);
 
         [DllImport("KMotion_dotNet_Interop.dll")]
+        static extern int KM_dotnet_Interop_CoordMotion_KinematicsReadGeoTable(IntPtr handle, string filename);
+
+        [DllImport("KMotion_dotNet_Interop.dll")]
         static extern int KM_dotnet_Interop_CoordMotion_DoKMotionBufCmd(IntPtr handle, string command);
 
         [DllImport("KMotion_dotNet_Interop.dll")]

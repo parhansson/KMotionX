@@ -5,11 +5,17 @@
 #include "rs274ngc_return.h"
 #include "rs274ngc.h"
 #include "GCodeInterpreter.h"
+#include "HiResTimer.h"
 
+#ifdef _KMOTIONX
+void * DoInvokeShell(void * lpdwParam);
+#else
+DWORD DoInvokeShell(LPDWORD lpdwParam);
+#endif
 
 CGCodeInterpreter::CGCodeInterpreter(CCoordMotion *CoordM)
 { 
-	CoordMotion=CoordM;   // set global variable for the low level Interpreter
+	CM=CoordMotion=CoordM;   // set global variable for the low level Interpreter
 	GC=this;
 
 	ToolFile[0] = 0;
@@ -41,6 +47,9 @@ CGCodeInterpreter::CGCodeInterpreter(CCoordMotion *CoordM)
 
 	m_UserFn = NULL;
 	m_UserFnMCode = NULL;
+	m_ScreenScriptCallback = NULL;
+
+	m_InvokeThreadID = m_InterpretThreadID = -1;
 }
 
 CGCodeInterpreter::~CGCodeInterpreter()
@@ -82,21 +91,38 @@ MOTION_PARAMS *CGCodeInterpreter::GetMotionParams()
 	return &CoordMotion->Kinematics->m_MotionParams;
 }
 
-
 #ifdef _KMOTIONX
 void * DoExecuteShell(void *lpdwParam)
-#else
-DWORD DoExecuteShell(LPDWORD lpdwParam)
-#endif
 {
 	CGCodeInterpreter *p=(CGCodeInterpreter*)lpdwParam;
+
+	p->m_InterpretThreadID = kmx::getThreadId("GCodeInterpreter::DoExecuteShell");
 
 	p->m_exitcode = p->DoExecute();
 
 	p->DoExecuteComplete();
 
+	p->m_InterpretThreadID = -1;
+
+	pthread_exit(0);
 	return 0;
 }
+#else
+DWORD DoExecuteShell(LPDWORD lpdwParam)
+{
+	CGCodeInterpreter *p=(CGCodeInterpreter*)lpdwParam;
+
+	p->m_InterpretThreadID = GetCurrentThreadId();
+
+	p->m_exitcode = p->DoExecute();
+
+	p->DoExecuteComplete();
+
+	p->m_InterpretThreadID = -1;
+
+	return 0;
+}
+#endif
 
 
 void CGCodeInterpreter::Halt()
@@ -132,17 +158,17 @@ bool CGCodeInterpreter::GetAbort()
 
 void CGCodeInterpreter::SetToolFile(char *f)
 {
-	strncpy(f,ToolFile,MAX_PATH);
+	strncpy(ToolFile,f,MAX_PATH);
 }
 
 void CGCodeInterpreter::SetSetupFile(char *f)
 {
-	strncpy(f,SetupFile,MAX_PATH);
+	strncpy(SetupFile,f,MAX_PATH);
 }
 
 void CGCodeInterpreter::SetVarsFile(char *f)
 {
-	strncpy(f,VarsFile,MAX_PATH);
+	strncpy(VarsFile,f,MAX_PATH);
 }
 
 int CGCodeInterpreter::rs274ErrorExit(int status)
@@ -231,6 +257,7 @@ int CGCodeInterpreter::DoExecute()
 	char trash[INTERP_TEXT_SIZE];
 	char * read_ok;
 	int program_status;
+	//CString OutputCRLF;
 
 	ErrorOutput[0]='\0';
 
@@ -277,9 +304,9 @@ int CGCodeInterpreter::DoExecute()
 
 		if  (CoordMotion->m_PreviouslyStopped)
 			result = CoordMotion->ReadCurAbsPosition(&CoordMotion->current_x,&CoordMotion->current_y,&CoordMotion->current_z,
-													&CoordMotion->current_a,&CoordMotion->current_b,&CoordMotion->current_c,true);
+													&CoordMotion->current_a,&CoordMotion->current_b,&CoordMotion->current_c,&CoordMotion->current_u,&CoordMotion->current_v,true);
 		else
-			result = ReadAndSyncCurPositions(&_setup.current_x,&_setup.current_y,&_setup.current_z,&_setup.AA_current,&_setup.BB_current,&_setup.CC_current);
+			result = ReadAndSyncCurPositions(&_setup.current_x,&_setup.current_y,&_setup.current_z,&_setup.AA_current,&_setup.BB_current,&_setup.CC_current,&_setup.UU_current,&_setup.VV_current);
 
 		if (result == 1)
 		{
@@ -317,13 +344,15 @@ int CGCodeInterpreter::DoExecute()
 	
 	_setup.current_line=m_GCodeReads;
 
+	if (m_end == -1) m_end = -99;  // -1 is valid previous line when looping back to line 0
+
 	for(  ; ; m_GCodeReads++)
 	{
 		// record what line we are doing in the GCode
 
 		_setup.current_line = m_CurrentLine = m_GCodeReads;
 
-		SetupTracker.InsertState(&_setup);  // save the interpreter state
+		StateSaved=false;  // remember we should save the state at some point
 		
 		// give output to caller
 #ifndef _KMOTIONX
@@ -337,7 +366,7 @@ int CGCodeInterpreter::DoExecute()
 		Output[0]='\0';  // clear it
 
 
-		if (((m_end!=-1)&&(m_CurrentLine>m_end)) || (CoordMotion->m_Simulate && m_Halt) || CoordMotion->GetAbort() || m_HaltNextLine)
+		if (((m_end!=-99)&&(m_CurrentLine>m_end)) || (CoordMotion->m_Simulate && m_Halt) || CoordMotion->GetAbort() || m_HaltNextLine)
 		{
 			rs274ngc_close();
 			return 0;
@@ -360,7 +389,7 @@ int CGCodeInterpreter::DoExecute()
 		{
 			// line number changed
 
-			if (m_end!=-1)
+			if (m_end!=-99)
 				m_end += _setup.current_line - m_CurrentLine;
 		
 			m_GCodeReads = m_CurrentLine = _setup.current_line;  // get back line no (in case we called a subroutine)
@@ -398,7 +427,19 @@ void CGCodeInterpreter::SaveStateOnceOnly()
 
 int CGCodeInterpreter::DoExecuteComplete()
 {
-	CoordMotion->ExecutionStop();
+	if (!CoordMotion->GetAbort() && !CoordMotion->GetHalt() && CoordMotion->ExecutionStop())
+	{
+		// check again now that motion stopped if no Abort or Halt must have been an error
+		if (!CoordMotion->GetAbort() && !CoordMotion->GetHalt())
+		{
+			if (CoordMotion->m_AxisDisabled)
+				CoordMotion->KMotionDLL->DoErrMsg("Error Executing GCode\r\rAxis Disabled");
+			else
+				CoordMotion->KMotionDLL->DoErrMsg("Error Executing GCode");
+
+			m_exitcode = 1005;
+		}
+	}
 
 	if (CoordMotion->m_Stopping != STOPPED_NONE)
 	{
@@ -411,8 +452,10 @@ int CGCodeInterpreter::DoExecuteComplete()
 
 			// convert stopped absolute coordinates to GCode interpreter coordinates
 
-			ConvertAbsoluteToInterpreterCoord(CoordMotion->m_StoppedMachinex, CoordMotion->m_StoppedMachiney, CoordMotion->m_StoppedMachinez, CoordMotion->m_StoppedMachinea, CoordMotion->m_StoppedMachineb, CoordMotion->m_StoppedMachinec,
-												 &CoordMotion->m_Stoppedx, &CoordMotion->m_Stoppedy, &CoordMotion->m_Stoppedz, &CoordMotion->m_Stoppeda, &CoordMotion->m_Stoppedb, &CoordMotion->m_Stoppedc);
+			ConvertAbsoluteToInterpreterCoord(CoordMotion->m_StoppedMachinex, CoordMotion->m_StoppedMachiney, CoordMotion->m_StoppedMachinez, 
+				CoordMotion->m_StoppedMachinea, CoordMotion->m_StoppedMachineb, CoordMotion->m_StoppedMachinec, CoordMotion->m_StoppedMachineu, CoordMotion->m_StoppedMachinev,
+				&CoordMotion->m_Stoppedx, &CoordMotion->m_Stoppedy, &CoordMotion->m_Stoppedz, 
+				&CoordMotion->m_Stoppeda, &CoordMotion->m_Stoppedb, &CoordMotion->m_Stoppedc, &CoordMotion->m_Stoppedu, &CoordMotion->m_Stoppedv);
 
 			_setup.file_pointer=NULL;
 		}
@@ -466,7 +509,7 @@ void InvokeCompleteCallback(int status, int lineno, int sequence_number, const c
 {
 	if (status)
 	{
-		GC->CoordMotion->KMotionDLL->DoErrMsg(err);
+		CM->KMotionDLL->DoErrMsg(err);
 	}
 	InvokeInterpComplete=true;
 }
@@ -483,9 +526,141 @@ void InvokeStatusCallback(int line_no, const char *msg)
 int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 {
 	MCODE_ACTION *p;
-	char s[MAX_LINE];
+
+	if (i<MAX_MCODE_ACTIONS_M1 + MAX_MCODE_ACTIONS_BUTTONS)
+		p = &McodeActions[i];
+	else if (i >= 100)
+		p = &McodeActions[i - 100 + MCODE_ACTIONS_M100_OFFSET];
+	else
+		p = &McodeActions[i - 24 + MCODE_ACTIONS_SPECIAL_OFFSET];
+
+	return InvokeAction(i, FlushBeforeUnbufferedOperation, p);
+}
+
+
+typedef struct
+{
+	int i;
+	BOOL FlushBeforeUnbufferedOperation;
+	MCODE_ACTION p;
+	CGCodeInterpreter *GC;
+} INVOKE_PARAMS;
+
+
+int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation, MCODE_ACTION *p)
+{
+	// check if action was from a GUI Button (no Flush required)
+	// if so create a Worker Thread to perform the Action
+
+	if (FlushBeforeUnbufferedOperation)
+	{
+		//no just call it directly
+		return InvokeActionDirect(i, FlushBeforeUnbufferedOperation, p);
+	}
+	else
+	{
+		// create a Worker Thread to do it
+
+		// wait if a previous action is still in progress
+		CHiResTimer Timer;
+		Timer.Start();
+		while (m_InvokeThreadID != -1)
+		{
+			Sleep(10);
+
+			if (CoordMotion->GetAbort()) return 1;
+
+			if (Timer.Elapsed_Seconds() > 10.0)
+			{
+				CoordMotion->KMotionDLL->DoErrMsg("Timeout waiting on Action to complete");
+				return 1;
+			}
+		}
+
+		// Now start a worker thread that performs the Action
+
+
+		INVOKE_PARAMS *params = new INVOKE_PARAMS;
+
+		params->i = i;
+		params->FlushBeforeUnbufferedOperation = FlushBeforeUnbufferedOperation;
+		params->p = *p;
+		params->GC = this;
+		
+#ifdef _KMOTIONX
+    pthread_t thr;
+    params->GC->m_InvokeThreadID++;
+    if(pthread_create(&thr, NULL, &::DoInvokeShell, params))
+    {
+				params->GC->m_InvokeThreadID--;
+				delete params;
+        printf("Could not create thread\n");
+        return -1;
+    }
+    
+    // We don't use pthread_join(), so allow system to clean up resources.
+    pthread_detach(thr);
+#else
+
+		HANDLE Thread = CreateThread(
+			NULL,                        /* no security attributes        */
+			0,                           /* use default stack size        */
+			(LPTHREAD_START_ROUTINE) ::DoInvokeShell, /* thread function       */
+			params,						 /* argument to thread function   */
+			0,                           /* use default creation flags    */
+			&params->GC->m_InvokeThreadID);
+#endif
+		return 0;
+	}
+}
+
+#ifdef _KMOTIONX
+void * DoInvokeShell(void * lpdwParam)
+{
+	INVOKE_PARAMS *params = (INVOKE_PARAMS*)lpdwParam;
+	params->GC->m_InvokeExitcode = params->GC->InvokeActionDirect(params->i, params->FlushBeforeUnbufferedOperation, &params->p);
+	//TODO mutex lock before changing m_InvokeThreadID
+	params->GC->m_InvokeThreadID--;
+	delete params;
+	pthread_exit(0);
+	return 0;
+}
+#else
+DWORD DoInvokeShell(LPDWORD lpdwParam)
+{
+	INVOKE_PARAMS *params = (INVOKE_PARAMS*)lpdwParam;
+
+	params->GC->m_InvokeExitcode = params->GC->InvokeActionDirect(params->i, params->FlushBeforeUnbufferedOperation, &params->p);
+
+	params->GC->m_InvokeThreadID = -1;
+
+	delete params;
+
+	return 0;
+}
+#endif
+
+
+
+int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOperation, MCODE_ACTION *p)
+{
+	char s[MAX_LINE]; char s0[32]; char e[MAX_PATH];
 	double value;
-	int ivalue,ipersist;
+	int ivalue,ipersist,result;
+	bool MCode;
+
+	if (i == -1)  // determine if MCode in GCode or from a button
+		MCode = false;
+	else if (i < MAX_MCODE_ACTIONS_M1)
+		MCode = true;
+	else if (i<MAX_MCODE_ACTIONS_M1 + MAX_MCODE_ACTIONS_BUTTONS)
+		MCode = false;  // User Button
+	else if (i >= 100)
+		MCode = true;
+	else
+		MCode = false;  // Specials
+
+
 
 	if (FlushBeforeUnbufferedOperation && CoordMotion->m_Simulate) return 0;
 
@@ -496,12 +671,6 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 		CoordMotion->ClearHalt();
 	}
 	
-	if (i<MAX_MCODE_ACTIONS_M1+MAX_MCODE_ACTIONS_BUTTONS)
-		p=&McodeActions[i];
-	else if (i>=100)
-		p=&McodeActions[i-100+MCODE_ACTIONS_M100_OFFSET];
-	else
-		p=&McodeActions[i-24+MCODE_ACTIONS_SPECIAL_OFFSET];
 
 	switch (p->Action)
 	{
@@ -568,12 +737,12 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 			if (CoordMotion->WaitForSegmentsFinished()) {CoordMotion->SetAbort(); return 1;}
 		}
 
-		s[0] = '\0';
+		e[0] = '\0';
 		if(strlen(p->String) >= 4){
-			strcpy(s,p->String+ strlen(p->String) -4);
-			_strlwr(s);
+			strcpy(e,p->String+ strlen(p->String) -4);
+			_strlwr(e);
 		}
-		if(s[0] != '\0' && strcmp(s,".ngc")==0)
+		if(e[0] != '\0' && strcmp(e,".ngc")==0)
 		{
 			if (_setup.file_pointer!= NULL)
 			{
@@ -638,7 +807,7 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 					// for other M Codes check if P Q or R words are present on the same line
 					// if so, download them into successive persist vars as floats
 	
-					if (p_setup->block1.p_flag)
+					if (MCode && p_setup->block1.p_flag)
 					{
 						float p = (float)p_setup->block1.p_number;
 						sprintf(s, "SetPersistHex %d %x",ipersist, *(int *)&p);
@@ -647,7 +816,7 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 						count++;
 					}
 	
-					if (p_setup->block1.q_flag)
+					if (MCode && p_setup->block1.q_flag)
 					{
 						float q = (float)p_setup->block1.q_number;
 						sprintf(s, "SetPersistHex %d %x",ipersist, *(int *)&q);
@@ -656,7 +825,7 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 						count++;
 					}
 	
-					if (p_setup->block1.r_flag)
+					if (MCode && p_setup->block1.r_flag)
 					{
 						float r = (float)p_setup->block1.r_number;
 						sprintf(s, "SetPersistHex %d %x",ipersist, *(int *)&r);
@@ -675,14 +844,51 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 	
 			// If a C File is specified then Compile and load it
 	
-			if (p->String[0])
+			if(e[0] != '\0' && strcmp(e,".out")==0)
 			{
-				char Err[500];
-	
-				if (CoordMotion->KMotionDLL->CompileAndLoadCoff(p->String, (int)p->dParams[0], Err, 499))
+#ifdef _KMOTIONX
+				char FileName[MAX_PATH];
+				strcpy(FileName, p->String);
+				if(strchr(FileName,PATH_SEPARATOR) - FileName > -1){
+					sprintf(FileName,"%s%s%s", CoordMotion->MainPathRoot, C_PROGRAMS_DIR,  p->String);
+				}
+#else
+				CString FileName = p->String; 
+				if (FileName.Find("\\\\") == -1 && FileName.Find(':') == -1)  // if no Path in File name add in the default path
+				{
+					FileName = CoordMotion->MainPathRoot + ((CString)C_PROGRAMS_DIR) + FileName;
+				}
+#endif
+
+				if (CoordMotion->KMotionDLL->LoadCoff((int)p->dParams[0], FileName))
 				{
 					char message[1024];
-					sprintf(message,"Error Compiling and Loading KMotion Program\r\r%s\r\r%s", p->String, Err );
+					sprintf(message,"Error Loading KMotion Coff Program\r\r%s\r\r", FileName);
+					CoordMotion->KMotionDLL->DoErrMsg(message);
+					return 1;
+				}
+			}
+			else if (p->String[0])
+			{
+				char Err[500];
+
+#ifdef _KMOTIONX
+				char FileName[MAX_PATH];
+				strcpy(FileName, p->String);
+				if(strchr(FileName,PATH_SEPARATOR) == NULL){
+					sprintf(FileName,"%s%s%s", CoordMotion->MainPathRoot, C_PROGRAMS_DIR,  p->String);
+				}
+#else
+				CString FileName = p->String; 
+				if (FileName.Find("\\\\") == -1 && FileName.Find(':') == -1)  // if no Path in File name add in the default path
+				{
+					FileName = CoordMotion->MainPathRoot + ((CString)C_PROGRAMS_DIR) + FileName;
+				}
+#endif
+				if (CoordMotion->KMotionDLL->CompileAndLoadCoff(FileName, (int)p->dParams[0], Err, 499))
+				{
+					char message[1024];
+					sprintf(message,"Error Compiling and Loading KMotion Program\r\r%s\r\r%s", FileName, Err );
 					CoordMotion->KMotionDLL->DoErrMsg(message);
 					return 1;
 				}
@@ -711,6 +917,9 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 					}
 	
 					if (CoordMotion->GetAbort()) return 1;
+
+					// if not called from a button check for Halt
+					if (FlushBeforeUnbufferedOperation && CoordMotion->CheckMotionHalt(true)) return 2;
 				}
 				while (strcmp(response,"0")!=0);
 			}
@@ -722,7 +931,7 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 				if (CoordMotion->WaitForMoveXYZABCFinished()) return 1;
 	
 				if (!CoordMotion->m_Simulate && ReadAndSyncCurPositions(&_setup.current_x,&_setup.current_y,&_setup.current_z,
-					                                                               &_setup.AA_current,&_setup.BB_current,&_setup.CC_current))
+					      &_setup.AA_current, &_setup.BB_current, &_setup.CC_current, &_setup.UU_current, &_setup.VV_current))
 				{
 					if (CoordMotion->m_AxisDisabled)
 					  strcpy(ErrorOutput,"Unable to read defined coordinate system axis positions - Axis Disabled ");
@@ -750,7 +959,7 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 			if (CoordMotion->WaitForMoveXYZABCFinished()) return 1;
 
 			if (!CoordMotion->m_Simulate && ReadAndSyncCurPositions(&_setup.current_x,&_setup.current_y,&_setup.current_z,
-															   &_setup.AA_current,&_setup.BB_current,&_setup.CC_current))
+							&_setup.AA_current,&_setup.BB_current,&_setup.CC_current,&_setup.UU_current,&_setup.VV_current))
 				return 1;
 		}
 		break;
@@ -764,9 +973,7 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 		}
 
 		// we will be executing a PC Program pass any related parameters
-		//s="";
-		s[0]='\0';
-		char s0[32];
+		s[0]='\0'; //s="";
 		if (i==6)  // tool change
 		{
 			sprintf(s, " %d",p_setup->selected_tool_slot);
@@ -801,7 +1008,7 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 		}
 		char pcCmd[MAX_LINE];
 		sprintf(pcCmd,"%s%s",p->String,s);
-		int result = ExecutePC(pcCmd);  // call the executable with parameters
+		result = ExecutePC(pcCmd);  // call the executable with parameters
 		if (result)
 		{
 			char Err[350];
@@ -811,7 +1018,11 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation)
 
 			if (AfxMessageBox(Err,MB_YESNO)==IDYES) Abort();
 		};
+		break;
 
+		case M_Action_ScreenScript:
+		if (m_ScreenScriptCallback)
+			if (m_ScreenScriptCallback(p->String)) return 1;
 		break;
 	}
 
@@ -942,6 +1153,16 @@ double CGCodeInterpreter::ConvertAbsToUserUnitsC(double c)
 	return InchesOrDegToUserUnitsC(c - p_setup->CC_axis_offset  - p_setup->CC_origin_offset);
 }
 
+double CGCodeInterpreter::ConvertAbsToUserUnitsU(double u)
+{
+	return InchesToUserUnits(u - p_setup->UU_axis_offset  - p_setup->UU_origin_offset);
+}
+
+double CGCodeInterpreter::ConvertAbsToUserUnitsV(double v)
+{
+	return InchesToUserUnits(v - p_setup->VV_axis_offset  - p_setup->VV_origin_offset);
+}
+
 double CGCodeInterpreter::InchesToUserUnits(double inches)
 {
 	return p_setup->length_units==CANON_UNITS_INCHES ? inches : inches * 25.4;
@@ -1019,10 +1240,15 @@ double CGCodeInterpreter::UserUnitsToInchesOrDegC(double input)
 }
 
 
+void CGCodeInterpreter::ConvertAbsoluteToInterpreterCoord(double x, double y, double z, double a, double b, double c,
+	double *gx, double *gy, double *gz, double *ga, double *gb, double *gc, setup_pointer psetup)
+{
+	double dummyu, dummyv;
+	ConvertAbsoluteToInterpreterCoord(x, y, z, a, b, c, 0.0, 0.0, gx, gy, gz, ga, gb, gc, &dummyu, &dummyv, psetup);
+}
 
-	
-void CGCodeInterpreter::ConvertAbsoluteToInterpreterCoord(double x,double y,double z,double a,double b,double c, 
-													double *gx,double *gy,double *gz,double *ga,double *gb,double *gc,setup_pointer psetup)
+void CGCodeInterpreter::ConvertAbsoluteToInterpreterCoord(double x,double y,double z,double a,double b,double c, double u, double v,
+						double *gx,double *gy,double *gz,double *ga,double *gb,double *gc, double *gu, double *gv, setup_pointer psetup)
 {
 	if (!psetup) psetup = p_setup;
 
@@ -1032,32 +1258,48 @@ void CGCodeInterpreter::ConvertAbsoluteToInterpreterCoord(double x,double y,doub
 	*ga  = InchesOrDegToUserUnitsA(a) - psetup->AA_axis_offset - psetup->AA_origin_offset;
 	*gb  = InchesOrDegToUserUnitsB(b) - psetup->BB_axis_offset - psetup->BB_origin_offset;
 	*gc  = InchesOrDegToUserUnitsC(c) - psetup->CC_axis_offset - psetup->CC_origin_offset;
+	*gu  = InchesToUserUnits(u) - psetup->UU_axis_offset - psetup->UU_origin_offset;
+	*gv  = InchesToUserUnits(v) - psetup->VV_axis_offset - psetup->VV_origin_offset;
 }
 
-void CGCodeInterpreter::ConvertAbsoluteToMachine(double x,double y,double z,double a,double b,double c, 
-											double *gx,double *gy,double *gz,double *ga,double *gb,double *gc)
+void CGCodeInterpreter::ConvertAbsoluteToMachine(double x, double y, double z, double a, double b, double c,
+	double *gx, double *gy, double *gz, double *ga, double *gb, double *gc)
+{
+	double dummyu, dummyv;
+	ConvertAbsoluteToMachine(x, y, z, a, b, c, 0.0, 0.0, gx, gy, gz, ga, gb, gc, &dummyu, &dummyv);
+}
+
+void CGCodeInterpreter::ConvertAbsoluteToMachine(double x, double y, double z, double a, double b, double c, double u, double v,
+	double *gx, double *gy, double *gz, double *ga, double *gb, double *gc, double *gu, double *gv)
 {
 	*gx  = InchesToUserUnitsX(x);
 	*gy  = InchesToUserUnits(y);
 	*gz  = InchesToUserUnits(z);
 	*ga  = InchesOrDegToUserUnitsA(a);
-	*gb  = InchesOrDegToUserUnitsB(b);
-	*gc  = InchesOrDegToUserUnitsC(c);
-}	
-int CGCodeInterpreter::ReadAndSyncCurPositions(double *x,double *y,double *z,double *a,double *b,double *c)
+	*gb = InchesOrDegToUserUnitsB(b);
+	*gc = InchesOrDegToUserUnitsC(c);
+	*gu = InchesToUserUnits(u);
+	*gv = InchesToUserUnits(v);
+}
+int CGCodeInterpreter::ReadAndSyncCurPositions(double *x,double *y,double *z,double *a,double *b,double *c,double *u,double *v)
 {
+	double dummyu, dummyv;
+
+	if (u == NULL) u = &dummyu;
+	if (v == NULL) v = &dummyv;
+
 	// find out which axis is which
 	// force refresh and save results
-
+	
     CoordMotion->m_DefineCS_valid = false;
 
 	if (CoordMotion->ReadCurAbsPosition(&CoordMotion->current_x,&CoordMotion->current_y,&CoordMotion->current_z,
-		&CoordMotion->current_a,&CoordMotion->current_b,&CoordMotion->current_c,true)) return 1;
+		&CoordMotion->current_a,&CoordMotion->current_b,&CoordMotion->current_c,&CoordMotion->current_u,&CoordMotion->current_v,true)) return 1;
 
 	// convert absolute coordinates to GCode interpreter coordinates
 
 	ConvertAbsoluteToInterpreterCoord(CoordMotion->current_x,CoordMotion->current_y,CoordMotion->current_z,
-		CoordMotion->current_a,CoordMotion->current_b,CoordMotion->current_c, x, y, z, a, b, c);
+		CoordMotion->current_a,CoordMotion->current_b,CoordMotion->current_c,CoordMotion->current_u,CoordMotion->current_v, x, y, z, a, b, c, u, v);
 	
 	return 0;    
 }
@@ -1094,39 +1336,88 @@ int CGCodeInterpreter::ChangeFixtureNumber(int fixture)
 
 
 int CGCodeInterpreter::SetOrigin(int index, double x, double y, double z, double a, double b, double c)
-{ 
- 
-	int k = (5200 + (index * 20));
+{
+	int k;
+
+	if (index == 0) // axis offset??
+		k = 5210;  // yes
+	else
+		k = (5200 + (index * 20));  // no, origin (fixture) offsets
 
 	p_setup->parameters[k + 1] = x;
 	p_setup->parameters[k + 2] = y;
-	p_setup->parameters[k + 3] = z; 
+	p_setup->parameters[k + 3] = z;
 	p_setup->parameters[k + 4] = a;
 	p_setup->parameters[k + 5] = b;
-	p_setup->parameters[k + 6] = c; 
+	p_setup->parameters[k + 6] = c;
+	
+	return 0;
+}
 
+int CGCodeInterpreter::SetOrigin(int index, double x, double y, double z, double a, double b, double c, double u, double v)
+{
+	int k;
+
+	if (index == 0) // axis offset??
+		k = 5210;  // yes
+	else
+		k = (5200 + (index * 20));  // no, origin (fixture) offsets
+
+	p_setup->parameters[k + 1] = x;
+	p_setup->parameters[k + 2] = y;
+	p_setup->parameters[k + 3] = z;
+	p_setup->parameters[k + 4] = a;
+	p_setup->parameters[k + 5] = b;
+	p_setup->parameters[k + 6] = c;
+	p_setup->parameters[k + 7] = u;
+	p_setup->parameters[k + 8] = v;
+
+	return 0;
+}
+
+int CGCodeInterpreter::GetOrigin(int index, double *x, double *y, double *z, double *a, double *b, double *c, double *u, double *v)
+{
+	int k;
+	
+	if (index == 0) // axis offset??
+		k = 5210;  // yes
+	else
+		k = (5200 + (index * 20));  // no, origin (fixture) offsets
+
+	*x = p_setup->parameters[k + 1];
+	*y = p_setup->parameters[k + 2];
+	*z = p_setup->parameters[k + 3];
+	*a = p_setup->parameters[k + 4];
+	*b = p_setup->parameters[k + 5];
+	*c = p_setup->parameters[k + 6];
+	*u = p_setup->parameters[k + 7];
+	*v = p_setup->parameters[k + 8];
 
 	return 0;
 }
 
 int CGCodeInterpreter::GetOrigin(int index, double *x, double *y, double *z, double *a, double *b, double *c)
 {
- 
-	int k = (5200 + (index * 20));
+	int k;
+
+	if (index == 0) // axis offset??
+		k = 5210;  // yes
+	else
+		k = (5200 + (index * 20));  // no, origin (fixture) offsets
 
 	*x = p_setup->parameters[k + 1];
 	*y = p_setup->parameters[k + 2];
-	*z = p_setup->parameters[k + 3]; 
+	*z = p_setup->parameters[k + 3];
 	*a = p_setup->parameters[k + 4];
 	*b = p_setup->parameters[k + 5];
-	*c = p_setup->parameters[k + 6]; 
+	*c = p_setup->parameters[k + 6];
 
 	return 0;
 }
 
 int CGCodeInterpreter::DoResumeSafe()
 {
-	double SafeZ,SafeZMachine,Machinex,Machiney,Machinez,Machinea,Machineb,Machinec;
+	double SafeZ,SafeZMachine,Machinex,Machiney,Machinez,Machinea, Machineb, Machinec, Machineu, Machinev;
 
 	if (!m_Resume) return 0;
 
@@ -1135,10 +1426,10 @@ int CGCodeInterpreter::DoResumeSafe()
 	// read the current positions
 
 	if (CoordMotion->ReadCurAbsPosition(&CoordMotion->current_x,&CoordMotion->current_y,&CoordMotion->current_z,
- 									    &CoordMotion->current_a,&CoordMotion->current_b,&CoordMotion->current_c,true)) return 1;
+ 		&CoordMotion->current_a, &CoordMotion->current_b, &CoordMotion->current_c, &CoordMotion->current_u, &CoordMotion->current_v,true)) return 1;
 
 
-	if (CoordMotion->ReadCurAbsPosition(&Machinex,&Machiney,&Machinez,&Machinea,&Machineb,&Machinec,true)) return 1;
+	if (CoordMotion->ReadCurAbsPosition(&Machinex, &Machiney, &Machinez, &Machinea, &Machineb, &Machinec, &Machineu, &Machinev, true)) return 1;
 
 	SafeZ = UserUnitsToInches(m_ResumeSafeZ);
 
@@ -1162,7 +1453,7 @@ int CGCodeInterpreter::DoResumeSafe()
 	{
 		// keep everything where it is, except move z
 		Machinez = SafeZMachine;
-		if (CoordMotion->StraightTraverse(Machinex,Machiney,Machinez,Machinea,Machineb,Machinec,false,_setup.sequence_number+1)) return 2;
+		if (CoordMotion->StraightTraverse(Machinex,Machiney,Machinez,Machinea, Machineb, Machinec, Machineu, Machinev, false,_setup.sequence_number+1)) return 2;
 	}
 
 	if (m_ResumeTraverseXY)
@@ -1173,7 +1464,7 @@ int CGCodeInterpreter::DoResumeSafe()
 		Machinea = CoordMotion->m_StoppedMachinea;
 		Machineb = CoordMotion->m_StoppedMachineb;
 		Machinec = CoordMotion->m_StoppedMachinec;
-		if (CoordMotion->StraightTraverse(Machinex,Machiney,Machinez,Machinea,Machineb,Machinec,false,_setup.sequence_number+1)) return 2;
+		if (CoordMotion->StraightTraverse(Machinex, Machiney, Machinez, Machinea, Machineb, Machinec, Machineu, Machinev, false, _setup.sequence_number + 1)) return 2;
 	}
 
 	if (m_ResumeSafeStartSpindle)
@@ -1192,7 +1483,8 @@ int CGCodeInterpreter::DoResumeSafe()
 	{
 		Machinez = GC->UserUnitsToInches(m_ResumeFeedSafeZ+_setup.axis_offset_z+_setup.origin_offset_z+_setup.tool_length_offset);
 
-		if (CoordMotion->StraightFeed(UserUnitsToInches(m_ResumeZFeedRate)/60.0,Machinex,Machiney,Machinez,Machinea,Machineb,Machinec,_setup.sequence_number+1,0)) return 2;
+		if (CoordMotion->StraightFeed(UserUnitsToInches(m_ResumeZFeedRate) / 60.0, Machinex, Machiney, Machinez, Machinea, Machineb, Machinec,
+			Machineu, Machinev, _setup.sequence_number + 1, 0)) return 2;
 	}
 
 	if (m_ResumeRestoreFeedRate)
@@ -1225,11 +1517,22 @@ void CGCodeInterpreter::SetUserMCodeCallback(G_M_USER_CALLBACK *UserFn)
 	m_UserFnMCode = UserFn;
 }
 
+// Set Invoke Action Callback to call KMotionCNC to executa Screen Script File
+void CGCodeInterpreter::SetScreenScriptCallback(G_SCREENSCRIPT_CALLBACK *UserFn)
+{
+	m_ScreenScriptCallback = UserFn;
+}
+
 int CGCodeInterpreter::rs274ngc_save_parameters()
 {
 	char file[MAX_PATH+1];
 	GET_EXTERNAL_PARAMETER_FILE_NAME(file, MAX_PATH);
 	return ::rs274ngc_save_parameters(file,p_setup->parameters);
+}
+
+bool CGCodeInterpreter::rs274ngc_save_parameters_changed(void)
+{
+	return ::rs274ngc_save_parameters_changed();
 }
 
 
@@ -1268,9 +1571,10 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 
 		if  (CoordMotion->m_PreviouslyStopped)
 			result = CoordMotion->ReadCurAbsPosition(&CoordMotion->current_x,&CoordMotion->current_y,&CoordMotion->current_z,
-													&CoordMotion->current_a,&CoordMotion->current_b,&CoordMotion->current_c,true);
+					&CoordMotion->current_a,&CoordMotion->current_b,&CoordMotion->current_c,&CoordMotion->current_u,&CoordMotion->current_v,true);
 		else
-			result = ReadAndSyncCurPositions(&_setup.current_x,&_setup.current_y,&_setup.current_z,&_setup.AA_current,&_setup.BB_current,&_setup.CC_current);
+			result = ReadAndSyncCurPositions(&_setup.current_x,&_setup.current_y,&_setup.current_z,
+				&_setup.AA_current,&_setup.BB_current,&_setup.CC_current,&_setup.UU_current,&_setup.VV_current);
 
 		if (result == 1)
 		{
@@ -1318,7 +1622,7 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 #ifdef _KMOTIONX
 		strcpy(LineArray[GCodeReads],trash);
 #else
-		LineArray[GCodeReads] = trash;
+		LineArray[GCodeReads]=trash;
 #endif
 	}
 
@@ -1335,36 +1639,28 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 	bool FoundA=CoordMotion->a_axis < 0;
 	bool FoundB=CoordMotion->b_axis < 0;
 	bool FoundC=CoordMotion->c_axis < 0;
+	bool FoundU=CoordMotion->u_axis < 0;
+	bool FoundV=CoordMotion->v_axis < 0;
 
-	bool FoundX0,FoundY0,FoundZ0,FoundA0,FoundB0,FoundC0,FoundG0,FoundF0,FoundUnits0;
+	bool FoundX0,FoundY0,FoundZ0,FoundA0,FoundB0,FoundC0,FoundU0,FoundV0,FoundG0,FoundF0,FoundUnits0;
 
+	p_setup->motion_mode=-1;  //set motion mode as undefined
 
 	int G=-1;
 	int Units=-1;
-	double x=0,y=0,z=0,a=0,b=0,c=0,f=0;
+	double xprep = 0, yprep = 0, zprep = 0, aprep = 0, bprep = 0, cprep = 0, uprep = 0, vprep = 0;
+	double x0 = 0, y0 = 0, z0 = 0, a0 = 0, b0 = 0, c0 = 0, u0 = 0, v0 = 0, f0 = 0;
+	double x = 0, y = 0, z = 0, a = 0, b = 0, c = 0, u = 0, v = 0, f = 0;
 	block *BL=&p_setup->block1;
 	block block0;
 	bool FirstLoop=true;
 
-	if (--GCodeReads<0) {CLEAN_ARRAY; return 1;}
-
-	status = rs274ngc_read(LineArray[GCodeReads]);
-	if (status == RS274NGC_ENDFILE)
-	{
-		rs274ngc_close();
-		CLEAN_ARRAY;
-		return RS274NGC_ENDFILE;
-	}
-
-	// save what is on the line the User wants to switch to
-
-	block0=p_setup->block1;
 
 	// we need to determine what everthing would be 
 	// after the previous line was executed
 
 	while (!FoundG || (!FoundF && (G==-1 || G==G_1 || G==G_2 || G==G_3)) 
-		    || !FoundX || !FoundY || !FoundZ || !FoundA || !FoundB || !FoundC
+		    || !FoundX || !FoundY || !FoundZ || !FoundA || !FoundB || !FoundC|| !FoundU || !FoundV
 			|| !FoundUnits)
 	{
 		if (--GCodeReads<0) break;
@@ -1376,6 +1672,11 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 			CLEAN_ARRAY;
 			return RS274NGC_ENDFILE;
 		}
+
+		// save what is on the line the User wants to switch to
+		if (FirstLoop)
+			block0 = p_setup->block1;
+
 
 		if (!FoundG)
 		{
@@ -1401,21 +1702,36 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 		if (!FoundY && BL->y_flag) {FoundY=true; y=BL->y_number;}
 		if (!FoundZ && BL->z_flag) {FoundZ=true; z=BL->z_number;}
 		if (!FoundA && BL->a_flag) {FoundA=true; a=BL->a_number;}
-		if (!FoundB && BL->b_flag) {FoundB=true; b=BL->b_number;}
-		if (!FoundC && BL->c_flag) {FoundC=true; c=BL->c_number;}
+		if (!FoundB && BL->b_flag) { FoundB = true; b = BL->b_number; }
+		if (!FoundC && BL->c_flag) { FoundC = true; c = BL->c_number; }
+		if (!FoundU && BL->u_flag) { FoundU = true; u = BL->u_number; }
+		if (!FoundV && BL->v_flag) { FoundV = true; v = BL->v_number; }
 
 		if (FirstLoop)
 		{
-			FirstLoop=false;
-			FoundX0=FoundX;
-			FoundY0=FoundY;
-			FoundZ0=FoundZ;
-			FoundA0=FoundA;
-			FoundB0=FoundB;
-			FoundC0=FoundC;
-			FoundG0=FoundG;
-			FoundF0=FoundF;
-			FoundUnits0=FoundUnits;
+			FirstLoop = false;
+			FoundX0 = FoundX; x0 = x;
+			FoundY0 = FoundY; y0 = y;
+			FoundZ0 = FoundZ; z0 = z;
+			FoundA0 = FoundA; a0 = a;
+			FoundB0 = FoundB; b0 = b;
+			FoundC0 = FoundC; c0 = c;
+			FoundU0 = FoundU; u0 = u;
+			FoundV0 = FoundV; v0 = v;
+			FoundG0 = FoundG;
+			FoundF0 = FoundF;
+			FoundUnits0 = FoundUnits;
+
+			// reset to not found as we need to know both where
+			// the current line will go and where we were prior
+			FoundX = CoordMotion->x_axis < 0;
+			FoundY = CoordMotion->y_axis < 0;
+			FoundZ = CoordMotion->z_axis < 0;
+			FoundA = CoordMotion->a_axis < 0;
+			FoundB = CoordMotion->b_axis < 0;
+			FoundC = CoordMotion->c_axis < 0;
+			FoundU = CoordMotion->u_axis < 0;
+			FoundV = CoordMotion->v_axis < 0;
 		}
 	}
 
@@ -1425,56 +1741,71 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 	{
 		if (Units==G_20 && p_setup->length_units!=CANON_UNITS_INCHES)
 		{
-			if (AfxMessageBox("Backward scan found G20 Inches Mode.  Switch to Inches?" ,MB_YESNO)==IDYES)
+			if (AfxMessageBox("Backward scan found G20 Inches Mode.  Switch to Inches?" ,MB_YESNO | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL)==IDYES)
 			{
 				p_setup->length_units=CANON_UNITS_INCHES;
 			}
 		}
 		if (Units==G_21 && p_setup->length_units!=CANON_UNITS_MM)
 		{
-			if (AfxMessageBox("Backward scan found G21 MM Mode.  Switch to MM?" ,MB_YESNO)==IDYES)
+			if (AfxMessageBox("Backward scan found G21 MM Mode.  Switch to MM?" ,MB_YESNO | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL)==IDYES)
 			{
 				p_setup->length_units=CANON_UNITS_MM;
 			}
 		}
 	}
 
-	// if jumping to a G0 assume User knows what is intended and it is ok to rapid to that location 
-	if (block0.motion_to_be==G_0) return 1;
-
-
-	if (GCodeReads<0)
+	if (block0.motion_to_be == -1)
 	{
-		strcpy(s,"Unable to determine starting conditions for this line.\r\r");
+		sprintf(s, "New Line does not contain a G mode.  Backward scan found:\r\rG%d\r\rUse this mode?", G / 10);
+
+		if (AfxMessageBox(s, MB_YESNO | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL) == IDNO)
+		{
+			return 1;
+		}
+	}
+
+	// if jumping to a G0 assume User knows what is intended and it is ok to rapid to that location
+	// Also make sure all valid axes are specified in the line.
+	if (G == G_0)
+	{
+		if ((CoordMotion->x_axis < 0 || FoundX0) &&
+			(CoordMotion->y_axis < 0 || FoundY0) &&
+			(CoordMotion->z_axis < 0 || FoundZ0) &&
+			(CoordMotion->a_axis < 0 || FoundA0) &&
+			(CoordMotion->b_axis < 0 || FoundB0) &&
+			(CoordMotion->c_axis < 0 || FoundC0) &&
+			(CoordMotion->u_axis < 0 || FoundU0) &&
+			(CoordMotion->v_axis < 0 || FoundV0))
+			return 1;
+	}
+
+	if (GCodeReads<0) // scanned all the way to the beginning?
+	{
+		strcpy(s,"Error unable to determine starting conditions for this line.\r\r");
 		if (!FoundX) strcat(s,"X? ");
 		if (!FoundY) strcat(s,"Y? ");
 		if (!FoundZ) strcat(s,"Z? ");
 		if (!FoundA) strcat(s,"A? ");
 		if (!FoundB) strcat(s,"B? ");
 		if (!FoundC) strcat(s,"C? ");
+		if (!FoundU) strcat(s,"U? ");
+		if (!FoundV) strcat(s,"V? ");
 		if (!FoundF && (G==-1 || G==G_1 || G==G_2 || G==G_3))strcat(s,"F? ");
 		if (!FoundUnits) strcat(s,"G20/21? ");
 		
-		AfxMessageBox(s);
+		AfxMessageBox(s,MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
 		return 1;
 	}
 
-	if (block0.motion_to_be==-1)
-	{
-		sprintf(s, "New Line does not contain a G mode.  Backward scan found:\r\rG%d\r\rUse this mode?",G/10);
-
-		if (AfxMessageBox(s,MB_YESNO)==IDNO)
-		{
-			return 1;
-		}
-	}
 
 	if (block0.f_number==-1)
 	{
 		if (FoundF)
 		{
 			sprintf(s, "New Line does not contain a Feedrate F command.  Backward scan found:\r\rF%g\r\rUse this feedrate?",f);
-			if (AfxMessageBox(s,MB_YESNO)==IDYES)
+			// Ask if not already set to that value
+			if (p_setup->feed_rate == f || AfxMessageBox(s,MB_YESNO | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL)==IDYES)
 			{
 				p_setup->feed_rate=m_StoppedInterpState.feed_rate=f;
 			}
@@ -1485,7 +1816,7 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 		}
 		else
 		{
-			AfxMessageBox("New Line does not contain a Feedrate F command.  Unable to determine previous feedrate");
+			AfxMessageBox("New Line does not contain a Feedrate F command.  Unable to determine previous feedrate", MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
 		}
 	}
 	else
@@ -1493,51 +1824,84 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 		p_setup->feed_rate=m_StoppedInterpState.feed_rate=block0.f_number;
 	}
 
+	// intially setup for preparation move to move to prior position
+	if (FoundX) xprep = x;
+	if (FoundY) yprep = y;
+	if (FoundZ) zprep = z;
+	if (FoundA) aprep = a;
+	if (FoundB) bprep = b;
+	if (FoundC) cprep = c;
+	if (FoundU) uprep = u;
+	if (FoundV) vprep = v;
 
-	if (!FoundX0 || !FoundY0 ||!FoundZ0 ||!FoundA0 ||!FoundB0 ||!FoundC0)
+
+	// for Rapids move directly to where the new Line will go
+	// otherwise move to where we would be previously
+	if (G == G_0)
 	{
-		char v[32];
-		strcpy(s,"Backward scan found previous position as:\r\r");
-		if (CoordMotion->x_axis >= 0){ sprintf(v," X%g",x); strcat(s,v);}
-		if (CoordMotion->y_axis >= 0){ sprintf(v," Y%g",y); strcat(s,v);}
-		if (CoordMotion->z_axis >= 0){ sprintf(v," Z%g",z); strcat(s,v);}
-		if (CoordMotion->a_axis >= 0){ sprintf(v," A%g",a); strcat(s,v);}
-		if (CoordMotion->b_axis >= 0){ sprintf(v," B%g",b); strcat(s,v);}
-		if (CoordMotion->c_axis >= 0){ sprintf(v," C%g",c); strcat(s,v);}
-		strcat(s,"\rShould a Safe Z move be made using these coordinates?");
-		if (AfxMessageBox(s,MB_YESNO)==IDNO)
+		if (FoundX0) xprep = x0;
+		if (FoundY0) yprep = y0;
+		if (FoundZ0) zprep = z0;
+		if (FoundA0) aprep = a0;
+		if (FoundB0) bprep = b0;
+		if (FoundC0) cprep = c0;
+		if (FoundU0) uprep = u0;
+		if (FoundV0) vprep = v0;
+	}
+
+
+
+	if (G != G_0 || !FoundX0 || !FoundY0 ||!FoundZ0 ||!FoundA0 ||!FoundB0 ||!FoundC0 ||!FoundU0 ||!FoundV0)
+	{
+		char v[128];
+
+		if (G == G_0)
+			strcpy(s,"Backward scan found target position as:\r\r");
+		else
+			strcpy(s,"Backward scan found prior position as:\r\r");
+
+		if (CoordMotion->x_axis >= 0) { sprintf(v," X%g", xprep); strcat(s, v); }
+		if (CoordMotion->y_axis >= 0) { sprintf(v," Y%g", yprep); strcat(s, v); }
+		if (CoordMotion->z_axis >= 0) { sprintf(v," Z%g", zprep); strcat(s, v); }
+		if (CoordMotion->a_axis >= 0) { sprintf(v," A%g", aprep); strcat(s, v); }
+		if (CoordMotion->b_axis >= 0) { sprintf(v," B%g", bprep); strcat(s, v); }
+		if (CoordMotion->c_axis >= 0) { sprintf(v," C%g", cprep); strcat(s, v); }
+		if (CoordMotion->u_axis >= 0) { sprintf(v," U%g", uprep); strcat(s, v); }
+		if (CoordMotion->v_axis >= 0) { sprintf(v," V%g", vprep); strcat(s, v); }
+		strcat(s,"\r\rShould a Safe Z move be made to these coordinates?");
+		if (AfxMessageBox(s,MB_YESNO | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL)==IDNO)
 		{
 			return 1;
 		}
 	}
 
-	if (!FoundG0)
-	{
-		int group = _gees[G*10];
+	int group = _gees[G*10];
 
-		if (group==0)  // G4 = group0
-			p_setup->active_g_codes[1]=-1;
-		else           // G0,G1,G2,G3
-			p_setup->active_g_codes[0]=-1;
+	if (group==0)  // G4 = group0
+		p_setup->active_g_codes[1]=-1;
+	else           // G0,G1,G2,G3
+		p_setup->active_g_codes[0]=-1;
 
-		p_setup->motion_mode=G;
-	}
+	p_setup->motion_mode=G;
 
-	if (FoundX) {CoordMotion->m_Stoppedx=x; p_setup->current_x=x;}
-	if (FoundY) {CoordMotion->m_Stoppedy=y; p_setup->current_y=y;}
-	if (FoundZ) {CoordMotion->m_Stoppedz=z; p_setup->current_z=z;}
-	if (FoundA) {CoordMotion->m_Stoppeda=a; p_setup->AA_current=a;}
-	if (FoundB) {CoordMotion->m_Stoppedb=b; p_setup->BB_current=b;}
-	if (FoundC) {CoordMotion->m_Stoppedc=c; p_setup->CC_current=c;}
+	// intially setup for preparation move to move to prior position
+	CoordMotion->m_Stoppedx = p_setup->current_x = xprep;
+	CoordMotion->m_Stoppedy = p_setup->current_y = yprep;
+	CoordMotion->m_Stoppedz = p_setup->current_z = zprep;
+	CoordMotion->m_Stoppeda = p_setup->AA_current = aprep;
+	CoordMotion->m_Stoppedb = p_setup->BB_current = bprep;
+	CoordMotion->m_Stoppedc = p_setup->CC_current = cprep;
+	CoordMotion->m_Stoppedu = p_setup->UU_current = uprep;
+	CoordMotion->m_Stoppedv = p_setup->VV_current = vprep;
 
-	CoordMotion->m_StoppedMachinex = UserUnitsToInchesX(CoordMotion->m_Stoppedx+_setup.axis_offset_x+_setup.origin_offset_x+_setup.tool_xoffset);
-	CoordMotion->m_StoppedMachiney = UserUnitsToInches(CoordMotion->m_Stoppedy+_setup.axis_offset_y+_setup.origin_offset_y+_setup.tool_yoffset);
-	CoordMotion->m_StoppedMachinez = UserUnitsToInches(CoordMotion->m_Stoppedz+_setup.axis_offset_z+_setup.origin_offset_z+_setup.tool_length_offset);
-	CoordMotion->m_StoppedMachinea  = InchesOrDegToUserUnitsA(CoordMotion->m_Stoppeda) - _setup.AA_axis_offset - _setup.AA_origin_offset;
-	CoordMotion->m_StoppedMachineb  = InchesOrDegToUserUnitsB(CoordMotion->m_Stoppedb) - _setup.BB_axis_offset - _setup.BB_origin_offset;
-	CoordMotion->m_StoppedMachinec  = InchesOrDegToUserUnitsC(CoordMotion->m_Stoppedc) - _setup.CC_axis_offset - _setup.CC_origin_offset;
-
-
+	CoordMotion->m_StoppedMachinex = UserUnitsToInchesX(CoordMotion->m_Stoppedx + _setup.axis_offset_x + _setup.origin_offset_x + _setup.tool_xoffset);
+	CoordMotion->m_StoppedMachiney = UserUnitsToInches(CoordMotion->m_Stoppedy + _setup.axis_offset_y + _setup.origin_offset_y + _setup.tool_yoffset);
+	CoordMotion->m_StoppedMachinez = UserUnitsToInches(CoordMotion->m_Stoppedz + _setup.axis_offset_z + _setup.origin_offset_z + _setup.tool_length_offset);
+	CoordMotion->m_StoppedMachinea = InchesOrDegToUserUnitsA(CoordMotion->m_Stoppeda) - _setup.AA_axis_offset - _setup.AA_origin_offset;
+	CoordMotion->m_StoppedMachineb = InchesOrDegToUserUnitsB(CoordMotion->m_Stoppedb) - _setup.BB_axis_offset - _setup.BB_origin_offset;
+	CoordMotion->m_StoppedMachinec = InchesOrDegToUserUnitsC(CoordMotion->m_Stoppedc) - _setup.CC_axis_offset - _setup.CC_origin_offset;
+	CoordMotion->m_StoppedMachineu = UserUnitsToInches(CoordMotion->m_Stoppedu) - _setup.UU_axis_offset - _setup.UU_origin_offset;
+	CoordMotion->m_StoppedMachinev = UserUnitsToInches(CoordMotion->m_Stoppedv) - _setup.VV_axis_offset - _setup.VV_origin_offset;
 
 	CoordMotion->m_PreviouslyStopped = CoordMotion->m_Stopping = STOPPED_INDEP;
 
@@ -1547,6 +1911,8 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 int CGCodeInterpreter::SetCSS(int mode)  // set CSS mode
 {
 	char s[64];
+
+	if (CoordMotion->m_Simulate) return 0;
 
 
 	if (mode==CANON_SPINDLE_CSS)

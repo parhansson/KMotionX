@@ -42,6 +42,7 @@ main()
 	// put in the buffer constant speed for 10 seconds 
 	InterpolateLinear(0,0,0.1,0,10);
 
+	CS0_Flushed=TRUE;	// Allow Motion to run to end
 	ExecBuf();  // launch the motion
 	
 	while (!CheckDoneBuf()) ;  // wait till finished

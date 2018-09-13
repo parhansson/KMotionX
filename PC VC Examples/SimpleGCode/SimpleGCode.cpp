@@ -46,12 +46,15 @@ int UserMCodeCallback(int mcode)
 int main(int argc, char* argv[])
 {
 	int DisplayedLineNo,BoardType,board=0;
-	CString InFile="C:\\KMotionSrc\\GCode Programs\\SimpleCircle.ngc";
-
+	
 	
 	CKMotionDLL *KM = new CKMotionDLL(0);
 	CCoordMotion *CM = new CCoordMotion(KM);
     Interpreter = new CGCodeInterpreter(CM);
+
+
+	CString InFile = Interpreter->CoordMotion->MainPathRoot + (CString)"\\GCode Programs\\SimpleCircle.ngc";
+
 
 	MOTION_PARAMS *p=Interpreter->GetMotionParams();
 
@@ -79,6 +82,7 @@ int main(int argc, char* argv[])
 
 	strcpy(Interpreter->ToolFile,"");
 	strcpy(Interpreter->SetupFile,"");
+	Interpreter->CoordMotion->SetTPParams();
 
 	Finished=false;
 

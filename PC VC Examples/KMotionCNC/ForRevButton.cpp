@@ -56,7 +56,7 @@ void CForRevButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
 	if (lpDrawItemStruct->itemAction & ODA_DRAWENTIRE)
 	{
-		if (lpDrawItemStruct->itemState & ODS_SELECTED)
+		if (lpDrawItemStruct->itemState & ODS_SELECTED || DrawPushed)
 				HandleButtonDown();
 		else
 				HandleButtonUp();

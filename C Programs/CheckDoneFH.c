@@ -7,9 +7,10 @@ int CheckDoneFH(int ch)
 
 main()
 {
-	DefineCoordSystem(-1,-1,-1,-1);
+	DefineCoordSystem(0,1,2,-1);
 	MoveRel(0,300000);
-	while (!CheckDoneFH(0)) ;
+	MoveRel(1,300000);
+	while (!CheckDoneFH(0) && !CheckDoneFH(1)) ;
 	printf("Done\n");
 	DefineCoordSystem(0,1,2,-1);
 }

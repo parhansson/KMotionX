@@ -1,0 +1,620 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{6cbb4427-504c-424c-9092-1a79a02f53ec}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{28434d06-4393-403d-891e-ee99b4fc39e2}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{293425be-a0f4-469d-a624-9d18e01cac1b}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="Lib3D">
+      <UniqueIdentifier>{65f65b00-9dd4-48b6-a5bb-8d64a7d41db8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AllToolSetupSheet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CPreviewFileDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Display.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dlgbars.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgX.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DoPreview.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EditFixtures.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EditToolFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ForRevButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Frame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GViewDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GViewerSetup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\KMotionDLL\HiResTimer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ihelp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="KMotionCNC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="KMotionCNCDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LogSlider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MotionButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mysheet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenglCtl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ResumeDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RichEditCtrlEx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ScintillaCtrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ScintillaFindReplaceDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Screen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SetValue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolSetupButtonsPage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolSetupFilesPage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolSetupM100Page.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolSetupM1Page.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolSetupPage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolSetupTPPage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="webbrowser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib3D\Array3d.cpp">
+      <Filter>Lib3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib3D\Color.cpp">
+      <Filter>Lib3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib3D\ColorRamp.cpp">
+      <Filter>Lib3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib3D\Edge3d.cpp">
+      <Filter>Lib3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib3D\Face3d.cpp">
+      <Filter>Lib3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib3D\Material.cpp">
+      <Filter>Lib3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib3D\Mesh3d.cpp">
+      <Filter>Lib3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib3D\Object3d.cpp">
+      <Filter>Lib3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib3D\ParserVrml.cpp">
+      <Filter>Lib3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib3D\Path3d.cpp">
+      <Filter>Lib3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib3D\SceneGraph3d.cpp">
+      <Filter>Lib3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib3D\Texture.cpp">
+      <Filter>Lib3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib3D\Transform.cpp">
+      <Filter>Lib3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib3D\Utils3d.cpp">
+      <Filter>Lib3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib3D\Vector3d.cpp">
+      <Filter>Lib3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib3D\Vertex3d.cpp">
+      <Filter>Lib3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib3D\Vertex3dFast.cpp">
+      <Filter>Lib3D</Filter>
+    </ClCompile>
+    <ClCompile Include="UniButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Resample.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CEditScreen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dlgfloat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GViewParent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CComboBoxScreen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="KMotionCNC.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AllToolSetupSheet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GCodeInterpreter\canon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GCodeInterpreter\CoordMotion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cpreviewfiledialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Display.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dlgbars.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgX.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DoPreview.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EasySize.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EditFixtures.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EditToolFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ForRevButton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Frame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GCodeInterpreter\GCodeInterpreter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GViewDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GViewerSetup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\KMotionDLL\HiResTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ihelp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageButton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GCodeInterpreter\Kinematics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KMotionCNC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KMotionCNCDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\KMotionDLL\KMotionDLL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LogSlider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MainFrm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MotionButton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MYSHEET.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenglCtl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DSP_KMotion\PC-DSP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Scintilla\include\Platform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GCodeInterpreter\PT2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GCodeInterpreter\PT3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResumeDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RichEditCtrlEx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GCodeInterpreter\rs274ngc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Scintilla\include\SciLexer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Scintilla\include\Scintilla.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScintillaCtrl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScintillaFindReplaceDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Screen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SetValue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolSetupButtonsPage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolSetupFilesPage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolSetupM100Page.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolSetupM1Page.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolSetupPage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolSetupTPPage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GCodeInterpreter\TrajectoryPlanner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="webbrowser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib3D\Array3d.h">
+      <Filter>Lib3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib3D\Base3d.h">
+      <Filter>Lib3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib3D\Color.h">
+      <Filter>Lib3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib3D\ColorRamp.h">
+      <Filter>Lib3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib3D\Edge3d.h">
+      <Filter>Lib3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib3D\Face3d.h">
+      <Filter>Lib3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib3D\Material.h">
+      <Filter>Lib3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib3D\Mesh3d.h">
+      <Filter>Lib3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib3D\Object3d.h">
+      <Filter>Lib3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib3D\ParserVrml.h">
+      <Filter>Lib3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib3D\Path3d.h">
+      <Filter>Lib3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib3D\SceneGraph3d.h">
+      <Filter>Lib3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib3D\Texture.h">
+      <Filter>Lib3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib3D\Transform.h">
+      <Filter>Lib3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib3D\Utils3d.h">
+      <Filter>Lib3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib3D\Vector3d.h">
+      <Filter>Lib3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib3D\Vertex3d.h">
+      <Filter>Lib3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib3D\Vertex3dFast.h">
+      <Filter>Lib3D</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UniButton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resample.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CEditScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GViewParent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CComboBoxScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\backd.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\backf.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\backu.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\backx.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\CloseD.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\CloseF.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\CloseU.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\CloseX.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ContentsD.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ContentsF.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ContentsU.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ContentsX.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Down.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Down2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\emergenc.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\feedhold.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\FeedHoldPause.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\For.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\forwardd.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\forwardf.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\forwardu.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\forwardx.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\FR.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\fr32.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\gcode.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\gcodebar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\GO.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\gviewbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\GViewBarPreView.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Halt.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\KMotionCNC16.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\KMotionCNC256.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\KMotionCNC32.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\KMotionCNC48.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\KMotionCNC48.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\left.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\left2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\leftstep.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\printd.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\printf.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\printu.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\printx.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Rew.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\right.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Right2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\SR.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\SRCSS.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\stopstep.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ToggleKeyModeDown.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ToggleKeyModeUp.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Up.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Up2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\upstep.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\XD.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\XF.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\XU.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\XX.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\KMotionCNC.rc2">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="res\Manifest.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+  </ItemGroup>
+</Project>

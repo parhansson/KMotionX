@@ -32,11 +32,15 @@ public:
 
 // Implementation
 public:
-	void Init(CKMotionCNCDlg *Dlg, int axis, int dir, double mag, bool StepMode);
+	void Init(CKMotionCNCDlg *Dlg, int axis, int dir, double *mag, bool StepMode, int HotKey);
 	virtual ~CMotionButton();
 	double m_RawVel;
 	bool m_SimulateMotion;
 	bool m_Moving;
+	bool m_StepMode;
+	double *m_mag;
+	int m_axis;
+	int m_dir;
 
 	// Generated message map functions
 protected:
@@ -52,12 +56,8 @@ private:
 	double m_SimulateDelta;
 	double *m_pSimulatePos;
 
-	bool m_StepMode;
 	bool m_HasMouseCapture;
 	CKMotionCNCDlg *Dlg;
-	int m_axis;
-	int m_dir;
-	double m_mag;
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
@@ -65,11 +65,16 @@ private:
 
 public:
 	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
-	void HandleButtonDown(void);
+	int HandleButtonDown(void);
 	void HandleButtonUp(void);
 	void PutRawV(double *v);
 
 	typedef CMotionButton *LPCMotionButton;
+
+	int DoExecute();
+	int LaunchExecution();
+	int m_exitcode;
+	double stepx, stepy, stepz, stepa, stepb, stepc, stepu, stepv;
 
     static CList <LPCMotionButton,LPCMotionButton> AxisGroup;
 

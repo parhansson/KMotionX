@@ -19,7 +19,7 @@ void CloseDiag();
 #define SPEED_TOL 0.01
 #define ACCEL_TOL 0.04
 
-
+#define NON_ZERO_ANGLE_IN_DEGREES 0.001 // smallest significant change in angle in units of degrees
 
 #ifndef TWO_PI
 #define TWO_PI (2.0*3.141592653589793238)
@@ -55,8 +55,8 @@ double CalcLengthAlongCircle(double x0, double y0,
 					  double xc, double yc, BOOL DirIsCCW, 
 					  double *radius, double *theta0, double *dtheta);
 
-void CalcFinalDirectionOfSegment(SEGMENT *p,double &dx, double &dy, double &dz, double &da, double &db, double &dc);
-void CalcBegDirectionOfSegment(SEGMENT *p,double &dx, double &dy, double &dz, double &da, double &db, double &dc);
+void CalcFinalDirectionOfSegment(SEGMENT *p,double &dx, double &dy, double &dz, double &da, double &db, double &dc, double &du, double &dv);
+void CalcBegDirectionOfSegment(SEGMENT *p,double &dx, double &dy, double &dz, double &da, double &db, double &dc, double &du, double &dv);
 void AdjustSegVelocity(int i);
 int CombineSegments(double MaxLength);
 double MaximizeSegmentForward(int i);
@@ -96,6 +96,8 @@ void SetTrajectoryPlannerParams(MOTION_PARAMS *m)
 {
 	MP = *m;  // copy locally
 	FacetAngleRadians=MP.FacetAngle*PI/180.0;
+
+	if (MP.BreakAngle > 179.0) MP.BreakAngle = 179.0; // don't allow full reversals without stopping
 	BreakAngleRadians=MP.BreakAngle*PI/180.0;
 }
 
@@ -132,8 +134,8 @@ void tp_init()
 // insert new segment at the end.  Re-evaluate backwards
 // through list to see if velocities could be increased
 
-int tp_insert_linear_seg(double x0, double y0, double z0, double a0, double b0, double c0, 
-						 double x1, double y1, double z1, double a1, double b1, double c1, 
+int tp_insert_linear_seg(double x0, double y0, double z0, double a0, double b0, double c0, double u0, double v0, 
+						 double x1, double y1, double z1, double a1, double b1, double c1, double u1, double v1, 
 						 double MaxVel, double MaxAccel, double MaxCombineLength, int sequence_number,int ID, int NumLinearNotDrawn)
 {
 	double dx=x1-x0;
@@ -142,6 +144,8 @@ int tp_insert_linear_seg(double x0, double y0, double z0, double a0, double b0, 
 	double da=a1-a0;
 	double db=b1-b0;
 	double dc=c1-c0;
+	double du=u1-u0;
+	double dv=v1-v0;
 
 	// add into the list
 	
@@ -157,6 +161,8 @@ int tp_insert_linear_seg(double x0, double y0, double z0, double a0, double b0, 
 	p->a0 = a0;
 	p->b0 = b0;
 	p->c0 = c0;
+	p->u0 = u0;
+	p->v0 = v0;
 	
 	p->x1 = x1;
 	p->y1 = y1;
@@ -164,9 +170,11 @@ int tp_insert_linear_seg(double x0, double y0, double z0, double a0, double b0, 
 	p->a1 = a1;
 	p->b1 = b1;
 	p->c1 = c1;
+	p->u1 = u1;
+	p->v1 = v1;
 
 	BOOL pure_angle;
-	p->dx=FeedRateDistance(dx, dy, dz, da, db, dc, &MP, &pure_angle);
+	p->dx=FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &MP, &pure_angle);
 	p->OrigVel = p->MaxVel = MaxVel;
 	p->OrigAccel = MaxAccel;
 	p->vel=0.0f;
@@ -196,13 +204,20 @@ int tp_insert_linear_seg(double x0, double y0, double z0, double a0, double b0, 
 		{
 			pm1=GetSegPtr(nsegs-1);
 			pm2=GetSegPtr(nsegs-2);
+
+			bool nonZeroPureA = MP.DegreesA && MP.RadiusA==0.0 && fabs(pm1->a1 - pm1->a0) > NON_ZERO_ANGLE_IN_DEGREES;
+			bool nonZeroPureB = MP.DegreesB && MP.RadiusB==0.0 && fabs(pm1->b1 - pm1->b0) > NON_ZERO_ANGLE_IN_DEGREES;
+			bool nonZeroPureC = MP.DegreesC && MP.RadiusC==0.0 && fabs(pm1->c1 - pm1->c0) > NON_ZERO_ANGLE_IN_DEGREES;
 			
 			// size must be vey small relative to
 			// Collinear Tol and MaxCombineLength and
 			// max speeds must be very similar
 			// both must be normal linear segments
+			// also there must be no significant pure angle change
+			// that would not be included in dx
 
-			if (pm1->dx < MP.CollinearTol*0.5 &&
+			if (nonZeroPureA && nonZeroPureB && nonZeroPureC &&
+				pm1->dx < MP.CollinearTol*0.5 &&
 				pm1->dx < MaxCombineLength*0.25 &&
 				pm1->type==SEG_LINEAR &&
 				pm2->type==SEG_LINEAR &&
@@ -224,6 +239,8 @@ int tp_insert_linear_seg(double x0, double y0, double z0, double a0, double b0, 
 			pm2->a1 = p->a0;
 			pm2->b1 = p->b0;
 			pm2->c1 = p->c0;
+			pm2->u1 = p->u0;
+			pm2->v1 = p->v0;
 
 			double dx=pm2->x1 - pm2->x0;
 			double dy=pm2->y1 - pm2->y0;
@@ -231,12 +248,14 @@ int tp_insert_linear_seg(double x0, double y0, double z0, double a0, double b0, 
 			double da=pm2->a1 - pm2->a0;
 			double db=pm2->b1 - pm2->b0;
 			double dc=pm2->c1 - pm2->c0;
+			double du=pm2->u1 - pm2->u0;
+			double dv=pm2->v1 - pm2->v0;
 
 			// note keep velocity since it might already be non-zero
 			// and the previous segment might be maxed out (Done)
 			// and transitioning into it
 			BOOL pure_angle;
-			pm2->dx=FeedRateDistance(dx, dy, dz, da, db, dc, &MP, &pure_angle);
+			pm2->dx=FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &MP, &pure_angle);
 			pm2->ChangeInDirection = CalcChangeInDirection(nsegs-1);
 			pm2->Done=FALSE;
 
@@ -299,8 +318,8 @@ int tp_insert_linear_seg(double x0, double y0, double z0, double a0, double b0, 
 
 // insert new Rapid 3rd order segment at the end. 
 
-int tp_insert_linear_seg_3rdOrder(double x0, double y0, double z0, double a0, double b0, double c0, 
-								  double x1, double y1, double z1, double a1, double b1, double c1, 
+int tp_insert_linear_seg_3rdOrder(double x0, double y0, double z0, double a0, double b0, double c0, double u0, double v0, 
+								  double x1, double y1, double z1, double a1, double b1, double c1, double u1, double v1, 
 						          int sequence_number,int ID)
 {
 	double dx=x1-x0;
@@ -309,6 +328,8 @@ int tp_insert_linear_seg_3rdOrder(double x0, double y0, double z0, double a0, do
 	double da=a1-a0;
 	double db=b1-b0;
 	double dc=c1-c0;
+	double du=u1-u0;
+	double dv=v1-v0;
 
 	// add into the list
 	
@@ -324,16 +345,20 @@ int tp_insert_linear_seg_3rdOrder(double x0, double y0, double z0, double a0, do
 	p->a0 = a0;
 	p->b0 = b0;
 	p->c0 = c0;
-	
+	p->u0 = u0;
+	p->v0 = v0;
+
 	p->x1 = x1;
 	p->y1 = y1;
 	p->z1 = z1;
 	p->a1 = a1;
 	p->b1 = b1;
 	p->c1 = c1;
+	p->u1 = u1;
+	p->v1 = v1;
 
 	BOOL pure_angle;
-	p->dx=FeedRateDistance(dx, dy, dz, da, db, dc, &MP, &pure_angle);
+	p->dx=FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &MP, &pure_angle);
 	p->vel=0.0f;
 	p->StopRequired=TRUE;
 	p->StopRequiredNextSeg=FALSE;
@@ -348,7 +373,7 @@ int tp_insert_linear_seg_3rdOrder(double x0, double y0, double z0, double a0, do
 
 
 
-int tp_insert_dwell(double t, double x0, double y0, double z0, double a0, double b0, double c0, int sequence_number,int ID)
+int tp_insert_dwell(double t, double x0, double y0, double z0, double a0, double b0, double c0, double u0, double v0, int sequence_number,int ID)
 {
 	// add into the list
 	
@@ -364,6 +389,8 @@ int tp_insert_dwell(double t, double x0, double y0, double z0, double a0, double
 	p->a0 = a0;
 	p->b0 = b0;
 	p->c0 = c0;
+	p->u0 = u0;
+	p->v0 = v0;
 	
 	p->x1 = x0;
 	p->y1 = y0;
@@ -371,6 +398,8 @@ int tp_insert_dwell(double t, double x0, double y0, double z0, double a0, double
 	p->a1 = a0;
 	p->b1 = b0;
 	p->c1 = c0;
+	p->u1 = u0;
+	p->v1 = v0;
 
 	p->dwell_time = t;
 
@@ -398,10 +427,10 @@ int tp_insert_dwell(double t, double x0, double y0, double z0, double a0, double
 
 typedef struct
 {
-	double x,y,z,a,b,c;
-} P6;
+	double x,y,z,a,b,c,u,v;
+} P8;
 
-void CopySegStartToP6(SEGMENT *p, P6 &point)
+void CopySegStartToP8(SEGMENT *p, P8 &point)
 {
 	point.x = p->x0;
 	point.y = p->y0;
@@ -409,9 +438,11 @@ void CopySegStartToP6(SEGMENT *p, P6 &point)
 	point.a = p->a0;
 	point.b = p->b0;
 	point.c = p->c0;
+	point.u = p->u0;
+	point.v = p->v0;
 }
 
-void CopySegEndToP6(SEGMENT *p, P6 &point)
+void CopySegEndToP8(SEGMENT *p, P8 &point)
 {
 	point.x = p->x1;
 	point.y = p->y1;
@@ -419,9 +450,11 @@ void CopySegEndToP6(SEGMENT *p, P6 &point)
 	point.a = p->a1;
 	point.b = p->b1;
 	point.c = p->c1;
+	point.u = p->u1;
+	point.v = p->v1;
 }
 
-void DiffP6(P6 &p0,P6 &p1,P6 &p2)
+void DiffP8(P8 &p0,P8 &p1,P8 &p2)
 {
 	p2.x = p0.x - p1.x;
 	p2.y = p0.y - p1.y;
@@ -429,9 +462,11 @@ void DiffP6(P6 &p0,P6 &p1,P6 &p2)
 	p2.a = p0.a - p1.a;
 	p2.b = p0.b - p1.b;
 	p2.c = p0.c - p1.c;
+	p2.u = p0.u - p1.u;
+	p2.v = p0.v - p1.v;
 }
 
-void AddP6(P6 &p0,P6 &p1,P6 &p2)
+void AddP8(P8 &p0,P8 &p1,P8 &p2)
 {
 	p2.x = p0.x + p1.x;
 	p2.y = p0.y + p1.y;
@@ -439,9 +474,11 @@ void AddP6(P6 &p0,P6 &p1,P6 &p2)
 	p2.a = p0.a + p1.a;
 	p2.b = p0.b + p1.b;
 	p2.c = p0.c + p1.c;
+	p2.u = p0.u + p1.u;
+	p2.v = p0.v + p1.v;
 }
 
-void ScaleP6(P6 &p0, double s)
+void ScaleP8(P8 &p0, double s)
 {
 	p0.x *= s;
 	p0.y *= s;
@@ -449,17 +486,19 @@ void ScaleP6(P6 &p0, double s)
 	p0.a *= s;
 	p0.b *= s;
 	p0.c *= s;
+	p0.u *= s;
+	p0.v *= s;
 }
 
-double LengthP6(P6 &p)
+double LengthP8(P8 &p)
 {
 	BOOL pure_angle;
-	return FeedRateDistance(p.x, p.y, p.z, p.a, p.b, p.c, &MP, &pure_angle);
+	return FeedRateDistance(p.x, p.y, p.z, p.a, p.b, p.c, p.u, p.v, &MP, &pure_angle);
 }
 
 
 // adjust segment is-1 to now end at pa which is L from the end
-void AdjustSegToEndAtP6(int i, double L)
+void AdjustSegToEndAtP8(int i, double L)
 {
 	SEGMENT *p=GetSegPtr(i);
 
@@ -469,6 +508,8 @@ void AdjustSegToEndAtP6(int i, double L)
 	double da = p->a1 - p->a0;
 	double db = p->b1 - p->b0;
 	double dc = p->c1 - p->c0;
+	double du = p->u1 - p->u0;
+	double dv = p->v1 - p->v0;
 
 	double OldLength = p->dx;
 
@@ -485,6 +526,8 @@ void AdjustSegToEndAtP6(int i, double L)
 	p->a1 = p->a0 + da * scale;
 	p->b1 = p->b0 + db * scale;
 	p->c1 = p->c0 + dc * scale;
+	p->u1 = p->u0 + du * scale;
+	p->v1 = p->v0 + dv * scale;
 
 	dx = p->x1 - p->x0;
 	dy = p->y1 - p->y0;
@@ -492,14 +535,16 @@ void AdjustSegToEndAtP6(int i, double L)
 	da = p->a1 - p->a0;
 	db = p->b1 - p->b0;
 	dc = p->c1 - p->c0;
+	du = p->u1 - p->u0;
+	dv = p->v1 - p->v0;
 
 	BOOL pure_angle;
-	p->dx=FeedRateDistance(dx, dy, dz, da, db, dc, &MP, &pure_angle);
+	p->dx=FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &MP, &pure_angle);
 	p->ChangeInDirection = CalcChangeInDirection(i);
 }
 
 // adjust segment is to now begin at pb which is L from the beginning
-void AdjustSegToBeginAtP6(int i, double L)
+void AdjustSegToBeginAtP8(int i, double L)
 {
 	SEGMENT *p=GetSegPtr(i);
 
@@ -509,6 +554,8 @@ void AdjustSegToBeginAtP6(int i, double L)
 	double da = p->a1 - p->a0;
 	double db = p->b1 - p->b0;
 	double dc = p->c1 - p->c0;
+	double du = p->u1 - p->u0;
+	double dv = p->v1 - p->v0;
 
 	double OldLength = p->dx;
 
@@ -525,6 +572,8 @@ void AdjustSegToBeginAtP6(int i, double L)
 	p->a0 = p->a0 + da * scale;
 	p->b0 = p->b0 + db * scale;
 	p->c0 = p->c0 + dc * scale;
+	p->u0 = p->u0 + du * scale;
+	p->v0 = p->v0 + dv * scale;
 
 	dx = p->x1 - p->x0;
 	dy = p->y1 - p->y0;
@@ -532,9 +581,11 @@ void AdjustSegToBeginAtP6(int i, double L)
 	da = p->a1 - p->a0;
 	db = p->b1 - p->b0;
 	dc = p->c1 - p->c0;
+	du = p->u1 - p->u0;
+	dv = p->v1 - p->v0;
 
 	BOOL pure_angle;
-	p->dx=FeedRateDistance(dx, dy, dz, da, db, dc, &MP, &pure_angle);
+	p->dx=FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &MP, &pure_angle);
 	p->ChangeInDirection = CalcChangeInDirection(i);
 }
 
@@ -546,7 +597,7 @@ void AdjustSegToBeginAtP6(int i, double L)
 // then interpolation should run from 0% to 50%
 // i/(n-1) to (i+1)/(n-1)
 
-void CreateSegFromTo(int i, SEGMENT *sa, SEGMENT *sb ,P6 &prev, P6 &px, double start, double end)
+void CreateSegFromTo(int i, SEGMENT *sa, SEGMENT *sb ,P8 &prev, P8 &px, double start, double end)
 {
 	SEGMENT *p=GetSegPtr(i);
 
@@ -586,6 +637,13 @@ void CreateSegFromTo(int i, SEGMENT *sa, SEGMENT *sb ,P6 &prev, P6 &px, double s
 		p->c0 = sa->c1 + (sb->c0 - sa->c1) * start;
 		p->c1 = sa->c1 + (sb->c0 - sa->c1) * end;
 	}
+
+	p->u0 = prev.u;
+	p->u1 = px.u;
+
+	p->v0 = prev.v;
+	p->v1 = px.v;
+
 	
 	p->x0 = prev.x;
 	p->y0 = prev.y;
@@ -601,6 +659,8 @@ void CreateSegFromTo(int i, SEGMENT *sa, SEGMENT *sb ,P6 &prev, P6 &px, double s
 	double da = p->a1 - p->a0;
 	double db = p->b1 - p->b0;
 	double dc = p->c1 - p->c0;
+	double du = p->u1 - p->u0;
+	double dv = p->v1 - p->v0;
 
 	SEGMENT *s;
 
@@ -615,7 +675,7 @@ void CreateSegFromTo(int i, SEGMENT *sa, SEGMENT *sb ,P6 &prev, P6 &px, double s
 	p->ID = s->ID;
 
 	BOOL pure_angle;
-	p->dx=FeedRateDistance(dx, dy, dz, da, db, dc, &MP, &pure_angle);
+	p->dx=FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &MP, &pure_angle);
 	p->OrigVel = p->MaxVel = s->MaxVel;
 	p->OrigAccel = s->OrigAccel;
 	p->vel=0.0f;
@@ -637,7 +697,7 @@ void RoundCorner(int is)
 
 	BOOL StopRequiredAtP0;
 
-	P6 p0,p1,p2,pa,pb,pm,px,pc;
+	P8 p0,p1,p2,pa,pb,pm,px,pc;
 	int orig_special_cmds_first, orig_special_cmds_last;
 
 	if (is<1) return;
@@ -740,35 +800,35 @@ void RoundCorner(int is)
 	if (EliminateP0) NumberDeletedBefore++;
 	if (EliminateP2) NumberDeletedAfter++;
 
-	CopySegStartToP6(segm,p0);
-	CopySegStartToP6(seg,p1);
-	CopySegEndToP6(seg,p2);
+	CopySegStartToP8(segm,p0);
+	CopySegStartToP8(seg,p1);
+	CopySegEndToP8(seg,p2);
 
 	// compute start of curve
 	//  pa = p1 + (p0-p1) L/d0
-	DiffP6(p0,p1,px);
-	ScaleP6(px,L/d0);
-	AddP6(p1,px,pa);
+	DiffP8(p0,p1,px);
+	ScaleP8(px,L/d0);
+	AddP8(p1,px,pa);
 
 	// compute end of curve
 	// pb = p1 + (p2-p1) L/d1
-	DiffP6(p2,p1,px);
-	ScaleP6(px,L/d1);
-	AddP6(p1,px,pb);
+	DiffP8(p2,p1,px);
+	ScaleP8(px,L/d1);
+	AddP8(p1,px,pb);
 
 	// compute cord midpoint
 	// pm = (pa+pb)/2
-	AddP6(pa,pb,pm);
-	ScaleP6(pm,0.5);
+	AddP8(pa,pb,pm);
+	ScaleP8(pm,0.5);
 
 	// compute arc center
 
 	// pc = pm + (pm-p1)  x/MidToCorner
-	DiffP6(pm,p1,pc);
-	double MidToCorner = LengthP6(pc);
+	DiffP8(pm,p1,pc);
+	double MidToCorner = LengthP8(pc);
 	double x = R * cos(Theta2);
-	ScaleP6(pc,x/MidToCorner);
-	AddP6(pm,pc,pc);
+	ScaleP8(pc,x/MidToCorner);
+	AddP8(pm,pc,pc);
 
 
 	// generate segments
@@ -790,21 +850,25 @@ void RoundCorner(int is)
 
 	if (!EliminateP0)  // if it hasn't been completely eliminated
 	{
-		AdjustSegToEndAtP6(is-1,L);  // adjust segment is-1 to now end at pa
+		AdjustSegToEndAtP8(is-1,L);  // adjust segment is-1 to now end at pa
 		FromABC.a1 = segm->a1;
 		FromABC.b1 = segm->b1;
 		FromABC.c1 = segm->c1;
+		FromABC.u1 = segm->u1;
+		FromABC.v1 = segm->v1;
 	}
 	else
 	{
 		FromABC.a1 = segm->a0;
 		FromABC.b1 = segm->b0;
 		FromABC.c1 = segm->c0;
+		FromABC.u1 = segm->u0;
+		FromABC.v1 = segm->v0;
 	}
 
 	if (!EliminateP2)  // if it hasn't been completely eliminated
 	{
-		AdjustSegToBeginAtP6(is,L);  // adjust segment is to now begin at pb
+		AdjustSegToBeginAtP8(is,L);  // adjust segment is to now begin at pb
 
 		// also move it down
 		is_new = is+n-1-NumberDeletedBefore;
@@ -813,12 +877,16 @@ void RoundCorner(int is)
 		ToABC.a0 = seg->a0;
 		ToABC.b0 = seg->b0;
 		ToABC.c0 = seg->c0;
+		ToABC.u0 = seg->u0;
+		ToABC.v0 = seg->v0;
 	}
 	else
 	{
 		ToABC.a0 = seg->a1;
 		ToABC.b0 = seg->b1;
 		ToABC.c0 = seg->c1;
+		ToABC.u0 = seg->u1;
+		ToABC.v0 = seg->v1;
 	}
 
 	// use info from first segment for half of the corner segments
@@ -843,36 +911,36 @@ void RoundCorner(int is)
 
 
 
-	P6 prev=pa;
+	P8 prev=pa;
 
 	// loop through the number of facets in the corner
 	for (int i=0; i<n-1; i++)
 	{
-		P6 pw,pv;
+		P8 pw,pv;
 
 		double t=-(i+(3-n)/2.0)*dtheta;
 
-		DiffP6(pa,pb,px);
+		DiffP8(pa,pb,px);
 
-		double Z=LengthP6(px)/2;
+		double Z=LengthP8(px)/2;
 
 		double l=sqrt(R*R-Z*Z);
 
 		double w=l*tan(t);
 
 		// pw = pm + (pa-pm) w/Z
-		DiffP6(pa,pm,px);
-		ScaleP6(px,w/Z);
-		AddP6(pm,px,pw);
+		DiffP8(pa,pm,px);
+		ScaleP8(px,w/Z);
+		AddP8(pm,px,pw);
 
 		//now extend center to pw to the radius
 
-		DiffP6(pw,pc,px);
-		double g=LengthP6(px);
+		DiffP8(pw,pc,px);
+		double g=LengthP8(px);
 		// pv = pc + (pw-pc) * R/g
-		DiffP6(pw,pc,px);
-		ScaleP6(px,R/g);
-		AddP6(pc,px,pv);
+		DiffP8(pw,pc,px);
+		ScaleP8(px,R/g);
+		AddP8(pc,px,pv);
 
 
 		// Create the new facets, 3D goes from
@@ -934,7 +1002,7 @@ void SetSegmentVelAccelJerk(int i, double Vel, double Accel, double Jerk)
 
 
 
-void GetSegmentDirection(int i, double *dx, double *dy, double *dz, double *da, double *db, double *dc)
+void GetSegmentDirection(int i, double *dx, double *dy, double *dz, double *da, double *db, double *dc, double *du, double *dv)
 {
 	SEGMENT *p=GetSegPtr(i);
 	*dx = p->x1 - p->x0;
@@ -943,6 +1011,8 @@ void GetSegmentDirection(int i, double *dx, double *dy, double *dz, double *da, 
 	*da = p->a1 - p->a0;
 	*db = p->b1 - p->b0;
 	*dc = p->c1 - p->c0;
+	*du = p->u1 - p->u0;
+	*dv = p->v1 - p->v0;
 }
 
 
@@ -970,9 +1040,17 @@ bool CheckCollinear(SEGMENT *s0, SEGMENT *s1, SEGMENT *s2, double tol)
 	double da = s1->a0 - s0->a0;
 	double db = s1->b0 - s0->b0;
 	double dc = s1->c0 - s0->c0;
+	double du = s1->u0 - s0->u0;
+	double dv = s1->v0 - s0->v0;
 
 	BOOL pure_angle0,pure_angle1,pure_angle2;
-	double a = FeedRateDistance(dx, dy, dz, da, db, dc, &MP, &pure_angle0);
+
+	// any significant non zero pure angles then assume we can't combine
+	if (MP.DegreesA && MP.RadiusA==0.0 && fabs(da) > NON_ZERO_ANGLE_IN_DEGREES) return false;
+	if (MP.DegreesB && MP.RadiusB==0.0 && fabs(db) > NON_ZERO_ANGLE_IN_DEGREES) return false;
+	if (MP.DegreesC && MP.RadiusC==0.0 && fabs(dc) > NON_ZERO_ANGLE_IN_DEGREES) return false;
+
+	double a = FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &MP, &pure_angle0);
 
 	dx = s2->x0 - s1->x0;
 	dy = s2->y0 - s1->y0;
@@ -980,8 +1058,15 @@ bool CheckCollinear(SEGMENT *s0, SEGMENT *s1, SEGMENT *s2, double tol)
 	da = s2->a0 - s1->a0;
 	db = s2->b0 - s1->b0;
 	dc = s2->c0 - s1->c0;
+	du = s2->u0 - s1->u0;
+	dv = s2->v0 - s1->v0;
 
-	double b = FeedRateDistance(dx, dy, dz, da, db, dc, &MP, &pure_angle1);
+	// any significant non zero pure angles then assume we can't combine
+	if (MP.DegreesA && MP.RadiusA==0.0 && fabs(da) > NON_ZERO_ANGLE_IN_DEGREES) return false;
+	if (MP.DegreesB && MP.RadiusB==0.0 && fabs(db) > NON_ZERO_ANGLE_IN_DEGREES) return false;
+	if (MP.DegreesC && MP.RadiusC==0.0 && fabs(dc) > NON_ZERO_ANGLE_IN_DEGREES) return false;
+
+	double b = FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &MP, &pure_angle1);
 
 	dx = s2->x0 - s0->x0;
 	dy = s2->y0 - s0->y0;
@@ -989,8 +1074,15 @@ bool CheckCollinear(SEGMENT *s0, SEGMENT *s1, SEGMENT *s2, double tol)
 	da = s2->a0 - s0->a0;
 	db = s2->b0 - s0->b0;
 	dc = s2->c0 - s0->c0;
+	du = s2->u0 - s0->u0;
+	dv = s2->v0 - s0->v0;
 
-	double c = FeedRateDistance(dx, dy, dz, da, db, dc, &MP, &pure_angle2);
+	// any significant non zero pure angles then assume we can't combine
+	if (MP.DegreesA && MP.RadiusA==0.0 && fabs(da) > NON_ZERO_ANGLE_IN_DEGREES) return false;
+	if (MP.DegreesB && MP.RadiusB==0.0 && fabs(db) > NON_ZERO_ANGLE_IN_DEGREES) return false;
+	if (MP.DegreesC && MP.RadiusC==0.0 && fabs(dc) > NON_ZERO_ANGLE_IN_DEGREES) return false;
+
+	double c = FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &MP, &pure_angle2);
 
 	// if all pure angles then don't combine
 	if (pure_angle0 && pure_angle1 && pure_angle2) return false;
@@ -1052,13 +1144,13 @@ int CombineSegments(double MaxLength)
 
 	// max speeds must be very similar
 
-	if (fabs(pn->OrigVel - pm1->OrigVel) > SPEED_TOL * fmin(pn->OrigVel,pm1->OrigVel))
+	if (fabs(pn->OrigVel - pm1->OrigVel) > SPEED_TOL * fmin(pn->OrigVel,pm1->OrigVel)) 
 	{
 		nCombined = 0;
 		return 1;
 	}
 
-	if (fabs(pn->OrigAccel - pm1->OrigAccel) > SPEED_TOL * fmin(pn->OrigAccel,pm1->OrigAccel))
+	if (fabs(pn->OrigAccel - pm1->OrigAccel) > SPEED_TOL * fmin(pn->OrigAccel,pm1->OrigAccel)) 
 	{
 		nCombined = 0;
 		return 1;
@@ -1084,6 +1176,8 @@ int CombineSegments(double MaxLength)
 	end.a0 =  pn->a1;
 	end.b0 =  pn->b1;
 	end.c0 =  pn->c1;
+	end.u0 =  pn->u1;
+	end.v0 =  pn->v1;
 
 	if (!CheckCollinear(pm1,pn,&end,MP.CollinearTol))
 	{
@@ -1117,6 +1211,8 @@ int CombineSegments(double MaxLength)
 	pnc->a0 = pn->a0;
 	pnc->b0 = pn->b0;
 	pnc->c0 = pn->c0;
+	pnc->u0 = pn->u0;
+	pnc->v0 = pn->v0;
 	nCombined++;
 
 	// alter previous to include this one
@@ -1127,6 +1223,8 @@ int CombineSegments(double MaxLength)
 	pm1->a1 = pn->a1;
 	pm1->b1 = pn->b1;
 	pm1->c1 = pn->c1;
+	pm1->u1 = pn->u1;
+	pm1->v1 = pn->v1;
 	
 	double dx=pm1->x1 - pm1->x0;
 	double dy=pm1->y1 - pm1->y0;
@@ -1134,12 +1232,14 @@ int CombineSegments(double MaxLength)
 	double da=pm1->a1 - pm1->a0;
 	double db=pm1->b1 - pm1->b0;
 	double dc=pm1->c1 - pm1->c0;
+	double du=pm1->u1 - pm1->u0;
+	double dv=pm1->v1 - pm1->v0;
 
 	// note keep velocity since it might already be non-zero
 	// and the previous segment might be maxed out (Done)
 	// and transitioning into it
 	BOOL pure_angle;
-	pm1->dx=FeedRateDistance(dx, dy, dz, da, db, dc, &MP, &pure_angle);
+	pm1->dx=FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &MP, &pure_angle);
 	pm1->ChangeInDirection = CalcChangeInDirection(nsegs-1);
 	pm1->Done=FALSE;
 
@@ -1205,9 +1305,11 @@ void AdjustSegVelocity(int i)
 	double da=p->a1 - pm->a0;
 	double db=p->b1 - pm->b0;
 	double dc=p->c1 - pm->c0;
+	double du=p->u1 - pm->u0;
+	double dv=p->v1 - pm->v0;
 
 	BOOL pure_angle;
-	double d = FeedRateDistance(dx, dy, dz, da, db, dc, &MP, &pure_angle);
+	double d = FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &MP, &pure_angle);
 
 	double sinT = sin(p->ChangeInDirection);  // seg contains angle (radians) from previous
 	
@@ -1281,7 +1383,7 @@ void AdjustSegVelocityCircle(int i, double A)
 
 
 
-void CalcFinalDirectionOfSegment(SEGMENT *p,double &dx, double &dy, double &dz,double &da, double &db, double &dc)
+void CalcFinalDirectionOfSegment(SEGMENT *p,double &dx, double &dy, double &dz,double &da, double &db, double &dc, double &du, double &dv)
 {
 	if (p->type != SEG_ARC)
 	{
@@ -1293,6 +1395,8 @@ void CalcFinalDirectionOfSegment(SEGMENT *p,double &dx, double &dy, double &dz,d
 		da = p->a1 - p->a0;
 		db = p->b1 - p->b0;
 		dc = p->c1 - p->c0;
+		du = p->u1 - p->u0;
+		dv = p->v1 - p->v0;
 	}
 	else
 	{
@@ -1324,6 +1428,8 @@ void CalcFinalDirectionOfSegment(SEGMENT *p,double &dx, double &dy, double &dz,d
 		da = p->a1 - p->a0;
 		db = p->b1 - p->b0;
 		dc = p->c1 - p->c0;
+		du = p->u1 - p->u0;
+		dv = p->v1 - p->v0;
 
 		// we did everything as if we were in the xy plane
 		// if we were in a different axis then switch them
@@ -1353,7 +1459,7 @@ void CalcFinalDirectionOfSegment(SEGMENT *p,double &dx, double &dy, double &dz,d
 }
 
 
-void CalcBegDirectionOfSegment(SEGMENT *p, double &dx, double &dy, double &dz, double &da, double &db, double &dc)
+void CalcBegDirectionOfSegment(SEGMENT *p, double &dx, double &dy, double &dz, double &da, double &db, double &dc, double &du, double &dv)
 {
 	if (p->type != SEG_ARC)
 	{
@@ -1365,6 +1471,8 @@ void CalcBegDirectionOfSegment(SEGMENT *p, double &dx, double &dy, double &dz, d
 		da = p->a1 - p->a0;
 		db = p->b1 - p->b0;
 		dc = p->c1 - p->c0;
+		du = p->u1 - p->u0;
+		dv = p->v1 - p->v0;
 	}
 	else
 	{
@@ -1396,6 +1504,8 @@ void CalcBegDirectionOfSegment(SEGMENT *p, double &dx, double &dy, double &dz, d
 		da = p->a1 - p->a0;
 		db = p->b1 - p->b0;
 		dc = p->c1 - p->c0;
+		du = p->u1 - p->u0;
+		dv = p->v1 - p->v0;
 
 		// we did everything as if we were in the xy plane
 		// if we were in a different axis then switch them
@@ -1431,8 +1541,8 @@ double CalcChangeInDirection(int i)
 {
 	if (i==0) return 0.0;  // return if first segment
 
-	double adx,ady,adz,bdx,bdy,bdz;
-	double ada,adb,adc,bda,bdb,bdc,dot;
+	double adx, ady, adz, bdx, bdy, bdz;
+	double ada, adb, adc, adu, adv, bda, bdb, bdc, bdu, bdv, dot;
 
 	SEGMENT *a=GetSegPtr(i-1);
 	SEGMENT *b=GetSegPtr(i);
@@ -1443,26 +1553,28 @@ double CalcChangeInDirection(int i)
 	bool BisDist = (!MP.DegreesB || MP.RadiusB!=0.0);
 	bool CisDist = (!MP.DegreesC || MP.RadiusC!=0.0);
 
-	CalcFinalDirectionOfSegment(a,adx,ady,adz,ada,adb,adc);
-	CalcBegDirectionOfSegment(b,bdx,bdy,bdz,bda,bdb,bdc);
+	CalcFinalDirectionOfSegment(a, adx, ady, adz, ada, adb, adc, adu, adv);
+	CalcBegDirectionOfSegment(b, bdx, bdy, bdz, bda, bdb, bdc, bdu, bdv);
 
-	bool PureAngleA = adx==0.0 && ady==0.0 && adz==0.0 && (ada==0.0 || !AisDist) && 
-													      (adb==0.0 || !BisDist) && 
-													      (adc==0.0 || !CisDist);
+	bool PureAngleA = adx == 0.0 && ady == 0.0 && adz == 0.0 && adu == 0.0 && adv == 0.0 && (ada == 0.0 || !AisDist) && (adb == 0.0 || !BisDist) && (adc == 0.0 || !CisDist);
 
-	bool PureAngleB = bdx==0.0 && bdy==0.0 && bdz==0.0 && (bda==0.0 || !AisDist) && 
-													      (bdb==0.0 || !BisDist) && 
-													      (bdc==0.0 || !CisDist);
+	bool PureAngleB = bdx == 0.0 && bdy == 0.0 && bdz == 0.0 && bdu == 0.0 && bdv == 0.0 && (bda == 0.0 || !AisDist) && (bdb == 0.0 || !BisDist) && (bdc == 0.0 || !CisDist);
 	
-	if (PureAngleA && PureAngleB)
+	if (PureAngleA != PureAngleB) // don't mix pure angle motion with non-pure angle motion - return large direction change
+	{
+		return TWO_PI;
+	}
+	else if (PureAngleA && PureAngleB)
 	{
 		dot = ada*bda + adb*bdb + adc*bdc;
 	}
 	else
 	{
-		dot = (adx) * (bdx) +
-			  (ady) * (bdy) +
-			  (adz) * (bdz);
+		dot = (adx) * (bdx)+
+			  (ady) * (bdy)+
+			  (adz) * (bdz)+
+			  (adu) * (bdu)+
+			  (adv) * (bdv);
 
 		
 		bool AisDist = (!MP.DegreesA || MP.RadiusA!=0.0);
@@ -1512,7 +1624,7 @@ double CalcChangeInDirectionXYZ(int i)
 	if (i==0) return 0.0;  // return if first segment
 
 	double adx,ady,adz,bdx,bdy,bdz;
-	double ada,adb,adc,bda,bdb,bdc;
+	double ada,adb,adc,adu,adv,bda,bdb,bdc,bdu,bdv;
 
 	SEGMENT *a=GetSegPtr(i-1);
 	SEGMENT *b=GetSegPtr(i);
@@ -1522,12 +1634,14 @@ double CalcChangeInDirectionXYZ(int i)
 
 	if (lengtha == 0.0 || lengthb == 0.0) return 0.0;
 
-	CalcFinalDirectionOfSegment(a,adx,ady,adz,ada,adb,adc);
-	CalcBegDirectionOfSegment(b,bdx,bdy,bdz,bda,bdb,bdc);
+	CalcFinalDirectionOfSegment(a, adx, ady, adz, ada, adb, adc, adu, adv);
+	CalcBegDirectionOfSegment(b, bdx, bdy, bdz, bda, bdb, bdc, bdu, bdv);
 
 	double dot = (adx) * (bdx) +
 		         (ady) * (bdy) +
-		         (adz) * (bdz);
+				 (adz) * (bdz) +
+				 (adu) * (bdu) +
+				 (adv) * (bdv);
 
 	dot /= lengtha * lengthb;
 
@@ -1542,7 +1656,7 @@ double CalcLengthAlongHelix(double x0, double y0, double z0,
 					  double x1, double y1, double z1, 
 					  double xc, double yc, BOOL DirIsCCW, 
 					  double *radius, double *theta0, double *dtheta,
-					  double da, double db, double dc, MOTION_PARAMS *MP, double *dcircle)
+					  double da, double db, double dc, double du, double dv, MOTION_PARAMS *MP, double *dcircle)
 {
 	double d,dz;
 
@@ -1574,6 +1688,10 @@ double CalcLengthAlongHelix(double x0, double y0, double z0,
 		if (MP->DegreesC) dc *= PI/180.0*MP->RadiusC;
 		d += dc*dc;
 	}
+
+	d += du*du;
+	d += dv*dv;
+
 
 	return sqrt(d); // total length
 }
@@ -1620,15 +1738,15 @@ double CalcLengthAlongCircle(double x0, double y0,
 // through list to see if velocities could be increased
 
 int tp_insert_arc_seg(CANON_PLANE plane, 
-					  double x0, double y0, double z0, double a0, double b0, double c0,
-					  double x1, double y1, double z1, double a1, double b1, double c1,
+					  double x0, double y0, double z0, double a0, double b0, double c0, double u0, double v0,
+					  double x1, double y1, double z1, double a1, double b1, double c1, double u1, double v1,
 					  double xc, double yc, BOOL DirIsCCW,
 					  double MaxVel, double MaxAccel, double MaxDecel, double MaxLength,
 					  int sequence_number, int ID)
 {
 	double dx, radius, theta0, dtheta;
 	
-	dx = CalcLengthAlongHelix(x0,y0,z0,x1,y1,z1,xc,yc,DirIsCCW,&radius,&theta0,&dtheta,a1-a0,b1-b0,c1-c0,&MP, NULL);  // total length
+	dx = CalcLengthAlongHelix(x0, y0, z0, x1, y1, z1, xc, yc, DirIsCCW, &radius, &theta0, &dtheta, a1 - a0, b1 - b0, c1 - c0, u1 - u0, v1 - v0, &MP, NULL);  // total length
 
 	// add into the list
 	SEGMENT *p=GetSegPtr(nsegs);
@@ -1644,6 +1762,8 @@ int tp_insert_arc_seg(CANON_PLANE plane,
 	p->a0 = a0;
 	p->b0 = b0;
 	p->c0 = c0;
+	p->u0 = u0;
+	p->v0 = v0;
 	
 	p->x1 = x1;
 	p->y1 = y1;
@@ -1651,6 +1771,8 @@ int tp_insert_arc_seg(CANON_PLANE plane,
 	p->a1 = a1;
 	p->b1 = b1;
 	p->c1 = c1;
+	p->u1 = u1;
+	p->v1 = v1;
 
 	p->xc = xc;
 	p->yc = yc;
@@ -2000,11 +2122,17 @@ void MaximizeSegments()
 
 			if (FirstPass)
 			{
-				if (i>0 && GetSegPtr(i-1)->Done)
+				if (i>0 && GetSegPtr(i-1)->Done) // found a "Done" on first pass?
 				{
+					LastDone = i - 1;  // yes, all to the left are Done and don't need consideration
 					PassFinished=true;
-					LastDone = i-1;
 					FirstPass=false;
+				}
+				else if (i == 1) // ran all the way to beginning with no "Done"? 
+				{
+					LastDone = -1;  // yes, set all still need consideration
+					PassFinished = true;
+					FirstPass = false;
 				}
 			}
 			else
@@ -2020,7 +2148,7 @@ void MaximizeSegments()
 		}
 	} while (SomethingChanged);
 
-#if 0 // tktk
+#if 0 
 	// verify there are no gaps in the "Done"
 
 	for (i=0; i<nsegs-1; i++)
@@ -2494,7 +2622,7 @@ int tp_calc_seg_trip_states_dwell(int i)
 
 // compute total distance tool will move by considering both linear and angular movements  
 
-double FeedRateDistance(double dx, double dy, double dz, double da, double db, double dc, MOTION_PARAMS *MP,BOOL *PureAngle)
+double FeedRateDistance(double dx, double dy, double dz, double da, double db, double dc, double du, double dv, MOTION_PARAMS *MP,BOOL *PureAngle)
 {
 
 	//  Every axis is either a pure linear distance or
@@ -2514,9 +2642,7 @@ double FeedRateDistance(double dx, double dy, double dz, double da, double db, d
 	bool BisDist = (!MP->DegreesB || MP->RadiusB!=0.0);
 	bool CisDist = (!MP->DegreesC || MP->RadiusC!=0.0);
 
-	*PureAngle = dx==0.0 && dy==0.0 && dz==0.0 && (da==0.0 || !AisDist) && 
-	                                              (db==0.0 || !BisDist) && 
-											      (dc==0.0 || !CisDist);
+	*PureAngle = dx==0.0 && dy == 0.0 && dz == 0.0 && du == 0.0 && dv == 0.0 && (da==0.0 || !AisDist) && (db==0.0 || !BisDist) && (dc==0.0 || !CisDist);
 	if (*PureAngle)
 	{
 		d = da*da + db*db + dc*dc;
@@ -2524,6 +2650,8 @@ double FeedRateDistance(double dx, double dy, double dz, double da, double db, d
 	else
 	{
 		d = dx*dx + dy*dy + dz*dz;
+		
+
 		if (AisDist)
 		{
 			if (MP->DegreesA) da *= PI/180.0*MP->RadiusA;
@@ -2539,6 +2667,9 @@ double FeedRateDistance(double dx, double dy, double dz, double da, double db, d
 			if (MP->DegreesC) dc *= PI/180.0*MP->RadiusC;
 			d += dc*dc;
 		}
+
+		//if there is xyz abc(linear) motion it determines the feedrate, otherwise uv determines the feed rate
+		if (d == 0.0) d = du*du + dv*dv;
 	}
 	return sqrt(d);
 }

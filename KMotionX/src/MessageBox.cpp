@@ -11,14 +11,14 @@ int AfxMessageBox(const char* value, int type){
 }
 
 int MessageBox(int whatisthis,const char* value,const char* title, int type){
-	return mb_callback("AfxMessageBox",value,type);
+	return mb_callback("MessageBox",value,type);
 }
 
 //Default Console handler for messageboxes
 int MessageBoxConsoleHandler(const char *title, const char *msg, int options){
 		char str[100];
-		printf("---------%s:  OPTION:  %s---------\n%d\n-----------------------------------------------\n",
-		    title,msg,options);
+		printf("---------%s:  (0x%.8X)  ---------\n%s\n-----------------------------------------------\n",
+		    title,options,msg);
 		if((options & MB_OK) == MB_OK){
 			printf(">OK?");
 			fgets(str, 100, stdin);

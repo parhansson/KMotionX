@@ -27,6 +27,10 @@ main()
 	// turn spindle on CW and ramp to new speed
 	SetBit(SPINDLECW_BIT);
 	
+	
+	LastState = 1;          														 //  Add string
+	
+	
 	if (*css_mode != 2)
 	{
 		// spindle is already on, so ramp to new speed

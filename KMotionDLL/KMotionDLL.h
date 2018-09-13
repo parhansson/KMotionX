@@ -84,6 +84,11 @@ typedef void ERRMSG_HANDLER(const char *ErrMsg);
 class KMOTIONDLL_API CKMotionDLL {
 public:
 	CKMotionDLL(int boardid);
+#ifdef _KMOTIONX	
+	// Alternative ctor to connect via TCP.  If url is NULL, assumes localhost, else is a host name.
+	CKMotionDLL(int boardid, unsigned int dfltport, const char * url = NULL);
+	
+#endif	
 	virtual ~CKMotionDLL();
     int BoardID;
 
@@ -93,8 +98,8 @@ public:
 	int WriteLineWithEcho(const char *s);
 	int ReadLineTimeOut(char *buf, int TimeOutms=1000000);
 	int ListLocations(int *nlocations, int *list);
-	int WaitToken(bool display_msg=true, int TimeOut_ms=1000000);
-	int KMotionLock();
+	int WaitToken(bool display_msg=true, int TimeOut_ms=1000000, const char *CallerID=NULL);
+	int KMotionLock(const char *CallerID=NULL);
 	int USBLocation();
 	int KMotionLockRecovery();
 	void ReleaseToken();
@@ -127,11 +132,9 @@ public:
 	int ExtractCoffVersionString(const char *InFile, char *Version);
     int GetStatus(MAIN_STATUS& status, bool lock);
 	void DoErrMsg(const char *s);
-#ifdef _KMOTIONX	
-	// Alternative ctor to connect via TCP.  If url is NULL, assumes localhost, else is a host name.
-	CKMotionDLL(int boardid, unsigned int dfltport, const char * url = NULL);
-	
-#endif
+
+	bool ErrMessageDisplayed;
+
 private:
 
 	CMutex *PipeMutex;

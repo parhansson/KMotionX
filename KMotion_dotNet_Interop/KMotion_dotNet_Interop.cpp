@@ -201,7 +201,7 @@ extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_ReadLineTimeOut
 extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_WaitToken(void *handle, int timeout)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
-	int rslt=KM_dll->WaitToken(false, timeout);
+	int rslt=KM_dll->WaitToken(false, timeout, "dotNETWaitToken");
 	return rslt;
 }
 
@@ -1049,6 +1049,12 @@ extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_Do
     return CM_dll->DoKMotionBufCmd(s);
 }
 
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_KinematicsReadGeoTable(int *handle, const char *filename)
+{
+	CCoordMotion *CM_dll=(CCoordMotion *)handle;
+	return CM_dll->Kinematics->ReadGeoTable(filename);
+}
+
 
 
  
@@ -1304,9 +1310,26 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 //Setup Parameters
 	//Acutator Origins, Positions and Offsets
 
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_GetInterpretThreadID(int *handle)
+{
+	CGCodeInterpreter *GC_dll = (CGCodeInterpreter *)handle;
+	return GC_dll->m_InterpretThreadID;
+}
+
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_GetInvokeThreadID(int *handle)
+{
+	CGCodeInterpreter *GC_dll = (CGCodeInterpreter *)handle;
+	return GC_dll->m_InvokeThreadID;
+}
+
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_GetCurrentWin32ThreadID()
+{
+	return GetCurrentThreadId();
+}
+
 extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_GetInitializeOnExecute(int *handle)
 {
-	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
+	CGCodeInterpreter *GC_dll = (CGCodeInterpreter *)handle;
 	return GC_dll->m_InitializeOnExecute;
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_SetInitializeOnExecute(int *handle, bool value)

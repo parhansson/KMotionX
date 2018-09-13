@@ -42,6 +42,7 @@ namespace KMotion_dotNet
             /// <summary>
             /// Constructor for GCode interpreter internal setup parameters interface
             /// </summary>
+            /// <param name="handle">Associated Interpreter Handle</param>
             public KM_Interpreter_SetupParams(IntPtr handle)
             {
                 _InstanceHandle = handle;

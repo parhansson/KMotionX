@@ -21,12 +21,15 @@ static char THIS_FILE[] = __FILE__;
 
 CList <LPCMotionButton,LPCMotionButton> CMotionButton::AxisGroup;
 
+static DWORD DoExecuteShell(LPDWORD lpdwParam);
 
 CMotionButton::CMotionButton()
 {
 	m_Moving=false;
 	m_RawVel=0.0;
 	m_HasMouseCapture=false;
+	Style = MotionButton;
+
 	// make a global list of all Motion Buttons
 	// so we can allow mutiple buttons down but not
 	// more than one with the same axis
@@ -42,6 +45,8 @@ BEGIN_MESSAGE_MAP(CMotionButton, CImageButton)
 	//{{AFX_MSG_MAP(CMotionButton)
 	ON_WM_TIMER()
 	ON_WM_MOUSEMOVE()
+	ON_MESSAGE(WM_MOUSELEAVE, OnMouseLeave)
+	ON_MESSAGE(WM_MOUSEHOVER, OnMouseHover)
 	ON_WM_KILLFOCUS()
 	ON_WM_CAPTURECHANGED()
 	ON_WM_LBUTTONUP()
@@ -57,15 +62,19 @@ END_MESSAGE_MAP()
 
 void CMotionButton::OnMouseMove(UINT nFlags, CPoint point) 
 {
+	CImageButton::OnMouseMove(nFlags, point);
 }
 
-void CMotionButton::Init(CKMotionCNCDlg *pDlg, int axis, int dir, double mag, bool StepMode)
+void CMotionButton::Init(CKMotionCNCDlg *pDlg, int axis, int dir, double *mag, bool StepMode, int HotKey)
 {
 	Dlg = pDlg;
 	m_axis = axis;
 	m_dir=dir;
 	m_mag=mag;
 	m_StepMode=StepMode;
+	m_HotKey = HotKey;
+	Style = MotionButton;
+
 }
 
 
@@ -97,11 +106,11 @@ void CMotionButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	CImageButton::DrawItem(lpDrawItemStruct);
 }
 
-void CMotionButton::HandleButtonDown(void)
+int CMotionButton::HandleButtonDown(void)
 {
 	CString s;
 	CCoordMotion *CM= Dlg->Interpreter->CoordMotion;
-	double delta=0,x,y,z,a,b,c;
+	double delta=0;
 
 	POSITION position=CMotionButton::AxisGroup.GetHeadPosition();
 	LPCMotionButton p;
@@ -157,7 +166,9 @@ void CMotionButton::HandleButtonDown(void)
 		case 5: Step = Dlg->m_Step5; break;
 		}
 
-		if (Dlg->Interpreter->p_setup->length_units==CANON_UNITS_INCHES)
+		bool Degrees = (m_axis == 3 && CM->GetMotionParams()->DegreesA) || (m_axis == 4 && CM->GetMotionParams()->DegreesB) || (m_axis == 5 && CM->GetMotionParams()->DegreesC);
+
+		if (Dlg->Interpreter->p_setup->length_units==CANON_UNITS_INCHES || Degrees)
 			delta = Step*m_dir; 
 		else if (Dlg->Interpreter->p_setup->length_units==CANON_UNITS_MM)
 			delta = Step*m_dir/25.4; 
@@ -172,43 +183,51 @@ void CMotionButton::HandleButtonDown(void)
 			// check if we came to a stop yet (either from Jog to stop, or from offset)
 
 			CString response;
-			if (TheFrame->KMotionDLL->WriteLineReadLine("CheckDoneXYZABC",response.GetBufferSetLength(MAX_LINE))) return;
+			if (TheFrame->KMotionDLL->WriteLineReadLine("CheckDoneXYZABC", response.GetBufferSetLength(MAX_LINE))) return 1;
 			response.ReleaseBuffer();
+			if (response == "0") return 0;  // exit if still stopping 
 
-			if (response=="0") return;  // exit if still stopping 
-			
+			if (TheFrame->KMotionDLL->WriteLineReadLine("CheckDoneBuf", response.GetBufferSetLength(MAX_LINE))) return 1;
+			response.ReleaseBuffer();
+			if (response == "0") return 0;  // exit if still stopping 
+
 			if (Dlg->CS_axis[m_axis]>=0)
 			{
-				if (CM->ReadCurAbsPosition(&x,&y,&z,&a,&b,&c)) return;
-			
+				if (CM->ReadCurAbsPosition(&stepx,&stepy,&stepz,&stepa, &stepb, &stepc, &stepu, &stepv)) return 1;
+
+				CM->current_x = stepx;
+				CM->current_y = stepy;
+				CM->current_z = stepz;
+				CM->current_a = stepa;
+				CM->current_b = stepb;
+				CM->current_c = stepc;
+				CM->current_u = stepu;
+				CM->current_v = stepv;
+
 				switch (m_axis)
 				{
 				case 0:
-					x += delta;
+					stepx += delta;
 					break;
 				case 1:
-					y += delta;
+					stepy += delta;
 					break;
 				case 2:
-					z += delta;
+					stepz += delta;
 					break;
 				case 3:
-					a += delta;
+					stepa += delta;
 					break;
 				case 4:
-					b += delta;
+					stepb += delta;
 					break;
 				case 5:
-					c += delta;
+					stepc += delta;
 					break;
 				}
 
-				double Acts[MAX_ACTUATORS];
-
-				CM->Kinematics->TransformCADtoActuators(x, y, z, a, b, c, Acts);
-
-				for (int i=0; i<MAX_ACTUATORS; i++)
-					if (Dlg->DoActPosition(i,Acts[i])) return;
+				//Do coordinated motion with a worker thread
+				LaunchExecution();
 			}
 		}
 	}
@@ -218,7 +237,7 @@ void CMotionButton::HandleButtonDown(void)
 
 		if (Dlg->m_Simulate)
 		{
-			m_SimulateDelta = Dlg->m_JogSpeed[m_axis] * m_dir * m_mag * 0.1; /* simulate this speed for short time delta */
+			m_SimulateDelta = Dlg->m_JogSpeed[m_axis] * Dlg->m_JogSpeedOverride[m_axis] * m_dir * *m_mag * 0.01 * 0.1; /* simulate this speed for short time delta */
 			*m_pSimulatePos += m_SimulateDelta; 
 			m_SimulateMotion=true;
 			SetTimer(1,100,NULL);
@@ -227,23 +246,67 @@ void CMotionButton::HandleButtonDown(void)
 		{
 			if (Dlg->CS_axis[m_axis]>=0)
 			{
-				m_RawVel = Dlg->m_JogSpeed[m_axis] * m_dir * m_mag;
+				m_RawVel = Dlg->m_JogSpeed[m_axis] * Dlg->m_JogSpeedOverride[m_axis] * m_dir * *m_mag * 0.01;
+				if (Dlg->ProcessChangeInJogVelocity()) 
+				{
+					m_RawVel=0.0;
+					return 0;
+				}
 				m_Moving=true;
-				Dlg->ProcessChangeInJogVelocity();
 			}
 		}
 	}
 	DrawPushed=true;
 	InvalidateRect(NULL);
+	return 0;
+}
+
+int CMotionButton::LaunchExecution()
+{
+	DWORD ID;
+
+
+	// Now start a worker thread that performs the G Code
+
+	HANDLE Thread = CreateThread(
+		NULL,                        /* no security attributes        */
+		0,                           /* use default stack size        */
+		(LPTHREAD_START_ROUTINE) ::DoExecuteShell, /* thread function       */
+		this,							 /* argument to thread function   */
+		0,                           /* use default creation flags    */
+		&ID);
+
+	return 0;
+}
+
+static DWORD DoExecuteShell(LPDWORD lpdwParam)
+{
+	CMotionButton *p = (CMotionButton*)lpdwParam;
+
+	p->m_exitcode = p->DoExecute();
+
+	return 0;
+}
+
+int CMotionButton::DoExecute()
+{
+	CCoordMotion *CM = Dlg->Interpreter->CoordMotion;
+	CM->ClearAbort();
+	CM->ClearHalt();
+	CM->SetTPParams();
+	if (CM->StraightTraverse(stepx, stepy, stepz, stepa, stepb, stepc, true)) return 1;
+	if (CM->FlushSegments())  return 1;
+	if (CM->WaitForSegmentsFinished()) return 1;
+	return 0;
 }
 
 void CMotionButton::HandleButtonUp(void)
 {
 	m_SimulateMotion=false;
 
+	m_RawVel=0.0;
 	if (m_Moving)
 	{
-		m_RawVel=0.0;
 		m_Moving=false;
 		Dlg->ProcessChangeInJogVelocity();
 		KillTimer(1);
@@ -282,7 +345,7 @@ void CMotionButton::OnLButtonUp(UINT nFlags, CPoint point)
 void CMotionButton::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	ForceDisableFocus=false;
-	HandleButtonDown();
+	if (HandleButtonDown()) return;
 	CButton::OnLButtonDown(nFlags, point);
 }
 

@@ -1,0 +1,8 @@
+TargetBarWidth 10.0000 10.0000
+TargetBarWidthTol 10.0000 10.0000
+TargetBarMinHeight 40.0000 40.0000
+FilterLevel 7
+CalRC 5.0000 7.0000
+CalGrid 1.0000 1.0000
+CalDelay 1.5000
+OrthoValue 82.0000

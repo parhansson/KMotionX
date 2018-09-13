@@ -2,11 +2,7 @@
 
 main()
 {
-	int BitA,Change1=0,Change2=0, DiffX2;
-	int PosNoWrap, NewPos, Pos=0, wraps;
-	double Factor=0;
-	
-	SetBit(152);
+	SetBit(152);  // enable AMPS
 	SetBit(157);
 	SetBit(158);
 	

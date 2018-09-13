@@ -20,6 +20,7 @@
 
 
 #define _CRT_SECURE_NO_DEPRECATE
+#define NO_WARN_MBCS_MFC_DEPRECATION
 #define WINVER 0x0600 
 #define _WIN32_IE 0x0600 
 
@@ -1203,7 +1204,7 @@ char *get_tok_str(int v, CValue *cv)
     case TOK_CLLONG:
     case TOK_CULLONG:
         /* XXX: not quite exact, but only useful for testing  */
-        sprintf(p, "%Lu", (unsigned long long)cv->ull);
+        sprintf(p, "%llu", cv->ull);
         break;
     case TOK_CCHAR:
     case TOK_LCHAR:

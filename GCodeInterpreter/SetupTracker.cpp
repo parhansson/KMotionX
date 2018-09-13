@@ -67,26 +67,6 @@ int CSetupTracker::InsertState(setup *CurSetup)
 			}
 		}
 
-		// Interpreter keeps track if any parameters changed so check those also
-
-/* tktk - which vars are changed per line should not need to be tracked, only the final values
-	    for (int n = 0; n < CurSetup->parameter_occurrence; n++)
-		{	
-			i = (int64_t *)(&CurSetup->parameters[_setup.parameter_numbers[n]]) - s;
-			X = s[i] ^ d[i];  // xor words
-			if (X)  // Changed?
-			{
-				C.data = X;  // save changes
-				C.offset = i;	// save offset
-				Buffer[index++] = C;
-				if (index>=MAX_TRACKER) index=0;
-				nChanges++;
-				C.first = false;
-				d[i] = s[i];    // update with the change
-				k++;
-			}
-		}
-*/
 
 		// Interpreter keeps track if any parameters changed so check those also
 

@@ -2630,8 +2630,8 @@ namespace DirectX.Capture
 			{
 				return 0;
 			}
-//tktk			this.frameCaptured = true;
-			this.bufferedSize = BufferLen;
+
+            this.bufferedSize = BufferLen;
 			
 			int stride = this.SnapShotWidth * 3;
 

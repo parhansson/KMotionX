@@ -43,6 +43,8 @@ int main(int argc, char* argv[])
 
 	if (KM->WriteLine("Echo Move Complete")) MyError(); // Echo a string to console 
 
+	delete KM;
+
 	return 0;
 }
 

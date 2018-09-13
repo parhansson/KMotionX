@@ -144,10 +144,9 @@ int CPath3d::glBuildList()
 					  m_Transform.GetRotation()->y(),
 					  m_Transform.GetRotation()->z());
 
-		if (m_Transform.GetValueRotationXY()!=0.0f) glRotatef(m_Transform.GetValueRotationXY(),0.0f,0.0f,1.0f);
-		if (m_Transform.GetValueRotationYZ()!=0.0f) glRotatef(m_Transform.GetValueRotationYZ(),1.0f,0.0f,0.0f);
-		if (m_Transform.GetValueRotationZX()!=0.0f) glRotatef(m_Transform.GetValueRotationZX(),0.0f,1.0f,0.0f);
-
+		if (m_Transform.GetValueRotationXY() != 0.0f) glRotatef(m_Transform.GetValueRotationXY(), 0.0f, 0.0f, 1.0f);
+		if (m_Transform.GetValueRotationZX() != 0.0f) glRotatef(m_Transform.GetValueRotationZX(), 0.0f, 1.0f, 0.0f);
+		if (m_Transform.GetValueRotationYZ() != 0.0f) glRotatef(m_Transform.GetValueRotationYZ(), 1.0f, 0.0f, 0.0f);
 
 		// path
 		pPrev = m_ArrayVertex[m_nPointsInList];
@@ -161,6 +160,7 @@ int CPath3d::glBuildList()
 		
 			if (!(*pPrev->GetColor() == *pNew->GetColor()))
 			{
+				::glEnd();
 				::glBegin(GL_LINE_STRIP);
 				::glColor3ub(pNew->GetColor()->r(),pNew->GetColor()->g(),pNew->GetColor()->b());
 				::glVertex3f(pPrev->x(),pPrev->y(),pPrev->z());
@@ -183,12 +183,12 @@ int CPath3d::glBuildList()
 	m_ListDone = 1;
 	
 	// only set as un modified if nothing changed in the mean time
-	if (TheFrame) TheFrame->GViewDlg.m_view.OpenGLMutex->Lock();
+	if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Lock();
 	if(m_ArrayVertex.GetSize() == NbVertex)
 	{
 		m_Modified = 0;
 	}
-	if (TheFrame) TheFrame->GViewDlg.m_view.OpenGLMutex->Unlock();
+	if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Unlock();
 
 	return 1;
 }
@@ -447,15 +447,18 @@ double CPath3d::FindDistPointToSegment(CVertex3dFast *s0, CVertex3dFast *s1, CVe
 //********************************************
 int CPath3d::RemovePathEnd(int sequence_number, int ID, double x, double y, double z)
 {
-	if (TheFrame) TheFrame->GViewDlg.m_view.OpenGLMutex->Lock();
+	if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Lock();
 
 	int n = m_ArrayVertex.GetSize()-1;
 
-	setup_pointer p=TheFrame->GCodeDlg.Interpreter->p_setup;
+	CGCodeInterpreter *GC = TheFrame->GCodeDlg.Interpreter;
 
-	float xtool = p->tool_table[p->selected_tool_slot].xoffset;
-	float ytool = p->tool_table[p->selected_tool_slot].yoffset;
-	float ztool = p->tool_table[p->selected_tool_slot].length;
+
+	setup_pointer p=GC->p_setup;
+
+	float xtool = GC->UserUnitsToInchesX(p->tool_table[p->selected_tool_slot].xoffset);
+	float ytool = GC->UserUnitsToInchesX(p->tool_table[p->selected_tool_slot].yoffset);
+	float ztool = GC->UserUnitsToInchesX(p->tool_table[p->selected_tool_slot].length);
 
 	x -= xtool;
 	y -= ytool;
@@ -472,7 +475,7 @@ int CPath3d::RemovePathEnd(int sequence_number, int ID, double x, double y, doub
 
 	if (n<0)
 	{
-		if (TheFrame) TheFrame->GViewDlg.m_view.OpenGLMutex->Unlock();
+		if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Unlock();
 		return 1;
 	}
 
@@ -488,7 +491,7 @@ int CPath3d::RemovePathEnd(int sequence_number, int ID, double x, double y, doub
 
 	if (n<0)
 	{
-		if (TheFrame) TheFrame->GViewDlg.m_view.OpenGLMutex->Unlock();
+		if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Unlock();
 		return 1;
 	}
 
@@ -540,7 +543,7 @@ int CPath3d::RemovePathEnd(int sequence_number, int ID, double x, double y, doub
 		n--;
 	}
 
-	if (TheFrame) TheFrame->GViewDlg.m_view.OpenGLMutex->Unlock();
+	if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Unlock();
 
 	if (n<0) return 1;
 	return 0;

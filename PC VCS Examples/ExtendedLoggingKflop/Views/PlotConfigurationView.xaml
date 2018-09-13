@@ -1,0 +1,165 @@
+﻿<catel:DataWindow x:Class="ExtendedLoggingKflop.Views.PlotConfigurationView"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+                  xmlns:models="clr-namespace:ExtendedLoggingKflop.Models"
+                  xmlns:viewModels="clr-namespace:ExtendedLoggingKflop.ViewModels"
+                  xmlns:myConverters="clr-namespace:ExtendedLoggingKflop.Converters"
+                  xmlns:wpfToolkitConverters="clr-namespace:Xceed.Wpf.Toolkit.Core.Converters;assembly=Xceed.Wpf.Toolkit"
+                  xmlns:catel="http://catel.codeplex.com">
+
+    <catel:StackGrid>
+        <catel:StackGrid.Resources>
+            <wpfToolkitConverters:ColorToSolidColorBrushConverter x:Key="ColorToSolidColorBrushConverter" />
+            <myConverters:YAxisKeyToAxisNameConverter x:Key="YAxisKeyToAxisNameConverter" />
+        </catel:StackGrid.Resources>
+        <catel:StackGrid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+           </catel:StackGrid.RowDefinitions>
+
+        <StackPanel Orientation="Vertical">
+            <GroupBox Header="Plot Info">
+                <catel:StackGrid>
+                    <catel:StackGrid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </catel:StackGrid.RowDefinitions>
+                    <catel:StackGrid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" MinWidth="300" />
+                    </catel:StackGrid.ColumnDefinitions>
+                    <Label Content="Title" />
+                    <TextBox Text="{Binding PlotName, NotifyOnValidationError=True, ValidatesOnDataErrors=True}" />
+                    <Label Content="Notes"/>
+                    <TextBox Text="{Binding Notes}" AcceptsReturn="True" TextWrapping="Wrap" />
+                </catel:StackGrid>
+            </GroupBox>
+            <GroupBox Header="Y Axis Configuration">
+                <DockPanel LastChildFill="True">
+                    <StackPanel DockPanel.Dock="Right" Orientation="Vertical">
+
+                        <WrapPanel>
+                            <!-- Added -->
+                            <Button Command="{Binding AddAxis}" Style="{DynamicResource ImageButtonStyle}" ToolTip="Add">
+                                <Image Source="../Resources/Add.png" />
+                            </Button>
+
+                            <!-- Edit -->
+                            <Button Command="{Binding EditAxis}" Style="{DynamicResource ImageButtonStyle}" ToolTip="Edit">
+                                <Image Source="../Resources/edit.png" />
+                            </Button>
+
+                            <!-- Remove -->
+                            <Button Command="{Binding RemoveAxis}" Style="{DynamicResource ImageButtonStyle}" ToolTip="Remove">
+                                <Image Source="../Resources/close.png" />
+                            </Button>
+                        </WrapPanel>
+                    </StackPanel>
+
+                    <ListView DockPanel.Dock="Left" MinHeight="80" MinWidth="400" 
+                                  SelectedItem="{Binding SelectedAxis}" 
+                                  ItemsSource="{Binding Axes, Mode=TwoWay}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseDoubleClick">
+                                <catel:EventToCommand Command="{Binding EditAxis}" DisableAssociatedObjectOnCannotExecute="False" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Title" Width="125" DisplayMemberBinding="{Binding AxisTitle}" />
+                                <GridViewColumn Header="Units" Width="125" DisplayMemberBinding="{Binding Unit}" />
+                                <!--<GridViewColumn Header="Key" Width="100" DisplayMemberBinding="{Binding Key}" />-->
+                                <GridViewColumn Header="Position" Width="Auto" >
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <StackPanel.Resources>
+                                                    <myConverters:MyEnumToBooleanConverter x:Key="EnumToBooleanConverter"></myConverters:MyEnumToBooleanConverter>
+                                                </StackPanel.Resources>
+
+                                                <RadioButton IsChecked="{Binding Path=AxisPosition, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static models:PlotAxisPositionEnum.YAxisLeft}}" Content="Left" />
+                                                <RadioButton IsChecked="{Binding Path=AxisPosition, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static models:PlotAxisPositionEnum.YAxisRight}}" Content="Right" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </DockPanel>
+            </GroupBox>
+            <GroupBox Header="Series Configuration">
+                <DockPanel LastChildFill="True">
+                    <StackPanel DockPanel.Dock="Right" Orientation="Vertical">
+
+                        <WrapPanel>
+                            <!-- Added -->
+                            <Button Command="{Binding AddSeries}" Style="{DynamicResource ImageButtonStyle}" ToolTip="Add">
+                                <Image Source="../Resources/Add.png" />
+                            </Button>
+
+                            <!-- Edit -->
+                            <Button Command="{Binding EditSeries}" Style="{DynamicResource ImageButtonStyle}" ToolTip="Edit">
+                                <Image Source="../Resources/edit.png" />
+                            </Button>
+
+                            <!-- Remove -->
+                            <Button Command="{Binding RemoveSeries}" Style="{DynamicResource ImageButtonStyle}" ToolTip="Remove">
+                                <Image Source="../Resources/close.png" />
+                            </Button>
+                        </WrapPanel>
+                    </StackPanel>
+
+                    <ListView DockPanel.Dock="Left" MinHeight="80" MinWidth="400" 
+                                  SelectedItem="{Binding SelectedSeries}" 
+                                  ItemsSource="{Binding Series, Mode=TwoWay}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseDoubleClick">
+                                <catel:EventToCommand Command="{Binding EditSeries}" DisableAssociatedObjectOnCannotExecute="False" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Title" Width="125" DisplayMemberBinding="{Binding SeriesTitle}" />
+                                <GridViewColumn Header="Color" Width="80" >
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+
+                                            <Line Stroke="{Binding Color, Converter={StaticResource ColorToSolidColorBrushConverter}}" X1="0" Y1="0" X2="1"  Y2="0" Stretch="Uniform" StrokeThickness="2"/>
+                                                
+                                            
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                <GridViewColumn Header="Y Axis" Width="120" >
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Label>
+                                                <Label.Content>
+                                                    <MultiBinding Converter="{StaticResource YAxisKeyToAxisNameConverter}">
+                                                        <Binding Path="DataContext.Axes" RelativeSource="{RelativeSource AncestorType={x:Type catel:DataWindow}}"/>
+                                                        <Binding Path="YAxisKey" />
+                                                    </MultiBinding>
+                                                </Label.Content>
+                                            </Label>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Result Index 1" Width="Auto" DisplayMemberBinding="{Binding ResultIndex1}" />
+                                <GridViewColumn Header="Result Index 2" Width="Auto" DisplayMemberBinding="{Binding ResultIndex2}" />
+                                <GridViewColumn Header="Operator" Width="Auto" DisplayMemberBinding="{Binding ResultOperator}" />
+
+
+
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </DockPanel>
+            </GroupBox>
+        </StackPanel>
+    </catel:StackGrid>
+    
+</catel:DataWindow>

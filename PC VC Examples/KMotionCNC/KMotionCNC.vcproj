@@ -656,6 +656,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Screen.cpp"
+				>
+			</File>
+			<File
 				RelativePath="SetValue.cpp"
 				>
 				<FileConfiguration
@@ -932,6 +936,10 @@
 			</File>
 			<File
 				RelativePath="ScintillaFindReplaceDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Screen.h"
 				>
 			</File>
 			<File

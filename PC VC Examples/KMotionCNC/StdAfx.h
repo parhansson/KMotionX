@@ -12,15 +12,20 @@
 
 #define KMOTION_CNC
 
-#define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
+//#define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 #define _CRT_SECURE_NO_DEPRECATE
-#define WINVER 0x0600 
-#define _WIN32_IE 0x0600 
+#define NO_WARN_MBCS_MFC_DEPRECATION
+
+#define WINVER _WIN32_WINNT_WINXP    // these are required to still be able to run under XP
+#define _WIN32_WINNT _WIN32_WINNT_WINXP 
+#define _WIN32_IE _WIN32_WINNT_WINXP 
+#define NTDDI_VERSION NTDDI_WINXP
 
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
 #include <afxole.h>         // MFC OLE classes
 #include <afxodlgs.h>       // MFC OLE dialog classes
+#include <afxDialogex.h>
 #include <afxdisp.h>        // MFC OLE automation classes
 #include <afxpriv.h>		// for AfxLoadString
 #ifndef _AFX_NO_AFXCMN_SUPPORT
@@ -56,6 +61,7 @@
 #include <stdlib.h>
 
 #include <string.h>
+#include <afxglobals.h>
 
 
 //{{AFX_INSERT_LOCATION}}
