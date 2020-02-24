@@ -12,6 +12,7 @@
 #include <sys/time.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #include <sys/syscall.h>
 #include "KMotionX.h"
 
@@ -87,6 +88,7 @@ namespace kmx
 
 	int verifyInstallRoot(const char * rootpath);
 	int verifySubpath(const char * path, const char * subpath, bool isdir);
+	int testExecuteAccess(const char * file);
 
 	const char * getInstallPath(){
 				char cwd[MAX_PATH];
@@ -162,34 +164,26 @@ namespace kmx
 		strncpy(Compiler, customCompiler,MaxCompilerLen);
 		if (Compiler[0] == '/')
 		{
-			int result = access(Compiler, F_OK | X_OK); // try if compiler is accessible on absolute path
-			if (result)
-			{
-				snprintf(Compiler,MaxCompilerLen,"Error Locating custom compiler (given absolute path) %s",customCompiler);
-				return 1;
-			}
+			// try if compiler is accessible on absolute path
+			if(testExecuteAccess(Compiler) == 0 ) return 0;			
 		}
 		else
 		{
-			int result = access(Compiler, F_OK | X_OK);  // try if compiler is on path
-			if(result == 0 ) return 0;
-
+			// try in the released directory next
 			sprintf(Compiler, "%s/%s", getBinPath(), customCompiler);
-			result = access(Compiler, F_OK | X_OK); // try in the released directory next
-			if(result == 0 ) return 0;
+			if(testExecuteAccess(Compiler) == 0 ) return 0;			
 
+			// this is for development only
 			sprintf(Compiler, "%s/TCC67/%s", getInstallPath(), customCompiler);
-			result = access(Compiler, F_OK | X_OK); // try in the released directory next
-			if(result == 0 ) return 0;
+			if(testExecuteAccess(Compiler) == 0 ) return 0;
 
 			if(Compiler[0] != '.'){ // check if compiler is present in current dir
 				sprintf(Compiler, "./%s", customCompiler);
-				result = access(Compiler, F_OK | X_OK);
-				if(result == 0 ) return 0;
+				if(testExecuteAccess(Compiler) == 0 ) return 0;
 			}
 		}
-		snprintf(Compiler,MaxCompilerLen,"Error Locating c67-tcc Compiler %s",customCompiler);
-		return 1;
+		snprintf(Compiler,MaxCompilerLen,"Error Locating Compiler %s",customCompiler);
+		return -1;
 		
 	}
 
@@ -256,6 +250,21 @@ namespace kmx
 		return 0;
 	}
 
+	int testExecuteAccess(const char * file){
+		debug("Testing file for existance execute permissions %s",file);
+		//log_info("Checking access=%s",file);			
+		struct stat *sb;
+		sb = (struct stat *)malloc(sizeof(struct stat));        
+		int result = -1;
+		if(stat(file, sb) == 0){
+			//check that file is real file and is executable
+			if(S_ISREG(sb->st_mode) && sb->st_mode & S_IXUSR){
+				result = 0;
+			}
+		}
+		free(sb);
+		return result;
+	}
 
 	int verifyInstallRoot(const char * root){
 		int error = verifySubpath(root, "bin/", true) |

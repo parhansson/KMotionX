@@ -166,15 +166,18 @@ void testCheckForReady(){
 void testCompile(){
 	char file[256];
 	strcpy(file,kmx::getInstallPath());
-	strcat(file,"/C Programs/FanOFF.c");
+	strcat(file,"/C Programs/BlinkKFLOP.c");
 	char err[1024];
-	//KM->CompileAndLoadCoff(file, 1, err, sizeof(err));
-	KM->CompileAndLoadCoff(file, 1);
+	KM->CompileAndLoadCoff(file, 1, err, sizeof(err));
 	if(err[0])
 	{
-    printf("%s", err);
+    printf("%s\n", err);
+	} else {
+		printf("compiled %s\n", file); 
 	}
+
 }
+
 void testExtractCoffVersion(){
 	char file[256];
 		strcpy(file,kmx::getInstallPath());
