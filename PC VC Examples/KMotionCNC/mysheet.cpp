@@ -261,7 +261,7 @@ BOOL CMySheet::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 	return CPropertySheet::OnNotify(wParam, lParam, pResult);
 }
 
-LONG CMySheet::OnResizePage (UINT, LONG)
+LRESULT CMySheet::OnResizePage (WPARAM, LPARAM)
 {
 	// resize the page
 	CPropertyPage* pPage = GetActivePage ();

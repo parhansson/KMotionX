@@ -1,404 +1,380 @@
-<!doctype html>
-
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-    <title>KSTEP Basics Tutorial - Dynomotion</title>
-    <meta name="keywords" content="37, 37pin, 37pinconnect, back, connector, products, Motion, Control, 4-axis, 8-axis, stepper, brushless, DC motor, servo, encoder, adc, dac, motion control, automated motion, manufacturing, motion,Mach3, USB CNC controller">
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+<meta name="keywords" content="ethernet 16-axis controller, cnc control, motion control, cnc boards, 4-axis, 8-axis, stepper, brushless, DC motor, servo, encoder, adc, dac, motion controller, automated motion, manufacturing, Mach3">
 <meta name="description" content="Manufacturer of premium motion control products for CNC Manufacturing, Robotics and Automation">
-	   
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+
+<title>KStep Basics Tutorial</title>
+
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<link rel="stylesheet" href="css/prism.css" data-noprefix />
+<script src="js/prism.js"></script>
 </head>
 
 <body>
 
-<table>
-    <tr>
-        <td width=600px>
-            <img src="images/Logo220New.png" width="220" height="63">
-                <br><br>
-<h1><font color=Blue>KSTEP Basics Tutorial</font></h1>
+<div id="logo"><a href="index.htm"></a></div>
 
+<div id="home">
+	<a href="index.htm">Table of contents</a> | 
+	<script>
+		if (navigator.userAgent.indexOf("NT 6.2") == -1){
+			document.write('<a href="https://www.dynomotion.com">Dynomotion home page</a>')
+		} else {
+			document.write('<a href="https://www.dynomotion.com" target="_blank">Dynomotion home page</a>')
+		}
+	</script>
+</div>
+<div id="searchNav">
+
+	<div class="gcse-search">
+					<script>
+					  if (document.location.protocol  ==  'https:') {
+					  (function() {
+					  var cx = '012657033059195044748:9fmjmlufts0';
+					  var gcse = document.createElement('script');
+					  gcse.type = 'text/javascript';
+					  gcse.async = true;
+					  gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+					      '//cse.google.com/cse.js?cx=' + cx;
+					  var s = document.getElementsByTagName('script')[0];
+					  s.parentNode.insertBefore(gcse, s);
+					})();
+					  }
+				      </script> 
+				      <gcse:search> </gcse:search>  
+
+	       </div>
+</div>	
+
+	
+
+
+<div id="google_translate_element" style="background: transparent;" align="right"><script type="text/javascript">
+if (navigator.userAgent.indexOf("NT 6.2") == -1) {
+		function googleTranslateElementInit() {
+	  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,de,fr,it,es,pt,ru,uk,ar,zh-CN,zh-TW,ko,iw,hi,ja,tr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+		}						}
+	</script>
+	<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+	</script>
+</div>		
+<div id="main">
+            
+<h1>KStep Basics Tutorial</h1>
     
-<h3><font color=Blue>Introduction</font></h3>
+<h2>Introduction</h2>
 
-KSTEP is an add-on stepper driver for KFLOP and it is perhaps the easiest way available to start controlling stepper motors.
-<br><br>
-This guide will help you with the most basic KSTEP setup so that by the end of these instructions you will be able to control stepper motors using the KMotion setup/configuration screens, C-Code and G-Code.  This guide is not comprehensive, however, and you should spend time reading the help pages for more in-depth information:
+<p>KStep is an add-on stepper driver for KFLOP and it is perhaps the easiest way available to start controlling stepper motors.</p>
+<p>This guide will help you with the most basic KStep setup so that by the end of these instructions you will be able to control stepper motors using the KMotion setup/configuration screens, C-Code and G-Code.  This guide is not comprehensive, however, and you should spend time reading the help pages for more in-depth information:</p>
 
+<ul>
+    <li>Main manuals page: <a href="index.htm">https://dynomotion.com/Help/index.htm</a></li>
+    <li>KFLOP Connectors: <a href="SchematicsKFLOP/ConnectorsKFLOP.htm">https://dynomotion.com/Help/SchematicsKFLOP/ConnectorsKFLOP.htm</a></li>
+    <li>Kogna Connectors: <a href="https://www.dynomotion.com/Help/SchematicsKogna/ConnectorsKogna.html">https://www.dynomotion.com/Help/SchematicsKogna/ConnectorsKogna.html</a> </li>
+    <li>KStep Connectors: <a href="SchematicsKStep/ConnectorsKStep.htm">https://dynomotion.com/Help/SchematicsKStep/ConnectorsKStep.htm</a> </li>
+    <li>KStep Use and Settings: <a href="SchematicsKStep/UsingKStep.htm">https://dynomotion.com/Help/SchematicsKStep/UsingKStep.htm</a></li>
+    <li>KStep Block Diagram: <a href="BlockDiagramKStep.htm">https://dynomotion.com/Help/BlockDiagramKStep.htm</a></li>
+    <li>KStep Specifications: <a href="SpecificationKStep.htm">https://dynomotion.com/Help/SpecificationKStep.htm</a></li>
+    <li>Dynomotion Forum (research and ask questions here): <a href="https://www.dynomotion.com/forum/">https://www.dynomotion.com/forum</a></li>
+    <li>CNC Forum (research and ask questions for CNC-specific applications here): <a href="https://www.cnczone.com/forums/dynomotion-kflop-kanalog/">https://www.cnczone.com/forums/dynomotion-kflop-kanalog/</a></li>
+  </ul>
+<p>Need to get up and running with KStep fast? View this high-level explanation of a basic KStep setup:
+<iframe width="560" height="315" src="https://www.youtube.com/embed/pW-9fDLAn2s" frameborder="0" allowfullscreen></iframe>
+		</p>
+
+    <h3>KStep Tutorial Table of Contents:</h3>
+    
 <ol>
-    <li>Main manuals page: <a href="index.htm">http://dynomotion.com/Help/index.htm</a></li>
-    <li>KFLOP Connectors: <a href="SchematicsKFLOP/ConnectorsKFLOP.htm">http://dynomotion.com/Help/SchematicsKFLOP/ConnectorsKFLOP.htm</a></li>
-    <li>KSTEP Connectors: <a href="SchematicsKStep/ConnectorsKStep.htm">http://dynomotion.com/Help/SchematicsKStep/ConnectorsKStep.htm</a> </li>
-    <li>KSTEP Use and Settings: <a href="SchematicsKStep/UsingKStep.htm">http://dynomotion.com/Help/SchematicsKStep/UsingKStep.htm</a></li>
-    <li>KSTEP Block Diagram: <a href="BlockDiagramKStep.htm">http://dynomotion.com/Help/BlockDiagramKStep.htm</a></li>
-    <li>KSTEP Specifications: <a href="SpecificationKStep.htm">http://dynomotion.com/Help/SpecificationKStep.htm</a></li>
-    <li>Yahoo Groups Forum (research and ask questions here): <a href="https://groups.yahoo.com/neo/groups/DynoMotion/info">https://groups.yahoo.com/neo/groups/DynoMotion/info</a></li>
-    <li>CNC Forum (research and ask questions for CNC-specific applications here): <a href="http://www.cnczone.com/forums/dynomotion-kflop-kanalog/">http://www.cnczone.com/forums/dynomotion-kflop-kanalog/</a></li>
-</ol>
-
-    <br>
-	KSTEP Tutorial Table of Contents:
-<ol type="1">
-    <li><a href="KSTEP_Basics_Tutorial.html#1">Basic Software Setup</a></li>
-    <li><a href="KSTEP_Basics_Tutorial.html#2">Basic Hardware Setup</a></li>
+    <li><a href="KStep_Basics_Tutorial.html#1">Basic Software Setup</a></li>
+    <li><a href="KStep_Basics_Tutorial.html#2">Basic Hardware Setup</a></li>
     <ol type="A">
-	<li><a href="KSTEP_Basics_Tutorial.html#2a">Providing +5V Board Power</a></li>
-	<li><a href="KSTEP_Basics_Tutorial.html#2b">Checking Firmware Version</a></li>
-        <li><a href="KSTEP_Basics_Tutorial.html#2c">Voltage Clamping</a></li>
-	<li><a href="KSTEP_Basics_Tutorial.html#2d">Power Supply input</a></li>
-        <li><a href="KSTEP_Basics_Tutorial.html#2e">Current Settings</a></li>
-        <li><a href="KSTEP_Basics_Tutorial.html#2f">Basic Motor Wiring</a></li>
+	<li><a href="KStep_Basics_Tutorial.html#2a">Providing +5V Board Power</a></li>
+	<li><a href="KStep_Basics_Tutorial.html#2b">Checking Firmware Version</a></li>
+        <li><a href="KStep_Basics_Tutorial.html#2c">Voltage Clamping</a></li>
+	<li><a href="KStep_Basics_Tutorial.html#2d">Power Supply input</a></li>
+        <li><a href="KStep_Basics_Tutorial.html#2e">Current Settings</a></li>
+        <li><a href="KStep_Basics_Tutorial.html#2f">Basic Motor Wiring</a></li>
     </ol>
-    <li><a href="KSTEP_Basics_Tutorial.html#3">Driving Your Steppers</a></li>
+    <li><a href="KStep_Basics_Tutorial.html#3">Driving Your Steppers</a></li>
     <ol type="A">
-	<li><a href="KSTEP_Basics_Tutorial.html#3a">Enabling Output</a></li>
-	<li><a href="KSTEP_Basics_Tutorial.html#3b">Setting Axis/Channel Parameters and Running an Initialization C Program (Init)</a></li>
-        <li><a href="KSTEP_Basics_Tutorial.html#3c">The Four Requirements for an Init C Program</a></li>
-        <li><a href="KSTEP_Basics_Tutorial.html#3d">Use KMotionCNC to Jog Your Motors</a></li>
-    </ol>
-    
+	<li><a href="KStep_Basics_Tutorial.html#3a">Enabling Output</a></li>
+	<li><a href="KStep_Basics_Tutorial.html#3b">Setting Axis/Channel Parameters and Running an Initialization C Program (Init)</a></li>
+        <li><a href="KStep_Basics_Tutorial.html#3c">The Four Requirements for an Init C Program</a></li>
+        <li><a href="KStep_Basics_Tutorial.html#3d">Use KMotionCNC to Jog Your Motors</a></li>
     </ol>
 </ol>
 
 <br>
 
-What you need:
+<h3>What you need:</h3>
+
 <ol type="1">
-<li>KFLOP/KSTEP or KFLOP/2xKSTEP combo with provided hardware</li>
-<li>Dedicated 12V-48V Motor Power Supply to be wired into KSTEP as described below.  Optional +5V power supply. </li>
+<li>KFLOP/Kogna and KStep or KFLOP/Kogna and 2xKStep combo with provided hardware</li>
+<li>Dedicated 12V-48V Motor Power Supply to be wired into KStep as described below. Optional +5V power supply. </li>
 <li>Stepper Motors</li>
-<li>USB Cable (included with every KFLOP and KFLOP combo order)</li>
+<li>USB Cable (included with every KFLOP and KFLOP combo order) or Ethernet Cable (included with every Kogna and Kogna combo order)</li>
 <li>Ohm Meter (or multi-meter)</li>
 <li>General tools for electronics (wire cutters/strippers, small screwdrivers, etc.)</li>
 </ol>
 
+<h2><a name="1">1. Software Setup</a></h3>
 
-<h3><font color=Blue><a name="1">1. Software Setup</a></font></h3>
+<p>Start by ensuring you have the latest KMotion software installed on your computer.  Download and install the latest KMotion software from the <a href="https://dynomotion.com/Software/Download.html"> Software Download Page</a>.  Ensure the software installs and starts normally.  If the software does not install properly, search the <a href="https://www.dynomotion.com/forum/">Dynomotion</a> or <a href="https://www.cnczone.com/forums/dynomotion-kflop-kanalog/">CNC Zone</a> forums for help on common installation issues such as temporarily disabling antivirus software installation preventions, or <a href="https://dynomotion.com/faq.html#Driver">enabling Windows unsigned software installations</a>.</p>
 
-Start by ensuring you have the latest KMotion software installed on your computer.  Download and install the latest KMotion software from <a href="http://dynomotion.com/Software/Download.html">This Software Download Page</a>.  Ensure the software installs and starts normally.  If the software does not install properly, search the <a href="https://groups.yahoo.com/neo/groups/DynoMotion/info">Yahoo</a> or <a href="http://www.cnczone.com/forums/dynomotion-kflop-kanalog/">CNC Zone</a> forums for help on common installation issues such as temporarily disabling antivirus software installation preventions, or <a href="http://dynomotion.com/faq.html#Driver">enabling Windows unsigned software installations</a>.
-<br><br>
-Note: Every screen in KMotion has a 'Help' button that will bring up a Help page that is focused on that particular screen.
+<p><strong>Note</strong>: Every screen in KMotion has a 'Help' button that will bring up a Help page that is focused on that particular screen.</p>
 
-
-<h3><font color=Blue><a name="2">2. Hardware Setup</a></font></h3>
-    <h4><font color=Blue><a name="2a">2A. Providing +5V Board Power</a></font></h4>
+<h2><a name="2">2. Hardware Setup</a></h2>
     
-In a static-free environment, remove your KFLOP and KSTEP from the packaging and connect the two <a href="images/KSTEP_KFLOP_perspective1_800.jpg">as shown here</a>.  The first step to powering up KFLOP is to determine how to provide the +5V used to power the boards.  Both KFLOP and KSTEP require +5V for operation and there are a number of ways to provide it.
-<br><br>
-<font color="red"><u>Note: Once +5V is supplied to the boards, it is available at every +5V terminal.  Therefore do not supply +5V by more than one way or you will damage the boards and potentially your power supplies.</u></font>  The only exception to this is if KFLOP and KSTEP are isolated by removing jumpers on KSTEP JP34 and JP35.  With this isolation, +5V must be supplied to both KFLOP and KSTEP as described below.
-<br><br>
-With jumpers installed on KSTEP's JP34 and JP35, the +5V and GND signals will be shared between both boards and only needs to be supplied in one way.  The possibilties are:
-<ol type="1">
-    <li>On KFLOP: Through the USB cable plugged into KFLOP.  The jumper on KFLOP's J3 must be installed for power to be received through the USB cable and the jumpers on KSTEP's JP34 and JP35 must be installed for KSTEP to receive the +5V signal.  If board power is supplied this way, ensure +5V is not provided through KFLOP's JR1, KSTEP's JR1, or KSTEP's J6 connectors or the board and power supply could be damaged.  Note that the USB cable should be of high quality and must meet USB 2.0 specifications for plug shell-to-shell resistance of <0.6 Ohms.  When measuring resistance, remember to subtract the resistance introduced by the measuring device by first measuring the probe-to-probe contact resistance.</li><br>
-    <li>On KFLOP: +5V and GND through KFLOP's JR1 Molex&#174 connector.  The jumper on KFLOP's J3 must be removed to avoid receiving +5V from the USB cable in this case. The jumpers on KSTEP's JP34 and JP35 must be installed for KSTEP to receive the +5V signal - in this case do not provide +5V on KSTEP's JR1 or J6 connectors.  Note that in this case, the +12V provided through the Molex connector is not used internally, but is routed to pins on the JP4, JP6, and JP7 connectors for convenience.</li><br>
-    <li>On KSTEP: +5V and GND through KSTEP's JR1 Molex connector.  The jumpers on KFLOP's J3 must be removed and the jumpers on KSTEP's JP34 and JP35 must be installed in this case in order for KFLOP to receive +5V power.  Also note that if KSTEP's JR1 Molex connector is used, it is likely that +12V is being provided through this connector and therefore all VB connections on KSTEP will have 12V applied to them, and which would then be used for motor power.  Therefore, do not provide motor power through KSTEP's J1 terminal.</li><br>
-    <li>On KSTEP: +5V and GND through KSTEP's J6 terminal block. The jumpers on KFLOP's J3 must be removed and the jumpers on KSTEP's JP34 and JP35 must be installed in this case in order for KFLOP to receive +5V power.</li>
+<h3><a name="2a">2A. Providing +5V Board Power</a></h3>
+    
+<p>In a static-free environment, remove your KFLOP/Kogna and KStep from the packaging and connect the two <a href="images/KStep_KFLOP_perspective1_800.jpg">as shown here</a>.  The first step to powering up KFLOP/Kogna is to determine how to provide the +5V used to power the boards.  Both KFLOP/Kogna and KStep require +5V for operation and there are a number of ways to provide it.</p>
+
+<p><strong>Note</strong>: Once +5V is supplied to the boards, it is available at every +5V terminal.  Therefore do not supply +5V by more than one way or you will damage the boards and potentially your power supplies.  The only exception to this is if KFLOP/Kogna and KStep are isolated by removing jumpers on KStep JP34 and JP35.  With this isolation, +5V must be supplied to both KFLOP/Kogna and KStep as described below.
+<p>
+
+<p>With jumpers installed on KStep's JP34 and JP35, the +5V and GND signals will be shared between both boards and only needs to be supplied in one way.  The possibilties are:<p>
+
+<ol>
+    <li>On KFLOP/Kogna: Through the USB cable plugged into KFLOP/Kogna.  The jumper on KFLOP's J3 must be installed for power to be received through the USB cable and the jumpers on KStep's JP34 and JP35 must be installed for KStep to receive the +5V signal.  If board power is supplied this way, ensure +5V is not provided through KFLOP's/Kogna's JR1, KStep's JR1, or KStep's J6 connectors or the board and power supply could be damaged.  Note that the USB cable should be of high quality and must meet USB 2.0 specifications for plug shell-to-shell resistance of &lt;0.6 Ohms.  When measuring resistance, remember to subtract the resistance introduced by the measuring device by first measuring the probe-to-probe contact resistance.</li>
+    <li>On KFLOP/Kogna: +5V and GND through KFLOP's/Kogna's JR1 Molex&#174 connector.  The jumper on KFLOP's J3 must be removed to avoid receiving +5V from the USB cable in this case. The jumpers on KStep's JP34 and JP35 must be installed for KStep to receive the +5V signal - in this case do not provide +5V on KStep's JR1 or J6 connectors.  Note that in this case, the +12V provided through the Molex connector is not used internally, but is routed to pins on the JP4, JP6, and JP7 connectors for convenience.</li>
+    <li>On KStep: +5V and GND through KStep's JR1 Molex connector.  The jumpers on KFLOP's J3 must be removed and the jumpers on KStep's JP34 and JP35 must be installed in this case in order for KFLOP/Kogna to receive +5V power.  Also note that if KStep's JR1 Molex connector is used, it is likely that +12V is being provided through this connector and therefore all VB connections on KStep will have 12V applied to them, and which would then be used for motor power.  Therefore, do not provide motor power through KStep's J1 terminal.</li>
+    <li>On KStep: +5V and GND through KStep's J6 terminal block. The jumpers on KFLOP's J3 must be removed and the jumpers on KStep's JP34 and JP35 must be installed in this case in order for KFLOP to receive +5V power.</li>
 </ol>
-In the case where you want KFLOP and KSTEP to have +5V supplied independently.  Remove jumpers on KSTEP's JP34 and JP35 and then supply power through 1 or 2 and 3 or 4 above.  Note that, in this case, the +5V power supplies should be different power supplies or the purpose of supplying board power independently is defeated.
 
-<br><br>
-Once the board power delivery method is determined, the boards are ready to power up.  Provide +5V via your chosen method to power up the boards.
-<br><br>
-On power up, KFLOP LEDs will illuminate as will the "+5V" LED on KSTEP indicating that both boards are receiving a +5V signal.  Once motor supply power is fed into KSTEP as described below, the "MOT PWR" motor supply LED on KSTEP will illuminate.
+<p>In the case where you want KFLOP/Kogna and KStep to have +5V supplied independently.  Remove jumpers on KStep's JP34 and JP35 and then supply power through 1 or 2 and 3 or 4 above.  Note that, in this case, the +5V power supplies should be different power supplies or the purpose of supplying board power independently is defeated.</p>
 
+<p>Once the board power delivery method is determined, the boards are ready to power up.  Provide +5V via your chosen method to power up the boards.</p>
 
-    <h4><font color=Blue><a name="2b">2B. Check the firmware version and update if necessary</a></font></h4>
+<p>On power up, KFLOP/Kogna LEDs will illuminate as will the "+5V" LED on KStep indicating that both boards are receiving a +5V signal. Once motor supply power is fed into KStep as described below, the "MOT PWR" motor supply LED on KStep will illuminate.</p>
 
-Next, ensure the software version on KFLOP is up-to-date. In the KMotion software, open the Console screen and type the command  "Version" into one of the command lines (if one of the command lines already contains the command there is no need to type it). Press the "Send" button next to the command to send the Version Command to KFLOP to display the version of onboard firmware.  If the firmware version does not match the version of KMotion you downloaded and are running (Help>About KMotion...), open the Config screen and press the "New Version" button.  The pop-up window will automatically locate the necessary file for the sofware update, click "Open" and confirm the next pop-up.  Allow a few seconds for the software to finish updating and after it is finished,  cycle power to KFLOP.
+<h3><a name="2b">2B. Check the firmware version and update if necessary</a></h3>
 
+<p>Next, ensure the software version on KFLOP/Kogna is up-to-date. In the KMotion software, open the Console screen and type the command &quot;Version&quot; into one of the command lines (if one of the command lines already contains the command there is no need to type it). Press the &quot;Send&quot; button next to the command to send the Version Command to KFLOP/Kogna to display the version of onboard firmware.  If the firmware version does not match the version of KMotion you downloaded and are running (Help &gt; About KMotion...), open the Config screen and press the &quot;New Version&quot; button.  The pop-up window will automatically locate the necessary file for the sofware update, click &quot;Open&quot; and confirm the next pop-up.  Allow a few seconds for the software to finish updating and after it is finished, cycle power to KFLOP/Kogna.</p>
 
+<h3><a name="2c">2C. Motor Power Supply Setup - Voltage Clamping</a></h3>
 
-<h4><font color=Blue><a name="2c">2C. Motor Power Supply Setup - Voltage Clamping</a></font></h4>
+<p>Voltage spikes due to Regenerative Braking and other sources can potentially raise the supply voltage up to a level that can damage electronics including KStep or the power supply.  Voltage Spikes may also cause a power supply to trip a fault and shut down.  KStep's Voltage clamp can be used to avoid these problems.</p>
 
-Voltage spikes due to Regenerative Braking and other sources can potentially raise the supply voltage up to a level that can damage electronics including KSTEP or the power supply.  Voltage Spikes may also cause a power supply to trip a fault and shut down.  KSTEP's Voltage clamp can be used to avoid these problems.
+<p>Motor power supply may be supplied through KStep's J1 terminal block OR KStep's JR1 Molex connector, but not both at the same time; and it is crucial that voltage clamps on KStep are set according to the motor power supply voltage level.  KStep can handle motor power supplies from 12V to 48V and voltage clamp settings are designed to be 1V higher than common power supply voltages.   It is critical that you clamp voltage on KStep at a value HIGHER than the motor power supply.</p>
 
-<br><br>
+ <p>See this image for voltage clamp jumper location: <a href="SchematicsKStep/KStepConnectors.png">KStep Connector Pinouts</a>.</p>
 
-Motor power supply may be supplied through KSTEP's J1 terminal block <U>OR</U> KSTEP's JR1 Molex connector, but not both at the same time; and it is crucial that voltage clamps on KSTEP are set according to the motor power supply voltage level.  KSTEP can handle motor power supplies from 12V to 48V and voltage clamp settings are designed to be 1V higher than common power supply voltages.  <font color="red"> <u>It is critical that you clamp voltage on KSTEP at a value HIGHER than the motor power supply</u></font>
-<br><br>
-    See this image for voltage clamp jumper location: <a href="SchematicsKStep/KSTEPConnectors.png">KSTEP Connector Pinouts</a>
-    <br><br>
-Common power supply voltages are 12V, 24V, 36V, and 48v.  KSTEP has a voltage clamping feature that can be set to 13V, 25V, 37V, or 49V volts.  So whatever is the value of your motor power supply voltage, set the clamp to the next value higher than your motor power supply.  <font color="red"><u>Setting the voltage clamp to a value lower than the power supply will draw excessive current and is likely to cause damage to your KSTEP and/or the power supply</u></font>
-<br><br>
-Pin jumpers are provided with every KSTEP purchase.  These are small plastic rectangular pieces with a metal coupling inside that connects two pins together when applied. You will use these to set the voltage clamp.  Essentially, every jumper added to A, B, or C of the voltage clamping pins will reduce the voltage clamping by 12V.  So, with no jumpers, voltage is clamped at 49V.  With a jumper on A, voltage is clamped at 37V.  With jumpers on A and B, voltage is clamped at 25V.  With jumpers applied to A, B, and C, voltage is clamped at 13V (the lowest setting).  Make sure voltage is clamped HIGHER than your power supply voltage or you will damage KSTEP.
-<br><br>
-<table border="3" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="400" id="table3" height="125" bordercolorlight="#000000">
+<p>Common power supply voltages are 12V, 24V, 36V, and 48v.  KStep has a voltage clamping feature that can be set to 13V, 25V, 37V, or 49V volts.  So whatever is the value of your motor power supply voltage, set the clamp to the next value higher than your motor power supply.  Setting the voltage clamp to a value lower than the power supply will draw excessive current and is likely to cause damage to your KStep and/or the power supply. </p>
+
+<p>Pin jumpers are provided with every KStep purchase.  These are small plastic rectangular pieces with a metal coupling inside that connects two pins together when applied. You will use these to set the voltage clamp.  Essentially, every jumper added to A, B, or C of the voltage clamping pins will reduce the voltage clamping by 12V.  So, with no jumpers, voltage is clamped at 49V.  With a jumper on A, voltage is clamped at 37V.  With jumpers on A and B, voltage is clamped at 25V.  With jumpers applied to A, B, and C, voltage is clamped at 13V (the lowest setting).  Make sure voltage is clamped HIGHER than your power supply voltage or you will damage KStep.</p>
+
+<table class="tableMedium">
   <tr>
-    <td width="25%" height="9" align="center" bordercolorlight="#000000" bordercolordark="#000000" bgcolor="#C0C0C0">
-	<p style="margin-left: 5px"><b><font face="Arial" size="2">Motor Power Supply Voltages</font></b></td>
-    <td width="25%" height="9" align="center" bordercolorlight="#000000" bordercolordark="#000000" bgcolor="#C0C0C0">
-	<b><font face="Arial" size="2">Required Number of Jumpers</font></b></td>
-    <td width="25%" height="9" align="center" bordercolorlight="#000000" bordercolordark="#000000" bgcolor="#C0C0C0">
-	<b><font face="Arial" size="2">Jumper Location</font></b></td>
-    <td width="25%" height="9" align="center" bordercolorlight="#000000" bordercolordark="#000000" bgcolor="#C0C0C0">
-	<p style="margin-left: 5px"><b><font face="Arial" size="2">Clamping Level</font></b></td>
+    <th>Motor Power Supply Voltages</th>
+    <th>Required Number of Jumpers</th>
+    <th>Jumper Location</th>
+    <th>Clamping Level</th>
     
   </tr>
   <tr>
-    <td width="25%" height="23" align="center">
-	<p style="margin-left: 5px"><b><font face="Arial" size="2">37V to 48V</font></b></td>
-    <td width="25%" height="23" align="center">
-    <b><font face="Arial" size="2">None</font></b></td>
-    <td width="25%" height="23" align="center">
-    <b><font face="Arial" size="2">-</font></b></td>
-    <td width="25%" height="23" align="center">
-	<p style="margin-left: 5px"><b><font face="Arial" size="2">49V</font></b></td>
+    <td>37V to 48V</td>
+    <td>None</td>
+    <td>-</td>
+    <td>49V</td>
    
   </tr>
   <tr>
-    <td width="25%" height="23" align="center">
-	<p style="margin-left: 5px"><b><font face="Arial" size="2">25V to 36V</font></b></td>
-    <td width="25%" height="23" align="center">
-    <b><font face="Arial" size="2">1</font></b></td>
-    <td width="25%" height="23" align="center">
-    <b><font face="Arial" size="2">A</font></b></td>
-    <td width="25%" height="23" align="center">
-	<p style="margin-left: 5px"><b><font face="Arial" size="2">37V</font></b></td>
+    <td>25V to 36V</td>
+    <td>1</td>
+    <td>A</td>
+    <td>37V</td>
     
   </tr>
   <tr>
-    <td width="25%" height="22" align="center">
-	<p style="margin-left: 5px"><b><font face="Arial" size="2">13V to 24V</font></b></td>
-    <td width="25%" height="22" align="center">
-    <b><font face="Arial" size="2">2</font></b></td>
-    <td width="25%" height="22" align="center">
-    <b><font face="Arial" size="2">A+B</font></b></td>
-    <td width="25%" height="22" align="center">
-	<p style="margin-left: 5px"><b><font face="Arial" size="2">25V</font></b></td>
+    <td>
+	13V to 24V</td>
+    <td>2</td>
+    <td>A+B</td>
+    <td>25V</td>
     
   </tr>
   <tr>
-    <td width="25%" height="25" align="center">
-	<p style="margin-left: 5px"><b><font face="Arial" size="2">12V Only</font></b></td>
-    <td width="25%" height="25" align="center">
-    <b><font face="Arial" size="2">3</font></b></td>
-    <td width="25%" height="25" align="center">
-    <b><font face="Arial" size="2">A+B+C</font></b></td>
-    <td width="25%" height="25" align="center">
-	<p style="margin-left: 5px"><b><font face="Arial" size="2">13V</font></b></td>
+    <td>12V Only</td>
+    <td>3</td>
+    <td>A+B+C</td>
+    <td>13V</td>
   </tr>
   </table>
 
-<h4><font color=Blue><a name="2d">2D. Motor Power Supply Setup - Connecting Motor Power to KSTEP</a></font></h4>
+<h3><a name="2d">2D. Motor Power Supply Setup - Connecting Motor Power to KStep</a></h3>
 
-There are two ways to feed motor power into KSTEP, and they are incompatible with each other such that you must choose one or the other and not both or you will damage your power supplies and KSTEP.
-<br><br>
-The first and perhaps easiest way to connect motor power is through the Molex connector at position JR1 on KSTEP.  Many power supplies have this standard connector and it plugs easily into KSTEP to provide motor power. <font color="red"><u>Caution: Note that if JR1 is plugged into a power supply this way, all VB connections on the board will have that voltage active on them.  Also, it is likely that +5V signals are provided by a power supply with this connector and so you need to make sure no other 5V signals are being provided as described in the Board Power section of this tutorial before plugging power into the board in this way.</u></font>
-<br><br>
-The second way to supply motor power is through the screw terminals at position J1 on KSTEP.  For applications requiring less than 10 Amps, simply screw in power supply leads into one of the respective VBB+ and GND terminals on J1.  Do not supply power through JR1 if you supply power on J1 or you will damage KSTEP and your power supply.
-<br><br>
-Note: for applications requiring more than 10 Amps, both of the VBB and GND connections on J1 should be used.
-<br><br>
-Power Supply Voltage Selection is a fairly complex subject but as a rule-of-thumb the supply should be 10~15 times higher than the rated voltage of the steppers.  Sometimes the voltage of the Stepper motor is not stated, in which case it can be determined by using Ohm's law ( V = I x R ) and the Current and Resistance specifications.  For example, for a 3 Amp motor with a resistance of 0.6 ohms the motor would require 1.8V.   A power supply of 18V to 27V might be used.  
+<p>There are two ways to feed motor power into KStep, and they are incompatible with each other such that you must choose one or the other and not both or you will damage your power supplies and KStep.<p>
 
-<h4><font color=Blue><a name="2e">2E. Motor Current Settings</a></font></h4>
+<p>The first and perhaps easiest way to connect motor power is through the Molex connector at position JR1 on KStep.  Many power supplies have this standard connector and it plugs easily into KStep to provide motor power. Caution: Note that if JR1 is plugged into a power supply this way, all VB connections on the board will have that voltage active on them.  Also, it is likely that +5V signals are provided by a power supply with this connector and so you need to make sure no other 5V signals are being provided as described in the Board Power section of this tutorial before plugging power into the board in this way.</p>
 
-The current supplied to your motors must be configured to provide the correct level and KSTEP provides a physical method of doing this through the installation of jumpers on current setting pins on KSTEP.
+<p>The second way to supply motor power is through the screw terminals at position J1 on KStep.  For applications requiring less than 10 Amps, simply screw in power supply leads into one of the respective VBB+ and GND terminals on J1.  Do not supply power through JR1 if you supply power on J1 or you will damage KStep and your power supply.</p>
 
-<br><br>
+<p>Note: for applications requiring more than 10 Amps, both of the VBB and GND connections on J1 should be used.</p>
 
-Stepper motor current is generally specified on a per coil basis such as 670mA, or 0.67A, per coil.  It is important to know what is the current per coil for your motors so you can set the correct current jumpers on KSTEP.  The current setting pins are labeled on the board as "CUR MOTOR#" where # is the axis number from 0-3.  KSTEP has a High, Medium, and Low current jumper for each motor coil (2 coils per axis).  Set jumpers on the H (high), M (medium), and L (low) pins such that the value is the next level lower than your motor specifications.  For example, if your motor has a per coil current rating of 670 mA, you will not set any jumpers for both coils - corresponding to a current setting of 0.63A.  For a motor with a 3.5A current per coil specification you would set jumpers on H for both coils corresponding to a current setting of 3.13A.
+<p>Power Supply Voltage Selection is a fairly complex subject but as a rule-of-thumb the supply should be 10~15 times higher than the rated voltage of the steppers.  Sometimes the voltage of the Stepper motor is not stated, in which case it can be determined by using Ohm's law ( V = I x R ) and the Current and Resistance specifications.  For example, for a 3 Amp motor with a resistance of 0.6 ohms the motor would require 1.8V.   A power supply of 18V to 27V might be used.</p>
 
-<br><br>
-Use the table below to determine how to set your jumpers according to the motor current ratings.
-<br><br>
+<h3><a name="2e">2E. Motor Current Settings</a></h3>
 
-<table border="3" cellpadding="0" cellspacing="0" style="border-collapse: collapse;" bordercolor="#111111" width="550" id="table4" bordercolorlight="#000000">
+<p>The current supplied to your motors must be configured to provide the correct level and KStep provides a physical method of doing this through the installation of jumpers on current setting pins on KStep.</p>
+
+<p>Stepper motor current is generally specified on a per coil basis such as 670mA, or 0.67A, per coil.  It is important to know what is the current per coil for your motors so you can set the correct current jumpers on KStep.  The current setting pins are labeled on the board as "CUR MOTOR#" where # is the axis number from 0-3.  KStep has a High, Medium, and Low current jumper for each motor coil (2 coils per axis).  Set jumpers on the H (high), M (medium), and L (low) pins such that the value is the next level lower than your motor specifications.  For example, if your motor has a per coil current rating of 670 mA, you will not set any jumpers for both coils - corresponding to a current setting of 0.63A.  For a motor with a 3.5A current per coil specification you would set jumpers on H for both coils corresponding to a current setting of 3.13A.</p>
+
+<p>Use the table below to determine how to set your jumpers according to the motor current ratings.</p>
+
+<table class="tableMedium">	
+	<tr>
+		<th>Motor Current per Coil Rating (Amps)</th>
+		<th>H</th>
+		<th>M</th>
+		<th>L</th>
+		<th>Current Setting (Amps)</th>
+	</tr>
+	<tr>
+		<td>0.63 to 1.24</td>
+		<td>Removed</td>
+		<td>Removed</td>
+		<td>Removed</td>
+		<td>0.63</td>
+	</tr>
+	<tr>
+		<td>1.25 to 1.87</td>
+		<td>Removed</td>
+		<td>Removed</td>
+		<td>Installed</td>
+		<td>1.25</td>
+	</tr>
+	<tr>
+		<td>1.88 to 2.49</td>
+		<td>Removed</td>
+		<td>Installed</td>
+		<td>Removed</td>
+		<td>1.88</td>
+	</tr>
+	<tr>
+		<td>2.50 to 3.13</td>
+		<td>Removed</td>
+		<td>Installed</td>
+		<td>Installed</td>
+		<td>2.50</td>
+	</tr>
+	<tr>
+		<td>3.13 to 3.74</td>
+		<td>Installed</td>
+		<td>Removed</td>
+		<td>Removed</td>
+		<td>3.13</td>
+	</tr>
+	<tr>
+		<td>3.75 to 4.37</td>
+		<td>Installed</td>
+		<td>Removed</td>
+		<td>Installed</td>
+		<td>3.75</td>
+	</tr>
+	<tr>
+		<td>4.38 to 4.99</td>
+		<td>Installed</td>
+		<td>Installed</td>
+		<td>Removed</td>
+		<td>4.38</td>
+	</tr>
+	<tr>
+		<td>5.00+</td>
+		<td>Installed</td>
+		<td>Installed</td>
+		<td>Installed</td>
+		<td>5.00</td>
+	</tr>
 	
-	<tr style="border: none">
-		<td width="20%" height="25" align="center" bgcolor="#C0C0C0">
-	<b>Motor Current per Coil Rating (Amps)</b></td>
-		<td width="20%" height="25" align="center" bgcolor="#C0C0C0">
-	<b>H</b></td>
-		<td width="20%" height="25" align="center" bgcolor="#C0C0C0">
-	<b>M</b></td>
-		<td width="20%" height="25" align="center" bgcolor="#C0C0C0">
-	<b>L</b></td>
-		<td width="20%" height="25" align="center" bgcolor="#C0C0C0">
-	<b>Current Setting (Amps)</b></td>
-	</tr>
-	<tr height="20" style="height:15.0pt">
-		<td style="text-align: center;">
-		<font size="3">0.63 to 1.24</font></td>
-		<td style="text-align: center;">
-		<font size="3">Removed</font></td>
-		<td style="text-align: center;">
-		<font size="3">Removed</font></td>
-		<td style="text-align: center;">
-		<font size="3">Removed</font></td>
-		<td style="text-align: center;">
-		<font size="3">0.63</font></td>
-	</tr>
-	<tr height="20" style="height:15.0pt">
-		<td style="text-align: center;">
-		<font size="3">1.25 to 1.87</font></td>
-		<td style="text-align: center;">
-		<font size="3">Removed</font></td>
-		<td style="text-align: center;">
-		<font size="3">Removed</font></td>
-		<td style="text-align: center;">
-		<font size="3">Installed</font></td>
-		<td style="text-align: center;">
-		<font size="3">1.25</font></td>
-	</tr>
-	<tr height="20" style="height:15.0pt">
-		<td style="text-align: center;">
-		<font size="3">1.88 to 2.49</font></td>
-		<td style="text-align: center;">
-		<font size="3">Removed</font></td>
-		<td style="text-align: center;">
-		<font size="3">Installed</font></td>
-		<td style="text-align: center;">
-		<font size="3">Removed</font></td>
-		<td style="text-align: center;">
-		<font size="3">1.88</font></td>
-	</tr>
-	<tr height="20" style="height:15.0pt">
-		<td style="text-align: center;">
-		<font size="3">2.50 to 3.13</font></td>
-		<td style="text-align: center;">
-		<font size="3">Removed</font></td>
-		<td style="text-align: center;">
-		<font size="3">Installed</font></td>
-		<td style="text-align: center;">
-		<font size="3">Installed</font></td>
-		<td style="text-align: center;">
-		<font size="3">2.50</font></td>
-	</tr>
-	<tr height="20" style="height:15.0pt">
-		<td style="text-align: center;">
-		<font size="3">3.13 to 3.74</font></td>
-		<td style="text-align: center;">
-		<font size="3">Installed</font></td>
-		<td style="text-align: center;">
-		<font size="3">Removed</font></td>
-		<td style="text-align: center;">
-		<font size="3">Removed</font></td>
-		<td style="text-align: center;">
-		<font size="3">3.13</font></td>
-	</tr>
-	<tr height="20" style="height:15.0pt">
-		<td style="text-align: center;">
-		<font size="3">3.75 to 4.37</font></td>
-		<td style="text-align: center;">
-		<font size="3">Installed</font></td>
-		<td style="text-align: center;">
-		<font size="3">Removed</font></td>
-		<td style="text-align: center;">
-		<font size="3">Installed</font></td>
-		<td style="text-align: center;">
-		<font size="3">3.75</font></td>
-	</tr>
-	<tr height="20" style="height:15.0pt">
-		<td style="text-align: center;">
-		<font size="3">4.38 to 4.99</font></td>
-		<td style="text-align: center;">
-		<font size="3">Installed</font></td>
-		<td style="text-align: center;">
-		<font size="3">Installed</font></td>
-		<td style="text-align: center;">
-		<font size="3">Removed</font></td>
-		<td style="text-align: center;">
-		<font size="3">4.38</font></td>
-	</tr>
-	<tr height="20" style="height:15.0pt">
-		<td style="text-align: center;">
-		<font size="3">5.00+</font></td>
-		<td style="text-align: center;">
-		<font size="3">Installed</font></td>
-		<td style="text-align: center;">
-		<font size="3">Installed</font></td>
-		<td style="text-align: center;">
-		<font size="3">Installed</font></td>
-		<td style="text-align: center;">
-		<font size="3">5.00</font></td>
-	</tr>
 </table>
 
+<h3><a name="2f">2F. Wiring Motors to KStep</a></h3>
 
+<p>Stepper motors come in a variety of wiring configurations from 4 to 8 wires.  KStep only needs 4 of these to drive a stepper since KStep does not require the center tap wires.  KStep requires only the full bridge coils to drive the stepper and you can ignore center tap wires if your motor has them.  For 8-wire steppers, you have a choice about how to wire them, in series or in parallel and would need to choose the power supply to fit the wiring method.</p>
 
-<h4><font color=Blue><a name="2f">2F. Wiring Motors to KSTEP</a></font></h4>
+<p>There are many resources on the web that describes Stepper motor wiring so we will not address the specifics here, but essentially you need only to wire in the coils across the "+" and "-" of the motor power output of KStep.</p>
 
-Stepper motors come in a variety of wiring configurations from 4 to 8 wires.  KSTEP only needs 4 of these to drive a stepper since KSTEP does not require the center tap wires.  KSTEP requires only the full bridge coils to drive the stepper and you can ignore center tap wires if your motor has them.  For 8-wire steppers, you have a choice about how to wire them, in series or in parallel and would need to choose the power supply to fit the wiring method.
-<br><br>
-There are many resources on the web that describes Stepper motor wiring so we will not address the specifics here, but essentially you need only to wire in the coils across the "+" and "-" of the motor power output of KSTEP.
-<br><br>
-<font color="red"><u>Warning: you can damage KSTEP if you wire the motors incorrectly</u></font> make sure to measure the resistance between coils and that you have identified your coils properly before wiring into KSTEP.  It is vitally important that each coil is wired into KSTEP properly.
-<br><br>
-Motors can be wired into connectors J2 through J5 on KSTEP according to the following diagram:
-<br>
-    <br><center>
-	<img src="SchematicsKStep/MotorConnections.png">
-	    <br>
-	<img src="SchematicsKStep/J2J3J4J5.png">
-	    <br><br>
-	    </center>
+	  <p><span class="warning">Warning: you can damage KStep if you wire the motors incorrectly.</span> Make sure to measure the resistance between coils and that you have identified your coils properly before wiring into KStep.  It is vitally important that each coil is wired into KStep properly.</p>
 
-In addition, take note of the following default mapping as it is useful to know for the next steps (this mapping can be altered in software):
-<br>
+<p>Motors can be wired into connectors J2 through J5 on KStep according to the following diagram:</p>
+
+<p><img src="SchematicsKStep/MotorConnections.png" /><br />
+	<img src="SchematicsKStep/J2J3J4J5.png" /></p>
+	   
+<p>In addition, take note of the following default mapping as it is useful to know for the next steps (this mapping can be altered in software):</p>
+
 <ol>
-    <li>Axis Channel #0:  Output Channel =  8 -> Motor Wiring J2</li>
-    <li>Axis Channel #1:  Output Channel =  9 -> Motor Wiring J3</li>
-    <li>Axis Channel #2:  Output Channel = 10 -> Motor Wiring J4</li>
-    <li>Axis Channel #3:  Output Channel = 11 -> Motor Wiring J5</li>
+    <li>Axis Channel #0:  Output Channel =  8 -&gt; Motor Wiring J2</li>
+    <li>Axis Channel #1:  Output Channel =  9 -&gt; Motor Wiring J3</li>
+    <li>Axis Channel #2:  Output Channel = 10 -&gt; Motor Wiring J4</li>
+    <li>Axis Channel #3:  Output Channel = 11 -&gt; Motor Wiring J5</li>
 </ol>
 
-
-<h4><font color=Blue><a name="3">3. Driving Your Steppers</a></font></h4>
-    <h4><font color=Blue><a name="3a">3A. Enabling Output</a></font></h4>
+<h2><a name="3">3. Driving Your Steppers</a></h2>
+   
+    <h3><a name="3a">3A. Enabling Output</a></h3>
     
-Once you have the voltage clamping, current limits and power supply set and wired, you are ready to begin moving your motors.  
-<br><br>
-To do this, while the KSTEP LED D1 MOT PWR is illuminated, open KMotion.exe, select the Digital IO Screen, Set IO bit 45 as Output (enable the checkbox to the left of bit 45), Set IO 45 State to On (enable the checkbox to the right of bit 45).  Verify that the KSTEP D3 ENABLE LED illuminates and that your motors hold position against a torque - in other words, you cannot move the motor shaft with your fingers.  <b>In this state, the motors will become warm and may become too hot to touch.</b>
-<br><br>
-<img src="images/DigitalIOenable.png">
-<br><br>
-As a side note, this action can also be performed by entering the following commands in a C program or sending the commands using the Console screen:
-<br>
-    <ol><table bgcolor=#CCCCCC><tr><td><font face="monospace">SetBitDirection(45,1); //This sets the Enable Signal as Output<br>SetBit(45); //This Enables the amplifiers</font></td></tr></table>
-    </ol>
+<p>Once you have the voltage clamping, current limits and power supply set and wired, you are ready to begin moving your motors. </p> 
 
-Or by an external signal wired to KSTEP's J6 terminal.
-<br><br>
+<p>To do this, while the KStep LED D1 MOT PWR is illuminated, open KMotion.exe, select the Digital IO Screen, Set IO bit 45 as Output (enable the checkbox to the left of bit 45), Set IO 45 State to On (enable the checkbox to the right of bit 45).  Verify that the KStep D3 ENABLE LED illuminates and that your motors hold position against a torque - in other words, you cannot move the motor shaft with your fingers.  <strong>In this state, the motors will become warm and may become too hot to touch.</strong><p>
 
- <h4><font color=Blue><a name="3b">3B. Setting Axis/Channel Parameters and Running an Initialization C Program (Init)</a></font></h4>
+<p><img src="images/DigitalIOenable.png" /></p>
+
+<p>As a side note, this action can also be performed by entering the following commands in a C program or sending the commands using the Console screen:</p>
+
+  <pre>
+    <code>
+    SetBitDirection(45,1);	//This sets the Enable Signal as Output
+    SetBit(45); 		//This Enables the amplifiers
+    </code>
+  </pre>
+
+<p>Or by an external signal wired to KStep's J6 terminal.</p>
+
+ <h4><a name="3b">3B. Setting Axis/Channel Parameters and Running an Initialization C Program (Init)</a></h4>
  
-The goal in this section is to set the parameters that will ultimately go into the Init program. To do this, you will use two screens in KMotion: "Config & Flash" and "Step Response."  If you plan to use an encoder for Closed-Loop Stepper Control, you would also use the "IIR Filters" screen as well, but it is not used for open-loop stepper control as described in this tutorial.  You can view an explanation of how parameters are passed to/from KFLOP, loaded, saved and copied to C Programs here:
-<a href="FlashHelp/Parameters/index.html">http://dynomotion.com/Help/FlashHelp/Parameters/index.html</a>.
-<ol type="1">
-    <li>In KMotion, Open the "Config & Flash" Screen and select the "Channel" at the top of the screen for the axis you plan to use (0-3).</li><br>
-    <li>Since it is best to start with a known default, click on "Load Channel" and choose the corresponding "KStepAxis#.mot" file where # matches the chosen Channel.  This will load the last saved settings in that file, which are set to default values that should work for a majority of stepper motors.  In addition, loading this file puts the Channel into "Step Dir" Axis output mode, which is required for KSTEP.</li><br>
-    <li>After loading the Channel, open the "Step Response Screen" screen.  </li><br>
-    <li>Notice at the top that the Channel number matches the Channel number on the Configuration screen.  Note: changing the Channel on either the Configuration or the Step Response screen will change the Channel in the other screen.</li><br>
-    <li>The purpose of the Step Response screen in this tutorial is simply to help you set the Velocity, Acceleration and Jerk values to achieve smooth motor performance.  These values are on the Step Response screen under "motion profile" labeled V, A and J, respectively.</li><br>
-    <li>Click on the 'Move' button.  If Channel "0" is chosen, the motor wired to the J2 terminal should move a few degrees one direction and then back to the original position and, after a few seconds, a plot will appear in the Step Response Screen showing the Commanded Step movement.  You can increase the step time (up to a maximum of 3.5 seconds) and size in this screen to get a larger movement.</li><br>
+<p>The goal in this section is to set the parameters that will ultimately go into the Init program. To do this, you will use two screens in KMotion: "Config & Flash" and "Step Response."  If you plan to use an encoder for Closed-Loop Stepper Control, you would also use the "IIR Filters" screen as well, but it is not used for open-loop stepper control as described in this tutorial.  You can view an explanation of how parameters are passed to/from KFLOP/Kogna, loaded, saved and copied to C Programs here:
+<a href="Parameters/index.html">https://dynomotion.com/Help/Parameters/index.html</a>.</p>
+<ol >
+    <li>In KMotion, Open the "Config & Flash" Screen and select the "Channel" at the top of the screen for the axis you plan to use (0-3).</li>
+    <li>Since it is best to start with a known default, click on "Load Channel" and choose the corresponding "KStepAxis#.mot" file where # matches the chosen Channel.  This will load the last saved settings in that file, which are set to default values that should work for a majority of stepper motors.  In addition, loading this file puts the Channel into "Step Dir" Axis output mode, which is required for KStep.</li>
+    <li>After loading the Channel, open the "Step Response Screen" screen.  </li>
+    <li>Notice at the top that the Channel number matches the Channel number on the Configuration screen.  Note: changing the Channel on either the Configuration or the Step Response screen will change the Channel in the other screen.</li>
+    <li>The purpose of the Step Response screen in this tutorial is simply to help you set the Velocity, Acceleration and Jerk values to achieve smooth motor performance.  These values are on the Step Response screen under "motion profile" labeled V, A and J, respectively.</li>
+    <li>Click on the 'Move' button.  If Channel "0" is chosen, the motor wired to the J2 terminal should move a few degrees one direction and then back to the original position and, after a few seconds, a plot will appear in the Step Response Screen showing the Commanded Step movement.  You can increase the step time (up to a maximum of 3.5 seconds) and size in this screen to get a larger movement.</li>
     <li>Now you can change the V, A, and J values until you are satisfied that the motor is moving smoothly - typically keeping A to be an order of magnitude or more than V, and J to be an order of magnitude more than A.  If the motor stalls, seems jerky or misses steps, you can decrease the parameters until motion is smooth.  In fact, it is recommended that you increase the parameters until the motor stalls, then decrease the parameters by 30-50%. Note: motors under load will perform differently so you may need to revisit this step once your motors are carrying weight.  In that case, take precautions to ensure the system is not damaged if the motor experiences a stall. Click <a href="https://groups.yahoo.com/neo/groups/DynoMotion/conversations/messages/9252">here for a discussion on choosing values</a> for the Velocity, Acceleration and Jerk parameters.
     <br>
     <br>
-    The V, A, and J parameters are in terms of microsteps since KSTEP performs all movements using microstepping, which is 16 microsteps for every step.  Therefore a Velocity value of 4,000 means 4,000 microsteps per second.  You can relate this to your motor velocity by this equation:
+    The V, A, and J parameters are in terms of microsteps since KStep performs all movements using microstepping, which is 16 microsteps for every step.  Therefore a Velocity value of 4,000 means 4,000 microsteps per second.  You can relate this to your motor velocity by this equation:
     <br><br>
 	Motor RPM = 60 * V / (16 * Step/Rev)
     <br><br>where V is the Velocity value on the Step Response screen and Step/Rev is the steps per revolution specification for your motor.  For a motor with 200 steps/rev, a value of 4,000 for V equates to 75 RPM. Take note of the direction your motor spins and if you want it to spin in the opposite direction you can change the 'gain' value in the Configuration window to '-1'.
-    </li><br>
-    <li>As the parameters are changed, they are automatically available to the Configuration window so they may be saved, downloaded to KFLOP, copied to the clipboard or exported to an open C program.  Furthermore, the parameters for each axis are persistent in that you can select a new Channel and the parameters for the previous Channel will not be lost unless the KMotion program is closed.  Because of this, when you copy to the clipboard or export to an open C program, parameters for all axes are copied or exported to the C program (as long as the axis exists in the C program as shown below).
+    </li>
+    <li>As the parameters are changed, they are automatically available to the Configuration window so they may be saved, downloaded to KFLOP/Kogna, copied to the clipboard or exported to an open C program.  Furthermore, the parameters for each axis are persistent in that you can select a new Channel and the parameters for the previous Channel will not be lost unless the KMotion program is closed.  Because of this, when you copy to the clipboard or export to an open C program, parameters for all axes are copied or exported to the C program (as long as the axis exists in the C program as shown below).
     </li>
 </ol>
-<img src="images/ConfigurationCh0.png">
-<br><br>
-    <img src="images/StepResponseCh0.png">
-<br><br>
-    
-Once the parameters are set, you can save them to a file, export them to a C program or download them to KFLOP. To do this:
+
+<p><img src="images/ConfigurationCh0.png" /></p>
+<p><img src="images/StepResponseCh0.png" /></p>
+
+<p>Once the parameters are set, you can save them to a file, export them to a C program or download them to KFLOP. To do this:</p>
 <ol>
-    <li><b>Save to a file:</b>  On the Config & Flash screen, click the Save Channel button and choose a file location and click Save.  You can open this file later to reload those paramaters.</li>
-    <li><b>Download to KFLOP:</b> On the Config & Flash screen, click the Download Channel button.  This will load KFLOP with the axis parameters.</li>
-    <li><b>Copy to a C Program:</b>  For this you must have a C Program open with the initialization parameters within <b>int main()</b>.  An example C Program is located in the \KMotionXXX\C Programs\KStep folder and a good program to choose is the InitKStep3Axis.c, which has parameters for, and enables, 3 axes.  Then simply click the 'Export All to Open C Program' and all available channels will be merged into the open C program if channel assignments are present there.  This would then become an "Init" file.</li>
-    <li><b>Copy to Clipboard:</b>  This button simply copies the parameters to Window's Clipboard so you may paste into any other text window that you wish.</li>
+    <li><strong>Save to a file:</strong>  On the Config & Flash screen, click the Save Channel button and choose a file location and click Save.  You can open this file later to reload those paramaters.</li>
+    <li><strong>Download to KFLOP/Kogna:</strong> On the Config & Flash screen, click the Download Channel button.  This will load KFLOP/Kogna with the axis parameters.</li>
+    <li><strong>Copy to a C Program:</strong>  For this you must have a C Program open with the initialization parameters within <strong>int main()</strong>.  An example C Program is located in the \KMotionXXX\C Programs\KStep folder and a good program to choose is the InitKStep3Axis.c, which has parameters for, and enables, 3 axes.  Then simply click the 'Export All to Open C Program' and all available channels will be merged into the open C program if channel assignments are present there.  This would then become an "Init" file.</li>
+    <li><strong>Copy to Clipboard:</strong>  This button simply copies the parameters to Window's Clipboard so you may paste into any other text window that you wish.</li>
 </ol>
-<br>
 
-
-Here are the parameters for a single axis:
-<div id="scrollbox" style="overflow-y:auto; overflow-x:hidden; width:600px; height:400px; white-space:pre; background:#CCCCCC;"><font face="monospace">
+<p>Here are the parameters for a single axis:<p>
+<div id="scrollbox" style="overflow-y:auto; overflow-x:hidden; width:600px; height:400px; white-space:pre; background:#CCCCCC;" class="code">
 	ch0-&gt;InputMode=NO_INPUT_MODE;
 	ch0-&gt;OutputMode=STEP_DIR_MODE;
 	ch0-&gt;Vel=115000;
@@ -456,15 +432,15 @@ Here are the parameters for a single axis:
 	ch0-&gt;iir[2].B2=0.000769;
 	ch0-&gt;iir[2].A1=1.92076;
 	ch0-&gt;iir[2].A2=-0.923833;
-	</font>
+	
 </div>
-<br>
-    Notice that the <font face="monospace">"ch0->"</font> indicates it is setting parameters for Axis #0. Each axis will have all of these parameters and these are what are exported to the C program or copied to the clipboard when those options are selected in the Configuration screen.
-<br><br>
-Below is the example that shows 3 Axes being configured, enabled, and referenced into a coordinate system.  This constitutes a full Init file to initialize a 3-axis system as discussed in the next section:<br>
-<br>
 
-<div id="scrollbox" style="overflow-y:scroll; overflow-x:hidden; width:600px; height:400px; white-space:pre; background:#CCCCCC;"><font face="monospace">#include &quot;KMotionDef.h&quot;
+	  <p>Notice that the <span class="code">"ch0-&gt;"</span> indicates it is setting parameters for Axis #0. Each axis will have all of these parameters and these are what are exported to the C program or copied to the clipboard when those options are selected in the Configuration screen.</p>
+
+	<p>Below is the example that shows 3 Axes being configured, enabled, and referenced into a coordinate system. This constitutes a full Init file to initialize a 3-axis system as discussed in the next section:</p>
+
+<div id="scrollbox" style="overflow-y:scroll; overflow-x:hidden; width:600px; height:400px; white-space:pre; background:#CCCCCC;" class="code">
+#include &quot;KMotionDef.h&quot;
 
 // Defines axis 0, 1, 2 as simple step dir outputs
 // enables them
@@ -620,108 +596,90 @@ int main()
 
     return 0;
 }
-</font>
+
 </div>
-<br>
-    You can find more information on how to quickly import or export settings between the KMotion Screens and a C Program 
-			<a href="ConfigurationScreen/ConfigurationScreen.htm#Utilities">here</a>.<h4>
-			<font color=Blue><a name="3c">3C. The Four Requirements for an Init C Program</a></font></h4>
+
+<p>You can find more information on how to quickly import or export settings between the KMotion Screens and a C Program <a href="ConfigurationScreen/ConfigurationScreen.htm#Utilities">here</a>.
+		
+<h3><a name="3c">3C. The Four Requirements for an Init C Program</a></h3>
 	
-At this point, you are ready to begin writing a C program to move your motors or simply use it as an Initilization file that allows KMotionCNC to control them.  An initilization C program, which is also referred to simply as an Init file, will have four operations (all of which the InitKStep3Axis.c and InitKStep4Axis.c programs already have):
+<p>At this point, you are ready to begin writing a C program to move your motors or simply use it as an Initilization file that allows KMotionCNC to control them.  An initilization C program, which is also referred to simply as an Init file, will have four operations (all of which the InitKStep3Axis.c and InitKStep4Axis.c programs already have):</p>
 <ol>
-    <li>
-	The following commands:
-	<table bgcolor=#CCCCCC><tr><td><font face="monospace">KStepPresent=True;  //which tells KFLOP that KSTEP is connected
-	<br>
-	FPGA(KAN_TRIG_REG)=4; //Mux PWM0 to JP7 Pin5 IO 44 for KSTEP
-	<br>
-	FPGA(STEP_PULSE_LENGTH_ADD) = 63 + 0x80; //which sets polarity and pulse length to 4us</font></td></tr></table>
-    </li>
-    <li>
-	Axis settings such as the velocity, acceleration and jerk parameters as described in the previous section along with the following command <b>for each axis</b>:
-	<br>
-	    <table bgcolor=#CCCCCC><tr><td><font face="monospace">EnableAxisDest(#,0); //where # is the axis/channel number</font></td></tr></table>
-    </li>
-    <li>
-	Commands to enable all axes:
-	<br>
-	    <table bgcolor=#CCCCCC><tr><td><font face="monospace">SetBitDirection(45,1); //This sets the Enable Signal as Output<br>SetBit(45); //This Enables the amplifiers</font></td></tr></table>
-    </li>
-    <li>
-	And then a command that defines which axes are in the coordinate system:
-	<br>
-	    <table bgcolor=#CCCCCC><tr><td><font face="monospace">DefineCoordSystem(0,1,2,-1);</font></td></tr></table>
-	    This command defines a coordinate system with 3 axes: 0, 1, 2 and the 4th axis is disabled by entering a '-1', otherwise a '3' would be used to include the 4th axis.
-    </li>
+    <li>The following commands:
+	<pre>
+		<code class="language-c">
+KStepPresent=True;							//which tells KFLOP that KStep is connected
+FPGA(KAN_TRIG_REG)=4;						//Mux PWM0 to JP7 Pin5 IO 44 for KStep
+FPGA(STEP_PULSE_LENGTH_ADD) = 63 + 0x80;	//which sets polarity and pulse length to 4us
+		</code>
+   </pre></li>
+    <li>Axis settings such as the velocity, acceleration and jerk parameters as described in the previous section along with the following command <strong>for each axis</strong>:
+	<pre>
+		<code class="language-c">
+EnableAxisDest(#,0); 	//where # is the axis/channel number
+</code>
+   </pre></li>
+    <li>Commands to enable all axes:
+	<pre>
+		<code class="language-c">
+SetBitDirection(45,1);	 //This sets the Enable Signal as Output
+SetBit(45); 			//This Enables the amplifiers
+	</code>
+   </pre></li>
+    <li>And then a command that defines which axes are in the coordinate system:
+	<pre>
+		<code class="language-c">
+DefineCoordSystem(0,1,2,-1);
+		</code>
+   </pre>
+	    This command defines a coordinate system with 3 axes: 0, 1, 2 and the 4th axis is disabled by entering a '-1', otherwise a '3' would be used to include the 4th axis.</li>
 </ol>
 
-You can add more C code into this initilization file to control your system, or use Dynomotion's KMotionCNC program to run G-Code.
-<br><br>
-Since adding C code is more involved, that will be handled in a different tutorial, but here is an example of a simple infinite loop to move one motor that can be added into an init file:
-<br>
-<br>
-    <table bgcolor=#CCCCCC width=750px style="white-space: nowrap; table-layout:fixed; font: monospace;"><tr><td>
-	<font face="monospace">for(;;) <font color=Green>//loop forever</font><br>
+<p>You can add more C code into this initilization file to control your system, or use Dynomotion's KMotionCNC program to run G-Code.</p>
+<p>Since adding C code is more involved, that will be handled in a different tutorial, but here is an example of a simple infinite loop to move one motor that can be added into an init file:<p>
+	<pre>
+		<code class="language-c">
+	for(;;) //loop forever
 	{
-	<ol>
-	    MoveRelAtVel(0,500,100); <font color=Green face="monospace">//relative move Axis 0 for 500 steps at 100 steps/second</font>
-	    <br>
-	    <font color=Blue>while</font> (!CheckDone(0)) ; <font color=Green>//ensure the move of Axis 0 is complete before moving on</font>
-	    <br>
-	    MoveRelAtVel(0,-500,100); <font color=Green>//relative move Axis 0 for 500 steps in opposite <ol><ol><ol><ol><ol>// direction at 100 steps/second</ol></ol></ol></ol></ol></font>
-	    <font color=Blue>while</font> (!CheckDone(0)) ; <font color=Green>//ensure the move of Axis 0 is complete before moving on</font>
-	</ol>
-	} <font color=Green>// close loop (loop still loops forever)</font></font>
-    </td></tr></table>
-<br><br>
-Then you only need to Save, Compile, Download and Run the program to have KFLOP execute the program.  You can do this in steps on the C Program screen or all in one button click with the Save-Compile-Download-Run button on the top.  To stop the program, press the "Stop" button on the main KMotion menu.
-<br><br>
+		MoveRelAtVel(0,500,100); 		//relative move Axis 0 for 500 steps at 100 steps/second
+		while (!CheckDone(0)); 			//ensure the move of Axis 0 is complete before moving on
+		MoveRelAtVel(0,-500,100);		//relative move Axis 0 for 500 steps in opposite direction at 100 steps/second
+		while (!CheckDone(0));			//ensure the move of Axis 0 is complete before moving on
+		
+	} 	// close loop (loop still loops forever)
+		</code>
+	</pre>
+<p>Then you only need to Save, Compile, Download and Run the program to have KFLOP execute the program.  You can do this in steps on the C Program screen or all in one button click with the Save-Compile-Download-Run button on the top.  To stop the program, press the "Stop" button on the main KMotion menu.</p>
 
-The next steps cover how to use KMotionCNC for basic movements.
-<br><br>
-<h4><font color=Blue><a name="3d">3D. Use KMotionCNC to jog your motors</a></font></h4>
+<p>The next steps cover how to use KMotionCNC for basic movements.</p>
 
-After running an Init file such as InitKStep3Axis.c for initialization, you are ready to move your motors by using KMotionCNC.  Try moving the motors by first clicking on the jog buttons (buttons with green arrows at left).  If everything is initialized properly the motors should move when the respective jog button is clicked.  These jog buttons are mapped to the axes by the "<font face="monospace">DefineCoordSystem(0,1,2,-1);</font>" command discussed above.  In this example, the X-axis is mapped to Axis #0, Y-axis is mapped to Axis #1, Z-axis is mapped to Axis #2 and the A-axis is not used.  If pressing the jog buttons move the motors, then you are ready to begin running G-Code.  To do this, within KMotionCNC choose "Open" and choose a G-Code program from the GCode Programs folder.  If everything has been initialized correctly, the motors will move when the Start button is pressed to start the G-Code.
-<br><br>
-Note: An initialization C program such as the InitKStep3Axis.c must be run before operating with KMotionCNC will work.  This initialization C program can be called with the 'Init' button in KMotionCNC once programmed to do so by setting the file location and Thread number for the INIT button within the 'Tool Setup' Screen on the 'User Buttons' tab in KMotionCNC:</a>
-<br><br>
-<img src="images/CustomActions.png" width="750">
-<br><br>
-The GUI of KMotionCNC can be configured based on how many axes you are using by changing the option for "Main Dialog Face" on the 'Tool/Setup Files' tab within the 'Tool Setup' screen.  The screenshot below is for a 3-axis setup as you can tell from the display of only X, Y, and Z coordinates.
-<br><br>
-<img src="images/KMotionCNClabelled.png">
-<br><br>
-Note that the motors will not yet be moving accurately until the full parameters are set within KMotionCNC.  To do this, you will set the Counts per inch (Cnts/inch) for each axis on the Trajectory Planner tab within the Tool Setup screen of KMotionCNC.  You should also set the axis velocities and accelerations, and jog velocities and accelerations for your system on this tab.
-<br><br>
-<img src="images/TrajectoryPlanner.png" width="750">
-<br><br>
-You can measure the distance each axis moves for a given number of steps and then use this Cnts/inch value as a conversion factor so KMotionCNC knows how many steps to move for a given distance.
-<br><br>
-For greater accuracy, you can create a <a href="KMotionCNC/GeoCorrection.htm">
-			Geocorrection File</a>.&nbsp;
-			<p><br>
-For a detailed discussion on Step and Direction Outputs, <a href="StepAndDirection/StepAndDir.htm">See this page.</a>
+<h3><a name="3d">3D. Use KMotionCNC to jog your motors</a></h3>
 
-<br><br>
-Once you understand everything in this tutorial, you will be ready to dive into the details of your KFLOP/KSTEP.  See our 
-			<a href="index.htm">manual</a> for more information.<br><br>
+<p>After running an Init file such as InitKStep3Axis.c for initialization, you are ready to move your motors by using KMotionCNC.  Try moving the motors by first clicking on the jog buttons (buttons with green arrows at left).  If everything is initialized properly the motors should move when the respective jog button is clicked.  These jog buttons are mapped to the axes by the <span class="code">"DefineCoordSystem(0,1,2,-1);"</span> command discussed above.  In this example, the X-axis is mapped to Axis #0, Y-axis is mapped to Axis #1, Z-axis is mapped to Axis #2 and the A-axis is not used.  If pressing the jog buttons move the motors, then you are ready to begin running G-Code.  To do this, within KMotionCNC choose "Open" and choose a G-Code program from the GCode Programs folder.  If everything has been initialized correctly, the motors will move when the Start button is pressed to start the G-Code.</p>
 
+<p>Note: An initialization C program such as the InitKStep3Axis.c must be run before operating with KMotionCNC will work.  This initialization C program can be called with the 'Init' button in KMotionCNC once programmed to do so by setting the file location and Thread number for the INIT button within the 'Tool Setup' Screen on the 'User Buttons' tab in KMotionCNC:<p>
 
-<br><br>
-KSTEP Tutorial Rev. 1.0
-</p>
-<hr>
-<br><br>
+<p><img src="images/CustomActions.png" width="1012" height="176" alt="Custom Actions" /></p>
 
+<p>The GUI of KMotionCNC can be configured based on how many axes you are using by changing the option for "Main Dialog Face" on the 'Tool/Setup Files' tab within the 'Tool Setup' screen.  The screenshot below is for a 3-axis setup as you can tell from the display of only X, Y, and Z coordinates.<p>
 
+<p><img src="images/KMotionCNClabelled.png" width="700" height="528" alt="3-Axis Setup" /></p>
 
+<p>Note that the motors will not yet be moving accurately until the full parameters are set within KMotionCNC.  To do this, you will set the Counts per inch (Cnts/inch) for each axis on the Trajectory Planner tab within the Tool Setup screen of KMotionCNC.  You should also set the axis velocities and accelerations, and jog velocities and accelerations for your system on this tab.</p>
 
-<br><br><br>
-</td>
-    </tr>
-</table>
+<p><img src="images/TrajectoryPlanner.png" width="1064" height="698" alt="Trajectory Planner"></p>
 
+<p>You can measure the distance each axis moves for a given number of steps and then use this Cnts/inch value as a conversion factor so KMotionCNC knows how many steps to move for a given distance.</p>
 
+<p>For greater accuracy, you can create a <a href="KMotionCNC/GeoCorrection.htm">Geocorrection File</a>.</p>
+
+<p>For a detailed discussion on Step and Direction Outputs, <a href="StepAndDirection/StepAndDir.htm">see this page.</a></p>
+
+<p>Once you understand everything in this tutorial, you will be ready to dive into the details of your KFLOP/KStep. See our <a href="index.htm">manual</a> for more information.</p>
+
+<p>KStep Tutorial Rev. 1.0</p>
+
+</div>
 
 </body>
 </html>

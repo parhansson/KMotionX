@@ -1,4 +1,5 @@
-﻿using System;
+﻿//#define TEST_BIG_ARRAY 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -34,21 +35,35 @@ namespace SimpleFormsCS
         static Mutex ConsoleMutex = new Mutex();
         static string ConsoleMessageReceived;
         bool Connected = false;
-        int skip = 0;
+        int skip = 1000; // so we check for board immediately
+        int IP_Addr;
+        int[] List;
+        int nBoards;
+#if TEST_BIG_ARRAY
+        static int ASize = 500000000;
+        Double[] Big = new Double[ASize];
+        Double[] Big2 = new Double[ASize];
+        Double sum = 0;
+#endif
 
-        public Form1()
+        public Form1(int IP)
         {
+            IP_Addr = IP;
             InitializeComponent();
             MainPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             MainPath = System.IO.Path.GetDirectoryName(MainPath);
             MainPath = System.IO.Path.GetDirectoryName(MainPath);
 
             CFileName.Text = MainPath + "\\C Programs\\KStep\\InitKStep3Axis.c";
-            KM = new KMotion_dotNet.KM_Controller();
+            KM = new KMotion_dotNet.KM_Controller(IP_Addr);
 
             //Set the callback for general messages
             KM.MessageReceived += new KMConsoleHandler(ConsoleMessageHandler);
 
+#if TEST_BIG_ARRAY
+            for (uint i = 0; i < ASize; i++) Big[i] = Big2[i] = (double)i * (double)i; //tktk
+            for (uint i = 0; i < ASize; i++) sum += Big[i] + Big2[i];
+#endif
         }
 
         private void WriteLineHandleException(string s)
@@ -97,42 +112,31 @@ namespace SimpleFormsCS
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            int[] List;
-            int nBoards = 0;
 
             // with extra FTDI Drivers this can take a long time
             // so only call occasionally when not connected
-            if (!Connected && ++skip==10)
+            if (skip++ > 20)
             {
                 skip = 0;
-
                 // check how many boards connected
                 List = KM.GetBoards(out nBoards);
-                if (nBoards > 0)
-                {
-                    Connected = true;
-                    this.Text = String.Format("Dynomotion C# Forms App - Connected - USB location {0:X}", List[0]);
-                }
-                else
-                {
-                    Connected = false;
-                    this.Text = "Dynomotion C# Forms App - Disconnected";
-                }
             }
 
-            if (Connected && KM.WaitToken(100) == KMOTION_TOKEN.KMOTION_LOCKED)
+            if (KM.WaitToken(100) == KMOTION_TOKEN.KMOTION_LOCKED)
             {
+                Connected = true;
                 KM_MainStatus MainStatus;
 
                 try
                 {
                     MainStatus = KM.GetStatus(false);  // we already have a lock
                     KM.ReleaseToken();
-                    XPos.Text = String.Format("{0:F1}", MainStatus.Destination[0]);
-                    XEnabled.Checked = (MainStatus.Enables & (1 << 0)) != 0;
+                    XPos.Text = String.Format("{0:F1}", MainStatus.GetDestination(0));
+                    XEnabled.Checked = MainStatus.GetAxisEnabled(0) != 0;
                 }
                 catch (DMException ex) // in case disconnect in the middle of reading status
                 {
+                    Connected = false;
                     KM.ReleaseToken();
                     MessageBox.Show(ex.InnerException.Message);
                 }
@@ -142,6 +146,11 @@ namespace SimpleFormsCS
                 Connected = false;
             }
 
+            if (Connected)
+                Text = String.Format("Dynomotion C# Forms App - Connected {0}", BoardString(KM.GetUSBLocation()));
+            else
+                Text = "Dynomotion C# Forms App - Disconnected";
+
             ConsoleMutex.WaitOne();  // make sure we are thread safe
             if (ConsoleMessageReceived != null && ConsoleMessageReceived != "")
             {
@@ -149,6 +158,40 @@ namespace SimpleFormsCS
                 ConsoleMessageReceived = "";
             }
             ConsoleMutex.ReleaseMutex();
+        }
+
+        private String BoardString(int board)
+        {
+            String s;
+
+            if (board <= 0 && board >= -15)
+            {
+                s = String.Format("{0}", board); // show as decimal number
+            }
+            else if ((uint)board < 0x00FFFFFF) // USB?
+            {
+                s = String.Format("KFLOP 0x{0:X}", board); // show as hex USB ID number
+            }
+
+            else // assume IP Address
+            {
+                String sn = "";
+                for (int i = 0; i < nBoards; i++)  // check for match and if found add SN
+                {
+                    if ((uint)board > 0x00FFFFFF)
+                    {
+                        if (board == List[i])
+                        {
+                            sn = String.Format(" - SN{0}", List[i + 1] & 0xFFF);
+                            break;
+                        }
+                        i++; // skip SN
+                    }
+                }
+                s = String.Format("Kogna {0}.{1}.{2}.{3}{4}",
+                    (board >> 24) & 0xff, (board >> 16) & 0xff, (board >> 8) & 0xff, board & 0xff, sn);
+            }
+            return s;
         }
 
         private void JogXPosMouseDown(object sender, MouseEventArgs e)
@@ -199,7 +242,15 @@ namespace SimpleFormsCS
                 KM.WriteLineWithEcho(Command.Text);
                 while (true)
                 {
-                    var status = KM.CheckIsReady();
+                    KMOTION_CHECK_READY status = KMOTION_CHECK_READY.ERROR;
+                    try
+                    {
+                        status = KM.CheckIsReady();
+                    }
+                    catch (DMException ex) // in case disconnect in the middle of reading status
+                    {
+                        MessageBox.Show(ex.InnerException.Message);
+                    }
 
                     if (status == KMOTION_CHECK_READY.READY)
                     {
@@ -227,33 +278,49 @@ namespace SimpleFormsCS
 
         private void TestUSB_Click(object sender, EventArgs e)
         {
-            int N = 100000;  //size of block to test
-            int nchars_sent = 0;
+            int N = 10000000;  //size of block to test
             int[] data = new int[N];
             int[] data2 = new int[N];
+            bool SentData = false;
+            String BOARD = "Kogna";
 
-            // fill simple buffer with a ramp
-            for (int i = 0; i < N; i++) data[i] = i;
-
-            // first get the token for the board to allow uninterrupted access
-
-            if (KM.WaitToken(1000000) != KMOTION_TOKEN.KMOTION_LOCKED) return;
-
-            DateTime T0 = DateTime.Now;
-
+            if (KM.GetBoardType() == BOARD_TYPE.KFLOP) // KFLOP communication is slower and less memory space
+            {
+                N = 100000;
+                BOARD = "KFLOP";
+            }
+           
             try
             {
+                DateTime T0;
+                string s = "";
+                DateTime T1;
+                double dt;
+#if true
+                int nchars_sent = 0;
+                int L = 256;  // put up to 256 per line (with ';' every 8)
+                if (KM.GetBoardType() == BOARD_TYPE.KFLOP) 
+                    L = 8;  // KFLOP does 8 per line                                       
+                            
+                // fill simple buffer with a ramp
+                for (int i = 0; i < N; i++) data[i] = i;
+
+                // first get the token for the board to allow uninterrupted access
+                if (KM.WaitToken(1000000) != KMOTION_TOKEN.KMOTION_LOCKED) return;
+
+                SentData = true;
+                T0 = DateTime.Now;
+
                 // tell the board we will send N (32 bit ) words at offset 0
                 KM.WriteLine(String.Format("SetGatherHex {0} {1}", 0, N));
 
                 // send the data (simple ramp)  (8 hex words per line)
 
-                string s = "";
                 for (int i = 0; i < N; i++)
                 {
                     s = s + data[i].ToString("X8");
 
-                    if (((i % 8) == 7) || i == N - 1)  // every 8 or on the last send it
+                    if (((i % L) == L - 1) || i == N - 1)  // every 8/256 or on the last send it
                     {
                         KM.WriteLine(s);
                         nchars_sent += s.Length;
@@ -264,12 +331,18 @@ namespace SimpleFormsCS
                         s = s + " ";  // otherwise insert a space
                     }
                 }
+                // release our access to the board
+                KM.ReleaseToken();
 
-                DateTime T1 = DateTime.Now;
-                double dt = (T1.Ticks - T0.Ticks) / 1e7;
-                TestResults1.Text = String.Format("PC->KFLOP N={0} Int32, Time={1:F3} sec, {2:F0}KBytes/sec", N, dt, nchars_sent / dt / 1000.0);
+                T1 = DateTime.Now;
+                dt = (T1.Ticks - T0.Ticks) / 1e7;
+                    TestResults1.Text = String.Format("PC->{0} N={1} Int32, Time={2:F3} sec, {3:F0}KBytes/sec", BOARD, N, dt, nchars_sent / dt / 1000.0);
+#endif
+#if true
+                int nchars_received = 0;
 
-
+                // first get the token for the board to allow uninterrupted access
+                if (KM.WaitToken(1000000) != KMOTION_TOKEN.KMOTION_LOCKED) return;
                 T0 = DateTime.Now;
 
                 // tell the board we will read N (32 bit ) words at offset 0
@@ -281,7 +354,10 @@ namespace SimpleFormsCS
                 for (int i = 0; i < N; i++)
                 {
                     if (s.Length < 8)
+                    {
                         KM.ReadLineTimeout(ref s, 100000000);
+                        nchars_received += s.Length;
+                    }
 
                     string vs = s.Substring(0, 8);
                     if (s[8] == ' ')
@@ -291,13 +367,12 @@ namespace SimpleFormsCS
 
                     data2[i] = int.Parse(vs, System.Globalization.NumberStyles.HexNumber);
 
-                    if (data[i] != data2[i])
+                    if (SentData &&  data[i] != data2[i])
                     {
                         MessageBox.Show("BAD DATA");
                         KM.ReleaseToken();
                         return;
                     }
-
                 }
 
                 // release our access to the board
@@ -305,7 +380,9 @@ namespace SimpleFormsCS
 
                 T1 = DateTime.Now;
                 dt = (T1.Ticks - T0.Ticks) / 1e7;
-                TestResults2.Text = String.Format("KFLOP->PC N={0} Int32, Time={1:F3} sec, {2:F0}KBytes/sec", N, dt, nchars_sent / dt / 1000.0);
+                    TestResults2.Text = String.Format("{0}->PC N={1} Int32, Time={2:F3} sec, {3:F0}KBytes/sec",
+                    BOARD, N, dt, nchars_received / dt / 1000.0);
+#endif
             }
             catch (DMException ex) // in case disconnect in the middle of reading status
             {

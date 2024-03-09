@@ -60,6 +60,11 @@ void CScintillaFindReplaceDlg::OnRegularExpression()
 	m_bRegularExpression = (pCtrl->GetCheck() == 1);
 }
 
+void CScintillaFindReplaceDlg::SetFindWhat(LPCTSTR s)
+{
+	GetDlgItem(1152)->SetWindowTextA(s);
+}
+
 void CScintillaFindReplaceDlg::OnFindReplaceHelp() 
 {
 	TheFrame->HelpDlg.Show("RegularExp.htm");

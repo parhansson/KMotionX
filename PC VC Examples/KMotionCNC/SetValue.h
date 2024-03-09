@@ -16,12 +16,12 @@ class CSetValue : public CDialog
 public:
 	double m_Value;
 	CList<CString, CString> Recent;
-	CSetValue(CWnd* pParent = NULL);   // standard constructor
+	CSetValue(int DialogID, CWnd* pParent = NULL);   // standard constructor
 	CString m_Label;
+	double halfDRO;
 
 // Dialog Data
 	//{{AFX_DATA(CSetValue)
-	enum { IDD = IDD_SetValue };
 	CComboBox	m_ValueCombo;
 	CString	m_ValueString;
 	//}}AFX_DATA
@@ -44,6 +44,8 @@ protected:
 	virtual BOOL OnInitDialog();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnUsedDRO2();
 };
 
 //{{AFX_INSERT_LOCATION}}

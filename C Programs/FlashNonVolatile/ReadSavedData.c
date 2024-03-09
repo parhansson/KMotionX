@@ -1,7 +1,5 @@
 #include "KMotionDef.h"
 
-void SetFlashBank(volatile unsigned short *add);
-
 main()
 {
 	double *p=(double*)FLASH_USER;  // pointer to the FLASH Chip

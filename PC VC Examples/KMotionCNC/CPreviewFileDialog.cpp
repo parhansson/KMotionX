@@ -344,7 +344,7 @@ void CPreviewFileDialog::AddAxisToScene()
 	}
 	else
 	{
-		AfxMessageBox("Unable to load GCode Axis Image file:"+m_AxisShapeFile);
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to load GCode Axis Image file:") + (CStringW)m_AxisShapeFile, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 	}
 }
 
@@ -435,7 +435,7 @@ void CPreviewFileDialog::AddToolToScene()
 	else
 	{
 		m_ToolFileDisplayed = file;
-		AfxMessageBox("Unable to load GCode Tool Image file:"+file);
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to load GCode Tool Image file:") + (CStringW)file, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 	}
 }
 
@@ -496,18 +496,18 @@ void CPreviewFileDialog::SetViewDistance(ViewDir View)
 	}
 	else if (View==VIEWYZ)
 	{
-		m_view.m_xTranslation = -midz;
-		m_view.m_yTranslation = -midy;
+		m_view.m_xTranslation = -midy;
+		m_view.m_yTranslation = -midz;
 		m_view.m_zTranslation = -midx -3.0 * max_size;
 	}
 	else if (View==VIEWXZ)
 	{
-		m_view.m_xTranslation = -midz;
-		m_view.m_yTranslation = -midx;
+		m_view.m_xTranslation = -midx;
+		m_view.m_yTranslation = -midz;
 		m_view.m_zTranslation = -midy -3.0 * max_size;
 	}
  
-	m_view.m_SpeedTranslation = max_size / 500.0f;
+	m_view.m_SpeedTranslation_Persp = max_size / 500.0f;
 }
 
 
@@ -521,26 +521,44 @@ void CPreviewFileDialog::OnXy()
 
 void CPreviewFileDialog::OnXz() 
 {
-	if (TheFrame->GCodeDlg.m_XPosFront)
+	if (TheFrame->GCodeDlg.m_Lathe)
 	{
-		m_view.m_xRotation = 0.0f;
-		m_view.m_yRotation = 90.0f;
-		m_view.m_zRotation = -90.0f;
+		if (TheFrame->GCodeDlg.m_XPosFront)
+		{
+			m_view.m_xRotation = 0.0f;
+			m_view.m_yRotation = 90.0f;
+			m_view.m_zRotation = -90.0f;
+		}
+		else
+		{
+			m_view.m_xRotation = 0.0f;
+			m_view.m_yRotation = 90.0f;
+			m_view.m_zRotation = 90.0f;
+		}
 	}
 	else
 	{
-		m_view.m_xRotation = 0.0f;
-		m_view.m_yRotation = 90.0f;
-		m_view.m_zRotation = 90.0f;
+		m_view.m_xRotation = -90.0f;
+		m_view.m_yRotation = 0.0f;
+		m_view.m_zRotation = 0.0f;
 	}
 	SetViewDistance(VIEWXZ);
 }
 
 void CPreviewFileDialog::OnYz() 
 {
-	m_view.m_xRotation = 0.0f;
-	m_view.m_yRotation = 90.0f;
-	m_view.m_zRotation = 0.0f;
+	if (TheFrame->GCodeDlg.m_Lathe)
+	{
+		m_view.m_xRotation = 0.0f;
+		m_view.m_yRotation = 90.0f;
+		m_view.m_zRotation = 0.0f;
+	}
+	else
+	{
+		m_view.m_xRotation = -90.0f;
+		m_view.m_yRotation = 0.0f;
+		m_view.m_zRotation = -90.0f;
+	}
 	SetViewDistance(VIEWYZ);
 }
 

@@ -1,0 +1,11 @@
+---------------------------------
+1SA, 2SA, 3SA, 4SA - Step Angle for the motor
+---------------------------------
+
+This is a decimal number which is often 1.8 degrees per step, but should reflect 
+the motor in use. You might also find 0.9, 3.6, 7.5 or other values. You can 
+usually read this off the motor label. If a motor is indicated in steps per 
+revolution just divide 360 by that number. A 200 step-per-rev motor is 1.8 degrees,
+a 400 step-per-rev motor has 0.9 degrees per step.
+
+  1SA = 1.8 Sets step angle for motor 1. This is a typical value for many motors 

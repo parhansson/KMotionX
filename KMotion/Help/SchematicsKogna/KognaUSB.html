@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+<meta name="keywords" content="ethernet 16-axis controller, cnc control, motion control, cnc boards, 4-axis, 8-axis, stepper, brushless, DC motor, servo, encoder, adc, dac, motion controller, automated motion, manufacturing, Mach3">
+<meta name="description" content="Manufacturer of premium motion control products for CNC Manufacturing, Robotics and Automation">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+
+<title>Kogna's USB UART COM Port</title>
+
+<link rel="stylesheet" type="text/css" href="../css/style.css">
+</head>
+
+<body>
+
+<div id="logo"><a href="../index.htm"></a></div>
+
+<div id="home">
+<a href="../index.htm">Table of contents</a> |  
+	<script>
+		if (navigator.userAgent.indexOf("NT 6.2") == -1){
+			document.write('<a href="https://www.dynomotion.com">Dynomotion home page</a>')
+		} else {
+			document.write('<a href="https://www.dynomotion.com" target="_blank">Dynomotion home page</a>')
+		}
+	</script>
+</div>
+	
+<div id="searchNav">
+
+	<div class="gcse-search">
+					<script>
+					  if (document.location.protocol  ==  'https:') {
+					  (function() {
+					  var cx = '012657033059195044748:9fmjmlufts0';
+					  var gcse = document.createElement('script');
+					  gcse.type = 'text/javascript';
+					  gcse.async = true;
+					  gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+					      '//cse.google.com/cse.js?cx=' + cx;
+					  var s = document.getElementsByTagName('script')[0];
+					  s.parentNode.insertBefore(gcse, s);
+					})();
+					  }
+				      </script> 
+				      <gcse:search> </gcse:search>  
+
+	       </div>
+</div>	
+
+	
+
+
+<div id="google_translate_element" style="background: transparent;" align="right"><script type="text/javascript">
+if (navigator.userAgent.indexOf("NT 6.2") == -1) {
+		function googleTranslateElementInit() {
+	  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,de,fr,it,es,pt,ru,uk,ar,zh-CN,zh-TW,ko,iw,hi,ja,tr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+		}						}
+	</script>
+	<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+	</script>
+</div>		
+<div id="main">
+
+<h1>Kogna's USB UART COM Port</h1>
+
+<p>Kogna has a USB Port (J3 on Kogna's backside) that operates as a Virtual COM Port.  A micro-USB cable is used to connect between Kogna and the PC Host.</p>
+<p><img src="J3.jpg" width="305" height="318" alt=""/></p>
+<p> The COM Port can used to display diagnostic information during Boot and about Ethernet activity and errors. Basic commands can be entered to set things like the  Ethernet IP Address. When connected a COM port should show up in Windows Device Manager as shown below. Note Windows may assign a different COM Port number than shown below. If your PC has more than one COM Port (or you have more than one Kogna) you might need to try each by trial and error to see which is connected to Kogna.  You might also unplug the USB cable to Kogna to see which COM Port is removed to determine which it is. Note the USB COM Port is powered from USB power so should remain connected and powered whether or not Kogna has +5V power applied.</p>
+<p><img src="DeviceManager.png" width="403" height="719" alt=""/></p>
+<p>The COM Port is connected to a UART on Kogna's DSP that operates at 115200 Baud. 8-bit data. No Parity. 1 Stop bit. No Flow Control. A Program such as Teraterm or HyperTerminal (or other serial terminal emulators) can be used to display output or enter input commands. TeraTerm can be downloaded from <a href="https://download.cnet.com/Tera-Term/3000-2094_4-75766675.html">cnet.com</a>.</p>
+<p><img src="SerialConfig.png" width="470" height="455" alt=""/></p>
+<p>Below is shown a Primary boot, Delay, then Secondary boot sequence  on startup. The Primary boot loader is loaded at the factory.  The Secondary boot is of the Firmware Version Flashed into Kogna using Flash New Version. If secondary booting is not successful see <a href="ConnectorsKogna.html#JP13">here</a> for recovery.</p>
+<p><img src="BootSequence.png" width="563" height="306" alt=""/></p>
+<p>&nbsp;</p>
+<p>The 'I' command can be used to display or manually set the Ethernet IP Address.</p>
+<p>Enter 'I' then Enter to display the requested and assigned IP Address</p>
+<p>A requested IP Address of 0 requests the Network DHCP Server to assign the IP Address. An address of 0 may be entered as '0' or '0.0.0.0'. </p>
+<p>To manually specify an IP Address enter 4 decimal byte numbers separated by periods. Note changing the IP Address will Flash the setting to Flash memory to be requested on the next Boot or new network connection.</p>
+<p>See example below. The 'I' command is used to report that DHCP is used and the Assigned address is 192.168.68.126. Then the IP Address is set to 192.168.68.200. The Ethernet cable is disconnected and re-connect to have the new IP Address assigned. A multicast packet is received from the Host PC 192.168.68.118 and responded to so the PC obtains the new IP Address (and Serial Number).</p>
+<p><img src="ChangeIP.png" width="563" height="306" alt=""/></p>
+<p>&nbsp;</p>
+
+</div>
+</body>
+
+</html>
+

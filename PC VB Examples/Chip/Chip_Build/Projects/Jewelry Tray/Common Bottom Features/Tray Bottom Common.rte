@@ -1,0 +1,11 @@
+Header~Fixture~Jewelry Tray
+Operation~Bottom Pocket~~0.500 End Mill~Fixture~Fixed~4.4876~3.5678~0~0.833~
+Task~~Bolted Mount~00:19:20~Bottom Pocket 0_500 EM.chp~0~-8~0~.75~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Jewelry Tray\Common Bottom Features
+Operation~Handles~~0.500 End Mill~Fixture~Fixed~4.3917~3.5678~0~0.833~
+Task~~Bolted Mount~00:08:44~Bottom Handles Rough 0_500 EM.chp~0~-8~0~.75~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Jewelry Tray\Common Bottom Features
+Task~~Bolted Mount~00:03:37~Bottom Handles Finish 0_500 EM.chp~0~-8~0~.75~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Jewelry Tray\Common Bottom Features
+Operation~Chamfer~~0.500 Chamfer (Small)~Fixture~Fixed~3.8772~2.912~0~0.833~
+Task~~Bolted Mount~00:02:00~Bottom Pocket Inside Smalll Chamfe.chp~0~-8~0~.75~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Jewelry Tray\Common Bottom Features
+Task~~Bolted Mount~00:02:11~Bottom Pocket Outside Small Chamfer.chp~0~-8~0~.75~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Jewelry Tray\Common Bottom Features
+Task~~Bolted Mount~00:01:25~Bottom Border Small Chamfer.chp~0~-8~0~.75~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Jewelry Tray\Common Bottom Features
+Task~~Bolted Mount~00:00:15~Bottom Cutout Smalll Chamfer.chp~0~-8~0~.75~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Jewelry Tray\Common Bottom Features

@@ -244,6 +244,8 @@ void InterpolateLinear(double a, double b, double c, double d, double t)
 
 	if (++ParametricIndex == MAX_SEGMENTS) ParametricIndex=0;   // wrap the buffer              
 	ParametricCoeffs[ParametricIndex].trajectory_mode = TRAJECTORY_OFF; // keep terminated
+
+	CS0_TimeDownloaded += t;
 }
 
 // create a circular (or helix) interpolated motion segment
@@ -334,6 +336,8 @@ void InterpolateArc(double a, double b, double c, double d, double t)
 
 	if (++ParametricIndex == MAX_SEGMENTS) ParametricIndex=0;   // wrap the buffer              
 	ParametricCoeffs[ParametricIndex].trajectory_mode = TRAJECTORY_OFF; // keep terminated
+	
+	CS0_TimeDownloaded += t;
 }
 
 
@@ -356,5 +360,6 @@ void OpenBuf(void)
 	CoordSystem0 = NULL;
 	LastCoordSystem0=&ParametricCoeffs[0];
 	ParametricIndex=0;
+	CS0_TimeDownloaded=0.0;
     ParametricCoeffs[ParametricIndex].trajectory_mode = TRAJECTORY_OFF; // keep terminated
 }

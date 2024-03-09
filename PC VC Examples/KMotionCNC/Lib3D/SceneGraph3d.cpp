@@ -372,7 +372,7 @@ int CSceneGraph3d::SaveFile(char *name)
 	// Write header
 	if(!WriteHeader(file,name))
 	{
-		AfxMessageBox("Error during writing header");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error during writing header"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 0;
 	}
 
@@ -412,7 +412,7 @@ int CSceneGraph3d::SaveFileRaw(char *name)
 		#ifdef _DEBUG
 		  afxDump << "File could not be opened " << ex.m_cause << "\n";
 		#endif
-		AfxMessageBox("Unable to open file for writing");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to open file for writing"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 0;
 	}
 
@@ -449,7 +449,7 @@ int CSceneGraph3d::WriteHeader(CStdioFile &file,
 		#ifdef _DEBUG
 		  afxDump << "File could not be opened " << ex.m_cause << "\n";
 		#endif
-		AfxMessageBox("Unable to open file for writing");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to open file for writing"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 0;
 	}
 
@@ -466,7 +466,7 @@ int CSceneGraph3d::WriteHeader(CStdioFile &file,
 		#ifdef _DEBUG
 				afxDump << "Error during writing " << e->m_cause << "\n";
 		#endif
-		AfxMessageBox("Error during writing file header");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error during writing file header"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		file.Close();
 		return 0;
 	}

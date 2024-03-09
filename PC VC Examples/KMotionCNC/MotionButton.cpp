@@ -78,7 +78,7 @@ void CMotionButton::Init(CKMotionCNCDlg *pDlg, int axis, int dir, double *mag, b
 }
 
 
-void CMotionButton::OnTimer(UINT nIDEvent) 
+void CMotionButton::OnTimer(UINT_PTR nIDEvent) 
 {
 	CString s;
 
@@ -173,6 +173,7 @@ int CMotionButton::HandleButtonDown(void)
 		else if (Dlg->Interpreter->p_setup->length_units==CANON_UNITS_MM)
 			delta = Step*m_dir/25.4; 
 
+		if (m_axis == 0 && Dlg->Interpreter->p_setup->DiameterMode) delta *= 0.5;
 
 		if (Dlg->m_Simulate)
 		{

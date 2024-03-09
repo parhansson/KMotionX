@@ -149,7 +149,7 @@ void CEditFixtures::OnBnClickedSave()
 
 	if (m_Interpreter->rs274ngc_save_parameters())
 	{
-		AfxMessageBox("Error Saving Interpreter variables");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Saving Interpreter variables"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 	}
 }
 

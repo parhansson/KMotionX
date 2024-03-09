@@ -52,15 +52,19 @@ public:
 
 	void DeleteDlgControls(void);
 
-	CList<PDLG_CONTROL,PDLG_CONTROL> DlgControls;
+	CList<PDLG_CONTROL, PDLG_CONTROL> DlgControls;
+	CList<int, int> DlgControlIDsFound;
 	CList<CString,CString> Defines;
 
 // Implementation
 public:
     virtual ~CScreen();
 
-	int ProcessScript(CString file);
-	BOOL SetWindowPosDPI(CWnd * W, const CWnd * pWndInsertAfter, int x, int y, int cx, int cy, UINT nFlags);
+	int ScriptReset();
+
+	int ProcessScript(CString file, int OffX = 0, int OffY = 0);
+	int CreateListOfAllControlsInScriptFile(CString file);
+	BOOL SetWindowPosDPI(CWnd* W, const CWnd* pWndInsertAfter, int x, int y, int cx, int cy, UINT nFlags);
 	int ReadResourceIDs();
 	int FindResourceIDs(CString s);
 	CString FindResourceName(int ID);
@@ -74,13 +78,19 @@ public:
 	int SwapRGB(int n);
 	bool CheckForScreenEditorToolTip(UINT id, LPWSTR Tip);
 	int GetEditScreenVar(int Var, CString *s);
+	CString ConvertWideToANSI(CStringW s);
+	CStringW ConvertANSIToWide(CString s);
 	bool CheckForScreenEditorHotKey(int VirtualKey, UINT *ID, CImageButton **I);
 	bool Find3MotionButtonsSameAxisDir(int axis, int dir, CMotionButton **B, CMotionButton **B2, CMotionButton **Bstep);
-	int Execute(CStringW s, DLG_CONTROL *Dlg, bool *NewControl);
-	int DoControlID(CStringW s, DLG_CONTROL *Dlg);
+	int Execute(CStringW s, DLG_CONTROL *Dlg, bool *NewControl, int OffX = 0, int OffY = 0);
+	int DoControlID(CStringW s, DLG_CONTROL *Dlg, bool *NewControl,  int OffX, int OffY);
+	void AddRelPaths(CString & file);
+	CString Recurse(CString pstr, CString File);
+	bool CheckIfFileExists(CString Name);
 	int DoCompatibility(DLG_CONTROL *Dlg);
 	int DoMainDlg(CStringW s);
-	int DoSScript(CStringW s);
+	int DoScriptName(CStringW s);
+	int DoSScript(CStringW s, int OffX = 0, int OffY = 0);
 	int DoAction(CStringW s);
 	int DoWinMsg(CStringW s);
 	CImageButton* FindImageButton(int ID);
@@ -88,18 +98,23 @@ public:
 	CImageButton * FindImageButtonHotKey(int VirtualKey);
 	CEditScreen* FindEditScreen(int ID);
 	CComboBoxScreen* FindComboBoxScreen(int ID);
+	CComboBoxScreen * FindComboBoxScreenFromHandle(HWND w);
 	CDisplay* FindDisplay(int ID);
 	CStringW CreateScript(DLG_CONTROL *DlgCtrl);
 	int ServiceImageButtons();
 	bool GetStatusBit(int bit);
+	bool ReadBitCached(int bit);
 	void HandleRadioButton(CDialog *Dlg, int nIDC);
 	void RemoveCommasW(CStringW &s);
 	void Convert24to32(CImage *img);
+	CStringW GetPersistText(CString IDNameToFind);
 	void ResetAllControls();
 	int EditScreenChangesCount;
 	bool CheckIfOKtoChangeText(int ID);
 
-
+	int KeyDown(WORD vkey);
+	int KeyUp(WORD vkey);
+	int KeyPress(WORD vkey);
 
 
 	CString LastLoadedScreen;

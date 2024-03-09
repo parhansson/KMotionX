@@ -63,6 +63,11 @@
 #include <string.h>
 #include <afxglobals.h>
 
+#if _WIN64
+#define HANDLE64 __int64
+#else
+#define HANDLE64 int
+#endif
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

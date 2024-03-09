@@ -29,7 +29,7 @@ END_MESSAGE_MAP()
 CPersistOpenDlg::CPersistOpenDlg() : CFileDialog(TRUE),m_wndListViewShell(this)
 {
 	m_bFileNameRestored = false;
-	m_ofn.lpstrTitle = _T("Select a file or folder");
+	m_ofn.lpstrTitle = /*TRAN*/"Select a file or folder";
 }
 
 

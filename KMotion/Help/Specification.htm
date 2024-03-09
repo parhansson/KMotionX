@@ -1,419 +1,442 @@
+<!DOCTYPE html>
 <html>
-
 <head>
-<meta http-equiv="Content-Language" content="en-us">
-<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
-<meta name="ProgId" content="FrontPage.Editor.Document">
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+<meta name="keywords" content="ethernet 16-axis controller, cnc control, motion control, cnc boards, 4-axis, 8-axis, stepper, brushless, DC motor, servo, encoder, adc, dac, motion controller, automated motion, manufacturing, Mach3">
+<meta name="description" content="Manufacturer of premium motion control products for CNC Manufacturing, Robotics and Automation">
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-<title>Hardware</title>
-	   
+<meta http-equiv="Content-Language" content="en-us">
+
+<title>KFLOP Hardware and Software Specification</title>
+
+<link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 
 <body>
 
-<div align="left">
- <p> <i><font face="Arial Black" size="5">Hardware</font></i><table border="1" id="table1" bgcolor="#999966" align="left" width="600" height="663" cellpadding="2"></p>
-    <!-- MSTableType="nolayout" -->
-    <tr>
-      <td valign="top" bgcolor="#333300" width="109">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <span style="letter-spacing: 1px">
-      <font face="Arial Black" size="2" color="#FFFFFF">Function</font></span></td>
-      <td valign="top" bgcolor="#333300">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <span style="letter-spacing: 1px">
-      <font face="Arial Black" size="2" color="#FFFFFF">Parameter</font></span></td>
-      <td valign="top" bgcolor="#333300" height="24" width="302">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <span style="letter-spacing: 1px">
-      <font face="Arial Black" size="2" color="#FFFFFF">Specification</font></span></td>
-    </tr>
-    <tr>
-      <td valign="top" align="left" width="109">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <font face="Arial Black" size="2">Processor</font></td>
-      <td valign="top" align="left">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">CPU</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Memory</font></td>
-      <td valign="top" height="54" align="left" width="302">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      TMS320C67-100MHz DSP 600 MFLOP</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      32/64-Bit Native Floating Point</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      FLASH 512KBytes</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      SDRAM 16 Mbytes</font></td>
-    </tr>
-    <tr>
-      <td valign="top" bgcolor="#808000" align="left" width="109">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <font face="Arial Black" size="2">Interface</font></td>
-      <td bgcolor="#808000" align="left" valign="top">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Host</font></td>
-      <td bgcolor="#808000" height="24" align="left" valign="top" width="302">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">USB 
-      2.0 Full Speed</font></td>
-    </tr>
-    <tr>
-      <td valign="top" align="left" width="109">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <font face="Arial Black" size="2">Connectors</font></td>
-      <td align="left" valign="top">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Motor/Power</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">I/O</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">Aux 
-      IO</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">USB</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      System Power</font></td>
-      <td valign="top" height="86" align="left" width="302">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">37 
-      pin DSUB</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">40 
-      pin Header</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">16 
-      pin Header</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Type B</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Molex 4-pin (Disk drive type)</font></td>
-    </tr>
-    <tr>
-      <td valign="top" bgcolor="#808000" align="left" width="109">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <font face="Arial Black" size="2">Servo Loop</font></td>
-      <td bgcolor="#808000" align="left" valign="top">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Sample Rate</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Compensation</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Feed Forward</font></td>
-      <td height="24" valign="top" bgcolor="#808000" align="left" width="302">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">90</font><font size="2" face="Times New Roman">µ</font><font face="Arial" size="2">s
-      </font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">PID 
-      + (3) IIR bi-quad Stages/Axis</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Acceleration + Velocity</font></td>
-    </tr>
-    <tr>
-      <td valign="top" align="left" width="109">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <font face="Arial Black" size="2">Axis</font></td>
-      <td align="left" valign="top">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Number</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Type</font></td>
-      <td height="38" align="left" valign="top" width="302">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">4</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      MicroStep/Servo/Brush/Brushless</font></td>
-    </tr>
-    <tr>
-      <td bgcolor="#808000" align="left" valign="top" width="109">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <font face="Arial Black" size="2">Power Amps</font></td>
-      <td valign="top" bgcolor="#808000" align="left">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Number</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Type</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Cont. Current</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Peak Current</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">Max 
-      Supply</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">Min 
-      Supply</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Independent Supply Inputs</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Thermal Protection</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Over Current Protection</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Under Voltage Protection</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Current Measurement</font></td>
-      <td height="86" bgcolor="#808000" valign="top" align="left" width="302">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">8 
-      Full H-Bridges</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Switching 30KHz</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">3 A 
-      each Axis</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">6 A</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      +55V</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      +12V</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">Yes</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">Yes</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">Yes</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">Yes</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">Yes</font></td>
-    </tr>
-    <tr>
-      <td valign="top" align="left" width="109">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <font face="Arial Black" size="2">Logic Supply</font></td>
-      <td align="left" valign="top">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Voltage</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">Max 
-      Current</font></td>
-      <td height="25" align="left" valign="top" width="302">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">+5V 
-      ±10%</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      2.5A</font></td>
-    </tr>
-    <tr>
-      <td valign="top" align="left" bgcolor="#808000" width="109">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <font face="Arial Black" size="2">User I/O</font></td>
-      <td align="left" valign="top" bgcolor="#808000">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Digital</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Encoders</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Analog</font></td>
-      <td height="57" align="left" valign="top" bgcolor="#808000" width="302">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">28 
-      Gen Purpose LVTTL</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">(4)&nbsp; 
-      single-ended, 1 MHz</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">(4) 
-      ±10V ADCs&nbsp; - (4) 0-4V ADC - (4) ±10V DACs</font></td>
-    </tr>
-    <tr>
-      <td valign="top" align="left" width="109">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <font face="Arial Black" size="2">Environment</font></td>
-      <td align="left" valign="top">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Operating Temperature<br>
-      Storage Temperature<br>
-      Humidity</font></td>
-      <td height="56" align="left" valign="top" width="302">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      0-40º C</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      0-40º C<br>
-      20-90% Relative Humidity, non-condensing</font></td>
-    </tr>
-    <tr>
-      <td valign="top" bgcolor="#808000" align="left" width="109">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <font size="2" face="Arial Black">±15V</font></td>
-      <td bgcolor="#808000" align="left" valign="top">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      On-board DC-DC Generator</font></td>
-      <td height="26" bgcolor="#808000" align="left" valign="top" width="302">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">2 
-      Watts (70ma each supply)</font></td>
-    </tr>
-    <tr>
-      <td valign="top" bgcolor="#999966" align="left" width="109">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <font face="Arial Black" size="2">Dimensions</font></td>
-      <td bgcolor="#999966" align="left" valign="top">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Length</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Width</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Height</font></td>
-      <td height="26" bgcolor="#999966" align="left" valign="top" width="302">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">6.5 
-      inches (165 mm)</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">5.0 
-      inches (127 mm)</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">2.0 
-      inches (50 mm)</font></td>
-    </tr>
-  </table>
-  <p style="margin-top: 0; margin-bottom: 0">&nbsp;</div>
-<div align="left">
-&nbsp;<p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-  <p style="margin-top: 0; margin-bottom: 0"><i>
-  <p><font face="Arial Black" size="5">Software</font></i></p>
-  <table border="1" id="table2" bgcolor="#999966" align="left" cellpadding="2" width="600" height="440">
-    <!-- MSTableType="nolayout" -->
-    <tr>
-      <td valign="top" bgcolor="#333300">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <span style="letter-spacing: 1px">
-      <font face="Arial Black" color="#FFFFFF" size="2">Function</font></span></td>
-      <td valign="top" bgcolor="#333300">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <span style="letter-spacing: 1px">
-      <font face="Arial Black" color="#FFFFFF" size="2">Parameter</font></span></td>
-      <td valign="top" bgcolor="#333300" height="24">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <span style="letter-spacing: 1px">
-      <font face="Arial Black" color="#FFFFFF" size="2">Specification</font></span></td>
-    </tr>
-    <tr>
-      <td valign="top" align="left" bgcolor="#0099CC">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <font face="Arial Black" size="2">User Programs</font></td>
-      <td valign="top" align="left" bgcolor="#0099CC">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Language</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Number concurrent</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Stand alone mode</font></td>
-      <td valign="top" align="left" height="56" bgcolor="#0099CC">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">C</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">7</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">Yes</font></td>
-    </tr>
-    <tr>
-      <td valign="top" bgcolor="#00CCFF" align="left">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <font face="Arial Black" size="2">Host Requirements</font></td>
-      <td bgcolor="#00CCFF" align="left" valign="top">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">OS</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Interface</font></td>
-      <td bgcolor="#00CCFF" align="left" valign="top" height="38">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">MS 
-      Windows</font><font size="2" face="Times New Roman">™ 2000, </font>
-      <font face="Arial" size="2">MS Windows</font><font size="2" face="Times New Roman">™ 
-      XP</font></p>
-      <p style="margin-top: 0; margin-bottom: 0">
-      <font size="2" face="Times New Roman">USB 2.0 </font></td>
-    </tr>
-    <tr>
-      <td valign="top" align="left" bgcolor="#0099CC">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <font face="Arial Black" size="2">Interface Library</font></td>
-      <td align="left" valign="top" bgcolor="#0099CC">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Multi-Thread</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Multi-Process</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Multi-Board</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">MS 
-      Windows</font><font size="2" face="Times New Roman">™</font><font size="2" face="Arial"> 
-      VC++</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font size="2" face="Arial">MS 
-      Windows</font><font size="2" face="Times New Roman">™</font><font size="2" face="Arial"> 
-      VB</font></td>
-      <td valign="top" align="left" height="90" bgcolor="#0099CC">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">Yes</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">Yes</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">Yes</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Supported</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Supported</font></td>
-    </tr>
-    <tr>
-      <td valign="top" bgcolor="#00CCFF" align="left">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <font face="Arial Black" size="2">C Compiler</font></td>
-      <td bgcolor="#00CCFF" align="left" valign="top">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      TCC67</font></td>
-      <td valign="top" bgcolor="#00CCFF" align="left" height="26">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Included</font></td>
-    </tr>
-    <tr>
-      <td valign="top" align="left" bgcolor="#0099CC">
-      <font face="Arial Black" size="2">G Code</font></td>
-      <td valign="top" bgcolor="#0099CC" align="left">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Interpreter</font></td>
-      <td bgcolor="#0099CC" valign="top" align="left" height="25">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Included</font></td>
-    </tr>
-    <tr>
-      <td bgcolor="#00CCFF" align="left" valign="top">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <font face="Arial Black" size="2">Script Language</font></td>
-      <td valign="top" bgcolor="#00CCFF" align="left">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      ASCII Commands</font></td>
-      <td bgcolor="#00CCFF" valign="top" align="left" height="28">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Included</font></td>
-    </tr>
-    <tr>
-      <td valign="top" align="left" bgcolor="#0099CC">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <font face="Arial Black" size="2">Trajectory Planner</font></td>
-      <td align="left" valign="top" bgcolor="#0099CC">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Coordinated Motion</font></td>
-      <td align="left" valign="top" height="24" bgcolor="#0099CC">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">4 
-      Axis</font></td>
-    </tr>
-    <tr>
-      <td bgcolor="#00CCFF" align="left" valign="top">
-      <font face="Arial Black" size="2">Executive Application</font></td>
-      <td valign="top" bgcolor="#00CCFF" align="left">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Configuration</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Tuning</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      User Programs</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">G 
-      Code</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Command Console</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Status Display</font></td>
-      <td bgcolor="#00CCFF" valign="top" align="left" height="107">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Upload/Download/Save/Load Motor Config</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Move/Step Response, Bode Plot, Calc Filters</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Integrated IDE - Edit/Compile/Download/Exec</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Integrated </font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      ASCII Command Entry - Log Console</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Axis/Analog/Digital</font></td>
-    </tr>
-  </table>
-  <p style="margin-top: 0; margin-bottom: 0">&nbsp;</div>
+<div id="logo"><a href="index.htm"></a></div>
 
+<div id="home">
+	<a href="index.htm">Table of contents</a> | 
+	<script>
+		if (navigator.userAgent.indexOf("NT 6.2") == -1){
+			document.write('<a href="https://www.dynomotion.com">Dynomotion home page</a>')
+		} else {
+			document.write('<a href="https://www.dynomotion.com" target="_blank">Dynomotion home page</a>')
+		}
+	</script>
+</div>
+<div id="searchNav">
+
+	<div class="gcse-search">
+					<script>
+					  if (document.location.protocol  ==  'https:') {
+					  (function() {
+					  var cx = '012657033059195044748:9fmjmlufts0';
+					  var gcse = document.createElement('script');
+					  gcse.type = 'text/javascript';
+					  gcse.async = true;
+					  gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+					      '//cse.google.com/cse.js?cx=' + cx;
+					  var s = document.getElementsByTagName('script')[0];
+					  s.parentNode.insertBefore(gcse, s);
+					})();
+					  }
+				      </script> 
+				      <gcse:search> </gcse:search>  
+
+	       </div>
+</div>	
+
+	
+
+
+<div id="google_translate_element" style="background: transparent;" align="right"><script type="text/javascript">
+if (navigator.userAgent.indexOf("NT 6.2") == -1) {
+		function googleTranslateElementInit() {
+	  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,de,fr,it,es,pt,ru,uk,ar,zh-CN,zh-TW,ko,iw,hi,ja,tr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+		}						}
+	</script>
+	<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+	</script>
+</div>		
+<div id="main">
+
+<h1>KFLOP Hardware and Software Specification</h1>
+
+ <h2>Hardware</h2>
+ 
+<table>
+  <tr>
+    <th>Parameter</th>
+    <th>Specification</th>
+  </tr>
+  <tr>
+    <td colspan="2" class="header">Processor</td>
+  </tr>
+  <tr>
+    <td>CPU</td>
+    <td>TMS320C67-100MHz DSP 600 MFLOP</td>
+  </tr>
+  <tr>
+    <td>Memory</td>
+    <td>32/64-Bit Native Floating Point FLASH 512KBytes SDRAM 16 Mbytes</td>
+  </tr>
+  <tr>
+    <td colspan="2" class="header">Interface</td>
+    </tr>
+  <tr>
+    <td>Host</td>
+    <td>USB 2.0 Full Speed</td>
+  </tr>
+  <tr>
+    <td colspan="2" class="header">Connectors</td>
+    </tr>
+  <tr>
+    <td>Motor/Power</td>
+    <td>37 pin DSUB</td>
+  </tr>
+  <tr>
+    <td>I/O</td>
+    <td>40 pin Header</td>
+  </tr>
+  <tr>
+    <td>Aux IO</td>
+    <td>16 pin Header</td>
+  </tr>
+  <tr>
+    <td>USB</td>
+    <td>Type B</td>
+  </tr>
+  <tr>
+    <td>System Power</td>
+    <td>Molex 4-pin (Disk drive type)</td>
+  </tr>
+  <tr>
+    <td colspan="2" class="header">Servo Loop</td>
+    </tr>
+  <tr>
+    <td>Sample Rate</td>
+    <td>90&micro;s</td>
+  </tr>
+  <tr>
+    <td>Compensation</td>
+    <td>PID + (3) IIR bi-quad Stages/Axis</td>
+  </tr>
+  <tr>
+    <td>Feed Forward</td>
+    <td>Acceleration + Velocity</td>
+  </tr>
+  <tr>
+    <td colspan="2" class="header">Axis</td>
+    </tr>
+  <tr>
+    <td>Number</td>
+    <td>4</td>
+  </tr>
+  <tr>
+    <td>Type</td>
+    <td>MicroStep/Servo/Brush/Brushless</td>
+  </tr>
+  <tr>
+    <td colspan="2" class="header">Power Amps</td>
+    </tr>
+  <tr>
+    <td> Number</td>
+    <td>8 Full H-Bridges</td>
+  </tr>
+  <tr>
+    <td>Type </td>
+    <td>Switching 30KHz</td>
+  </tr>
+  <tr>
+    <td>Cont. Current</td>
+    <td> 3 A each Axis</td>
+  </tr>
+  <tr>
+    <td>Peak Current</td>
+    <td>6 A</td>
+  </tr>
+  <tr>
+    <td>Max Supply</td>
+    <td>+55V</td>
+  </tr>
+  <tr>
+    <td>Min Supply</td>
+    <td>+12V</td>
+  </tr>
+  <tr>
+    <td>Independent Supply Inputs</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Thermal Protection</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Over Current Protection</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Under Voltage Protection</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Current Measurement</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td colspan="2" class="header">Logic Supply</td>
+    </tr>
+  <tr>
+    <td>Voltage</td>
+    <td>+5V &plusmn;10% </td>
+  </tr>
+  <tr>
+    <td>Max Current</td>
+    <td>2.5A</td>
+  </tr>
+  <tr>
+    <td colspan="2" class="header">User I/O</td>
+    </tr>
+  <tr>
+    <td> Digital</td>
+    <td>28 Gen Purpose LVTTL</td>
+  </tr>
+  <tr>
+    <td>Encoders</td>
+    <td>(4) single-ended, 1 MHz </td>
+  </tr>
+  <tr>
+    <td>Analog</td>
+    <td>(4) &plusmn;10V ADCs - (4) 0-4V ADC - (4) &plusmn;10V DACs</td>
+  </tr>
+  <tr>
+    <td colspan="2" class="header">Environment</td>
+    </tr>
+  <tr>
+    <td>Operating Temperature</td>
+    <td>0-40&ordm; C</td>
+  </tr>
+  <tr>
+    <td>Storage Temperature</td>
+    <td>0-40&ordm; C</td>
+  </tr>
+  <tr>
+    <td>Humidity</td>
+    <td>20-90% Relative Humidity, non-condensing</td>
+  </tr>
+  <tr>
+    <td colspan="2" class="header">&plusmn;15V</td>
+    </tr>
+  <tr>
+    <td> On-board DC-DC Generator</td>
+    <td>2  Watts (70ma each supply)</td>
+  </tr>
+  <tr>
+    <td colspan="2" class="header">Dimensions</td>
+    </tr>
+  <tr>
+    <td>Length</td>
+    <td>6.5 inches (165 mm)</td>
+  </tr>
+  <tr>
+    <td>Width</td>
+    <td>5.0 inches (127 mm)</td>
+  </tr>
+  <tr>
+    <td>Height</td>
+    <td>2.0 inches (50 mm)</td>
+  </tr>
+</table>
+
+  <div style="clear: both;"></div>
+  
+  <h2>Software</h2>
+  
+  <table>
+    <tr>
+      <th>Function</th>
+      <th>Parameter</th>
+      <th>Specification</th>
+    </tr>
+    <tr>
+      <td colspan="3" class="header">User Programs</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>
+      
+      Language</p></td>
+      <td>C</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td> Number concurrent
+      </p></td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>Stand alone mode</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td colspan="3" class="header">Host Requirements</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>OS
+      </p></td>
+      <td>MS 
+      Windows™ 2000, 
+      MS Windows™ 
+      XP
+      </p></td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>
+  Interface</td>
+      <td>
+      USB 2.0 </td>
+    </tr>
+    <tr>
+      <td colspan="3" class="header">Interface Library</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>
+      
+      Multi-Thread</p></p></td>
+      <td>
+      Yes</p></p></td>
+
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td> Multi-Process
+      </p></td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>Multi-Board</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td> MS 
+      Windows™ 
+      VC++
+      </p></td>
+      <td>Supported</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td> MS 
+      Windows™ 
+      VB</td>
+      <td>Supported</td>
+    </tr>
+    <tr>
+      <td colspan="3" class="header">C Compiler</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>
+      
+      TCC67</td>
+      <td>
+      
+      Included</td>
+    </tr>
+    <tr>
+      <td colspan="3" class="header">G Code</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>
+      
+      Interpreter</td>
+      <td>
+      
+      Included</td>
+    </tr>
+    <tr>
+      <td colspan="3" class="header">Script Language</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>
+      
+      ASCII Commands</td>
+      <td>
+      
+      Included</td>
+    </tr>
+    <tr>
+      <td colspan="3" class="header">Trajectory Planner</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>
+      
+      Coordinated Motion</td>
+      <td>
+      4 
+      Axis</td>
+    </tr>
+    <tr>
+      <td colspan="3" class="header">Executive Application</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>
+      
+      Configuration</p></p>
+      </p></td>
+      <td>
+      
+      Upload/Download/Save/Load Motor Config</p></p></p></p></td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>Tuning</td>
+      <td>Move/Step Response, Bode Plot, Calc Filters</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>User Programs
+      </p></td>
+      <td>Integrated IDE - Edit/Compile/Download/Exec</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>G 
+      Code</td>
+      <td>Integrated</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td> Command Console
+      </p></td>
+      <td>ASCII Command Entry - Log Console
+      </p></td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>Status Display</td>
+      <td>Axis/Analog/Digital</td>
+    </tr>
+  </table>
+ 
+
+</div>
 </body>
 
 </html>

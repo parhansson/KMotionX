@@ -1,0 +1,5 @@
+-z -q -c -m"Thread2.map" -o  -x -e _main 
+"MainFile1.obj" 
+"File2.obj" 
+"lnkThread2.cmd"
+

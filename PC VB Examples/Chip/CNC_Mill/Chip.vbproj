@@ -1,0 +1,582 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DFB3CDEF-0EB1-4E24-A3A2-401A086A9721}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <StartupObject>Chip.My.MyApplication</StartupObject>
+    <RootNamespace>Chip</RootNamespace>
+    <AssemblyName>Chip</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <MyType>WindowsForms</MyType>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
+    <PublishUrl>Publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>..\..\..\KMotion\Debug\</OutputPath>
+    <DocumentationFile>
+    </DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\KMotion\Release\</OutputPath>
+    <DocumentationFile>
+    </DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionExplicit>On</OptionExplicit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionCompare>Binary</OptionCompare>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionStrict>Off</OptionStrict>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionInfer>On</OptionInfer>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>D352764828282FB13AD4AE018A1EB96FF8D1861F</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>CNC_Mill_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>false</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release64|AnyCPU'">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>..\..\..\KMotion\Release64\</OutputPath>
+    <Optimize>true</Optimize>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug64|AnyCPU'">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>..\..\..\KMotion\Debug64\</OutputPath>
+    <Optimize>true</Optimize>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>..\..\..\KMotion\Debug\</OutputPath>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>..\..\..\KMotion\Release\</OutputPath>
+    <Optimize>true</Optimize>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release64|x86'">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>..\..\..\KMotion\Release64\</OutputPath>
+    <Optimize>true</Optimize>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug64|x86'">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>..\..\..\KMotion\Debug64\</OutputPath>
+    <Optimize>true</Optimize>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>..\..\..\KMotion\Debug\</OutputPath>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>..\..\..\KMotion\Release\</OutputPath>
+    <Optimize>true</Optimize>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release64|x64'">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>..\..\..\KMotion\Release64\</OutputPath>
+    <Optimize>true</Optimize>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug64|x64'">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>..\..\..\KMotion\Debug64\</OutputPath>
+    <Optimize>false</Optimize>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <Prefer32Bit>true</Prefer32Bit>
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="KMotion_dotNet, Version=1.0.1.0, Culture=neutral, PublicKeyToken=fcaf9556d6f68c3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\KMotion\$(Configuration)\KMotion_dotNet.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Collections.Generic" />
+    <Import Include="System.Data" />
+    <Import Include="System.Drawing" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Windows.Forms" />
+    <Import Include="System.Linq" />
+    <Import Include="System.Xml.Linq" />
+    <Import Include="System.Threading.Tasks" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Classes\Class_Display_Handlers.vb" />
+    <Compile Include="Classes\Class_Delay.vb" />
+    <Compile Include="Classes\Class_Grid_List.vb" />
+    <Compile Include="Classes\Class_Keyboard_Hook.vb" />
+    <Compile Include="Classes\Class_Keyboard_User32_DLL.vb" />
+    <Compile Include="Classes\Class_Kflop.vb" />
+    <Compile Include="Classes\Class_GCode.vb" />
+    <Compile Include="Classes\Class_Logitech_G13.vb" />
+    <Compile Include="Classes\Class_Calc.vb" />
+    <Compile Include="Classes\Class_Data_File.vb" />
+    <Compile Include="Classes\Class_Graphics.vb" />
+    <Compile Include="Classes\Class_Mouse_User32_DLL.vb" />
+    <Compile Include="Classes\Class_Process.vb" />
+    <Compile Include="Classes\Class_Wizards.vb" />
+    <Compile Include="Controls\Chip_Button.Designer.vb">
+      <DependentUpon>Chip_Button.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Chip_Button.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Chip_C_Interface.Designer.vb">
+      <DependentUpon>Chip_C_Interface.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Chip_C_Interface.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Chip_Digital_Input.Designer.vb">
+      <DependentUpon>Chip_Digital_Input.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Chip_Digital_Input.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Chip_Digital_Output.Designer.vb">
+      <DependentUpon>Chip_Digital_Output.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Chip_Digital_Output.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Chip_Text_Box.Designer.vb">
+      <DependentUpon>Chip_Text_Box.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Chip_Text_Box.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Chip_Build.Designer.vb">
+      <DependentUpon>Chip_Build.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Chip_Build.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Chip_Fixture_Offsets.Designer.vb">
+      <DependentUpon>Chip_Fixture_Offsets.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Chip_Fixture_Offsets.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Chip_Drawing.Designer.vb">
+      <DependentUpon>Chip_Drawing.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Chip_Drawing.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Chip_Gcode.Designer.vb">
+      <DependentUpon>Chip_Gcode.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Chip_Gcode.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Chip_Maintenance.Designer.vb">
+      <DependentUpon>Chip_Maintenance.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Chip_Maintenance.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Chip_Trace.Designer.vb">
+      <DependentUpon>Chip_Trace.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Chip_Trace.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Fixture.Designer.vb">
+      <DependentUpon>dlg_Fixture.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Fixture.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Go_To.Designer.vb">
+      <DependentUpon>dlg_Go_To.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Go_To.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Key_Test.Designer.vb">
+      <DependentUpon>dlg_Key_Test.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Key_Test.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Material_Origin.Designer.vb">
+      <DependentUpon>dlg_Material_Origin.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Material_Origin.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Mounts.Designer.vb">
+      <DependentUpon>dlg_Mounts.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Mounts.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Pendant.Designer.vb">
+      <DependentUpon>dlg_Pendant.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Pendant.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Color_Picker.designer.vb">
+      <DependentUpon>dlg_Color_Picker.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Color_Picker.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Input.Designer.vb">
+      <DependentUpon>dlg_Input.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Input.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Modal_Message.Designer.vb">
+      <DependentUpon>dlg_Modal_Message.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Modal_Message.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Progress.Designer.vb">
+      <DependentUpon>dlg_Progress.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Progress.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Flash_Message.designer.vb">
+      <DependentUpon>dlg_Flash_Message.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Flash_Message.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Help.Designer.vb">
+      <DependentUpon>dlg_Help.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Help.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Message_Box.designer.vb">
+      <DependentUpon>dlg_Message_Box.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Message_Box.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Select_Node.designer.vb">
+      <DependentUpon>dlg_Select_Node.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Select_Node.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Set_Offfset.Designer.vb">
+      <DependentUpon>dlg_Set_Offfset.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Set_Offfset.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Startup.Designer.vb">
+      <DependentUpon>dlg_Startup.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Startup.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Task_Parameters.Designer.vb">
+      <DependentUpon>dlg_Task_Parameters.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Task_Parameters.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Tools.Designer.vb">
+      <DependentUpon>dlg_Tools.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Tools.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Tree_Node.Designer.vb">
+      <DependentUpon>dlg_Tree_Node.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\dlg_Tree_Node.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\Form1.Designer.vb">
+      <DependentUpon>Form1.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\Form1.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Main_Form.Designer.vb">
+      <DependentUpon>Main_Form.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Main_Form.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Mod_Global.vb" />
+    <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="My Project\Application.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Application.myapp</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="My Project\Resources.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Settings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Settings.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Controls\Chip_Button.resx">
+      <DependentUpon>Chip_Button.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Chip_C_Interface.resx">
+      <DependentUpon>Chip_C_Interface.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Chip_Digital_Input.resx">
+      <DependentUpon>Chip_Digital_Input.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Chip_Digital_Output.resx">
+      <DependentUpon>Chip_Digital_Output.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Chip_Text_Box.resx">
+      <DependentUpon>Chip_Text_Box.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Chip_Build.resx">
+      <DependentUpon>Chip_Build.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Chip_Fixture_Offsets.resx">
+      <DependentUpon>Chip_Fixture_Offsets.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Chip_Drawing.resx">
+      <DependentUpon>Chip_Drawing.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Chip_Gcode.resx">
+      <DependentUpon>Chip_Gcode.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Chip_Maintenance.resx">
+      <DependentUpon>Chip_Maintenance.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Chip_Trace.resx">
+      <DependentUpon>Chip_Trace.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\dlg_Fixture.resx">
+      <DependentUpon>dlg_Fixture.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\dlg_Go_To.resx">
+      <DependentUpon>dlg_Go_To.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\dlg_Key_Test.resx">
+      <DependentUpon>dlg_Key_Test.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\dlg_Material_Origin.resx">
+      <DependentUpon>dlg_Material_Origin.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\dlg_Mounts.resx">
+      <DependentUpon>dlg_Mounts.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\dlg_Pendant.resx">
+      <DependentUpon>dlg_Pendant.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\dlg_Color_Picker.resx">
+      <DependentUpon>dlg_Color_Picker.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\dlg_Input.resx">
+      <DependentUpon>dlg_Input.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\dlg_Modal_Message.resx">
+      <DependentUpon>dlg_Modal_Message.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\dlg_Progress.resx">
+      <DependentUpon>dlg_Progress.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\dlg_Flash_Message.resx">
+      <DependentUpon>dlg_Flash_Message.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\dlg_Help.resx">
+      <DependentUpon>dlg_Help.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\dlg_Message_Box.resx">
+      <DependentUpon>dlg_Message_Box.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\dlg_Select_Node.resx">
+      <DependentUpon>dlg_Select_Node.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\dlg_Set_Offfset.resx">
+      <DependentUpon>dlg_Set_Offfset.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\dlg_Startup.resx">
+      <DependentUpon>dlg_Startup.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\dlg_Task_Parameters.resx">
+      <DependentUpon>dlg_Task_Parameters.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\dlg_Tools.resx">
+      <DependentUpon>dlg_Tools.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\dlg_Tree_Node.resx">
+      <DependentUpon>dlg_Tree_Node.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Main_Form.resx">
+      <DependentUpon>Main_Form.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My Project\Resources.resx">
+      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="CNC_Mill_TemporaryKey.pfx" />
+    <None Include="My Project\app.manifest" />
+    <None Include="My Project\Application.myapp">
+      <Generator>MyApplicationCodeGenerator</Generator>
+      <LastGenOutput>Application.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="My Project\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <CustomToolNamespace>My</CustomToolNamespace>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="Dialogs\App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

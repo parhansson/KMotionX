@@ -105,6 +105,8 @@ Partial Class Form1
         Me.btnGetInterpreterFileName = New System.Windows.Forms.Button()
         Me.txtInterpreterFileName = New System.Windows.Forms.TextBox()
         Me.Label5 = New System.Windows.Forms.Label()
+        Me.TestCMSequence = New System.Windows.Forms.Button()
+        Me.HaltCM = New System.Windows.Forms.Button()
         Me.grpAxisPositions.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
         CType(Me.sldJogZ, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -504,6 +506,8 @@ Partial Class Form1
         'GroupBox4
         '
         Me.GroupBox4.BackColor = System.Drawing.Color.White
+        Me.GroupBox4.Controls.Add(Me.HaltCM)
+        Me.GroupBox4.Controls.Add(Me.TestCMSequence)
         Me.GroupBox4.Controls.Add(Me.Button1)
         Me.GroupBox4.Controls.Add(Me.SyncPositions)
         Me.GroupBox4.Controls.Add(Me.Label23)
@@ -991,6 +995,24 @@ Partial Class Form1
         Me.Label5.TabIndex = 0
         Me.Label5.Text = "File Name ::"
         '
+        'TestCMSequence
+        '
+        Me.TestCMSequence.Location = New System.Drawing.Point(439, 30)
+        Me.TestCMSequence.Name = "TestCMSequence"
+        Me.TestCMSequence.Size = New System.Drawing.Size(129, 26)
+        Me.TestCMSequence.TabIndex = 20
+        Me.TestCMSequence.Text = "Test CM Sequence"
+        Me.TestCMSequence.UseVisualStyleBackColor = True
+        '
+        'HaltCM
+        '
+        Me.HaltCM.Location = New System.Drawing.Point(439, 66)
+        Me.HaltCM.Name = "HaltCM"
+        Me.HaltCM.Size = New System.Drawing.Size(129, 26)
+        Me.HaltCM.TabIndex = 20
+        Me.HaltCM.Text = "Halt CoordMotion"
+        Me.HaltCM.UseVisualStyleBackColor = True
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1112,5 +1134,6 @@ Partial Class Form1
     Friend WithEvents SyncPositions As System.Windows.Forms.Button
     Friend WithEvents Label23 As System.Windows.Forms.Label
     Friend WithEvents RealtimeLine As System.Windows.Forms.Label
-
+    Friend WithEvents TestCMSequence As Button
+    Friend WithEvents HaltCM As Button
 End Class

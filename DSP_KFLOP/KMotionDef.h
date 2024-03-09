@@ -51,9 +51,23 @@ typedef unsigned int size_t;
 #ifndef TWO_PI
 #define TWO_PI (2.0 * 3.14159265358979323846264)
 #endif    
+#ifndef SQRT2
+#define SQRT2 (1.4142135623730950488)
+#endif    
+#ifndef ISQRT2
+#define ISQRT2 (0.7071067811865475244)
+#endif    
+#ifndef SQRT3
+#define SQRT3 (1.7320508075688772935)
+#endif    
+#ifndef ISQRT3
+#define ISQRT3 (0.577350269189625764509)
+#endif    
 
 
-#include "PC-DSP.h"   // contains common structures shared by PC and DSP
+#include "PC-DSP.h"   // contains common structures shared by PC and DSP (both KFLOP and Kogna)
+
+#define N_CHANNELS N_CHANNELS_KFLOP // for compatibility
 
 // Global Host Status that the PC Application can specify as it Requests Global Status
 // to inform KFLOP User threads of its current state.  ie Job Actively running
@@ -61,6 +75,8 @@ typedef unsigned int size_t;
 extern int volatile HostStatus;
 
 #define JOB_ACTIVE (HostStatus & HOST_JOB_ACTIVE_BIT)
+#define BLOCK_DELETE_CHECKED (HostStatus & HOST_BLOCK_DELETE_BIT)
+#define RTCP_ACTIVE (HostStatus & HOST_RTCP_ACTIVE_BIT)
 
 // incremented by PC whenever any Edit Control Changes.  Count sent to KFLOP with 
 // each Global Status request.  Sample this value the read any Edit Controls from
@@ -68,13 +84,18 @@ extern int volatile HostStatus;
 // re-acquired
 extern int volatile EditChangeCount;  
 
+extern BOOL StandardDerivativeMethod;  // select PID Derivative term based on: 0-Position(default), 1-Error
 
 // standard math funtions
 
 extern float sqrtf (float x);
+extern float rsqrtf(float x);  // return 3.40282e+38 for x=0.0f
 extern float expf  (float x);
+extern float exp2f (float x);
+extern float exp10f(float x);
 extern float logf  (float x);
 extern float log10f(float x);
+extern float log2f (float x);
 extern float powf  (float x, float y);
 extern float sinf  (float x);
 extern float cosf  (float x);
@@ -86,9 +107,13 @@ extern float atan2f(float y, float x);
 extern float fast_fabsf (float y); 
 
 extern double sqrt (double x);
+extern double rsqrt(double x);  // returns 1.79769e+308 for x=0.0
 extern double exp  (double x);
+extern double exp2 (double x);
+extern double exp10(double x);
 extern double log  (double x);
 extern double log10(double x);
+extern double log2 (double x);
 extern double pow  (double x, double y);
 extern double sin  (double x);
 extern double cos  (double x);
@@ -98,6 +123,44 @@ extern double acos (double x);
 extern double atan (double x);
 extern double atan2(double y, double x); 
 extern double fast_fabs (double y); 
+extern double CubeRoot(double v);
+
+extern double modf(double, double*); // returns integer part with more than 32-bit precision
+extern double floor(double x);
+extern double ceil(double x);
+float fractionf(double v);  // return fractional part of a huge number accurately
+
+
+
+extern int  abs(int i);  // integer absolute value
+extern size_t  strlen(const char* _string);
+
+extern char *strcpy(char *_dest, const char *_src);
+extern char *strncpy(char *_to, const char *_from, size_t _n);
+extern char *strcat(char *_string1, const char *_string2);
+extern char *strncat(char *_to, const char *_from, size_t _n);
+extern char *strchr(const char *_string, int _c);
+extern char *strrchr(const char *_string, int _c);
+
+extern int  strcmp(const char *_string1, const char *_string2);
+extern int  strncmp(const char *_string1, const char *_string2, size_t _n);
+
+extern int     strcoll(const char *_string1, const char *_string2);
+extern size_t  strxfrm(char *_to, const char *_from, size_t _n);
+extern char   *strpbrk(const char *_string, const char *_chs);
+extern size_t  strspn(const char *_string, const char *_chs);
+extern size_t  strcspn(const char *_string, const char *_chs);
+extern char   *strstr(const char *_string1, const char *_string2);
+extern char   *strtok(char *_str1, const char *_str2);
+extern char   *strerror(int _errno);
+
+extern void   *memmove(void *_s1, const void *_s2, size_t _n);
+extern void   *memcpy(void *_s1, const void *_s2, size_t _n);
+
+extern int     memcmp(const void *_cs, const void *_ct, size_t _n);
+extern void   *memchr(const void *_cs, int _c, size_t _n);
+
+extern void   *memset(void *_mem, int _ch, size_t _n);
 
 
 #define FPGA_ADDR ((volatile unsigned char *)0x91000000)   // Base of FPGA addresses
@@ -303,6 +366,8 @@ void SetRapidFROwRate(float FRO, float DecelTime); // change from current to the
 void SetFROwRateTemp(float FRO, float DecelTime); //  Temporarily change from current to the specified FRO using a rate based on caller specified time, override FeedHold, don't save as LastFRO
 extern float CS0_LastFRO;	        // Last Desired FRO (used for Resume after FeedHold or for changes in FRO while in FeedHold) 
 extern float CS0_LastRapidFRO;      // Last Desired FRO (used for Resume after FeedHold during Rapid) 
+void iOpenBuf(void);  // Open Coordinated Motion Buffer
+void iExecBuf(void);  // Execute Coordinated Motion Buffer   
 
 // Called after adding something to the Cood Motion Buffer.  Increments the Coord Motion Buffer pointer 
 // while keeping track of how much time is currently in the buffer (CS0_TimeDownloaded), also how much 
@@ -325,7 +390,7 @@ extern TRIP_COEFF TripCoeffs[N_CHANNELS][MAX_TRIP];  // Trip Coeff lists for eac
 //                   1 Disallow drive in direction of limit
 //                   2 Stop movement
 //
-// Bit 8=use Extended Limit Bit Numbers (LimitNegSwitchBit,LimitPosSwitchBit)
+// Bit 8=use Extended Limit Bit Numbers (LimitSwitchNegBit,LimitSwitchPosBit)
 //
 // (for legacy support allow packed 8-bit numbers)
 // Bits 16-23 Neg Limit I/O Bit number
@@ -352,7 +417,7 @@ typedef struct
     double t;                       // current time in secs within the trip state
     double Dest;                    // current dest position for servo
 	double UnfilteredDest;			// unfiltered current dest position for servo (before CM smoothing)
-    double DestOffset;              // Additional offset to position (used by Injection)
+	double DestOffset;              // Additional offset to position (used by Injection)
     float Vel;                      // max velocity for the move trajectory
     float Accel;                    // max Acceleration for the move trajectory
     float Jerk;                     // max Jerk (rate of change of Accel) for the move
@@ -409,7 +474,7 @@ typedef struct
 }CHAN;
 
 // continuously sent by DMA to DACs
-extern short int DAC_Buffer[N_DACS];   //  format    12 bits data 
+extern short int DAC_Buffer[N_DACS];   //  Kanalog format 12 bits data
 #define DAC(ch, v) DAC_Buffer[ch]=((v-2048)&0xfff)  // set DAC channel to value (range -2048/+2047)
 
 extern int ADC_BufferIn[N_ADCS];     //  format   12 bits data 
@@ -430,7 +495,7 @@ extern int ADC_BufferInSnap[2*N_ADCS_SNAP];   //  Snap Amp Current ADC format  1
 #define FULL_RANGE_CURRENT 4.85f
 #define MeasuredAxisAmps(axis) ((ADC(axis+4)+2048)*(FULL_RANGE_CURRENT/4096.0f))  // returns measured current in an axis (Amperes)
 
-// On board Power Amp PWM control
+// SnapAmp PWM control
 
 #define MAX_PWMR_VALUE 400		// Max value for PWMs in Recirculate mode
 void WritePWMR(int ch, int v);  // Write to PWM - Recirculate mode (+ or - power then shorted)
@@ -441,7 +506,7 @@ void WritePWM(int ch, int v);   // Write to PWM - locked anti-phase mode (+ powe
 void WritePWMC(int ch, int v);  // Write to PWM - Current Loop mode - Always optimal decay
 
 extern int SnapAmpPresent;     				// 1 = SnapAmp Present 0= Not Present
-extern int DisableSnapAmpDetectOnBoot;  // disables using Bits 12,13, and 15 on JP7 detect AutoDetect SnapAmps
+extern int DisableSnapAmpDetectOnBoot;  // disables using Bits 12,13, and 15 on JP4 detect AutoDetect SnapAmps
 void WriteSnapAmp(int add, int data);		// write a 16-bit word directly to SnapAmp FPGA 
 int ReadSnapAmp(int add);					// read a 16-bit word directly from SnapAmp FPGA
 
@@ -494,12 +559,12 @@ int ReadSnapAmp(int add);					// read a 16-bit word directly from SnapAmp FPGA
 
 
 extern int KanalogPresent;     // 1=Kanalog Present
-extern int DisableKanalogDetectOnBoot;  // disables using Bits 16-20 and 23 on JP4 to detect AutoDetect Kanalog
+extern int DisableKanalogDetectOnBoot;  // disables using Bits 16-20 and 23 on JP7 to detect AutoDetect Kanalog
 
-extern int KStepPresent;       // 1=KStep Present - set this to mux inputs into virtual bits 48-63
+extern int KStepPresent;       // 0=Not Present, 1=KStep Present, 2=KStepPro Present - set this to mux inputs into virtual bits 48-63
 
 // Kanalog FPGA Registers for internal use only
-#define KAN_TRIG_REG 0xA0		// triggers a transfer to/from Kanalog, 1-enables Kanalog, 2-enables RS232, 3-both
+#define KAN_TRIG_REG 0xA0		// triggers a transfer to/from Kanalog, 1-enables Kanalog, 2-enables RS232, 3-both, 4-Mux PWM0 to JP7 Pin5 IO 44 for KSTEP
 #define KAN_DAC_REGS 0x80  		// 8 - 12 bit r/w regs
 #define KAN_FET_OPTO 0x88  		// 1 - 16 bit 15-8 FET drivers, 7-0 Opto Outputs
 #define KAN_GPOUT    0x89  		// 1 - 8 bit   7-0 GP 3.3V OUTPUTS
@@ -546,6 +611,7 @@ typedef struct
 	double LastCSTime;			// Previous Coordinate System Time
 	double *pEncoderPos;		// pointer to Spindle Position 
 	double K;					// Tau low pass filter coefficient
+	double SyncFactor;			// Time Factor to result in Spindle Sync
 	float TrueSpeedRPS;			// last measured speed
 	float InvBaseSpeedRPS;		// Reciprocal of Base speed of which trajectory was planned
 	double InvBaseSpeedRPSK1;	// InvBaseSpeedRPS * (1-K)
@@ -619,11 +685,44 @@ void Zero(int ch);  // Zero the Encoder Position and Current Commanded Position
 
 // Basic motion commands to move one axis
 void Move(int ch, double x);   // move using absolute coordinates
-void MoveAtVel(int chno, double x, float MaxVel);        // move using absolute coordinates and specify the velocity
+void MoveAtVel(int chno, double x, float MaxVel);   // move using absolute coordinates and specify the velocity
+void MoveAtVelAccel(int chno, double x, float MaxVel, float MaxAccel);  // move using absolute coordinates and specify the velocity and acceleration
+void MoveAtVelAccelDecel(int chno, double x, float MaxVel, float MaxAccel, float MaxDecel);  // move using absolute coordinates and specify the velocity, Accel, Decel
 void MoveRel(int ch, double dx);    // move relative to current destination
-void MoveRelAtVel(int chno, double x, float MaxVel);        //  move relative to current destinatio and specify the velocity
-void Jog(int ch, double vel);       // move continiously at specified velocity
+void MoveRelAtVel(int chno, double x, float MaxVel);   //  move relative to current destination and specify the velocity
+void MoveRelAtVelAccel(int chno, double x, float MaxVel, float Accel);  // move relative to current destination and specify the velocity and accel
+void MoveRelAtVelAccelDecel(int chno, double x, float MaxVel, float Accel, float MaxDecel);  // move relative to current destination and specify the velocity and accel
+void MoveRelAtVelAccelDecelSoft(int chno, double x, float MaxVel, float MaxAccel, float MaxDecel);  // move rel to curr dest and specify the vel, accel, decel and limit to soft limits
+void Jog(int ch, double vel);       // move continuously at specified velocity
+void JogAtAccel(int ch, double vel, double MaxAccel);       // move continiously at specified velocity using specified acceleration
 void MoveExp(int chno, double x, double Tau);  // exponentially approach a target at time constant Tau
+
+typedef enum {  // type of move created by MoveEx
+	INVALID = 0,
+	INVALID_ZERO_NEG_CONSTRAINT,  // improper Accelleration, Jerk, or Vmaxp specified
+	ZERO_DISTANCE_FROM_STOP,  // nothing to do if at stop and commanded to move 0 distance
+	DOUBLE_DECEL_TRI_TRI,  // must decellerate to desired velocity before then decelerating to stop-both triangular deccel
+	DOUBLE_DECEL_TRI_TRAP, // must decellerate to desired velocity before then decelerating to stop-initial triangular deccel, then trapazoidal
+	DOUBLE_DECEL_TRAP_TRI, // must decellerate to desired velocity before then decelerating to stop-initial trapazoidal deccel, then triangular
+	DOUBLE_DECEL_TRAP_TRAP, // must decellerate to desired velocity before then decelerating to stop-both trapazoidal decel
+	TRI_TRI,  // Accelerate then decellerate to stop-both triangular
+	TRI_TRAP,  // Accelerate then decellerate to stop-initial triangular then trapazoidal
+	TRAP_TRI, // Accelerate then decellerate to stop-initial trapazoidal then triangular 
+	TRAP_TRAP,// Accelerate then decellerate to stop-both trapazoidal
+	ACCEL_CRUZE_DECEL,  // Accelerate to desired Velocity (Vmaxp), cruize with zero acceleration, Stop
+	CANT_STOP,  // Algorithm error can't find a solution to stop in time.
+	N_MOVE_TYPES
+} MOVE_TYPE;
+
+extern const char *MoveTypeNames[N_MOVE_TYPES];  // map Move Type String to a descriptive string
+
+
+
+// Creates potentially blended Jerk limited move where current state (a0=current accel, v0=current velocity, x0=current position) 
+// attemps to accelerate/decelerate (using Amax) to a desired velocity (Vmaxp) before stopping at position x1 using deceleration Dmax.
+// returns 0 if sucessful
+int MoveEx(double x1, TRIP_COEFF * Trips, double a0, double v0, double x0, double Amax, double Dmax, double Vmaxp, 
+	double J, int *MoveType, int *Nstates, CHAN *ch);  // Move with Extended options - different Accelleration and Deceleration
 
 int CheckDone(int ch);  // returns 1 if axis is Done, 0 if not, -1 if axis is disabled
 
@@ -638,11 +737,19 @@ int CheckDoneBuf();   // returns 1 if Done, 0 if not, -1 if any axis in CS disab
 int CheckDoneGather();
 void StartMove(int ch);
 
+// Create Trip States for Independent Movement
 void SetupForMove(double From, double To, float MaxVel, CHAN *ch, int CoeffOffset,
-                                                  int NoJerkControlAtStart, 
-                                                  int NoJerkControlAtEnd,
-                                                  int Start,
-												  int *Nstates);
+	int NoJerkControlAtStart,
+	int NoJerkControlAtEnd,
+	int Start,
+	int *Nstates); 
+
+// Create Trip States for Independent Movement (with specified Acceleration)
+void SetupForMoveAccel(double From, double To, float MaxVel, float MaxAccel, CHAN *ch, int CoeffOffset,
+		int NoJerkControlAtStart,
+		int NoJerkControlAtEnd,
+		int Start,
+		int *Nstates);
                                                   
 void SetupForMotionPause(double x,CHAN *ch,int CoeffOffset, double time);  // stay still                                                   
 
@@ -795,31 +902,35 @@ char *fgets(char *str, int n, FILE *file); //read string from PC disk file, str=
 int fscanf(FILE *f, const char *format, ...); //read sting from PC Disk file, convert values, returns number of items converted
 int feof(FILE *f);   // End of file status for disk reading
 
+void *memcpy(void *s1, const void *s2, size_t n);  // copy bytes from s2 -> s1 
+void *memset(void *mem, int ch, size_t n); // set memory bytes with unsigned byte specified by ch
+
+
 /*
  * MessageBox() Flags thes can be passed to the PC to invoke MessageBoxes
  *              for some applications such as KMotionCNC which monitor upload
  *              status and present message boxes when requested.  See the pc-dsp.h
  *              header for more information
  */
-#define MB_OK                       0x00000000L
-#define MB_OKCANCEL                 0x00000001L
-#define MB_ABORTRETRYIGNORE         0x00000002L
-#define MB_YESNOCANCEL              0x00000003L
-#define MB_YESNO                    0x00000004L
-#define MB_RETRYCANCEL              0x00000005L
-#define MB_CANCELTRYCONTINUE        0x00000006L
-#define MB_ICONHAND                 0x00000010L
-#define MB_ICONQUESTION             0x00000020L
-#define MB_ICONEXCLAMATION          0x00000030L
-#define MB_ICONASTERISK             0x00000040L
-#define MB_APPLMODAL                0x00000000L
-#define MB_SYSTEMMODAL              0x00001000L
-#define MB_TASKMODAL                0x00002000L
-#define MB_NOFOCUS                  0x00008000L
-#define MB_SETFOREGROUND            0x00010000L
-#define MB_DEFAULT_DESKTOP_ONLY     0x00020000L
-#define MB_TOPMOST                  0x00040000L
-#define MB_RIGHT                    0x00080000L
+#define MB_OK                       0x00000000
+#define MB_OKCANCEL                 0x00000001
+#define MB_ABORTRETRYIGNORE         0x00000002
+#define MB_YESNOCANCEL              0x00000003
+#define MB_YESNO                    0x00000004
+#define MB_RETRYCANCEL              0x00000005
+#define MB_CANCELTRYCONTINUE        0x00000006
+#define MB_ICONHAND                 0x00000010
+#define MB_ICONQUESTION             0x00000020
+#define MB_ICONEXCLAMATION          0x00000030
+#define MB_ICONASTERISK             0x00000040
+#define MB_APPLMODAL                0x00000000
+#define MB_SYSTEMMODAL              0x00001000
+#define MB_TASKMODAL                0x00002000
+#define MB_NOFOCUS                  0x00008000
+#define MB_SETFOREGROUND            0x00010000
+#define MB_DEFAULT_DESKTOP_ONLY     0x00020000
+#define MB_TOPMOST                  0x00040000
+#define MB_RIGHT                    0x00080000
 
 /*
  * Dialog Box Command IDs
@@ -849,7 +960,7 @@ void StartThread(int thread);  // starts a downloaded program at it's entry poin
 void PauseThread(int thread);  // stops a thread from executing
 int ResumeThread(int thread);  // resumes a tread after a pause 
 void ThreadDone(void);         // call to terminate current thread
-extern int CurrentThread;      // current thread that is/was executing  0 = Pri 1-7 = User Threads
+extern int volatile CurrentThread;  // current thread that is/was executing  0 = Pri 1-7 = User Threads
 
 
 
@@ -878,6 +989,16 @@ void AtomicSet(int *p, int mask);
 //}
 
 void AtomicClear(int *p, int mask);
+//{
+//	*p = *p & mask;
+//}
+
+void AtomicSet16(unsigned short int *p, int mask);
+//{
+//	*p = *p | mask;
+//}
+
+void AtomicClear16(unsigned short int *p, int mask);
 //{
 //	*p = *p & mask;
 //}

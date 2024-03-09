@@ -229,7 +229,7 @@ void CDlgX::RestoreOnStart(FILE * f)
 	
 BOOL CDlgX::OnToolTipNotify( UINT id, NMHDR * pNMHDR, LRESULT * pResult )
 {    
-	TOOLTIPTEXT *pTTT = (TOOLTIPTEXT *)pNMHDR;    UINT nID =pNMHDR->idFrom;
+	TOOLTIPTEXT *pTTT = (TOOLTIPTEXT *)pNMHDR;   HANDLE64 nID =pNMHDR->idFrom;
     
 	if (pTTT->uFlags & TTF_IDISHWND)    
 	{
@@ -252,7 +252,7 @@ int CDlgX::LookForCString(const char * s, const char * c, CString * b)
 {
 	unsigned int i;
 
-	for (i=0; i<strlen(c); i++)
+	for (i=0; i<(int)strlen(c); i++)
 		if (s[i] != c[i]) return 1;
 	
 	*b = s+i;
@@ -268,7 +268,7 @@ void CDlgX::LookForChars(const char * s, const char * c, char * b)
 	CString ss;
 	unsigned int i;
 
-	for (i=0; i<strlen(c); i++)
+	for (i=0; i<(int)strlen(c); i++)
 		if (s[i] != c[i]) return;
 	
 	ss = s+i;
@@ -285,16 +285,17 @@ void CDlgX::LookForFloat(const char * s, const char * c, float * b)
 {
 	unsigned int i;
 
-	for (i=0; i<strlen(c); i++)
+	for (i=0; i<(int)strlen(c); i++)
 		if (s[i] != c[i]) return;
 	sscanf(s+i,"%f",b);
+	*b = round(*b * 1000000.0f) / 1000000.0f;
 }
 
 void CDlgX::LookForIIR(const char * s, const char * c, float *f0, float *f1, float *f2, float *f3, float *f4)
 {
 	unsigned int i;
 
-	for (i=0; i<strlen(c); i++)
+	for (i=0; i<(int)strlen(c); i++)
 		if (s[i] != c[i]) return;
 	
 	sscanf(s+i,"%f%f%f%f%f",f0,f1,f2,f3,f4);
@@ -304,7 +305,7 @@ void CDlgX::LookForDouble(const char * s, const char * c, double * b)
 {
 	unsigned int i;
 
-	for (i=0; i<strlen(c); i++)
+	for (i=0; i<(int)strlen(c); i++)
 		if (s[i] != c[i]) return;
 	sscanf(s+i,"%lf",b);
 }
@@ -313,7 +314,7 @@ void CDlgX::LookForInt(const char * s, const char * c, int * b)
 {
 	unsigned int i;
 
-	for (i=0; i<strlen(c); i++)
+	for (i=0; i<(int)strlen(c); i++)
 		if (s[i] != c[i]) return;
 	sscanf(s+i,"%d",b);
 }
@@ -322,7 +323,7 @@ void CDlgX::LookForHex(const char * s, const char * c, int * b)
 {
 	unsigned int i;
 
-	for (i=0; i<strlen(c); i++)
+	for (i=0; i<(int)strlen(c); i++)
 		if (s[i] != c[i]) return;
 	sscanf(s+i,"%x",b);
 }
@@ -382,7 +383,7 @@ BOOL CDlgX::OnToolTipText(UINT, NMHDR* pNMHDR, LRESULT* pResult)
      TOOLTIPTEXTW* pTTTW = (TOOLTIPTEXTW*)pNMHDR;
      TCHAR szFullText[512];
      CString strTipText;
-     UINT nID = pNMHDR->idFrom;
+     HANDLE64 nID = pNMHDR->idFrom;
 
      if (pNMHDR->code == TTN_NEEDTEXTA && (pTTTA->uFlags & TTF_IDISHWND) ||
          pNMHDR->code == TTN_NEEDTEXTW && (pTTTW->uFlags & TTF_IDISHWND))

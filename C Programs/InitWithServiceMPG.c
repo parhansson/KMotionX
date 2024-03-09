@@ -1,6 +1,6 @@
 #include "KMotionDef.h"
-#include "MPGServiceSmoothHardwareEnc.c"
-// Defines axis 0, 1, 2 as simple step dir outputs
+#include "MPGServiceSmoothHardwareEncFilteredRev3.c"
+// Defines axis 0, 1, 2 as DAC Servos
 // enables them
 // sets them as an xyz coordinate system for GCode
 // Includes and calls MPG Service
@@ -64,7 +64,6 @@ int main()
 	ch0->iir[2].B2=0.000768788;
 	ch0->iir[2].A1=1.92076;
 	ch0->iir[2].A2=-0.923833;
-    EnableAxisDest(0,0);
 
 	ch1->InputMode=ENCODER_MODE;
 	ch1->OutputMode=DAC_SERVO_MODE;
@@ -123,7 +122,6 @@ int main()
 	ch1->iir[2].B2=0.000769;
 	ch1->iir[2].A1=1.92081;
 	ch1->iir[2].A2=-0.923885;
-    EnableAxisDest(1,0);
     
     ch2->InputMode=ENCODER_MODE;
 	ch2->OutputMode=DAC_SERVO_MODE;
@@ -182,27 +180,21 @@ int main()
 	ch2->iir[2].B2=0.000769;
 	ch2->iir[2].A1=1.92081;
 	ch2->iir[2].A2=-0.923885;
-    EnableAxisDest(2,0);
-    
-
     
     EnableAxis(0);
 	EnableAxis(1);
 	EnableAxis(2);
-	//EnableAxis(3);
+
     SetBit(152);
-    
-    
 
 	DefineCoordSystem(0,1,2,-1);
 
     printf("Hello World!\n");  // send message to console
     while(1)
     {
-		ServiceMPG();
+		ServiceMPG();  // Call function to service the MPG
 			
 		//FeedRate();
 		//SpindleCtrl();
     }
-    return 0;
 }

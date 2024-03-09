@@ -14,6 +14,8 @@
 
 #include "..\KMotionDll\KMotionDll.h"  // KMotion DLL Header
 
+#define HANDLE64 _int64
+
 // translate call to __stdcall otherwise stack will be wrong for VB
 VB_CONSOLE_HANDLER *VB_ConsoleHandler=NULL;   
 
@@ -36,34 +38,34 @@ long __stdcall KMViaVB_Test3(long *jj)
 	return 0xDEAD + (*jj)++;
 }
 
-long __stdcall KMViaVB_New(long *handle, long board)
+long __stdcall KMViaVB_New(HANDLE64 *handle, long board)
 {
 	CKMotionDLL *KM; // one instance of the interface class
 
 	KM = new CKMotionDLL(board);
-	*handle=(long)KM;
+	*handle=(HANDLE64)KM;
 	return 1L;
 }
 
 
-long __stdcall KMViaVB_Free(long *handle)
+long __stdcall KMViaVB_Free(HANDLE64 handle)
 {
 	CKMotionDLL *KM; // one instance of the interface class
 	KM=*(CKMotionDLL **)handle;
 	delete KM;
-	*handle=0L;
+	*(HANDLE64 *)handle=0L;
 	return 1L;
 }
 
 
-long __stdcall KMViaVB_WriteLineReadLine(long *handle, char *s, char **rtrn)
+long __stdcall KMViaVB_WriteLineReadLine(HANDLE64 handle, char *s, char **rtrn)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
 	long rslt=KM_dll->WriteLineReadLine(s,*rtrn);
 	return rslt;
 }
 
-long __stdcall KMViaVB_WriteLine(void *handle, char *s)
+long __stdcall KMViaVB_WriteLine(HANDLE64 handle, char *s)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
 	long rslt=KM_dll->WriteLine(s);
@@ -71,70 +73,70 @@ long __stdcall KMViaVB_WriteLine(void *handle, char *s)
 }
 
 
-long __stdcall KMViaVB_WriteLineWithEcho(void *handle, char *s)
+long __stdcall KMViaVB_WriteLineWithEcho(HANDLE64 handle, char *s)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
 	long rslt=KM_dll->WriteLineWithEcho(s);
 	return rslt;
 }
 
-long __stdcall KMViaVB_ReadLineTimeOut(void *handle,char **buf, long TimeOutms)
+long __stdcall KMViaVB_ReadLineTimeOut(HANDLE64 handle,char **buf, long TimeOutms)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
 	long rslt=KM_dll->ReadLineTimeOut(*buf,TimeOutms);
 	return rslt;
 }
 
-long __stdcall KMViaVB_WaitToken(void *handle)
+long __stdcall KMViaVB_WaitToken(HANDLE64 handle)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
 	long rslt=KM_dll->WaitToken();
 	return rslt;
 }
 
-long __stdcall KMViaVB_KMotionLock(void *handle)
+long __stdcall KMViaVB_KMotionLock(HANDLE64 handle)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
 	long rslt=KM_dll->KMotionLock();
 	return rslt;
 }
 
-long __stdcall KMViaVB_USBLocation(void *handle)
+long __stdcall KMViaVB_USBLocation(HANDLE64 handle)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
 	long rslt=KM_dll->USBLocation();
 	return rslt;
 }
 
-void __stdcall KMViaVB_ReleaseToken(void *handle)
+void __stdcall KMViaVB_ReleaseToken(HANDLE64 handle)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
 	KM_dll->ReleaseToken();
 	return;
 }
 
-long __stdcall KMViaVB_Failed(void *handle)
+long __stdcall KMViaVB_Failed(HANDLE64 handle)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
 	long rslt=KM_dll->Failed();
 	return rslt;
 }
 
-long __stdcall KMViaVB_Disconnect(void *handle)
+long __stdcall KMViaVB_Disconnect(HANDLE64 handle)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
 	long rslt=KM_dll->Disconnect();
 	return rslt;
 }
 
-long __stdcall KMViaVB_CheckForReady(void *handle)
+long __stdcall KMViaVB_CheckForReady(HANDLE64 handle)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
 	long rslt=KM_dll->CheckForReady();
 	return rslt;
 }
 
-long __stdcall KMViaVB_LoadCoff(void *handle,long Thread, char *Name, long PackToFlash)
+long __stdcall KMViaVB_LoadCoff(HANDLE64 handle,long Thread, char *Name, long PackToFlash)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
 	long rslt=KM_dll->LoadCoff(Thread,Name,PackToFlash);
@@ -142,14 +144,14 @@ long __stdcall KMViaVB_LoadCoff(void *handle,long Thread, char *Name, long PackT
 }
 
 
-long __stdcall KMViaVB_CompileAndLoadCoff(long *handle,  long Thread, char *Name, char **Err, long MaxErrLen)
+long __stdcall KMViaVB_CompileAndLoadCoff(HANDLE64 handle,  long Thread, char *Name, wchar_t **Err, long MaxErrLen)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
 	long rslt=KM_dll->CompileAndLoadCoff(Name,Thread,*Err,MaxErrLen);
 	return rslt;
 }
 
-long __stdcall KMViaVB_ServiceConsole(void *handle)
+long __stdcall KMViaVB_ServiceConsole(HANDLE64 handle)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
 	long rslt=KM_dll->ServiceConsole();
@@ -157,7 +159,7 @@ long __stdcall KMViaVB_ServiceConsole(void *handle)
 }
 
 
-long __stdcall KMViaVB_SetConsoleCallback(void *handle, VB_CONSOLE_HANDLER *ch)
+long __stdcall KMViaVB_SetConsoleCallback(HANDLE64 handle, VB_CONSOLE_HANDLER *ch)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
 	VB_ConsoleHandler=ch;
@@ -165,7 +167,7 @@ long __stdcall KMViaVB_SetConsoleCallback(void *handle, VB_CONSOLE_HANDLER *ch)
 	return rslt;
 }
 
-long __stdcall KMViaVB_ListLocations(void *handle, long *nlocations, long *list)
+long __stdcall KMViaVB_ListLocations(HANDLE64 handle, long *nlocations, long *list)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
 	long rslt=KM_dll->ListLocations((int *)nlocations,(int *)list);

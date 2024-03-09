@@ -505,7 +505,160 @@ namespace TeachMotion
                 xp = MainStatus.Destination[1] / YResolution;
                 yp = MainStatus.Destination[0] / XResolution;
             }
+            else
+            {
+                // Terminate any MoveExp motion
+                WriteLineHandleException("Jog0=0");
+                WriteLineHandleException("Jog1=0");
         }
+        }
+
+        private void TeachFormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (SyncEnable.Checked)
+            {
+                // Terminate any MoveExp motion
+                WriteLineHandleException("Jog0=0");
+                WriteLineHandleException("Jog1=0");
+            }
+        }
+
+        private void Cleanup_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string[] lines = System.IO.File.ReadAllLines("C:\\Temp\\ValleyTest1opt.txt");  // read the file
+                var LineList = new List<String>(lines);
+                lines = LineList.ToArray();
+                bool[] Away;
+                double[] F;
+                double[] X;
+                double[] Y;
+
+                const double PI = 3.1415926535;
+                const double Angle0 = 135.0;
+                const double AngleTol = 15.0;
+                const double DistTol = 0.05;
+                const double MaxSeg = 0.01;
+
+                int N = lines.Length*100;
+                X = new double[N];
+                Y = new double[N];
+                F = new double[N];
+                Away = new bool[N];
+
+                double LastX = 0.0, LastY = 0.0, LastF = 10.0;
+
+                int i = 0;
+                foreach (string s in lines)  // read in all the points
+                {
+                    int i0 = s.IndexOf('X');
+                    if (i0 >= 0)  // contain an X?
+                    {
+                        int i1 = s.IndexOf(' ', i0 + 1);
+                        if (i1 < 0) i1 = s.Length;
+                        LastX = Convert.ToDouble(s.Substring(i0 + 1, i1 - i0 - 1));
+                    }
+
+                    i0 = s.IndexOf('Y');
+                    if (i0 >= 0)  // contain an X?
+                    {
+                        int i1 = s.IndexOf(' ', i0 + 1);
+                        if (i1 < 0) i1 = s.Length;
+                        LastY = Convert.ToDouble(s.Substring(i0 + 1, i1 - i0 - 1));
+                    }
+
+                    i0 = s.IndexOf('F');
+                    if (i0 >= 0)  // contain an X?
+                    {
+                        int i1 = s.IndexOf(' ', i0 + 1);
+                        if (i1 < 0) i1 = s.Length;
+                        LastF = Convert.ToDouble(s.Substring(i0 + 1, i1 - i0 - 1));
+                    }
+
+                    if (s.IndexOf('G') >= 0)  // contain a G?
+                    {
+                        bool Rapid = s.IndexOf("G0") >= 0;  // rapid?  Assume is far away
+
+                        if (i > 0)
+                        {
+                            // subdivide segment into small pieces
+                            double prevx = X[i - 1];
+                            double prevy = Y[i - 1];
+                            double dx = LastX - prevx;
+                            double dy = LastY - prevy;
+                            double Dist = Math.Sqrt(dx * dx + dy * dy);
+
+                            int nsegs = (int)Math.Ceiling(Dist / MaxSeg);
+
+                            for (int k=0; k < nsegs; k++)
+                            {
+                                X[i] = prevx + (k + 1) * dx / nsegs;
+                                Y[i] = prevy + (k + 1) * dy / nsegs;
+                                F[i] = LastF;
+                                Away[i++] = Rapid;
+                            }
+                        }
+                        else
+                        {
+                            X[i] = LastX;
+                            Y[i] = LastY;
+                            F[i] = LastF;
+                            Away[i++] = Rapid;
+                        }
+                    }
+                }
+
+                N = i; // update n of points found
+
+                for (i = 0; i < N; i++)
+                {
+                    for (int k = 0; k < i; k++) // determine direction and distance to all previous points
+                    {
+                        double dx = X[k] - X[i];
+                        double dy = Y[k] - Y[i];
+
+                        double Angle = Math.Atan2(dy, dx) * 180.0 / PI;
+                        double Dist = Math.Sqrt(dx * dx + dy * dy);
+
+                        if (Angle < 0) Angle += 360.0;  // change from +/-180 to 0-360 for easy comparison
+
+                        // check if direction is within tolerance and distance is greater than threshold
+
+                        if (Math.Abs(Angle - Angle0) < AngleTol && Dist > DistTol)
+                        {
+                            Away[i] = true;
+                            break;
+                        }
+
+                    }
+                }
+
+                System.IO.StreamWriter file = new System.IO.StreamWriter("C:\\Temp\\ValleyTest1optTK.txt");
+
+                for (i = 0; i < N; i++)
+                {
+                    // delete consecutive Away points
+                    if (i != 0 && i < N - 1 && Away[i] && Away[i + 1]) continue;
+
+                    // if Away do a rapid else a feed
+                    if (Away[i])
+                        file.WriteLine(string.Format("G0 X{0:n4} Y{1:n4} F{2:n0}", X[i], Y[i], F[i]));
+                    else
+                        file.WriteLine(string.Format("G1 X{0:n4} Y{1:n4} F{2:n0}", X[i], Y[i], F[i]));
+                }
+
+                file.WriteLine("M30");
+
+                file.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+   
 
         private void ClearData_Click(object sender, EventArgs e)
         {

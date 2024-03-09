@@ -1,0 +1,10 @@
+Header~Fixture~Jewelry Tray
+Operation~Foot Screws~~4-40 Tap Drill~Fixture~Fixed~6~6~0~0.833~ 
+Task~~Bolted Mount~~Foot Screws Drill.chp~0~-8~0~.75~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Jewelry Tray\Common Top Features
+Operation~Chamfer~~0.650 Chamfer (Large)~Fixture~Fixed~4.7137~3.7031~0~0.833~
+Task~~Bolted Mount~00:01:51~Top Outline Chamfer.chp~0~-8~0~.75~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Jewelry Tray\Common Top Features
+Task~~Bolted Mount~00:01:03~Foot Chamfer.chp~0~-8~0~.75~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Jewelry Tray\Common Top Features
+Operation~Foot Holes~~0.250 End Mill~Fixture~Fixed~6~6~0~0.833~ 
+Task~~Bolted Mount~00:02:11~Foot Holes 0_250 EM.chp~0~-8~0~.75~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Jewelry Tray\Common Top Features
+Operation~Top Outline (Cut free)~~0.250 End Mill~Fixture~Fixed~6~3.565~0~0.833~Put on Clamp
+Task~~Bolted Mount~00:05:07~Top Outline Cutout 0_250 EM.chp~0~-8~0~.75~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Jewelry Tray\Common Top Features

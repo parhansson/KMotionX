@@ -1,0 +1,5 @@
+Header~Fixture~Jewelry Tray
+Operation~Test Square~~0.020 Engraver~Fixture~Fixed~6~2.6204~0~0~
+Task~~Bolted Mount~00:00:38~Square.chp~0~-8~0~1~12~8~Top Left~C:\KMotionSrc\PC VB Examples\Chip\Chip_Build\Tooling and Fixtures\Test
+Operation~Test Cut~~0.500 End Mill~Fixture~Fixed~6~6~0~0~
+Task~~Bolted Mount~00:00:12~Test cut 0 depth.chp~0~-8~0~1~12~8~Top Left~C:\KMotionSrc\PC VB Examples\Chip\Chip_Build\Tooling and Fixtures\Test

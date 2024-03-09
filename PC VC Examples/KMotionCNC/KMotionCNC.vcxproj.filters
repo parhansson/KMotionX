@@ -616,5 +616,8 @@
     <Xml Include="res\Manifest.xml">
       <Filter>Resource Files</Filter>
     </Xml>
+    <Xml Include="res\Manifest64.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

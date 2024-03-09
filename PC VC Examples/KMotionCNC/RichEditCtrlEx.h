@@ -8,6 +8,7 @@
 #define AFX_RICHEDITCTRLEX_H__1FAF8777_42B9_4E83_88CA_62478A88F92D__INCLUDED_
 
 #include "TransformDlg.h"	// Added by ClassView
+#include "HiResTimer.h"
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
@@ -40,18 +41,17 @@ public:
 // Implementation
 public:
 	CTransformDlg TransformDlg;
-	DWORD m_t0_esc_time;
+	CHiResTimer m_esc_time;
 	bool m_esc_pushed;
 	bool m_SingleLineOnly;
 	bool escape_time();
-	bool ShiftIsDown;
-	bool CtrlIsDown;
 	int  ModeCode;
 	void SetupForCCode();
 	void SetupForGCode(int size, CString FontName);
 	void SetupForCMD();
 	void SetAStyle(int style, COLORREF fore, COLORREF back=RGB(0xff, 0xff, 0xff), int size=-1, const char *face=0);
 	virtual ~CRichEditCtrlEx();
+	LRESULT OnTabletQuerySystemGestureStatus(WPARAM, LPARAM);
 	int ReadWriteVar; // -1=normal 0=Read Only (changeable using context memu), 1=Read Write, 2=forced Read Only
 
 
@@ -91,6 +91,8 @@ public:
 	CString FindTokenBackwards(CString s, int r);
 	CString CRichEditCtrlEx::WhitespaceToSpace(CString s);
 	int CheckForChars(CString s, CString chs);
+	afx_msg void OnFind();
+	afx_msg void OnReplace();
 
 
 	// Generated message map functions
@@ -110,19 +112,18 @@ protected:
 	afx_msg void OnPaste();
 	afx_msg void OnDelete();
 	afx_msg void OnSelectAll();
-	afx_msg void OnFind();
-	afx_msg void OnReplace();
 	afx_msg void OnSpecialContext();
 	afx_msg void OnTransformSel();
 	afx_msg void OnToggleBlock();
 	afx_msg void OnShowLineNumbers();
 	afx_msg void OnMakeReadWrite();
-    afx_msg LONG OnFindReplaceCmd(WPARAM wParam, LPARAM lParam);
+    afx_msg LRESULT OnFindReplaceCmd(WPARAM wParam, LPARAM lParam);
 	//}}AFX_MSG
 
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
+	afx_msg void OnKillFocus(CWnd* pNewWnd);
 };
 
 /////////////////////////////////////////////////////////////////////////////

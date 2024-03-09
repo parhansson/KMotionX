@@ -86,12 +86,12 @@ namespace SimpleGCodeWPF
                 if (nBoards > 0)
                 {
                     Connected = true;
-                    Title = String.Format("Dynomotion C# Forms App - Connected - USB location {0:X}", List[0]);
+                    Title = String.Format("Dynomotion C# WPF App - Connected - USB location {0:X}", List[0]);
                 }
                 else
                 {
                     Connected = false;
-                    Title = "Dynomotion C# Forms App - Disconnected";
+                    Title = "Dynomotion C# WPF App - Disconnected";
                 }
             }
 

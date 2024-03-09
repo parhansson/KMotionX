@@ -1,0 +1,45 @@
+---------------------------------
+Global Power Management Commands
+---------------------------------
+
+These commands affect all motors.
+
+MD(=N) Disable motors 	    
+  MD will disable all motors. Set N = 1-4 to disable motor N only This will turn off any motor
+  that is not permanently enabled (nPM=1). If provided a valid motor number it will disable that
+  motor only.
+
+ME(=N) Enable motors
+  ME will enable all motors. Set N = 1-4 to enable motor N only. This will turn on any motor that
+  is not disabled (1PM=0). If provided a valid motor number it will enable that motor only.
+
+MT  Set motor enable timeout   
+  In seconds, up to 1 million seconds.Sets the number of seconds before a motor will shut off 
+  automatically. When the timeout starts is se by context:
+                                    
+    Disabled motors (nPM=0) are always off. They do not time out.
+
+    Enabled motors (nPM=1) are always on. They do not time out.
+
+    Motors that are powered-in-cycle(nPM=2) begin timeout at the end of the cycle, which is when
+    the last motor stops moving. 
+
+    Motors that are powered-while-moving (nPM=3) begin timeout at the end of their movement
+
+
+Motor timeouts are suspended during feedholds. This allows changing or adjusting tools without 
+loss of position.
+
+PWR  Report enable states
+  PWR returns all motor enables states. This is like a virtual motor LED that returns 1 if
+  motor N is enabled (LED is lit), 0 if not.
+
+PWR1  Report enable state 	    
+  PWRn returns a single motor state
+
+Examples.
+ME = 180    Lock all motors for 3 minutes for a tooling operation 
+MD        Disable all motors
+MT = 300    Set timeout to 5 minutes
+PWR       Query power enabled for all motors
+PWR2      Query power enabled for motor 2

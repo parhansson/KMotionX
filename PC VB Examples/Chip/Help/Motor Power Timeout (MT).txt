@@ -1,0 +1,6 @@
+---------------------------------
+MT - Motor Power Timeout
+---------------------------------
+
+mt=5        - Keep motors energized for 5 seconds after last movement command
+mt=1000000  - Keep motors energized for 1 million seconds after last movement command (11.57 days)

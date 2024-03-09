@@ -115,9 +115,9 @@ int CGViewDlg::SaveConfig()
 	
 	if (!f)
 	{
-		CString cs;
-		cs.Format("Error Opening Configuration File %s", Name.GetBuffer(0));
-		TheFrame->MessageBox(cs,"Error",MB_ICONSTOP|MB_OK);
+		CStringW cs;
+		cs.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Error Opening Configuration File %s"), Name.GetBuffer(0));
+		MessageBoxW(NULL,cs,/*TRAN*/TheFrame->KMotionDLL->Translate("Error"),MB_ICONSTOP|MB_OK);
 		return 1;
 	}
 
@@ -137,9 +137,9 @@ int CGViewDlg::LoadConfig()
 	
 	if (!f)
 	{
-		CString cs;
-		cs.Format("Error Opening Configuration File %s", Name.GetBuffer(0));
-		TheFrame->MessageBox(cs,"Error",MB_ICONSTOP|MB_OK);
+		CStringW cs;
+		cs.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Error Opening Configuration File %s"), Name.GetBuffer(0));
+		MessageBoxW(NULL, cs,/*TRAN*/TheFrame->KMotionDLL->Translate("Error"),MB_ICONSTOP|MB_OK);
 		return 1;
 	}
 
@@ -164,17 +164,17 @@ int CGViewDlg::LoadConfig()
 int CGViewDlg::SaveLoadConfig(FILE *f, char *s, bool save)
 {
 	CSTRING(m_ToolShapeFile);
-	FLOAT(m_BoxX);
-	FLOAT(m_BoxY);
-	FLOAT(m_BoxZ);
-	FLOAT(m_BoxOffsetX);
-	FLOAT(m_BoxOffsetY);
-	FLOAT(m_BoxOffsetZ);
-	FLOAT(m_ToolSize);
-	FLOAT(m_ToolOffX);
-	FLOAT(m_ToolOffY);
-	FLOAT(m_ToolOffZ);
-	FLOAT(m_AxisSize);
+	DOUBLE(m_BoxX);
+	DOUBLE(m_BoxY);
+	DOUBLE(m_BoxZ);
+	DOUBLE(m_BoxOffsetX);
+	DOUBLE(m_BoxOffsetY);
+	DOUBLE(m_BoxOffsetZ);
+	DOUBLE(m_ToolSize);
+	DOUBLE(m_ToolOffX);
+	DOUBLE(m_ToolOffY);
+	DOUBLE(m_ToolOffZ);
+	DOUBLE(m_AxisSize);
 	INT(m_ShowAxis);
 	INT(m_ShowBox);
 	INT(m_ShowTool);
@@ -265,6 +265,16 @@ BOOL CGViewDlg::OnInitDialog()
 	rect.left = 0;
 	rect.right = rect_dlg.right;
 	GViewParent.m_view.MoveWindow(&rect);
+
+	if (GViewParent.m_FirstScreenDisplay)
+	{
+		GViewParent.m_FirstScreenDisplay = false;
+		if (TheFrame->GCodeDlg.m_Lathe)
+			OnXz();
+		else
+			OnXy();
+	}
+
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE

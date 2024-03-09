@@ -1,0 +1,8 @@
+---------------------------------
+xJH - Jerk Homing
+---------------------------------
+
+Sets the jerk value used for homing to stop movement when switches are hit or released.
+You generally want this value to be larger than the $xJM value, as this determines how 
+fast the axis will stop once it hits the switch. You generally want this as fast as you 
+can get it without losing steps on the accelerations.

@@ -63,15 +63,15 @@ void CGViewerSetup::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_BoxOffsetZ, m_BoxOffsetZ);
 	DDV_MinMaxDouble(pDX, m_BoxOffsetZ, -1000000000., 1000000000.);
 	DDX_Text(pDX, IDC_AxisSize, m_AxisSize);
-	DDV_MinMaxFloat(pDX, m_AxisSize, 0.f, 1.e+006f);
+	DDV_MinMaxDouble(pDX, m_AxisSize, 0.f, 1.e+006);
 	DDX_Text(pDX, IDC_ToolSize, m_ToolSize);
-	DDV_MinMaxFloat(pDX, m_ToolSize, 0.f, 1.e+006f);
+	DDV_MinMaxDouble(pDX, m_ToolSize, 0.f, 1.e+006);
 	DDX_Text(pDX, IDC_ToolOffX, m_ToolOffX);
-	DDV_MinMaxFloat(pDX, m_ToolOffX, -1e6, 1.e+006f);
+	DDV_MinMaxDouble(pDX, m_ToolOffX, -1e6, 1.e+006);
 	DDX_Text(pDX, IDC_ToolOffY, m_ToolOffY);
-	DDV_MinMaxFloat(pDX, m_ToolOffY, -1e6, 1.e+006f);
+	DDV_MinMaxDouble(pDX, m_ToolOffY, -1e6, 1.e+006);
 	DDX_Text(pDX, IDC_ToolOffZ, m_ToolOffZ);
-	DDV_MinMaxFloat(pDX, m_ToolOffZ, -1e6, 1.e+006f);
+	DDV_MinMaxDouble(pDX, m_ToolOffZ, -1e6, 1.e+006);
 	DDX_Check(pDX, IDC_IncludeA, m_IncludeA);
 	DDX_Check(pDX, IDC_IncludeB, m_IncludeB);
 	DDX_Check(pDX, IDC_IncludeC, m_IncludeC);
@@ -99,10 +99,10 @@ void CGViewerSetup::OnBrowseToolShapeFile()
 	CPersistOpenDlg FileDlg (TRUE, ".wrl", 
 		TheFrame->GCodeDlg.InitialFile(m_ToolShapeFile, TOOL_IMAGE_SUB_DIR, "Tool.wrl"),
 		OFN_FILEMUSTEXIST | OFN_ENABLESIZING, 
-		"Tool Shape VRML Files (*.wrl)|*.wrl|All Files (*.*)|*.*||");
+		/*TRAN*/"Tool Shape VRML Files (*.wrl)|*.wrl|All Files (*.*)|*.*||");
 
 	FileDlg.m_ofn.lpstrInitialDir = IDir;
-	FileDlg.m_ofn.lpstrTitle="Select Tool Shape VRML File";
+	FileDlg.m_ofn.lpstrTitle=/*TRAN*/"Select Tool Shape VRML File";
 
 	if (FileDlg.DoModal() == IDOK)
 	{

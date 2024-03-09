@@ -81,7 +81,7 @@ void CToolSetupFilesPage::OnCloseupDialogFace()
 
 void CToolSetupFilesPage::OnIhelp() 
 {
-	TheFrame->HelpDlg.Show("KMotionCNC\\ToolSetupScreenFiles.htm");
+	TheFrame->HelpDlg.Show(/*TRAN*/"KMotionCNC\\ToolSetupScreenFiles.htm");
 }
 
 void CToolSetupFilesPage::OnBrowseToolFile() 
@@ -89,7 +89,7 @@ void CToolSetupFilesPage::OnBrowseToolFile()
 	CPersistOpenDlg FileDlg (TRUE, ".tbl", 
 		TheFrame->GCodeDlg.InitialFile(m_ToolFile, DATA_SUB_DIR, "Default.tbl"),
 		OFN_FILEMUSTEXIST | OFN_ENABLESIZING, 
-		"Tool Files (*.tbl)|*.tbl|All Files (*.*)|*.*||");
+		/*TRAN*/"Tool Files (*.tbl)|*.tbl|All Files (*.*)|*.*||");
 	
 	if (FileDlg.DoModal() == IDOK)
 	{
@@ -103,7 +103,7 @@ void CToolSetupFilesPage::OnBrowseSetupFile()
 	CPersistOpenDlg FileDlg (TRUE, ".set", 
 		TheFrame->GCodeDlg.InitialFile(m_SetupFile, DATA_SUB_DIR, "Default.set"),
 		OFN_FILEMUSTEXIST | OFN_ENABLESIZING, 
-		"Setup Files (*.set)|*.set|All Files (*.*)|*.*||");
+		/*TRAN*/"Setup Files (*.set)|*.set|All Files (*.*)|*.*||");
 	
 	if (FileDlg.DoModal() == IDOK)
 	{
@@ -118,7 +118,7 @@ void CToolSetupFilesPage::OnBrowseGeoFile()
 	CPersistOpenDlg FileDlg (TRUE, ".txt", 
 		TheFrame->GCodeDlg.InitialFile(m_GeoFile, DATA_SUB_DIR, "Measurements.txt"),
 		OFN_FILEMUSTEXIST | OFN_ENABLESIZING,
-		"Geo Files (*.txt)|*.txt|All Files (*.*)|*.*||");
+		/*TRAN*/"Geo Files (*.txt)|*.txt|All Files (*.*)|*.*||");
 	
 	if (FileDlg.DoModal() == IDOK)
 	{
@@ -132,7 +132,7 @@ void CToolSetupFilesPage::OnBrowseVarsFile()
 	CPersistOpenDlg FileDlg (TRUE, ".var", 
 		TheFrame->GCodeDlg.InitialFile(m_VarsFile, DATA_SUB_DIR, "emc.var"),
 				OFN_FILEMUSTEXIST | OFN_ENABLESIZING, 
-		"Variables Files (*.var)|*.var|All Files (*.*)|*.*||");
+		/*TRAN*/"Variables Files (*.var)|*.var|All Files (*.*)|*.*||");
 	
 	if (FileDlg.DoModal() == IDOK)
 	{
@@ -146,7 +146,7 @@ void CToolSetupFilesPage::OnBrowseScreenScriptFile()
 	CPersistOpenDlg FileDlg (TRUE, ".scr", 
 		TheFrame->GCodeDlg.InitialFile(m_ScreenScriptFile, SCREEN_SCRIPTS_DIR, "Default.scr"),
 		OFN_FILEMUSTEXIST | OFN_ENABLESIZING, 
-		"ScreenScript Files (*.scr)|*.scr|All Files (*.*)|*.*||");
+		/*TRAN*/"ScreenScript Files (*.scr)|*.scr|All Files (*.*)|*.*||");
 
 	
 	if (FileDlg.DoModal() == IDOK)

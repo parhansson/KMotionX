@@ -14,6 +14,11 @@
 #define FRO_MIN 0.1
 #define FRO_MAX 2.0
 
+#define MPG_INPUT_AXIS 7
+#define RRO_MAX 1.5
+#define RRO_MIN .1
+
+
 // solve for mapping relationship between encoder and FRO
 // assume the linear relationship (form y=ax+b)
 // Determine the a and b values that will map encoder of Zero
@@ -36,6 +41,9 @@
 // 1.0 = a * Encoder + b
 // Encoder =  (1.0 - b)/a
 //
+
+void ChangeFROAndRRO();
+
  
 double LastFRO=-1;
 double LastFROTime=0;
@@ -61,27 +69,55 @@ main()
 	{
 		T = WaitNextTimeSlice();
 
-		Encoder += (ch->Position - LastEncoder);   // accumulate changes
-		LastEncoder = ch->Position;
-		
-
-		// send message to KMotionCNC if the pot changed significantly
-		// and it has been a while since the last message
-		if ((Encoder > LastUpdateEncoder+CHANGE_TOL || Encoder < LastUpdateEncoder-CHANGE_TOL) && 
-			T > LastFROTime+CHANGE_TIME)
-		{
-			// limit the Range
-			if (Encoder > ALLOWED_ENC_RANGE) Encoder = ALLOWED_ENC_RANGE;
-			if (Encoder < 0) Encoder = 0;
-
-			// map the encoder range to the desired FRO range
-			FRO = exp(a * Encoder + b);
-			if (FRO > FRO_MAX) FRO=FRO_MAX;
-			if (FRO < FRO_MIN) FRO=FRO_MIN;
-
-			DoPCFloat(PC_COMM_SET_FRO,FRO);
-			LastUpdateEncoder=Encoder;
-			LastFROTime=T;
-		}
+		ChangeFROAndRRO();
 	}
 }
+
+void ChangeFROAndRRO()
+{
+    static double T;
+    static int FirstTime=TRUE;
+    static double LastFRO=1, LastTime=0, LastRRO=1, LastEncoder=0, 
+                    LastUpdateEncoder=1e30, Encoder=0, FRO=1, incrementFactorFRO=1, increment=0,
+                    RRO=1, incrementFactorRRO=1, tktk=55;
+    
+    // Initializes the position of the MPG encoder in the first execution.
+	if (FirstTime)
+	{
+	    LastEncoder = chan[MPG_INPUT_AXIS].Position;
+	    FirstTime = FALSE;
+	}
+
+    T = WaitNextTimeSlice();
+    Encoder += (chan[MPG_INPUT_AXIS].Position - LastEncoder);   // accumulate changes
+    LastEncoder = chan[MPG_INPUT_AXIS].Position;
+    
+    ch7->Dest = Encoder;
+
+    if ((Encoder > CHANGE_TOL || Encoder < -CHANGE_TOL) && T > LastTime+CHANGE_TIME)
+    {
+    	printf("A\n");
+        increment = (Encoder > 0) ? 0.1 : -0.1;
+
+        FRO = LastFRO + increment;
+        if (FRO > FRO_MAX) FRO=FRO_MAX;
+        if (FRO < FRO_MIN) FRO=FRO_MIN;
+        incrementFactorFRO = 1 + ((FRO - LastFRO)/LastFRO);
+        LastFRO = FRO;
+        printf("FRO: %f, incrementFactor: %f, increment: %f. MPGWatch.c.\n", FRO, incrementFactorFRO, increment);
+        DoPCFloat(PC_COMM_SET_FRO, FRO);
+        
+        RRO = LastRRO + increment;
+        if (RRO > RRO_MAX || FRO >= RRO_MAX) RRO=RRO_MAX;
+        if (RRO < RRO_MIN) RRO=RRO_MIN;
+        incrementFactorRRO = 1 + ((RRO - LastRRO)/LastRRO);
+        LastRRO = RRO;
+        printf("RRO: %f, incrementFactor: %f, increment: %f. MPGWatch.c.\n", RRO, incrementFactorRRO, increment);
+        DoPCFloat(PC_COMM_SET_RRO, RRO);    
+        
+        LastTime=T;
+        Encoder = 0;
+    }
+}
+
+

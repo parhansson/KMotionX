@@ -1,0 +1,17 @@
+---------------------------------
+xVM - Velocity Maximum
+---------------------------------
+
+(aka traverse rate or seek rate). Sets the maximum velocity the axis will move during a G0 move
+(traverse). This is set in length units per minute for linear axes, degrees per minute for rotary
+axes.
+
+Note that the max velocity is per-axis. Diagonal / multi-axis traverses will actually occur at 
+the fastest speed the combined set of axes and the geometry will allow, and may be faster than 
+the individual axis max velocities. For example, max velocity for X and Y are set to 1000 mm/min.
+For a 45 degree traverse in X and Y the toolhead would travel at 1414.21 mm/min.
+
+ XVM = 1200   sets X maximum velocity (G0) to 1200 mm/min - assuming G21 is active (i.e. the 
+              machine is in MM mode)
+ ZVM = 30.0   sets Z to 30 inches per minute - assuming G20 is active (i.e. inches mode)
+ AVM = 36000  sets A to 100 revolutions per minute (360 * 100)

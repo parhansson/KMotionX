@@ -29,8 +29,11 @@ public:
 
 	HICON m_hIcon;
 
-	CString MainPathRoot;
+	CString MainPathDLL;   // path to DLL without any 64 suffix (32-bit code)
+	CString MainPathDLL64; // Actual Path to DLL 
 	CString MainPath;
+	CString MainPathRoot;
+
 	CString config_file;
 	CString config_file_backup;
 

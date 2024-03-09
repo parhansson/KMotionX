@@ -1,201 +1,333 @@
-<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns="http://www.w3.org/TR/REC-html40">
-
+<!DOCTYPE html>
+<html>
 <head>
-<meta http-equiv="Content-Language" content="en-us">
-<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-<link rel="File-List" href="KFLOPQuickStart_files/filelist.xml">
-<title>KFLOP Quick Start</title>
-<style>
-<!--
-p
-	{margin-right:0in;
-	margin-left:0in;
-	font-size:12.0pt;
-	font-family:"Times New Roman";
-	}
- p.MsoNormal
-	{mso-style-parent:"";
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman";
-	margin-left:0in; margin-right:0in; margin-top:0in}
--->
-</style>
-<!--[if !mso]>
-<style>
-v\:*         { behavior: url(#default#VML) }
-o\:*         { behavior: url(#default#VML) }
-.shape       { behavior: url(#default#VML) }
-</style>
-<![endif]--><!--[if gte mso 9]>
-<xml><o:shapedefaults v:ext="edit" spidmax="1027"/>
-</xml><![endif]-->
 
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+<meta name="keywords" content="ethernet 16-axis controller, cnc control, motion control, cnc boards, 4-axis, 8-axis, stepper, brushless, DC motor, servo, encoder, adc, dac, motion controller, automated motion, manufacturing, Mach3">
+
+<meta name="description" content="Manufacturer of premium motion control products for CNC Manufacturing, Robotics and Automation">
+
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+
+<meta http-equiv="Content-Language" content="en-us">
+
+<title>KFLOP Quick Start</title>
+
+<link rel="stylesheet" type="text/css" href="print.css">
 
 </head>
 
-<body topmargin="10" leftmargin="30" rightmargin="30" bottommargin="10">
+<body>
 
-<p style="margin:0in;margin-bottom:.0001pt">
-<font face="Arial">
-<img border="0" src="Images/logo_2_600_107.png" width="400" height="71"><span style="font-size: 14.0pt">&nbsp;</span></font></p>
-<p style="margin:0in;margin-bottom:.0001pt">&nbsp;</p>
-<p style="margin:0in;margin-bottom:.0001pt"><font face="Arial"><!--[if gte vml 1]><v:shapetype id="_x0000_t136"
- coordsize="21600,21600" o:spt="136" adj="10800" path="m@7,l@8,m@5,21600l@6,21600e">
- <v:formulas>
-  <v:f eqn="sum #0 0 10800"/>
-  <v:f eqn="prod #0 2 1"/>
-  <v:f eqn="sum 21600 0 @1"/>
-  <v:f eqn="sum 0 0 @2"/>
-  <v:f eqn="sum 21600 0 @3"/>
-  <v:f eqn="if @0 @3 0"/>
-  <v:f eqn="if @0 21600 @1"/>
-  <v:f eqn="if @0 0 @2"/>
-  <v:f eqn="if @0 @4 21600"/>
-  <v:f eqn="mid @5 @6"/>
-  <v:f eqn="mid @8 @5"/>
-  <v:f eqn="mid @7 @8"/>
-  <v:f eqn="mid @6 @7"/>
-  <v:f eqn="sum @6 0 @5"/>
- </v:formulas>
- <v:path textpathok="t" o:connecttype="custom" o:connectlocs="@9,0;@10,10800;@11,21600;@12,10800"
-  o:connectangles="270,180,90,0"/>
- <v:textpath on="t" fitshape="t"/>
- <v:handles>
-  <v:h position="#0,bottomRight" xrange="6629,14971"/>
- </v:handles>
- <o:lock v:ext="edit" text="t" shapetype="t"/>
-</v:shapetype><v:shape id="_x0000_s1025" type="#_x0000_t136" style='width:227.25pt;
- height:44.25pt' fillcolor="gray">
- <v:fill color2="#7f7f7f"/>
- <v:shadow color="#868686"/>
- <o:extrusion v:ext="view" specularity="80000f" diffusity="43712f" backdepth="18pt"
-  color="white" on="t" metal="t" viewpoint="-34.72222mm" viewpointorigin="-.5"
-  skewangle="-45" brightness="10000f" lightposition="0,-50000" lightlevel="44000f"
-  lightposition2="0,50000" lightlevel2="24000f" type="perspective"/>
- <v:textpath style='font-family:"BankGothic Md BT";font-weight:bold;
-  v-text-spacing:72090f;v-text-kern:t' trim="t" fitpath="t" string="Thank You!"/>
-</v:shape><![endif]--><![if !vml]><img border=0 width=250 height=52
-src="Images/ThankYou.png" alt="Thank You!" v:shapes="_x0000_s1025"><![endif]></font></p>
-<br><br>
-<p style="margin:0in;margin-bottom:.0001pt"><b>
-<span style="font-size: 14.0pt; font-family: Arial">Dynomotion, Inc.</span></b><font face="Arial"><span style="font-size: 14.0pt">&nbsp;&nbsp;&nbsp;
-</span></font></p>
-<p style="margin:0in;margin-bottom:.0001pt">
-<span style="font-size: 14.0pt; font-family: Arial">
-<a style="color: blue; text-decoration: underline; text-underline: single" href="http://www.dynomotion.com/">
-www.dynomotion.com</a></span></p>
-<p style="margin:0in;margin-bottom:.0001pt">
-<span style="font-size: 14.0pt; font-family: Arial">Email: support@dynomotion.com</span></p>
-<p style="margin:0in;margin-bottom:.0001pt"><font face="Arial"><span style="font-size: 13.5pt">&nbsp;</span></font></p>
-<p style="margin:0in;margin-bottom:.0001pt">&nbsp;</p>
-<p style="margin:0in;margin-bottom:.0001pt"><font face="Arial">
-<span style="font-size: 13.5pt">Please download and install the latest software 
-from </span></font></p>
-<p style="margin:0in;margin-bottom:.0001pt"><font face="Arial">
-<a style="color: blue; text-decoration: underline; text-underline: single" href="http://dynomotion.com/Software/Download.html">
-http://dynomotion.com/Software/Download.html</a></font></p>
-<p style="text-align:justify"><font face="Arial">The installation will create a 
-Windows™ Start button link to further help and to the <b><i>KMotion</i></b> 
-Setup and Tuning Application. </font></p>
-<p>&nbsp;</p>
-<p><font face="Arial"><b><i><u><span style="font-size:14.0pt">QuickStart</span></u></i></b></font></p>
-<p><font face="Arial">Remove the KFLOP Board from the anti-static packaging in a 
-static safe environment.&nbsp; </font></p>
-<p align="center" style="text-align:center"><font face="Arial"><b><i>Note: 
+
+<div id="logo"><a href="../index.htm"></a></div>
+
+<div id="home">
+<a href="../index.htm">Table of contents</a> |  
+	<script>
+		if (navigator.userAgent.indexOf("NT 6.2") == -1){
+			document.write('<a href="https://www.dynomotion.com">Dynomotion home page</a>')
+		} else {
+			document.write('<a href="https://www.dynomotion.com" target="_blank">Dynomotion home page</a>')
+		}
+	</script>
+</div>
+	
+
+<div id="searchNav">
+
+	<div class="gcse-search">
+					<script>
+					  if (document.location.protocol  ==  'https:') {
+					  (function() {
+					  var cx = '012657033059195044748:9fmjmlufts0';
+					  var gcse = document.createElement('script');
+					  gcse.type = 'text/javascript';
+					  gcse.async = true;
+					  gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+					      '//cse.google.com/cse.js?cx=' + cx;
+					  var s = document.getElementsByTagName('script')[0];
+					  s.parentNode.insertBefore(gcse, s);
+					})();
+					  }
+				      </script> 
+				      <gcse:search> </gcse:search>  
+
+	       </div>
+</div>	
+
+	
+
+
+<div id="google_translate_element" style="background: transparent;" align="right"><script type="text/javascript">
+if (navigator.userAgent.indexOf("NT 6.2") == -1) {
+		function googleTranslateElementInit() {
+	  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,de,fr,it,es,pt,ru,uk,ar,zh-CN,zh-TW,ko,iw,hi,ja,tr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+		}						}
+	</script>
+	<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+	</script>
+</div>		
+	
+	
+<div id="main" class="small">
+
+	
+
+<p><img width="200" height="38" src="Images/ThankYou.png" alt="Thank You!" /></p>
+
+
+
+<p>Web: <a href="http://www.dynomotion.com/">www.dynomotion.com</a> | Email: support@dynomotion.com</p>
+
+<p>Please download and install the latest software from <a href="http://dynomotion.com/Software/Download.html">http://dynomotion.com/Software/Download.html</a></p>
+
+
+
+<p>The installation will create a Windows&#0153; Start button link to further help and to the <strong><em>KMotion</em></strong> Setup and Tuning Application. </p>
+
+
+
+
+
+<h1>QuickStart</h1>
+
+
+
+<p>Remove the KFLOP Board from the anti-static packaging in a static safe environment. </p>
+
+
+
+<p><strong><em><span class="warning">Note: </span>
+
 immediately before touching any electronic component, always discharge any 
+
 static electricity you may have by touching an earth ground, such as the metal 
-chassis of a PC.</i></b></font></p>
-<p style="text-align:justify"><font face="Arial">KFLOP may operate powered from 
-the USB by inserting J3.&nbsp; Total power must be &lt; 0.5A for USB powered 
-operation.&nbsp;&nbsp; Otherwise remove J3 and connect a +5V power supply to 
-the <b><i>KMotion</i></b> 4 pin Molex connector.&nbsp; This connector is the same 
-Pinout as a PC Disk Drive power connector.&nbsp; The +12V is not 
+
+chassis of a PC.</em></strong></p>
+
+
+
+<p>KFLOP may operate powered from the USB by inserting J3. Total power must be &lt; 0.5A for USB powered operation. Otherwise remove J3 and connect a +5V power supply to 
+
+the <strong><em>KMotion</em></strong> 4 pin Molex connector. This connector is the same 
+
+Pinout as a PC Disk Drive power connector. The +12V is not 
+
 required for operation, it is routed internally through the board to several of 
-the connectors.&nbsp; See the on-line help section titled <i>Hardware/Connector 
-Description</i> for more information.</font></p>
-<p align="center" style="text-align:center"><font face="Arial"><b><i>Note: KFLOP 
-may at times draw as little as 0.25 Amps from the +5V supply.&nbsp; Some PC power 
-supplies will not function without a minimum load.&nbsp; In these cases an 
-appropriate power resistor (~10 ohm 5 Watt) should be added across the +5V.&nbsp; 
+
+the connectors. See the on-line help section titled <em>Hardware/Connector 
+
+Description</em> for more information.</p>
+
+
+
+<p><strong><em><span class="warning">Note:</span> KFLOP 
+
+may at times draw as little as 0.25 Amps from the +5V supply. Some PC power 
+
+supplies will not function without a minimum load. In these cases an 
+
+appropriate power resistor (~10 ohm 5 Watt) should be added across the +5V. 
+
 Additionally, most ATX power supplies require pins 14 and 15 on the main 20 pin 
-power connector to be shorted.</i></b></font></p>
-<p align="center" style="text-align:center"><font face="Arial"><b><i>Note: it is 
+
+power connector to be shorted.</em></strong></p>
+
+
+
+		<p ><strong><em><span class="warning">Note:</span> it is 
+
 NOT recommended to use the same power supply that is powering your PC and Hard 
-drives to power the KFLOP.&nbsp; Motor noise and power surges have the possibility to 
-cause damage or loss of data within the PC.</i></b></font></p>
-<p><font face="Arial">Connect the USB or turn on the +5V supply.&nbsp; Two green LEDs should blink 
-rapidly for a few seconds (<b><i>KFLOP</i></b> is checking if the Host is 
+
+drives to power the KFLOP. Motor noise and power surges have the possibility to 
+
+cause damage or loss of data within the PC.</em></strong></p>
+
+
+
+<p>Connect the USB or turn on the +5V supply. Two green LEDs should blink 
+
+rapidly for a few seconds (<strong><em>KFLOP</em></strong> is checking if the Host is 
+
 requesting a Flash Recovery during this time), and then the LEDs should remain 
-steady.</font></p>
-<p><font face="Arial">Now connect a USB cable from <b><i>KFLOP</i></b> to your 
-PC and follow the USB Driver instructions below.</font></p>
-<p>&nbsp;</p>
-<p><font face="Arial"><b><i><u><span style="font-size:13.5pt">USB Installation</span></u></i></b></font></p>
-<p><font face="Arial">The first time the <b><i>KFLOP</i></b> board is connected 
-to a computer's USB port this message should be displayed near the Windows™ Task 
-Bar.</font></p>
-<p><font face="Arial"><img border="0" src="Images/KFLOPFound.PNG" width="432" height="112"></font></p>
-<p><font face="Arial">Shortly thereafter, the New Hardware Wizard Should appear.</font></p>
-<p><font face="Arial"><img border="0" src="Images/NewHardware.PNG" width="503" height="392"></font></p>
-<p><font face="Arial">Select &quot;<b>Install from a specific location (Advanced)&quot;
-</b>and select <b>Next</b>.</font></p>
-<p><font face="Arial">&nbsp;</font></p>
-<p><font face="Arial">If you haven't already, download and install the complete
-<b><i>KFLOP</i></b> Software including drivers available at:</font></p>
-<p><font face="Arial">
-<a style="color: blue; text-decoration: underline; text-underline: single" href="http://dynomotion.com/Software/Download.html">
-http://dynomotion.com/Software/Download.html</a></font></p>
-<p><font face="Arial">&nbsp;</font></p>
-<p><font face="Arial">Select: &quot;<b>Don't search.&nbsp; I will choose the 
-driver to install</b>&quot; and click <b>Next</b></font></p>
-<p><font face="Arial">&nbsp;<img border="0" src="Images/DontSearch.PNG" width="503" height="392"></font></p>
-<p><font face="Arial">&nbsp;</font></p>
-<p><font face="Arial">Select: &quot;<b>Have Disk...</b>&quot;</font></p>
-<p><font face="Arial"><img border="0" src="Images/HaveDisk.PNG" width="503" height="392"></font></p>
-<p>&nbsp;</p>
-<p><font face="Arial">Browse to within the subdirectory where you selected the
-<b><i>KFLOP</i></b> Software to be installed to the &quot;<b>USB DRIVER</b>&quot; 
-subdirectory.</font></p>
-<p><font face="Arial">(If the software was installed into the default 
-subdirectory, the location would be: <b>C:\KFLOP4xx\USB DRIVER)</b></font></p>
-<p><font face="Arial">Click<b> </b></font><b><font face="Arial">OK</font></b></p>
-<p><font face="Arial"><img border="0" src="Images/InstallFromDisk.PNG" width="429" height="228"></font></p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p><font face="Arial">Select &quot;<b>KFLOP - Motion Controller 4.xx</b>&quot; and slelect
-<b>Next</b> </font></p>
-<p><font face="Arial"><img border="0" src="Images/FoundKFLOP4xx.PNG" width="503" height="392"></font></p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p><font face="Arial">If this screen appears select <b>Continue Anyway.</b></font></p>
-<p><font face="Arial"><img border="0" src="Images/ContinueAnyway.PNG" width="396" height="315"></font></p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p><font face="Arial">If successful, the above screen should appear. Click <b>
-Finish.</b></font></p>
-<p><font face="Arial"><img border="0" src="Images/Finish.PNG" width="503" height="392"></font></p>
-<p><font face="Arial">&nbsp;</font></p>
-<p><font face="Arial">The <b><i>KFLOP</i></b> Board is now ready for use.&nbsp; To 
-verify proper USB connection to the KFLOP Board, use the Windows™ Start Button 
-to launch the <b><i>KMotion</i></b> Application.</font></p>
-<p><img border="0" src="Images/KMotionMainScreen.PNG" width="632" height="528"></p>
-<p>&nbsp;</p>
-<p><font face="Arial">At the main tool bar select the &quot;Console&quot; button to 
-Display the Console Screen.</font></p>
-<p><img border="0" src="Images/Version.PNG" width="485" height="292"></p>
-<p style="text-align:justify"><font face="Arial">Enter the “Version” command and 
-press the &quot;Send&quot; button to send the ‘Version” command to the <b><i>KFLOP</i></b> 
-Board.&nbsp; The following should be displayed indicating successful communication 
-between the PC and <b><i>KFLOP</i></b> Board.</font></p>
-<p class="MsoNormal"><font face="Arial"><b>KFLOP 4.07 Build 09:36:16 Nov 8 2008<br>
-KFLOP 4.07<br>
-Ready</b><br>
-&nbsp;</font></p>
-<p class="MsoNormal"><font face="Arial">See the On-Line help for more 
-information on how to connect your motors drives, enter console script commands, 
-compile and run C Programs, execute G Code, and much more!!!</font></p>
+
+steady.</p>
+
+
+
+<p>Now connect a USB cable from <strong><em>KFLOP</em></strong> to your 
+
+PC and follow the USB Driver instructions below.</p>
+
+
+
+
+
+<h2>USB Installation</h2>
+
+
+
+<p>The first time the <strong><em>KFLOP</em></strong> board is connected 
+
+to a computer's USB port this message should be displayed near the Windows&#0153; Task 
+
+Bar.</p>
+
+
+
+<table>
+
+ <tr>
+
+  <td>
+
+   <p><img src="Images/NewHardwareFound.png" width="399" height="161" alt=""/></p></td>
+
+  <td></td>
+
+  <td>
+
+   <p><img border="0" src="Images/BrowseMyComputer.png" width="381" height="275"></p></td>
+
+ </tr>
+
+ <tr>
+
+   <td>Shortly thereafter, the New Hardware Wizard Should appear.</td>
+
+   <td>&nbsp;</td>
+
+   <td>Select <strong>&quot;Browse my computer for driver software&quot;</strong>.</td>
+
+ </tr>
+
+ <tr>
+
+   <td colspan="3">If you haven't already, download and install the complete <strong><em>KFLOP</em></strong> Software including drivers available at: <a href="http://dynomotion.com/Software/Download.html">http://dynomotion.com/Software/Download.html</a></td>
+
+   </tr>
+
+  <tr>
+
+   <td><img border="0" src="Images/DriverSoftwareLocation.png" width="383" height="251"></td>
+
+   <td></td>
+
+   <td><img border="0" src="Images/WindowsCannotVerify.png" width="362" height="227"></td>
+
+ </tr>
+
+ <tr>
+
+   <td><p>Browse to within the subdirectory where you selected the <strong><em>KFLOP</em></strong> Software to be installed to the &quot;<strong>USB DRIVER</strong>&quot; 
+
+     subdirectory. (If the software was installed into the default 
+
+      subdirectory, the location would be: <strong>C:\KMotion4xx\USB DRIVER)</strong>.</p></td>
+
+   <td>&nbsp;</td>
+
+   <td valign="top"><p><strong>Note:</strong> If your system has not received the latest Windows&#0153; security updates, you might get a warning screen. Select &quot;<strong>Install this driver software anyway&quot;</strong>.</p></td>
+
+ </tr>
+
+ <tr>
+
+   <td><img src="Images/UpdateSuccessful.png" width="348" height="236" alt=""/></td>
+
+   <td></td>
+
+   <td><img border="0" src="Images/KMotionMainScreen.PNG" width="356" height="297"></td>
+
+ </tr>
+
+ <tr>
+
+   <td>If successful, the above screen should appear. Click <strong> &quot;Close&quot;.</strong></td>
+
+   <td>&nbsp;</td>
+
+   <td>The <strong><em>KFLOP</em></strong> Board is now ready for use. To 
+
+verify proper USB connection to the KFLOP Board, use the Windows&#0153; Start Button 
+
+to launch the <strong><em>KMotion</em></strong> Application.</td>
+
+ </tr>
+
+ <tr>
+
+   <td><img border="0" src="Images/Version.PNG" width="350" height="250"></td>
+
+   <td></td>
+
+   <td><img src="Images/DeviceManager.png" width="374" height="336" alt=""/></td>
+
+ </tr>
+
+ <tr>
+
+   <td>At the main tool bar select the &quot;Console&quot; button to 
+
+Display the Console Screen. Enter the "Version" command and press "Send". An output message
+
+will appear indicating successful communication between the PC and KFLOP.</td>
+
+   <td>&nbsp;</td>
+
+   <td>Go to  the <strong>Device Manager</strong> and   right-mouse-click on &quot;KFLOP Motion Controller&quot; under &quot;Other devices&quot; and select<strong> &quot;Update Driver Software&quot;</strong>.</td>
+
+ </tr>
+
+ <tr>
+
+   <td colspan="3">If you are upgrading to a new version of <em><strong>KMotion</strong></em>, follow the steps below:</td>
+
+   </tr>
+
+ <tr>
+   
+   <td><img src="Images/UpdateDriver.png" width="329" height="365" alt=""/></td>
+   
+   <td>&nbsp;</td>
+   
+   <td><img src="Images/Uninstall.png" width="342" height="225" alt=""/></td>
+   
+ </tr>
+
+ <tr>
+
+   <td>On the next screen click <strong>&quot;Update driver&quot;</strong> and follow the steps described above.</td>
+
+   <td>&nbsp;</td>
+
+   <td>If the wrong or no drivers were installed, find KFLOP in the Device Manager and right-mouse-click<strong> &quot;Uninstall&quot;</strong>. On the next screen, select the checkbox next to<strong> &quot;Delete the driver software for this device&quot;</strong>.</td>
+
+ </tr>
+
+</table>
+
+
+
+
+
+<p>See the On-Line help for more 
+
+  information on how to connect your motors drives, enter console script commands, 
+
+  compile and run C Programs, execute G Code, and much more!</p>
+
+
+
+</div>
 
 </body>
 
+
+
 </html>
+

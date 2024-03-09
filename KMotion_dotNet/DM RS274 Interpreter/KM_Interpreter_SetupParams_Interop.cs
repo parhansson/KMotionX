@@ -310,6 +310,16 @@ namespace KMotion_dotNet
             static extern void KM_dotnet_Interop_GCodeInterpreter_GetTool(IntPtr handle, int index, ref int slot, ref int id,
                                                ref double length, ref double diameter, ref double xoffset, ref double yoffset);
 
+            // GCode Parameters
+
+            [DllImport("KMotion_dotNet_Interop.dll")]
+            static extern double KM_dotnet_Interop_GCodeInterpreter_Get_Parameter(IntPtr handle, int index);
+
+            [DllImport("KMotion_dotNet_Interop.dll")]
+            static extern bool KM_dotnet_Interop_GCodeInterpreter_Set_Parameter(IntPtr handle, int index, double value);
+
+
+
             //Fixed Cycle Params     
 
             [DllImport("KMotion_dotNet_Interop.dll")]
@@ -380,8 +390,12 @@ namespace KMotion_dotNet
             [DllImport("KMotion_dotNet_Interop.dll")]
             static extern double KM_dotnet_Interop_GCodeInterpreter_Get_block_r_number(IntPtr handle);
 
-            
-            
+            [return: MarshalAs(UnmanagedType.I1)]
+            [DllImport("KMotion_dotNet_Interop.dll")]
+            static extern bool KM_dotnet_Interop_GCodeInterpreter_Get_block_d_flag(IntPtr handle);
+            [DllImport("KMotion_dotNet_Interop.dll")]
+            static extern double KM_dotnet_Interop_GCodeInterpreter_Get_block_d_number(IntPtr handle);
+
             #endregion
         }
     }

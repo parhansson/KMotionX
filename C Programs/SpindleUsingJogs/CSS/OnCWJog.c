@@ -11,7 +11,8 @@ int   *css_mode = &persist.UserData[PC_COMM_CSS_MODE];			// Mode 1=Normal RPM mo
 main()
 {
 	float speed = *(float *)&persist.UserData[SPEEDVAR];  // value stored is actually a float 
-	float LastState = persist.UserData[STATEVAR];  // get last state 
+	int LastState = persist.UserData[STATEVAR];  // get last state 
+
 	
 	if (LastState==-1)  
 	{

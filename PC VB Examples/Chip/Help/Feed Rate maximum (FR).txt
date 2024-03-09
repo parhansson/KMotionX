@@ -1,0 +1,14 @@
+---------------------------------
+xFR - Feed Rate maximum
+---------------------------------
+
+Sets the maximum velocity the axis will move during a feed in a G1, G2, or G3 move. This works 
+similarly to maximum velocity, but instead of actually setting the speed, it only serves to 
+establish a "do not exceed" for Gcode F words. Put another way, the maximum feed rate setting 
+is NOT used to set the Gcode's F value; it is only a maximum that may be used to limit the F value
+provided in a gcode file.
+
+Axis feed rates should be equal to or less than the maximum velocity. See TinyG Tuning for more details.
+
+ XFR  =1000  sets X max feed rate to 1000 mm/min - assuming G21 is active 
+             (i.e. the machine is in MM mode)

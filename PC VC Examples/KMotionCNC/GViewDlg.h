@@ -25,17 +25,17 @@ public:
 	int FindExtents();
 	
 	CString m_ToolShapeFile;
-	float m_BoxX;
-	float m_BoxY;
-	float m_BoxZ;
-	float m_BoxOffsetX;
-	float m_BoxOffsetY;
-	float m_BoxOffsetZ;
-	float m_ToolSize;
-	float m_ToolOffX;
-	float m_ToolOffY;
-	float m_ToolOffZ;
-	float m_AxisSize;
+	double m_BoxX;
+	double m_BoxY;
+	double m_BoxZ;
+	double m_BoxOffsetX;
+	double m_BoxOffsetY;
+	double m_BoxOffsetZ;
+	double m_ToolSize;
+	double m_ToolOffX;
+	double m_ToolOffY;
+	double m_ToolOffZ;
+	double m_AxisSize;
 	BOOL m_ShowAxis, m_ShowBox, m_ShowTool, m_Ortho;
 	BOOL m_IncludeA;
 	BOOL m_IncludeB;

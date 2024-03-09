@@ -30,13 +30,13 @@ class CAllToolSetupSheet : public CMySheet
 public:
 	CAllToolSetupSheet(UINT nIDCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0);
 	CAllToolSetupSheet(LPCTSTR pszCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0);
-	virtual void RestoreOnStart(FILE *f);
-	virtual void SaveOnExit(FILE *f);
 	int LastMoveX;
 	int LastMoveY;
 	int LastSizeX;
 	int LastSizeY;
 	BOOL InitDialogComplete;
+
+	int LastPageViewed;
 
 protected:
 	int AddControlPages(void);

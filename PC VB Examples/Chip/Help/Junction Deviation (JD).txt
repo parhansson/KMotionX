@@ -1,0 +1,28 @@
+---------------------------------
+xJD - Junction Deviation
+---------------------------------
+
+This one is somewhat complicated. Junction deviation - in combination with Junction 
+Acceleration (JA) from the system group - sets the velocity reduction used during 
+cornering through the junction of two lines. The reduction is based on controlling 
+the centripetal acceleration through the junction to the value set in JA with the 
+junction deviation being the "tightness" of the controlling cornering circle. An 
+explanation of what's happening here can be found on Sonny Jeon's blog: Improving grbl
+cornering algorithm.
+
+It's important to realize that the tool head does not actually follow the controlling circle. 
+The circle is just used to set the speed of the tool through the defined path. In other words,
+the tool does go through the sharp corner, just not as fast. This is a Gcode G61 - Exact Path Mode
+operation, not a Gcode G64 - Continuous Path Mode (aka corner rounding, or splining) operation.
+
+While JA is set globally and applies to all axes, JD is set per axis and can vary depending on 
+the characteristics of the axis. An axis that moves more slowly should have a JD that is less 
+than an axis that can move more quickly, as the larger the JD the faster the machine will move
+through the junction (i.e. a bigger controlling circle). The following example has some representative
+values for a Probotix Fireball V90 machine. The V90 has 5 TPI X and Y screws, and 12 TPI Z. All values
+in MM. 
+
+ xJD = 0.05      Units are mm
+ yJD = 0.05
+ zJD = 0.02      Setting Z to a smaller value means that moves with a change in the Z component 
+                 will move proportionately slower depending on the contribution in Z. 

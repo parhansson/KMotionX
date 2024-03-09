@@ -112,6 +112,7 @@ int SPI_IN(int send_data)
         SetStateBit(DOUT, (send_data >> (14 - i)) & 1);
         Dly();
     }
+    dataIn = (dataIn << 1) | ReadBit(DATAIN);  // read the bit
     SetBit(CS); //CS high
     Dly();
 

@@ -1,226 +1,222 @@
+<!DOCTYPE html>
 <html>
-
 <head>
-<meta http-equiv="Content-Language" content="en-us">
-<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
-<meta name="ProgId" content="FrontPage.Editor.Document">
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+<meta name="keywords" content="ethernet 16-axis controller, cnc control, motion control, cnc boards, 4-axis, 8-axis, stepper, brushless, DC motor, servo, encoder, adc, dac, motion controller, automated motion, manufacturing, Mach3">
+<meta name="description" content="Manufacturer of premium motion control products for CNC Manufacturing, Robotics and Automation">
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+
 <title>Using SnapAmp</title>
-<style>
-<!--
-div.Section1
-	{page:Section1;}
--->
-</style>
+
+<link rel="stylesheet" type="text/css" href="../css/style.css">
+<link rel="stylesheet" href="../css/prism.css" data-noprefix />
+<script src="../js/prism.js"></script>
 </head>
 
 <body>
 
-<p style="margin-top: 0; margin-bottom: 0"><b><font face="Arial" size="4">Using SnapAmp 
-1000</font></b></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0"><i><font face="Arial">SnapAmp is a very 
-high performance, feature rich, efficient amplifier that expands the capability 
-of the KMotion Motion Control System.</font></i></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">A SnapAmp adds:</font></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">&nbsp;&nbsp;&nbsp; 
-PWM Amplifier channels</font></p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">&nbsp;&nbsp;&nbsp; 
-Opto isolated Inputs</font></p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">&nbsp;&nbsp;&nbsp; 
-Differential Encoder inputs</font></p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">&nbsp;&nbsp;&nbsp; 
-General Purpose digital IO</font></p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">&nbsp;&nbsp;&nbsp; 
-Real-time current measurement for each motor coil</font></p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">&nbsp;&nbsp;&nbsp; 
-Real-time power supply voltage measurement</font></p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">&nbsp;&nbsp;&nbsp; 
-Programmable peak Supply Current limits</font></p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">&nbsp;&nbsp;&nbsp; 
-Programmable power supply voltage clamping</font></p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">&nbsp;&nbsp;&nbsp; 
-Digital temperature monitoring</font></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Up to two SnapAmps 
-may be added to a Single KMotion Controller.</font></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">A single SnapAmp 
-adds four PWM full bridge amplifiers.&nbsp; The four PWM's are identified as 
-8,9,10,11 for the first SnapAmp in a system and 12,13,14,15 for a second SnapAmp 
-in a system.&nbsp; A single PWM/Full bridge is required for a brush motor, and a 
-consecutive pair of PWM/Full Bridges are required for a Stepper Motor or 
-Brushless Motor.</font></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<div class="Section1">
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">A single 
-	SnapAmp adds four Quadrature Encoder inputs.&nbsp; The four Quadrature 
+<div id="logo"><a href="../index.htm"></a></div>
+
+<div id="home">
+<a href="../index.htm">Table of contents</a> |  
+	<script>
+		if (navigator.userAgent.indexOf("NT 6.2") == -1){
+			document.write('<a href="https://www.dynomotion.com">Dynomotion home page</a>')
+		} else {
+			document.write('<a href="https://www.dynomotion.com" target="_blank">Dynomotion home page</a>')
+		}
+	</script>
+</div>
+	
+<div id="searchNav">
+
+	<div class="gcse-search">
+					<script>
+					  if (document.location.protocol  ==  'https:') {
+					  (function() {
+					  var cx = '012657033059195044748:9fmjmlufts0';
+					  var gcse = document.createElement('script');
+					  gcse.type = 'text/javascript';
+					  gcse.async = true;
+					  gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+					      '//cse.google.com/cse.js?cx=' + cx;
+					  var s = document.getElementsByTagName('script')[0];
+					  s.parentNode.insertBefore(gcse, s);
+					})();
+					  }
+				      </script> 
+				      <gcse:search> </gcse:search>  
+
+	       </div>
+</div>	
+
+	
+
+
+<div id="google_translate_element" style="background: transparent;" align="right"><script type="text/javascript">
+if (navigator.userAgent.indexOf("NT 6.2") == -1) {
+		function googleTranslateElementInit() {
+	  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,de,fr,it,es,pt,ru,uk,ar,zh-CN,zh-TW,ko,iw,hi,ja,tr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+		}						}
+	</script>
+	<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+	</script>
+</div>		
+<div id="main">
+
+<h1>Using SnapAmp 1000</h1>
+
+<p>SnapAmp is a very high performance, feature rich, efficient amplifier that expands the capability 
+of our KFLOP/Kogna Motion Control Boards.</p>
+
+<p>A SnapAmp adds:</p>
+	<ul>
+		<li>PWM Amplifier channels</li>
+		<li>Opto isolated Inputs</li>
+		<li>Differential Encoder inputs</li>
+		<li>General Purpose digital IO</li>
+		<li>Real-time current measurement for each motor coil</li>
+		<li> Real-time power supply voltage measurement</li>
+		<li>Programmable peak Supply Current limits</li>
+		<li>Programmable power supply voltage clamping</li>
+		<li>Digital temperature monitoring</li>
+	</ul>
+	
+	<p>Up to two SnapAmps may be added to a Single KFLOP/Kogna Controller.</p>
+
+	<p>A single SnapAmp adds four PWM full bridge amplifiers. The four PWM's are identified as 
+	8,9,10,11 for the first SnapAmp in a system and 12,13,14,15 for a second SnapAmp 
+	in a system. A single PWM/Full bridge is required for a brush motor, and a 
+	consecutive pair of PWM/Full Bridges are required for a Stepper Motor or 
+	Brushless Motor.</p>
+
+	<p>A single SnapAmp adds four Quadrature Encoder inputs. The four Quadrature 
 	Encoder inputs are identified as 8,9,10,11 for the first SnapAmp in a system 
-	and 12,13,14,15 for a second SnapAmp in a system.</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Within the 
-	KMotion executive program under the option menu set whether there are one or 
-	two SnapAmps connected to KMotion.&nbsp; This enables expanded Analog and 
+	and 12,13,14,15 for a second SnapAmp in a system.</p>
+
+	<p>Within the KMotion executive program under the option menu set whether there are one or 
+	two SnapAmps connected to KFLOP/Kogna. This enables expanded Analog and 
 	Digital Screens that will then display the additional I/O available on the 
-	SnapAmp(s).</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">
-	<font face="Arial">
-	<img border="0" src="SnapMenu.PNG" width="346" height="89"></font></p>
-	<p style="margin-top: 0; margin-bottom: 0">
-	&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">
-	&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">
-	<font face="Arial">The middle portion of the Analog Status Screen displays 
-	the measured currents, supply voltages, temperatures, and current PWM 
-	settings.</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">
-	&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
-	<img border="0" src="SnapAnalog.PNG" width="480" height="732"></font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The Digital 
-	I/O screen displays the IO bits (numbers 64 - 93) for SnapAmp 0 in the 
+	SnapAmp(s).</p>
+
+	<p><img src="SnapMenu.PNG" width="346" height="89" alt="SnapAmp Menu" /></p>
+
+	<p>The middle portion of the Analog Status Screen displays the measured currents, supply voltages, temperatures, and current PWM settings.</p>
+
+	<p><img src="SnapAnalog.PNG" width="480" height="732" alt="SnapAmp Analog" /></p>
+
+	<p>The Digital I/O screen displays the IO bits (numbers 64 - 93) for SnapAmp 0 in the 
 	middle portion of the screen, and IO bits numbered (96 - 125) for Snap Amp 1 
-	on the right portion of the screen.&nbsp; The original KMotion I/O bits 
-	remain on the left portion of the screen.&nbsp; Note that KMotion I/O Bits 
+	on the right portion of the screen. The original KFLOP/Kogna I/O bits 
+	remain on the left portion of the screen. Note that KFLOP/Kogna I/O Bits 
 	20-28 are used for the high speed communication to the SnapAmps and may not 
-	be used as user IO.</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">
-	<img border="0" src="SnapDigital.PNG" width="927" height="352"></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p><font face="Arial"><span style="font-family: Arial">
-	SnapAmp has programmable peak current limiting and also programmable peak 
-	supply voltage clamping.&nbsp; The clamping is required for large machines 
+	be used as user IO.</p>
+
+	<p><img src="SnapDigital.PNG" width="927" height="352" alt="SnapAmp Digital" /></p>
+
+	<p>SnapAmp has programmable peak current limiting and also programmable peak 
+	supply voltage clamping. The clamping is required for large machines 
 	because when a massive machine stops quickly, the mechanical energy ends up 
-	getting injected back into the power supply. &nbsp;Some power supplies don’t like 
+	getting injected back into the power supply. Some power supplies don’t like 
 	this and allow their voltage to rise up possibly causing damage to the 
-	supply or the SnapAmp. &nbsp;The clamping feature protects against this.&nbsp; 
-	Currently there isn't&nbsp; a way to configure the current limits and 
-	voltage clamp from the KMotion Screens. &nbsp;Listed below is a small C program 
-	that may be used 
-	to set them appropriately for most systems. &nbsp;Snap Amp has 2 green LEDS.&nbsp; One 
-	just blinks to say it is alive and running. &nbsp;The other turns on for a fault 
-	condition.&nbsp; A fault can be an over current or over temp. &nbsp;When a fault 
-	condition is present, all amps are disabled.&nbsp; When you power up KMotion the 
+	supply or the SnapAmp. The clamping feature protects against this. 
+	Currently there isn't a way to configure the current limits and 
+	voltage clamp from the KMotion Screens. Listed below is a small C program 
+	that may be used to set them appropriately for most systems. Snap Amp has 2 green LEDS. One 
+	just blinks to say it is alive and running. The other turns on for a fault 
+	condition. A fault can be an over current or over temp. When a fault 
+	condition is present, all amps are disabled. When you power up KFLOP/Kogna the 
 	fault LED should be on until you run the program and the current limit is 
-	set.</span></font></p>
-	<p><span style="font-family: Arial">SnapAmp peak current limiting is 
-	measured from the Motor Supply high side terminal.&nbsp; High side supply 
+	set.</p>
+	
+	<p>SnapAmp peak current limiting is measured from the Motor Supply high side terminal. High side supply 
 	measurement is preferred for short protection because most wiring shorts to 
-	ground are detected and properly trigger a fault.&nbsp;&nbsp; SnapAmp 
-	measures both High side and Low side currents.&nbsp; The Low Side current 
+	ground are detected and properly trigger a fault. SnapAmp 
+	measures both High side and Low side currents. The Low Side current 
 	measurement is made specific to each motor lead, digitized with a precision 
-	10-bit ADC and available for plotting.&nbsp; High Side current measurement 
+	10-bit ADC and available for plotting. High Side current measurement 
 	is fairly crude with a few programmable thresholds for detecting 
-	catastrophic events such as shorts and stalls.&nbsp; Threshold levels 9 
-	through 15 set the approximate fault threshold.&nbsp; The lowest value that 
-	allows proper operation of your system without faults should be used.&nbsp; 
+	catastrophic events such as shorts and stalls. Threshold levels 9 
+	through 15 set the approximate fault threshold. The lowest value that 
+	allows proper operation of your system without faults should be used. 
 	The Table below lists the approximate fault current thresholds for levels 9 
-	through 15.&nbsp; The default power up value of 0 will generate a continuous 
-	fault until set to the appropriate value.&nbsp; Note that if <i>either</i> 
+	through 15. The default power up value of 0 will generate a continuous 
+	fault until set to the appropriate value. Note that if <em>either</em> 
 	of the two power supply peak current detectors are over threshold the entire 
-	SnapAmp board (all 4 full bridges) will be disabled.&nbsp; When a fault 
+	SnapAmp board (all 4 full bridges) will be disabled. When a fault 
 	occurs all full bridges will be disabled for approximately 1/4 second, after 
-	which the board will be automatically re-enabled until another fault is 
-	detected.&nbsp; <i>Note: Since any over current fault disables the amplifier 
+	which the board will be automatically re-enabled until another fault is detected.</p>
+	<p><em><strong>Note:</strong> Since any over current fault disables the amplifier 
 	for 1/4 second, whenever a fault is cleared, including when the level is 
-	initially changed from zero, a delay of 1/2 second should be made before 
-	attempting any motion.</i></span></p>
-	<p><span style="font-family: Arial">Approximate Peak Current Thresholds</span><font face="Arial">:</font></p>
-	<table border="1" width="118" id="table1">
+	initially changed from zero, a delay of 1/2 second should be made before attempting any motion.</em></p>
+		
+	<p><strong>Approximate Peak Current Thresholds:</strong></p>
+	<table class="tableSmall">
 		<tr>
-			<td align="center"><font face="Arial">Level</font></td>
-			<td align="center" width="55"><font face="Arial">Amps</font></td>
+			<th>Level</th>
+			<th>Amps</th>
 		</tr>
 		<tr>
-			<td align="center"><font face="Arial">9</font></td>
-			<td align="center" width="55"><font face="Arial">2</font></td>
+			<td>9</td>
+			<td>2</td>
 		</tr>
 		<tr>
-			<td align="center"><font face="Arial">10</font></td>
-			<td align="center" width="55"><font face="Arial">6</font></td>
+			<td>10</td>
+			<td>6</td>
 		</tr>
 		<tr>
-			<td align="center"><font face="Arial">11</font></td>
-			<td align="center" width="55"><font face="Arial">10</font></td>
+			<td>11</td>
+			<td>10</td>
 		</tr>
 		<tr>
-			<td align="center"><font face="Arial">12</font></td>
-			<td align="center" width="55"><font face="Arial">14</font></td>
+			<td>12</td>
+			<td>14</td>
 		</tr>
 		<tr>
-			<td align="center"><font face="Arial">13</font></td>
-			<td align="center" width="55"><font face="Arial">18</font></td>
+			<td>13</td>
+			<td>18</td>
 		</tr>
 		<tr>
-			<td align="center"><font face="Arial">14</font></td>
-			<td align="center" width="55"><font face="Arial">22</font></td>
+			<td>14</td>
+			<td>22</td>
 		</tr>
 		<tr>
-			<td align="center"><font face="Arial">15</font></td>
-			<td align="center" width="55"><font face="Arial">26</font></td>
+			<td>15</td>
+			<td>26</td>
 		</tr>
 	</table>
-	<p>&nbsp;</p>
-	<p><font face="Arial">Below is an example C program that must be loaded and 
-	executed in the KMotion Board to set the Peak Current limits for each motor 
-	supply (to threshold level 9 in this example) and to set the Supply voltage 
-	clamp level (to 90V in this example).&nbsp; The Supply Voltage clamping 
-	level should be set several volts higher than the actual supply voltage.&nbsp; 
-	The example shows setting the values on the first SnapAmp.&nbsp; To set 
-	values on the second snap amp replace the symbol SNAP0 with SNAP1.</font></p>
-	<font SIZE="2" COLOR="#0000ff">
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Courier New">#include</font></font><font SIZE="2" face="Courier New">
-	</font><font SIZE="2" COLOR="#800000"><font face="Courier New">&quot;KMotionDef.h&quot;</font></p>
-	</font><font SIZE="2">
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Courier New">main()</font></div>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Courier New">{</font></p>
-<p style="margin-left: 30px; margin-top: 0; margin-bottom: 0">
-<font SIZE="2" COLOR="#008000" face="Courier New">// peak current limits</p>
-</font>
-<p style="margin-left: 30px; margin-top: 0; margin-bottom: 0">
-<font face="Courier New">WriteSnapAmp(SNAP0+SNAP_PEAK_CUR_LIMIT0,9); </font></p>
-<p style="margin-left: 30px; margin-top: 0; margin-bottom: 0">
-<font face="Courier New">WriteSnapAmp(SNAP0+SNAP_PEAK_CUR_LIMIT1,9); </font></p>
-<p style="margin-left: 30px; margin-top: 0; margin-bottom: 0"></p>
-<p style="margin-left: 30px; margin-top: 0; margin-bottom: 0">
-<font SIZE="2" COLOR="#008000" face="Courier New">// clamp supply to 90V</p>
-</font>
-<p style="margin-left: 30px; margin-top: 0; margin-bottom: 0">
-<font face="Courier New">WriteSnapAmp(SNAP0+SNAP_SUPPLY_CLAMP0 
-,SNAP_CONVERT_VOLTS_TO_ADC(90.0)); </font></p>
-<p style="margin-left: 30px; margin-top: 0; margin-bottom: 0">
-<font face="Courier New">WriteSnapAmp(SNAP0+SNAP_SUPPLY_CLAMP1 
-,SNAP_CONVERT_VOLTS_TO_ADC(90.0));</font></p>
-<p style="margin-left: 30px; margin-top: 0; margin-bottom: 0"></p>
-<p style="margin-left: 30px; margin-top: 0; margin-bottom: 0">
-<font SIZE="2" COLOR="#008000" face="Courier New">// enable supply clamping</p>
-</font>
-<p style="margin-left: 30px; margin-top: 0; margin-bottom: 0">
-<font face="Courier New">WriteSnapAmp(SNAP0+SNAP_SUPPLY_CLAMP_ENA0 ,1); </font>
-</p>
-<p style="margin-left: 30px; margin-top: 0; margin-bottom: 0">
-<font face="Courier New">WriteSnapAmp(SNAP0+SNAP_SUPPLY_CLAMP_ENA1 ,1);</font></p>
-</font>
-<div class="Section1">
-	<font SIZE="2">
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Courier New">}</font></p>
-	</font>
-	<p class="MsoNormal">&nbsp;</p>
-	<p class="MsoNormal"><font face="Arial" size="2">
-	<span style="font-size: 10pt; font-family: Arial">&nbsp;</span></font></div>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
 
+	<p>Below is an example C program that must be loaded and 
+	executed in the KFLOP/Kogna Board to set the Peak Current limits for each motor 
+	supply (to threshold level 9 in this example) and to set the Supply voltage 
+	clamp level (to 90V in this example). The Supply Voltage clamping 
+	level should be set several volts higher than the actual supply voltage. 
+	The example shows setting the values on the first SnapAmp. To set 
+	values on the second snap amp replace the symbol SNAP0 with SNAP1.</p>
+	<pre>
+		<code class="language-c">
+	#include &quot;KMotionDef.h&quot;
+	main()
+	{
+		// peak current limits
+		WriteSnapAmp(SNAP0+SNAP_PEAK_CUR_LIMIT0,9);
+		WriteSnapAmp(SNAP0+SNAP_PEAK_CUR_LIMIT1,9);
+		clamp supply to 90V
+		WriteSnapAmp(SNAP0+SNAP_SUPPLY_CLAMP0 ,SNAP_CONVERT_VOLTS_TO_ADC(90.0));
+		WriteSnapAmp(SNAP0+SNAP_SUPPLY_CLAMP1 ,SNAP_CONVERT_VOLTS_TO_ADC(90.0));
+		// enable supply clamping
+		WriteSnapAmp(SNAP0+SNAP_SUPPLY_CLAMP_ENA0 ,1); 
+		WriteSnapAmp(SNAP0+SNAP_SUPPLY_CLAMP_ENA1 ,1);
+	}
+		</code>
+	</pre>
+<p>&nbsp;</p>
+</div>
 </body>
 
 </html>

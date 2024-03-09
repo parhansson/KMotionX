@@ -47,78 +47,9 @@ void CEditScreen::Reset()
 
 void CEditScreen::GetPersistText(void)
 {
-	CString s,r,IDName;
-	FILE *f = fopen(TheFrame->MainPathRoot + EDIT_CONTROL_PERSIST_FILE, "rt");
 	CScreen *scr = &TheFrame->GCodeDlg.Screen;
-
 	if (!m_hWnd || !scr->CheckIfOKtoChangeText(GetID())) return;
-
-	if (f)
-	{
-		while (!feof(f))
-		{
-			fgets(s.GetBufferSetLength(256), 255, f);
-			s.ReleaseBuffer();
-
-			int k = s.Find(':');
-			if (k == -1) k = s.GetLength();
-			IDName = s.Mid(0, k);
-
-			if (IDName == GetIDName())
-			{
-				s.Delete(0, k);
-				if (s[0] == ':') s.Delete(0, 1);
-				s.Remove('\r');
-				s.Remove('\n');
-				SetWindowText(s);
-				break;
-			}
-		}
-
-		fclose(f);	
-	}
-}
-
-
-
-int CEditScreen::SavePersists(void)
-{
-	CScreen *scr = &TheFrame->GCodeDlg.Screen;
-	FILE *f = fopen(TheFrame->MainPathRoot + EDIT_CONTROL_PERSIST_FILE, "wt");
-
-	if (f)
-	{
-		POSITION p = scr->Defines.GetHeadPosition();
-		for (int i = 0; i < scr->Defines.GetSize(); i++)
-		{
-			int j;
-			CString s = scr->Defines.GetNext(p);
-			for (j = 0; j < s.GetLength(); j++)
-			{
-				if (s[j] == ' ' || s[j] == '\t') break; // find next space
-			}
-
-			int ID;
-			sscanf((const char *)s + j + 1, "%d", &ID);
-
-			if (scr->CheckIfOKtoChangeText(ID))
-			{
-				CEditScreen *E;
-				E = scr->FindEditScreen(ID);
-				if (E)  // EditScreen Control?
-				{
-					CString IDName = s.Mid(0, j);
-					fprintf(f, "%s:%ws\n", IDName.GetBuffer(), E->PrevWindowText.GetBuffer());
-				}
-			}
-		}
-		fclose(f);	
-	}
-	else
-	{
-		return 1;
-	}
-	return 0;
+	SetWText(scr->GetPersistText(GetIDName()));
 }
 
 CEditScreen::~CEditScreen()
@@ -161,7 +92,7 @@ LRESULT CEditScreen::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_IME_NOTIFY:
 	case WM_PAINT:
-		// detect whenever the text changes to notify KFLOP somthing changed 
+		// detect whenever the text changes to notify KFLOP something changed 
 		::GetWindowTextW(m_hWnd,t.GetBufferSetLength(256),255);
 		t.ReleaseBuffer();
 		if (t != PrevWindowText)
@@ -184,3 +115,85 @@ void CEditScreen::SetFont(const char *szFaceName, int height, bool Bold, bool It
 }
 
 
+
+int CEditScreen::SavePersists(void)
+{
+	CScreen *scr = &TheFrame->GCodeDlg.Screen;
+	CString file = TheFrame->MainPathRoot + EDIT_CONTROL_PERSIST_FILE;
+
+	// Open the file with the specified encoding
+	FILE *fStream;
+	
+	errno_t e = _tfopen_s(&fStream, file, _T("w,ccs=UNICODE"));
+		
+	if (e != 0)  // failed..CString sRead;
+	{
+		::MessageBoxW(NULL, TheFrame->KMotionDLL->Translate("Unable to open Screen Script file:\r\r") + (CStringW)file, L"KMotionCNC", MB_ICONSTOP | MB_OK);
+		return 1;
+	}
+
+	if (fStream)
+	{
+		POSITION p = scr->Defines.GetHeadPosition();
+		for (int i = 0; i < scr->Defines.GetSize(); i++)
+		{
+			int j;
+			CString s = scr->Defines.GetNext(p);
+			for (j = 0; j < s.GetLength(); j++)
+			{
+				if (s[j] == ' ' || s[j] == '\t') break; // find next space
+			}
+
+			int ID;
+			sscanf((const char *)s + j + 1, "%d", &ID);
+
+			if (scr->CheckIfOKtoChangeText(ID))
+			{
+				CEditScreen *E;
+				E = scr->FindEditScreen(ID);
+				if (E)  // EditScreen Control?
+				{
+					CStringW w, IDName = s.Mid(0, j);
+					CStringW t;
+					::GetWindowTextW(E->m_hWnd, t.GetBufferSetLength(256), 255);
+					t.ReleaseBuffer();
+					swprintf(w.GetBuffer(2048), 2048, L"%s:%s\n", IDName.GetBuffer(), t.GetBuffer());
+					w.ReleaseBuffer();
+					fputws(w, fStream);
+				}
+
+				CComboBoxScreen *C;
+				C = scr->FindComboBoxScreen(ID);
+				if (C)  // ComboBoxScreen Control?
+				{
+					CStringW w, IDName = s.Mid(0, j);
+					swprintf(w.GetBuffer(2048), 2048, L"%s:%s\n", IDName.GetBuffer(), C->PrevWindowText.GetBuffer());
+					w.ReleaseBuffer();
+					fputws(w, fStream);
+				}
+			}
+		}
+		fclose(fStream);
+	}
+	else
+	{
+		return 1;
+	}
+	return 0;
+}
+
+
+// Return control text as a wide string
+CStringW CEditScreen::GetWText()
+{
+	CStringW w;
+	::CallWindowProcW(*GetSuperWndProcAddr(), m_hWnd, WM_GETTEXT, 2000, (LPARAM)(LPWSTR)w.GetBufferSetLength(200));
+	w.ReleaseBuffer();
+	return w;
+}
+
+// Set control text as a wide string
+void CEditScreen::SetWText(CStringW w)
+{
+	::CallWindowProcW(*GetSuperWndProcAddr(), m_hWnd, WM_SETTEXT, 0, (LPARAM)(LPCWSTR)w);
+}

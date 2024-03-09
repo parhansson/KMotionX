@@ -175,7 +175,12 @@ namespace KFlopWebNC.Model
 
         private void ValidateFolders()
         {
-            _SystemPaths.Add("Root", Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            var P = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            if (P.Substring(P.Length - 2) == "64") P = P.Substring(0, P.Length - 2);
+            if (P.Substring(P.Length - 7) == "Release") P = P.Substring(0, P.Length - 7);
+            if (P.Substring(P.Length - 5) == "Debug") P = P.Substring(0, P.Length - 5);
+            P = P + "Release";
+            _SystemPaths.Add("Root", P);
             _SystemPaths.Add("Site", Path.Combine(_SystemPaths["Root"], "Site"));
             _SystemPaths.Add("Content", Path.Combine(_SystemPaths["Site"], "Content"));
             _SystemPaths.Add("Themes", Path.Combine(_SystemPaths["Content"], "Themes"));

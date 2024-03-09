@@ -1,57 +1,108 @@
+<!DOCTYPE html>
 <html>
-
 <head>
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+<meta name="keywords" content="ethernet 16-axis controller, cnc control, motion control, cnc boards, 4-axis, 8-axis, stepper, brushless, DC motor, servo, encoder, adc, dac, motion controller, automated motion, manufacturing, Mach3">
+<meta name="description" content="Manufacturer of premium motion control products for CNC Manufacturing, Robotics and Automation">
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-<title>KMotion/KFlop Multi-tasking</title>
-    <style type="text/css">
-        .auto-style1 {
-            font-family: Arial;
-        }
-    </style>
-    
+<meta http-equiv="Content-Language" content="en-us">
+
+<title>KMotion/KFLOP Preemptive Multitasking</title>
+
+<link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 
 <body>
 
-<p><font size="5"><em><strong>KMotion/KFlop Preemptive Multitasking</strong></em></font></p>
-<p><img border="0" src="MultiTasking.PNG" width="888" height="175"></p>
-<p class="auto-style1">
-    KMotion/KFlop 
-uses a simple method of preemptive multitasking (multiple programs or &quot;Threads&quot; 
-running at the same time).&nbsp; Each Thread consists of an area of memory where 
+<div id="logo"><a href="index.htm"></a></div>
+
+<div id="home">
+	<a href="index.htm">Table of contents</a> | 
+	<script>
+		if (navigator.userAgent.indexOf("NT 6.2") == -1){
+			document.write('<a href="https://www.dynomotion.com">Dynomotion home page</a>')
+		} else {
+			document.write('<a href="https://www.dynomotion.com" target="_blank">Dynomotion home page</a>')
+		}
+	</script>
+</div>
+<div id="searchNav">
+
+	<div class="gcse-search">
+					<script>
+					  if (document.location.protocol  ==  'https:') {
+					  (function() {
+					  var cx = '012657033059195044748:9fmjmlufts0';
+					  var gcse = document.createElement('script');
+					  gcse.type = 'text/javascript';
+					  gcse.async = true;
+					  gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+					      '//cse.google.com/cse.js?cx=' + cx;
+					  var s = document.getElementsByTagName('script')[0];
+					  s.parentNode.insertBefore(gcse, s);
+					})();
+					  }
+				      </script> 
+				      <gcse:search> </gcse:search>  
+
+	       </div>
+</div>	
+
+	
+
+
+<div id="google_translate_element" style="background: transparent;" align="right"><script type="text/javascript">
+if (navigator.userAgent.indexOf("NT 6.2") == -1) {
+		function googleTranslateElementInit() {
+	  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,de,fr,it,es,pt,ru,uk,ar,zh-CN,zh-TW,ko,iw,hi,ja,tr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+		}						}
+	</script>
+	<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+	</script>
+</div>		
+<div id="main">
+
+<h1>KFLOP/Kogna Preemptive Multitasking</h1>
+
+<p><img src="MultiTasking.PNG" width="888" height="175" alt="Multitasking" /></p>
+
+<p>KFLOP/Kogna uses a simple method of preemptive multitasking (multiple programs or &quot;Threads&quot; 
+running at the same time). Each Thread consists of an area of memory where 
 a program can be loaded, A CPU Stack for that program, and a potential time 
-slice of the CPU.&nbsp; User Programs (Threads) and 
+slice of the CPU. User Programs (Threads) and 
 the System Thread context switch every Servo Interrupt and sequence in a round 
 robin order.</p>
-<p>
-    <span class="auto-style1">The main thing to understand is that two programs that ever 
+
+<p>The main thing to understand is that two programs that ever 
 need to be running at the same time need to be assigned to different threads. 
-The KFLOP system Thread runs all the time in Thread #0. So Thread #0 may never 
+The KFLOP/Kogna system Thread runs all the time in Thread #0. So Thread #0 may never 
 be used. In a typical KMotionCNC system the Init.c program is usually assigned 
 to thread #1 and runs forever. If other UserButtons (or MCodes) run C Programs 
 that do something and terminate (Exec/Wait option) then these might all be 
 assigned to use Thread#2. If your programs run for a longer time where a 3rd or 
 4th program might be Launched so they all overlap in time, then they must all be 
-assigned to different Threads.</span><br class="auto-style1">
-<br class="auto-style1"><span class="auto-style1">Most Applications have a Red Stop Button that stops all or most Threads from executing. For example KMotion.exe stops all User Threads.&nbsp; KMotionCNC stops all User Threads except Thread #1 so any critical monitoring program might be placed in Thread #1 in order to continue execution after an Emergency Stop.</span></p>
-<p class="auto-style1">
-    The above example shows a case where two User 
-Threads are currently active.&nbsp; </p>
-<p class="auto-style1">
-    The C function WaitNextTimeSlice() can be used 
+assigned to different Threads.</p>
+
+<p>Most Applications have a Red Stop Button that stops all or most Threads from executing. For example KMotion.exe stops all User Threads. KMotionCNC stops all User Threads except Thread #1 so any critical monitoring program might be placed in Thread #1 in order to continue execution after an Emergency Stop.</p>
+
+<p>The above example shows a case where two User Threads are currently active. </p>
+
+<p>The C function WaitNextTimeSlice() can be used 
 to wait until the next context switch occurs and return immediately at the 
-beginning of the next time slice.&nbsp; This can assure that the User Program can 
+beginning of the next time slice. This can assure that the User Program can 
 execute for a few microseconds without being interrupted and at a very stable 
 rate (with a few microseconds of jitter).</p>
-<p class="auto-style1">
-    The time period between executions of each user 
+
+<p>The time period between executions of each user 
 thread is a function of the number of active User Threads:</p>
-<p class="auto-style1">
-    Period = (# User Threads + 1) * TIMEBASE 
-</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
+
+<p>Period = (# User Threads + 1) * TIMEBASE</p>
+
+	</div>
 
 </body>
 

@@ -1,0 +1,16 @@
+---------------------------------
+xAM - Axis Mode
+---------------------------------
+
+Sets the function of the axis.
+
+    0 = Disable. All input to that axis will be ignored and the axis will not move.
+    1 = Standard. Linear axes move in length units. Rotary axes move in degrees.
+    2 = Inhibited. Axis values are taken into account when planning moves, but the axis will
+        not move. Use this to perform a Z kill or to do a compute-only run.
+    3 = Radius mode. (Rotary axes only) In radius mode gcode values are interpreted as linear
+        units; either inches or mm depending on the prevailing G20/G21 setting. The conversion
+        of linear units to degrees is accomplished using the radius setting for that axis. 
+        See ARA for details.
+
+ ZAM = 2       Inhibit the Z axis; $zam1 will restore standard operation

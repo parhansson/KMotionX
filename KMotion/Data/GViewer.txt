@@ -17,4 +17,3 @@ m_IncludeA=0
 m_IncludeB=0
 m_IncludeC=0
 m_IncludeToolAngles=1
-m_Ortho=0

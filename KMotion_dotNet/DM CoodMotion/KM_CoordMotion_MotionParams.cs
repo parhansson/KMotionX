@@ -486,6 +486,21 @@ namespace KMotion_dotNet
                 Set_DegreesC(value);
             }
         }
+
+        /// <summary>
+        /// Whether RTCP (Kinematics) is Active or not.
+        /// </summary>
+        public bool TCP_Active
+        {
+            get
+            {
+                return Get_TCP_Active();
+            }
+            set
+            {
+                Set_TCP_Active(value);
+            }
+        }
         #endregion
 
         /// <summary>
@@ -2264,6 +2279,61 @@ namespace KMotion_dotNet
             {
                 throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
                   this.ToString(), "Set_DegreesC"));
+            }
+        }
+
+
+        /// <summary>
+        /// Property getter Accessor for TCP_Active (Kinematics)
+        /// </summary>
+        /// <returns>Current TCP_Active</returns>
+        private bool Get_TCP_Active()
+        {
+            try
+            {
+                return KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_TCP_Active(_InstanceHandle);
+            }
+            catch (DllNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                    this.ToString(), "Get_TCP_Active"));
+            }
+            catch (EntryPointNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                   this.ToString(), "Get_TCP_Active"));
+            }
+            catch (Exception e)
+            {
+                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                  this.ToString(), "Get_TCP_Active"));
+            }
+        }
+        /// <summary>
+        /// Property setter Accessor for TCP_Active
+        /// </summary>
+        /// <param name="value">DegreesC to set (whether axis is in units of degrees)</param>
+        private void Set_TCP_Active(bool value)
+        {
+            try
+            {
+                KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_TCP_Active(_InstanceHandle, value);
+                SetTPParams();
+            }
+            catch (DllNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                    this.ToString(), "Set_TCP_Active"));
+            }
+            catch (EntryPointNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                   this.ToString(), "Set_TCP_Active"));
+            }
+            catch (Exception e)
+            {
+                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                  this.ToString(), "Set_TCP_Active"));
             }
         }
 

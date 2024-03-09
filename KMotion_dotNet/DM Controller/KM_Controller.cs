@@ -189,7 +189,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Maximum allowed return error string length
         /// </summary>
-        private int _ErrorLength = 100;
+        private int _ErrorLength = 2000;
         /// <summary>
         /// Board USB ID
         /// </summary>
@@ -201,7 +201,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Dynomotion board device type
         /// </summary>
-        private int _BoardType = -1;
+        private BOARD_TYPE _BoardType = BOARD_TYPE.UNKNOWN;
         private bool _Loaded = false;
 
 
@@ -342,7 +342,7 @@ namespace KMotion_dotNet
         /// <summary>
         /// Dynomotion board device type
         /// </summary>
-        public int BoardType
+        public BOARD_TYPE BoardType
         {
             get
             {
@@ -470,7 +470,10 @@ namespace KMotion_dotNet
         /// 
         /// Use this for single board applications
         /// </summary>
-        public KM_Controller()
+        /// <param name="DoNotObtainConsoleMessages">Set true
+        /// if Console Messages should not be handled by this App
+        /// Defaults to false.</param>
+        public KM_Controller(bool DoNotObtainConsoleMessages = false)
         {
             try
             { 
@@ -486,7 +489,8 @@ namespace KMotion_dotNet
                 _CoordMotion = new KM_CoordMotion(this); 
 
                 SetErrorHandler();
-                SetCallbackHandler();
+                if (!DoNotObtainConsoleMessages)
+                    SetCallbackHandler();
 // don't think we want to necessarily do all this communication on creation
 //                _CurrentStatus = GetStatus(false);
             }
@@ -510,41 +514,27 @@ namespace KMotion_dotNet
         /// <summary>
         /// Multiple board constructor for attaching this object to a specific board address
         /// </summary>
-        /// <param name="boardnumber">device ID</param>
-        public KM_Controller(int boardnumber)
+        /// <param name="boardnumber">device ID 
+        /// 0=any KFLOP/Kogna found
+        /// less than or equal to 0x00FFFFFF assume USB Location ID
+        /// greater than or equal to 0xFF00XXXX Kogna with Serial Number XXXX
+        /// Otherwise assume Static IP Address ie.
+        /// 0xC0A80A64 -> 192.168.10.100</param>
+        /// <param name="DoNotObtainConsoleMessages">Set true
+        /// if Console Messages should not be handled by this App
+        /// Defaults to false.</param>
+        public KM_Controller(int boardnumber, bool DoNotObtainConsoleMessages = false)
         {
             try
             { 
                 KM_dotnet_Interop_New(ref _InstanceHandle, boardnumber);
-                _BoardType = GetBoardType();
-                int boardcount = -1;
-                var boards = GetBoards(out boardcount);
-                if (boardcount > 0)
-                {
-                    if (boardnumber < boardcount)
-                    {
-                        _BoardID = boards[boardnumber];
-                        _BoardNumber = boardnumber;
-                    }
-                    else
-                    {
-                        _BoardID = boards[0];
-                        _BoardNumber = 0;
-                    }
-                    if (boardcount == 1)
-                    {
-                        _BoardID = 0;
-                    }
-                    _CoordMotion = new KM_CoordMotion(this); 
-                } 
-                else
-                {
-                    throw new Exception("No KMotion Devices Found!!");
-                }
-
+                _CoordMotion = new KM_CoordMotion(this); 
                 SetErrorHandler();
-                SetCallbackHandler();
-                _CurrentStatus = GetStatus(false);
+
+                if (!DoNotObtainConsoleMessages)
+                    SetCallbackHandler();
+                // don't think we want to necessarily do all this communication on creation
+                //               _CurrentStatus = GetStatus(false);
             }
             catch (DllNotFoundException e)
             {
@@ -1095,15 +1085,15 @@ namespace KMotion_dotNet
         }
         /// <summary>
         /// Gets the board type
-        /// 1 = KMotion
-        /// 2 = KFlop
+        /// BOARD_TYPE.KFLOP = 2 = KFlop  8 Axes Controller
+        /// BOARD_TYPE.KOGNA = 3 = Kogna 16 Axis Controller
         /// </summary>
         /// <returns>Board Type we are talking to</returns>
-        public int GetBoardType()
+        public BOARD_TYPE GetBoardType()
         { 
             try
             {
-                int result = -1;
+                BOARD_TYPE result = BOARD_TYPE.UNKNOWN;
                 KM_dotnet_Interop_CheckKMotionVersion(_InstanceHandle, ref result, true);
                 return result;
             }
@@ -1123,6 +1113,9 @@ namespace KMotion_dotNet
                   this.ToString(), "GetBoardType"));
             } 
         }
+
+
+
         /// <summary>
         /// Generates and returns an updated copy of the MAIN_STATUS structure
         /// </summary>
@@ -1131,114 +1124,33 @@ namespace KMotion_dotNet
         public KM_MainStatus GetStatus(bool locked)
         {
             KM_MainStatus mainstatus = new KM_MainStatus();
-            try
             {
-                int versionandsize = 0;
-                int[] adc = new int[24];
-                int[] dac = new int[8];
-                int[] pwm = new int[26];
-                double[] position = new double[8];
-                double[] destination = new double[8];
-                int[] outputchan0 = new int[8];
-                int inputmodes = 0;
-                int inputmodes2 = 0;
-                int outputmodes = 0;
-                int outputmodes2 = 0;
-                int enables = 0;
-                int axisdone = 0;
-                int[] bitsdirection = new int[2];
-                int[] bitsstate = new int[2];
-                int snapbitsdirection0 = 0;
-                int snapbitsdirection1 = 0;
-                int snapbitsstate0 = 0;
-                int snapbitsstate1 = 0;
-                int kanalgobitsstateinputs = 0;
-                int kanalogbitsstateoutputs = 0;
-                int runonstartup = 0;
-                int threadactive = 0;
-                int stopimmediatestate = 0;
-                double timestamp = 0;
-                int[] pccomm = new int[8];
-                int virtualbits = 0;
-                int virtualbitsex0 = 0;
+                try
+                {
+                    KM_dotnet_Interop_MainStatus_GetStatus(_InstanceHandle, locked, ref mainstatus.MainStatus);
+                }
+                catch (DllNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                        this.ToString(), "GetStatus"));
+                }
+                catch (EntryPointNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                       this.ToString(), "GetStatus"));
+                }
+                catch (Exception e)
+                {
+                    throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                      this.ToString(), "GetStatus"));
+                }
+                mainstatus._TicksAtUpdate = Environment.TickCount;
 
-                KM_dotnet_Interop_MainStatus_GetStatus(_InstanceHandle,
-                    locked,
-                    ref versionandsize,
-                     adc,
-                     dac,
-                     pwm,
-                     position,
-                     destination,
-                     outputchan0,
-                    ref inputmodes,
-                    ref inputmodes2,
-                    ref outputmodes,
-                    ref outputmodes2,
-                    ref enables,
-                    ref axisdone,
-                     bitsdirection,
-                     bitsstate,
-                    ref snapbitsdirection0,
-                    ref snapbitsdirection1,
-                    ref snapbitsstate0,
-                    ref snapbitsstate1,
-                    ref kanalgobitsstateinputs,
-                    ref kanalogbitsstateoutputs,
-                    ref runonstartup,
-                    ref threadactive,
-                    ref stopimmediatestate,
-                    ref timestamp,
-                    pccomm,
-                    ref virtualbits,
-                    ref virtualbitsex0);
-
-                mainstatus = KM_MainStatus.GetStatus(versionandsize,
-                    adc,
-                    dac,
-                    pwm,
-                    position,
-                    destination,
-                    outputchan0,
-                    inputmodes,
-                    inputmodes2,
-                    outputmodes,
-                    outputmodes2,
-                    enables,
-                    axisdone,
-                    bitsdirection,
-                    bitsstate,
-                    snapbitsdirection0,
-                    snapbitsdirection1,
-                    snapbitsstate0,
-                    snapbitsstate1,
-                    kanalgobitsstateinputs,
-                    kanalogbitsstateoutputs,
-                    runonstartup,
-                    threadactive,
-                    stopimmediatestate,
-                    timestamp,
-                    pccomm,
-                    virtualbits,
-                    virtualbitsex0);
+                return mainstatus;
             }
-            catch (DllNotFoundException e)
-            {
-                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
-                    this.ToString(), "GetStatus"));
-            }
-            catch (EntryPointNotFoundException e)
-            {
-                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
-                   this.ToString(), "GetStatus"));
-            }
-            catch (Exception e)
-            {
-                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
-                  this.ToString(), "GetStatus"));
-            } 
-            return mainstatus;
         }
+
+
 
         /// <summary>
         /// Checks whether a User Program Thread is currently executing.  
@@ -1374,7 +1286,11 @@ namespace KMotion_dotNet
                 {
                     MarshalPre(ref error);
                     int result=KM_dotnet_Interop_CompileAndLoadCoff(_InstanceHandle, thread, programname, ref error, _ErrorLength);
-                    if (result!=0 && (error=="" || !error.Contains((char)0))) error="Error Compiling and Loading Program";
+
+                    // error string may not be null terminated if error was longer then _ErrorLength.
+                    // In this case it will have a longer length (including spaces) so terminate it 
+                    if (error.Length >= _ErrorLength) error = error.Substring(0, _ErrorLength - 1);
+                    if (result!=0 && error=="") error="Error Compiling and Loading Program";
                     MarshalPost(ref error);
                 }
                 else
@@ -1409,11 +1325,16 @@ namespace KMotion_dotNet
         { 
             try
             {
-                string result = "";
                 string error = "";
-                KM_dotnet_Interop_Compile(_InstanceHandle, _BoardType, thread, programname, ref result, ref error, _ErrorLength);
+                MarshalPre(ref error);
+                int result = KM_dotnet_Interop_Compile(_InstanceHandle, _BoardType, thread, programname, ref error, _ErrorLength);
+                // error string may not be null terminated if error was longer then _ErrorLength.
+                // In this case it will have a longer length (including spaces) so terminate it 
+                if (error.Length >= _ErrorLength) error = error.Substring(0, _ErrorLength - 1);
+                if (result != 0 && error == "") error = "Error Compiling and Loading Program";
+                MarshalPost(ref error);
                 _ErrorLog += error;
-                return result;
+                return error;
             }
             catch (DllNotFoundException e)
             {
@@ -1498,7 +1419,7 @@ namespace KMotion_dotNet
         /// </summary>
         public void ClearFeedhold()
         {
-            WriteLine(String.Format("StopImmediate0"));
+            WriteLine(String.Format("StopImmediate2"));
         }
 
         #endregion
@@ -1625,7 +1546,7 @@ namespace KMotion_dotNet
         /// Separate delegate for this callback prevents the Garbage Collector from releasing the 
         /// unmanaged function pointer from being destroyed
         /// </summary>
-        private void SetCallbackHandler()
+        public void SetCallbackHandler()
         {
             try
             {
@@ -1833,7 +1754,7 @@ namespace KMotion_dotNet
         /// <param name="s">message</param>
         private void MarshalPre(ref string s)
         {
-            s = new string(' ', 255);
+            s = new string(' ', 4096);
         }
         /// <summary>
         /// formats a message end for callback

@@ -1,0 +1,25 @@
+   
+Top Left of Fixture
+X =  2.8000
+Y = 12.8250 
+
+ 
+Width of slot = 0.332  divided by 2 =  0.166
+
+Middle of first slot = 2.311 + 0.166 = 2.476
+
+
+
+
+Probe Test
+
+		0.7820   -0.0030
+
+0.7827 -0.0023		0.7830  -0.0020
+
+		0.7850
+
+
+
+
+

@@ -2,7 +2,7 @@
 
 Public Class DynoMotionVBnetProvider
 
-    Private _Controller As New KMotion_dotNet.KM_Controller()
+    Public _Controller As New KMotion_dotNet.KM_Controller() ' was Private
 
     Public MessageMutex As New Threading.Mutex()
 
@@ -443,7 +443,35 @@ Public Class DynoMotionVBnetProvider
         _Controller.CoordMotion.StraightTraverse(x, y, z, 0, 0, 0, False)
     End Sub
 
+
+    Private Delegate Sub DoTestCMSequenceDelegate()
+    Friend Sub DoTestCMSequence()
+        Dim runner As New DoTestCMSequenceDelegate(AddressOf OnDoTestCMSequence)
+        runner.BeginInvoke(Nothing, Nothing)
+    End Sub
+
+    Friend Sub DoHaltCM()
+        _Controller.CoordMotion.Halt()
+    End Sub
+
+    Public Sub OnDoTestCMSequence()
+        Dim x As Double
+        Dim y As Double
+        Dim z As Double
+        Dim a As Double
+        Dim b As Double
+        Dim c As Double
+
+        _Controller.CoordMotion.ClearAbort()
+        _Controller.CoordMotion.ClearHalt()
+        _Controller.CoordMotion.ReadAndSyncCurPositions(x, y, z, a, b, c)
+        _Controller.CoordMotion.StraightFeed(2.2, 30, 2, 3, 0, 0, 0, 0, 0)
+        _Controller.CoordMotion.FlushSegments()
+        _Controller.CoordMotion.WaitForSegmentsFinished(False)
+    End Sub
+
     Private Delegate Sub DoLinearDelegate(ByVal x As Double, ByVal y As Double, ByVal z As Double)
+
     Public Sub DoLinear(ByVal x As Double, ByVal y As Double, ByVal z As Double)
         Dim runner As New DoLinearDelegate(AddressOf OnDoLinear)
         runner.BeginInvoke(x, y, z, Nothing, Nothing)
@@ -477,6 +505,8 @@ Public Class DynoMotionVBnetProvider
         Dim a As Double
         Dim b As Double
         Dim c As Double
+        _Controller.CoordMotion.ClearAbort()
+        _Controller.CoordMotion.ClearHalt()
         _Controller.CoordMotion.ReadAndSyncCurPositions(x, y, z, a, b, c)
     End Sub
     Private Delegate Sub DoFlushExecuteDelegate()
@@ -487,6 +517,7 @@ Public Class DynoMotionVBnetProvider
     End Sub
     Public Sub OnDoFlushExecute()
         _Controller.CoordMotion.FlushSegments()
+        _Controller.CoordMotion.WaitForSegmentsFinished(False)
     End Sub
     Public Sub OnCoordMotionStraightTranverse(ByVal x As Double, ByVal y As Double, ByVal z As Double, ByVal sequence_number As Integer)
         MessageMutex.WaitOne()

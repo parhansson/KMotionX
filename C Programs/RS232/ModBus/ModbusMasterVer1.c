@@ -140,13 +140,6 @@ void ModbusMaster_Init()
 	//d printf("persist.UserData[%d]<=%08X\n",PERSIST_RWREG_BLOCK_ADR,MBRWRegisters); //debug
 }
 
-char* strncpy(char *dst,char* src,int len)
-{
-	int i;
-	for (i=0;i<len;i++)
-		dst[i]=src[i];
-	return dst;
-}
 
 // marshal and move values read from PLC/Slave into MBRegisters to KFlop memory
 void ModbusMaster_RegUnload()

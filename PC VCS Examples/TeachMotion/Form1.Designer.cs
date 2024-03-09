@@ -55,6 +55,7 @@
             this.NPtsCaptured = new System.Windows.Forms.Label();
             this.WriteData = new System.Windows.Forms.Button();
             this.saveTeachFileDlg = new System.Windows.Forms.SaveFileDialog();
+            this.Cleanup = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -287,7 +288,7 @@
             // 
             // ClearData
             // 
-            this.ClearData.Location = new System.Drawing.Point(558, 487);
+            this.ClearData.Location = new System.Drawing.Point(572, 487);
             this.ClearData.Name = "ClearData";
             this.ClearData.Size = new System.Drawing.Size(84, 31);
             this.ClearData.TabIndex = 5;
@@ -306,7 +307,7 @@
             // 
             // WriteData
             // 
-            this.WriteData.Location = new System.Drawing.Point(664, 487);
+            this.WriteData.Location = new System.Drawing.Point(678, 487);
             this.WriteData.Name = "WriteData";
             this.WriteData.Size = new System.Drawing.Size(84, 31);
             this.WriteData.TabIndex = 5;
@@ -319,11 +320,22 @@
             this.saveTeachFileDlg.DefaultExt = "txt";
             this.saveTeachFileDlg.Title = "Save Teach File";
             // 
+            // Cleanup
+            // 
+            this.Cleanup.Location = new System.Drawing.Point(468, 487);
+            this.Cleanup.Name = "Cleanup";
+            this.Cleanup.Size = new System.Drawing.Size(84, 31);
+            this.Cleanup.TabIndex = 15;
+            this.Cleanup.Text = "Cleanup";
+            this.Cleanup.UseVisualStyleBackColor = true;
+            this.Cleanup.Click += new System.EventHandler(this.Cleanup_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 540);
+            this.Controls.Add(this.Cleanup);
             this.Controls.Add(this.NPtsCaptured);
             this.Controls.Add(this.ShowData);
             this.Controls.Add(this.CaptureOn);
@@ -343,6 +355,7 @@
             this.Controls.Add(this.CFileName);
             this.Name = "Form1";
             this.Text = "Teach Motion";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TeachFormClosing);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
@@ -378,6 +391,7 @@
         private System.Windows.Forms.Label NPtsCaptured;
         private System.Windows.Forms.Button WriteData;
         private System.Windows.Forms.SaveFileDialog saveTeachFileDlg;
+        private System.Windows.Forms.Button Cleanup;
     }
 }
 

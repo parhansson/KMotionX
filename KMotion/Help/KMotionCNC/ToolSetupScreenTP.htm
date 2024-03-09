@@ -1,14 +1,77 @@
+<!DOCTYPE html>
 <html>
-
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-<title>Tool Setup Trajectory Planner</title>
 
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+
+<meta name="keywords" content="ethernet 16-axis controller, cnc control, motion control, cnc boards, 4-axis, 8-axis, stepper, brushless, DC motor, servo, encoder, adc, dac, motion controller, automated motion, manufacturing, Mach3">
+<meta name="description" content="Manufacturer of premium motion control products for CNC Manufacturing, Robotics and Automation">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<title>Tool Setup Screen - Trajectory Planner</title>
+
+<link rel="stylesheet" type="text/css" href="../css/style.css">
+<link rel="stylesheet" href="../css/prism.css" data-noprefix />
+<script src="../js/prism.js"></script>
 </head>
 
 <body>
 
-<p><i><b><font size="5" face="Arial">Tool Setup Screen - Trajectory Planner</font></b></i></p>
+<div id="logo"><a href="../index.htm"></a></div>
+
+<div id="home">
+<a href="../index.htm">Table of contents</a> |  
+	<script>
+		if (navigator.userAgent.indexOf("NT 6.2") == -1){
+			document.write('<a href="https://www.dynomotion.com">Dynomotion home page</a>')
+		} else {
+			document.write('<a href="https://www.dynomotion.com" target="_blank">Dynomotion home page</a>')
+		}
+	</script>
+</div>
+	
+<div id="searchNav">
+
+	<div class="gcse-search">
+					<script>
+					  if (document.location.protocol  ==  'https:') {
+					  (function() {
+					  var cx = '012657033059195044748:9fmjmlufts0';
+					  var gcse = document.createElement('script');
+					  gcse.type = 'text/javascript';
+					  gcse.async = true;
+					  gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+					      '//cse.google.com/cse.js?cx=' + cx;
+					  var s = document.getElementsByTagName('script')[0];
+					  s.parentNode.insertBefore(gcse, s);
+					})();
+					  }
+				      </script> 
+				      <gcse:search> </gcse:search>  
+
+	       </div>
+</div>	
+
+	
+
+
+<div id="google_translate_element" style="background: transparent;" align="right"><script type="text/javascript">
+if (navigator.userAgent.indexOf("NT 6.2") == -1) {
+		function googleTranslateElementInit() {
+	  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,de,fr,it,es,pt,ru,uk,ar,zh-CN,zh-TW,ko,iw,hi,ja,tr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+		}						}
+	</script>
+	<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+	</script>
+</div>		
+<div id="main">
+
+
+<h1>Tool Setup Screen - Trajectory Planner</h1>
+
 <p>
 <map name="FPMap0">
 <area href="#Trajectory_Planner" shape="rect" coords="26,51,815,101">
@@ -32,402 +95,389 @@
 <area shape="rect" coords="536,476,769,496" href="#arc-radius-small">
 <area shape="rect" coords="538,423,687,439" href="#confirm-program-exit">
 </map>
-<img border="0" src="KMotionCNCfiles/ToolSetupTP.PNG" usemap="#FPMap0" width="859" height="553"></p>
+<img src="KMotionCNCfiles/ToolSetupTP.PNG" usemap="#FPMap0" width="859" height="553" /><br />
+<span class="small">(Click on Image to Jump to related help)</span></p>
+	
+<p>The Tool Setup Screen allows <strong><em>KMotionCNC</em></strong> to be configured for a 
+particular machine tool. Each machine tool is likely to have different 
+motion resolution, speeds, and acceleration limits. It is also likely to 
+different I/O requirements with regard to Spindle control and such. 
+Additionally a machine may have different initialization and homing 
+requirements. <strong><em>KMotionCNC</em></strong> has a flexible mechanism for defining what 
+type of action is to be performed for various M Codes and Custom Buttons.</p>
 
-<p><font face="Arial"><i>(Click on Image to Jump to 
-		related help)</i></font></p>
-<p><font face="Arial">The Tool Setup Screen allows <i>KMotionCNC</i> to be configured for a 
-particular machine tool.&nbsp; Each machine tool is likely to have different 
-motion resolution, speeds, and acceleration limits.&nbsp; It is also likely to 
-different I/O requirements with regard to Spindle control and such.&nbsp; 
-Additionally&nbsp; a machine may have different initialization and homing 
-requirements.&nbsp; <i>KMotionCNC</i> has a flexible mechanism for defining what 
-type of action is to be performed for various M Codes and Custom Buttons. </font> </p>
-<p>&nbsp;</p>
-<p><i><b><font size="4" face="Arial"><a name="Trajectory_Planner">Trajectory Planner</a></font></b></i></p>
-<p>
-<font face="Arial">
-<img border="0" src="KMotionCNCfiles/TrajectoryPlanner.png" align="left" hspace="15"></font></p>
-<p>
-</p>
-<p>
-</p>
-<p>
-</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p><font face="Arial"><i>KMotionCNC</i> contains a powerful Trajectory Planner.&nbsp; The 
+<h2><a name="Trajectory_Planner">Trajectory Planner</a></h2>
+
+<p><img src="KMotionCNCfiles/TrajectoryPlanner.png" alt="Trajectory Planner" /></p>
+
+<p><strong><em>KMotionCNC</em></strong> contains a powerful Trajectory Planner. The 
 Trajectory Planner utilizes a &quot;break angle&quot; concept to decide when a stop must 
-be made.&nbsp; Vectors that are in the same direction within the &quot;break angle&quot; 
-are traversed without stopping.&nbsp; When a &quot;sharp&quot; angle is detected a 
-complete stop will be made before beginning on the next vector.&nbsp; The Break 
+be made. Vectors that are in the same direction within the &quot;break angle&quot; 
+are traversed without stopping. When a &quot;sharp&quot; angle is detected a 
+complete stop will be made before beginning on the next vector. The Break 
 Angle Parameter allows the user to specify the angle in degrees that will be 
-considered a &quot;sharp&quot; angle.&nbsp;&nbsp; <i>KMotionCNC</i> considers the change 
-in direction in 3 dimensions (x,y,z ignoring a).&nbsp;&nbsp; The Trajectory 
+considered a &quot;sharp&quot; angle. <strong><em>KMotionCNC</em></strong> considers the change 
+in direction in 3 dimensions (x,y,z ignoring a). The Trajectory 
 Planner is capable of optimizing the acceleration and deceleration through many 
 short (or long) vectors all of which may have different acceleration and 
-velocity limitations.</font></p>
-<p><font face="Arial">The Trajectory Planner also has a &quot;<a name="lookahead">lookahead</a>&quot; parameter.&nbsp; With 
-KMotionCNC the G Code Program itself, the G Code Interpreter, and the Trajectory 
-Planner all reside within the PC running Microsoft Windows™.&nbsp; 
-Since the Microsoft Windows™ is <i>not</i> a 
+velocity limitations.</p>
+
+<p>The Trajectory Planner also has a &quot;<a name="lookahead">lookahead</a>&quot; parameter. With 
+  <strong><em>KMotionCNC</em></strong> the G Code Program itself, the G Code Interpreter, and the Trajectory 
+Planner all reside within the PC running Microsoft Windows™. 
+Since the Microsoft Windows™ is <em>not</em> a 
 real-time OS, a certain amount of motion must be buffered in the motion 
 controller to handle the cases where the PC program doesn't have a chance to 
-execute for a while.&nbsp; These time periods are typically very short (a few 
+execute for a while. These time periods are typically very short (a few 
 milliseconds), but in some extreme cases may occasionally be as long as one or 
-several seconds.&nbsp; The worst case is often a factor of the hardware (disk 
-network adapters, etc) and associated drivers that are loaded into the system.&nbsp;&nbsp; 
+several seconds. The worst case is often a factor of the hardware (disk 
+network adapters, etc) and associated drivers that are loaded into the system. 
 The lookahead parameter is used to determine how much motion, in terms of time, 
-should be downloaded to the motion controller <i>before</i> actual motion is 
-initiated.&nbsp;&nbsp; Furthermore, after motion has begun, the lookahead 
+should be downloaded to the motion controller <em>before</em> actual motion is 
+initiated. Furthermore, after motion has begun, the lookahead 
 parameter is used to pause the trajectory planner to avoid having the Trajectory 
-Planner get too far ahead of the actual motion.&nbsp; The disadvantage of having 
+Planner get too far ahead of the actual motion. The disadvantage of having 
 the Trajectory Planner get too far ahead is that if the User decides to override 
 the feed rate, since the motion has already been planned and downloaded, the 
-rate will not be changed quickly.&nbsp; A value of 3 seconds is very 
-conservative on most systems.&nbsp; If more responsive feed rate override is 
-desirable, an experiment with a smaller value might be made.</font></p>
-<p><font face="Arial">&quot;Collinear Tolerance&quot; allows GCode blocks that are nearly 
+rate will not be changed quickly. A value of 3 seconds is very 
+conservative on most systems. If more responsive feed rate override is 
+desirable, an experiment with a smaller value might be made.</p>
+<p>&quot;Collinear Tolerance&quot; allows GCode blocks that are nearly 
 linear, to be combined into a single linear segment to allow faster and smoother 
-motion.&nbsp; Often GCode programs generated by 3D CAD systems contain very 
-small vectors that appear jagged or noisy due to numerical round off errors .&nbsp;&nbsp; 
-See below for an example of a small GCode fragment from an intended circle.&nbsp; 
+motion. Often GCode programs generated by 3D CAD systems contain very 
+small vectors that appear jagged or noisy due to numerical round off errors . 
+See below for an example of a small GCode fragment from an intended circle. 
 The 0.3 inch diameter circle was divided into 10,000 sides each only 0.0001 
-inches in length.&nbsp; Intuitively one would think this would result in an 
-extremely smooth contour.&nbsp; Ironically, rounding off&nbsp; to 4 decimal 
+inches in length. Intuitively one would think this would result in an 
+extremely smooth contour. Ironically, rounding off to 4 decimal 
 digits introduces &quot;noise&quot; that results in sharp angles and each axis being 
-required to repeatedly stop and start.&nbsp; Even with quite high acceleration, 
+required to repeatedly stop and start. Even with quite high acceleration, 
 stopping and starting over short distances results in extremely low average 
-speed and most likely a rough surface.&nbsp; A combined segment shown below in 
-blue will result in a faster and smoother motion.</font></p>
-<p><font face="Arial">Segments are combined as long as all intermediate 
+speed and most likely a rough surface. A combined segment shown below in 
+blue will result in a faster and smoother motion.</p>
+
+<p>Segments are combined as long as all intermediate 
 waypoints do not deviate from the combined segment by more than the allowed 
-collinear tolerance.&nbsp; Setting the collinear tolerance to zero will disallow 
-any segments from being combined. </font></p>
-<p><font face="Courier New">N70 G90 G54 G0 X6.315 Y4.7132 Z1.<br>
-N100 G1 X6.3151 F60.<br>
-N110 Y4.7133<br>
-N120 X6.3152 Y4.7134<br>
-N130 Y4.7135<br>
-N140 X6.3153 Y4.7136<br>
-N150 Y4.7137<br>
-N160 X6.3154 Y4.7138<br>
-N170 X6.3155 Y4.7139<br>
-N180 Y4.714<br>
-N190 X6.3156 Y4.7141<br>
-N200 Y4.7142<br>
-N210 X6.3157 Y4.7143<br>
-N220 Y4.7144<br>
-N230 X6.3158<br>
-&nbsp;</font></p>
-<p>
-<img border="0" src="KMotionCNCfiles/CollinearTol.PNG" width="347" height="397"></p>
-<p>&nbsp;</p>
-<p><font face="Arial">The &quot;Arcs To Segments&quot; option allows circular arcs that 
+collinear tolerance. Setting the collinear tolerance to zero will disallow 
+any segments from being combined. </p>
+
+<pre>
+	N70 G90 G54 G0 X6.315 Y4.7132 Z1.
+	N100 G1 X6.3151 F60.
+	N110 Y4.7133
+	N120 X6.3152 Y4.7134
+	N130 Y4.7135
+	N140 X6.3153 Y4.7136
+	N150 Y4.7137
+	N160 X6.3154 Y4.7138
+	N170 X6.3155 Y4.7139
+	N180 Y4.714
+	N190 X6.3156 Y4.7141
+	N200 Y4.7142
+	N210 X6.3157 Y4.7143
+	N220 Y4.7144
+	N230 X6.3158
+</pre>
+
+<p><img src="KMotionCNCfiles/CollinearTol.PNG" width="347" height="397"></p>
+<p></p>
+<p>The &quot;Arcs To Segments&quot; option allows circular arcs that 
 were specified in the original GCode to be replaced by a number of linear 
-segments.&nbsp; Each arc will be recursively subdivided until any cord error 
-deviation from the original path is less than the Collinear Tolerance parameter.&nbsp; 
+segments. Each arc will be recursively subdivided until any cord error 
+deviation from the original path is less than the Collinear Tolerance parameter. 
 Sub dividing the arc (actually a helix) into line segments allows the path 
-motion to be more fully optimized by the Trajectory Planner.&nbsp; This is 
-because as the motion progresses through the arc the direction changes.&nbsp; As 
+motion to be more fully optimized by the Trajectory Planner. This is 
+because as the motion progresses through the arc the direction changes. As 
 the direction changes the different axes become involved and also work together 
-in different ways (diagonal directions make use of more than one axis).&nbsp; 
-This means constraints (max velocity and acceleration) vary throughout the arc.&nbsp; 
+in different ways (diagonal directions make use of more than one axis). 
+This means constraints (max velocity and acceleration) vary throughout the arc. 
 With individual line segments the Trajectory planner is able to use optimal 
-acceleration and velocity throughout the arc.&nbsp; When Arcs To Segments is not 
-selected the entire arc may be treated as&nbsp; a single entity and will use the 
+acceleration and velocity throughout the arc. When Arcs To Segments is not 
+selected the entire arc may be treated as a single entity and will use the 
 most limited velocity and acceleration constraints throughout the arc for the 
-entire arc.&nbsp; If the feed rate is slow and curvature based accelerations are 
+entire arc. If the feed rate is slow and curvature based accelerations are 
 small relative to the axis limits then there will be little performance increase 
-in using segments.</font></p>
-<p><font face="Arial">When the &quot;Arcs To Segments&quot; Option is selected the 
-Collinear Tolerance must be larger than zero.&nbsp; Care should be used in 
+in using segments.</p>
+
+<p>When the &quot;Arcs To Segments&quot; Option is selected the 
+Collinear Tolerance must be larger than zero. Care should be used in 
 selecting a Collinear Tolerance so that an excessive number of segments is not 
-generated.&nbsp; The number of segments increases as the square root of the 
+generated. The number of segments increases as the square root of the 
 inverse of the Collinear Tolerance (cutting the tolerance in half increase the 
-number of segments by 40%).</font></p>
-<p><font face="Arial">For a description of the <i>Corner Rounding</i> feature 
-and Corner Tolerance and Facet Angle see <a href="TrajectoryPlanner.htm">here</a>.&nbsp;&nbsp;
-</font></p>
-<p>&nbsp;</p>
-<p><i><b><font size="4" face="Arial"><a name="Jog_Speeds">Jog Speeds</a></font></b></i></p>
-<p><font face="Arial"><img border="0" src="KMotionCNCfiles/Slow Percentage.png" align="left" hspace="15"></font></p>
-<p>&nbsp;</p>
-<p><font face="Arial">Defines the Jog Speeds for both the Jog Buttons and any attached Gamepad 
-controller.&nbsp;These  speeds are the maximum Jog speeds which are indicated by the outer jog arrow  buttons (Jog Fast) or the GamePad joystick fully depressed. The user can define  a slower speed as a percentage of the fast speed. &nbsp; See Also
-<a href="KMotionCNC.htm#Jog_Buttons">Jog Buttons</a>.&nbsp;</font></p>
-<p>&nbsp;</p>
-<p><i><b><font face="Arial" size="4"><a name="Step_Increments">Step Increments</a></font></b></i></p>
+number of segments by 40%).</p>
+
+<p>For a description of the <em>Corner Rounding</em> feature 
+and Corner Tolerance and Facet Angle see <a href="TrajectoryPlanner.htm">here</a>.</p>
+
+<h2><a name="Jog_Speeds">Jog Speeds</a></h2>
+
+<p><img src="KMotionCNCfiles/Slow Percentage.png" alt="Jog Speeds" /></p>
+
+<p>Defines the Jog Speeds for both the Jog Buttons and any attached Gamepad 
+controller.These  speeds are the maximum Jog speeds which are indicated by the outer jog arrow  buttons (Jog Fast) or the GamePad joystick fully depressed. The user can define a slower speed as a percentage of the fast speed. See Also
+<a href="KMotionCNC.htm#Jog_Buttons">Jog Buttons</a>.</p>
+
+<h2><a name="Step_Increments">Step Increments</a></h2>
+
+<p><img src="KMotionCNCfiles/StepIncrements.PNG" alt="Step Increments" /></p>
+
+<p>Defines the step size distances for the Step Buttons that are displayed on 
+the main <strong><em>KMotionCNC</em></strong> Screen. Setting a step size to zero will hide 
+the size selection. The <em>Enable Gamepad</em> checkbox allows you to enable or disable a gamepad. Some systems falsely indicate that they have a gamepad installed, which may cause errors. In these cases, uncheck the<em> Enable Gamepad</em> checkbox. See Also <a href="KMotionCNC.htm#Jog_Buttons">Jog Buttons</a>.</p>
+
+<h2><a name="Lathe_Options">Lathe Options</a></h2>
 <p>
-<img border="0" src="KMotionCNCfiles/StepIncrements.PNG"></p>
-<p><font face="Arial">Defines the step size distances for the Step Buttons that are displayed on 
-the main <i>KMotionCNC</i> Screen.&nbsp; Setting a step size to zero will hide 
-the size selection.&nbsp; The <em>Enable Gamepad</em> checkbox allows you to enable or disable a gamepad. Some systems falsely indicate that they have a gamepad installed, which may cause errors. In these cases, uncheck the<em> Enable Gamepad</em> checkbox. See Also <a href="KMotionCNC.htm#Jog_Buttons">Jog Buttons</a>.</font></p>
-<p>&nbsp;</p>
-<p><i><b><font face="Arial" size="4"><a name="Lathe_Options">Lathe Options</a></font></b></i></p>
-<p>
-<img border="0" src="KMotionCNCfiles/LatheOptions.png"></p>
-<p><font face="Arial">Defines options relating to Lathe systems.&nbsp; </font></p>
-<p><font face="Arial">Selecting the Lathe option orients the Jog Buttons and 
+<img src="KMotionCNCfiles/LatheOptions.png" alt="Lathe Options" /></p>
+
+<p>Defines options relating to Lathe systems. </p>
+<p>Selecting the Lathe option orients the Jog Buttons and 
 default GViewer orientations to have +Z horizontal to the right and with X 
-vertical as most Lathe systems are configured.&nbsp; The &quot;X Positive Front&quot; 
+vertical as most Lathe systems are configured. The &quot;X Positive Front&quot; 
 rotates the axes system (and X Jog Keys) so that the tool moves toward the front 
-of the system as X increases.&nbsp; This is more suitable for cutting tools 
-mounted on the front side of the spindle.&nbsp; Otherwise the tool moves toward 
-the back as X increases.&nbsp; This is more suitable for read mounted tools.</font></p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">X Positive Rear
-</font></p>
-<p style="margin-top: 0; margin-bottom: 0">
-<font face="Arial">
-<img border="0" src="KMotionCNCfiles/LathePosBack.png" width="154" height="181"></font></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;
-</p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">X Positive Front</font></p>
-<p style="margin-top: 0; margin-bottom: 0">
-<font face="Arial">
-<img border="0" src="KMotionCNCfiles/LathePosFront.png"></font></p>
-<p><font face="Arial">When Diameter Mode is selected the Gcode X Units, X Offset 
-Units, and X DRO Units are all in terms of diameter.&nbsp; In this mode actual 
+of the system as X increases. This is more suitable for cutting tools 
+mounted on the front side of the spindle. Otherwise the tool moves toward 
+the back as X increases. This is more suitable for rear mounted tools.</p>
+
+<p><strong>X Positive Rear</strong></p>
+<p><img src="KMotionCNCfiles/LathePosBack.png" width="154" height="181" alt="X Positive Rear" /></p>
+
+<p><strong>X Positive Front</strong></p>
+<p><img src="KMotionCNCfiles/LathePosFront.png" alt="X Positive Front" /></p>
+
+<p>When Diameter Mode is selected the Gcode X Units, X Offset 
+Units, and X DRO Units are all in terms of diameter. In this mode actual 
 tool cutter motion is 1/2 the specified value so the the total diameter of the 
-cut part is the specified value.&nbsp; When Diameter Mode is not selected, 
+cut part is the specified value. When Diameter Mode is not selected, 
 Radius mode will be used, the tool cutter motion will be the specified value, 
-and the cut part will have a radius of the specified value in the GCode. </font></p>
-<p>&nbsp;</p>
-<p><i><b><font face="Arial" size="4"><a name="Feed_Rate_Override">Feed Rate Override</a></font></b></i></p>
-<p>
-<img border="0" src="KMotionCNCfiles/FeedRateOverride.png" width="247" height="61"></p>
-<p><font face="Arial">The Hardware Range value allows control over what part of 
+and the cut part will have a radius of the specified value in the GCode. </p>
+
+<h2><a name="Feed_Rate_Override">Feed Rate Override</a></h2>
+
+<p><img src="KMotionCNCfiles/FeedRateOverride.png" width="247" height="61" alt="Feed Rate Override" /></p>
+
+<p>The Hardware Range value allows control over what part of 
 the Feed Rate Override (FRO) Range is handled by Hardware, and what part is handled by 
-Software (Trajectory Planner).&nbsp;&nbsp; </font></p>
-<p><font face="Arial">Hardware FRO has the advantage of having instant response, 
-however it has a disadvantage of having accelerations distorted by time warping.&nbsp; 
-Accelerations will be distorted by the square of the FRO setting.&nbsp; For 
-example a FRO of 2.0 will result in accelerations 4X higher than planned.&nbsp; 
-Hardware FRO can be thought of like playing a movie back in fast or slow motion.&nbsp; 
+Software (Trajectory Planner). </p>
+<p>Hardware FRO has the advantage of having instant response, 
+however it has a disadvantage of having accelerations distorted by time warping. 
+Accelerations will be distorted by the square of the FRO setting. For 
+example a FRO of 2.0 will result in accelerations 4X higher than planned. 
+Hardware FRO can be thought of like playing a movie back in fast or slow motion. 
 Another analogy might be a car that plans a trajectory accelerating from 0 to 
-60MPH in 10 seconds.&nbsp; Played at double time (FRO=2.0) would result in 
-acceleration from 0 to 120MPH in 5 seconds!&nbsp; Similarly feed rates through 
+60MPH in 10 seconds. Played at double time (FRO=2.0) would result in 
+acceleration from 0 to 120MPH in 5 seconds! Similarly feed rates through 
 tight curves will be proportionally increased by the FRO possibly resulting 
-in excessive acceleration.&nbsp; Velocities are also increased proportionally by 
-the Hardware FRO.&nbsp; This is obviously the normal intention, however speeds 
+in excessive acceleration. Velocities are also increased proportionally by 
+the Hardware FRO. This is obviously the normal intention, however speeds 
 at or near the maximum possible for the system may now exceed the capabilities 
-of the system.&nbsp;&nbsp; This also applies for Rapid (G0) motions.&nbsp; Any 
+of the system. This also applies for Rapid (G0) motions. Any 
 Hardware FRO value higher than 1.0 must have maximum system settings set in a manner 
 that accelerations and velocities have sufficient margins to allow this 
-increased acceleration and velocity.&nbsp; </font></p>
-<p><font face="Arial">Hardware FRO values less than 1.0 will be distorted in the 
-opposite manner.&nbsp; Accelerations will be unnecessarily slow.&nbsp; In the 
+increased acceleration and velocity. </p>
+<p>Hardware FRO values less than 1.0 will be distorted in the 
+opposite manner. Accelerations will be unnecessarily slow. In the 
 previous car analogy played at slow motion (FRO=0.5) the car would accelerate 
-from 0 to 30MPH in 20 seconds.&nbsp; Motions through tight curves will be 
+from 0 to 30MPH in 20 seconds. Motions through tight curves will be 
 proportionally slowed down regardless if a higher speed might be possible and 
-closer to the desired feed rate.&nbsp; Hardware&nbsp; FRO values less than 1.0 
-will never cause a maximum acceleration or velocity limit to be exceeded.</font></p>
-<p><font face="Arial">Software FRO always provides the optimal motion without ever exceeding any system constraint.&nbsp; Maximum Accelerations and 
-Velocities on all axes will always be honored.&nbsp; Accelerations to feed rate 
-will always be optimized.&nbsp; Speeds through curves will always be optimal.&nbsp; 
+closer to the desired feed rate. Hardware FRO values less than 1.0 
+will never cause a maximum acceleration or velocity limit to be exceeded.</p>
+<p>Software FRO always provides the optimal motion without ever exceeding any system constraint. Maximum Accelerations and 
+Velocities on all axes will always be honored. Accelerations to feed rate 
+will always be optimized. Speeds through curves will always be optimal. 
 However such optimized Trajectory Planning is complex and requires look ahead 
-and results in some delayed response to changes.&nbsp; Reducing
-<a href="#lookahead">lookahead</a> can minimize this delay. </font></p>
-<p><font face="Arial">The FRO Hardware Range Parameter sets the boundary FRO 
+and results in some delayed response to changes. Reducing
+<a href="#lookahead">lookahead</a> can minimize this delay. </p>
+<p>The FRO Hardware Range Parameter sets the boundary FRO 
 value where values below the setting will be handled by Hardware, and values 
-above the setting will be handled by Software.&nbsp; Here are some examples:</font></p>
-<p><font face="Arial">Hardware Range = 0.0 will cause <i>all</i> FRO values to be 
-handled by Software.&nbsp; </font></p>
-<p><font face="Arial">Hardware Range =&nbsp; 100.0 (a huge value) will result in 
-<i>all</i> FRO values being handled by Hardware.&nbsp; </font></p>
-<p><font face="Arial">Hardware Range = 1.0 will cause all values less than 1.0 
-to be handled by Hardware and values greater than 1.0 to be handled in Software.&nbsp; 
+above the setting will be handled by Software. Here are some examples:</p>
+<p>Hardware Range = 0.0 will cause <em>all</em> FRO values to be 
+handled by Software. </p>
+<p>Hardware Range = 100.0 (a huge value) will result in 
+<em>all</em> FRO values being handled by Hardware. </p>
+<p>Hardware Range = 1.0 will cause all values less than 1.0 
+to be handled by Hardware and values greater than 1.0 to be handled in Software. 
 This is the largest value that will never cause the set values of Max 
-Acceleration or Max Velocity set in the Trajectory Planner to be exceeded.</font></p>
-<p><font face="Arial">Hardware range = 1.2 will cause all values less than 1.2 
-to be handled by Hardware and values greater than 1.2 to be handled in Software.&nbsp; 
+Acceleration or Max Velocity set in the Trajectory Planner to be exceeded.</p>
+<p>Hardware range = 1.2 will cause all values less than 1.2 
+to be handled by Hardware and values greater than 1.2 to be handled in Software. 
 This setting is useful if it is required to have minor increases (+20%) and 
-all decreases have an instant effect.&nbsp; However this requires that the set 
+all decreases have an instant effect. However this requires that the set 
 values of Max Acceleration or Max Velocity set in the Trajectory Planner be set by a 
 factor of 1/1.2<sup>2</sup> = 0.69 of the system capabilities in order 
-to provide margin to allow for the Hardware FRO.</font></p>
-<p><font face="Arial">Hardware Range = 0.5 will cause all values less than 0.5 
-to be handled by Hardware, and values greater than 0.5 to be handled in Software.&nbsp; 
+to provide margin to allow for the Hardware FRO.</p>
+<p>Hardware Range = 0.5 will cause all values less than 0.5 
+to be handled by Hardware, and values greater than 0.5 to be handled in Software. 
 In most cases this will result in a similar result as Hardware Range = 0.0 (with 
-all changes handled by Software).&nbsp; However in cases for example where the FRO is 
+all changes handled by Software). However in cases for example where the FRO is 
 suddenly reduced from 1.0 to 0.25 the system will first reduce the FRO to 0.5 in 
-Software, and then the remainder, another factor of 0.5 in Hardware.&nbsp; The 
-Software effect will be delayed but the hardware effect will be instant.&nbsp; 
+Software, and then the remainder, another factor of 0.5 in Hardware. The 
+Software effect will be delayed but the hardware effect will be instant. 
 This provides most all of the benefits of Software FRO in the normal ranges of (ie 
-0.9 - 1.1) while also allowing a means of instantly slowing down.</font></p>
-<p>&nbsp;</p>
-<p><font size="4" face="Arial"><b><i><a name="Max_Rapid_FRO">Max Rapid FRO</a></i></b></font></p>
-<p>
-<img border="0" src="KMotionCNCfiles/MaxRapidFRO.png" width="198" height="30"></p>
-<p><font face="Arial">Limits the Rapid FRO to the specified value.&nbsp; Rapid 
+0.9 - 1.1) while also allowing a means of instantly slowing down.</p>
+
+<h2><a name="Max_Rapid_FRO">Max Rapid FRO</a></h2>
+
+<p><img src="KMotionCNCfiles/MaxRapidFRO.png" width="198" height="30" alt="Max Rapid FRO" /></p>
+
+<p>Limits the Rapid FRO to the specified value. Rapid 
 FRO is always performed in hardware so values Rapid FRO values greater than 1.0 
-will exceed the specified Velocity, Acceleration, and Jerk specified in KFLOP.&nbsp; 
-Use this limit to avoid FRO values that would cause Velocities,&nbsp; 
-Accelerations, or Jerks that the system would be incapable of performing.&nbsp; 
+will exceed the specified Velocity, Acceleration, and Jerk specified in KFLOP. 
+Use this limit to avoid FRO values that would cause Velocities, 
+Accelerations, or Jerks that the system would be incapable of performing. 
 This value is commonly set to 1.0 if the parameters specified in KFLOP are set 
-at the maximum possible.&nbsp; To allow FRO values greater than 1.0 the system 
-must have sufficient margin to be able to exceed the specified parameters.&nbsp; 
-Values less than 1.0 are not commonly specified.</font></p>
-<p>&nbsp;</p>
-<p><font size="4" face="Arial"><b><i><a name="Rapids_as_Feeds">Rapids as Feeds</a></i></b></font></p>
-<p>
-<img border="0" src="KMotionCNCfiles/RapidsAsFeeds.png" width="149" height="26"></p>
-<p><font face="Arial">Selects whether Rapids are performed as 3rd-order (Jerk 
-limited) motions or 2nd order Feed Motions.&nbsp; Most systems will not select 
+at the maximum possible. To allow FRO values greater than 1.0 the system 
+must have sufficient margin to be able to exceed the specified parameters. 
+Values less than 1.0 are not commonly specified.</p>
+
+<h2><a name="Rapids_as_Feeds">Rapids as Feeds</a></h2>
+
+<p><img src="KMotionCNCfiles/RapidsAsFeeds.png" width="149" height="26" alt="Rapids as Feeds" /></p>
+
+<p>Selects whether Rapids are performed as 3rd-order (Jerk 
+limited) motions or 2nd order Feed Motions. Most systems will not select 
 this option so that Rapids are performed as faster/smoother 3rd-order 
-Jerk-Limited motions.&nbsp; However KFLOP performs 3rd order Rapids as a single 
-linear interpolated multi-axis motion at the actuator level.&nbsp; This is fine 
+Jerk-Limited motions. However KFLOP performs 3rd order Rapids as a single 
+linear interpolated multi-axis motion at the actuator level. This is fine 
 for normal Cartesian xyz linear systems however may cause problems for highly 
 non-linear kinematic systems as a straight line in actuator space is not likely 
-to be a straight line in real CAD space.&nbsp; For example a Delta Platform is 
-an example of a non-linear system.&nbsp; This may result in a rapid motion path 
-from one point to another to be along a somewhat unpredictable curved path.&nbsp; 
-In some cases this may result in an undesirable crash.&nbsp;
+to be a straight line in real CAD space. For example a Delta Platform is 
+an example of a non-linear system. This may result in a rapid motion path 
+from one point to another to be along a somewhat unpredictable curved path. 
+In some cases this may result in an undesirable crash.
 <a href="GeoCorrection.htm">Geometric Correction</a> is also a form of 
-nonlinearity.&nbsp; However Geometric correction is usually not sufficiently 
+nonlinearity. However Geometric correction is usually not sufficiently 
 non-linear to cause problems unless long rapids are performed passing very close 
-to part surfaces or features.&nbsp; If nonlinearity is an issue for your system, 
+to part surfaces or features. If nonlinearity is an issue for your system, 
 select this option and Rapids will always be performed along a straight line as 
 they will be subdivided into small segments where proper actuator positions are 
-calculated to keep the motion along a straight line.&nbsp; Regardless of whether 
+calculated to keep the motion along a straight line. Regardless of whether 
 this option is selected or not the Velocity and Acceleration will be set by the 
 KFLOP Axis Parameters not by the current GCode Feed Rate or Trajectory Planner 
-Settings.</font></p>
-<p>&nbsp;</p>
-<p><i><b><font face="Arial" size="4"><a name="Display_Encoders">Display Encoders</a></font></b></i></p>
-<p><font face="Arial">
-<img border="0" src="KMotionCNCfiles/DisplayEncoders.png" width="170" height="37"></font></p>
-<p><font face="Arial">Displays in the DROs the Measured Encoder Position for 
-axes that are configured with an Input Mode other than None.&nbsp; When 
-Un-checked all DROs display the commanded position.</font></p>
-<p>&nbsp;</p>
-<p><i><b><font face="Arial" size="4"><a name="Zero_Using_Fixture_Offsets">Zero 
-Using Fixture Offsets</a></font></b></i></p>
-<p><font face="Arial">
-<img border="0" src="KMotionCNCfiles/ZeroUsingFixtureOffsets.png" width="234" height="48"></font></p>
-<p><font face="Arial">Zero/Set Buttons near DROs allow the User to Set the DRO 
-to Zero or a Specified Value.&nbsp; This is accomplished by adjusting GCode 
-Offsets.&nbsp; When this option is selected then the currently selected Fixture 
-Offset will be adjusted.&nbsp; When unchecked the Global G92/G52 Offset will be 
-adjusted.</font></p>
+Settings.</p>
 
-<p>&nbsp;</p>
-<p><i><b><font face="Arial" size="4"><a name="Tool_Length/Offset_Immediately">
-Tool Length/Offset Immediately</a></font></b></i></p>
-<p>
-<img border="0" src="KMotionCNCfiles/ToolLengthImmediate.png" width="261" height="39"></p>
-<p><font face="Arial">This option causes the KMotionCNC Drop Down Tool Selector 
+<h2><a name="Display_Encoders">Display Encoders</a></h2>
+
+<p><img src="KMotionCNCfiles/DisplayEncoders.png" width="170" height="37" alt="Display Encoders" /></p>
+
+<p>Displays in the DROs the Measured Encoder Position for 
+axes that are configured with an Input Mode other than None. When 
+Un-checked all DROs display the commanded position.</p>
+
+<h2><a name="Zero_Using_Fixture_Offsets">Zero Using Fixture Offsets</a></h2>
+
+<p><img src="KMotionCNCfiles/ZeroUsingFixtureOffsets.png" width="234" height="48" alt="Zero_Using_Fixture_Offsets" /></p>
+<p>Zero/Set Buttons near DROs allow the User to Set the DRO 
+to Zero or a Specified Value. This is accomplished by adjusting GCode 
+Offsets. When this option is selected then the currently selected Fixture 
+Offset will be adjusted. When unchecked the Global G92/G52 Offset will be 
+adjusted.</p>
+
+<h2><a name="Tool_Length/Offset_Immediately">Tool Length/Offset Immediately</a></h2>
+
+<p><img src="KMotionCNCfiles/ToolLengthImmediate.png" width="261" height="39" alt="Tool_Length/Offset_Immediately" /></p>
+
+<p>This option causes the <strong><em>KMotionCNC</em></strong> Drop Down Tool Selector 
 to immediately select and apply the Tool Length (and offsets) Compensation 
-without having to select and turn on the compensation in GCode with &quot;HxxxxG43&quot;.</font></p>
-<p>&nbsp;</p>
-<p><b><i><font face="Arial" size="4"><a name="M6onToolTableChanges">M6 on Tool 
-Table Changes</a></font></i></b></p>
-<p>
-<img border="0" src="KMotionCNCfiles/M6onToolTableChanges.png"></p>
-<p><font face="Arial">This option causes the automatic execution of an TxxxM6 
+without having to select and turn on the compensation in GCode with &quot;HxxxxG43&quot;.</p>
+
+<h2><a name="M6onToolTableChanges">M6 on Tool Table Changes</a></h2>
+
+<p><img src="KMotionCNCfiles/M6onToolTableChanges.png" alt="M6 on Tool Table Changes" /></p>
+
+<p>This option causes the automatic execution of an TxxxM6 
 operation after the Tool Table has been edited to re-select the specified Tool 
 so the selected Tool ID, slot, offsets, image all reflect the current state of 
-the Tool Table.</font></p>
-<p><b><i><font face="Arial" size="4"><a name="confirm-program-exit" id="confirm-program-exit">Confirm Program Exit</a></font></i></b></p>
-<p> <img src="KMotionCNCfiles/ConfirmProgramExit.png" width="184" height="29" alt=""/></p>
-<p><font face="Arial">By default checked, this option prompts  a confirmation that a user wants to exit KMotionCNC.</font></p>
-<p><b><i><font face="Arial" size="4"><a name="arc-beg-end" id="arc-beg-end">Arc beg/end radius Tol</a></font></i></b></p>
-<p> <img src="KMotionCNCfiles/ArcBegEndRadiusTol.png" width="297" height="33" border="0"></p>
-<p><font face="Arial">The GCode indirectly specifies the Start of the Arc (previous      position), the End of the Arc (Specified Position), and the Arc      Center Point (Previous Position + IJK offset).&nbsp; The distance between      the Start to the Center and the End to the Center should be the      same.&nbsp; Specifies the allowed Tolerance the GCode Interpreter will      allow between the beginning and ending radius of an arc.&nbsp; This      should be a very small number within the rounding tolerance of the      numbers.</font></p>
-<p><b><i><font face="Arial" size="4"><a name="arc-radius-small" id="arc-beg-end2">Arc radius small Tol</a></font></i></b></p>
-<p> <img src="KMotionCNCfiles/ArcRadiusSmallTol.png" width="295" height="28" border="0"></p>
-<p><font face="Arial">Tolerance parameter for allowing Arc Radius being smaller than half      the distance from the start of Arc to End of Arc when specifying      Arcs using R mode.</font></p>
-<p><i><b><font size="4" face="Arial"><a name="Axis_Motion_Parameters">Axis Motion Parameters</a></font></b></i></p>
-<p>
-<font face="Arial">
-<img border="0" src="KMotionCNCfiles/AxisParams.png" align="left" hspace="15"></font></p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p><font face="Arial">The Axis Motion Parameters define the scale, maximum feed velocities, and 
-maximum feed accelerations for each of the six axis.&nbsp; </font> </p>
-<p><font face="Arial">The first parameter is the axis's scale in counts/inch.&nbsp; For the example 
-value of 100 shown, <i>KMotionCNC</i> will command the motion controller to move 
-100 counts for each inch of motion in the G Code Program.&nbsp; This value is 
-always in counts/inch regardless of the units used in the interpreter.&nbsp; <i>
-KMotionCNC</i> will automatically perform any conversions.</font></p>
-<p><font face="Arial">The second parameter is the maximum allowed feed rate for the axis in 
-inches/sec.&nbsp; Note that the G Code Interpreter Feed Rate is defined in 
-inches per minute or (mm per minute) so be aware of the different time units.&nbsp; 
-These are <i>maximum</i> feed rates for each axis.&nbsp; If a vector tool motion 
+the Tool Table.</p>
+
+<h2><a name="confirm-program-exit" id="confirm-program-exit">Confirm Program Exit</a></h2>
+
+<p><img src="KMotionCNCfiles/ConfirmProgramExit.png" width="184" height="29" alt="Confirm Program Exit"/></p>
+
+<p>By default checked, this option prompts  a confirmation that a user wants to exit <strong><em>KMotionCNC</em></strong>.</p>
+
+<h2><a name="arc-beg-end" id="arc-beg-end">Arc beg/end radius Tol</a></h2>
+
+<p><img src="KMotionCNCfiles/ArcBegEndRadiusTol.png" width="297" height="33" alt="Arc beg/end radius Tol" /></p>
+
+<p>The GCode indirectly specifies the Start of the Arc (previous position), the End of the Arc (Specified Position), and the Arc Center Point (Previous Position + IJK offset). The distance between the Start to the Center and the End to the Center should be the same. Specifies the allowed Tolerance the GCode Interpreter will allow between the beginning and ending radius of an arc. This should be a very small number within the rounding tolerance of the numbers.</p>
+
+<h2><a name="arc-radius-small" id="arc-beg-end2">Arc radius small Tol</a></h2>
+
+<p><img src="KMotionCNCfiles/ArcRadiusSmallTol.png" width="295" height="28" border="0"></p>
+<p>Tolerance parameter for allowing Arc Radius being smaller than half the distance from the start of Arc to End of Arc when specifying Arcs using R mode.</p>
+
+<h2><a name="Axis_Motion_Parameters">Axis Motion Parameters</a></h2>
+
+<p><img src="KMotionCNCfiles/AxisParams.png" aly="Axis Motion Parameters"/></p>
+
+<p>The Axis Motion Parameters define the scale, maximum feed velocities, and 
+maximum feed accelerations for each of the six axis.  </p>
+<p>The first parameter is the axis's scale in counts/inch. For the example 
+value of 100 shown, <em><strong>KMotionCNC</strong></em> will command the motion controller to move 
+100 counts for each inch of motion in the G Code Program. This value is 
+always in counts/inch regardless of the units used in the interpreter. <em>
+<strong>KMotionCNC</strong></em> will automatically perform any conversions.</p>
+<p>The second parameter is the maximum allowed feed rate for the axis in 
+inches/sec. Note that the G Code Interpreter Feed Rate is defined in 
+inches per minute or (mm per minute) so be aware of the different time units. 
+These are <em>maximum</em> feed rates for each axis. If a vector tool motion 
 at a particular feed rate has any component velocity that exceeds the 
 corresponding axis's maximum velocity, the feed rate for the vector will be 
-reduced so that all axes remain at or below their maximum allowed velocity.</font></p>
-<p><font face="Arial">The third parameter is the maximum allowed acceleration for the axis in 
-inches/sec<sup>2</sup>.&nbsp; The G Code Language has no provisions for 
-specifying acceleration rates.&nbsp; Therefore the acceleration (and 
+reduced so that all axes remain at or below their maximum allowed velocity.</p>
+<p>The third parameter is the maximum allowed acceleration for the axis in 
+inches/sec<sup>2</sup>. The G Code Language has no provisions for 
+specifying acceleration rates. Therefore the acceleration (and 
 deceleration) along a vector used will always be the largest acceleration such 
-that each axis's acceleration is at or below the specified limit.</font></p>
-<p><font face="Arial">The velocity and acceleration limits apply only to linear and circular feed 
-motions (G1, G2, G3).&nbsp; Rapid motions (G0) use the settings in the motion 
-controller (velocity, acceleration, and Jerk) to move each axis independently 
-from one point to another (which is likely not to be a straight line).&nbsp; To 
-change the speed of Rapid motions change the configuration settings in the 
-motion controller.</font></p>
-<p><font face="Arial">Axes A,B,C sometimes are angular axes and are programmed 
-to move angles of degrees rather than linear distances.&nbsp; If so select 
+that each axis's acceleration is at or below the specified limit.</p>
+<p>The velocity and acceleration limits apply only to linear and circular   feed motions (G1, G2, G3). Rapid motions (G0) use the settings in the   motion controller (velocity, acceleration, and Jerk) to move all axes   from one point to another along a straight line as quickly as possible   without violating any axis involved in the motion constraints.&nbsp; To   change the speed of G0 Rapid motions change the axes configuration settings in the motion controller. </p>
+<p>Axes A,B,C sometimes are angular axes and are programmed 
+to move angles of degrees rather than linear distances. If so select 
 &quot;Degrees&quot; so that the axis moves in degrees regardless of the Inch or mm modes 
-in GCode.&nbsp; </font></p>
-<p><font face="Arial">The best method for performing coordinated linear and 
-angular combined motion is to use G93 Inverse Time Mode.&nbsp; This mode allows 
+in GCode. </p>
+<p>The best method for performing coordinated linear and 
+angular combined motion is to use G93 Inverse Time Mode. This mode allows 
 the CAD system to generate GCode that will cause the feed rate at the tool to 
-always be at the desired feed rate based on the geometry of the system.&nbsp; 
+always be at the desired feed rate based on the geometry of the system. 
 However this requires a time (specified by its inverse) for each GCode block to 
-be computed and included in the data stream.&nbsp; If&nbsp; Inverse TIme GCode 
-data is not available a Radius for each Angular Axis can be specified.&nbsp;&nbsp; 
+be computed and included in the data stream. If Inverse TIme GCode 
+data is not available a Radius for each Angular Axis can be specified. 
 This allows the Trajectory planner to convert angular motion rates to linear 
-motion rates.&nbsp; This assumes that the tool will remain at a relatively 
-constant radius from the rotation axis (ie. engraving on a cylinder).&nbsp; 
+motion rates. This assumes that the tool will remain at a relatively 
+constant radius from the rotation axis (ie. engraving on a cylinder). 
 Whenever Degrees is specified with a non-zero radius then the Trajectory Planner 
 will consider the motion for that axis to be at the equivalent radius and 
-orthogonal to all other combined motions.</font></p>
-<p><font face="Arial">As an example for the settings shown above for Axis A the 
+orthogonal to all other combined motions.</p>
+<p>As an example for the settings shown above for Axis A the 
 maximum linear Velocity and Acceleration rates are the same as X, Y, and Z 
-assuming a 10 inch radius about the A Axis of rotation.</font></p>
-<p><font face="Arial">57.295 deg/sec&nbsp; x </font>
-<font face="Times New Roman" size="4">&nbsp;&#960;</font><font face="Arial">/180deg&nbsp; 
-x&nbsp; 10in&nbsp; = 10in/sec</font></p>
-<p><font face="Arial">229.183 deg/sec<sup>2</sup> x </font>
-<font face="Times New Roman" size="4">&nbsp;&#960;</font><font face="Arial">/180deg&nbsp; 
-x&nbsp; 10in&nbsp; = 40in/sec<sup>2</sup></font></p>
-<p><font face="Arial">The GCode sequence shown below will perform a G1 Feed a 
-linear distance of 10 inches in both X and A.&nbsp; Because the X and A axis are 
+assuming a 10 inch radius about the A Axis of rotation.</p>
+<p>57.295 deg/sec x &#960;/180deg x 10in = 10in/sec</p>
+<p>229.183 deg/sec<sup>2</sup> x &#960;/180deg x 10in = 40in/sec<sup>2</sup></p>
+<p>The GCode sequence shown below will perform a G1 Feed a 
+linear distance of 10 inches in both X and A. Because the X and A axis are 
 assumed to be orthogonal the combined distance will be assumed to be 14.1 inches 
-total.&nbsp; At a feed rate of 60 ipm = 1 ips, the total Feed Time will be 14.1 
-sec (plus a small acceleration time).</font></p>
-<p><font face="Arial">G20<br>
-G0 X0 Y0 Z0 A0<br>
-G1 X10 A57.295 F60<br>
-M2</font></p>
-<p>&nbsp;</p>
-<p><b><i><font face="Arial" size="4"><a name="Threading/Spindle_Settings">
-Threading/Spindle Settings</a></font></i></b></p>
-<p>
-<img border="0" src="KMotionCNCfiles/Threading.png" width="559" height="102" align="left"></p>
+total. At a feed rate of 60 ipm = 1 ips, the total Feed Time will be 14.1 
+sec (plus a small acceleration time).</p>
+<p>G20<br />
+G0 X0 Y0 Z0 A0<br />
+G1 X10 A57.295 F60<br />
+M2</p>
 
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p><font face="Arial" size="3">
-		Spindle Speed measurement is also supported (Single Point Threading is 
-under development).&nbsp; A quadrature encoder is required on the spindle.&nbsp; Specify the 
-		Sensor Type as 1 to enable the Spindle measurement.&nbsp; Configure the 
+<h2><a name="Threading/Spindle_Settings">Threading/Spindle Settings</a></h2>
+
+<p><img src="KMotionCNCfiles/Threading.png" width="559" height="102" alt="Threading/Spindle Settings" /></p>
+
+<p>Spindle Speed measurement is supported as well as Single Point Threading. 
+		A quadrature encoder is required on the spindle. Specify the 
+		Sensor Type as 1 to enable the Spindle measurement. Configure the 
 		Axis Channel that is configured to read the encoder (Note this is not 
 		the encoder channel, rather it is the axis that has the encoder channel 
-		configured as its input).&nbsp; Specify the Update time, Tau, and 
-		counts/rev.&nbsp; See <a href="../Cmd.htm#ConfigSpindle">here</a> for 
-		more information.&nbsp; </font></p>
+		configured as its input). Specify the Update time, Tau, and 
+		counts/rev. See <a href="../Cmd.htm#ConfigSpindle">here</a> for 
+	  more information. </p>
 
+
+<p>&nbsp;</p>
+	</div>
 </body>
 
 </html>

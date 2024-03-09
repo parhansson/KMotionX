@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Dynomotion")]
 [assembly: AssemblyProduct("SimpleGCodeWPF")]
-[assembly: AssemblyCopyright("Copyright © Dynomotion 2018")]
+[assembly: AssemblyCopyright("Copyright © Dynomotion 2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -298,7 +298,7 @@ BOOL CToolSetupTPPage::OnKillActive()
 		{
 			GetDlgItem(IDC_CollinearTol)->SetFocus();
 			((CEdit*)GetDlgItem(IDC_CollinearTol))->SetSel(0,-1);		
-			AfxMessageBox("Error Arcs To Segs selected with Zero Collinear Tolerance");
+			MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Arcs To Segs selected with Zero Collinear Tolerance"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 			return FALSE;
 		}
 	}

@@ -1909,7 +1909,7 @@ int CMesh3d::WriteFile(CStdioFile &file)
 		#ifdef _DEBUG
 				afxDump << "Error during writing transform" << e->m_cause << "\n";
 		#endif
-		AfxMessageBox("Error during writing transform");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error during writing transform"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 0;
 	}
 	END_CATCH
@@ -2004,7 +2004,7 @@ int CMesh3d::WriteFileRaw(CFile &file)
 		#ifdef _DEBUG
 				afxDump << "Error during writing " << e->m_cause << "\n";
 		#endif
-		AfxMessageBox("Error during writing");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error during writing"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 0;
 	}
 	END_CATCH

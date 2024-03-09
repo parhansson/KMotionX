@@ -230,9 +230,9 @@
             // 
             this.TestUSB.Location = new System.Drawing.Point(18, 498);
             this.TestUSB.Name = "TestUSB";
-            this.TestUSB.Size = new System.Drawing.Size(65, 21);
+            this.TestUSB.Size = new System.Drawing.Size(109, 21);
             this.TestUSB.TabIndex = 5;
-            this.TestUSB.Text = "Test USB";
+            this.TestUSB.Text = "Test USB/Ethernet";
             this.TestUSB.UseVisualStyleBackColor = true;
             this.TestUSB.Click += new System.EventHandler(this.TestUSB_Click);
             // 
@@ -241,9 +241,9 @@
             this.TestResults2.BackColor = System.Drawing.SystemColors.Control;
             this.TestResults2.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.TestResults2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TestResults2.Location = new System.Drawing.Point(89, 518);
+            this.TestResults2.Location = new System.Drawing.Point(133, 521);
             this.TestResults2.Name = "TestResults2";
-            this.TestResults2.Size = new System.Drawing.Size(462, 16);
+            this.TestResults2.Size = new System.Drawing.Size(426, 16);
             this.TestResults2.TabIndex = 7;
             this.TestResults2.Text = "Not Tested";
             this.TestResults2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -253,9 +253,9 @@
             this.TestResults1.BackColor = System.Drawing.SystemColors.Control;
             this.TestResults1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.TestResults1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TestResults1.Location = new System.Drawing.Point(89, 498);
+            this.TestResults1.Location = new System.Drawing.Point(133, 500);
             this.TestResults1.Name = "TestResults1";
-            this.TestResults1.Size = new System.Drawing.Size(462, 16);
+            this.TestResults1.Size = new System.Drawing.Size(426, 16);
             this.TestResults1.TabIndex = 7;
             this.TestResults1.Text = "Not Tested";
             this.TestResults1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;

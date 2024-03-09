@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
 
 	Finished=false;
 
-	if (Interpreter->CoordMotion->KMotionDLL->CheckKMotionVersion( &BoardType)) return 1;
+	if (Interpreter->CoordMotion->KMotionDLL->CheckKMotionVersion(&BoardType)) return 1;
 
 	Interpreter->SetUserCallback(UserCallback);  // Set this to handle (USR,Message) Callbacks
 

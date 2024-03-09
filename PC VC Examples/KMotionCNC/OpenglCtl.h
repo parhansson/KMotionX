@@ -8,6 +8,9 @@
 
 typedef void RENDERCALLBACK(void *);
 
+#define ORTHO_CAMERA_Z -200.0  // Distance Camera is back in ortho mode
+#define ORTHO_HEIGHT 2.0 // OpenGL Height of View (+/- 1 units)
+
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -67,7 +70,8 @@ public:
 	float m_xTranslation;
 	float m_yTranslation;
 	float m_zTranslation;
-	float m_zTranslation0;  // nominal distance where Ortho should be at Scale0
+	float m_zTranslation0_Ortho;  // nominal distance where Ortho should be at Scale0
+	float m_zTranslation0_Persp;  // nominal distance for persp
 
 	float m_xScaling;
 	float m_yScaling;
@@ -77,7 +81,8 @@ public:
 	float m_aspect;
 	int m_cx, m_cy;
 
-	float m_SpeedTranslation;
+	float m_SpeedTranslation_Ortho;
+	float m_SpeedTranslation_Persp;
 	float m_SpeedRotation;
 
 	// Colors
@@ -119,7 +124,7 @@ protected:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnDestroy();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	//}}AFX_MSG
 
 	DECLARE_MESSAGE_MAP()

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+<meta name="keywords" content="ethernet 16-axis controller, cnc control, motion control, cnc boards, 4-axis, 8-axis, stepper, brushless, DC motor, servo, encoder, adc, dac, motion controller, automated motion, manufacturing, Mach3">
+
+<meta name="description" content="Manufacturer of premium motion control products for CNC Manufacturing, Robotics and Automation">
+
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+
+<title>Kogna Quick Start</title>
+
+<link rel="stylesheet" type="text/css" href="print.css">
+</head>
+
+<body>
+
+
+<div id="logo"><a href="../index.htm"></a></div>
+
+<div id="home">
+<a href="../index.htm">Table of contents</a> |  
+	<script>
+		if (navigator.userAgent.indexOf("NT 6.2") == -1){
+			document.write('<a href="https://www.dynomotion.com">Dynomotion home page</a>')
+		} else {
+			document.write('<a href="https://www.dynomotion.com" target="_blank">Dynomotion home page</a>')
+		}
+	</script>
+</div>
+	
+
+<div id="searchNav">
+
+	<div class="gcse-search">
+					<script>
+					  if (document.location.protocol  ==  'https:') {
+					  (function() {
+					  var cx = '012657033059195044748:9fmjmlufts0';
+					  var gcse = document.createElement('script');
+					  gcse.type = 'text/javascript';
+					  gcse.async = true;
+					  gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+					      '//cse.google.com/cse.js?cx=' + cx;
+					  var s = document.getElementsByTagName('script')[0];
+					  s.parentNode.insertBefore(gcse, s);
+					})();
+					  }
+				      </script> 
+				      <gcse:search> </gcse:search>  
+
+	       </div>
+</div>	
+
+	
+
+
+<div id="google_translate_element" style="background: transparent;" align="right"><script type="text/javascript">
+if (navigator.userAgent.indexOf("NT 6.2") == -1) {
+		function googleTranslateElementInit() {
+	  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,de,fr,it,es,pt,ru,uk,ar,zh-CN,zh-TW,ko,iw,hi,ja,tr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+		}						}
+	</script>
+	<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+	</script>
+</div>		
+	
+	
+<div id="main" class="small">
+
+	
+
+<p><img width="200" height="38" src="Images/ThankYou.png" alt="Thank You!" /></p>
+
+
+
+<p>Web: <a href="http://www.dynomotion.com/">www.dynomotion.com</a> | Email: support@dynomotion.com</p>
+
+<p>Please download and install the latest software from <a href="http://dynomotion.com/Software/Download.html">http://dynomotion.com/Software/Download.html</a></p>
+
+
+
+<p>The installation will create a Windows&#0153; Start button link to further help and to the <strong><em>KMotion</em></strong> Setup and Tuning Application. </p>
+
+
+
+
+
+<h1>QuickStart</h1>
+
+
+
+<p>Remove the Kogna Board from the anti-static packaging in a static safe environment. </p>
+
+
+
+<p><strong><em><span class="warning">Note: </span>
+
+immediately before touching any electronic component, always discharge any 
+
+static electricity you may have by touching an earth ground, such as the metal 
+
+chassis of a PC.</em></strong></p>
+
+
+
+<p>Kogna may operate powered from the USB by inserting JP2. Total power must be &lt; 0.5A for USB powered operation. Otherwise remove JP2 and connect a +5V power supply to 
+
+the <strong><em>Kogna's</em></strong> 4 pin Molex connector. This connector is the same 
+
+Pinout as a PC Disk Drive power connector. The +12V is not 
+
+required for operation, it is routed internally through the board to several of 
+
+the connectors. See the on-line help section titled <em>Hardware/Connector 
+
+Description</em> for more information.</p>
+
+
+
+<p><strong><em><span class="warning">Note:</span> Kogna 
+
+may at times draw as little as 0.25 Amps from the +5V supply. Some PC power 
+
+supplies will not function without a minimum load. In these cases an 
+
+appropriate power resistor (~10 ohm 5 Watt) should be added across the +5V. 
+
+Additionally, most ATX power supplies require pins 14 and 15 on the main 20 pin 
+
+power connector to be shorted.</em></strong></p>
+
+
+
+		<p ><strong><em><span class="warning">Note:</span> it is 
+
+NOT recommended to use the same power supply that is powering your PC and Hard 
+
+drives to power the Kogna. Motor noise and power surges have the possibility to 
+
+cause damage or loss of data within the PC.</em></strong></p>
+
+
+
+<p>Connect the USB or turn on the +5V supply. Two green LEDs should blink 
+
+rapidly for a few seconds (<strong><em>Kogna</em></strong> is checking if the Host is 
+
+requesting a Flash Recovery during this time), and then the LEDs should remain 
+
+steady.</p>
+
+
+
+<p>Now connect an Ethernet  cable from <strong><em>Kogna</em></strong> to your 
+
+Network Router and run KMotion.exe. By default KMotion.exe uses any KFLOP or Kogna found by searching Ethernet or USB.  If only one Kogna board is connected on the same network as the PC (or only one KFLOP on the PC's USB ports) connection should be automatic. </p>
+<p>If Kogna is connected directly to the PC without a Router to automatically assign IP Addresses with DHCP then the IP Addresses of the PC and Kogna will need to be assigned manually.</p>
+<p>Recommended addresses for the PC and Kogna are 192.168.0.10 and 192.168.0.11</p>
+<p>To set the PC IP Address in Windows 10 go to Control Panel | Network and Sharing | Change Adapter Settings | Right click - Ethernet | Properties | Select Internet Protocol Version 4 (TCP/IPv4)</p>
+<p><img src="Images/EthernetProperties.png" width="363" height="468" alt=""/></p>
+<p>Select Properties then select Use the following IP Address and enter the IP Address</p>
+<p><img src="Images/IPAddress.png" width="400" height="455" alt=""/></p>
+<p>Note the current PC IP Address can be displayed by entering the <strong>ipconfig</strong> command in a Windows Command Prompt.</p>
+<p>To set Kogna's IP Address see <a href="../SchematicsKogna/KognaUSB.html">Kogna's USB UART COM Port</a></p>
+
+<p>Otherwise see <a href="../MultipleBoards.htm">here</a>.</p>
+
+
+
+
+
+
+
+
+
+</div>
+
+</body>
+
+
+
+</html>
+

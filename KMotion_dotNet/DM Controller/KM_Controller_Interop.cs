@@ -30,6 +30,29 @@ namespace KMotion_dotNet
 {
     #region Enums
     /// <summary>
+    /// Type of Board Currently KFLOP or Kogna
+    /// 
+    /// <remarks>
+    /// Used where the Controllers Capabilities differ
+    /// </remarks>
+    /// </summary>
+    public enum BOARD_TYPE : int
+    {
+        /// <summary>
+        /// Board type not yet determined
+        /// </summary>
+        UNKNOWN = -1,
+        /// <summary>
+        /// Controller is KFLOP
+        /// </summary>
+        KFLOP = 2,
+        /// <summary>
+        /// Controller is Kogna
+        /// </summary>
+        KOGNA = 3
+    }
+
+    /// <summary>
     /// Represents the axis pair for executing arc segments
     /// 
     /// <remarks>
@@ -537,7 +560,7 @@ namespace KMotion_dotNet
         static extern int KM_dotnet_Interop_CompileAndLoadCoff(IntPtr handle, int threadID, string name, ref string error, int _ErrorLength);
 
         [DllImport("KMotion_dotNet_Interop.dll")]
-        static extern int KM_dotnet_Interop_Compile(IntPtr handle, int boardtype, int threadID, string name, ref string outfile, ref string error, int _ErrorLength);
+        static extern int KM_dotnet_Interop_Compile(IntPtr handle, BOARD_TYPE boardtype, int threadID, string name, ref string error, int _ErrorLength);
 
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern int KM_dotnet_Interop_ServiceConsole(IntPtr handle);
@@ -567,40 +590,12 @@ namespace KMotion_dotNet
         static extern int KM_dotnet_Interop_ConvertToOut(IntPtr handle, int thread, string infile, string outfile, int maxlength);
 
         [DllImport("KMotion_dotNet_Interop.dll")]
-        static extern int KM_dotnet_Interop_CheckKMotionVersion(IntPtr handle, ref int type, bool getboardtypeonly);
+        static extern int KM_dotnet_Interop_CheckKMotionVersion(IntPtr handle, ref BOARD_TYPE type, bool getboardtypeonly);
         
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern int KM_dotnet_Interop_ExtractCoffVersionString(IntPtr handle, string file, ref string version);
         [DllImport("KMotion_dotNet_Interop.dll")]
-        static extern int KM_dotnet_Interop_MainStatus_GetStatus(IntPtr handle, bool locked,
-        ref int versionandsize,
-        [MarshalAs(UnmanagedType.LPArray, SizeConst = 24)] int[] adc,
-        [MarshalAs(UnmanagedType.LPArray, SizeConst = 8)] int[] dac,
-        [MarshalAs(UnmanagedType.LPArray, SizeConst = 16)]  int[] pwm,
-        [MarshalAs(UnmanagedType.LPArray, SizeConst = 8)] double[] position,
-        [MarshalAs(UnmanagedType.LPArray, SizeConst = 8)] double[] destination,
-        [MarshalAs(UnmanagedType.LPArray, SizeConst = 8)] int[] outputchan0,
-        ref  int inputmodes,
-        ref  int inputmodes2,
-        ref int outputmodes,
-        ref  int outputmodes2,
-        ref int enables,
-        ref int axisdone,
-        [MarshalAs(UnmanagedType.LPArray, SizeConst = 2)]  int[] bitsdirection,
-        [MarshalAs(UnmanagedType.LPArray, SizeConst = 2)]  int[] bitsstate,
-        ref  int snapbitsdirection0,
-        ref  int snapbitsdirection1,
-        ref  int snapbitsstate0,
-        ref  int snapbitsstate1,
-        ref  int kanalgobitsstateinputs,
-        ref  int kanalogbitsstateoutputs,
-        ref  int runonstartup,
-        ref int threadactive,
-        ref int stopimmediatestate,
-        ref double timestamp,
-        [MarshalAs(UnmanagedType.LPArray, SizeConst = 8)] int[] pccomm,
-        ref int virtualbits,
-        ref int virtualbitsex0);
+        static extern int KM_dotnet_Interop_MainStatus_GetStatus(IntPtr handle, bool locked, ref KM_MainStatusRaw status);
         #endregion 
         #endregion
     }

@@ -1,0 +1,7 @@
+Header~Fixture~Table
+Operation~Upper Left Corner~~0.125 End Mill~Fixture~Movable~3~3~
+Task~~Upper Left~00:00:21~Test Point.chp~0~-12~.7500~24~12~Top Left~$$DEFAULT_BUILD_ROOT$$\Tooling and Fixtures\Machne Table and Fixture
+Task~~Upper Left~00:09:45~Countersinks 0_125 EM.chp~0~-12~.7500~24~12~Top Left~$$DEFAULT_BUILD_ROOT$$\Tooling and Fixtures\Machne Table and Fixture
+Task~~Upper Left~00:11:11~Bolt Slots 0_125 EM.chp~0~-12~.7500~24~12~Top Left~$$DEFAULT_BUILD_ROOT$$\Tooling and Fixtures\Machne Table and Fixture
+Task~~Upper Left~00:01:59~Left Location Pins 0_125 EM.chp~0~-12~.7500~24~12~Top Left~$$DEFAULT_BUILD_ROOT$$\Tooling and Fixtures\Machne Table and Fixture
+Task~~Upper Left~~Location Pins 0_125 EM.chp~0~-12~.7500~24~12~Top Left~$$DEFAULT_BUILD_ROOT$$\Tooling and Fixtures\Machne Table and Fixture

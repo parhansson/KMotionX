@@ -24,7 +24,10 @@ public:
 	//}}AFX_DATA
 
 	CString Contents;
+	bool FirstTime;
+	bool EdgeHelpClient;
 
+	HWND FindEdgeHelpWindow();
 
 // Overrides
 	// ClassWizard generated virtual function overrides

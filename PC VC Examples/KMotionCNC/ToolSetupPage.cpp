@@ -64,7 +64,7 @@ BOOL CToolSetupPage::CheckThreadNo(int ControlID, MCODE_ACTION *Action)
 	{
 		GetDlgItem(ControlID)->SetFocus();
 		((CEdit*)GetDlgItem(ControlID))->SetSel(0,-1);		
-		AfxMessageBox("Invalid User Thread Number");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid User Thread Number"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return TRUE;
 	}
 
@@ -175,7 +175,7 @@ void CToolSetupPage::SetAction(MCODE_ACTION *M, int ID_Action,
 	case M_Action_Program_wait_sync:
 		SetDlgItemText(ID_S1,"Thread");
 		SetDlgItemText(ID_S2,"VAR");
-		SetDlgItemText(ID_S3,"C File");
+		SetDlgItemTextW(m_hWnd, ID_S3,/*TRAN*/TheFrame->KMotionDLL->Translate("C File"));
 		GetDlgItem(ID_S1)->ShowWindow(SW_SHOW);
 		GetDlgItem(ID_S2)->ShowWindow(SW_SHOW);
 		GetDlgItem(ID_S3)->ShowWindow(SW_SHOW);
@@ -193,7 +193,7 @@ void CToolSetupPage::SetAction(MCODE_ACTION *M, int ID_Action,
 	case M_Action_ScreenScript:
 		SetDlgItemText(ID_S1,"Thread");
 		SetDlgItemText(ID_S2,"VAR");
-		SetDlgItemText(ID_S3,"File");
+		SetDlgItemTextW(m_hWnd, ID_S3,/*TRAN*/TheFrame->KMotionDLL->Translate("File"));
 		GetDlgItem(ID_S1)->ShowWindow(SW_HIDE);
 		GetDlgItem(ID_S2)->ShowWindow(SW_HIDE);
 		GetDlgItem(ID_S3)->ShowWindow(SW_SHOW);
@@ -226,17 +226,17 @@ void CToolSetupPage::DoDirectoryBrowse(MCODE_ACTION *m)
 	{
 	case M_Action_Program_PC:
 		Ext = ".bat";
-		Types = "Batch Files (*.bat)|*.bat|Program Files (*.exe)|*.exe|All Files (*.*)|*.*||";
+		Types = /*TRAN*/"Batch Files (*.bat)|*.bat|Program Files (*.exe)|*.exe|All Files (*.*)|*.*||";
 		DefaultDir = SCREEN_SCRIPTS_DIR;
 		break;
 	case M_Action_ScreenScript:
 		Ext = ".scr";
-		Types = "ScreenScript Files (*.scr)|*.scr|All Files (*.*)|*.*||";
+		Types = /*TRAN*/"ScreenScript Files (*.scr)|*.scr|All Files (*.*)|*.*||";
 		DefaultDir = SCREEN_SCRIPTS_DIR;
 		break;
 	default:
 		Ext = ".c";
-		Types = "C Files (*.c)|*.c|GCode Files (*.ngc)|*.ngc|Coff object Files (*.out)|*.out|All Files (*.*)|*.*||";
+		Types = /*TRAN*/"C Files (*.c)|*.c|GCode Files (*.ngc)|*.ngc|Coff object Files (*.out)|*.out|All Files (*.*)|*.*||";
 		DefaultDir = C_PROGRAMS_DIR;
 	}
 

@@ -1,137 +1,138 @@
+<!DOCTYPE html>
 <html>
-
 <head>
-<meta http-equiv="Content-Language" content="en-us">
-<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
-<meta name="ProgId" content="FrontPage.Editor.Document">
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+<meta name="keywords" content="ethernet 16-axis controller, cnc control, motion control, cnc boards, 4-axis, 8-axis, stepper, brushless, DC motor, servo, encoder, adc, dac, motion controller, automated motion, manufacturing, Mach3">
+<meta name="description" content="Manufacturer of premium motion control products for CNC Manufacturing, Robotics and Automation">
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+
 <title>Using Kanalog</title>
-<style>
-<!--
-div.Section1
-	{page:Section1;}
--->
-</style>
-    
+
+<link rel="stylesheet" type="text/css" href="../css/style.css">
+<link rel="stylesheet" href="../css/prism.css" data-noprefix />
+<script src="../js/prism.js"></script>
 </head>
 
 <body>
 
-<p style="margin-top: 0; margin-bottom: 0"><i><b><font face="Arial" size="4">Using 
-Kanalog 1.0</font></b></i></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial"><i>Kanalog</i> 
-adds Analog and Digital I/O to Dynomotion's <i>KFLOP</i> motion controller.&nbsp;
-</font></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Kanalog provides 6 
-types of various I/O which is enough to completely drive many types of machine 
-tools.&nbsp; </font></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Standard +/-10V 
-Analog outputs may be used to drive Analog Motor Drives.&nbsp; The Analog 
-outputs are true 12 bit DACS, <i>not</i> filtered PWMs that have slow response 
-and ripple.&nbsp; All (8) Analog inputs and (8) Analog outputs are all updated 
-every Servo Sample time of 90us (11KHz). </font></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Relay Drivers, 
-Opto Inputs, Opto Outputs, Differential Encoder Inputs, LVTTL inputs and outputs 
-are all included along with 112 screw terminals.</font></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The photo below 
-shows Kanalog with KFlop mounted and two cables that connect the two boards.</font></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0">
-<font face="Arial">
-<img border="0" src="KanalogPlusKflop500.jpg" width="500" height="417"></font></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<i><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Figure 
-1 - Kanalog + KFLOP</b></i></font></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0"><b><i><font face="Arial" size="4">
-Setting Options</font></i></b></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0">
-<font face="Arial">
-<img border="0" src="KanalogOption.PNG" width="316" height="172"></font></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Set options on the KMotion Executive 
-Program for both Kanalog and the required KFlop. </font> </p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<div class="Section1">
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><b><i>
-	<font face="Arial" size="4">Analog Status</font></i></b></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">All of the Analog ADC readings 
-	and DAC settings can be observed by selecting the Kanalog Tab of the Analog 
-	I/O Screen.</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">
-	<font face="Arial">
-	<img border="0" src="KanalogAnalogScreen.PNG" width="612" height="282"></font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><b><i>
-	<font face="Arial" size="4">Digital Status</font></i></b></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">All of the Digital I/O can be 
-	observed by selecting the Kanalog Tab of the Digital I/O Screen.</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Inputs are all on the left side 
-	of the screen and Outputs are on the right.&nbsp;&nbsp; Outputs may be 
-	toggled by clicking on the state.</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">
-	<font face="Arial">
-	<img border="0" src="KanalogDigitalScreen.PNG" width="479" height="516"></font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><i><b>
-	<font size="4" face="Arial">Example 
-	Configuration</font></b></i></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The example configuration below 
-	shows a typical configuration where an external analog motor amplifier is to 
-	be used with differential encoder feedback and optically isolated limit 
-	switches.&nbsp; </font> </p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Note the areas on the screen circled in red.&nbsp;&nbsp; 
-	</font> </p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The 
-	Axis input type has been selected as &quot;Encoder&quot; with the first Input channel 
-	set to 0 (Encoders only use one input channel).&nbsp; A differential encoder 
-	should then be connected to Kanalog JP1 A0+ A0- B0+ B0-. </font> </p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The Axis Output type has been 
-	selected as &quot;DAC Servo&quot; with the first Output channel set to 0 (DAC Servos 
-	only use one output channel).&nbsp; The Motor's Amplifier should then be 
-	connected to Kanalog DAC0 JP11 pin 1 (and ground).</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Limit Switch Options have 
-	selected I/O bits 136 and 137 which are Kanalog Opto Inputs 0 and 1 on JP15 
-	across pins 1&amp;2 and 3&amp;4.</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">
-	<font face="Arial">
-	<img border="0" src="ConfigKanalog.PNG" width="507" height="515"></font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<div id="logo"><a href="../index.htm"></a></div>
+
+<div id="home">
+<a href="../index.htm">Table of contents</a> |  
+	<script>
+		if (navigator.userAgent.indexOf("NT 6.2") == -1){
+			document.write('<a href="https://www.dynomotion.com">Dynomotion home page</a>')
+		} else {
+			document.write('<a href="https://www.dynomotion.com" target="_blank">Dynomotion home page</a>')
+		}
+	</script>
+</div>
+	
+<div id="searchNav">
+
+	<div class="gcse-search">
+					<script>
+					  if (document.location.protocol  ==  'https:') {
+					  (function() {
+					  var cx = '012657033059195044748:9fmjmlufts0';
+					  var gcse = document.createElement('script');
+					  gcse.type = 'text/javascript';
+					  gcse.async = true;
+					  gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+					      '//cse.google.com/cse.js?cx=' + cx;
+					  var s = document.getElementsByTagName('script')[0];
+					  s.parentNode.insertBefore(gcse, s);
+					})();
+					  }
+				      </script> 
+				      <gcse:search> </gcse:search>  
+
+	       </div>
+</div>	
+
+	
+
+
+<div id="google_translate_element" style="background: transparent;" align="right"><script type="text/javascript">
+if (navigator.userAgent.indexOf("NT 6.2") == -1) {
+		function googleTranslateElementInit() {
+	  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,de,fr,it,es,pt,ru,uk,ar,zh-CN,zh-TW,ko,iw,hi,ja,tr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+		}						}
+	</script>
+	<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+	</script>
+</div>		
+<div id="main">
+
+<h1>Using Kanalog 1.0</h1>
+
+	<p><em>Kanalog</em> adds Analog and Digital I/O to Dynomotion's KFLOP/Kogna motion controllers.</p>
+
+	<p>Kanalog provides 6 types of various I/O which is enough to completely drive many types of machine 
+	tools. </p>
+
+	<p>Standard +/-10V Analog outputs may be used to drive Analog Motor Drives. The Analog 
+	outputs are true 12 bit DACS, <em>not</em> filtered PWMs that have slow response 
+	and ripple. All (8) Analog inputs and (8) Analog outputs are all updated 
+	every Servo Sample time of 90us (11KHz). </p>
+
+	<p>Relay Drivers, Opto Inputs, Opto Outputs, Differential Encoder Inputs, LVTTL inputs and outputs 
+	are all included along with 112 screw terminals.</p>
+
+	<p>The photo below shows Kanalog with KFLOP mounted and two cables that connect the two boards.</p>
+
+	<p><img src="KanalogPlusKflop500.jpg" width="500" height="417" alt="Kanalog + Kflop"> /</p>
+
+	<p><em><strong> Figure 1 - Kanalog + KFLOP</strong></em></p>
+
+	<h2>Setting Options</h2>
+
+	<p><img src="KanalogOption.PNG" width="316" height="172" alt="KanalogOption" /></p>
+
+	<p>Set options on the KMotion Executive Program for both Kanalog and the required KFLOP.  </p>
+
+	<h2>Analog Status</h2>
+	
+	<p>All of the Analog ADC readings and DAC settings can be observed by selecting the Kanalog Tab of the Analog I/O Screen.</p>
+	
+	<p><img src="KanalogAnalogScreen.PNG" width="612" height="282" alt="KanalogAnalogScreen" /></p>
+	
+	<h2>Digital Status</h2>
+	
+	<p>All of the Digital I/O can be observed by selecting the Kanalog Tab of the Digital I/O Screen.</p>
+	
+	<p>Inputs are all on the left side of the screen and Outputs are on the right. Outputs may be 
+	toggled by clicking on the state.</p>
+	
+	<p><img src="KanalogDigitalScreen.PNG" width="479" height="516" alt="KanalogDigitalScreen" /></p>
+	
+	<h2>Example Configuration</h2>
+	
+	<p>The example configuration below shows a typical configuration where an external analog motor amplifier is to be used with differential encoder feedback and optically isolated limit 
+	switches.</p>
+	
+	<p>Note the areas on the screen circled in red.</p>
+	
+	<p>The Axis input type has been selected as &quot;Encoder&quot; with the first Input channel 
+	set to 0 (Encoders only use one input channel). A differential encoder 
+	should then be connected to Kanalog JP1 A0+ A0- B0+ B0-.  </p>
+	
+	<p>The Axis Output type has been selected as &quot;DAC Servo&quot; with the first Output channel set to 0 (DAC Servos only use one output channel). The Motor's Amplifier should then be 
+	connected to Kanalog DAC0 JP11 pin 1 (and ground).</p>
+	
+	<p>Limit Switch Options have selected I/O bits 136 and 137 which are Kanalog Opto Inputs 0 and 1 on JP15 across pins 1&amp;2 and 3&amp;4.</p>
+	
+	<p><img src="ConfigKanalog.PNG" width="507" height="515" alt="ConfigKanalog" /></p>
+	
+
 	</div>
 
+	</div>
 </body>
 
 </html>
