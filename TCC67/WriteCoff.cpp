@@ -982,6 +982,7 @@ int ReadCoff(TCCState *s1, const char *InFile)
 	syment csym;
 	char name2[9];
 
+	
 	f = fopen(InFile,"rb");
 
 	if (!f)	error("Unable to open .out file for input");
@@ -1046,9 +1047,6 @@ int ReadCoff(TCCState *s1, const char *InFile)
 			}
 		}
 
-//		if (strcmp("_DAC_Buffer",name)==0)  // tktk
-//			name[0]=0;
-
 		if (((csym.n_type & 0x30) == 0x20 && csym.n_sclass == 0x2) ||
 			((csym.n_type & 0x30) == 0x30 && csym.n_sclass == 0x2) ||
 			 (csym.n_type == 0x4          && csym.n_sclass == 0x2) ||
@@ -1096,7 +1094,6 @@ int InitializeExternalC67Intrinsics()
 	ts_divd = tok_alloc("_divd",sizeof("_divd"));
 	ts_remi = tok_alloc("_remi",sizeof("_remi"));
 	ts_remu = tok_alloc("_remu",sizeof("_remu"));
-
 	return 0;
 }
 

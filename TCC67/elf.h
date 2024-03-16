@@ -21,10 +21,10 @@
 #ifndef _ELF_H
 #define	_ELF_H 1
 
-#define inline              // tktk
-#define CONFIG_TCC_STATIC   // tktk
+#define inline              
+#define CONFIG_TCC_STATIC   
 #ifdef WIN32
-#define open _open          // tktk
+#define open _open          
 #endif
 
 #ifndef WIN32

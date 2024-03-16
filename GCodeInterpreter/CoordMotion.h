@@ -125,7 +125,7 @@ public:
 							   double x, double y, double z, double a, double b, double c, double u, double v, int sequence_number, int ID);
 
 
-	int /*CCoordMotion::*/Dwell(double seconds, int sequence_number=0);
+	int Dwell(double seconds, int sequence_number=0);
 
 	int ReadCurAbsPosition(double *x, double *y, double *z, double *a, double *b, double *c, bool snap=false, bool NoGeo = false);
 	int ReadCurAbsPosition(double *x, double *y, double *z, double *a, double *b, double *c, double *u, double *v, bool snap=false, bool NoGeo = false);
@@ -145,19 +145,18 @@ public:
 	int DoRateAdjustments(int i0, int i1);
 	int DoRateAdjustmentsArc(int i, double radius, double theta0, double dtheta, double dcircle);
 
-	int CheckSoftLimits(double x, double y, double z, double a, double b, double c, double u, double v, char *errmsg);
-	int CheckSoftLimitsArc(double XC, double YC, double Z1,
-						   double SoftLimitPosX,double SoftLimitNegX,
-						   double SoftLimitPosY,double SoftLimitNegY,
-						   double SoftLimitPosZ,double SoftLimitNegZ,
+	int CheckLimit(int axis, double Act, double SoftLimitPos, double SoftLimitNeg, char Name, std::string &errmsg);
+	int CheckSoftLimits(double x, double y, double z, double a, double b, double c, double u, double v, std::string &errmsg);
+	int CheckSoftLimitsArc(int plane, double XC, double YC, double Z0, double Z1,
 						   double a, double b, double c, double u, double v, BOOL DirIsCCW, 
-						   double radius, double theta0, double dtheta, 
-						   int x_axis,int y_axis,int z_axis,
-						   char XSTR, char YSTR, char ZSTR, char *errmsg);
+						   double radius, double theta0, double dtheta, std::string &errmsg);
 	
 	CKMotionDLL *KMotionDLL;
 
 	double m_TotalDownloadedTime;
+	double m_TotalDoTime;  // total accumulated trajectory planner times for simulation
+	double m_TotalFeedTime;  // total accumulated Feed Times while running.  Used for Tool Wear
+	double m_TotalFeedDist;  // total accumulated Feed Dist while running.  Used for Tool Wear
 	int m_nsegs_downloaded;
 	double m_TimeAlreadyExecuted;
 
@@ -170,6 +169,7 @@ public:
 	int m_board_type;
 
 	bool m_Simulate;
+	bool m_DoTime;   // do Trajectory Planning Timing during Simulation
 
 	bool m_ThreadingMode;            // Launches coordinated motion in spindle sync mode
 	double m_ThreadingBaseSpeedRPS;  // Base Rev/sec speed where trajectory should run an real-time
@@ -203,19 +203,22 @@ public:
 
 	void SetTPParams();
 
-	int /*CCoordMotion::*/GetRapidSettings();
-	int /*CCoordMotion::*/GetRapidSettingsAxis(int axis,double *Vel,double *Accel,double *Jerk, double *SoftLimitPos, double *SoftLimitNeg, double CountsPerInch);
+	int GetRapidSettings();
+	float MaxDecelTimeForAxis(int axis, double Vel, double Accel, double Jerk);
+	float GetNominalFROChangeTime(char* Axis);
+	int GetRapidSettingsAxis(int axis,double *Vel,double *Accel,double *Jerk, double *SoftLimitPos, double *SoftLimitNeg, double CountsPerInch, char* Axis);
 	bool RapidParamsDirty;
 
 	void SetPreviouslyStoppedAtSeg(SEGMENT *segs_to_check,int i);
 	
-	double FeedRateDistance(double dx, double dy, double dz, double da, double db, double dc, BOOL *PureAngle);
-	double FeedRateDistance(double dx, double dy, double dz, double da, double db, double dc, double du, double dv, BOOL *PureAngle);
+	double FeedRateDistance(double dx, double dy, double dz, double da, double db, double dc, BOOL *bPureAngle);
+	double FeedRateDistance(double dx, double dy, double dz, double da, double db, double dc, double du, double dv, BOOL *bPureAngle);
 	int ConfigSpindle(int type, int axis, double UpdateTime, double Tau, double CountsPerRev);
 	int GetSpindleRPS(float &speed);
 
 	bool m_TapCycleInProgress;
 
+	bool CheckCollinear(SEGMENT *s0, SEGMENT *s1, SEGMENT *s2, double tol);
 
 
 private:
@@ -229,9 +232,9 @@ private:
 	ARC_FEED_SIX_AXIS_CALLBACK *m_ArcFeedSixAxisCallback;
 	bool m_SegmentsStartedExecuting;
 	int m_NumLinearNotDrawn;
-	char WriteLineBuffer[MAX_LINE];
+	std::string WriteLineBuffer;
 	double WriteLineBufferTime;
-	int PutWriteLineBuffer(const char *s, double Time);
+	int PutWriteLineBuffer(std::string s, double Time);
 	int FlushWriteLineBuffer();
 	int ClearWriteLineBuffer();
 	int CommitPendingSegments(bool RapidMode);

@@ -52,18 +52,33 @@ CMutex::~CMutex() {
 }
 
 
-//CMutex(FALSE,"KMotionPipe",NULL)
-CMutex::CMutex(int initiallyOwn,const char *name ,int n){
+/*
+bInitiallyOwn
+Specifies if the thread creating the CMutex object initially has access to the resource controlled by the mutex.
+
+name
+Name of the CMutex object.
+
+lpsaAttribute
+Security attributes for the mutex object. Not used in this implemenation
+*/
+CMutex::CMutex(int initiallyOwn,const char *name ,lpsecurityAttr lpsaAttribute){
 	//TODO malloc and strcpy name
-	this->name = name;
+	//this->name = name;
 	if(initiallyOwn){
-		Lock(/*n*/);
+		Lock();
 	}
 }
 
-	//Specifies the amount of time to wait for the synchronization object to be available (signaled).
-	//If INFINITE, Lock will wait until the object is signaled before returning.
-	//DWORD TimeOut_ms = INFINITE = 4294967295
+	/*
+	Specifies the amount of time to wait for the synchronization object to be available (signaled).
+	If INFINITE, Lock will wait until the object is signaled before returning.
+	
+	DWORD TimeOut_ms = INFINITE = 4294967295
+	
+	Returns Nonzero if the function was successful; otherwise 0.
+	
+	*/
 	int CMutex::Lock(int TimeOut_ms/* = 4294967295*/){
 		//std::condition_variable_any;
 
@@ -82,8 +97,8 @@ CMutex::CMutex(int initiallyOwn,const char *name ,int n){
 		//printf(" %s lockCount %d \n",success?"Success":"Failed",lockCount);
 		return success?1:0;
 	}
-
-	void CMutex::Lock(){
+	//Returns Nonzero if the function was successful; otherwise 0.
+	int CMutex::Lock(){
 		long int tid = kmx::getThreadId("CMutex:Lock");
 		//return Lock(4294967295);
 		//printf("%s:%d Mutex: %s thread %ld lockCount %d waiting", __FILE__, __LINE__, name,tid,lockCount);
@@ -92,9 +107,11 @@ CMutex::CMutex(int initiallyOwn,const char *name ,int n){
 		lockCount++;
 
 		//printf(" %s lockCount %d \n","Success",lockCount);
+		return 1;
 	}
 
-	void CMutex::Unlock(){
+	//Returns Nonzero if the function was successful; otherwise 0.
+	int CMutex::Unlock(){
 		long int tid = kmx::getThreadId("CMutex::Unlock");
 
 		if(owner == tid && lockCount > 0){
@@ -102,8 +119,9 @@ CMutex::CMutex(int initiallyOwn,const char *name ,int n){
 			lockCount--;
 			mutex.unlock();
 			//printf("unlocked\n");
+			return 1;
 		}
-
+		return 0;
 	}
 
 

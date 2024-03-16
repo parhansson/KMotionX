@@ -1,23 +1,34 @@
 #include <iostream>
 #include "MessageBox.h"
+#include "KMotionX.h"
 
-int MessageBoxConsoleHandler(const char *title, const char *msg, int options);
+int MessageBoxConsoleHandler(const wchar_t *title, const wchar_t *msg, int options);
 
 MB_USER_CALLBACK *mb_callback = MessageBoxConsoleHandler;
 
 int AfxMessageBox(const char* value, int type){
 
-	return mb_callback("AfxMessageBox",value,type);
+	return mb_callback(L"AfxMessageBox",kmx::strtowstr(value).c_str(),type);
 }
 
-int MessageBox(int whatisthis,const char* value,const char* title, int type){
-	return mb_callback("MessageBox",value,type);
+int MessageBox(long hwnd,const char* value,const char* title, int type){
+	return mb_callback(kmx::strtowstr(title).c_str(),kmx::strtowstr(value).c_str(),type);
+}
+int MessageBoxW(long hwnd,const wchar_t* value,const wchar_t* title, int type){
+	return mb_callback(title,value,type);
+	//return MessageBox(hwnd, kmx::wstrtostr(value).c_str(), kmx::wstrtostr(title).c_str(), type);
+}
+int MessageBoxW(long hwnd, std::wstring value,const wchar_t* title, int type){
+	return mb_callback(title,value.c_str(),type);
+	//return MessageBox(hwnd, kmx::wstrtostr(value).c_str(), kmx::wstrtostr(title).c_str(), type); 
 }
 
 //Default Console handler for messageboxes
-int MessageBoxConsoleHandler(const char *title, const char *msg, int options){
+int MessageBoxConsoleHandler(const wchar_t *title, const wchar_t *msg, int options){
 		char str[100];
-		printf("---------%s:  (0x%.8X)  ---------\n%s\n-----------------------------------------------\n",
+		printf("---------%ls:  (0x%.8X)  ---------\n"
+				"%ls\n"
+				"-----------------------------------------------\n",
 		    title,options,msg);
 		if((options & MB_OK) == MB_OK){
 			printf(">OK?");

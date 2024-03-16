@@ -54,7 +54,8 @@ END_MESSAGE_MAP()
 // CKMotionApp construction
 
 
-CString MainPathDLL;
+CString MainPathDLL;   // path to DLL without any 64 suffix (32-bit code)
+CString MainPathDLL64; // Actual Path to DLL 
 CString MainPath;
 CString MainPathRoot;
 
@@ -68,7 +69,10 @@ CKMotionApp::CKMotionApp()
 
 	// Avoid strange relative paths
 	CString s;
-	_fullpath(s.GetBufferSetLength(MAX_PATH), MainPath, MAX_PATH);
+	if (_fullpath(s.GetBufferSetLength(MAX_PATH), MainPath, MAX_PATH) == NULL)
+	{
+		MessageBoxW(NULL, Translate("Error Module PathName"), L"KMotion", MB_ICONSTOP | MB_OK);
+	}
 	s.ReleaseBuffer();
 	MainPath = s;
 
@@ -78,15 +82,24 @@ CKMotionApp::CKMotionApp()
 	MainPath.TrimLeft();
 
 	int LastSlash=MainPath.ReverseFind('\\');
-	MainPathDLL=MainPath=MainPath.Left(LastSlash);
+	MainPathDLL64=MainPathDLL=MainPath.Left(LastSlash);
 
+	// Check if we are running from a 64bit directory directory
+	// if we are, then strip it off
+
+	if (MainPathDLL.Right(2).CompareNoCase("64") == 0)
+	{
+		MainPathDLL = MainPathDLL.Left(MainPathDLL.GetLength() - 2);
+	}
+
+	MainPath = MainPathDLL;
 
 	// Check if we are running from the debug directory
 	// if we are, then strip it off
 
 	if (MainPath.Right(6).CompareNoCase("\\debug") == 0)
 	{
-		MainPath = MainPath.Left(MainPath.GetLength()-6);
+		MainPath = MainPath.Left(MainPath.GetLength() - 6);
 	}
 
 	// Check if we are running from the release directory
@@ -94,7 +107,7 @@ CKMotionApp::CKMotionApp()
 
 	if (MainPath.Right(8).CompareNoCase("\\release") == 0)
 	{
-		MainPath = MainPath.Left(MainPath.GetLength()-8);
+		MainPath = MainPath.Left(MainPath.GetLength() - 8);
 	}
 
 	// Now set the root install directory

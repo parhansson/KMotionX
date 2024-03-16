@@ -38,6 +38,7 @@
 #include "VERSION.h"
 #include "COFF.h"
 #include "CLOAD.h"
+#include "Translate.h"
 
 
 #define MIN(a,b) ((a)<(b)?(a):(b))
@@ -140,15 +141,14 @@ int LoadCoff(CKMotionDLL *KMotionDLLtoUse, const char *Name, unsigned int *Entry
 
 	if (!fin)
 	{ 
-		char s2[300]="can't open file : ";
-		strcat(s2,Name);
-		AfxMessageBox(s2,MB_OK|MB_SYSTEMMODAL);
+		std::wstring s2 = /*TRAN*/Trans.Translate("can't open file : ");
+		MessageBoxW(NULL,s2 + kmx::strtowstr(Name),L"KMotion",MB_OK | MB_SYSTEMMODAL);
 		return 1;
 	}
 	
 	if (!cload()) 
 	{ 
-		AfxMessageBox("error loading file",MB_OK|MB_SYSTEMMODAL); 
+//	no message might be ELF		MessageBoxW(NULL, Translate("error loading file"),MB_OK|MB_SYSTEMMODAL, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL); 
 		fclose(fin);
 		return 1;
 	}

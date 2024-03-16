@@ -2,6 +2,7 @@
 #define KMOTIONX_CROSSOVER_H_
 #include "dbg.h"
 #include <stdint.h>
+#include <string>
 #define OLD_COMPILER 1              // Select default compiler: 1 to use 0.9.16 tcc, else 0 to use later version
 
 #if OLD_COMPILER
@@ -85,13 +86,22 @@ extern uint32_t timeGetTime();
 
 
 namespace kmx {
+
+  enum
+  {
+    BOARD_TYPE_KFLOP=2,
+    BOARD_TYPE_KOGNA=3,
+  };
   extern const char * getInstallPath();
   extern const char * getBinPath();
+  extern const char * getLocalLanguageFilePath();
   extern int LaunchServer();
-  extern int getDspFile(char * OutFile, bool KFLOP_board);
+  extern int getDspFile(char * OutFile, const int BoardType);
   extern int getCompiler(char * Compiler, int MaxCompilerLen);
-  extern int getCompileCommand(const char * Name, const char * OutFile, uint32_t LoadAddress, bool KFLOP_board, char * command, int cmd_len);
+  extern int getCompileCommand(const char * Name, const char * OutFile, uint32_t LoadAddress, const int BoardType, char * command, int cmd_len);
   
+  extern std::string wstrtostr(std::wstring wideString);
+  extern std::wstring strtowstr(std::string narrowString);
   // Use to override default compiler executable.  options controls whether -g (and other) option supplied.
 	// tcc_minor_version should be set to e.g. 26 for tcc version 0.9.26 (controls options), or 0 to
 	// not change the version.
@@ -102,6 +112,8 @@ namespace kmx {
 	extern void SetCustomCompiler(const char * compiler = NULL, const char * options = NULL, int tcc_minor_version = 0);   
   extern void getPath(const char * file, char * path);
   extern long int getThreadId(const char *callerId = NULL);
+  extern uint8_t randomInt();
+
 }
 
 #endif //KMOTIONX_CROSSOVER_H_

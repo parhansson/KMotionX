@@ -4,6 +4,8 @@
 /*         Copyright (c) 2003-2006  DynoMotion Incorporated          */
 /*********************************************************************/
 
+#ifndef KMOTIONDLL_DIRECT_H
+#define KMOTIONDLL_DIRECT_H
 
 
 
@@ -39,7 +41,10 @@ class KMOTIONDLL_API CKMotionDLL_Direct {
 public:
 	CKMotionDLL_Direct(void);
 
+	void FindKognas();
+
 	int MapBoardToIndex(int board);
+	int SetRequested_ID(int board, unsigned int Board_ID);
 	int WriteLineReadLine(int board, const char *s, char *response);
 	int WriteLine(int board, const char *s);
 	int WriteLineWithEcho(int board, const char *s);
@@ -55,7 +60,7 @@ public:
 	int FirmwareVersion(int board);
 	int CheckForReady(int board);
 	int ServiceConsole(int board);
-	const char *GetErrMsg(int board);
+	const wchar_t *GetErrMsg(int board);
 	void ClearErrMsg(int board);
 
 	int SetConsoleCallback(int board, SERVER_CONSOLE_HANDLER *ch);
@@ -63,4 +68,4 @@ public:
 	int nInstances();
 
 };
-
+#endif

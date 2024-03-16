@@ -36,109 +36,108 @@ stdout to a file.
 int HandleThreading(double *FeedRate);
 int CheckIfThreadingInProgress(void);
 
-
-char Output[MAX_LINE];
-char ErrorOutput[MAX_LINE];
+std::string Output;
+std::string ErrorOutput;
 CGCodeInterpreter *GC;
 CCoordMotion *CM;;
 
 
 void print_nc_line_number()
 {
-	char s[256];
+	wchar_t s[256];
 
 //  int line_number SET_TO _interpreter_block.line_number;
   int line_number SET_TO 0;
 
 	
 if (line_number IS -1)
-    sprintf(s," N ... ");
+    swprintf(s, 255, L" N ... ");
   else if (line_number < 10)
-    sprintf(s,"    N%d ", line_number);
+    swprintf(s, 255, L"    N%d ", line_number);
   else if (line_number < 100)
-    sprintf(s,"   N%d ", line_number);
+    swprintf(s, 255, L"   N%d ", line_number);
   else if (line_number < 1000)
-    sprintf(s,"  N%d ", line_number);
+    swprintf(s, 255, L"  N%d ", line_number);
   else if (line_number < 10000)
-    sprintf(s," N%d ", line_number);
+    swprintf(s, 255, L" N%d ", line_number);
   else
-    sprintf(s,"N%d ", line_number);
+    swprintf(s, 255, L"N%d ", line_number);
 
 //  Output += s;
-  strcat(Output,"-"); // this looks a little nicer in the KMotion app
+  Output += "-"; // this looks a little nicer in the KMotion app
 }
 
 #define PRINT0(control) if (1)               \
           {										\
-		   char _s[256];						 \
-		   sprintf(_s,"%5d ", line_number++);    \
-		   strcat(Output,_s);                  \
+		   wchar_t _s[256];						 \
+		   swprintf(_s, 255, L"%5d ", line_number++);    \
+		   Output += kmx::wstrtostr(_s);                      \
            print_nc_line_number();           \
-           sprintf(_s,control);                  \
-		   if ('\n'==_s[strlen(_s)-1]) _s[strlen(_s)-1]=0; \
-		   strcat(Output,_s);                  \
-		   sprintf(_s,"@%.3f\r\n",((double)GetTickCount())/1000.0); \
-		   strcat(Output,_s);                  \
+           swprintf(_s, 255, control);                  \
+		   if ('\n'==_s[wcslen(_s)-1]) _s[wcslen(_s)-1]=0; \
+		   Output += kmx::wstrtostr(_s);                      \
+		   swprintf(_s, 255, L"@%.3f\r\n",((double)GetTickCount())/1000.0); \
+		   Output += kmx::wstrtostr(_s);                      \
           } else
 #define PRINT1(control, arg1) if (1)         \
           {										\
-		   char _s[256];						 \
-		   sprintf(_s,"%5d ", line_number++);    \
-		   strcat(Output,_s);                  \
+		   wchar_t _s[256];						 \
+		   swprintf(_s, 255, L"%5d ", line_number++);    \
+		   Output += kmx::wstrtostr(_s);                      \
            print_nc_line_number();           \
-           sprintf(_s,control, arg1);            \
-		   if ('\n'==_s[strlen(_s)-1]) _s[strlen(_s)-1]=0; \
-		   strcat(Output,_s);                  \
-		   sprintf(_s,"@%.3f\r\n",((double)GetTickCount())/1000.0); \
-		   strcat(Output,_s);                  \
+           swprintf(_s, 255, (control), (arg1));            \
+		   if ('\n'==_s[wcslen(_s)-1]) _s[wcslen(_s)-1]=0; \
+		   Output += kmx::wstrtostr(_s);                      \
+		   swprintf(_s, 255, L"@%.3f\r\n",((double)GetTickCount())/1000.0); \
+		   Output += kmx::wstrtostr(_s);                      \
           } else
 #define PRINT2(control, arg1, arg2) if (1)   \
           {										\
-		   char _s[256];						 \
-		   sprintf(_s,"%5d ", line_number++);    \
-		   strcat(Output,_s);                  \
+		   wchar_t _s[256];						 \
+		   swprintf(_s, 255, L"%5d ", line_number++);    \
+		   Output += kmx::wstrtostr(_s);                      \
            print_nc_line_number();           \
-           sprintf(_s,control, arg1, arg2);      \
-		   if ('\n'==_s[strlen(_s)-1]) _s[strlen(_s)-1]=0; \
-		   strcat(Output,_s);                  \
-		   sprintf(_s,"@%.3f\r\n",((double)GetTickCount())/1000.0); \
-		   strcat(Output,_s);                  \
+           swprintf(_s, 255, control, arg1, arg2);      \
+		   if ('\n'==_s[wcslen(_s)-1]) _s[wcslen(_s)-1]=0; \
+		   Output += kmx::wstrtostr(_s);                      \
+		   swprintf(_s, 255, L"@%.3f\r\n",((double)GetTickCount())/1000.0); \
+		   Output += kmx::wstrtostr(_s);                      \
           } else
 #define PRINT3(control, arg1, arg2, arg3) if (1)         \
           {										\
-		   char _s[256];						 \
-		   sprintf(_s,"%5d ", line_number++);    \
-		   strcat(Output,_s);                  \
+		   wchar_t _s[256];						 \
+		   swprintf(_s, 255, L"%5d ", line_number++);    \
+		   Output += kmx::wstrtostr(_s);                      \
            print_nc_line_number();                       \
-           sprintf(_s,control, arg1, arg2, arg3);            \
-		   if ('\n'==_s[strlen(_s)-1]) _s[strlen(_s)-1]=0; \
-		   strcat(Output,_s);                  \
-		   sprintf(_s,"@%.3f\r\n",((double)GetTickCount())/1000.0); \
-		   strcat(Output,_s);                  \
+           swprintf(_s, 255, control, arg1, arg2, arg3);            \
+		   if ('\n'==_s[wcslen(_s)-1]) _s[wcslen(_s)-1]=0; \
+		   Output += kmx::wstrtostr(_s);                      \
+		   swprintf(_s, 255, L"@%.3f\r\n",((double)GetTickCount())/1000.0); \
+		   Output += kmx::wstrtostr(_s);                      \
           } else
 #define PRINT4(control, arg1, arg2, arg3, arg4) if (1)   \
           {										\
-		   char _s[256];						 \
-		   sprintf(_s,"%5d ", line_number++);    \
-		   strcat(Output,_s);                  \
+		   wchar_t _s[256];						 \
+		   swprintf(_s, 255, L"%5d ", line_number++);    \
+		   Output += kmx::wstrtostr(_s);                      \
            print_nc_line_number();                       \
-           sprintf(_s,control, arg1, arg2, arg3, arg4);      \
-		   if ('\n'==_s[strlen(_s)-1]) _s[strlen(_s)-1]=0; \
-		   strcat(Output,_s);                  \
-		   sprintf(_s,"@%.3f\r\n",((double)GetTickCount())/1000.0); \
-		   strcat(Output,_s);                  \
+           swprintf(_s, 255, control, arg1, arg2, arg3, arg4);      \
+		   if ('\n'==_s[wcslen(_s)-1]) _s[wcslen(_s)-1]=0; \
+		   Output += kmx::wstrtostr(_s);                      \
+		   swprintf(_s, 255, L"@%.3f\r\n",((double)GetTickCount())/1000.0); \
+		   Output += kmx::wstrtostr(_s);                      \
           } else
 #define PRINT6(control, arg1, arg2, arg3, arg4, arg5, arg6) if (1) \
           {										\
-		   char _s[256];						 \
-		   sprintf(_s,"%5d ", line_number++);    \
-		   strcat(Output,_s);                  \
+		   wchar_t _s[256];						 \
+		   swprintf(_s, 255, L"%5d ", line_number++);    \
+		   Output += kmx::wstrtostr(_s);                      \
            print_nc_line_number();                                 \
-           sprintf(_s,control, arg1, arg2, arg3, arg4, arg5, arg6);    \
-		   if ('\n'==_s[strlen(_s)-1]) _s[strlen(_s)-1]=0; \
-		   strcat(Output,_s);                  \
-		   sprintf(_s,"@%.3f\r\n",((double)GetTickCount())/1000.0); \
-		   strcat(Output,_s);                  \
+           swprintf(_s, 255, control, arg1, arg2, arg3, arg4, arg5, arg6);    \
+		   if ('\n'==_s[wcslen(_s)-1]) _s[wcslen(_s)-1]=0; \
+		   Output += kmx::wstrtostr(_s);                      \
+		   swprintf(_s, 255, L"@%.3f\r\n",((double)GetTickCount())/1000.0); \
+		   Output += kmx::wstrtostr(_s);                      \
           } else
 
 		  
@@ -148,29 +147,29 @@ static CANON_UNITS length_units = CANON_UNITS_MM;
 static CANON_PLANE active_plane = CANON_PLANE_XY;
 
 /* Representation */
-
+//ExcludeTranslate
 void SET_ORIGIN_OFFSETS(double x, double y, double z,
 			double a, double b, double c, double u, double v)
-{PRINT3("SET_ORIGIN_OFFSETS(%.4f, %.4f, %.4f)\n", x, y, z);
+{PRINT3(L"SET_ORIGIN_OFFSETS(%.4f, %.4f, %.4f)\n", x, y, z);
   program_origin.x SET_TO x;
   program_origin.y SET_TO y;
   program_origin.z SET_TO z;
 }
 
 void USE_LENGTH_UNITS(CANON_UNITS in_unit)
-{PRINT1("USE_LENGTH_UNITS(%s)\n",
-        (in_unit IS CANON_UNITS_INCHES) ? "CANON_UNITS_INCHES" :
-        (in_unit IS CANON_UNITS_MM)     ? "CANON_UNITS_MM" : "UNKNOWN");
+{PRINT1(L"USE_LENGTH_UNITS(%s)\n",
+        (in_unit IS CANON_UNITS_INCHES) ? L"CANON_UNITS_INCHES" :
+        (in_unit IS CANON_UNITS_MM)     ? L"CANON_UNITS_MM" : L"UNKNOWN");
 }
 
 /* Free Space Motion */
 void SET_TRAVERSE_RATE(double rate)
-{PRINT1("SET_TRAVERSE_RATE(%.4f)\n", rate);}
+{PRINT1(L"SET_TRAVERSE_RATE(%.4f)\n", rate);}
 
 void STRAIGHT_TRAVERSE (double x, double y, double z,
                         double a, double b, double c, double u, double v)
 {
-	PRINT4("STRAIGHT_TRAVERSE(%.4f, %.4f, %.4f, %.4f)\n", x, y, z, a);
+	PRINT4(L"STRAIGHT_TRAVERSE(%.4f, %.4f, %.4f, %.4f)\n", x, y, z, a);
 
 	if (CheckIfThreadingInProgress()) return;
 
@@ -190,63 +189,63 @@ void STRAIGHT_TRAVERSE (double x, double y, double z,
 /* Machining Attributes */
 void SET_FEED_RATE(double rate)
 {
-	PRINT1("SET_FEED_RATE(%.4f)\n", rate);
+	PRINT1(L"SET_FEED_RATE(%.4f)\n", rate);
 }
 
 void SET_FEED_REFERENCE(CANON_FEED_REFERENCE reference)
-{PRINT1("SET_FEED_REFERENCE(%s)\n",
-        (reference IS CANON_WORKPIECE) ? "CANON_WORKPIECE" : "CANON_XYZ");}
+{PRINT1(L"SET_FEED_REFERENCE(%s)\n",
+        (reference IS CANON_WORKPIECE) ? L"CANON_WORKPIECE" : L"CANON_XYZ");}
 
 void SET_MOTION_CONTROL_MODE(CANON_MOTION_MODE mode)
-{PRINT1("SET_MOTION_CONTROL_MODE(%s)\n",
-        (mode IS CANON_EXACT_PATH) ? "CANON_EXACT_PATH" :
-        (mode IS CANON_EXACT_STOP) ? "CANON_EXACT_STOP" : "CANON_CONTINUOUS");}
+{PRINT1(L"SET_MOTION_CONTROL_MODE(%s)\n",
+        (mode IS CANON_EXACT_PATH) ? L"CANON_EXACT_PATH" :
+        (mode IS CANON_EXACT_STOP) ? L"CANON_EXACT_STOP" : L"CANON_CONTINUOUS");}
 
 void SET_SPINDLE_MODE(CANON_SPINDLE_MODE mode)
-{PRINT1("SET_MOTION_CONTROL_MODE(%s)\n",
-        (mode IS CANON_SPINDLE_NORMAL) ? "CANON_SPINDLE_NORMAL" :
-		(mode IS CANON_SPINDLE_CSS) ? "CANON_SPINDLE_CSS" : "CANON_SPINDLE_INVALID");
+{PRINT1(L"SET_MOTION_CONTROL_MODE(%s)\n",
+        (mode IS CANON_SPINDLE_NORMAL) ? L"CANON_SPINDLE_NORMAL" :
+		(mode IS CANON_SPINDLE_CSS) ? L"CANON_SPINDLE_CSS" : L"CANON_SPINDLE_INVALID");
 
 	GC->SetCSS(mode);
 }
 
 void SELECT_PLANE(CANON_PLANE in_plane)
-{PRINT1("SELECT_PLANE(%s)\n",
-        (in_plane IS CANON_PLANE_XY) ? "CANON_PLANE_XY" :
-        (in_plane IS CANON_PLANE_YZ) ? "CANON_PLANE_YZ" :
-        (in_plane IS CANON_PLANE_XZ) ? "CANON_PLANE_XZ" : "UNKNOWN");
+{PRINT1(L"SELECT_PLANE(%s)\n",
+        (in_plane IS CANON_PLANE_XY) ? L"CANON_PLANE_XY" :
+        (in_plane IS CANON_PLANE_YZ) ? L"CANON_PLANE_YZ" :
+        (in_plane IS CANON_PLANE_XZ) ? L"CANON_PLANE_XZ" : L"UNKNOWN");
 }
 
 void SET_CUTTER_RADIUS_COMPENSATION(double radius)
-{PRINT1("SET_CUTTER_RADIUS_COMPENSATION(%.4f)\n", radius);}
+{PRINT1(L"SET_CUTTER_RADIUS_COMPENSATION(%.4f)\n", radius);}
 
 void START_CUTTER_RADIUS_COMPENSATION(int side)
-{PRINT1("START_CUTTER_RADIUS_COMPENSATION(%s)\n",
-        (side IS LEFT)  ? "LEFT"  :
-        (side IS RIGHT) ? "RIGHT" : "UNKNOWN");
+{PRINT1(L"START_CUTTER_RADIUS_COMPENSATION(%s)\n",
+        (side IS LEFT)  ? L"LEFT"  :
+        (side IS RIGHT) ? L"RIGHT" : L"UNKNOWN");
 }
 
 void STOP_CUTTER_RADIUS_COMPENSATION()
-{PRINT0 ("STOP_CUTTER_RADIUS_COMPENSATION()\n");}
+{PRINT0(L"STOP_CUTTER_RADIUS_COMPENSATION()\n");}
 
 void START_SPEED_FEED_SYNCH()
-{PRINT0 ("START_SPEED_FEED_SYNCH()\n");}
+{PRINT0(L"START_SPEED_FEED_SYNCH()\n");}
 
 void STOP_SPEED_FEED_SYNCH()
-{PRINT0 ("STOP_SPEED_FEED_SYNCH()\n");}
+{PRINT0(L"STOP_SPEED_FEED_SYNCH()\n");}
 
 void SELECT_MOTION_MODE(CANON_MOTION_MODE mode)
-{PRINT1("SELECT_MOTION_MODE(%s)\n",
-        (mode IS CANON_EXACT_STOP) ? "CANON_EXACT_STOP" :
-        (mode IS CANON_EXACT_PATH) ? "CANON_EXACT_PATH" :
-        (mode IS CANON_CONTINUOUS) ? "CANON_CONTINUOUS" :
-                                          "UNKNOWN");
+{PRINT1(L"SELECT_MOTION_MODE(%s)\n",
+        (mode IS CANON_EXACT_STOP) ? L"CANON_EXACT_STOP" :
+        (mode IS CANON_EXACT_PATH) ? L"CANON_EXACT_PATH" :
+        (mode IS CANON_CONTINUOUS) ? L"CANON_CONTINUOUS" :
+                                          L"UNKNOWN");
 }
 void SELECT_SPINDLE_MODE(CANON_SPINDLE_MODE mode)
-{PRINT1("SELECT_SPINDLE_MODE(%s)\n",
-        (mode IS CANON_SPINDLE_NORMAL) ? "CANON_SPINDLE_NORMAL" :
-        (mode IS CANON_SPINDLE_CSS) ? "CANON_SPINDLE_CSS" :
-                                          "UNKNOWN");
+{PRINT1(L"SELECT_SPINDLE_MODE(%s)\n",
+        (mode IS CANON_SPINDLE_NORMAL) ? L"CANON_SPINDLE_NORMAL" :
+        (mode IS CANON_SPINDLE_CSS) ? L"CANON_SPINDLE_CSS" :
+                                          L"UNKNOWN");
 }
 
 /* Machining Functions */
@@ -257,7 +256,7 @@ void ARC_FEED(double first_end, double second_end,
 {
 	double FeedRate;
 
-	PRINT6("ARC_FEED(%.4f, %.4f, %.4f, %.4f, %d, %.4f)\n",
+	PRINT6(L"ARC_FEED(%.4f, %.4f, %.4f, %.4f, %d, %.4f)\n",
         first_end, second_end, first_axis, second_axis, rotation,
         axis_end_point);
 
@@ -265,7 +264,6 @@ void ARC_FEED(double first_end, double second_end,
 
 	if (!CM->m_ThreadingMode)  // Threading?
 	{
-		if (CheckIfThreadingInProgress()) return;
 		FeedRate = GC->UserUnitsToInches(_setup.feed_rate) / 60.0;
 	}
 
@@ -322,11 +320,12 @@ void ARC_FEED(double first_end, double second_end,
 					_setup.sequence_number, ID);
 	}
 }
+//ResumeTranslate
 
 void STRAIGHT_FEED (double x, double y, double z,
 		            double a, double b, double c, double u, double v, int ID)
 {
-	PRINT4("STRAIGHT_FEED(%.4f, %.4f, %.4f, %.4f)\n", x, y, z, a);
+	PRINT4(L"STRAIGHT_FEED(%.4f, %.4f, %.4f, %.4f)\n", x, y, z, a);
 
 	double FeedRate;
 
@@ -334,8 +333,6 @@ void STRAIGHT_FEED (double x, double y, double z,
 
 	if (!CM->m_ThreadingMode)  // Threading?
 	{
-		if (CheckIfThreadingInProgress()) return;
-
 		// must do this to determine if feed is a pure angle
 		// if so feedrate is in degrees/min so don't convert from mm to inches
 		double dx = x - _setup.current_x;
@@ -352,9 +349,9 @@ void STRAIGHT_FEED (double x, double y, double z,
 		CM->FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &pure_angle);
 
 		if (pure_angle)
-			FeedRate = _setup.feed_rate/60.0;  // convert to degrees/sec
+			FeedRate = _setup.feed_rate / 60.0;  // convert to degrees/sec
 		else
-			FeedRate = GC->UserUnitsToInches(_setup.feed_rate)/60.0; // convert to inches/sec
+			FeedRate = GC->UserUnitsToInches(_setup.feed_rate) / 60.0; // convert to inches/sec
 	}
 
 	GC->SaveStateOnceOnly();  // save the state here before creating any motion segments
@@ -402,6 +399,11 @@ int HandleThreading(double *FeedRate)
 		
 		CM->m_ThreadingMode = true;
 	}
+	else
+	{
+		// if won't be doing Threading, flush any in progress
+		if (CheckIfThreadingInProgress()) { CM->SetAbort(); return 1; }
+	}
 	return 0;
 }
 
@@ -427,7 +429,7 @@ int CheckIfThreadingInProgress(void)
 
 void STRAIGHT_PROBE (double x, double y, double z,
 		     double a, double b, double c, double u, double v)
-{PRINT3("STRAIGHT_PROBE(%.4f, %.4f, %.4f)\n", x, y, z);}
+{PRINT3(L"STRAIGHT_PROBE(%.4f, %.4f, %.4f)\n", x, y, z);}
 
 
 /*
@@ -442,7 +444,7 @@ void PARAMETRIC_3D_CURVE_FEED(FunctionPtr xfcn, FunctionPtr yfcn,
 
 void DWELL(double seconds)
 {
-	PRINT1("DWELL(%.4f)\n", seconds);
+	PRINT1(L"DWELL(%.4f)\n", seconds);
 
 	if (CheckIfThreadingInProgress()) return;
 
@@ -453,51 +455,51 @@ void DWELL(double seconds)
 
 /* Spindle Functions */
 void SPINDLE_RETRACT_TRAVERSE()
-{PRINT0("SPINDLE_RETRACT_TRAVERSE()\n");}
+{PRINT0(L"SPINDLE_RETRACT_TRAVERSE()\n");}
 
 void START_SPINDLE_CLOCKWISE()
 {
-	PRINT0("START_SPINDLE_CLOCKWISE()\n");
+	PRINT0(L"START_SPINDLE_CLOCKWISE()\n");
 	GC->InvokeAction(3);  // do the defined action for M Code
 }
 
 void START_SPINDLE_COUNTERCLOCKWISE()
 {
-	PRINT0("START_SPINDLE_COUNTERCLOCKWISE()\n");
+	PRINT0(L"START_SPINDLE_COUNTERCLOCKWISE()\n");
 	GC->InvokeAction(4);  // do the defined action for M Code
 }
 
 void SET_SPINDLE_SPEED(double r)
 {
-	PRINT1("SET_SPINDLE_SPEED(%.4f)\n", r);
+	PRINT1(L"SET_SPINDLE_SPEED(%.4f)\n", r);
 	GC->InvokeAction(10);  // do the defined action for S Speed
 }
 
 void STOP_SPINDLE_TURNING()
 {
-	PRINT0("STOP_SPINDLE_TURNING()\n");
+	PRINT0(L"STOP_SPINDLE_TURNING()\n");
 	GC->InvokeAction(5);  // do the defined action for M Code
 }
 
 void SPINDLE_RETRACT()
-{PRINT0("SPINDLE_RETRACT()\n");}
+{PRINT0(L"SPINDLE_RETRACT()\n");}
 
 void ORIENT_SPINDLE(double orientation, CANON_DIRECTION direction)
-{PRINT2("ORIENT_SPINDLE(%.4f, %s)\n", orientation,
-        (direction IS CANON_CLOCKWISE) ? "CANON_CLOCKWISE" :
-                                         "CANON_COUNTERCLOCKWISE");
+{PRINT2(L"ORIENT_SPINDLE(%.4f, %s)\n", orientation,
+        (direction IS CANON_CLOCKWISE) ? L"CANON_CLOCKWISE" :
+                                         L"CANON_COUNTERCLOCKWISE");
 }
 
 void USE_NO_SPINDLE_FORCE()
-{PRINT0("USE_NO_SPINDLE_FORCE()\n");}
+{PRINT0(L"USE_NO_SPINDLE_FORCE()\n");}
 
 /* Tool Functions */
 
-void USE_TOOL_LENGTH_OFFSET(double length_units, double xoffset_units, double yoffset_units)
+void USE_TOOL_LENGTH_OFFSET(double length_units, double xoffset_units, double yoffset_units, bool TCP_Mode)
 {
     double Acts[MAX_ACTUATORS];
 
-    PRINT1("USE_TOOL_LENGTH_OFFSET(%.4f)\n", length_units);
+    PRINT1(L"USE_TOOL_LENGTH_OFFSET(%.4f)\n", length_units);
 
     double xoffset = GC->UserUnitsToInchesX(xoffset_units);
     double yoffset = GC->UserUnitsToInches(yoffset_units);
@@ -509,16 +511,25 @@ void USE_TOOL_LENGTH_OFFSET(double length_units, double xoffset_units, double yo
     // only flush when some offset changed and TCP is used
 
     if (CM->m_TCP_affects_actuators && 
-        (CM->GetMotionParams()->TCP_X != xoffset ||
+        (TCP_Mode != CM->GetMotionParams()->TCP_Active ||
+		 CM->GetMotionParams()->TCP_X != xoffset ||
          CM->GetMotionParams()->TCP_Y != yoffset ||
          CM->GetMotionParams()->TCP_Z != length))
     {
+		// Finish everything
         if (CM->FlushSegments()) { CM->SetAbort(); return; }
         if (CM->WaitForSegmentsFinished(TRUE)) { CM->SetAbort(); return; }
+        
+		// Determine where all actuators are
         CM->Kinematics->TransformCADtoActuators(CM->current_x, CM->current_y, CM->current_z, CM->current_a, CM->current_b, CM->current_c, CM->current_u, CM->current_v, Acts);
+		
+		// apply new mode and offsets
+		CM->GetMotionParams()->TCP_Active = TCP_Mode;
         CM->GetMotionParams()->TCP_X = xoffset;
         CM->GetMotionParams()->TCP_Y = yoffset;
         CM->GetMotionParams()->TCP_Z = length;
+
+		// Map actuators to CAD
         CM->Kinematics->TransformActuatorstoCAD(Acts, &CM->current_x, &CM->current_y, &CM->current_z, &CM->current_a, &CM->current_b, &CM->current_c, &CM->current_u, &CM->current_v);
         GC->ConvertAbsoluteToInterpreterCoord(CM->current_x, CM->current_y, CM->current_z, CM->current_a, CM->current_b, CM->current_c, CM->current_u, CM->current_v,
             &_setup.current_x, &_setup.current_y, &_setup.current_z, &_setup.AA_current, &_setup.BB_current, &_setup.CC_current, &_setup.UU_current, &_setup.VV_current, &_setup);
@@ -527,37 +538,38 @@ void USE_TOOL_LENGTH_OFFSET(double length_units, double xoffset_units, double yo
 
 void CHANGE_TOOL(int slot)
 {
-	PRINT1("CHANGE_TOOL(%d)\n", slot);
+	PRINT1(L"CHANGE_TOOL(%d)\n", slot);
 	GC->InvokeAction(6);  // do the defined action for M Code
 }
 
 int M100(int mcode)	/* User M code  */
 {
-	PRINT1("MCODE(%d)\n", mcode);
+	PRINT1(L"MCODE(%d)\n", mcode);
 	return GC->InvokeAction(mcode);  // do the defined action for M Code
 }
 
 
 void SELECT_TOOL(int slot)
-{PRINT1("SELECT_TOOL(%d)\n", slot);}
+{PRINT1(L"SELECT_TOOL(%d)\n", slot);}
 
 
 /* Misc Functions */
 
 void CLAMP_AXIS(CANON_AXIS axis)
-{PRINT1("CLAMP_AXIS(%s)\n",
-        (axis IS CANON_AXIS_X) ? "CANON_AXIS_X" :
-        (axis IS CANON_AXIS_Y) ? "CANON_AXIS_Y" :
-        (axis IS CANON_AXIS_Z) ? "CANON_AXIS_Z" : "UNKNOWN");}
+{PRINT1(L"CLAMP_AXIS(%s)\n",
+        (axis IS CANON_AXIS_X) ? L"CANON_AXIS_X" :
+        (axis IS CANON_AXIS_Y) ? L"CANON_AXIS_Y" :
+        (axis IS CANON_AXIS_Z) ? L"CANON_AXIS_Z" : L"UNKNOWN");}
 
 
 // check for CMD,xxxxxx  any case and after removing whitespace 
 
 
-int CheckForPassThroughCommand(char *comment)
+int CheckForPassThroughCommand(const wchar_t *comment)
 {				/* string with comment */
     int m;
     int item;
+	char acomment[256];
 
     for (m = 0; ((item = comment[m]) == ' ') || (item == '\t'); m++);
     if ((item != 'C') && (item != 'c')) return 0;
@@ -569,16 +581,18 @@ int CheckForPassThroughCommand(char *comment)
     if (item != ',') return 0;
 	for (m++; ((item = comment[m]) == ' ') || (item == '\t'); m++);
 
-	PRINT1("COMMAND(\"%s\")\n", comment + m);
-	CM->DoKMotionCmd(comment + m, TRUE);
+	PRINT1(L"COMMAND(\"%s\")\n", comment + m);
+	wcstombs(acomment, comment, 256);
+	CM->DoKMotionCmd(acomment + m, TRUE);
     return 1; 
 }
 
 
-int CheckForBufferedCommand(char *comment)
+int CheckForBufferedCommand(const wchar_t *comment)
 {				/* string with comment */
     int m;
     int item;
+	char acomment[256];
 
     for (m = 0; ((item = comment[m]) == ' ') || (item == '\t'); m++);
     if ((item != 'B') && (item != 'b')) return 0;
@@ -590,15 +604,17 @@ int CheckForBufferedCommand(char *comment)
     if (item != ',') return 0;
 	for (m++; ((item = comment[m]) == ' ') || (item == '\t'); m++);
 
-	PRINT1("BUFFER(\"%s\")\n", comment + m);
-	CM->DoKMotionBufCmd(comment + m,GC->p_setup->sequence_number);
+	PRINT1(L"BUFFER(\"%s\")\n", comment + m);
+	wcstombs(acomment, comment, 256);
+	CM->DoKMotionBufCmd(acomment + m,GC->p_setup->sequence_number);
     return 1; 
 }
 
-int CheckForUserCallback(char *comment)
+int CheckForUserCallback(const wchar_t *comment)
 {				/* string with comment */
     int m;
     int item;
+	char acomment[256];
 
     for (m = 0; ((item = comment[m]) == ' ') || (item == '\t'); m++);
     if ((item != 'U') && (item != 'u')) return 0;
@@ -610,12 +626,13 @@ int CheckForUserCallback(char *comment)
     if (item != ',') return 0;
 	for (m++; ((item = comment[m]) == ' ') || (item == '\t'); m++);
 
-	PRINT1("USR(\"%s\")\n", comment + m);
+	PRINT1(L"USR(\"%ls\")\n", comment + m);
 	if (GC->m_UserFn)
 	{
 		if (CM->FlushSegments()) {CM->SetAbort(); return 1;}  
 		if (CM->WaitForSegmentsFinished(TRUE)) {CM->SetAbort(); return 1;}
-		if (GC->m_UserFn(comment + m)){CM->SetAbort(); return 1;}
+		wcstombs(acomment, comment, 256);
+		if (GC->m_UserFn(acomment + m)){CM->SetAbort(); return 1;}
 
 		// don't sample positions until everything is stopped 
 		if (CM->WaitForSegmentsFinished()) return 1;
@@ -629,36 +646,35 @@ int CheckForUserCallback(char *comment)
 }
 
 
-void COMMENT(char *s)
+void COMMENT(const wchar_t *s)
 {
 	if (CheckForBufferedCommand(s)) return;	
 	if (CheckForPassThroughCommand(s)) return;	
 	if (CheckForUserCallback(s)) return;	
-	PRINT1("COMMENT(\"%s\")\n", s);
+	PRINT1(L"COMMENT(\"%ls\")\n", s);  /*TRAN*/
 }
 
 
-
 void DISABLE_FEED_OVERRIDE()
-{PRINT0("DISABLE_FEED_OVERRIDE()\n");}
+{PRINT0(L"DISABLE_FEED_OVERRIDE()\n");}
 
 void DISABLE_SPEED_OVERRIDE()
-{PRINT0("DISABLE_SPEED_OVERRIDE()\n");}
+{PRINT0(L"DISABLE_SPEED_OVERRIDE()\n");}
 
 void ENABLE_FEED_OVERRIDE()
-{PRINT0("ENABLE_FEED_OVERRIDE()\n");}
+{PRINT0(L"ENABLE_FEED_OVERRIDE()\n");}
 
 void ENABLE_SPEED_OVERRIDE()
-{PRINT0("ENABLE_SPEED_OVERRIDE()\n");}
+{PRINT0(L"ENABLE_SPEED_OVERRIDE()\n");}
 
 void FLOOD_OFF()
 {
-	PRINT0("FLOOD_OFF()\n");
+	PRINT0(L"FLOOD_OFF()\n");
 }
 
 void FLOOD_ON()
 {
-	PRINT0("FLOOD_ON()\n");
+	PRINT0(L"FLOOD_ON()\n");
 	GC->InvokeAction(8);  // do the defined action for M Code
 }
 
@@ -667,7 +683,7 @@ void MESSAGE(char *s)
 	if (CM->FlushSegments()) {CM->SetAbort(); return;}  
 	if (CM->WaitForSegmentsFinished(TRUE)) {CM->SetAbort(); return;}
 
-	PRINT1("MESSAGE(\"%s\")\n", s);
+	PRINT1(L"MESSAGE(\"%s\")\n", s);
 	if (AfxMessageBox(s,MB_OKCANCEL|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL)==IDCANCEL)
 	{
 		GC->Abort();
@@ -676,36 +692,36 @@ void MESSAGE(char *s)
 
 void MIST_OFF()
 {
-	PRINT0("MIST_OFF()\n");
+	PRINT0(L"MIST_OFF()\n");
 	GC->InvokeAction(9);  // do the defined action for M Code
 }
 
 void MIST_ON()
 {
-	PRINT0("MIST_ON()\n");
+	PRINT0(L"MIST_ON()\n");
 	GC->InvokeAction(7);  // do the defined action for M Code
 }
 
 void PALLET_SHUTTLE()
-{PRINT0("PALLET_SHUTTLE()\n");}
+{PRINT0(L"PALLET_SHUTTLE()\n");}
 
 void TURN_PROBE_OFF()
-{PRINT0("TURN_PROBE_OFF()\n");}
+{PRINT0(L"TURN_PROBE_OFF()\n");}
 
 void TURN_PROBE_ON()
-{PRINT0("TURN_PROBE_ON()\n");}
+{PRINT0(L"TURN_PROBE_ON()\n");}
 
 void UNCLAMP_AXIS(CANON_AXIS axis)
-{PRINT1("UNCLAMP_AXIS(%s)\n",
-        (axis IS CANON_AXIS_X) ? "CANON_AXIS_X" :
-        (axis IS CANON_AXIS_Y) ? "CANON_AXIS_Y" :
-        (axis IS CANON_AXIS_Z) ? "CANON_AXIS_Z" : "UNKNOWN");}
+{PRINT1(L"UNCLAMP_AXIS(%s)\n",
+        (axis IS CANON_AXIS_X) ? L"CANON_AXIS_X" :
+        (axis IS CANON_AXIS_Y) ? L"CANON_AXIS_Y" :
+        (axis IS CANON_AXIS_Z) ? L"CANON_AXIS_Z" : L"UNKNOWN");}
 
 /* Program Functions */
 
 void PROGRAM_STOP()
 {
-	PRINT0("PROGRAM_STOP()\n");
+	PRINT0(L"PROGRAM_STOP()\n");
 //	GC->m_Halt=true;
 	GC->InvokeAction(0,TRUE);
 	GC->m_end=0;  // force line number to be passed
@@ -714,12 +730,12 @@ void PROGRAM_STOP()
 void OPTIONAL_PROGRAM_STOP()
 {
 	GC->InvokeAction(1,TRUE);
-	PRINT0("OPTIONAL_PROGRAM_STOP()\n");
+	PRINT0(L"OPTIONAL_PROGRAM_STOP()\n");
 }
 
 void PROGRAM_END(int MCode)
 {
-	PRINT0("PROGRAM_END()\n");
+	PRINT0(L"PROGRAM_END()\n");
 
 	CM->FlushSegments();
 	if (MCode==30)

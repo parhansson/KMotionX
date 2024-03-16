@@ -15,8 +15,12 @@
 
 #include "StdAfx.h"
 #include "rs274ngc_return.h"
+#include "HiResTimer.h"
+
 //#include <stdlib.h>  /* for atof, atoi */
 //#include <string.h>
+
+//ExcludeTranslate
 
 #define AND              &&
 #define IS               ==
@@ -33,9 +37,9 @@ extern int ConvertToolToIndex(setup_pointer settings,int number,int *index);
 	{											\
 		char s[256];							\
 		sprintf(s, message, item);		        \
-		strcat(ErrorOutput,s);					\
+		ErrorOutput += s;						\
 		sprintf(s, "\n");						\
-		strcat(ErrorOutput,s);					\
+		ErrorOutput += s;						\
 		return RS274NGC_ERROR;					\
 	}							                \
 	else
@@ -47,9 +51,9 @@ extern int ConvertToolToIndex(setup_pointer settings,int number,int *index);
 		char s[256];							\
 		fclose(setup_file_port);				\
 		sprintf(s, message, item);		        \
-		strcat(ErrorOutput,s);					\
+		ErrorOutput += s;						\
 		sprintf(s, "\n");						\
-		strcat(ErrorOutput,s);					\
+		ErrorOutput += s;						\
 		return RS274NGC_ERROR;					\
 	}							                \
 	else
@@ -59,9 +63,9 @@ extern int ConvertToolToIndex(setup_pointer settings,int number,int *index);
 		char s[256];							\
 		fclose(tool_file_port);					\
 		sprintf(s, message, item);		        \
-		strcat(ErrorOutput,s);					\
+		ErrorOutput += s;						\
 		sprintf(s, "\n");						\
-		strcat(ErrorOutput,s);					\
+		ErrorOutput += s;						\
 		return RS274NGC_ERROR;					\
 	}							                \
 	else
@@ -89,7 +93,7 @@ potentially running past the end of the destination string.
 
 static char * strip_terminal_newline(char *string)
 {
-  int index = strlen(string) - 1;
+  int index = (int)strlen(string) - 1;
 
   while (index >= 0) {
     if (string[index] == '\n' ||
@@ -228,7 +232,7 @@ int read_keyboard_line( /* ARGUMENT VALUES                 */
   strcpy(line, raw_line);
   if (close_and_down(line) IS RS274NGC_ERROR)
     return RS274NGC_ERROR;
-  *length SET_TO strlen(line);
+  *length SET_TO (int)strlen(line);
   return RS274NGC_OK;
 }
 
@@ -482,6 +486,8 @@ int read_setup_file(     /* ARGUMENT VALUES             */
 	Vars[5214] = settings->AA_axis_offset;
 	Vars[5215] = settings->BB_axis_offset;
 	Vars[5216] = settings->CC_axis_offset;
+	Vars[5217] = settings->UU_axis_offset;
+	Vars[5218] = settings->VV_axis_offset;
 
 	int index = settings->origin_index;
 	Vars[5201+index*20] = settings->origin_offset_x;
@@ -543,11 +549,13 @@ int read_tool_file(      /* ARGUMENT VALUES             */
 	int tool_id;
 	double offset;
 	double diameter;
-	double xoffset=0;
-	double yoffset=0;
+	double xoffset = 0;
+	double yoffset = 0;
+	double FeedTime = 0;
+	double FeedDist = 0;
 	char buffer[1000];
-  char Comment[256];
-  char Image[MAX_PATH];
+	char Comment[256];
+	char Image[MAX_PATH];
 
 	tool_file_port SET_TO fopen(tool_file, "r");
 	if (tool_file_port IS NULL)
@@ -559,7 +567,8 @@ int read_tool_file(      /* ARGUMENT VALUES             */
 		else if (buffer[0] IS '\n' || buffer[0] IS '\r') //PH test for /r as well
 			break;
 
-		if (strstr(buffer, "IMAGE") != NULL) Revision=1;  // new format has xy offset 
+		if (strstr(buffer, "IMAGE") != NULL) Revision = 1;  // new format has xy offset 
+		if (strstr(buffer, "FEEDTIME") != NULL) Revision = 2;  // newer format also has tool time and distance 
 	}
 
 	index=0;
@@ -577,9 +586,18 @@ int read_tool_file(      /* ARGUMENT VALUES             */
 		}
 		else
 		{
-			if (sscanf(buffer, "%d %d %lf %lf %lf %lf%n", &slot,
-				&tool_id, &offset, &diameter, &xoffset, &yoffset, &n) IS 0)
-				DRIVER_ERROR_CF2("Bad input line \"%s\" in tool file", buffer);
+			if (Revision == 1)
+			{
+				if (sscanf(buffer, "%d %d %lf %lf %lf %lf%n", &slot,
+					&tool_id, &offset, &diameter, &xoffset, &yoffset, &n) IS 0)
+					DRIVER_ERROR_CF2("Bad input line \"%s\" in tool file", buffer);
+			}
+			else
+			{
+				if (sscanf(buffer, "%d %d %lf %lf %lf %lf %lf %lf%n", &slot,
+					&tool_id, &offset, &diameter, &xoffset, &yoffset, &FeedTime, &FeedDist, &n) IS 0)
+					DRIVER_ERROR_CF2("Bad input line \"%s\" in tool file", buffer);
+			}
 
 			//TODO check toofile parsing /PH
 			char s[256+60];
@@ -618,13 +636,71 @@ int read_tool_file(      /* ARGUMENT VALUES             */
 		settings->tool_table[index].diameter SET_TO diameter;
 		settings->tool_table[index].xoffset SET_TO xoffset;
 		settings->tool_table[index].yoffset SET_TO yoffset;
-		strcpy(settings->tool_table[index].Comment,Comment);
-		strcpy(settings->tool_table[index].ToolImage,Image);
+		settings->tool_table[index].FeedTime SET_TO FeedTime;
+		settings->tool_table[index].FeedDist SET_TO FeedDist;
+		settings->tool_table[index].Comment=Comment;
+		settings->tool_table[index].ToolImage=Image;
 		index++;
 	}
 	fclose(tool_file_port);
 	return RS274NGC_OK;
 }
+
+
+int save_tool_file(const char* File)
+{
+	static CHiResTimer Timer;
+
+	if (File[0] == 0) return 0;  // if no file specified exit
+
+	if (save_tool_file_0(File)) return 1;
+
+
+	// Save backup each time App launched or after a day
+	if (Timer.nSplit == 0)
+	{
+		Timer.Start();
+	}
+	else
+	{
+		if (Timer.Elapsed_Seconds() < 24.0 * 3600.0) return 0;
+	}
+
+	Timer.Start();  // restart timer
+
+	std::string Backup = File;
+
+	Backup = Backup + ".bak";
+
+	if (save_tool_file_0(Backup.c_str())) return 1;
+	return 0;
+}
+
+int save_tool_file_0(const char* File)
+{
+	FILE* f = fopen(File, "wt");
+
+	if (!f)
+	{
+		MessageBoxW(NULL, L"Unable to write Tool Table file:\r\r" + kmx::strtowstr(File), L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
+		return 1;
+	}
+
+	fprintf(f, "SLOT    ID        LENGTH         DIAMETER        XOFFSET        YOFFSET        FEEDTIME        FEEDDIST   COMMENT     IMAGE\n");
+	fprintf(f, "\n");
+
+
+	for (int i = 0; i < CANON_TOOL_MAX; i++)
+	{
+		CANON_TOOL_TABLE* T = &_setup.tool_table[i];
+
+		if (T->slot || T->id) fprintf(f, "%3d %6d %15.6f %15.6f %15.6f %15.6f %15.1f %15.1f \"%s\" \"%s\"\n", 
+			T->slot, T->id, T->length, T->diameter, T->xoffset, T->yoffset, T->FeedTime, T->FeedDist, T->Comment.c_str(), T->ToolImage.c_str());
+	}
+	fclose(f);
+	return 0;
+}
+
 
 /*********************************************************************/
 
@@ -937,5 +1013,5 @@ int main(int argc, char ** argv)
 
   return 0;
 }
-
+//ResumeTranslate
 /***********************************************************************/

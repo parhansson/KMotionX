@@ -1,3 +1,5 @@
+
+
 // KMotionDLL_Direct.cpp : Defines the entry point for the DLL application.
 /*********************************************************************/
 /*         Copyright (c) 2003-2006  DynoMotion Incorporated          */
@@ -13,16 +15,21 @@
 #include "VERSION.h"
 #include "COFF.h"
 #include "CLOAD.h"
-
-//#undef debug
-//#define debug(M, ...) fprintf(stderr, "DEBUG %s.%s:%d: " M "\n", __FILE__, __func__, __LINE__, ##__VA_ARGS__)
-
+#include "HiResTimer.h"
+#include "Ping.h"
 
 
 
 CKMotionDLL_Direct::CKMotionDLL_Direct()
 { 
 }
+
+void CKMotionDLL_Direct::FindKognas(void)
+{
+	::FindKognas();
+	::FindKFLOPs();
+}
+
 
 
 // Maps a specified Board Identifiers to a KMotionIO Index (or object)
@@ -58,7 +65,7 @@ int CKMotionDLL_Direct::MapBoardToIndex(int BoardID)
 	{
 		if (KMotionLocal.KMotionIO[i].BoardIDAssigned &&
 			KMotionLocal.KMotionIO[i].m_Connected &&
-			KMotionLocal.KMotionIO[i].USB_Loc_ID == BoardID)
+			KMotionLocal.KMotionIO[i].Actual_ID == BoardID)
 				return i;   // found previously assigned matching Location use it     
 	}
 
@@ -66,7 +73,7 @@ int CKMotionDLL_Direct::MapBoardToIndex(int BoardID)
 	{
 		if (KMotionLocal.KMotionIO[i].BoardIDAssigned)
 		{
-			if (KMotionLocal.KMotionIO[i].USB_Loc_ID == BoardID)
+			if (KMotionLocal.KMotionIO[i].Actual_ID == BoardID)
 				return i;   // found previously assigned matching object, return it     
 		}
 	}
@@ -82,15 +89,15 @@ int CKMotionDLL_Direct::MapBoardToIndex(int BoardID)
 		if (!KMotionLocal.KMotionIO[i].BoardIDAssigned) break;
 	}
 
-	if (i==MAX_BOARDS)
+	if (i == MAX_BOARDS)
 	{
-		AfxMessageBox("Fatal Error: Too Many Board IDs used",MB_ICONSTOP|MB_OK);
-		KMotionLocal.KMotionIO[i].Mutex->Unlock(); 
+		MessageBoxW(NULL, Translate("Fatal Error: Too Many Board IDs used"), L"KMotion", MB_ICONSTOP | MB_OK);
+		KMotionLocal.KMotionIO[i].Mutex->Unlock();
 		exit(1);
 	}
 
 	KMotionLocal.KMotionIO[i].BoardIDAssigned = true;  
-	KMotionLocal.KMotionIO[i].USB_Loc_ID = BoardID;  	// assign the ID
+	KMotionLocal.KMotionIO[i].Actual_ID = BoardID;  	// assign the ID
 
 	KMotionLocal.KMotionIO[0].Mutex->Unlock(); 
 	return i;
@@ -100,142 +107,48 @@ int CKMotionDLL_Direct::MapBoardToIndex(int BoardID)
 
 int CKMotionDLL_Direct::ListLocations(int *nlocations, int *list)
 {
-#ifndef LIB_FTDI
-	FT_DEVICE_LIST_INFO_NODE *devInfo;
-	FT_STATUS ftStatus;
-	DWORD numDevs;  
 	int i;
 
 	list[0]=-1;
 	*nlocations=0;
 
-	// create the device information list
-	ftStatus = FT_CreateDeviceInfoList(&numDevs);
-	
-	if (ftStatus == FT_OK) 
-	{ 
-		if (numDevs > 0) 
-		{ 
-			// allocate storage for list based on numDevs 
-			devInfo = (FT_DEVICE_LIST_INFO_NODE*)malloc(sizeof(FT_DEVICE_LIST_INFO_NODE)*numDevs); // get the device information list 
-			// get the device information list
-			ftStatus = FT_GetDeviceInfoList(devInfo,&numDevs);
 
-			// go through the list and copy Dynomotion USB IDs to User's list
-			for (i=0; i<(int)numDevs; i++)
-			{
-				if (strstr(devInfo[i].Description,"KFLOP")!= NULL ||
-					strstr(devInfo[i].Description,"KMotion")!= NULL ||
-					strstr(devInfo[i].Description,"Dynomotion")!= NULL)
-				{
-					list[(*nlocations)++] = devInfo[i].LocId;
-				}
-			}
-			delete (devInfo);
-		}
-	}
-	else
+	KognaListMutex->Lock();  // no time-out interval
+	if (1/*dwWaitResult == WAIT_OBJECT_0*/)
 	{
-		return 1;  // Create List Failed
-	}
-#else
-	struct ftdi_context *ftdi;
-    if ((ftdi = ftdi_new()) == 0)
-    {
-    	debug("ftdi_new failed\n");
-    	return 1;
-    }
-
-
-	int ftStatus;
-	int i, numDevs;
-	struct ftdi_device_list *devlist, *curdev;
-	char Manufacturer[128];
-//	char SerialNumber[16];
-	char Description[128];
-	*nlocations=0;
-
-	// fill the list with -1 because driver
-	// leaves the entries for open drivers unchanged
-
-	for (i=0; i<MAX_BOARDS; i++) list[i]=-1;
-
-	numDevs = ftStatus = ftdi_usb_find_all(ftdi, &devlist, VENDOR, PRODUCT );
-    
-	if (ftStatus < 0)
-	{
-		debug("ftdi_usb_find_all failed: %d (%s)",ftStatus, ftdi_get_error_string(ftdi));
-		return 1;
-	} else if (numDevs < 1 || numDevs >= MAX_BOARDS)
-	{
-		ftdi_list_free(&devlist);
-		debug("ftdi_list_free failed: %d (%s)",ftStatus, ftdi_get_error_string(ftdi));
-		//if (Reason) strcpy(Reason,"No KMotion devices available");
-		return 1;
-	}
-	// go through the list and remove any non-dynomotion boards
-	i = 0;
-	for (curdev = devlist; curdev != NULL; i++)
-	{
-		if ((ftStatus = ftdi_usb_get_strings(ftdi, curdev->dev, Manufacturer, sizeof(Manufacturer), 
-		                                    Description, sizeof(Description), NULL, 0)) < 0)
+		// go through the list and copy Kogna IPs to User's list
+		for (i = 0; i < nKognas; i++)
 		{
-			debug("ftdi_usb_get_strings failed: %d (%s)",ftStatus, ftdi_get_error_string(ftdi));
-		   // FT_Open failed
-		   list[i] = -1;  // mark as unusable
+			list[(*nlocations)++] = Kognas[i].KognaIP;				// Add Kogna IP to list
+			list[(*nlocations)++] = 0xFF000000 | Kognas[i].KognaSerialNumber;	// Add additional to list by Serial Number
 		}
-		else
-		{
-      debug("%d '%s' '%s'", ftStatus, Manufacturer, Description);
-			if (strstr(Description,"KFLOP")!= NULL ||
-				strstr(Description,"KMotion")!= NULL ||
-				strstr(Description,"Dynomotion")!= NULL)
-			{
-				//KMotionBoard detected add to list
-				//save index
-				(*nlocations)++;
-				list[i] = i;
-			}
-		}
-		curdev = curdev->next;
+
+		KognaListMutex->Unlock();
 	}
-	ftdi_list_free(&devlist);
-	ftdi_free(ftdi);
 
-	// note ListDevices fails if all devices are open,
-	// so if it changed the nlocations and it is reasonable
-	// assume it is valid
 
-	int k=0;
-
-	// go through and if there were any -1 that indicates
-	// that device is in use (connected) search and substitute
-	// with any assigned and connected boards
-
-	for (i=0; i<*nlocations; i++)
+	KFLOPListMutex->Lock();  // no time-out interval
+	if (1/*dwWaitResult == WAIT_OBJECT_0*/)
 	{
-		if (list[i] == -1)
+		// go through the list and copy Kogna IPs to User's list
+		for (unsigned int i = 0; i < nKFLOPs; i++)
 		{
-			for (;k<MAX_BOARDS;k++)
-			{
-				if (KMotionLocal.KMotionIO[k].BoardIDAssigned &&
-					KMotionLocal.KMotionIO[k].m_Connected &&
-					KMotionLocal.KMotionIO[k].USB_Loc_ID != -1)
-				{
-					list[i]=KMotionLocal.KMotionIO[k++].USB_Loc_ID;
-					break;
-				}
-			}
+			list[(*nlocations)++] = KFLOPs[i].LocId;				// Add KFLOP IP to list
 		}
+
+		KFLOPListMutex->Unlock();
 	}
 
-#endif
+
 	return 0;
 }
 
 
 
-
+int CKMotionDLL_Direct::SetRequested_ID(int board, unsigned int Board_ID)
+{
+	return KMotionLocal.KMotionIO[board].Requested_ID = Board_ID;
+}
 
 int CKMotionDLL_Direct::WriteLineReadLine(int board, const char *s, char *response)
 {
@@ -311,20 +224,15 @@ int CKMotionDLL_Direct::SetConsoleCallback(int board, SERVER_CONSOLE_HANDLER *ch
 
 int CKMotionDLL_Direct::nInstances()
 {
-#ifdef _KMOTIONX
-  return *(KMotionLocal.sharePtr);
-#else
 	return share;
-#endif
-
 }
 
-const char * CKMotionDLL_Direct::GetErrMsg(int board)
+const wchar_t * CKMotionDLL_Direct::GetErrMsg(int board)
 {
-	return KMotionLocal.KMotionIO[board].ErrMsg;
+	return KMotionLocal.KMotionIO[board].ErrMsg.c_str();
 }
 
 void CKMotionDLL_Direct::ClearErrMsg(int board)
 {
-	memset(KMotionLocal.KMotionIO[board].ErrMsg,'\0',MAX_LINE);
+	KMotionLocal.KMotionIO[board].ErrMsg=L"";
 }

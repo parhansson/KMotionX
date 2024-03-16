@@ -116,7 +116,7 @@ void CMainFrame::Dump(CDumpContext& dc) const
 
 void ServerMain(LPVOID lpvParam);
 
-void CMainFrame::OnTimer(UINT nIDEvent) 
+void CMainFrame::OnTimer(UINT_PTR nIDEvent) 
 {
 	DWORD dwThreadId;
 	KillTimer(0);

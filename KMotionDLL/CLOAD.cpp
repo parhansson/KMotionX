@@ -188,7 +188,10 @@ int cload_headers()
    /*-------------------------------------------------------------------------*/
    /* READ IN SECTION HEADERS.                                                */
    /*-------------------------------------------------------------------------*/
-   if (!(sect_hdrs = myalloc((n_sections = file_hdr.f_nscns) * SCNHSZ)) || 
+   n_sections = file_hdr.f_nscns;
+   if (n_sections <= 0) return FALSE;
+
+   if (!(sect_hdrs = myalloc(n_sections * SCNHSZ)) ||
        fread(sect_hdrs, SCNHSZ, n_sections, fin) != (unsigned)n_sections)
       return FALSE;
 
@@ -417,7 +420,7 @@ int cload_cinit(
 			/*-------------------------------------------------------------------*/
 			temp = (T_SIZE)unpack((unsigned char *)(loadbuf + i), sizeof(T_SIZE), sizeof(T_SIZE), 0);
 		
-			if (temp == 0) // tktk skip 0 length pads
+			if (temp == 0) // skip 0 length pads
 			{
 				i += sizeof(T_SIZE);
 				init_packet_size=0;
@@ -438,7 +441,7 @@ int cload_cinit(
 			}
 		}
 		
-		if (init_size>0)  // tktk skip 0 length pads
+		if (init_size>0)  // skip 0 length pads
 		{
 			/*----------------------------------------------------------------------*/
 			/* WRITE OUT THE CURRENT PACKET, UP TO THE END OF THE BUFFER.           */
@@ -452,6 +455,7 @@ int cload_cinit(
 				init_size -= init_packet_size / WORDSZ;
 			}
 		}
+		i = i+7 & ~7; // SJH - align to 8
 	}
 	return TRUE;
 }
@@ -633,10 +637,12 @@ int sym_read(unsigned int index, SYMENT *sym, AUXENT *aux)
 	  /* RELOCATE IT ACCORDING TO THE SECTION IT IS DEFINED IN.           */
 	  /*------------------------------------------------------------------*/
           if (sym->n_scnum == 0) 
-//			  lookup_sym((struct syment *)index, (union auxent *)sym, (short)aux);  // tktk ??
-		  lookup_sym((struct syment *)index, (union auxent *)sym, 0);  // tktk ??
+           {
+
+           }
+    	//	  lookup_sym((struct syment *)index, (union auxent *)sym, 0); // doesn't do anything anyways
 		  else if (sym->n_scnum > 0)
-	     sym->n_value += reloc_amount[sym->n_scnum - 1];
+	        sym->n_value += reloc_amount[sym->n_scnum - 1];
     }
     return (index + sym->n_numaux + 1);
 }

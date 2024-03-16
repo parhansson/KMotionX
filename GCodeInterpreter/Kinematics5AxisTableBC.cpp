@@ -19,15 +19,15 @@
 
 CKinematics5AxisTableBC::CKinematics5AxisTableBC()
 {
-        CTableBZeroZZero = 0; //Machine Z coordinate of C table face when B=0
-        CTableBZeroXCenterpoint = 0; //Machine X coordinate of C rotation axis when B=0
-        CTableBZeroYCenterpoint = 0; //Machine Y coordinate of C rotation axis when B=0
-        BSaddleXCenterpoint = 0.123; //Machine X coordinate of B rotation axis
-                                       //Set B to 90,-90 and measure the centerpoint and give result in machine coordinates
-                                       //Ideally this is equal to CTableBZeroXCenterpoint, but reality is rarely so nice
-        BSaddleZCenterpoint = 4.000; //Machine Z coordinate of B rotation axis
-                                       //Use CTableBZeroZZero and the measurements from BSaddleXCenterpoint (compensated for
-                                       //tool centerpoint) to define an arc to find the center of rotation in machine coordinate Z
+    CTableBZeroZZero = 0; //Machine Z coordinate of C table face when B=0
+    CTableBZeroXCenterpoint = 0; //Machine X coordinate of C rotation axis when B=0
+    CTableBZeroYCenterpoint = 0; //Machine Y coordinate of C rotation axis when B=0
+    BSaddleXCenterpoint = 0.123; //Machine X coordinate of B rotation axis
+                                    //Set B to 90,-90 and measure the centerpoint and give result in machine coordinates
+                                    //Ideally this is equal to CTableBZeroXCenterpoint, but reality is rarely so nice
+    BSaddleZCenterpoint = 4.000; //Machine Z coordinate of B rotation axis
+                                    //Use CTableBZeroZZero and the measurements from BSaddleXCenterpoint (compensated for
+                                    //tool centerpoint) to define an arc to find the center of rotation in machine coordinate Z
 
 	m_MotionParams.MaxLinearLength = 0.05;  // limit the segment lengths for nonlinear systems
 	m_MotionParams.MaxAngularChange = 0.5;  // limit the segment angle change for nonlinear systems
@@ -76,25 +76,25 @@ void CKinematics5AxisTableBC::Rotate3(double xc,double yc,double zc,double x,dou
 
 int CKinematics5AxisTableBC::TransformCADtoActuators(double x, double y, double z, double a, double b, double c, double *Acts, bool NoGeo)
 {
-        double CP_Rotated_C_x,CP_Rotated_C_y,CP_Rotated_C_z;
-        double CP_Rotated_BC_x,CP_Rotated_BC_y,CP_Rotated_BC_z;
+    double CP_Rotated_C_x,CP_Rotated_C_y,CP_Rotated_C_z;
+    double CP_Rotated_BC_x,CP_Rotated_BC_y,CP_Rotated_BC_z;
 
-        // Determine where the commanded XYZ point will be after C rotation
-        Rotate3(CTableBZeroXCenterpoint, CTableBZeroYCenterpoint, CTableBZeroZZero, x, y, z, 0, 0, c, &CP_Rotated_C_x, &CP_Rotated_C_y, &CP_Rotated_C_z);
-        // Determine where the commanded XYZ point will be after B rotation
-        Rotate3(BSaddleXCenterpoint, CTableBZeroYCenterpoint, BSaddleZCenterpoint, CP_Rotated_C_x, CP_Rotated_C_y, CP_Rotated_C_z, 0, b, 0, &CP_Rotated_BC_x, &CP_Rotated_BC_y, &CP_Rotated_BC_z);
+    // Determine where the commanded XYZ point will be after C rotation
+    Rotate3(CTableBZeroXCenterpoint, CTableBZeroYCenterpoint, CTableBZeroZZero, x, y, z, 0, 0, c, &CP_Rotated_C_x, &CP_Rotated_C_y, &CP_Rotated_C_z);
+    // Determine where the commanded XYZ point will be after B rotation
+    Rotate3(BSaddleXCenterpoint, CTableBZeroYCenterpoint, BSaddleZCenterpoint, CP_Rotated_C_x, CP_Rotated_C_y, CP_Rotated_C_z, 0, b, 0, &CP_Rotated_BC_x, &CP_Rotated_BC_y, &CP_Rotated_BC_z);
 
-        // Translate XYZ target for B rotation
-        x = CP_Rotated_BC_x;
-        y = CP_Rotated_BC_y;
-        z = CP_Rotated_BC_z;
+    // Translate XYZ target for B rotation
+    x = CP_Rotated_BC_x;
+    y = CP_Rotated_BC_y;
+    z = CP_Rotated_BC_z;
 
-        // Translate from TCP to end effector origin
-        //x += CP_Rotated_BC_x - b_x;
-        //y += CP_Rotated_BC_y - b_y;
-        //z += CP_Rotated_BC_z - b_z;
+    // Translate from TCP to end effector origin
+    //x += CP_Rotated_BC_x - b_x;
+    //y += CP_Rotated_BC_y - b_y;
+    //z += CP_Rotated_BC_z - b_z;
 
-        if (!NoGeo) GeoCorrect(x,y,z,&x,&y, &z);
+    if (!NoGeo) GeoCorrect(x,y,z,&x,&y, &z);
 
 	Acts[0] = x*m_MotionParams.CountsPerInchX;
 	Acts[1] = y*m_MotionParams.CountsPerInchY;

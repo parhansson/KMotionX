@@ -39,6 +39,7 @@ CGCodeInterpreter::CGCodeInterpreter(CCoordMotion *CoordM)
 	}
 
 	p_setup->length_units=CANON_UNITS_INCHES;
+	p_setup->length_units_of_origin = CANON_UNITS_UNDEFINED;
 	p_setup->origin_index=1;
 	p_setup->tool_table_index=1;
 
@@ -75,7 +76,7 @@ int CGCodeInterpreter::Interpret(
 	m_restart=restart;
 	m_CompleteFn=CompleteFn;
 	m_StatusFn=StatusFn;
-	strcpy(m_InFile,fname);
+	m_InFile=fname;
 	m_Halt=m_HaltNextLine=false;
 	CoordMotion->ClearHalt();
 
@@ -173,29 +174,31 @@ void CGCodeInterpreter::SetVarsFile(char *f)
 
 int CGCodeInterpreter::rs274ErrorExit(int status)
 {
-	char ErrDescr[200];
-	ErrDescr[0]='\0';
+	std::wstring ErrDescr;
+
 	rs274ngc_close();
 
 	if (CoordMotion->GetAbort())
 	{
 		if (CoordMotion->m_AxisDisabled)
 		{
-		  strcpy(ErrDescr,"Axis Disabled - GCode Aborted");
+			ErrDescr=L"Axis Disabled - GCode Aborted";
 			status=1000;
 		}
 		else
 		{
-			strcpy(ErrDescr,"GCode Aborted");
+			ErrDescr=L"GCode Aborted";
 			status=1001;
 		}
 	}
 	else
 	{
-		rs274ngc_error_text(status,ErrDescr,200);
+		wchar_t buf[200];
+		buf[0]='\0';
+		rs274ngc_error_text(status,buf,200);
+		ErrDescr=buf;
 	}
-
-	strcat(ErrorOutput,ErrDescr);
+	ErrorOutput+=kmx::wstrtostr(ErrDescr);
 
 	return status;
 }
@@ -218,7 +221,7 @@ int CGCodeInterpreter::InitializeInterp(void)
 {
 	int status;
 
-	Output[0]='\0';
+	Output="";
 	line_number=0;
 
 	// initialize the trajectory planner
@@ -259,7 +262,10 @@ int CGCodeInterpreter::DoExecute()
 	int program_status;
 	//CString OutputCRLF;
 
-	ErrorOutput[0]='\0';
+	ErrorOutput="";
+	CoordMotion->m_TotalDoTime = 0.0;
+	CoordMotion->m_TotalFeedTime = 0.0;
+	CoordMotion->m_TotalFeedDist = 0.0;
 
 	program_status = RS274NGC_OK;
 
@@ -306,20 +312,36 @@ int CGCodeInterpreter::DoExecute()
 			result = CoordMotion->ReadCurAbsPosition(&CoordMotion->current_x,&CoordMotion->current_y,&CoordMotion->current_z,
 													&CoordMotion->current_a,&CoordMotion->current_b,&CoordMotion->current_c,&CoordMotion->current_u,&CoordMotion->current_v,true);
 		else
-			result = ReadAndSyncCurPositions(&_setup.current_x,&_setup.current_y,&_setup.current_z,&_setup.AA_current,&_setup.BB_current,&_setup.CC_current,&_setup.UU_current,&_setup.VV_current);
+		{
+			result = ReadAndSyncCurPositions(&_setup.current_x, &_setup.current_y, &_setup.current_z, &_setup.AA_current, &_setup.BB_current, &_setup.CC_current, &_setup.UU_current, &_setup.VV_current);
+
+			// because of possible round off errors when subtracting and adding back GCode offsets
+			// resulting in microscopic motions possibly causing pure angular motions to have non-zero linear
+			// motions resulting changing to be non-pure angular.  So compute/adjust the CoordMotion Absolute
+			// current positions as computed from the Interpreter positions so they will exactly match
+
+			CoordMotion->current_x = GC->UserUnitsToInchesX(_setup.current_x + _setup.axis_offset_x + _setup.origin_offset_x + _setup.tool_xoffset);
+			CoordMotion->current_y = GC->UserUnitsToInches(_setup.current_y + _setup.axis_offset_y + _setup.origin_offset_y + _setup.tool_yoffset);
+			CoordMotion->current_z = GC->UserUnitsToInches(_setup.current_z + _setup.axis_offset_z + _setup.origin_offset_z + _setup.tool_length_offset);
+			CoordMotion->current_a = GC->UserUnitsToInchesOrDegA(_setup.AA_current + _setup.AA_axis_offset + _setup.AA_origin_offset);
+			CoordMotion->current_b = GC->UserUnitsToInchesOrDegB(_setup.BB_current + _setup.BB_axis_offset + _setup.BB_origin_offset);
+			CoordMotion->current_c = GC->UserUnitsToInchesOrDegC(_setup.CC_current + _setup.CC_axis_offset + _setup.CC_origin_offset);
+			CoordMotion->current_u = GC->UserUnitsToInches(_setup.UU_current + _setup.UU_axis_offset + _setup.UU_origin_offset);
+			CoordMotion->current_v = GC->UserUnitsToInches(_setup.VV_current + _setup.VV_axis_offset + _setup.VV_origin_offset);
+		}
 
 		if (result == 1)
 		{
 			if (CoordMotion->m_AxisDisabled)
-			  strcpy(ErrorOutput,"Unable to read defined coordinate system axis positions - Axis Disabled ");
+				ErrorOutput=kmx::wstrtostr(CoordMotion->KMotionDLL->Translate("Unable to read defined coordinate system axis positions - Axis Disabled "));
 			else
-			  strcpy(ErrorOutput,"Unable to read defined coordinate system axis positions ");
+				ErrorOutput=kmx::wstrtostr(CoordMotion->KMotionDLL->Translate("Unable to read defined coordinate system axis positions "));
 		}
 
 		if (result != 0) return 1005;
 	}
 
-	status = rs274ngc_open(m_InFile);
+	status = rs274ngc_open(m_InFile.c_str());
 	if (status != RS274NGC_OK)	return rs274ErrorExit(status);
 
 	if (_setup.percent_flag == ON)
@@ -332,7 +354,7 @@ int CGCodeInterpreter::DoExecute()
 		read_ok = fgets(trash, INTERP_TEXT_SIZE,_setup.file_pointer);
 		if (!read_ok) 
 		{
-		  strcpy(ErrorOutput,"Error while reading GCode file ");
+			ErrorOutput=kmx::wstrtostr(CoordMotion->KMotionDLL->Translate("Error while reading GCode file "));
 			return NCE_A_FILE_IS_ALREADY_OPEN;
 		}
 	}
@@ -357,13 +379,13 @@ int CGCodeInterpreter::DoExecute()
 		// give output to caller
 #ifndef _KMOTIONX
 		//not needed on linux
-		CString tmpStr = Output;
+		CString tmpStr = Output.c_str();
 		tmpStr.Replace("\n","\r\n");
 		strcpy(Output, tmpStr);
 #endif
-		m_StatusFn(m_CurrentLine,Output);
+		m_StatusFn(m_CurrentLine,Output.c_str());
 		
-		Output[0]='\0';  // clear it
+		Output="";  // clear it
 
 
 		if (((m_end!=-99)&&(m_CurrentLine>m_end)) || (CoordMotion->m_Simulate && m_Halt) || CoordMotion->GetAbort() || m_HaltNextLine)
@@ -433,9 +455,9 @@ int CGCodeInterpreter::DoExecuteComplete()
 		if (!CoordMotion->GetAbort() && !CoordMotion->GetHalt())
 		{
 			if (CoordMotion->m_AxisDisabled)
-				CoordMotion->KMotionDLL->DoErrMsg("Error Executing GCode\r\rAxis Disabled");
+				CoordMotion->KMotionDLL->DoErrMsg(CoordMotion->KMotionDLL->Translate("Error Executing GCode\r\rAxis Disabled"));
 			else
-				CoordMotion->KMotionDLL->DoErrMsg("Error Executing GCode");
+				CoordMotion->KMotionDLL->DoErrMsg(CoordMotion->KMotionDLL->Translate("Error Executing GCode"));
 
 			m_exitcode = 1005;
 		}
@@ -463,7 +485,11 @@ int CGCodeInterpreter::DoExecuteComplete()
 		m_exitcode=1005;
 	}
 	
-	m_CompleteFn(m_exitcode,_setup.current_line,_setup.sequence_number,ErrorOutput);
+	m_CompleteFn(m_exitcode,_setup.current_line,_setup.sequence_number,ErrorOutput.c_str());
+
+	// Accumulate Tool Wear stats
+	AccumToolWearStats(&_setup, _setup.current_slot, true);
+
 
 	ExecutionInProgress=false;
 	return 0;
@@ -551,8 +577,8 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation, 
 {
 	// check if action was from a GUI Button (no Flush required)
 	// if so create a Worker Thread to perform the Action
-
-	if (FlushBeforeUnbufferedOperation)
+	// Screen scripts must be called from GUI Thread not worker Thread
+	if (FlushBeforeUnbufferedOperation || p->Action == M_Action_ScreenScript)
 	{
 		//no just call it directly
 		return InvokeActionDirect(i, FlushBeforeUnbufferedOperation, p);
@@ -588,18 +614,18 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation, 
 		params->GC = this;
 		
 #ifdef _KMOTIONX
-    pthread_t thr;
-    params->GC->m_InvokeThreadID++;
-    if(pthread_create(&thr, NULL, &::DoInvokeShell, params))
-    {
-				params->GC->m_InvokeThreadID--;
-				delete params;
-        printf("Could not create thread\n");
-        return -1;
-    }
+		pthread_t thr;
+		//In windows m_InvokeThreadID is set to the created thread identifier
+		//in linux we change it inside the thread in DoInvokeShell
+		if(pthread_create(&thr, NULL, &::DoInvokeShell, params))
+		{
+			delete params;
+			printf("Could not create thread\n");
+			return -1;
+		}
     
-    // We don't use pthread_join(), so allow system to clean up resources.
-    pthread_detach(thr);
+		// We don't use pthread_join(), so allow system to clean up resources.
+		pthread_detach(thr);
 #else
 
 		HANDLE Thread = CreateThread(
@@ -618,9 +644,12 @@ int CGCodeInterpreter::InvokeAction(int i, BOOL FlushBeforeUnbufferedOperation, 
 void * DoInvokeShell(void * lpdwParam)
 {
 	INVOKE_PARAMS *params = (INVOKE_PARAMS*)lpdwParam;
+	//mutex lock before changing m_InvokeThreadID?
+	//this lets CGCodeInterpreter::InvokeAction wait if another action is executing
+	params->GC->m_InvokeThreadID = kmx::getThreadId();
 	params->GC->m_InvokeExitcode = params->GC->InvokeActionDirect(params->i, params->FlushBeforeUnbufferedOperation, &params->p);
-	//TODO mutex lock before changing m_InvokeThreadID
-	params->GC->m_InvokeThreadID--;
+	//mutex lock before changing m_InvokeThreadID?
+	params->GC->m_InvokeThreadID = -1;
 	delete params;
 	pthread_exit(0);
 	return 0;
@@ -748,7 +777,7 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 			{
 				// A GCode file is currently running
 				// don't allow the Interpreter to re-ener
-				CoordMotion->KMotionDLL->DoErrMsg("Running a GCode file from a GCode file is not allowed.  Check if an MCode is assigned to a Gcode File and is also called from a GCode File");
+				CoordMotion->KMotionDLL->DoErrMsg(CoordMotion->KMotionDLL->Translate("Running a GCode file from a GCode file is not allowed.  Check if an MCode is assigned to a Gcode File and is also called from a GCode File"));
 				CoordMotion->SetAbort(); 
 				return 1;
 			}
@@ -834,10 +863,18 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 						count++;
 					}
 	
-					if (count==0)  // if no parameters just set the MCode number
+					if (count==0)  // if no parameters just set the MCode number or Param if from Screen Script
 					{
-						sprintf(s, "SetPersistHex %d %x",ipersist,i);
-						if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
+						if (i == -1) // From a Screen Script Button?
+						{
+							float v = (float)p->dParams[2]; 
+							sprintf(s, "SetPersistHex %d %x",ipersist,*(int *)&v);
+						}
+						else
+						{
+							sprintf(s, "SetPersistHex %d %x",ipersist,i);
+						}
+						if (CoordMotion->KMotionDLL->WriteLine(s)) { CoordMotion->SetAbort(); return 1; }
 					}
 				}
 			}
@@ -862,9 +899,7 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 
 				if (CoordMotion->KMotionDLL->LoadCoff((int)p->dParams[0], FileName))
 				{
-					char message[1024];
-					sprintf(message,"Error Loading KMotion Coff Program\r\r%s\r\r", FileName);
-					CoordMotion->KMotionDLL->DoErrMsg(message);
+					CoordMotion->KMotionDLL->DoErrMsg(CoordMotion->KMotionDLL->Translate("Error Loading KMotion Coff Program\r\r") + kmx::strtowstr(p->String) + L"\r\r");
 					return 1;
 				}
 			}
@@ -887,9 +922,7 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 #endif
 				if (CoordMotion->KMotionDLL->CompileAndLoadCoff(FileName, (int)p->dParams[0], Err, 499))
 				{
-					char message[1024];
-					sprintf(message,"Error Compiling and Loading KMotion Program\r\r%s\r\r%s", FileName, Err );
-					CoordMotion->KMotionDLL->DoErrMsg(message);
+					CoordMotion->KMotionDLL->DoErrMsg(CoordMotion->KMotionDLL->Translate("Error Compiling and Loading KMotion Program\r\r") + kmx::strtowstr(FileName) + L"\r\r" + kmx::strtowstr(Err));
 					return 1;
 				}
 			}
@@ -934,9 +967,9 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 					      &_setup.AA_current, &_setup.BB_current, &_setup.CC_current, &_setup.UU_current, &_setup.VV_current))
 				{
 					if (CoordMotion->m_AxisDisabled)
-					  strcpy(ErrorOutput,"Unable to read defined coordinate system axis positions - Axis Disabled ");
+						ErrorOutput=kmx::wstrtostr(CoordMotion->KMotionDLL->Translate("Unable to read defined coordinate system axis positions - Axis Disabled "));
 					else
-					  strcpy(ErrorOutput,"Unable to read defined coordinate system axis positions ");
+						ErrorOutput=kmx::wstrtostr(CoordMotion->KMotionDLL->Translate("Unable to read defined coordinate system axis positions "));
 	
 					return 1;
 				}
@@ -1011,12 +1044,11 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 		result = ExecutePC(pcCmd);  // call the executable with parameters
 		if (result)
 		{
-			char Err[350];
+			wchar_t Err[350];
 
-			sprintf(Err,"Error Executing PC Program:\r\r%s\r\r"
-				"Return code = %d\r\rAbort?",p->String,result);
+			swprintf(Err, 350, CoordMotion->KMotionDLL->Translate("Error Executing PC Program:\r\r%s\r\rReturn code = %d\r\rAbort?").c_str(),p->String,result);
 
-			if (AfxMessageBox(Err,MB_YESNO)==IDYES) Abort();
+			if (MessageBoxW(NULL, Err, L"KMotion", MB_YESNO) == IDYES) Abort();
 		};
 		break;
 
@@ -1033,11 +1065,11 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 }
 
 
-int CGCodeInterpreter::ExecutePC(const char *Name)
+int CGCodeInterpreter::ExecutePC(const char *Name, bool NoWait)
 {
 #ifdef _KMOTIONX
 	int exitcode;
-	//TODO implement timeout
+	//TODO implement timeout and support for NoWait
 	exitcode = system(Name);
 #else
 	SECURITY_ATTRIBUTES sa          = {0};
@@ -1579,9 +1611,9 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 		if (result == 1)
 		{
 			if (CoordMotion->m_AxisDisabled)
-				strcpy(ErrorOutput,"Unable to read defined coordinate system axis positions - Axis Disabled ");
+				ErrorOutput=kmx::wstrtostr(CoordMotion->KMotionDLL->Translate("Unable to read defined coordinate system axis positions - Axis Disabled "));
 			else
-				strcpy(ErrorOutput,"Unable to read defined coordinate system axis positions ");
+				ErrorOutput=kmx::wstrtostr(CoordMotion->KMotionDLL->Translate("Unable to read defined coordinate system axis positions "));
 		}
 
 		if (result != 0) return 1005;
@@ -1616,7 +1648,7 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 		{
 			rs274ngc_close();
 			CLEAN_ARRAY;
-			AfxMessageBox("Error while reading GCode file ");
+			MessageBoxW(NULL, L"Error while reading GCode file ", L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 			return 1;
 		}
 #ifdef _KMOTIONX
@@ -1782,7 +1814,7 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 
 	if (GCodeReads<0) // scanned all the way to the beginning?
 	{
-		strcpy(s,"Error unable to determine starting conditions for this line.\r\r");
+		strcpy(s,kmx::wstrtostr(CoordMotion->KMotionDLL->Translate("Error unable to determine starting conditions for this line.\r\r")).c_str());
 		if (!FoundX) strcat(s,"X? ");
 		if (!FoundY) strcat(s,"Y? ");
 		if (!FoundZ) strcat(s,"Z? ");
@@ -1816,7 +1848,7 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 		}
 		else
 		{
-			AfxMessageBox("New Line does not contain a Feedrate F command.  Unable to determine previous feedrate", MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
+			MessageBoxW(NULL, CoordMotion->KMotionDLL->Translate("New Line does not contain a Feedrate F command.  Unable to determine previous feedrate"), L"KMotion", MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
 		}
 	}
 	else
@@ -1953,4 +1985,34 @@ int CGCodeInterpreter::SetCSS(int mode)  // set CSS mode
 	if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 
 	return 0;
+}
+
+// based on the real-time Coord Motion Sequence number 
+// return a pointer to the delayed Interpreter state corresponding
+// to that time
+
+setup_pointer CGCodeInterpreter::GetRealTimeState()
+{
+	if (ExecutionInProgress && CoordMotion->m_realtime_Sequence_number_valid && !CoordMotion->m_Simulate)
+	{
+		SetupTracker.AdvanceState(CoordMotion->m_realtime_Sequence_number);
+		return &SetupTracker.realtime_state;
+	}
+	else
+	{
+		return p_setup;
+	}
+}
+
+// Read and update the Interpreter Tool File Now
+
+int CGCodeInterpreter::ReadToolFile()
+{
+	return read_tool_file(ToolFile, &_setup);
+}
+
+// Global function for language translation
+std::wstring Translate(std::string s)
+{
+	return CM->KMotionDLL->Translate(s);
 }

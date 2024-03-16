@@ -1,8 +1,6 @@
 #ifndef LIBTCC_H
 #define LIBTCC_H
 
-// tktk struct TheTCCState;
-
 extern TCCState TheTCCState;
 
 /* create a new TCC compilation context */

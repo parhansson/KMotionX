@@ -1338,7 +1338,7 @@ static int check_other_codes(	/* ARGUMENTS */
     }
 
     if (block->k_flag == ON) {	/* could still be useless if xy_plane arc */
-	CHK(((motion != G_2) && (motion != G_3) && (motion != G_87)),
+	CHK(((motion != G_2) && (motion != G_3) && (motion != G_83) && (motion != G_87)),
 	    NCE_K_WORD_WITH_NO_G2_OR_G3_OR_G87_TO_USE_IT);
     }
 
@@ -1351,7 +1351,7 @@ static int check_other_codes(	/* ARGUMENTS */
     if (block->p_flag == ON) {
 	CHK(((block->g_modes[0] != G_10) &&
 		(block->g_modes[0] != G_4) &&
-		(motion != G_82) && (motion != G_86) &&
+		(motion != G_82) && (motion != G_83) && (motion != G_86) &&
 		(motion != G_88) && (motion != G_89) &&
 		(block->m_modes[4] != 98) &&
 		(block->m_modes[10] == -1)),
@@ -2306,22 +2306,22 @@ static int convert_comment2(	/* ARGUMENTS */
 
     for (m = 0; ((item = comment[m]) == ' ') || (item == '\t'); m++);
     if ((item != 'M') && (item != 'm')) {
-	COMMENT(comment);
+	COMMENT(kmx::strtowstr(comment).c_str());
 	return RS274NGC_OK;
     }
     for (m++; ((item = comment[m]) == ' ') || (item == '\t'); m++);
     if ((item != 'S') && (item != 's')) {
-	COMMENT(comment);
+	COMMENT(kmx::strtowstr(comment).c_str());
 	return RS274NGC_OK;
     }
     for (m++; ((item = comment[m]) == ' ') || (item == '\t'); m++);
     if ((item != 'G') && (item != 'g')) {
-	COMMENT(comment);
+	COMMENT(kmx::strtowstr(comment).c_str());
 	return RS274NGC_OK;
     }
     for (m++; ((item = comment[m]) == ' ') || (item == '\t'); m++);
     if (item != ',') {
-	COMMENT(comment);
+	COMMENT(kmx::strtowstr(comment).c_str());
 	return RS274NGC_OK;
     }
     MESSAGE(comment + m + 1);
@@ -2569,14 +2569,16 @@ static int convert_coordinate_system(	/* ARGUMENTS */
 	ERM(NCE_BUG_CODE_NOT_IN_RANGE_G54_TO_G593);
     }
 
-    if (origin == settings->origin_index) {	/* already using this origin */
+	/* already using this origin in the same units? */
+    if (origin == settings->origin_index && settings->length_units_of_origin == settings->length_units) {
 #ifdef DEBUG_EMC
-	COMMENT("interpreter: continuing to use same coordinate system");
+	COMMENT(Translate("interpreter: continuing to use same coordinate system").c_str());
 #endif
 	return RS274NGC_OK;
     }
 
     settings->origin_index = origin;
+	settings->length_units_of_origin = settings->length_units;
     parameters[PChanged(5220)] = (double) origin;
 
 /* axis offsets could be included in the two set of calculations for
@@ -2696,7 +2698,7 @@ static int convert_cutter_compensation_off(	/* ARGUMENTS */
     setup_pointer settings)
 {				/* pointer to machine settings */
 #ifdef DEBUG_EMC
-    COMMENT("interpreter: cutter radius compensation off");
+    COMMENT(Translate("interpreter: cutter radius compensation off").c_str());
 #endif
     settings->cutter_comp_side = OFF;
 
@@ -2800,9 +2802,9 @@ static int convert_cutter_compensation_on(	/* ARGUMENTS */
     }
 #ifdef DEBUG_EMC
     if (side == RIGHT)
-	COMMENT("interpreter: cutter radius compensation on right");
+	COMMENT(Translate("interpreter: cutter radius compensation on right").c_str());
     else
-	COMMENT("interpreter: cutter radius compensation on left");
+	COMMENT(Translate("interpreter: cutter radius compensation on left").c_str());
 #endif
 
     settings->cutter_comp_radius = radius;
@@ -3037,16 +3039,44 @@ static int convert_cycle_g83(	/* ARGUMENTS */
     static char name[] = "convert_cycle_g83";
     double current_depth;
     double rapid_delta;
+	double dwell;		/* dwell time */
 
-    rapid_delta = G83_RAPID_DELTA;
+	setup *ps = GC->p_setup;
+
+	if (!ps->block1.k_flag)  // rapid delta not specified ?
+	{
+		if (ps->motion_mode != G_83) // first use of G83
+			ps->block1.k_number = G83_RAPID_DELTA;    // set default
+		else
+			ps->block1.k_number = ps->cycle_k;    // set to previous
+	}
+	rapid_delta = ps->cycle_k = ps->block1.k_number;  // save for next cycle
+	
+	if (rapid_delta < 0.0)  rapid_delta = 0.0;
+
     if (_setup.length_units == CANON_UNITS_MM)
 	rapid_delta = (rapid_delta * 25.4);
+
+
+	if (!ps->block1.p_flag)  // Dwell time not specified ?
+	{
+		if (ps->motion_mode != G_83) // first use of G83
+			ps->block1.p_number = 0.0;    // set default
+		else
+			ps->block1.p_number = ps->cycle_p;    // set to previous
+	}
+	dwell = ps->cycle_p = ps->block1.p_number;  // save for next cycle
+
+
+	CHK((delta <= 0.0), NCE_INVALID_Q_VALUE_IN_G83_CANNED_CYCLE);
 
     for (current_depth = (r - delta);
 	current_depth > bottom_z; current_depth = (current_depth - delta)) {
 	cycle_feed(plane, x, y, current_depth);
+	DWELL(dwell);
 	cycle_traverse(plane, x, y, r);
 	cycle_traverse(plane, x, y, current_depth + rapid_delta);
+	if (CM->GetAbort()) return RS274NGC_EXIT;
     }
     cycle_feed(plane, x, y, bottom_z);
     cycle_traverse(plane, x, y, clear_z);
@@ -3144,12 +3174,12 @@ static int convert_cycle_g84(	/* ARGUMENTS */
 	{
 		TapAxis = CM->z_axis;
 		AxisRes = CM->GetMotionParams()->CountsPerInchZ;
-		xbot = x;
-		ybot = y;
-		zbot = bottom_z;
-		xR = x;
-		yR = y;
-		zR = r;
+		xbot = GC->UserUnitsToInchesX(x + _setup.axis_offset_x + _setup.origin_offset_x + _setup.tool_xoffset);
+		ybot = GC->UserUnitsToInches(y + _setup.axis_offset_y + _setup.origin_offset_y + _setup.tool_yoffset);
+		zbot = GC->UserUnitsToInches(bottom_z + _setup.axis_offset_z + _setup.origin_offset_z + _setup.tool_length_offset);
+		xR = xbot;
+		yR = ybot;
+		zR = GC->UserUnitsToInches(r + _setup.axis_offset_z + _setup.origin_offset_z + _setup.tool_length_offset);
 		xfinal = x;
 		yfinal = y;
 		zfinal = clear_z;
@@ -3158,12 +3188,12 @@ static int convert_cycle_g84(	/* ARGUMENTS */
 	{
 		TapAxis = CM->x_axis;
 		AxisRes = CM->GetMotionParams()->CountsPerInchX;
-		ybot = x;
-		zbot = y;
-		xbot = bottom_z;
-		yR = x;
-		zR = y;
-		xR = r;
+		ybot = GC->UserUnitsToInches(x + _setup.axis_offset_y + _setup.origin_offset_y + _setup.tool_yoffset);
+		zbot = GC->UserUnitsToInches(y + _setup.axis_offset_z + _setup.origin_offset_z + _setup.tool_length_offset);
+		xbot = GC->UserUnitsToInchesX(bottom_z + _setup.axis_offset_x + _setup.origin_offset_x + _setup.tool_xoffset);
+		yR = ybot;
+		zR = zbot;
+		xR = GC->UserUnitsToInchesX(r + _setup.axis_offset_x + _setup.origin_offset_x + _setup.tool_xoffset);
 		yfinal = x;
 		zfinal = y;
 		xfinal = clear_z;
@@ -3172,12 +3202,12 @@ static int convert_cycle_g84(	/* ARGUMENTS */
 	{
 		TapAxis = CM->y_axis;
 		AxisRes = CM->GetMotionParams()->CountsPerInchY;
-		xbot = x;
-		zbot = y;
-		ybot = bottom_z;
-		xR = x;
-		zR = y;
-		yR = r;
+		xbot = GC->UserUnitsToInchesX(x + _setup.axis_offset_x + _setup.origin_offset_x + _setup.tool_xoffset);
+		zbot = GC->UserUnitsToInches(y + _setup.axis_offset_z + _setup.origin_offset_z + _setup.tool_length_offset);
+		ybot = GC->UserUnitsToInches(bottom_z + _setup.axis_offset_y + _setup.origin_offset_y + _setup.tool_yoffset);
+		xR = xbot;
+		zR = zbot;
+		yR = GC->UserUnitsToInches(r + _setup.axis_offset_y + _setup.origin_offset_y + _setup.tool_yoffset);
 		xfinal = x;
 		zfinal = y;
 		yfinal = clear_z;
@@ -4254,14 +4284,14 @@ static int convert_distance_mode(	/* ARGUMENTS */
     if (g_code == G_90) {
 	if (settings->distance_mode != MODE_ABSOLUTE) {
 #ifdef DEBUG_EMC
-	    COMMENT("interpreter: distance mode changed to absolute");
+	    COMMENT(Translate("interpreter: distance mode changed to absolute").c_str());
 #endif
 	    settings->distance_mode = MODE_ABSOLUTE;
 	}
     } else if (g_code == G_91) {
 	if (settings->distance_mode != MODE_INCREMENTAL) {
 #ifdef DEBUG_EMC
-	    COMMENT("interpreter: distance mode changed to incremental");
+	    COMMENT(Translate("interpreter: distance mode changed to incremental").c_str());
 #endif
 	    settings->distance_mode = MODE_INCREMENTAL;
 	}
@@ -4319,19 +4349,19 @@ static int convert_feed_mode(	/* ARGUMENTS */
     static char name[] = "convert_feed_mode";
     if (g_code == G_93) {
 #ifdef DEBUG_EMC
-	COMMENT("interpreter: feed mode set to inverse time");
+	COMMENT(Translate("interpreter: feed mode set to inverse time").c_str());
 #endif
 	settings->feed_mode = INVERSE_TIME;
 	}
 	else if (g_code == G_94) {
 #ifdef DEBUG_EMC
-	COMMENT("interpreter: feed mode set to units per minute");
+	COMMENT(Translate("interpreter: feed mode set to units per minute").c_str());
 #endif
 		settings->feed_mode = UNITS_PER_MINUTE;
 	}
 	else if (g_code == G_95) {
 #ifdef DEBUG_EMC
-	 COMMENT("interpreter: feed mode set to units per rev");
+	 COMMENT(Translate("interpreter: feed mode set to units per rev").c_str());
 #endif
 	 settings->feed_mode = UNITS_PER_REV;
 	}
@@ -4736,14 +4766,14 @@ static int convert_m(		/* ARGUMENTS */
   if (block->m_modes[2] == 26)
     {
 #ifdef DEBUG_EMC
-      COMMENT("interpreter: automatic A-axis clamping turned on");
+      COMMENT(Translate("interpreter: automatic A-axis clamping turned on").c_str());
 #endif
       settings->a_axis_clamping = ON;
     }
   else if (block->m_modes[2] == 27)
     {
 #ifdef DEBUG_EMC
-      COMMENT("interpreter: automatic A-axis clamping turned off");
+      COMMENT(Translate("interpreter: automatic A-axis clamping turned off").c_str());
 #endif
       settings->a_axis_clamping = OFF;
     }
@@ -4855,7 +4885,7 @@ static int convert_motion(	/* ARGUMENTS */
 	CHP(convert_probe(block, settings));
     } else if (motion == G_80) {
 #ifdef DEBUG_EMC
-	COMMENT("interpreter: motion mode set to none");
+	COMMENT(Translate("interpreter: motion mode set to none").c_str());
 #endif
 	settings->motion_mode = G_80;
     } else if ((motion > G_80) && (motion < G_90)) {
@@ -4981,12 +5011,12 @@ static int convert_retract_mode(	/* ARGUMENTS */
     static char name[] = "convert_retract_mode";
     if (g_code == G_98) {
 #ifdef DEBUG_EMC
-	COMMENT("interpreter: retract mode set to old_z");
+	COMMENT(Translate("interpreter: retract mode set to old_z").c_str());
 #endif
 	settings->retract_mode = OLD_Z;
     } else if (g_code == G_99) {
 #ifdef DEBUG_EMC
-	COMMENT("interpreter: retract mode set to r_plane");
+	COMMENT(Translate("interpreter: retract mode set to r_plane").c_str());
 #endif
 	settings->retract_mode = R_PLANE;
     } else
@@ -5140,7 +5170,7 @@ static int convert_setup(	/* ARGUMENTS */
 	}
 #ifdef DEBUG_EMC
     else
-	COMMENT("interpreter: setting coordinate system origin");
+	COMMENT(Translate("interpreter: setting coordinate system origin").c_str());
 #endif
     return RS274NGC_OK;
 }
@@ -5459,10 +5489,10 @@ static int convert_stop(	/* ARGUMENTS */
 				if (fgets(line, RS274NGC_TEXT_SIZE, _setup.file_pointer) ==
 					NULL) {
 					COMMENT
-						("interpreter: percent sign missing from end of file");
+						(Translate("interpreter: percent sign missing from end of file").c_str());
 					break;
 				}
-				length = strlen(line);
+				length = (int)strlen(line);
 				if (length == (RS274NGC_TEXT_SIZE - 1)) {	// line is
 					// too long.
 					// need to
@@ -6086,12 +6116,35 @@ static int convert_tool_change(	/* ARGUMENTS */
 {				/* pointer to machine settings */
     static char name[] = "convert_tool_change";
 
-    CHANGE_TOOL(settings->selected_tool_slot);
+	// Accumulate Tool Wear stats
+	if (AccumToolWearStats(settings, settings->current_slot, false)) return RS274NGC_EXIT;
+
+	CHANGE_TOOL(settings->selected_tool_slot);
     settings->current_slot = settings->selected_tool_slot;
     settings->spindle_turning = CANON_STOPPED;
 
     return RS274NGC_OK;
 }
+
+// Accumulate Tool Wear stats
+int AccumToolWearStats(setup_pointer settings, int ToolIndex, bool ForceSave)
+{
+	if (!CM->m_Simulate && (ForceSave || settings->selected_tool_slot != settings->current_slot))
+	{
+		if (!ForceSave)
+		{
+			if (CM->FlushSegments()) { CM->SetAbort(); return 1; }
+			if (CM->WaitForSegmentsFinished()) { CM->SetAbort(); return 1; }
+		}
+		settings->tool_table[ToolIndex].FeedTime += CM->m_TotalFeedTime;
+		settings->tool_table[ToolIndex].FeedDist += CM->m_TotalFeedDist;
+		CM->m_TotalFeedTime = CM->m_TotalFeedDist = 0.0; // Clear times after acuumulated to a tool
+
+		save_tool_file(GC->ToolFile);
+	}
+	return 0;
+}
+
 
 /****************************************************************************/
 
@@ -6136,42 +6189,41 @@ static int convert_tool_length_offset(	/* ARGUMENTS */
     double length, xoffset, yoffset;
 
     if (g_code == G_49) {
-	USE_TOOL_LENGTH_OFFSET(0.0, 0.0, 0.0);
-	settings->current_x = (settings->current_x +
-	    settings->tool_xoffset);
-	settings->current_y = (settings->current_y +
-	    settings->tool_yoffset);
-	settings->current_z = (settings->current_z +
-	    settings->tool_length_offset);
-	settings->tool_xoffset = 0.0;
-	settings->tool_yoffset = 0.0;
-	settings->tool_length_offset = 0.0;
-	settings->length_offset_index = -1;
-	CM->GetMotionParams()->TCP_Active = false;
+		USE_TOOL_LENGTH_OFFSET(0.0, 0.0, 0.0, g_code == G_43_4);  // set new offset and TCP mode
+		settings->current_x = (settings->current_x +
+			settings->tool_xoffset);
+		settings->current_y = (settings->current_y +
+			settings->tool_yoffset);
+		settings->current_z = (settings->current_z +
+			settings->tool_length_offset);
+		settings->tool_xoffset = 0.0;
+		settings->tool_yoffset = 0.0;
+		settings->tool_length_offset = 0.0;
+		settings->length_offset_index = -1;
     } else if (g_code == G_43 || g_code == G_43_4) {
-	index = block->h_number;
-	CHK((index == -1), NCE_OFFSET_INDEX_MISSING);
-	if (result=ConvertToolToIndex(settings,index,&index)) return result;
+		index = block->h_number;
+		CHK((index == -1), NCE_OFFSET_INDEX_MISSING);
+		if (result=ConvertToolToIndex(settings,index,&index)) return result;
 	
-	xoffset = settings->tool_table[index].xoffset;
-	yoffset = settings->tool_table[index].yoffset;
-	length = settings->tool_table[index].length;
-	USE_TOOL_LENGTH_OFFSET(length, xoffset, yoffset);
+		xoffset = settings->tool_table[index].xoffset;
+		yoffset = settings->tool_table[index].yoffset;
+		length = settings->tool_table[index].length;
 
-	settings->current_x =
-	    (settings->current_x + settings->tool_xoffset - xoffset);
-	settings->tool_xoffset = xoffset;
+		USE_TOOL_LENGTH_OFFSET(length, xoffset, yoffset, g_code == G_43_4);  // set new offset and TCP mode
 
-	settings->current_y =
-	    (settings->current_y + settings->tool_yoffset - yoffset);
-	settings->tool_yoffset = yoffset;
+		settings->current_x =
+			(settings->current_x + settings->tool_xoffset - xoffset);
+		settings->tool_xoffset = xoffset;
 
-	settings->current_z =
-	    (settings->current_z + settings->tool_length_offset - length);
-	settings->tool_length_offset = length;
+		settings->current_y =
+			(settings->current_y + settings->tool_yoffset - yoffset);
+		settings->tool_yoffset = yoffset;
 
-	settings->length_offset_index = index;
-	CM->GetMotionParams()->TCP_Active = g_code == G_43_4;
+		settings->current_z =
+			(settings->current_z + settings->tool_length_offset - length);
+		settings->tool_length_offset = length;
+
+		settings->length_offset_index = index;
 	} else
 	ERM(NCE_BUG_CODE_NOT_G43_OR_G49);
     return RS274NGC_OK;
@@ -6379,7 +6431,9 @@ static int enhance_block(	/* ARGUMENTS */
 					   but not G92 */
 	CHK(((!axis_flag) && (block->g_modes[0] == G_92 || block->g_modes[0] == G_52)),
 	    NCE_ALL_AXES_MISSING_WITH_G52_G92);
-    } else if (axis_flag) {
+    // allow G to be omitted if some motion axis is specified (or ijk is specified if in arc mode)
+	} else if (axis_flag || ((settings->motion_mode == G_2 || settings->motion_mode == G_3) && 
+		(block->i_flag || block->j_flag || block->k_flag))) {
 	CHK(((settings->motion_mode == -1)
 		|| (settings->motion_mode == G_80)),
 	    NCE_CANNOT_USE_AXIS_VALUES_WITHOUT_A_G_CODE_THAT_USES_THEM);
@@ -6611,7 +6665,10 @@ static int execute_block(	/* ARGUMENTS */
 	    CHP(convert_feed_rate(block, settings));
 	}
     }
-    if (block->g_modes[14] != -1) {
+    if (block->g_modes[14] != -1) {  // G96 or G97 ?
+	if (block->s_number > -1.0) {  // yes, if S is also specified in line, update speed so SetCSS uses new value
+		settings->speed = block->s_number;
+	}
 	CHP(convert_spindle_mode(block->g_modes[14], settings));
     }
     if (block->s_number > -1.0) {
@@ -6847,7 +6904,7 @@ static int find_ends(		/* ARGUMENTS */
     if (block->g_modes[0] == G_53) {	/* distance mode is absolute in this
 					   case */
 #ifdef DEBUG_EMC
-	COMMENT("interpreter: offsets temporarily suspended");
+	COMMENT(Translate("interpreter: offsets temporarily suspended").c_str());
 #endif
 	*px = (block->x_flag == ON) ? (block->x_number -
 	    (settings->tool_xoffset +
@@ -7147,7 +7204,8 @@ static int init_block(		/* ARGUMENTS */
 	block->v_flag = OFF;
 	block->comment[0] = 0;
     block->d_number = -1;
-    block->f_number = -1.0;
+	block->d_flag = OFF;
+	block->f_number = -1.0;
     for (n = 0; n < 15; n++) {
 	block->g_modes[n] = -1;
     }
@@ -7930,6 +7988,7 @@ static int read_d(		/* ARGUMENTS */
     CHK((value < 0), NCE_NEGATIVE_D_WORD_TOOL_RADIUS_INDEX_USED);
 	CHK((value > 99999 && block->g_modes[14] != G_96), NCE_TOOL_RADIUS_INDEX_TOO_BIG);
     block->d_number = value;
+	block->d_flag = ON;
     return RS274NGC_OK;
 }
 
@@ -8324,7 +8383,7 @@ static int read_items(		/* ARGUMENTS */
     int length;
     int status;
 
-    length = strlen(line);
+    length = (int)strlen(line);
     counter = 0;
 
 	if (line[counter] == '/') {	/* block delete character?? */
@@ -10044,13 +10103,13 @@ static int read_text(		/* ARGUMENTS */
 	}
 	_setup.sequence_number++;	/* moved from version1, was outside
 					   if */
-	if (strlen(raw_line) == (RS274NGC_TEXT_SIZE - 1)) {	/* line is
+	if ((int)strlen(raw_line) == (RS274NGC_TEXT_SIZE - 1)) {	/* line is
 	    too long. need to finish reading the line to recover */
 	    for (; fgetc(inport) != '\n';) {
 	    }			// could also look for EOF
 	    ERM(NCE_COMMAND_TOO_LONG);
 	}
-	for (index = (strlen(raw_line) - 1);	/* index set on last char */
+	for (index = ((int)strlen(raw_line) - 1);	/* index set on last char */
 	    (index >= 0) && (isspace(raw_line[index])); index--) { /* remove 
 	     space at end of raw_line, especially CR & LF */
 	    raw_line[index] = 0;
@@ -10061,7 +10120,7 @@ static int read_text(		/* ARGUMENTS */
 	if ((line[0] == '%') && (line[1] == 0) && (_setup.percent_flag == ON))
 	    return RS274NGC_ENDFILE;
     } else {
-	CHK((strlen(command) >= RS274NGC_TEXT_SIZE), NCE_COMMAND_TOO_LONG);
+	CHK(((int)strlen(command) >= RS274NGC_TEXT_SIZE), NCE_COMMAND_TOO_LONG);
 	strcpy(raw_line, command);
 	strcpy(line, command);
 	CHP(close_and_downcase(line));
@@ -10072,7 +10131,7 @@ static int read_text(		/* ARGUMENTS */
 	if ((line[0] == 0) || ((line[0] == '/') && (line[1] == 0)))
 	*length = 0;
     else
-	*length = strlen(line);
+	*length = (int)strlen(line);
 
     return RS274NGC_OK;
 //    return ((line[0] == '/') ? RS274NGC_EXECUTE_FINISH : RS274NGC_OK);
@@ -10780,11 +10839,21 @@ int rs274ngc_load_tool_table()
     CHK((_setup.tool_max > CANON_TOOL_MAX), NCE_TOOL_MAX_TOO_LARGE);
     for (n = 0; n <= _setup.tool_max; n++) {
 	_setup.tool_table[n] = GET_EXTERNAL_TOOL_TABLE(n);
+		_setup.tool_table[n].xoffset = 0;
+		_setup.tool_table[n].yoffset = 0;
+		_setup.tool_table[n].slot = 0;
+		_setup.tool_table[n].Comment = "";
+		_setup.tool_table[n].ToolImage = "";
     }
     for (; n <= CANON_TOOL_MAX; n++) {
 	_setup.tool_table[n].id = 0;
 	_setup.tool_table[n].length = 0;
 	_setup.tool_table[n].diameter = 0;
+		_setup.tool_table[n].xoffset = 0;
+		_setup.tool_table[n].yoffset = 0;
+		_setup.tool_table[n].slot = 0;
+		_setup.tool_table[n].Comment = "";
+		_setup.tool_table[n].ToolImage = "";
     }
 
     return RS274NGC_OK;
@@ -10843,16 +10912,16 @@ int rs274ngc_open(		/* ARGUMENTS */
 	static char name[] = "rs274ngc_open";
 
 	CHK((_setup.file_pointer != NULL), NCE_A_FILE_IS_ALREADY_OPEN);
-	CHK((strlen(filename) > (RS274NGC_TEXT_SIZE - 1)),
+	CHK(((int)strlen(filename) > (RS274NGC_TEXT_SIZE - 1)),
 		NCE_FILE_NAME_TOO_LONG);
 	_setup.file_pointer = fopen(filename, "rb");
 
 	if (_setup.file_pointer == NULL)
 	{
-		char s[500];
+		wchar_t s[500];
 
-		sprintf(s, "Unable to open input file %s\r\r code=%d", filename, errno);
-		AfxMessageBox(s);
+		swprintf(s, 500, Translate("Unable to open input file %s\r\r code=%d").c_str(), filename, errno);
+		MessageBoxW(NULL, s, L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
 	}
 	CHK((_setup.file_pointer == NULL), NCE_UNABLE_TO_OPEN_FILE);
 
@@ -10877,7 +10946,7 @@ int skip_percent(void)
 	{	/* skip blank lines */
 		CHK((fgets(line, RS274NGC_TEXT_SIZE, _setup.file_pointer) == NULL),
 			NCE_FILE_ENDED_WITH_NO_PERCENT_SIGN);
-		length = strlen(line);
+		length = (int)strlen(line);
 		if (length == (RS274NGC_TEXT_SIZE - 1))
 		{	/* line is too long.
 			need to finish reading the line to recover */
@@ -11065,10 +11134,10 @@ int rs274ngc_restore_parameters(	/* ARGUMENTS */
 
 	if (infile == NULL) 
 	{
-		char s[500];
+		wchar_t s[500];
 
-		sprintf(s,"Unable to open file %s",filename);
-		AfxMessageBox(s);
+		swprintf(s, 500, Translate("Unable to open file %s").c_str(),filename);
+		MessageBoxW(NULL, s, L"KMotion" , MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 	}
 
     CHK((infile == NULL), NCE_UNABLE_TO_OPEN_FILE);
@@ -11407,13 +11476,13 @@ max_size.
 
 void rs274ngc_error_text(	/* ARGUMENTS */
     int error_code,		/* code number of error */
-    char *error_text,		/* char array to copy error text into */
+    wchar_t *error_text,		/* char array to copy error text into */
     int max_size)
 {				/* maximum number of characters to copy */
     if (((error_code >= RS274NGC_MIN_ERROR) &&
 	    (error_code <= RS274NGC_MAX_ERROR)) &&
-	(strlen(_rs274ngc_errors[error_code]) < ((size_t) max_size))) {
-	strcpy(error_text, _rs274ngc_errors[error_code]);
+	(wcslen(_rs274ngc_errors[error_code]) < ((size_t) max_size))) {
+		wcscpy(error_text, _rs274ngc_errors[error_code]);
     } else
 	error_text[0] = 0;
 }
@@ -11439,7 +11508,7 @@ void rs274ngc_file_name(	/* ARGUMENTS */
     char *file_name,		/* string: to copy file name into */
     int max_size)
 {				/* maximum number of characters to copy */
-    if (strlen(_setup.filename) < ((size_t) max_size))
+    if ((int)strlen(_setup.filename) < ((size_t) max_size))
 	strcpy(file_name, _setup.filename);
     else
 	file_name[0] = 0;
@@ -11663,7 +11732,7 @@ int search_label(int label, BOOL *pfound, int *lineno)
 		if (read_ok && !feof(_setup.file_pointer)) 
 		{
 			(*lineno)++;
-			n = strlen(s);
+			n = (int)strlen(s);
 
 			// skip spaces and tabs
 			for (i=0; i<n; i++)

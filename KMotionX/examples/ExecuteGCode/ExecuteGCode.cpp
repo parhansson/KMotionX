@@ -6,19 +6,18 @@
 //  Copyright (c) 2012 P.Hansson. All rights reserved.
 //
 
-//#define BOOL int
-//#define FALSE 0
+// #define BOOL int
+// #define FALSE 0
 #include "GCodeInterpreterX.h"
 #include <limits.h>
 #include <stdlib.h>
-
 
 /*
 #pragma pack(1)
 typedef struct
 {
-    int id;
-    char[50] text;
+	int id;
+	char[50] text;
 } MESSAGE;
 
 // Send a message
@@ -38,9 +37,9 @@ printf("text=%s\n", msg->text);
 // Global Variables
 
 CGCodeInterpreter *Interpreter;
-int	ErrorLineNo, CurrentLineNo;
+int ErrorLineNo, CurrentLineNo;
 char ErrorMsg[512];
-int	exitcode;
+int exitcode;
 bool Finished;
 void CompleteCallback(int status, int line_no, int sequence_number, const char *err);
 void StatusCallback(int line_no, const char *msg);
@@ -49,22 +48,22 @@ int UserMCodeCallback(int mcode);
 
 void CompleteCallback(int status, int line_no, int sequence_number, const char *err)
 {
-	printf("Complete -- status: %d line: %d  error: %s\n", status,line_no,err);
-	ErrorLineNo=line_no;
-	strcpy(ErrorMsg,err);
-	exitcode=status;
-	Finished=true;
+	printf("Complete -- status: %d line: %d  error: %s\n", status, line_no, err);
+	ErrorLineNo = line_no;
+	strcpy(ErrorMsg, err);
+	exitcode = status;
+	Finished = true;
 }
 
 void StatusCallback(int line_no, const char *msg)
 {
-	printf("Status -- line: %d message:\n%s\n", line_no,msg);
-	CurrentLineNo=line_no;
+	printf("Status -- line: %d message:\n%s\n", line_no, msg);
+	CurrentLineNo = line_no;
 }
 
 int UserCallback(const char *msg)
 {
-	MessageBox(0,msg,"User callback",MB_OK);
+	MessageBox(0, msg, "User callback", MB_OK);
 	return 0;
 }
 
@@ -72,63 +71,72 @@ int UserMCodeCallback(int mcode)
 {
 	char msg[100];
 	double Var1000 = Interpreter->p_setup->parameters[1000];
-	sprintf(msg, "M%d Trigger GCode Var 1000 = %f\n",mcode,Var1000);
-	MessageBox(0,msg,"M code callback",MB_OK);
+	sprintf(msg, "M%d Trigger GCode Var 1000 = %f\n", mcode, Var1000);
+	MessageBox(0, msg, "M code callback", MB_OK);
 
 	return 0;
 }
 
-
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-	int DisplayedLineNo,BoardType;
+	int DisplayedLineNo, BoardType;
 	BoardType = BOARD_TYPE_KFLOP;
 	char InFile[MAX_PATH];
 	char m4_cfile[MAX_PATH];
 	char setup_cfile[MAX_PATH];
+	char tool_file[MAX_PATH];
 	int setup_thread = 1;
 	int m4_thread = 3;
 	char command[MAX_LINE];
 
-  char* rootDir;
+	char *rootDir;
 	rootDir = getenv("PWD");
 
 	char tmp_path[MAX_PATH];
 
-	sprintf(tmp_path,"%s/../KMotionX/examples/ExecuteGCode/Stepper3Axis.c",rootDir);
-  realpath(tmp_path, setup_cfile);
+	sprintf(tmp_path, "%s/../KMotionX/examples/ExecuteGCode/Stepper3Axis.c", rootDir);
+	realpath(tmp_path, setup_cfile);
 
-	sprintf(tmp_path,"%s/../C Programs/BlinkKFLOP.c",rootDir);
+	sprintf(tmp_path, "%s/../C Programs/BlinkKFLOP.c", rootDir);
 	realpath(tmp_path, m4_cfile);
 
-	//strcpy(setup_cfile,m4_cfile);
-	sprintf(tmp_path,"%s/../GCode Programs/SimpleCircle.ngc",rootDir);
-	realpath(tmp_path, InFile);
+	sprintf(tmp_path, "%s/../KMotion/Data/Default.tbl", rootDir);
+	realpath(tmp_path, tool_file);
 
+	// strcpy(setup_cfile,m4_cfile);
+	sprintf(tmp_path, "%s/../GCode Programs/SimpleCircle.ngc", rootDir);
+	realpath(tmp_path, InFile);
 
 	CKMotionDLL *KM = new CKMotionDLL(0);
 
-	char errMsg[MAX_LINE];
+	bool simulate = false;
 
-	printf("Loading file %s to thread %d\n", setup_cfile, setup_thread);
-	if(KM->CompileAndLoadCoff(setup_cfile, setup_thread, errMsg, MAX_LINE)){
-		printf("Loading file %s to thread %d failed.\n%s\nExiting.\n", setup_cfile, setup_thread, errMsg);
-		exit(1);
-	} else {
-		sprintf(command,"Execute%d",setup_thread);
-		KM->WriteLine(command);
+	if (!simulate)
+	{
+
+		char errMsg[MAX_LINE];
+
+		printf("Loading file %s to thread %d\n", setup_cfile, setup_thread);
+		if (KM->CompileAndLoadCoff(setup_cfile, setup_thread, errMsg, MAX_LINE))
+		{
+			printf("Loading file %s to thread %d failed.\n%s\nExiting.\n", setup_cfile, setup_thread, errMsg);
+			exit(1);
+		}
+		else
+		{
+			sprintf(command, "Execute%d", setup_thread);
+			KM->WriteLine(command);
+		}
 	}
-	//exit(0);
+	// exit(0);
 
 	CCoordMotion *CM = new CCoordMotion(KM);
 
-	//CM->m_Simulate =true;
-
+	CM->m_Simulate = simulate;
 
 	Interpreter = new CGCodeInterpreter(CM);
 
-
-	MOTION_PARAMS *p=Interpreter->GetMotionParams();
+	MOTION_PARAMS *p = Interpreter->GetMotionParams();
 
 	p->BreakAngle = 30;
 	p->MaxAccelX = 1;
@@ -149,39 +157,39 @@ int main(int argc, char* argv[])
 	p->CountsPerInchA = 100;
 	p->CountsPerInchB = 100;
 	p->CountsPerInchC = 100;
-	strcpy(Interpreter->ToolFile,"");
-	strcpy(Interpreter->SetupFile,"");
+	Interpreter->SetToolFile(tool_file);
+	strcpy(Interpreter->SetupFile, "");
 
-	Finished=false;
+	Finished = false;
 
-	Interpreter->SetUserCallback(UserCallback);  // Set this to handle (USR,Message) Callbacks
+	Interpreter->SetUserCallback(UserCallback); // Set this to handle (USR,Message) Callbacks
 
-	Interpreter->SetUserMCodeCallback(UserMCodeCallback);  // Set this to handle MCode Callbacks
+	Interpreter->SetUserMCodeCallback(UserMCodeCallback); // Set this to handle MCode Callbacks
 
 	// configure the Action for MCode 3 to do a Callback
 	Interpreter->McodeActions[3].Action = M_Action_Callback;
 	// configure the Action for MCode 105 to do a Callback
-	Interpreter->McodeActions[MCODE_ACTIONS_M100_OFFSET+5].Action = M_Action_Callback;
+	Interpreter->McodeActions[MCODE_ACTIONS_M100_OFFSET + 5].Action = M_Action_Callback;
 
 	// configure the Action for MCode 4to execute a program in thread 3
 	Interpreter->McodeActions[4].Action = M_Action_Program_wait_sync;
 	Interpreter->McodeActions[4].dParams[0] = m4_thread;
-	strcpy(Interpreter->McodeActions[4].String,m4_cfile);
+	strcpy(Interpreter->McodeActions[4].String, m4_cfile);
 
-	//CM->m_Simulate = true;
-	// Execute the GCode!
+	// CM->m_Simulate = true;
+	//  Execute the GCode!
 	printf("Interpreting file %s\n", InFile);
-	Interpreter->Interpret(BoardType,InFile,0,-1,true,StatusCallback,CompleteCallback);
+	Interpreter->Interpret(BoardType, InFile, 0, -1, true, StatusCallback, CompleteCallback);
 
 	// Display Current Line Number while executing
 
-	DisplayedLineNo=0;
+	DisplayedLineNo = 0;
 	while (!Finished)
 	{
-		if (CurrentLineNo>DisplayedLineNo)
+		if (CurrentLineNo > DisplayedLineNo)
 		{
-			DisplayedLineNo=CurrentLineNo;
-			//printf("Current Line = %d\n",CurrentLineNo);
+			DisplayedLineNo = CurrentLineNo;
+			// printf("Current Line = %d\n",CurrentLineNo);
 		}
 		sleep(1);
 	}
@@ -190,15 +198,14 @@ int main(int argc, char* argv[])
 
 	if (exitcode)
 	{
-		printf("Error in line %d\n",ErrorLineNo);
-		printf("%s\n",ErrorMsg);
+		printf("Error in line %d\n", ErrorLineNo);
+		printf("%s\n", ErrorMsg);
 	}
 	else
 	{
-		//printf("%s\n",GCodeOutput.c_str());
+		// printf("%s\n",GCodeOutput.c_str());
 	}
 
-	//getchar();
+	// getchar();
 	return 0;
 }
-

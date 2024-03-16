@@ -430,26 +430,44 @@ typedef struct
 	double x,y,z,a,b,c,u,v;
 } P8;
 
+// copy from segment start to a vector
+// also if abc angle have a radius convert to linear distance
 void CopySegStartToP8(SEGMENT *p, P8 &point)
 {
+	bool AAngleToDist = (MP.DegreesA && MP.RadiusA != 0.0);
+	bool BAngleToDist = (MP.DegreesB && MP.RadiusB != 0.0);
+	bool CAngleToDist = (MP.DegreesC && MP.RadiusC != 0.0);
+
 	point.x = p->x0;
 	point.y = p->y0;
 	point.z = p->z0;
 	point.a = p->a0;
+	if (AAngleToDist) point.a *= PI / 180.0 * MP.RadiusA;
 	point.b = p->b0;
+	if (BAngleToDist) point.b *= PI / 180.0 * MP.RadiusB;
 	point.c = p->c0;
+	if (CAngleToDist) point.c *= PI / 180.0 * MP.RadiusC;
 	point.u = p->u0;
 	point.v = p->v0;
 }
 
+// copy from segment end to a vector
+// also if abc angle have a radius convert to linear distance
 void CopySegEndToP8(SEGMENT *p, P8 &point)
 {
+	bool AAngleToDist = (MP.DegreesA && MP.RadiusA != 0.0);
+	bool BAngleToDist = (MP.DegreesB && MP.RadiusB != 0.0);
+	bool CAngleToDist = (MP.DegreesC && MP.RadiusC != 0.0);
+
 	point.x = p->x1;
 	point.y = p->y1;
 	point.z = p->z1;
 	point.a = p->a1;
+	if (AAngleToDist) point.a *= PI / 180.0 * MP.RadiusA;
 	point.b = p->b1;
+	if (BAngleToDist) point.b *= PI / 180.0 * MP.RadiusB;
 	point.c = p->c1;
+	if (CAngleToDist) point.c *= PI / 180.0 * MP.RadiusC;
 	point.u = p->u1;
 	point.v = p->v1;
 }
@@ -492,8 +510,17 @@ void ScaleP8(P8 &p0, double s)
 
 double LengthP8(P8 &p)
 {
-	BOOL pure_angle;
-	return FeedRateDistance(p.x, p.y, p.z, p.a, p.b, p.c, p.u, p.v, &MP, &pure_angle);
+	bool AisDist = (!MP.DegreesA || MP.RadiusA != 0.0);
+	bool BisDist = (!MP.DegreesB || MP.RadiusB != 0.0);
+	bool CisDist = (!MP.DegreesC || MP.RadiusC != 0.0);
+
+	double sq = p.x * p.x + p.y * p.y + p.z * p.z + p.u * p.u + p.v * p.v;
+
+	if (AisDist) sq += p.a * p.a;
+	if (BisDist) sq += p.b * p.b;
+	if (CisDist) sq += p.c * p.c;
+
+	return sqrt(sq);
 }
 
 
@@ -601,14 +628,14 @@ void CreateSegFromTo(int i, SEGMENT *sa, SEGMENT *sb ,P8 &prev, P8 &px, double s
 {
 	SEGMENT *p=GetSegPtr(i);
 
-	bool AisDist = (!MP.DegreesA || MP.RadiusA!=0.0);
-	bool BisDist = (!MP.DegreesB || MP.RadiusB!=0.0);
-	bool CisDist = (!MP.DegreesC || MP.RadiusC!=0.0);
+	bool AAngleToDist = (MP.DegreesA && MP.RadiusA != 0.0);
+	bool BAngleToDist = (MP.DegreesB && MP.RadiusB != 0.0);
+	bool CAngleToDist = (MP.DegreesC && MP.RadiusC != 0.0);
 
-	if (AisDist)
+	if (AAngleToDist)
 	{
-		p->a0 = prev.a;
-		p->a1 = px.a;
+		p->a0 = prev.a * 180.0 / (PI * MP.RadiusA);  // convert vector distance back to angle in degrees
+		p->a1 = px.a * 180.0 / (PI * MP.RadiusA);    // convert vector distance back to angle in degrees
 	}
 	else
 	{
@@ -616,10 +643,10 @@ void CreateSegFromTo(int i, SEGMENT *sa, SEGMENT *sb ,P8 &prev, P8 &px, double s
 		p->a1 = sa->a1 + (sb->a0 - sa->a1) * end;
 	}
 
-	if (BisDist)
+	if (BAngleToDist)
 	{
-		p->b0 = prev.b;
-		p->b1 = px.b;
+		p->b0 = prev.b * 180.0 / (PI * MP.RadiusB);  // convert vector distance back to angle in degrees
+		p->b1 = px.b * 180.0 / (PI * MP.RadiusB);    // convert vector distance back to angle in degrees
 	}
 	else
 	{
@@ -627,10 +654,10 @@ void CreateSegFromTo(int i, SEGMENT *sa, SEGMENT *sb ,P8 &prev, P8 &px, double s
 		p->b1 = sa->b1 + (sb->b0 - sa->b1) * end;
 	}
 
-	if (CisDist)
+	if (CAngleToDist)
 	{
-		p->c0 = prev.c;
-		p->c1 = px.c;
+		p->c0 = prev.c * 180.0 / (PI * MP.RadiusC);  // convert vector distance back to angle in degrees
+		p->c1 = px.c * 180.0 / (PI * MP.RadiusC);    // convert vector distance back to angle in degrees
 	}
 	else
 	{
@@ -721,6 +748,10 @@ void RoundCorner(int is)
 	if (Theta == 0.0 || fabs(MP.CornerTol) < SIGMA
 		|| seg->type != SEG_LINEAR|| segm->type != SEG_LINEAR) return;
 
+
+	if (PureAngle(seg)) return;   // cannot 'round' pure angle
+	if (PureAngle(segm)) return; // cannot 'round' pure angle
+
 	StopRequiredAtP0 = segm->StopRequired;
 
 	// number of angle changes that will occur
@@ -747,58 +778,43 @@ void RoundCorner(int is)
 	
 	double Theta2 = (n-1)*dtheta/2.0;
 
-	double B = PI2 - Theta2/2.0;
-
-	double Q = (PI - Theta)/2.0;
-
-	double D = PI2 - B + Q;
-
-	double SinQ = sin(Q);
-
-	double Den = 2.0 * cos(D) * cos(B);
-	
-	double R;
-	if (Den != 0.0)
-		R = MP.CornerTol * SinQ / Den;
-	else
-		R = 0.0;
-
-	double L = MP.CornerTol * (cos(Q) + SinQ * tan(D));
-
+	double v = Theta / 2.0 - Theta2;
+	double R = MP.CornerTol * cos(Theta / 2.0) / (cos(v) - cos(Theta / 2.0));  // optimize
+	double L = (R + MP.CornerTol) * sin(Theta / 2.0) - R * sin(v);
 
 	double d0 = segm->dx;
 	double d1 = seg->dx;
 
-	double original_L = L;
+	double half_seg = R * sin(dtheta / 2.0);
+	double L_plus_half_seg = L + half_seg;
+	double original_L_plus_half_seg = L_plus_half_seg;
 
-	// determine if the rounding is 
-	if (d0 < L) L = d0;
-	if (d1/2 < L) L = d1/2;  // only allow usage of 1/2 of the next segment
+	// determine if the rounding is taking too much of the segment
+	// we should leave at least an extra 1/2 segment facet so if 
+	// contiguous with next corner is smooth
+	if (d0 < L_plus_half_seg) L_plus_half_seg = d0;
+	if (d1/2 < L_plus_half_seg) L_plus_half_seg = d1/2;  // only allow usage of 1/2 of the next segment
 
-	// this is a bit complicated, but in the case that L  is  very close
+	// recompute R,L in case curve was too big
+	if (original_L_plus_half_seg != L_plus_half_seg && original_L_plus_half_seg !=0.0 )
+	{
+		R *= L_plus_half_seg / original_L_plus_half_seg;
+		L *= L_plus_half_seg / original_L_plus_half_seg;
+	}
+
+	// this is a bit complicated, but in the case that L is very close
 	// to d0 or d1 we might end up with a microscopic segment with a sharp 
 	// angle, so if it leaves less than sigma eliminate it.  sigma is the 
 	// smaller of either 0.1% of the CornerTolerance or segment lengths
-	// whichever is smaller
+	// whichever is smaller.  Note: because L will never be even half of
+	// d1 so P2 will never be totally eliminated.
 
 	double sigma = MP.CornerTol * 0.001;
 	if (sigma > d0 * 0.001) sigma = d0 * 0.001;
-	if (sigma > d1 * 0.001) sigma = d1 * 0.001;
 
 	bool EliminateP0 = fabs(L - d0) < sigma;
-	bool EliminateP2 = fabs(L - d1) < sigma;
-
-	// recompute R in case L changed;
-	if (original_L != L && original_L!=0.0 )
-	{
-		R *= L/original_L;
-	}
-
 	int NumberDeletedBefore = 0;
-	int NumberDeletedAfter = 0;
-
 	if (EliminateP0) NumberDeletedBefore++;
-	if (EliminateP2) NumberDeletedAfter++;
 
 	CopySegStartToP8(segm,p0);
 	CopySegStartToP8(seg,p1);
@@ -842,7 +858,7 @@ void RoundCorner(int is)
 	if (is+1 < nsegs)
 	{
 		SEGMENT *segp=GetSegPtr(is+1);
-		SEGMENT *segf=GetSegPtr(is+1+n-1-NumberDeletedBefore-NumberDeletedAfter);
+		SEGMENT *segf=GetSegPtr(is+1+n-1-NumberDeletedBefore);
 		*segf = *segp;  // copy the whole segment
 	}
 
@@ -866,28 +882,17 @@ void RoundCorner(int is)
 		FromABC.v1 = segm->v0;
 	}
 
-	if (!EliminateP2)  // if it hasn't been completely eliminated
-	{
-		AdjustSegToBeginAtP8(is,L);  // adjust segment is to now begin at pb
+	AdjustSegToBeginAtP8(is,L);  // adjust segment is to now begin at pb
 
-		// also move it down
-		is_new = is+n-1-NumberDeletedBefore;
-		segNew=GetSegPtr(is_new);
-		*segNew = *seg;  // copy the whole segment
-		ToABC.a0 = seg->a0;
-		ToABC.b0 = seg->b0;
-		ToABC.c0 = seg->c0;
-		ToABC.u0 = seg->u0;
-		ToABC.v0 = seg->v0;
-	}
-	else
-	{
-		ToABC.a0 = seg->a1;
-		ToABC.b0 = seg->b1;
-		ToABC.c0 = seg->c1;
-		ToABC.u0 = seg->u1;
-		ToABC.v0 = seg->v1;
-	}
+	// also move it down
+	is_new = is+n-1-NumberDeletedBefore;
+	segNew=GetSegPtr(is_new);
+	*segNew = *seg;  // copy the whole segment
+	ToABC.a0 = seg->a0;
+	ToABC.b0 = seg->b0;
+	ToABC.c0 = seg->c0;
+	ToABC.u0 = seg->u0;
+	ToABC.v0 = seg->v0;
 
 	// use info from first segment for half of the corner segments
 	FromABC.sequence_number = segm->sequence_number;
@@ -961,7 +966,7 @@ void RoundCorner(int is)
 	}
 
 	// compute the number of segments that were added
-	int nadded = n-1-NumberDeletedBefore-NumberDeletedAfter;
+	int nadded = n-1-NumberDeletedBefore;
 
 	// if there are special commands to be inserted at the waypoint
 	// between segments, move them into a segment in the middle of the corner
@@ -975,8 +980,7 @@ void RoundCorner(int is)
 
 	// recompute exiting segment direction now that we 
 	// rounded corner and previous angles have changed
-	if (!EliminateP2)  // if it hasn't been completely eliminated
-		segNew->ChangeInDirection = CalcChangeInDirection(is_new);
+	segNew->ChangeInDirection = CalcChangeInDirection(is_new);
 
 	nsegs += nadded;  // we added this many segments
 }
@@ -1534,7 +1538,38 @@ void CalcBegDirectionOfSegment(SEGMENT *p, double &dx, double &dy, double &dz, d
 	}
 }
 
+// Pure Angle if xyzuv has no motion, and abc has no motion based on radius, and there is some abc angular motion
 
+bool PureAngle(double dx, double dy, double dz, double da, double db, double dc, double du, double dv, MOTION_PARAMS* MP)
+{
+	bool AisDist = (!MP->DegreesA || MP->RadiusA != 0.0);
+	bool BisDist = (!MP->DegreesB || MP->RadiusB != 0.0);
+	bool CisDist = (!MP->DegreesC || MP->RadiusC != 0.0);
+
+	return dx == 0.0 && dy == 0.0 && dz == 0.0 && du == 0.0 && dv == 0.0 &&
+		(da == 0.0 || !AisDist) && (db == 0.0 || !BisDist) && (dc == 0.0 || !CisDist) &&
+		((da != 0.0 && MP->DegreesA) || (db != 0.0 && MP->DegreesB) || (dc != 0.0 && MP->DegreesC));
+
+}
+
+bool PureAngle(SEGMENT *p)
+{
+
+	double dx, dy, dz, da, db, dc, du, dv;
+
+	if (p->type != SEG_LINEAR) return false;
+
+	dx = p->x1 - p->x0;
+	dy = p->y1 - p->y0;
+	dz = p->z1 - p->z0;
+	da = p->a1 - p->a0;
+	db = p->b1 - p->b0;
+	dc = p->c1 - p->c0;
+	du = p->u1 - p->u0;
+	dv = p->v1 - p->v0;
+
+	return PureAngle(dx, dy, dz, da, db, dc, du, dv, &MP);
+}
 
 
 double CalcChangeInDirection(int i)
@@ -2206,9 +2241,9 @@ int tp_calc_seg_trip_states(int i)
 
 	if (VM==0 || A==0 || D==0)
 	{
-		char s[192];
-		sprintf(s, "Trajectory Planner has Invalid Velocity or Acceleration Vel = %f Accel = %f Decel = %f",VM,A,D);
-		AfxMessageBox(s,MB_ICONSTOP|MB_OK);
+		wchar_t s[64];
+		swprintf(s, 64, L"Vel = %f Accel = %f Decel = %f",VM,A,D);
+		MessageBoxW(NULL, Translate("Trajectory Planner has Invalid Velocity or Acceleration ") + s, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 1;
 	}
 
@@ -2622,7 +2657,7 @@ int tp_calc_seg_trip_states_dwell(int i)
 
 // compute total distance tool will move by considering both linear and angular movements  
 
-double FeedRateDistance(double dx, double dy, double dz, double da, double db, double dc, double du, double dv, MOTION_PARAMS *MP,BOOL *PureAngle)
+double FeedRateDistance(double dx, double dy, double dz, double da, double db, double dc, double du, double dv, MOTION_PARAMS *MP, BOOL *bPureAngle)
 {
 
 	//  Every axis is either a pure linear distance or
@@ -2642,8 +2677,9 @@ double FeedRateDistance(double dx, double dy, double dz, double da, double db, d
 	bool BisDist = (!MP->DegreesB || MP->RadiusB!=0.0);
 	bool CisDist = (!MP->DegreesC || MP->RadiusC!=0.0);
 
-	*PureAngle = dx==0.0 && dy == 0.0 && dz == 0.0 && du == 0.0 && dv == 0.0 && (da==0.0 || !AisDist) && (db==0.0 || !BisDist) && (dc==0.0 || !CisDist);
-	if (*PureAngle)
+	*bPureAngle = PureAngle(dx, dy, dz, da, db, dc, du, dv, MP);
+
+	if (*bPureAngle)
 	{
 		d = da*da + db*db + dc*dc;
 	}
@@ -2651,7 +2687,6 @@ double FeedRateDistance(double dx, double dy, double dz, double da, double db, d
 	{
 		d = dx*dx + dy*dy + dz*dz;
 		
-
 		if (AisDist)
 		{
 			if (MP->DegreesA) da *= PI/180.0*MP->RadiusA;

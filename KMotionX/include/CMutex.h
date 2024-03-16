@@ -39,6 +39,10 @@ either expressed or implied, of the FreeBSD Project.
 #include <mutex>
 #include <chrono>
 
+typedef struct _securityAttr {
+  uint32_t  nLength;
+} *lpsecurityAttr;
+
 
 #define TMUTEX
 class CMutex
@@ -47,14 +51,14 @@ class CMutex
 
 public:
 	CMutex();
-	CMutex(int initiallyOwn,const char *name ,int n);
+	CMutex(int initiallyOwn,const char *name ,lpsecurityAttr lpsaAttribute = NULL);
 
 	//Specifies the amount of time to wait for the synchronization object to be available (signaled).
 	//If INFINITE, Lock will wait until the object is signaled before returning.
 	//DWORD TimeOut_ms = INFINITE = 4294967295
 	int Lock(int TimeOut_ms/* = 4294967295*/);
-	void Lock();
-	void Unlock();
+	int Lock();
+	int Unlock();
 	//CMutex(FALSE,"KMotionPipe",NULL)
 	virtual ~CMutex();
 

@@ -3,13 +3,13 @@ include $(BUILD_ROOT)/config.mak
 LD_LIBS+=KMotionX
 LD_LIBS+=$(FTDILIB)
 
-
-SOURCES=COFFMAIN.cpp CLOAD.cpp KMotionDLL_Direct.cpp KMotionDLL.cpp KMotionLocal.cpp
+SOURCES=COFFMAIN.cpp CLOAD.cpp KMotionDLL_Direct.cpp KMotionDLL.cpp KMotionLocal.cpp TranslateX.cpp
 
 ifeq ($(FTDILIB),ftd2xx)
 SOURCES+=KmotionIO.cpp
 else
 SOURCES+=KmotionIOX.cpp
+SOURCES+=PingX.cpp
 IDIR+=/usr/include/lib$(FTDILIB)
 ifeq ($(OSNAME),Darwin)
 #if installed with macports

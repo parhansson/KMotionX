@@ -25,9 +25,8 @@
 class CKMotionLocal;
 
 extern CKMotionLocal KMotionLocal;  // declare one global instance 
-#ifndef _KMOTIONX
+
 extern volatile int share;
-#endif
 
 class CKMotionLocal  
 {

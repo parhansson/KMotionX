@@ -372,11 +372,10 @@ int CKinematicsGeppetto::ReadGeoTable(const char *name)
 	if (name[0] == 0) return 0; // passing in no file turns off geocorrection
 
 	FILE *f = fopen(name, "rt");
-	char message[MAX_PATH + 64];
+
 	if (!f)
 	{
-		sprintf(message, "Unable to open Geometric Correction File : %s", name);
-		AfxMessageBox(message);
+		MessageBoxW(NULL, Translate("Unable to open Geometric Correction File : ") + kmx::strtowstr(name), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 1;
 	}
 
@@ -385,8 +384,7 @@ int CKinematicsGeppetto::ReadGeoTable(const char *name)
 	if (result != 2 || NRows < 2 || NRows > 4000 || NCols < 2 || NCols > 4000)
 	{
 		fclose(f);
-		sprintf(message, "Invalid Geometric Correction File (NRows and NCols) : %s", name);
-		AfxMessageBox(message);
+		MessageBoxW(NULL, Translate("Invalid Geometric Correction File (NRows and NCols) : ") + kmx::strtowstr(name), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 1;
 	}
 
@@ -395,8 +393,7 @@ int CKinematicsGeppetto::ReadGeoTable(const char *name)
 	if (result != 2)
 	{
 		fclose(f);
-		sprintf(message, "Invalid Geometric Correction File (GeoSpacingX and GeoSpacingY) : %s", name);
-		AfxMessageBox(message);
+		MessageBoxW(NULL, Translate("Invalid Geometric Correction File (GeoSpacingX and GeoSpacingY) : ") + kmx::strtowstr(name), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 1;
 	}
 
@@ -405,8 +402,7 @@ int CKinematicsGeppetto::ReadGeoTable(const char *name)
 	if (result != 2)
 	{
 		fclose(f);
-		sprintf(message, "Invalid Geometric Correction File (GeoOffsetX and GeoOffsetY) : %s", name);
-		AfxMessageBox(message);
+		MessageBoxW(NULL, Translate("Invalid Geometric Correction File (GeoOffsetX and GeoOffsetY) : ") + kmx::strtowstr(name), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 1;
 	}
 
@@ -420,8 +416,7 @@ int CKinematicsGeppetto::ReadGeoTable(const char *name)
 		if (result != 6 || row < 0 || row >= NRows || col < 0 || col >= NCols)
 		{
 			fclose(f);
-			sprintf(message, "Invalid Geometric Correction File (invalid data value) : %s", name);
-			AfxMessageBox(message);
+			MessageBoxW(NULL, Translate("Invalid Geometric Correction File (invalid data value) : ") + kmx::strtowstr(name), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 			return 1;
 		}
 

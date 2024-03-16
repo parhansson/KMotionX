@@ -219,6 +219,13 @@ int CKinematics::InvertTransformCADtoActuators(double *Acts, double *xr, double 
 
 		// make a correction
 
+		// limit corrections to small values
+
+		if (ex > 1.0) ex = 1.0;
+		if (ex < -1.0) ex = -1.0;
+		if (ey > 1.0) ey = 1.0;
+		if (ey < -1.0) ey = -1.0;
+
 		x += ex;
 		y += ey;
 		z += ez;
@@ -607,11 +614,10 @@ int CKinematics::ReadGeoTable(const char *name)
 	if (name[0]==0) return 0; // passing in no file turns off geocorrection
 	
 	FILE *f = fopen(name,"rt");
-	char message[100+MAX_PATH];
+
 	if (!f)
 	{
-		sprintf(message, "Unable to open Geometric Correction File : %s",name);
-		AfxMessageBox(message);
+		MessageBoxW(NULL, Translate("Unable to open Geometric Correction File : ") + kmx::strtowstr(name), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 1;
 	}
 
@@ -620,8 +626,7 @@ int CKinematics::ReadGeoTable(const char *name)
 	if (result != 2 || NRows < 2 || NRows > 4000 || NCols < 2 || NCols > 4000)
 	{
 		fclose(f);
-		sprintf(message, "Invalid Geometric Correction File (NRows and NCols) : %s",name);
-		AfxMessageBox(message);
+		MessageBoxW(NULL, Translate("Invalid Geometric Correction File (NRows and NCols) : ") + kmx::strtowstr(name), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 1;
 	}
 
@@ -630,8 +635,7 @@ int CKinematics::ReadGeoTable(const char *name)
 	if (result != 2)
 	{
 		fclose(f);
-		sprintf(message, "Invalid Geometric Correction File (GeoSpacingX and GeoSpacingY) : %s",name);
-		AfxMessageBox(message);
+		MessageBoxW(NULL, Translate("Invalid Geometric Correction File (GeoSpacingX and GeoSpacingY) : ") + kmx::strtowstr(name), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 1;
 	}
 
@@ -640,8 +644,7 @@ int CKinematics::ReadGeoTable(const char *name)
 	if (result != 2)
 	{
 		fclose(f);
-		sprintf(message, "Invalid Geometric Correction File (GeoOffsetX and GeoOffsetY) : %s",name);
-		AfxMessageBox(message);
+		MessageBoxW(NULL, Translate("Invalid Geometric Correction File (GeoOffsetX and GeoOffsetY) : ") + kmx::strtowstr(name), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 1;
 	}
 
@@ -655,8 +658,7 @@ int CKinematics::ReadGeoTable(const char *name)
 		if (result != 5 || row < 0 || row >= NRows || col < 0 || col >= NCols)
 		{
 			fclose(f);
-			sprintf(message, "Invalid Geometric Correction File (invalid data value) : %s",name);
-			AfxMessageBox(message);
+			MessageBoxW(NULL, Translate("Invalid Geometric Correction File (invalid data value) : ") + kmx::strtowstr(name), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 			return 1;
 		}
 
@@ -771,4 +773,54 @@ int CKinematics::Solve(double *A, int N)
 				}
 	}
 	return 0;
+}
+
+int CKinematics::Initialize()
+{
+	return 0;
+}
+
+int CKinematics::GetParameter(const char* key, double *v)
+{
+	char kinFile[MAX_PATH];
+	sprintf(kinFile, "%s%cData%cKinematics.txt",MainPath,PATH_SEPARATOR,PATH_SEPARATOR);
+
+	FILE *f = fopen(kinFile,"rt");
+
+	if (!f) return 1;
+
+	while (!feof(f))
+	{
+		char s[81], *p;
+		fgets(s, 80, f);
+
+		p = strstr(s, key);
+
+		if (p != NULL)
+		{
+			fclose(f);
+			p = p + (int)strlen(key);
+			removeChar(p, ' ');  // remove spaces, tabs, or equal signs
+			removeChar(p, '=');
+			removeChar(p, '\t');
+
+			int result = sscanf(p, "%lf", v);
+			if (result != 1) return 2;
+			return 0;
+		}
+	}
+
+	fclose(f);
+	return 3;
+}
+
+
+void CKinematics::removeChar(char *s, int c) {
+
+	int j, n = (int)strlen(s);
+	for (int i = j = 0; i<n; i++)
+		if (s[i] != c)
+			s[j++] = s[i];
+
+	s[j] = '\0';
 }

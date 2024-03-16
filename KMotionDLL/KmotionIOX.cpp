@@ -32,6 +32,7 @@ either expressed or implied, of the FreeBSD Project.
 #include "StdAfx.h"
 #include <stdlib.h>
 #include <ftdi.h>
+#include "Ping.h"
 
 int _ftdi_usb_close(ftdi_context *ftdi){
 #ifdef __APPLE__
@@ -56,16 +57,19 @@ CKMotionIO::CKMotionIO()
 {
 	ConsoleHandler=NULL;
 
-	Mutex = new CMutex(FALSE,"KMotionIO",0);
+	Mutex = new CMutex(FALSE,"KMotionIO",NULL);
 
 	m_Connected=false;
+	ConnectSocket = NULL;
 	SendAbortOnConnect=true;
 	FailMessageAlreadyShown=false;
 	Token=0;
 	NonRespondingCount=0;
 	m_FirmwareVersion=2;
-	USB_Loc_ID=-1;
-  BoardIDAssigned=false;
+	Requested_ID = -1;
+	Actual_ID = -1;
+	port = 2000;
+	//m_ConnectThreadState = CONN_STATE_IDLE;
 
   if ((ftdi = ftdi_new()) == 0)
   {
@@ -77,139 +81,122 @@ CKMotionIO::CKMotionIO()
 
 CKMotionIO::~CKMotionIO()
 {
-  _ftdi_usb_close(ftdi);
+	//Deinitialize and free an ftdi_context.
 	ftdi_free(ftdi);
 	delete Mutex;
 }
 
-bool CKMotionIO::RequestedDeviceAvail(char *Reason)
-{
-	int ftStatus, i, numDevs, list[MAX_BOARDS];
-	struct ftdi_device_list *devlist, *curdev;
-	bool error;
-	char Manufacturer[128];
-	//char SerialNumber[16];
-	char Description[64]; 
 
-	error = false;
-	devlist = NULL;
+
+
+bool CKMotionIO::RequestedDeviceAvail(std::wstring *Reason)
+{
+	int i;
+	bool TryKogna = Requested_ID == 0 || Requested_ID >  MAX_USB_ID;
+	bool TryKFLOP = Requested_ID == 0 || Requested_ID <= MAX_USB_ID;
 
 	Mutex->Lock();
 
-	// fill the list with -1 because driver
-	// leaves the entries for open drivers unchanged
-
-	for (i=0; i<MAX_BOARDS; i++) list[i]=-1;
-	numDevs = ftStatus = ftdi_usb_find_all(ftdi, &devlist, VENDOR, PRODUCT );
-	if (ftStatus < 0)
+	if (TryKogna)
 	{
-		if (Reason) sprintf(Reason,"Failed to enumerate USB devices. %s(%d)",ftdi_get_error_string(ftdi), ftStatus);
-		error = true;
+		// if (ConnectSocket)
+		// {
+		// 	Mutex->Unlock();
+		// 	return true;
+		// }
+		// ConnectSocket = ConnectToKognaSocket(Reason, Requested_ID, port);
+		// if (ConnectSocket != NULL)
+		// {
+		// 	Mutex->Unlock();
+		// 	return true;
+		// }
 	}
-	else if (numDevs == 0)
+	
+	if (TryKFLOP) 
 	{
-    error = true;
-		if (Reason) strcpy(Reason,"No KMotion devices available");
-	}
-  else if (numDevs > MAX_BOARDS)
-  {
-    error = true;
-    if (Reason) strcpy(Reason,"Too many KMotion devices available");
-  }
-
-	if(error){
-	  if(devlist != NULL){
-      ftdi_list_free(&devlist);
-	  }
-		Mutex->Unlock();
-		return false;
-
-	}
-	// go through the list and remove any non-dynomotion boards
-	i = 0;
-	for (curdev = devlist; curdev != NULL; i++)
-	{
-		if ((ftStatus = ftdi_usb_get_strings(ftdi, curdev->dev, Manufacturer, 128, Description, 128, NULL, 0)) < 0)
+		KFLOPListMutex->Lock();  // no time-out interval
+		if (1/*dwWaitResult == WAIT_OBJECT_0*/)
 		{
-			log_info("ftdi_usb_get_strings failed: %d (%s)",ftStatus, ftdi_get_error_string(ftdi));
-		   // FT_Open failed
-		   list[i] = -1;  // mark as unusable
-		}
-		else
-		{
-		  debug("%s\n%s",Manufacturer, Description);
-			if (strstr(Description,"KFLOP")!= NULL ||
-				strstr(Description,"KMotion")!= NULL ||
-				strstr(Description,"Dynomotion")!= NULL)
+			if (nKFLOPs > 0)
 			{
-				//save index
-				list[i] = i;
-			}
-		}
-		curdev = curdev->next;
-	}
+				// if USB Location is undefined select the first from
+				// the list that is not already taken
 
-	ftdi_list_free(&devlist);
-
-	// if USB Location is undefined select the first from
-	// the list that is not already taken
-	if (!BoardIDAssigned)
-	{
-		for (i=0; i<numDevs && !BoardIDAssigned; i++)
-		{
-			if (list[i] != -1)
-			{
-				int k;
-				// make sure nobody is already using this one
-				for (k=0; k<MAX_BOARDS; k++)
+				if (Requested_ID == 0)
 				{
-					if (list[i]==KMotionLocal.KMotionIO[k].USB_Loc_ID)
+					for (i = 0; i < (int)nKFLOPs; i++)
+					{
+						int k;
+						// make sure nobody is already using this one
+						for (k = 0; k < MAX_BOARDS; k++)
+						{
+							if (KMotionLocal.KMotionIO[k].m_Connected &&
+								KFLOPs[i].LocId == KMotionLocal.KMotionIO[k].Actual_ID)
+								break;
+						}
+						if (k == MAX_BOARDS)
+						{
+							Actual_ID = KFLOPs[i].LocId;  // assign it
+							Mutex->Unlock();
+							KFLOPListMutex->Unlock();
+							return true;
+						}
+					}
+
+					Mutex->Unlock();
+					KFLOPListMutex->Unlock();
+					if (Reason) *Reason = Translate("No KMotion devices available");
+					return false;
+				}
+
+				// user wants a specific usb location
+				// so see if it is available
+
+				for (i = 0; i < (int)nKFLOPs; i++)
+				{
+					if (KFLOPs[i].LocId == Requested_ID)
 						break;
 				}
-				if (k==MAX_BOARDS)
+
+				if (i == nKFLOPs)
 				{
-					BoardIDAssigned=true;
-					USB_Loc_ID=list[i];  // assign it
-					debug("Board location %d", USB_Loc_ID);
+					Mutex->Unlock();
+					KFLOPListMutex->Unlock();
+					if (Reason)
+					{
+						wchar_t dyn_buf[150];
+						swprintf(dyn_buf,150, Translate("KMotion not found on USB Location %08X\r\rUnable to open device").c_str(), Requested_ID);
+						*Reason = dyn_buf;
+					} 
+					return false;
+				}
+				else // match
+				{
+					Mutex->Unlock();
+					KFLOPListMutex->Unlock();
+					return true;
 				}
 			}
+			else
+			{
+				Mutex->Unlock();
+				KFLOPListMutex->Unlock();
+				if (Reason) *Reason = Translate("No KMotion devices available");
+				return false;
+			}
 		}
-		if (!BoardIDAssigned)
-		{
-			Mutex->Unlock();
-			if (Reason) strcpy(Reason,"No KMotion devices available");
-			return false;
-		}
-	}
-
-	// user wants a specific usb location
-	// so see if it is available
-
-	for (i=0; i<numDevs; i++)
-	{
-		if (list[i]==USB_Loc_ID)
-			break;
-	}
-
-	if (i==numDevs)
-	{
-		Mutex->Unlock();
-		if (Reason) sprintf(Reason,"KMotion not found on USB Location %08X\n"
-								   "Unable to open device",USB_Loc_ID);
-		return false;
 	}
 
 	Mutex->Unlock();
-	return true;
+	return false;
 }
 
 
 #define CONNECT_TRIES 5
 
-
 int CKMotionIO::Connect()
 {
-	char reason[256];
+	std::wstring reason;
 
 	int ftStatus;
 
@@ -219,9 +206,9 @@ int CKMotionIO::Connect()
 
 	Mutex->Lock();
 
-	if (!RequestedDeviceAvail(reason))
+	if (!RequestedDeviceAvail(&reason))
 	{
-		ErrorMessageBox(reason);
+		ErrorMessageBox(reason.c_str());
 		Mutex->Unlock();
 		return 1;
 	}
@@ -239,7 +226,7 @@ int CKMotionIO::Connect()
 
 	for (;;) 
 	{
-		ftStatus = ftdi_usb_open_desc_index(ftdi, VENDOR, PRODUCT, NULL, NULL, USB_Loc_ID);
+		ftStatus = ftdi_usb_open_desc_index(ftdi, VENDOR, PRODUCT, NULL, NULL, Actual_ID);
 		
 		if (ftStatus < FT_OK)
 		{
@@ -247,7 +234,7 @@ int CKMotionIO::Connect()
 		  // FT_Open failed
 			if (timeGetTime()-t0 > TIME_TO_TRY_TO_OPEN)
 			{
-			  ErrorMessageBox("Unable to open KMotion device");
+			  ErrorMessageBox(L"Unable to open KMotion device");
 				Mutex->Unlock();
 				return 1;
 			}
@@ -271,14 +258,14 @@ int CKMotionIO::Connect()
 			
 			if (FlushInputBuffer())
 			{
-				log_info("FAIL: FlushInputBuffer for device %d",USB_Loc_ID);
+				log_info("FAIL: FlushInputBuffer for device %d",Actual_ID);
 				//This is the key to why it works on second attempt
 				//After usb_close has executed once the device works forever.
 				//The ftdi device is not closed when killing the KMotionServer
 				//Try to recover from this action when initialising this class.
-        if(_ftdi_usb_close(ftdi) < FT_OK){
-          log_info("_ftdi_usb_close failed: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
-        }
+				if(_ftdi_usb_close(ftdi) < FT_OK){
+					log_info("_ftdi_usb_close failed: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
+				}
 				Mutex->Unlock();
 				return 1;
 			}
@@ -391,7 +378,7 @@ int CKMotionIO::ReadBytesAvailable(char *RxBuffer, int maxbytes, uint32_t *Bytes
 // if it is "Ready" send it to the console and return KMOTION_READY;
 // otherwise send it to the console
 
-
+//ExcludeTranslate
 int CKMotionIO::CheckForReady()
 {
 	char buf[257];
@@ -425,11 +412,11 @@ int CKMotionIO::CheckForReady()
 					_strupr(copy);
 
 					// check for "Error"
-					if (strstr(copy,"ERROR")!=NULL)
+					if (strstr(copy, "ERROR") != NULL)
 					{
 						// error, send to console
 
-						DetectedError=true;
+						DetectedError = true;
 					}
 					
 					
@@ -446,7 +433,7 @@ int CKMotionIO::CheckForReady()
 
 						LogToConsole(beg);
 						if (DetectedError)
-							return KMOTION_ERROR;  // a line contained the word "error"
+							return KMOTION_ERROR;  // a line contained the word Translate("error")
 						else
 							return KMOTION_READY;  
 					}
@@ -469,7 +456,7 @@ int CKMotionIO::CheckForReady()
 
 	return result;
 }
-
+//ResumeTranslate
 
 
 
@@ -578,7 +565,7 @@ int CKMotionIO::ReadLineTimeOutRaw(char *buf, int TimeOutms)
 				{
 					if (i+TotalBytes > MAX_LINE)
 					{
-						ErrorMessageBox("KMotion Received Line too long");
+						ErrorMessageBox(Translate("KMotion Received Line too long").c_str());
 						Mutex->Unlock();
 						return 1;
 					}
@@ -673,7 +660,7 @@ int CKMotionIO::SetLatency(uint8_t LatencyTimer)
 		if (ftStatus < FT_OK)
 		{
 			// FT_SetLatencyTimer FAILED!
-			ErrorMessageBox("Unable to set USB Latency timer");
+			ErrorMessageBox(Translate("Unable to set USB Latency timer").c_str());
 			Mutex->Unlock();
 			return 1;
 		}
@@ -693,7 +680,7 @@ int CKMotionIO::SetLatency(uint8_t LatencyTimer)
 	else 
 	{ 
 		// FT_SetLatencyTimer FAILED!
-		ErrorMessageBox("Unable to set USB Event Character");
+		ErrorMessageBox(Translate("Unable to set USB Event Character").c_str());
 		Mutex->Unlock();
 		return 1;
 	}
@@ -714,7 +701,7 @@ int CKMotionIO::WriteLineReadLine(const char *send, char *response)
 	if (ReadLineTimeOut(response,3000))
 	{
 		Mutex->Unlock();
-		//TODO this fails occasionally
+		//TODO this fails occasionally maybe because timeout is 1000000 in newer code
 		debug("ReadLineTimeOut failed.");
 		return 1;
 	}
@@ -736,7 +723,10 @@ int CKMotionIO::FlushInputBuffer()
 	int BytesWritten;
 	char s[64];
 	unsigned char RxBuffer[500];
-
+	//TODO
+	//ftdi_usb_purge_buffers is deprecated use
+	//ftdi_tcioflush(ftdi)
+	//instead. Maybe we can skip the ugly hack below
 	// discard any data in the read queue in the driver
   ftStatus = ftdi_usb_purge_buffers(ftdi);
 	if (ftStatus < FT_OK){
@@ -808,8 +798,7 @@ int CKMotionIO::FlushInputBuffer()
 
 			if (NonRespondingCount == CONNECT_TRIES)
 			{
-				ErrorMessageBox("KMotion present but not responding\n"
-								"Correct problem and restart application");
+				ErrorMessageBox(Translate("KMotion present but not responding\nCorrect problem and restart application").c_str());
 			}
 			return 1;
 		}
@@ -839,7 +828,7 @@ int CKMotionIO::Failed()
 {
 	Mutex->Lock();
 	
-	m_Connected=false;
+	m_Connected = false;
 	
     if (_ftdi_usb_close(ftdi) < 0)
     {
@@ -847,7 +836,10 @@ int CKMotionIO::Failed()
     }
 	
 	if (!FailMessageAlreadyShown)
-		ErrorMessageBox("Read Failed - Auto Disconnect");
+	{
+		ReleaseToken();  // if we failed Release Token if Locked
+		ErrorMessageBox(Translate("Read Failed - Auto Disconnect").c_str());
+	}
 	
 	FailMessageAlreadyShown=true;
 	
@@ -885,7 +877,7 @@ int CKMotionIO::FirmwareVersion()
 int CKMotionIO::USBLocation()
 {
 	if (m_Connected)
-		return USB_Loc_ID;
+		return Actual_ID;
 	else
 		return -1;
 }
@@ -900,16 +892,17 @@ int CKMotionIO::USBLocation()
 int CKMotionIO::KMotionLock(const char *CallerID)
 {
 	int result;
-	char reason[256];
+	//int board = (int)(this - KMotionLocal.KMotionIO);
+	std::wstring reason;
 	if (!Mutex->Lock(3000)) return KMOTION_NOT_CONNECTED;
 
 	if (!m_Connected)
 	{
 		// try to connect
 
-		if (!RequestedDeviceAvail(reason))
+		if (!RequestedDeviceAvail(&reason))
 		{
-		  debug("KMOTION_NOT_CONNECTED %s", reason);
+			debug("KMOTION_NOT_CONNECTED %ls", reason.c_str());
 			NonRespondingCount=0;
 			Mutex->Unlock();  // no such device available
 			return KMOTION_NOT_CONNECTED; 
@@ -928,9 +921,10 @@ int CKMotionIO::KMotionLock(const char *CallerID)
 	{
 		Token++;
 		if (CallerID==NULL)
-			m_LastCallerID[0] = '\0';
-		else
-			strcpy(m_LastCallerID, CallerID);
+			m_LastCallerID = "";
+		else if (CallerID[0] == 0)
+			m_LastCallerID = "Unspecified";
+		else m_LastCallerID = CallerID;
 
 		result=KMOTION_LOCKED;
 	}
@@ -964,7 +958,7 @@ int CKMotionIO::KMotionLockRecovery()
 void CKMotionIO::ReleaseToken()
 {
 	Mutex->Lock();
-	m_LastCallerID[0] = '\0';
+	m_LastCallerID = "";
 	Token--;
 	if (Token < 0) Token=0; // ADDED THIS LINE TO ENFORCE Token >= 0
 	Mutex->Unlock();
@@ -1130,31 +1124,31 @@ int CKMotionIO::ServiceConsole()
 {
 	int nbytes;
 	int timeout;
-	char buf[MAX_LINE];
+	char b[MAX_LINE];
 
 	if (KMotionLock("Service Console") == KMOTION_LOCKED)  // quick check if it is available
 	{
 		//if (!NumberBytesAvailToRead(&nbytes, false) && nbytes>0)
 	  //Instead of making one call with a long time out we first make a call with a short time out,
 	  //if data is read we need to check if we had a timeout and ask again with a greater value.
-	  timeout = ReadLineTimeOutRaw(buf,0);  // likely we will get a timeout sometimes
-	  nbytes = strlen(buf);
+	  timeout = ReadLineTimeOutRaw(b,0);  // likely we will get a timeout sometimes
+	  nbytes = strlen(b);
 
 	  if(nbytes>0)
 		{
 			// some data in the buffer
 	    if(timeout){
           //if previos call timed out we can try again with a longer timout adding read bytes to buffer pointer
-          timeout = ReadLineTimeOutRaw(buf + nbytes ,100);
+          timeout = ReadLineTimeOutRaw(b + nbytes ,100);
 	    }
 
 
 			if (!timeout)
 			{
-				if (buf[0]==0x1b)                       // skip over esc if there is one
-					LogToConsole(buf+1);
+				if (b[0]==0x1b)                       // skip over esc if there is one
+					LogToConsole(b+1);
 				else
-					LogToConsole(buf);
+					LogToConsole(b);
 			}
 		}
 
@@ -1186,8 +1180,8 @@ int CKMotionIO::SetConsoleCallback(SERVER_CONSOLE_HANDLER *ch)
 
 // save the error message to be piped back to caller
 
-int CKMotionIO::ErrorMessageBox(const char *s)
+int CKMotionIO::ErrorMessageBox(const wchar_t *s)
 {
-	strcpy(ErrMsg,s);
+	ErrMsg = s;
 	return 0;
 }

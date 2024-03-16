@@ -1910,7 +1910,7 @@ void load(int r, SValue *sv)
             v1.c.ul = fc;
             load(r, &v1);
             fr = r;
-			v = r;  // not too sure about this tktk
+			v = r;  
         } 
 		
 		if ((ft & VT_BTYPE) == VT_LDOUBLE) 
@@ -3199,7 +3199,7 @@ void gen_opi(int op)
 
 
 // C67 can't do const compares, must load into a reg
-// so just go to gv2 directly - tktk
+// so just go to gv2 directly 
 
 
 

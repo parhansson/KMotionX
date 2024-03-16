@@ -19,10 +19,13 @@
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 #define _CRT_SECURE_NO_DEPRECATE
 #define NO_WARN_MBCS_MFC_DEPRECATION
-#define WINVER _WIN32_WINNT_WINXP 
-#define _WIN32_WINNT _WIN32_WINNT_WINXP 
-#define _WIN32_IE _WIN32_WINNT_WINXP 
-#define NTDDI_VERSION NTDDI_WINXP
+#define WINVER _WIN32_WINNT_VISTA 
+#define _WIN32_WINNT _WIN32_WINNT_VISTA 
+#define _WIN32_IE _WIN32_WINNT_VISTA 
+//#define NTDDI_VERSION NTDDI_WINXP
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+
+#define INCL_WINSOCK_API_PROTOTYPES 1 // tktk
 
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
@@ -34,7 +37,8 @@
 #include <afxcmn.h>			// MFC support for Windows Common Controls
 #endif // _AFX_NO_AFXCMN_SUPPORT
 #include <afxmt.h>
-
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #include <conio.h>
 #include <math.h>
 #include <mmsystem.h>
@@ -47,7 +51,8 @@
 #include "KMotionIO.h"
 #include "KMotionDLL_Direct.h"
 #include "KMotionLocal.h"
-#include "..\dsp_kmotion\pc-dsp.h"
+#include "..\DSP_KOGNA\pc-dsp.h"
+#include "Translate.h"
 #endif // _WINDOWS
 
 // TODO: reference additional headers your program requires here

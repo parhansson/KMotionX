@@ -247,11 +247,14 @@ int main(int argc, char **argv)
 		if(strcmp("-reset", argv[1])==0){
     	printf("Shared memory references %d\n", *KMotionLocal.sharePtr);
 			*KMotionLocal.sharePtr = 1;
+			share = 1;
 			return 0;
 		}
 		
 	}
-    /* SJH - modified to listen to a TCP socket in addition to the unix domain (local) socket.
+	KMotionDLL.FindKognas();  // setup background Thread to find/keep track of on-line Kognas
+    
+	/* SJH - modified to listen to a TCP socket in addition to the unix domain (local) socket.
        Listens at port KMOTION_PORT (defined in KMotionDLL.h).
        FIXME: need to make this an argc/argv parameter.
     */
@@ -362,7 +365,7 @@ int main(int argc, char **argv)
          //If exit() is executed in the processs that started the server we never get here
          //Hence the reference counting from KMotionDLl.nInstances must be made.
          if (nClients <= 0) break;                // nobody left - terminate server
-         if (KMotionDLL.nInstances() < 2) break;  // nobody left - terminate server
+         if (KMotionDLL.nInstances() < 2) break;  // nobody left - terminate server, actually only server left
          continue; //timeout
        } else if (FD_ISSET(main_socket, &rfds)) {
             t = sizeof(remote);
@@ -395,6 +398,8 @@ int main(int argc, char **argv)
          syslog(LOG_ERR,"Main Thread. Spawning worker\n");
          pthread_t thr;
          // initialize data to pass to thread
+		 //TODO maybe we need to new and delete thdata data
+		 //
          thdata data;
          data.file_desc = client_socket;
 
@@ -443,7 +448,7 @@ void * InstanceThread(void *ptr){
     bool cont = true;
 
 	while(cont) {
-
+		//syslog(LOG_ERR,"DEBUG recv loop socket: %d\n",thread_socket);
 		cbBytesRead = recv(thread_socket, chRequest + len, msglen - len, 0);
 		if (cbBytesRead <= 0) {
 			if (cbBytesRead < 0){
@@ -526,7 +531,9 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 	if (code!=ENUM_ListLocations)  // all commands require a board to be mapped, except this command
 	{
 		memcpy(&BoardID, chRequest+4,4);
-		board=KMotionDLL.MapBoardToIndex(BoardID);
+		board=KMotionDLL.MapBoardToIndex(BoardID);  // board is the class instance index
+		KMotionDLL.SetRequested_ID(board, BoardID);
+
 	}
 
 	chReply[0]=DEST_NORMAL;
@@ -564,7 +571,7 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 		break;
 
 	case ENUM_ListLocations:		// Send Code -- Get Dest, Result (int), nlocations (int), List (ints)
-	  SYSLOGD("GetAnswerToRequest %s\n",ENUM_NAMES[code]);
+		SYSLOGD("GetAnswerToRequest %s\n",ENUM_NAMES[code]);
 		result = KMotionDLL.ListLocations(&nLocations, List);
 		memcpy(chReply+1, &result,4);
 		memcpy(chReply+1+4, &nLocations,4);
@@ -682,7 +689,7 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 				}
 				break;
 			}
-			
+			//syslog(LOG_ERR,"DEBUG Write console message to pipe id: %d board %d BoardID %d message %s\n",hPipe,board,BoardID,s);
 			cbWritten = send(hPipe, s, cbReplyBytes, 0);
 
 			if (cbWritten < 0 || cbReplyBytes != cbWritten) {
@@ -719,7 +726,7 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 		unsigned short msglen;
 		char s[MAX_LINE+1];
 		s[0] = DEST_ERRMSG;
-		strcpy(s+1,KMotionDLL.GetErrMsg(board));
+		strcpy(s+1,kmx::wstrtostr(KMotionDLL.GetErrMsg(board)).c_str());
 
 		cbReplyBytes = strlen(s)+1;// + Term Null, DEST code already accounted for in s
 		// Write the message to the pipe. 
@@ -766,7 +773,7 @@ int ConsoleHandler(int board, const char *buf)
 	if (ConsolePipeHandle[board])
 	{
 		// there is, add the message to the list
-	  SYSLOGD("Console message: %s",buf2);
+		SYSLOGD("Console message: %s",buf2);
 		ConsoleList[board].push_back(buf2);
 	}
 	return 0;

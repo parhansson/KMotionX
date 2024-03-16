@@ -5,6 +5,7 @@
 
 
 
+#ifdef _KMOTIONX
 #include "StdAfx.h"
 #include <stdio.h>
 #include <string.h>
@@ -13,7 +14,7 @@
 #include <sys/file.h>
 #include <sys/mman.h>
 
-#ifdef _KMOTIONX
+
 static const char *memname = "kmxShared";
 static const size_t region_size = sysconf(_SC_PAGE_SIZE);
 static void *ptr;
@@ -21,7 +22,7 @@ static void error_and_die(const char *msg) {
   perror(msg);
   exit(EXIT_FAILURE);
 }
-
+int volatile share=0;
 CKMotionLocal KMotionLocal;  // declare one global instance 
 
 //////////////////////////////////////////////////////////////////////
@@ -56,11 +57,13 @@ CKMotionLocal::CKMotionLocal()
 
   sharePtr = (u_int32_t *) ptr;
   (*sharePtr)++;
+  share = *sharePtr;
 }
 
 CKMotionLocal::~CKMotionLocal()
 {
   (*sharePtr)--;
+  share = *sharePtr;
   log_info("share = %d", *sharePtr);
   if((*sharePtr) < 1){
     log_info("DEMAPPING");
@@ -76,6 +79,8 @@ CKMotionLocal::~CKMotionLocal()
   }
 }
 #else
+#include "stdafx.h"
+
 #pragma data_seg (".SHARED") // any name you like
 
 int volatile share=0;
@@ -83,7 +88,7 @@ int volatile share=0;
 
 #pragma comment(linker, "/section:.SHARED,RWS")
 
-CKMotionLocal KMotionLocal;  // declare one global instance
+CKMotionLocal KMotionLocal;  // declare one global instance 
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -93,7 +98,6 @@ CKMotionLocal KMotionLocal;  // declare one global instance
 
 CKMotionLocal::CKMotionLocal()
 {
-
 }
 
 CKMotionLocal::~CKMotionLocal()

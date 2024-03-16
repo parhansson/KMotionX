@@ -22,7 +22,7 @@ LD_LIB_PATH="/usr/local/lib"
 LD_LIBS="stdc++ m"
 TMPN="./conftest-$$"
 TMPH=$TMPN.h
-KMX_VERSION=4.33
+KMX_VERSION=5.3.2
 cpu=`uname -m`
 arch=$cpu
 # OS specific
@@ -258,13 +258,15 @@ fi
 
 checklib (){
 	libpath=`echo $LD_LIB_PATH | sed 's/ / -L/g'`
-#	echo "Check in paths $libpath"
-	haslib=`$cc -L$libpath -l$1 2>&1 > /dev/null | grep main -wc`
+	echo "Check in paths $libpath"
+	haslib=`$cc -L$libpath -l$1 2>&1 > /dev/null | grep main -c` 
+# -wc option does not longer work on mac anymore
+#	haslib=`$cc -L$libpath -l$1 2>&1 > /dev/null | grep main -wc` 
 	if test "$haslib" = "0" ; then
-#		echo "Checking library lib$1 not found"
+		echo "Checking library lib$1 not found"
 		retval=0
 	else
-#		echo "Checking library lib$1 found"
+		echo "Checking library lib$1 found"
 		retval=1
 	fi
 	return "$retval"

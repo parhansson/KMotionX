@@ -19,4 +19,3 @@ int InitializeExternalC67Intrinsics();
 Section* FindSection(TCCState *s1, const char *sname);
 
 extern int C67_main_entry_point;
-

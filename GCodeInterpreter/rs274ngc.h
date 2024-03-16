@@ -253,6 +253,7 @@ typedef struct block_struct {
     ON_OFF q_flag;
     double q_number;
     ON_OFF r_flag;
+    ON_OFF d_flag;
     double r_number;
     double s_number;
     int t_number;
@@ -333,7 +334,8 @@ typedef struct setup_struct {
     ON_OFF mist;		// whether mist coolant is on
     int motion_mode;		// active G-code for motion
     int origin_index;		// active origin (1=G54 to 9=G59.3)
-    double origin_offset_x;	// origin offset x
+	CANON_UNITS length_units_of_origin;	// millimeters or inches
+	double origin_offset_x;	// origin offset x
     double origin_offset_y;	// origin offset y
     double origin_offset_z;	// origin offset z
     ON_OFF percent_flag;	// ON means first line was percent sign
@@ -419,6 +421,9 @@ These functions may change the state of the interpreter.
 
 */
 
+int AccumToolWearStats(setup_pointer settings, int ToolIndex, bool ForceSave);
+
+
 // close the currently open NC code file
 extern int rs274ngc_close();
 
@@ -478,7 +483,7 @@ extern void rs274ngc_active_settings(double *settings);
 
 // copy the text of the error message whose number is error_code into the
 // error_text array, but stop at max_size if the text is longer.
-extern void rs274ngc_error_text(int error_code, char *error_text,
+extern void rs274ngc_error_text(int error_code, wchar_t *error_text,
     int max_size);
 
 // copy the name of the currently open file into the file_name array,

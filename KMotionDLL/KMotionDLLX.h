@@ -55,8 +55,8 @@
 #include "KmotionIO.h"
 #include "KMotionDLL_Direct.h"
 #include "KMotionLocal.h"
-#include "../DSP_KMotion/PC-DSP.h"
-
+#include "../DSP_KOGNA/PC-DSP.h"
+#include "Translate.h"
 
 #endif /* KMOTIONDLLX_H_ */
 

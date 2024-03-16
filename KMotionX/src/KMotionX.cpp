@@ -14,7 +14,11 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/syscall.h>
+#include <locale>
+#include <codecvt>
+#include <string>
 #include "KMotionX.h"
+
 
 #define SECONDS_PER_MONTH 2629743
 
@@ -77,7 +81,6 @@ uint32_t timeGetTime()
 
   return msThisMonth;
 }
-
 namespace kmx
 {
 	char customCompiler[256] = KMX_COMPILER;
@@ -85,11 +88,35 @@ namespace kmx
 	int tcc_vers = OLD_COMPILER ? 16 : 26;
 	char installPath[MAX_PATH] = {0};
 	char binPath[MAX_PATH] = {0};
+	char localLanguageFilePath[MAX_PATH] = {0};
 
 	int verifyInstallRoot(const char * rootpath);
 	int verifySubpath(const char * path, const char * subpath, bool isdir);
 	int testExecuteAccess(const char * file);
 
+    // Convert std::wstring to std::string
+	std::string wstrtostr(std::wstring wideString){
+    	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+    	std::string narrowString = converter.to_bytes(wideString);
+		return narrowString;
+	}
+    // Convert std::string to std::wstring
+	std::wstring strtowstr(std::string narrowString){
+
+    	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    	std::wstring wideString = converter.from_bytes(narrowString);
+		return wideString;
+	}
+	uint8_t randomInt(){
+		uint8_t random_number;
+
+		// Seed the random number generator with the current time
+		srand(time(NULL));
+
+		// Generate a random number between 1 and 128
+		random_number = rand() % 127 + 1;
+
+	}
 	const char * getInstallPath(){
 				char cwd[MAX_PATH];
 		getcwd(cwd,MAX_PATH);
@@ -124,6 +151,13 @@ namespace kmx
 		return installPath;
 	}
 
+	const char * getLocalLanguageFilePath() {
+		if(!localLanguageFilePath[0]){
+			sprintf(localLanguageFilePath, "%s/Data/LocalLanguage.txt", getInstallPath());
+		}
+		return localLanguageFilePath;
+	}
+
 	const char * getBinPath(){
 		if(!binPath[0]){
 			sprintf(binPath, "%s/bin", getInstallPath());
@@ -150,11 +184,11 @@ namespace kmx
 
 	}
 
-	int getDspFile(char * OutFile, bool KFLOP_board){
-		if(KFLOP_board){
-			sprintf(OutFile,"%s%cDSP_KFLOP%cDSPKFLOP.out",getInstallPath(),PATH_SEPARATOR,PATH_SEPARATOR);
+	int getDspFile(char * OutFile, const int BoardType){
+		if(BoardType == BOARD_TYPE_KOGNA){
+			sprintf(OutFile,"%s%cDSPKOGNA%cDSPKOGNA.out",getInstallPath(),PATH_SEPARATOR,PATH_SEPARATOR);
 		} else {
-			sprintf(OutFile,"%s%cDSP_KMotion%cDSPKMotion.out",getInstallPath(),PATH_SEPARATOR,PATH_SEPARATOR);
+			sprintf(OutFile,"%s%cDSP_KFLOP%cDSPKFLOP.out",getInstallPath(),PATH_SEPARATOR,PATH_SEPARATOR);
 		}
 		return 0;
 	}
@@ -201,7 +235,7 @@ namespace kmx
 					tcc_vers = tcc_minor_version;
 	}
 
-	int getCompileCommand(const char * Name, const char * OutFile, uint32_t LoadAddress, bool KFLOP_board, char * command, int cmd_len){
+	int getCompileCommand(const char * Name, const char * OutFile, uint32_t LoadAddress, const int BoardType, char * command, int cmd_len){
 		char Compiler[MAX_PATH +1];
 		if(getCompiler(Compiler, sizeof(Compiler))){
 			strncpy(command,Compiler,cmd_len);
@@ -213,7 +247,7 @@ namespace kmx
 		char BindTo[MAX_PATH +1];
 
 		//Get path to DSPKMotion.out or DSPKFLOP.out
-		getDspFile(BindTo, KFLOP_board);
+		getDspFile(BindTo, BoardType);
 
 		getPath(BindTo,IncSrcPath1);
 
@@ -279,11 +313,11 @@ namespace kmx
 		verifySubpath(root, "DSP_KFLOP/KMotionDef.h", false) |
 		verifySubpath(root, "DSP_KFLOP/PC-DSP.h", false) |
 		//verifySubpath(root, "DSP_KFLOP/PC2.c", false) |
-		verifySubpath(root, "DSP_KMotion/", true) |
-		verifySubpath(root, "DSP_KMotion/DSPKMotion.out", false) |
-		verifySubpath(root, "DSP_KMotion/KMotionDef.h", false) |
-		verifySubpath(root, "DSP_KMotion/PC-DSP.h", false);
-		//verifySubpath(root, "DSP_KMotion/PC2.c", false) |
+		verifySubpath(root, "DSP_KOGNA/", true) |
+		verifySubpath(root, "DSP_KOGNA/DSPKOGNA.out", false) |
+		verifySubpath(root, "DSP_KOGNA/KMotionDef.h", false) |
+		verifySubpath(root, "DSP_KOGNA/PC-DSP.h", false);
+		//verifySubpath(root, "DSP_KOGNA/PC2.c", false) |
 		return error;
 	}
 
@@ -351,6 +385,10 @@ namespace kmx
 
 		//pthread_id_np_t   tid;
 		//tid = pthread_getthreadid_np();
+		//---alternativeley--
+		//pthread_t         self;
+		//self = pthread_self();
+		//pthread_getunique_np(&self, &tid);
 
 	#endif
 		// if(callerId){
