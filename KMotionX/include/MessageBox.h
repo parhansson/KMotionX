@@ -118,8 +118,8 @@ either expressed or implied, of the FreeBSD Project.
 extern int AfxMessageBox(const char* value, int type = 0/*NULL*/);
 extern int MessageBoxW(long hwnd, const wchar_t* value,const wchar_t* title, int type);
 extern int MessageBoxW(long hwnd, std::wstring value,const wchar_t* title, int type);
-#endif
 extern int MessageBox(long hwnd,const char* value,const char* title, int type);
+#endif
 
 typedef int MB_USER_CALLBACK(const wchar_t *title, const wchar_t *msg, int options);
 extern MB_USER_CALLBACK *mb_callback;
