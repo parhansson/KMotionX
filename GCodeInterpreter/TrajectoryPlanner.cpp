@@ -1925,7 +1925,7 @@ void MaximizeSegments()
 	double MaxEndVel0,MaxBegVel1;
 
 #ifdef DEBUG_DOWNLOAD
-	sprintf(ds, "MaximizeSegments %f 0 0 %d\n",DTimer.Elapsed_Seconds(),nsegs);
+	snprintf(ds, MAX_LINE, "MaximizeSegments %f 0 0 %d\n",DTimer.Elapsed_Seconds(),nsegs);
 	PutString(ds);
 #endif
 

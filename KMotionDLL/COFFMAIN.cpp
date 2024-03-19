@@ -208,11 +208,11 @@ int mem_write(unsigned char *buffer, int nbytes, T_ADDR addr, int page)
 		}
 
 
-		sprintf(s,"LOADFLASH %X %X",addr,nbytes);
+		snprintf(s, 256, "LOADFLASH %X %X",addr,nbytes);
 	}
 	else
 	{
-		sprintf(s,"LOADDATA %X %X",addr,nbytes);
+		snprintf(s, 256,"LOADDATA %X %X",addr,nbytes);
 	}
 #ifdef SIMULATE_LOADCOFF
 	printf("%s:%d %s\n",__FILE__,__LINE__,s);
@@ -234,9 +234,9 @@ int mem_write(unsigned char *buffer, int nbytes, T_ADDR addr, int page)
 		for (k=0; k<BytesPerLine && i+k<nbytes; k++)
 		{
 			if (k+1<BytesPerLine && i+k+1<nbytes)
-				sprintf(x,"%02X ",buffer[i+k]);
+				snprintf(x, 256,"%02X ",buffer[i+k]);
 			else
-				sprintf(x,"%02X",buffer[i+k]);
+				snprintf(x, 256,"%02X",buffer[i+k]);
 
 			strcat(s,x);
 		}

@@ -36,9 +36,9 @@ extern int ConvertToolToIndex(setup_pointer settings,int number,int *index);
 #define DRIVER_ERROR(message,item) if(1)		\
 	{											\
 		char s[256];							\
-		sprintf(s, message, item);		        \
+		snprintf(s, 256, message, item);		        \
 		ErrorOutput += s;						\
-		sprintf(s, "\n");						\
+		snprintf(s, 256, "\n");						\
 		ErrorOutput += s;						\
 		return RS274NGC_ERROR;					\
 	}							                \
@@ -50,9 +50,9 @@ extern int ConvertToolToIndex(setup_pointer settings,int number,int *index);
 	{											\
 		char s[256];							\
 		fclose(setup_file_port);				\
-		sprintf(s, message, item);		        \
+		snprintf(s, 256, message, item);		        \
 		ErrorOutput += s;						\
-		sprintf(s, "\n");						\
+		snprintf(s, 256, "\n");						\
 		ErrorOutput += s;						\
 		return RS274NGC_ERROR;					\
 	}							                \
@@ -62,9 +62,9 @@ extern int ConvertToolToIndex(setup_pointer settings,int number,int *index);
 	{											\
 		char s[256];							\
 		fclose(tool_file_port);					\
-		sprintf(s, message, item);		        \
+		snprintf(s, 256, message, item);		        \
 		ErrorOutput += s;						\
-		sprintf(s, "\n");						\
+		snprintf(s, 256, "\n");						\
 		ErrorOutput += s;						\
 		return RS274NGC_ERROR;					\
 	}							                \
@@ -279,7 +279,7 @@ attribute name will cause an error.
 */
 
 int read_setup_file(     /* ARGUMENT VALUES             */
-					char * setup_file,      /* name of setup file          */
+					const char * setup_file,      /* name of setup file          */
 					setup_pointer settings) /* pointer to machine settings */
 {
 	static char name[] SET_TO "read_setup_file";
@@ -540,7 +540,7 @@ valid slot number.
 */
 
 int read_tool_file(      /* ARGUMENT VALUES             */
-				   char * tool_file,       /* name of tool file           */
+				   const char * tool_file,       /* name of tool file           */
 				   setup_pointer settings) /* pointer to machine settings */
 {
 	FILE * tool_file_port;
@@ -745,9 +745,9 @@ would be to use fgetpos and fsetpos.
 */
 
 int interpret_from_file( /* ARGUMENT VALUES                   */
- char * filename,        /* string: name of the rs274kt file  */
- char * tool_file,       /* name of tool file                 */
- char * setup_file,      /* name of setup file                */
+ const char * filename,        /* string: name of the rs274kt file  */
+ const char * tool_file,       /* name of tool file                 */
+ const char * setup_file,      /* name of setup file                */
  int no_stop)            /* switch which is ON or OFF         */
 {
   int status;

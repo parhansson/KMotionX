@@ -238,11 +238,11 @@ int CKMotionDLL::WaitToken(bool display_msg, int TimeOut_ms, const char *CallerI
 		char s[256];
 
 		if ((unsigned int)BoardID > MAX_USB_ID)
-			sprintf(s, " %u.%u.%u.%u", (BoardID>>24)&0xff, (BoardID >> 16) & 0xff, (BoardID >> 8) & 0xff, BoardID & 0xff);
+			snprintf(s, 256, " %u.%u.%u.%u", (BoardID>>24)&0xff, (BoardID >> 16) & 0xff, (BoardID >> 8) & 0xff, BoardID & 0xff);
 		else if (BoardID>0)
-			sprintf(s," 0x%X", BoardID);
+			snprintf(s, 256, " 0x%X", BoardID);
 		else
-			sprintf(s," #%d", BoardID);
+			snprintf(s, 256, " #%d", BoardID);
 
 		DoErrMsg(Translate("Can't Connect to KMotion Board") + kmx::strtowstr(s));
 
@@ -305,7 +305,7 @@ int CKMotionDLL::LoadCoff(int Thread, const char *Name, int PackToFlash)
 
 	if (PackToFlash==0)
 	{
-		sprintf(s,"Kill %d", Thread);  // make sure the Thread isn't running
+		snprintf(s, 50, "Kill %d", Thread);  // make sure the Thread isn't running
 		if (WriteLine(s)) return 1;
 	}
 #endif
@@ -325,7 +325,7 @@ int CKMotionDLL::LoadCoff(int Thread, const char *Name, int PackToFlash)
 	if (Thread >= 0 && PackToFlash==0)
 	{
 		// Set the entry point for the thread
-		sprintf(s,"EntryPoint%d %X",Thread,EntryPoint);
+		snprintf(s, 50, "EntryPoint%d %X",Thread,EntryPoint);
 		result = WriteLine(s);
 		if (result) return result;
 	}
@@ -1718,7 +1718,7 @@ int CKMotionDLL::CheckKMotionVersion(int *type, bool GetBoardTypeOnly, bool Wait
 
 		if (result)
 		{
-			sprintf(ms,"Error Extracting Version Information from file" LINE_BREAK LINE_BREAK " %s",OutFile);
+			snprintf(ms, MAX_LINE, "Error Extracting Version Information from file" LINE_BREAK LINE_BREAK " %s",OutFile);
 			DoErrMsg(ms);
 			return 1;
 		}
@@ -1730,7 +1730,7 @@ int CKMotionDLL::CheckKMotionVersion(int *type, bool GetBoardTypeOnly, bool Wait
 		if (strcmp(CoffVersion,BoardVersion) == 0) return 0;
 		//TODO check for first 4 charachters not just anywhere in string
 		if(strstr(BoardVersion,"KFLOP") != NULL)
-			sprintf(ms,"DSP_KFLOP.out Date Stamp Doesn't match KFLOP Firmware" LINE_BREAK LINE_BREAK
+			snprintf(ms, MAX_LINE, "DSP_KFLOP.out Date Stamp Doesn't match KFLOP Firmware" LINE_BREAK LINE_BREAK
 				" Before compiling programs please use Flash/Config Screen and select:" LINE_BREAK
 				" Download New Version.  This will install compatible Firmware with" LINE_BREAK
 				" this version of software" LINE_BREAK LINE_BREAK
@@ -1739,7 +1739,7 @@ int CKMotionDLL::CheckKMotionVersion(int *type, bool GetBoardTypeOnly, bool Wait
 				BoardVersion,
 				CoffVersion);
 		else
-			sprintf(ms,"DSP_KMotion.out Date Stamp Doesn't match KMotion Firmware" LINE_BREAK LINE_BREAK
+			snprintf(ms, MAX_LINE, "DSP_KMotion.out Date Stamp Doesn't match KMotion Firmware" LINE_BREAK LINE_BREAK
 				" Before compiling programs please use Flash/Config Screen and select:" LINE_BREAK
 				" Download New Version.  This will install compatible Firmware with" LINE_BREAK
 				" this version of software" LINE_BREAK LINE_BREAK
@@ -1785,7 +1785,7 @@ int CKMotionDLL::CheckCoffSize(const char *InFile, int *size_text, int *size_bss
 	if (fread(&file_hdr, FILHSZ, 1, f) != 1) return 1;
 
 /*-------------------------------------------------------------------------*/
-/* MAKE SURE THIS IS REALLY A COFF FILE. 
+/* MAKE SURE THIS IS REALLY A COFF FILE.                                   */ 
 /*-------------------------------------------------------------------------*/
 	if (file_hdr.f_magic != MAGIC)
 	{
@@ -2380,7 +2380,7 @@ int CKMotionDLL::GetStatus(MAIN_STATUS& status, bool lock)
 	}
 
 	// KMotion is available read the status
-	sprintf(s,"GetStatus");
+	snprintf(s, 2570, "GetStatus");
 	if (WriteLine(s))
 	{
 		ReleaseToken();

@@ -6,21 +6,11 @@ LD_LIB_PATH+=$(BINDIR)
 IDIR_ALL=$(BUILD_ROOT)/KMotionX/include $(BUILD_ROOT)/DSP_KFLOP $(IDIR)
 IFLAGS=$(addprefix -I,$(IDIR_ALL))
 
-W_FLAGS=-Wall -Wno-unknown-pragmas
-#exceptions on warnings
-W_FLAGS+=-Wno-overloaded-virtual
-W_FLAGS+=-Wno-deprecated-declarations
-W_FLAGS+=-Wno-dangling-else
-W_FLAGS+=-Wno-unused-variable
-W_FLAGS+=-Wno-writable-strings
-W_FLAGS+=-Wno-parentheses
-W_FLAGS+=-Wno-unused-but-set-variable
-W_FLAGS+=-Wno-char-subscripts
-W_FLAGS+=-Wno-comment
-W_FLAGS+=-Wno-deprecated-register
-
 CFLAGS+=-g -c -fmessage-length=0 -fPIC -MMD -MP
 CFLAGS+=-std=c++0x
+#exceptions on warnings default
+CFLAGS+=-Wall
+#wflag set by others might exclude specific warnings
 CFLAGS+=$(W_FLAGS)
 CFLAGS+=$(IFLAGS)
 CFLAGS+=$(DEFS)

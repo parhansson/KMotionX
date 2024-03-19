@@ -3263,7 +3263,7 @@ static int convert_cycle_g84(	/* ARGUMENTS */
 int PutIntVarToKFLOP(int v, int &ipersist)
 {
 	char s[64];
-	sprintf(s, "SetPersistHex %d %x", ipersist, v);
+	snprintf(s, 64, "SetPersistHex %d %x", ipersist, v);
 	if (CM->KMotionDLL->WriteLine(s)) { CM->SetAbort(); return 1; }
 	ipersist++;
 	return 0;
@@ -3275,7 +3275,7 @@ int PutFloatVarToKFLOP(double v, int &ipersist)
 {
 	char s[64];
 	float f = (float)v;
-	sprintf(s, "SetPersistHex %d %x", ipersist, *(int *)&f);
+	snprintf(s, 64, "SetPersistHex %d %x", ipersist, *(int *)&f);
 	if (CM->KMotionDLL->WriteLine(s)) { CM->SetAbort(); return 1; }
 	ipersist++;
 	return 0;
@@ -11273,7 +11273,7 @@ int rs274ngc_save_parameters(	/* ARGUMENTS */
 		if (k > variable)
 		    ERM(NCE_PARAMETER_FILE_OUT_OF_ORDER);
 		else if (k == variable) {
-		    sprintf(line, "%d\t%f\n", k, parameters[k]);
+		    snprintf(line, 256, "%d\t%f\n", k, parameters[k]);
 		    fputs(line, outfile);
 			// keep track of which variables get saved
 			actual_parameters_to_save[actual_saved_index] = k;
@@ -11284,7 +11284,7 @@ int rs274ngc_save_parameters(	/* ARGUMENTS */
 		    break;
 		} else if (k == required)	// know (k < variable)
 		{
-		    sprintf(line, "%d\t%f\n", k, parameters[k]);
+		    snprintf(line, 256, "%d\t%f\n", k, parameters[k]);
 		    fputs(line, outfile);
 			// keep track of which variables get saved
 			actual_parameters_to_save[actual_saved_index] = k;
@@ -11297,7 +11297,7 @@ int rs274ngc_save_parameters(	/* ARGUMENTS */
     fclose(infile);
     for (; k < RS274NGC_MAX_PARAMETERS; k++) {
 	if (k == required) {
-	    sprintf(line, "%d\t%f\n", k, parameters[k]);
+	    snprintf(line, 256, "%d\t%f\n", k, parameters[k]);
 	    fputs(line, outfile);
 		// keep track of which variables get saved
 		actual_parameters_to_save[actual_saved_index] = k;

@@ -206,7 +206,7 @@ public:
 	int GetRapidSettings();
 	float MaxDecelTimeForAxis(int axis, double Vel, double Accel, double Jerk);
 	float GetNominalFROChangeTime(char* Axis);
-	int GetRapidSettingsAxis(int axis,double *Vel,double *Accel,double *Jerk, double *SoftLimitPos, double *SoftLimitNeg, double CountsPerInch, char* Axis);
+	int GetRapidSettingsAxis(int axis,double *Vel,double *Accel,double *Jerk, double *SoftLimitPos, double *SoftLimitNeg, double CountsPerInch, const char* Axis);
 	bool RapidParamsDirty;
 
 	void SetPreviouslyStoppedAtSeg(SEGMENT *segs_to_check,int i);

@@ -65,8 +65,8 @@ CCoordMotion::CCoordMotion(CKMotionDLL *KM)
 	// Save for everybody what directory we are installed in
 #ifdef _KMOTIONX
 
-	sprintf(MainPath,"%s/KMotion",kmx::getInstallPath());
-	sprintf(MainPathRoot,"%s",kmx::getInstallPath());
+	snprintf(MainPath, MAX_PATH, "%s/KMotion",kmx::getInstallPath());
+	snprintf(MainPathRoot, MAX_PATH,"%s",kmx::getInstallPath());
 
 #else
 	CString Path;
@@ -133,7 +133,7 @@ CCoordMotion::CCoordMotion(CKMotionDLL *KM)
 	m_TCP_affects_actuators = true;  // assume Tool Center Point has effects except for simple cases
 	// check for a special Kinematics File
 	char kinFile[MAX_PATH];
-	sprintf(kinFile, "%s%cData%cKinematics.txt",MainPath,PATH_SEPARATOR,PATH_SEPARATOR);
+	snprintf(kinFile, MAX_PATH, "%s%cData%cKinematics.txt",MainPath,PATH_SEPARATOR,PATH_SEPARATOR);
 
 	FILE *f = fopen(kinFile,"rt");
 
@@ -278,8 +278,8 @@ int CCoordMotion::CheckLimit(int axis, double Act, double SoftLimitPos, double S
 	if (axis >= 0)
 	{
 		char errmsgbuf[64];
-		if (Act > SoftLimitPos) { sprintf(errmsgbuf, "Actuator %8g Limit %8g %c+",Act, SoftLimitPos, Name); errmsg = errmsgbuf; return 1; }
-		if (Act < SoftLimitNeg) { sprintf(errmsgbuf, "Actuator %8g Limit %8g %c-",Act, SoftLimitPos, Name); errmsg = errmsgbuf; return 1; }
+		if (Act > SoftLimitPos) { snprintf(errmsgbuf, 64, "Actuator %8g Limit %8g %c+",Act, SoftLimitPos, Name); errmsg = errmsgbuf; return 1; }
+		if (Act < SoftLimitNeg) { snprintf(errmsgbuf, 64, "Actuator %8g Limit %8g %c-",Act, SoftLimitPos, Name); errmsg = errmsgbuf; return 1; }
 	}
 	return 0;
 }
@@ -1739,7 +1739,7 @@ int CCoordMotion::LaunchCoordMotion()
 			return 1;
 		}
 
-		sprintf(s,"TrigThread %.6f",m_ThreadingBaseSpeedRPS);
+		snprintf(s, MAX_LINE, "TrigThread %.6f",m_ThreadingBaseSpeedRPS);
 		if(KMotionDLL->WriteLine(s)){SetAbort(); return 1;}
 	}
 	else  // no normal coordinated motion
@@ -1931,7 +1931,7 @@ int CCoordMotion::OutputSegment(int iseg)
 				int *IntUV = (int *)FloatUVArray;
 
 #ifdef DEBUG_DOWNLOAD
-				sprintf(ds, "Linear %f %d %d\n",DTimer.Elapsed_Seconds(),iseg,i);
+				snprintf(ds, MAX_LINE, "Linear %f %d %d\n",DTimer.Elapsed_Seconds(),iseg,i);
 				PutString(ds);
 #endif
 
@@ -1939,10 +1939,10 @@ int CCoordMotion::OutputSegment(int iseg)
 				if (!LastWasLinear)  // must specify all if first or there was an arc
 				{
 					if (u_axis >= 0 || v_axis >= 0)
-						sprintf(s, "LinearHexEx %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
+						snprintf(s, 256, "LinearHexEx %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
 							Int[0], Int[1], Int[2], Int[3], Int[4], Int[5], IntUV[0], IntUV[1], Int[6], Int[7], Int[8], Int[9], Int[10], Int[11], IntUV[2], IntUV[3], Int[12], Int[13], Int[14], Int[15], Int[16]);
 					else
-						sprintf(s, "LinearHex %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
+						snprintf(s, 256, "LinearHex %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
 							Int[0], Int[1], Int[2], Int[3], Int[4], Int[5], Int[6], Int[7], Int[8], Int[9], Int[10], Int[11], Int[12], Int[13], Int[14], Int[15], Int[16]);
 
 					DidThisLinear=LastWasLinear=true;
@@ -1950,15 +1950,15 @@ int CCoordMotion::OutputSegment(int iseg)
 				else if (!DidThisLinear) // new linear so we must specify the new endpoint
 				{
 					if (u_axis >= 0 || v_axis >= 0)
-						sprintf(s, "LHexEx1 %X %X %X %X %X %X %X %X %X %X %X %X %X", Int[6], Int[7], Int[8], Int[9], Int[10], Int[11], IntUV[2], IntUV[3], Int[12], Int[13], Int[14], Int[15], Int[16]);
+						snprintf(s, 256, "LHexEx1 %X %X %X %X %X %X %X %X %X %X %X %X %X", Int[6], Int[7], Int[8], Int[9], Int[10], Int[11], IntUV[2], IntUV[3], Int[12], Int[13], Int[14], Int[15], Int[16]);
 					else
-						sprintf(s, "LHex1 %X %X %X %X %X %X %X %X %X %X %X", Int[6], Int[7], Int[8], Int[9], Int[10], Int[11], Int[12], Int[13], Int[14], Int[15], Int[16]);
+						snprintf(s, 256, "LHex1 %X %X %X %X %X %X %X %X %X %X %X", Int[6], Int[7], Int[8], Int[9], Int[10], Int[11], Int[12], Int[13], Int[14], Int[15], Int[16]);
 							
 					DidThisLinear=true;
 				}
 				else
 				{
-					sprintf(s, "LHex2 %X %X %X %X %X",
+					snprintf(s, 256, "LHex2 %X %X %X %X %X",
 						Int[12],Int[13],Int[14],Int[15],Int[16]); 
 				}
 
@@ -2037,10 +2037,10 @@ int CCoordMotion::OutputSegment(int iseg)
 					FloatArray[18]  = (float)(p->C[i].t);
 
 					if (u_axis >= 0 || v_axis >= 0)
-						sprintf(s, "ArcHexEx %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
+						snprintf(s, 256, "ArcHexEx %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
 							Int[0], Int[1], Int[2], Int[3], Int[4], Int[5], Int[6], Int[7], Int[8], Int[9], IntUV[0], IntUV[1], Int[10], Int[11], Int[12], Int[13], IntUV[2], IntUV[3], Int[14], Int[15], Int[16], Int[17], Int[18]);
 					else
-						sprintf(s, "ArcHex %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
+						snprintf(s, 256, "ArcHex %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
 						Int[0], Int[1], Int[2], Int[3], Int[4], Int[5], Int[6], Int[7], Int[8], Int[9], Int[10], Int[11], Int[12], Int[13], Int[14], Int[15], Int[16], Int[17], Int[18]);
 				}
 				else if (p->plane == CANON_PLANE_XZ)
@@ -2080,10 +2080,10 @@ int CCoordMotion::OutputSegment(int iseg)
 					FloatArray[18]  = (float)(p->C[i].t);
 
 					if (u_axis >= 0 || v_axis >= 0)
-						sprintf(s, "ArcHexZXEx %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
+						snprintf(s, 256, "ArcHexZXEx %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
 							Int[0], Int[1], Int[2], Int[3], Int[4], Int[5], Int[6], Int[7], Int[8], Int[9], IntUV[0], IntUV[1], Int[10], Int[11], Int[12], Int[13], IntUV[2], IntUV[3], Int[14], Int[15], Int[16], Int[17], Int[18]);
 					else
-						sprintf(s, "ArcHexZX %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
+						snprintf(s, 256, "ArcHexZX %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
 							Int[0], Int[1], Int[2], Int[3], Int[4], Int[5], Int[6], Int[7], Int[8], Int[9], Int[10], Int[11], Int[12], Int[13], Int[14], Int[15], Int[16], Int[17], Int[18]);
 				}
 				else // YZ
@@ -2123,16 +2123,16 @@ int CCoordMotion::OutputSegment(int iseg)
 					FloatArray[18]  = (float)(p->C[i].t);
 
 					if (u_axis >= 0 || v_axis >= 0)
-						sprintf(s, "ArcHexYZEx %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
+						snprintf(s, 256, "ArcHexYZEx %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
 							Int[0], Int[1], Int[2], Int[3], Int[4], Int[5], Int[6], Int[7], Int[8], Int[9], IntUV[0], IntUV[1], Int[10], Int[11], Int[12], Int[13], IntUV[2], IntUV[3], Int[14], Int[15], Int[16], Int[17], Int[18]);
 					else
-						sprintf(s, "ArcHexYZ %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
+						snprintf(s, 256, "ArcHexYZ %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X %X",
 							Int[0], Int[1], Int[2], Int[3], Int[4], Int[5], Int[6], Int[7], Int[8], Int[9], Int[10], Int[11], Int[12], Int[13], Int[14], Int[15], Int[16], Int[17], Int[18]);
 				}
 
 
 #ifdef DEBUG_DOWNLOAD
-				sprintf(ds, "Arc %f %d %d\n",DTimer.Elapsed_Seconds(),iseg,i);
+				snprintf(ds, MAX_LINE, "Arc %f %d %d\n",DTimer.Elapsed_Seconds(),iseg,i);
 				PutString(ds);
 #endif
 			}
@@ -2142,7 +2142,7 @@ int CCoordMotion::OutputSegment(int iseg)
 			m_TotalDownloadedTime += p->C[i].t;  // sum all downloaded times
 
 #ifdef DEBUG_DOWNLOAD
-				sprintf(ds, "Done %f %d %d %f\n",DTimer.Elapsed_Seconds(),iseg,i,m_TotalDownloadedTime);
+				snprintf(ds, MAX_LINE, "Done %f %d %d %f\n",DTimer.Elapsed_Seconds(),iseg,i,m_TotalDownloadedTime);
 				PutString(ds);
 #endif
 		}
@@ -2395,7 +2395,7 @@ int CCoordMotion::DownloadDoneSegments()
 int CCoordMotion::SetAxisDefinitions(int x, int y, int z, int a, int b, int c)
 {
 	char s[MAX_LINE];
-	sprintf(s, "DefineCS=%d %d %d %d %d %d", x, y, z, a, b, c);
+	snprintf(s, MAX_LINE, "DefineCS=%d %d %d %d %d %d", x, y, z, a, b, c);
 	if (KMotionDLL->WriteLine(s)) return 1;
 	x_axis=x;
 	y_axis=y;
@@ -2410,7 +2410,7 @@ int CCoordMotion::SetAxisDefinitions(int x, int y, int z, int a, int b, int c)
 int CCoordMotion::SetAxisDefinitions(int x, int y, int z, int a, int b, int c, int u, int v)
 {
 	char s[MAX_LINE];
-	sprintf(s, "DefineCSEx=%d %d %d %d %d %d %d %d", x, y, z, a, b, c, u, v);
+	snprintf(s, MAX_LINE, "DefineCSEx=%d %d %d %d %d %d %d %d", x, y, z, a, b, c, u, v);
 	if (KMotionDLL->WriteLine(s)) return 1;
 	x_axis=x;
 	y_axis=y;
@@ -2670,7 +2670,7 @@ float CCoordMotion::GetNominalFROChangeTime(char *Axis)
 
 // Get motion profile settings for a single Axis if included in the Coordinated Motion System
 
-int CCoordMotion::GetRapidSettingsAxis(int axis,double *Vel,double *Accel,double *Jerk, double *SoftLimitPos, double *SoftLimitNeg, double CountsPerInch, char *Axis)
+int CCoordMotion::GetRapidSettingsAxis(int axis,double *Vel,double *Accel,double *Jerk, double *SoftLimitPos, double *SoftLimitNeg, double CountsPerInch, const char *Axis)
 {
 	char s[64];
 	char response[MAX_LINE];
@@ -2684,7 +2684,7 @@ int CCoordMotion::GetRapidSettingsAxis(int axis,double *Vel,double *Accel,double
 		return 1;
 	}
 
-	sprintf(s, "Vel%d;Accel%d;Jerk%d;SoftLimitPos%d;SoftLimitNeg%d",axis,axis,axis,axis,axis);
+	snprintf(s, 64, "Vel%d;Accel%d;Jerk%d;SoftLimitPos%d;SoftLimitNeg%d",axis,axis,axis,axis,axis);
 	if (KMotionDLL->WriteLine(s)) return 1;
 
 	if (KMotionDLL->ReadLineTimeOut(response)) return 1;
@@ -2787,7 +2787,7 @@ int CCoordMotion::GetDestination(int axis, double *d)
 	
 	if (axis<0 || axis>N_CHANNELS_KOGNA) {SetAbort(); return 1;} // invalid
 
-	sprintf(cmd, "Dest%d",axis);
+	snprintf(cmd, 16, "Dest%d",axis);
 	if (KMotionDLL->WriteLineReadLine(cmd,response)) {SetAbort(); return 1;}
 
 	result=sscanf(response, "%lf",d);
@@ -2808,7 +2808,7 @@ int CCoordMotion::GetPosition(int axis, double *d)
 	
 	if (axis<0 || axis>N_CHANNELS_KOGNA) {SetAbort(); return 1;} // invalid
 
-	sprintf(cmd, "Pos%d",axis);
+	snprintf(cmd, 16, "Pos%d",axis);
 	if (KMotionDLL->WriteLineReadLine(cmd,response)) {SetAbort(); return 1;}
 
 	result=sscanf(response, "%lf",d);
@@ -2829,7 +2829,7 @@ int CCoordMotion::GetAxisDone(int axis, int *r)
 	
 	if (axis<0 || axis>N_CHANNELS_KOGNA) {SetAbort(); return 1;} // invalid
 
-	sprintf(cmd, "CheckDone%d",axis);
+	snprintf(cmd, 16, "CheckDone%d",axis);
 	if (KMotionDLL->WriteLineReadLine(cmd,response)) {SetAbort(); return 1;}
 
 	result=sscanf(response, "%d",r);
@@ -2920,7 +2920,7 @@ void CCoordMotion::SetFeedRateOverride(double v)
 	if (!m_Simulate)
 	{
 		DetermineSoftwareHardwareFRO(HW,SW);
-		sprintf(s, "SetFRO %.4f",HW);
+		snprintf(s, 32, "SetFRO %.4f",HW);
 		KMotionDLL->WriteLine(s);
 	}
 }
@@ -2935,7 +2935,7 @@ void CCoordMotion::SetFeedRateRapidOverride(double v)
 
 	if (!m_Simulate)
 	{
-		sprintf(s, "SetRapidFRO %.4f",v);
+		snprintf(s, 32, "SetRapidFRO %.4f",v);
 		KMotionDLL->WriteLine(s);
 	}
 }
@@ -3059,7 +3059,7 @@ int CCoordMotion::MeasurePointAppendToFile(const char *name)
 	// starting over
 
 	FILE *f = fopen(name,"rt");
-	char message[100+MAX_PATH];
+
 	if (!f)
 	{
 		KMotionDLL->DoErrMsg(KMotionDLL->Translate("Unable to open Geometric Correction File : ") + kmx::strtowstr(name));
@@ -3185,7 +3185,7 @@ int CCoordMotion::ConfigSpindle(int type, int axis, double UpdateTime, double Ta
 {
 	char s[128];
 	
-	sprintf(s, "ConfigSpindle %d %d %.6f %.6f %f",type, axis, UpdateTime, Tau, CountsPerRev);
+	snprintf(s, 128, "ConfigSpindle %d %d %.6f %.6f %f",type, axis, UpdateTime, Tau, CountsPerRev);
 	return KMotionDLL->WriteLine(s);
 }
 

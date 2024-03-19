@@ -1,4 +1,4 @@
-wchar_t * _rs274ngc_errors[] = {
+const wchar_t * _rs274ngc_errors[] = {
 /*   0 */ L"No error",
 /*   1 */ L"No error",
 /*   2 */ L"No error",

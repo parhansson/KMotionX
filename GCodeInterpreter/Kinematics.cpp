@@ -783,7 +783,7 @@ int CKinematics::Initialize()
 int CKinematics::GetParameter(const char* key, double *v)
 {
 	char kinFile[MAX_PATH];
-	sprintf(kinFile, "%s%cData%cKinematics.txt",MainPath,PATH_SEPARATOR,PATH_SEPARATOR);
+	snprintf(kinFile, MAX_PATH, "%s%cData%cKinematics.txt",MainPath,PATH_SEPARATOR,PATH_SEPARATOR);
 
 	FILE *f = fopen(kinFile,"rt");
 

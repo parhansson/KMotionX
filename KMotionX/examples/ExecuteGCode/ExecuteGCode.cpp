@@ -71,7 +71,7 @@ int UserMCodeCallback(int mcode)
 {
 	char msg[100];
 	double Var1000 = Interpreter->p_setup->parameters[1000];
-	sprintf(msg, "M%d Trigger GCode Var 1000 = %f\n", mcode, Var1000);
+	snprintf(msg, 100, "M%d Trigger GCode Var 1000 = %f\n", mcode, Var1000);
 	MessageBox(0, msg, "M code callback", MB_OK);
 
 	return 0;
@@ -94,17 +94,17 @@ int main(int argc, char *argv[])
 
 	char tmp_path[MAX_PATH];
 
-	sprintf(tmp_path, "%s/../KMotionX/examples/ExecuteGCode/Stepper3Axis.c", rootDir);
+	snprintf(tmp_path, MAX_PATH, "%s/../KMotionX/examples/ExecuteGCode/Stepper3Axis.c", rootDir);
 	realpath(tmp_path, setup_cfile);
 
-	sprintf(tmp_path, "%s/../C Programs/BlinkKFLOP.c", rootDir);
+	snprintf(tmp_path, MAX_PATH, "%s/../C Programs/BlinkKFLOP.c", rootDir);
 	realpath(tmp_path, m4_cfile);
 
-	sprintf(tmp_path, "%s/../KMotion/Data/Default.tbl", rootDir);
+	snprintf(tmp_path, MAX_PATH, "%s/../KMotion/Data/Default.tbl", rootDir);
 	realpath(tmp_path, tool_file);
 
 	// strcpy(setup_cfile,m4_cfile);
-	sprintf(tmp_path, "%s/../GCode Programs/SimpleCircle.ngc", rootDir);
+	snprintf(tmp_path, MAX_PATH, "%s/../GCode Programs/SimpleCircle.ngc", rootDir);
 	realpath(tmp_path, InFile);
 
 	CKMotionDLL *KM = new CKMotionDLL(0);
@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
-			sprintf(command, "Execute%d", setup_thread);
+			snprintf(command, MAX_LINE, "Execute%d", setup_thread);
 			KM->WriteLine(command);
 		}
 	}

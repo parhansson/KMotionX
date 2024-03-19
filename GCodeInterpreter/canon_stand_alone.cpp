@@ -768,7 +768,7 @@ CANON_PLANE GET_PLANE()
 
 The purpose of these GET_XXX (and other) functions is to provide for
 local emulation of the world modeling done by the EMC system.
-
+*/
 /*********************************************************************/
 
 /* GET_EXTERNAL_FEED_RATE
@@ -997,7 +997,7 @@ CANON_SPINDLE_MODE GET_EXTERNAL_SPINDLE_MODE()
 void GET_EXTERNAL_PARAMETER_FILE_NAME(char *filename, int max_size)
 {
 	if (GC->VarsFile[0] == 0)
-		sprintf(filename, "%s%cData%cemc.var",GC->CoordMotion->MainPathRoot, PATH_SEPARATOR, PATH_SEPARATOR);
+		snprintf(filename, max_size, "%s%cData%cemc.var",GC->CoordMotion->MainPathRoot, PATH_SEPARATOR, PATH_SEPARATOR);
 	else
 		strcpy(filename, GC->VarsFile);
 }

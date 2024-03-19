@@ -709,12 +709,12 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 	case M_Action_Setbit:
 		if (FlushBeforeUnbufferedOperation)  // false for User button
 		{
-			sprintf(s, "SetStateBitBuf%d=%d",(int)p->dParams[0],(int)p->dParams[1]);
+			snprintf(s, MAX_LINE, "SetStateBitBuf%d=%d",(int)p->dParams[0],(int)p->dParams[1]);
 			if (CoordMotion->DoKMotionBufCmd(s,p_setup->sequence_number)) return 1;
 		}
 		else
 		{
-			sprintf(s, "SetStateBit%d=%d",(int)p->dParams[0],(int)p->dParams[1]);
+			snprintf(s, MAX_LINE, "SetStateBit%d=%d",(int)p->dParams[0],(int)p->dParams[1]);
 			if (CoordMotion->DoKMotionCmd(s,FlushBeforeUnbufferedOperation)) return 1;
 		}
 		break;
@@ -723,9 +723,9 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 		if (FlushBeforeUnbufferedOperation)  // false for User button (doesn't make sense for button)
 		{
 			if (p->dParams[1]==0)
-				sprintf(s, "WaitNotBitBuf%d",(int)p->dParams[0]);
+				snprintf(s, MAX_LINE, "WaitNotBitBuf%d",(int)p->dParams[0]);
 			else
-				sprintf(s, "WaitBitBuf%d",(int)p->dParams[0]);
+				snprintf(s, MAX_LINE, "WaitBitBuf%d",(int)p->dParams[0]);
 
 			if (CoordMotion->DoKMotionBufCmd(s)) return 1;
 		}
@@ -734,16 +734,16 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 	case M_Action_SetTwoBits:
 		if (FlushBeforeUnbufferedOperation)  // false for User button
 		{
-			sprintf(s, "SetStateBitBuf%d=%d",(int)p->dParams[0],(int)p->dParams[1]);
+			snprintf(s, MAX_LINE, "SetStateBitBuf%d=%d",(int)p->dParams[0],(int)p->dParams[1]);
 			if (CoordMotion->DoKMotionBufCmd(s,p_setup->sequence_number)) return 1;
-			sprintf(s, "SetStateBitBuf%d=%d",(int)p->dParams[2],(int)p->dParams[3]);
+			snprintf(s, MAX_LINE, "SetStateBitBuf%d=%d",(int)p->dParams[2],(int)p->dParams[3]);
 			if (CoordMotion->DoKMotionBufCmd(s,p_setup->sequence_number)) return 1;
 		}
 		else
 		{
-			sprintf(s, "SetStateBit%d=%d",(int)p->dParams[0],(int)p->dParams[1]);
+			snprintf(s, MAX_LINE, "SetStateBit%d=%d",(int)p->dParams[0],(int)p->dParams[1]);
 			if (CoordMotion->DoKMotionCmd(s,FlushBeforeUnbufferedOperation)) return 1;
-			sprintf(s, "SetStateBit%d=%d",(int)p->dParams[2],(int)p->dParams[3]);
+			snprintf(s, MAX_LINE, "SetStateBit%d=%d",(int)p->dParams[2],(int)p->dParams[3]);
 			if (CoordMotion->DoKMotionCmd(s,FlushBeforeUnbufferedOperation)) return 1;
 		}
 		break;
@@ -753,7 +753,7 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 		ivalue = (int)floor(value+0.5); 
 		if (ivalue < (int)p->dParams[3]) ivalue = (int)p->dParams[3];
 		if (ivalue > (int)p->dParams[4]) ivalue = (int)p->dParams[4];
-		sprintf(s, "DAC%d=%d",(int)p->dParams[0],ivalue);
+		snprintf(s, MAX_LINE, "DAC%d=%d",(int)p->dParams[0],ivalue);
 		if (CoordMotion->DoKMotionCmd(s,FlushBeforeUnbufferedOperation)) return 1;
 		break;
 
@@ -809,9 +809,9 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 			{
 				if (i==6)  // tool change
 				{
-					sprintf(s, "SetPersistHex %d %x",ipersist, p_setup->tool_table[p_setup->selected_tool_slot].slot);
+					snprintf(s, MAX_LINE, "SetPersistHex %d %x",ipersist, p_setup->tool_table[p_setup->selected_tool_slot].slot);
 					if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
-					sprintf(s, "SetPersistHex %d %x",ipersist+1, p_setup->tool_table[p_setup->selected_tool_slot].id);
+					snprintf(s, MAX_LINE, "SetPersistHex %d %x",ipersist+1, p_setup->tool_table[p_setup->selected_tool_slot].id);
 					if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 				}
 				else if (i==10)  // set speed
@@ -827,7 +827,7 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 						else
 							fspeed *= 12.0f/60.0f;
 					}
-					sprintf(s, "SetPersistHex %d %x",ipersist, *(int *)&fspeed);
+					snprintf(s, MAX_LINE, "SetPersistHex %d %x",ipersist, *(int *)&fspeed);
 					if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 				}
 				else
@@ -839,7 +839,7 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 					if (MCode && p_setup->block1.p_flag)
 					{
 						float p = (float)p_setup->block1.p_number;
-						sprintf(s, "SetPersistHex %d %x",ipersist, *(int *)&p);
+						snprintf(s, MAX_LINE, "SetPersistHex %d %x",ipersist, *(int *)&p);
 						if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 						ipersist++;
 						count++;
@@ -848,7 +848,7 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 					if (MCode && p_setup->block1.q_flag)
 					{
 						float q = (float)p_setup->block1.q_number;
-						sprintf(s, "SetPersistHex %d %x",ipersist, *(int *)&q);
+						snprintf(s, MAX_LINE, "SetPersistHex %d %x",ipersist, *(int *)&q);
 						if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 						ipersist++;
 						count++;
@@ -857,7 +857,7 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 					if (MCode && p_setup->block1.r_flag)
 					{
 						float r = (float)p_setup->block1.r_number;
-						sprintf(s, "SetPersistHex %d %x",ipersist, *(int *)&r);
+						snprintf(s, MAX_LINE, "SetPersistHex %d %x",ipersist, *(int *)&r);
 						if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 						ipersist++;
 						count++;
@@ -868,11 +868,11 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 						if (i == -1) // From a Screen Script Button?
 						{
 							float v = (float)p->dParams[2]; 
-							sprintf(s, "SetPersistHex %d %x",ipersist,*(int *)&v);
+							snprintf(s, MAX_LINE, "SetPersistHex %d %x",ipersist,*(int *)&v);
 						}
 						else
 						{
-							sprintf(s, "SetPersistHex %d %x",ipersist,i);
+							snprintf(s, MAX_LINE, "SetPersistHex %d %x",ipersist,i);
 						}
 						if (CoordMotion->KMotionDLL->WriteLine(s)) { CoordMotion->SetAbort(); return 1; }
 					}
@@ -887,7 +887,7 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 				char FileName[MAX_PATH];
 				strcpy(FileName, p->String);
 				if(strchr(FileName,PATH_SEPARATOR) - FileName > -1){
-					sprintf(FileName,"%s%s%s", CoordMotion->MainPathRoot, C_PROGRAMS_DIR,  p->String);
+					snprintf(FileName, MAX_PATH, "%s%s%s", CoordMotion->MainPathRoot, C_PROGRAMS_DIR,  p->String);
 				}
 #else
 				CString FileName = p->String; 
@@ -911,7 +911,7 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 				char FileName[MAX_PATH];
 				strcpy(FileName, p->String);
 				if(strchr(FileName,PATH_SEPARATOR) == NULL){
-					sprintf(FileName,"%s%s%s", CoordMotion->MainPathRoot, C_PROGRAMS_DIR,  p->String);
+					snprintf(FileName, MAX_PATH, "%s%s%s", CoordMotion->MainPathRoot, C_PROGRAMS_DIR,  p->String);
 				}
 #else
 				CString FileName = p->String; 
@@ -929,7 +929,7 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 	
 			// Now execute the thread!
 	
-			sprintf(s, "Execute%d",(int)p->dParams[0]);
+			snprintf(s, MAX_LINE, "Execute%d",(int)p->dParams[0]);
 			if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 	
 			if (p->Action == M_Action_Program_wait || p->Action == M_Action_Program_wait_sync)
@@ -938,7 +938,7 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 	
 				int count=0;
 	
-				sprintf(s, "CheckThread%d",(int)p->dParams[0]);
+				snprintf(s, MAX_LINE, "CheckThread%d",(int)p->dParams[0]);
 				do
 				{
 					if (count++) Sleep(10);
@@ -1009,12 +1009,12 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 		s[0]='\0'; //s="";
 		if (i==6)  // tool change
 		{
-			sprintf(s, " %d",p_setup->selected_tool_slot);
+			snprintf(s, MAX_LINE, " %d",p_setup->selected_tool_slot);
 		}
 		else if (i==10)  // set speed
 		{
 			float fspeed = (float)(p_setup->speed * CoordMotion->GetSpindleRateOverride());
-			sprintf(s, " %f",fspeed);
+			snprintf(s, MAX_LINE, " %f",fspeed);
 		}
 		else
 		{
@@ -1023,24 +1023,24 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 
 			if (p_setup->block1.p_flag)
 			{
-				sprintf(s0, " %f", p_setup->block1.p_number);
+				snprintf(s0, 32, " %f", p_setup->block1.p_number);
 				strcat(s,s0);
 			}
 
 			if (p_setup->block1.q_flag)
 			{
-				sprintf(s0, " %f", p_setup->block1.q_number);
+				snprintf(s0, 32, " %f", p_setup->block1.q_number);
 				strcat(s,s0);
 			}
 
 			if (p_setup->block1.r_flag)
 			{
-				sprintf(s0, " %f", p_setup->block1.r_number);
+				snprintf(s0, 32, " %f", p_setup->block1.r_number);
 				strcat(s,s0);
 			}
 		}
 		char pcCmd[MAX_LINE];
-		sprintf(pcCmd,"%s%s",p->String,s);
+		snprintf(pcCmd, MAX_LINE, "%s%s",p->String,s);
 		result = ExecutePC(pcCmd);  // call the executable with parameters
 		if (result)
 		{
@@ -1789,7 +1789,7 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 
 	if (block0.motion_to_be == -1)
 	{
-		sprintf(s, "New Line does not contain a G mode.  Backward scan found:\r\rG%d\r\rUse this mode?", G / 10);
+		snprintf(s, MAX_LINE, "New Line does not contain a G mode.  Backward scan found:\r\rG%d\r\rUse this mode?", G / 10);
 
 		if (AfxMessageBox(s, MB_YESNO | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL) == IDNO)
 		{
@@ -1835,7 +1835,7 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 	{
 		if (FoundF)
 		{
-			sprintf(s, "New Line does not contain a Feedrate F command.  Backward scan found:\r\rF%g\r\rUse this feedrate?",f);
+			snprintf(s, MAX_LINE, "New Line does not contain a Feedrate F command.  Backward scan found:\r\rF%g\r\rUse this feedrate?",f);
 			// Ask if not already set to that value
 			if (p_setup->feed_rate == f || AfxMessageBox(s,MB_YESNO | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL)==IDYES)
 			{
@@ -1892,14 +1892,14 @@ int CGCodeInterpreter::DoReverseSearch(const char * InFile, int CurrentLine)
 		else
 			strcpy(s,"Backward scan found prior position as:\r\r");
 
-		if (CoordMotion->x_axis >= 0) { sprintf(v," X%g", xprep); strcat(s, v); }
-		if (CoordMotion->y_axis >= 0) { sprintf(v," Y%g", yprep); strcat(s, v); }
-		if (CoordMotion->z_axis >= 0) { sprintf(v," Z%g", zprep); strcat(s, v); }
-		if (CoordMotion->a_axis >= 0) { sprintf(v," A%g", aprep); strcat(s, v); }
-		if (CoordMotion->b_axis >= 0) { sprintf(v," B%g", bprep); strcat(s, v); }
-		if (CoordMotion->c_axis >= 0) { sprintf(v," C%g", cprep); strcat(s, v); }
-		if (CoordMotion->u_axis >= 0) { sprintf(v," U%g", uprep); strcat(s, v); }
-		if (CoordMotion->v_axis >= 0) { sprintf(v," V%g", vprep); strcat(s, v); }
+		if (CoordMotion->x_axis >= 0) { snprintf(v, 128, " X%g", xprep); strcat(s, v); }
+		if (CoordMotion->y_axis >= 0) { snprintf(v, 128, " Y%g", yprep); strcat(s, v); }
+		if (CoordMotion->z_axis >= 0) { snprintf(v, 128, " Z%g", zprep); strcat(s, v); }
+		if (CoordMotion->a_axis >= 0) { snprintf(v, 128, " A%g", aprep); strcat(s, v); }
+		if (CoordMotion->b_axis >= 0) { snprintf(v, 128, " B%g", bprep); strcat(s, v); }
+		if (CoordMotion->c_axis >= 0) { snprintf(v, 128, " C%g", cprep); strcat(s, v); }
+		if (CoordMotion->u_axis >= 0) { snprintf(v, 128, " U%g", uprep); strcat(s, v); }
+		if (CoordMotion->v_axis >= 0) { snprintf(v, 128, " V%g", vprep); strcat(s, v); }
 		strcat(s,"\r\rShould a Safe Z move be made to these coordinates?");
 		if (AfxMessageBox(s,MB_YESNO | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL)==IDNO)
 		{
@@ -1968,20 +1968,20 @@ int CGCodeInterpreter::SetCSS(int mode)  // set CSS mode
 		float max_rpm=1e9;
 		if (p_setup->block1.d_number!=-1) max_rpm = (float)p_setup->block1.d_number;
 
-		sprintf(s, "SetPersistHex %d %x",PC_COMM_CSS_X_OFFSET, *(int *)&xoffset);
+		snprintf(s, 64, "SetPersistHex %d %x",PC_COMM_CSS_X_OFFSET, *(int *)&xoffset);
 		if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 
-		sprintf(s, "SetPersistHex %d %x",PC_COMM_CSS_X_FACTOR, *(int *)&x_factor);
+		snprintf(s, 64, "SetPersistHex %d %x",PC_COMM_CSS_X_FACTOR, *(int *)&x_factor);
 		if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 
-		sprintf(s, "SetPersistHex %d %x",PC_COMM_CSS_S, *(int *)&fspeed);
+		snprintf(s, 64, "SetPersistHex %d %x",PC_COMM_CSS_S, *(int *)&fspeed);
 		if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 
-		sprintf(s, "SetPersistHex %d %x",PC_COMM_CSS_MAX_RPM, *(int *)&max_rpm);
+		snprintf(s, 64, "SetPersistHex %d %x",PC_COMM_CSS_MAX_RPM, *(int *)&max_rpm);
 		if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 	}
 
-	sprintf(s, "SetPersistHex %d %x",PC_COMM_CSS_MODE, mode);
+	snprintf(s, 64, "SetPersistHex %d %x",PC_COMM_CSS_MODE, mode);
 	if (CoordMotion->KMotionDLL->WriteLine(s)) {CoordMotion->SetAbort(); return 1;}
 
 	return 0;

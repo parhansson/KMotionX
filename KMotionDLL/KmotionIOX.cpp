@@ -1073,7 +1073,7 @@ int CKMotionIO::ReadSendNextLine(FILE *fr)
 
 			Mutex->Lock();
 
-			sprintf(w,"ReadDiskData 1 %d",n);
+			snprintf(w, 256, "ReadDiskData 1 %d",n);
 			if (WriteLine(w))
 			{
 				Mutex->Unlock();
@@ -1084,7 +1084,7 @@ int CKMotionIO::ReadSendNextLine(FILE *fr)
 			int i,k=0;  // reset bytes/line
 			for (i=0; i<n; i++)
 			{
-				sprintf(w+3*k,"%02X ",s[i]);  // append hex code
+				snprintf(w+3*k,256-3*k, "%02X ",s[i]);  // append hex code
 				k++;
 				if (k==80) // full line? 
 				{
