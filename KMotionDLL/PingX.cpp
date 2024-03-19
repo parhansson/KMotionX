@@ -116,7 +116,7 @@ void *ScanKFLOPs(void *lpdwParam)
                     if ((ftStatus = ftdi_usb_get_strings(ftdi, curdev->dev, Manufacturer, sizeof(Manufacturer),
                                                          Description, sizeof(Description), NULL, 0)) < 0)
                     {
-                        debug("ftdi_usb_get_strings failed: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
+                        log_err("ftdi_usb_get_strings failed: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
                     }
                     else
                     {
@@ -139,14 +139,14 @@ void *ScanKFLOPs(void *lpdwParam)
             else
             {
                 // this means ftStatus < 0
-                debug("ftdi_usb_find_all failed: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
+                log_err("ftdi_usb_find_all failed: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
             }
             KFLOPListMutex->Unlock();
             ftdi_free(ftdi);
         }
         else
         {
-            debug("ftdi_new failed\n");
+            log_err("ftdi_new failed\n");
         }
 
         Sleep(1000);
