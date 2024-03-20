@@ -4,7 +4,7 @@ LD_LIB_PATH+=$(BINDIR)
 #LD_LIB_PATH+=../bin
 # add KMotionX include first
 IDIR_ALL=$(BUILD_ROOT)/KMotionX/include $(BUILD_ROOT)/DSP_KFLOP $(IDIR)
-IFLAGS=$(addprefix -I,$(IDIR_ALL))
+IFLAGS+=$(addprefix -I,$(IDIR_ALL))
 
 CFLAGS+=-g -c -fmessage-length=0 -fPIC -MMD -MP
 CFLAGS+=-std=c++0x

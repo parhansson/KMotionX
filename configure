@@ -277,10 +277,13 @@ if test "$use_libftdi" = "yes" ; then
 	checklib ftdi1
 	if [ "$?" -eq 1 ] ; then
 	     ftdi_lib="ftdi1"
+       iflag_ftdi=$(libftdi1-config --cflags)
 	else
+    #TODO drop support for ftdi only ftdi1
 		checklib ftdi
 		if [ "$?" -eq 1 ] ; then
 		     ftdi_lib="ftdi"
+         iflag_ftdi=$(libftdi-config --cflags)
 		fi
 	fi
 else
@@ -339,6 +342,7 @@ LD_LIB_PATH=$LD_LIB_PATH
 LD_LIBS=$LD_LIBS
 LIBEXT=$libsuf
 EXESUF=$exesuf
+IFLAG_FTDI=$iflag_ftdi
 EOF
 
 print_inc() {

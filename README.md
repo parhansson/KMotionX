@@ -9,7 +9,7 @@ Please raise an issue if you find something.
 The complicated features found in CNC control applications such as KMotionCNC is not in this repository. 
 See [KMotionXCNC](https://github.com/parhansson/KMotionXCNC "CNC application")
 
-#### Current status KMotion 4.34
+#### Current status KMotion 5.3.2
 
 Runs on Linux and Mac OS.
 
