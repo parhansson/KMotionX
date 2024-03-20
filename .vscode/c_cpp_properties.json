@@ -39,7 +39,10 @@
             "name": "Linux",
             "includePath": [
                 "/usr/include",
-                "${workspaceFolder}"
+                "${workspaceFolder}/DSP_KFLOP",
+                "${workspaceFolder}/KMotionDLL",
+                "${workspaceFolder}/GCodeInterpreter",
+                "${workspaceFolder}/KMotionX/include"
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
@@ -49,7 +52,9 @@
                     "${workspaceFolder}"
                 ]
             },
-            "intelliSenseMode": "linux-gcc-x64"
+            "intelliSenseMode": "linux-gcc-x64",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
         },
         {
             "name": "Win32",
