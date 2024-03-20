@@ -56,16 +56,12 @@ public:
 	//Specifies the amount of time to wait for the synchronization object to be available (signaled).
 	//If INFINITE, Lock will wait until the object is signaled before returning.
 	//DWORD TimeOut_ms = INFINITE = 4294967295
-	int Lock(int TimeOut_ms/* = 4294967295*/);
-	int Lock();
+	int Lock(uint32_t TimeOut_ms = 4294967295);
 	int Unlock();
-	//CMutex(FALSE,"KMotionPipe",NULL)
 	virtual ~CMutex();
 
 private:
-//	string value;
-//	char *buffer;
-	const char *name;
+	std::string name;
 #if defined(TMUTEX)
 	std::recursive_timed_mutex  mutex;
 	//std::timed_mutex  mutex;

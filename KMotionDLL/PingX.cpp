@@ -18,7 +18,7 @@ int FindKognas()
     // Create a mutex with no initial owner
     KognaListMutex = new CMutex(
         FALSE,          // initially not owned
-        NULL,           // unnamed mutex
+        "KognaList",    // mutex name
         NULL);          // default security attributes
     return 0;
 }
@@ -27,7 +27,7 @@ int FindKFLOPs()
     // Create a mutex with no initial owner
     KFLOPListMutex = new CMutex(
         FALSE,          // initially not owned
-        NULL,           // unnamed mutex
+        "KFLOPList",    // mutex name
         NULL);          // default security attributes
 
     pthread_t thr;
