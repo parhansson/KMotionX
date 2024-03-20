@@ -120,7 +120,7 @@ void *ScanKFLOPs(void *lpdwParam)
                     }
                     else
                     {
-                        debug("%d '%s' '%s'", ftStatus, Manufacturer, Description);
+                        //debug("%d '%s' '%s'", ftStatus, Manufacturer, Description);
                         if (strstr(Description, "KFLOP") != NULL ||
                             strstr(Description, "KMotion") != NULL ||
                             strstr(Description, "Dynomotion") != NULL)

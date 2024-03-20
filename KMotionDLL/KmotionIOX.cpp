@@ -49,6 +49,8 @@ int _ftdi_usb_close(ftdi_context *ftdi){
   return ret;
 #endif
 }
+
+enum { CONN_STATE_IDLE, CONN_STATE_CONNECTING, CONN_STATE_COMPLETE };
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -69,7 +71,7 @@ CKMotionIO::CKMotionIO()
 	Requested_ID = -1;
 	Actual_ID = -1;
 	port = 2000;
-	//m_ConnectThreadState = CONN_STATE_IDLE;
+	m_ConnectThreadState = CONN_STATE_IDLE;
 
   if ((ftdi = ftdi_new()) == 0)
   {
@@ -81,9 +83,246 @@ CKMotionIO::CKMotionIO()
 
 CKMotionIO::~CKMotionIO()
 {
+	//libusb_release_interface is not called from ftdi_free only ftdi_usb_close
+	//hence we close it first
+	_ftdi_usb_close(ftdi);
 	//Deinitialize and free an ftdi_context.
 	ftdi_free(ftdi);
 	delete Mutex;
+}
+
+
+SOCKET CKMotionIO::ConnectToKognaSocket(std::wstring* pReason, unsigned long ipAddress, int port)
+{
+#ifndef _KMOTIONX
+	unsigned char DynoMAC[6] = { 0x8c, 0x1f, 0x64, 0x15, 0xe0, 0x00 }; // dymotion purchased MAC base address
+	unsigned char DynoMask[6] = { 0xff, 0xff, 0xff, 0xff, 0xf0, 0x00 }; // high 36 bit mask
+
+	wchar_t ErrorMessage[64]; 		//----------------------
+	// Create a SOCKET for connecting to server
+	WORD wVersionRequested;
+	WSADATA wsaData;
+	int err;
+
+	PMIB_IPNETTABLE pIpNetTable = NULL;
+	ULONG Size = 0;
+	DWORD dwIpAddr = 0;
+
+	/ Use the MAKEWORD(lowbyte, highbyte) macro declared in Windef.h /
+	wVersionRequested = MAKEWORD(2, 2);
+
+	err = WSAStartup(wVersionRequested, &wsaData);
+	if (err != 0) {
+		/* Tell the user that we could not find a usable */
+		/* Winsock DLL.                                  */
+		_swprintf_p(ErrorMessage, 64, Translate("WSAStartup failed with error: %d\n"), err);
+		if (pReason)
+			*pReason = ErrorMessage;
+		return NULL;
+	}
+
+	// Check if User has specified a specific Board
+	// 0x00000000 = 0 = any board found
+	// 0x00XXXXXX = High byte 0 asSume USB Address 
+	// 0xFF000XXX = High Byte 255 low 2 bytes = Serial Number = Domain KognaXXXX
+	// 0x01000000 - 0xDFFFFFFF assume static IP Address if high byte >= 1 and < 224
+
+	if (ipAddress >= 0x01000000 && ipAddress <= 0xDFFFFFFF) // Static ip address?
+	{
+		return TryConnectToSocket(pReason, ipAddress, port);  // Try it
+	}
+
+	if (ipAddress == 0 ||									  // use any Board found
+		(ipAddress >= 0xFF000000 && ipAddress <= 0xFF000FFF)) // or use Kogna Serial Number?
+	{
+		// wait for first complete scan fro Kognas so Apps Expecting to connect on first try succeed
+		while (!FirstKognasScanComplete)
+			Sleep(1);
+
+		DWORD dwWaitResult = WaitForSingleObject(KognaListMutex, INFINITE);  // no time-out interval
+		if (dwWaitResult != WAIT_OBJECT_0) return -1;
+
+		for (int i = 0; i < nKognas; i++)
+		{
+			if (ipAddress == 0 || Kognas[i].KognaSerialNumber == (ipAddress & 0xFFF))
+			{
+				ipAddress = Kognas[i].KognaIP;
+				SOCKET s = TryConnectToSocket(pReason, ipAddress, port);
+
+				if (s)
+				{
+					ReleaseMutex(KognaListMutex);
+					Actual_ID = ipAddress;
+					return s;
+				}
+			}
+		}
+		ReleaseMutex(KognaListMutex);
+	}
+#endif
+	return NULL;
+}
+void * DoExecuteShell(void *lpdwParam)
+{
+	((CKMotionIO*)lpdwParam)->TryConnectToSocketThread();
+	return 0;
+}
+
+// because TCP/IP connections requires such a long time to timeout perform
+// the connection in a worker Thread and keep returning no connection until
+// the worker thread successfully connects
+
+SOCKET CKMotionIO::TryConnectToSocket(std::wstring* pReason, unsigned long ipAddress, int port)
+{
+#ifndef _KMOTIONX
+	HANDLE Thread = NULL;
+	bool wait = false;
+	CHiResTimer Timer;
+
+	do
+	{
+		switch (m_ConnectThreadState)
+		{
+		case CONN_STATE_IDLE:
+			m_ConnectThreadState = CONN_STATE_CONNECTING;
+			ipAddress_Thread = ipAddress;
+			port_Thread = port;
+
+			// create a worker Thread to scan for adapters in system
+			Thread = CreateThread(
+				NULL,                        /* no security attributes        */
+				100000,                      /* stack size 100K        */
+				(LPTHREAD_START_ROUTINE) ::ConnectThread, /* thread function       */
+				this,	    			     /* argument to thread function   */
+				0,                           /* use default creation flags    */
+				NULL);
+
+			if (!Thread)  // if Thread failed remain in IDLE state
+				m_ConnectThreadState = CONN_STATE_IDLE;
+
+			wait = true;  // at first trying to connect wait some time to connect
+			Sleep(0);
+			Timer.Start();
+			break;
+
+		case CONN_STATE_CONNECTING:
+			if (wait && Timer.Elapsed_Seconds() < 0.1)
+				break; // keep looping
+			else
+				return NULL;  // so far not connected, maybe next time
+
+		case CONN_STATE_COMPLETE:
+			// verify requested IP and port hasn't changed aand
+			// if so, discard and mark as no connection
+			m_ConnectThreadState = CONN_STATE_IDLE;
+			if (ipAddress == ipAddress_Thread && port == port_Thread)
+				return socket_Thread;
+		}
+	}
+	while (true);
+#endif	
+	return NULL;
+}
+
+
+
+// called by worker thread
+
+void CKMotionIO::TryConnectToSocketThread()
+{
+#ifndef _KMOTIONX
+	SOCKET ConnectSocket;
+
+	ConnectSocket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (ConnectSocket == INVALID_SOCKET)
+	{
+		socket_Thread = NULL;
+		m_ConnectThreadState = CONN_STATE_IDLE;
+		return;
+	}
+
+	//----------------------
+	// The sockaddr_in structure specifies the address family,
+	// IP address, and port of the server to be connected to.
+	sockaddr_in clientService;
+	memset(&clientService, 0, sizeof(clientService));
+	clientService.sin_family = AF_INET;
+	unsigned int Net_add = htonl(ipAddress_Thread);
+	clientService.sin_addr.s_addr = Net_add;
+	clientService.sin_port = htons(port);
+	char IPAddres[256];
+	strcpy(IPAddres, inet_ntoa(clientService.sin_addr));
+
+	//----------------------
+	// Connect to server.
+	if (connect_with_timeout(ConnectSocket, (SOCKADDR*)&clientService, sizeof(clientService), 500) == SOCKET_ERROR) 
+	{
+		socket_Thread = NULL;
+		m_ConnectThreadState = CONN_STATE_IDLE;
+		return;
+	}
+	socket_Thread = ConnectSocket;
+	m_ConnectThreadState = CONN_STATE_COMPLETE;
+#endif
+}
+
+
+// from https://stackoverflow.com/questions/2597608/c-socket-connection-timeout
+int CKMotionIO::connect_with_timeout(SOCKET sockfd, const struct sockaddr* addr, socklen_t addrlen, unsigned int timeout_ms)
+{
+#ifndef _KMOTIONX
+	int rc = 0;
+
+	// Set O_NONBLOCK
+	unsigned long ulValue = 1;
+	ioctlsocket(sockfd, FIONBIO, &ulValue);
+
+	// Start connecting (asynchronously)
+	if (connect(sockfd, addr, addrlen) == SOCKET_ERROR)
+	{
+		int err = WSAGetLastError();
+		// Did connect return an error? If so, we'll fail.
+		if ((err != WSAEWOULDBLOCK) && (err != WSAEINPROGRESS)) {
+			rc = -1;
+		}
+		// Otherwise, we'll wait for it to complete.
+		else {
+			// Set a deadline timestamp 'timeout' ms from now (needed b/c poll can be interrupted)
+			CHiResTimer Timer;
+			Timer.Start();
+
+			// Wait for the connection to complete.
+			do {
+				// Wait for connect to complete (or for the timeout deadline)
+				if (Timer.Elapsed_Seconds() > timeout_ms * 0.001) 
+				{ 
+					rc = -1; 
+					break; 
+				}
+
+				struct pollfd PollConnect[1];
+				PollConnect->fd = sockfd;
+				PollConnect->events = POLLOUT;
+
+				rc = WSAPoll(PollConnect, 1, 100);
+				if (rc > 0) // successful?
+				{
+					int error = 0; socklen_t len = sizeof(error);
+					int retval = getsockopt(sockfd, SOL_SOCKET, SO_ERROR, (char *)&error, &len);
+					if (error != 0) rc = -1;
+					break;
+				}
+			}
+			// If poll was interrupted, try again.
+			while (1);
+		}
+	}
+	// Restore original O_NONBLOCK state
+//	if (fcntl(sockfd, F_SETFL, sockfd_flags_before) < 0) return -1;
+	// Success
+	return rc;
+#endif
+return 0;
 }
 
 
@@ -197,6 +436,7 @@ bool CKMotionIO::RequestedDeviceAvail(std::wstring *Reason)
 int CKMotionIO::Connect()
 {
 	std::wstring reason;
+	CHiResTimer Timer;
 
 	int ftStatus;
 
@@ -214,34 +454,47 @@ int CKMotionIO::Connect()
 	}
 
 
+Timer.Start();
+#ifndef _KMOTIONX
+	if((unsigned int)Actual_ID > MAX_USB_ID)
+	{
+		// Set Socket to non-blocking mode
+		// Set socket to blocking mode
+		unsigned long ul = 1;  // 0=Nonblocking mode disabled
+		int nRet = ioctlsocket(ConnectSocket, FIONBIO, (unsigned long*)&ul);
+		if (nRet == SOCKET_ERROR)
+		{
+			closesocket(ConnectSocket);
+			ConnectSocket = NULL;
+			Mutex->Unlock();
+			return 1;
+		}
+
+		m_Connected=true;  // All set
+
+		if (FlushInputBufferKogna())
+		{
+			Mutex->Unlock();
+			return 1;
+		}
+
+		Mutex->Unlock();
+		return 0;
+	}
+#endif
+
 	
-	#define TIME_TO_TRY_TO_OPEN 3000
+	#define TIME_TO_TRY_TO_OPEN 3.0
 
 	// FT_ListDevices OK, number of devices connected is in numDevs
 
 	// usually during boot the board comes and goes, since it appeared 
 	// to be there, try for a while to open it
-
-	uint32_t t0=timeGetTime();
-
 	for (;;) 
 	{
 		ftStatus = ftdi_usb_open_desc_index(ftdi, VENDOR, PRODUCT, NULL, NULL, Actual_ID);
-		
-		if (ftStatus < FT_OK)
-		{
-		  log_info("ftdi_usb_open_desc_index failed: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
-		  // FT_Open failed
-			if (timeGetTime()-t0 > TIME_TO_TRY_TO_OPEN)
-			{
-			  ErrorMessageBox(L"Unable to open KMotion device");
-				Mutex->Unlock();
-				return 1;
-			}
 
-			Sleep(100);  // delay a bit then loop back and try again
-		}
-		else
+		if (ftStatus == FT_OK)
 		{
 			// FT_Open OK, use ftHandle to access device
 
@@ -254,8 +507,22 @@ int CKMotionIO::Connect()
 				Mutex->Unlock();
 				return 1;
 			}
-
 			
+			/*
+				timeouts are defaulted in ftdi_init
+			    ftdi->usb_read_timeout = 5000;
+     			ftdi->usb_write_timeout = 5000;
+			
+			// Set read timeout of 5sec, write timeout of 5sec 
+			ftStatus = FT_SetTimeouts(ftHandle, 5000, 5000); 
+			if (ftStatus != FT_OK)
+			{
+				FT_Close(ftHandle);
+				Mutex->Unlock();
+				return 1;
+			}
+			*/
+
 			if (FlushInputBuffer())
 			{
 				log_info("FAIL: FlushInputBuffer for device %d",Actual_ID);
@@ -269,10 +536,25 @@ int CKMotionIO::Connect()
 				Mutex->Unlock();
 				return 1;
 			}
+
 			m_Connected=true;  // All set
 
 			Mutex->Unlock();
 			return 0;
+		}
+		else
+		{
+			log_info("ftdi_usb_open_desc_index failed: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
+			// FT_Open failed
+
+			if (Timer.Elapsed_Seconds() > TIME_TO_TRY_TO_OPEN)
+			{
+				ErrorMessageBox(Translate("Unable to open KMotion device").c_str());
+				Mutex->Unlock();
+				return 1;
+			}
+
+			Sleep(100);  // delay a bit then loop back and try again
 		}
 	}
 
@@ -280,6 +562,38 @@ int CKMotionIO::Connect()
 	return 0;
 }
 
+#define CONNECT_TIMEOUT 1.0
+int CKMotionIO::FlushInputBufferKogna()
+{
+#ifndef _KMOTIONX
+	char s[2560];
+	CHiResTimer Timer;
+
+	if (SendAbortOnConnect)
+	{
+		// send flush command to DSP
+
+		s[0] = ABORT_CHAR;
+		s[1] = 0;
+
+		if (SendSocketNonBlock(s, 1))  return 1;  // send it
+
+		// wait for a fixed time for the abort acknowledge
+		// to come back which is exactly 3 characters ESC C \r
+
+		Timer.Start();
+		do
+		{
+			if (ReadLineTimeOutRaw(s, 100))  
+				return 1;
+			if (Timer.Elapsed_Seconds() > CONNECT_TIMEOUT)
+				return 1;
+		} while ((s[0] != 0x1b || s[1] != 'C' || s[2] != '\r' || s[3] != '\n' || s[4] != 0));
+	}
+#endif
+	// OK looks like we are in sync
+	return 0;
+}
 int CKMotionIO::NumberBytesAvailToRead(int *navail, bool ShowMessage)
 {
 	/*
@@ -291,6 +605,29 @@ int CKMotionIO::NumberBytesAvailToRead(int *navail, bool ShowMessage)
 	*navail = strlen(m_SaveChars);  // take into account any already read in
 	
 	Mutex->Lock();
+
+	*navail = (int)strlen(m_SaveChars);  // take into account any already read in
+	
+	if ((unsigned int)Actual_ID > MAX_USB_ID)
+	{
+		unsigned long bytes_available=0;
+
+		if (ioctlsocket(ConnectSocket, FIONREAD, &bytes_available) == SOCKET_ERROR)
+		{
+			if (ShowMessage)
+				Failed();
+			else
+				m_Connected = false;
+
+			Mutex->Unlock();
+			return 1;
+		}
+		*navail += (int)bytes_available;
+		Mutex->Unlock();
+		return 0;
+	}
+	else
+	{
 	ftStatus = FT_GetStatus(ftHandle,&RxBytes,&TxBytes,&EventDWord);
 
 	if (ftStatus != FT_OK) 
@@ -320,40 +657,83 @@ int CKMotionIO::ReadBytesAvailable(char *RxBuffer, int maxbytes, uint32_t *Bytes
 	int RxBytes;
 
 	Mutex->Lock();
-/*
-	ftStatus=FT_GetStatus(ftHandle,&RxBytes,&TxBytes,&EventDWord);
-
-	if (ftStatus != FT_OK)
+	if((unsigned int)Actual_ID > MAX_USB_ID)
 	{
-		Failed();
-		Mutex->Unlock();
-		return 1;
-	}
-	if ((int)RxBytes > maxbytes) RxBytes = maxbytes-1; // leave room for null
-*/
-	RxBytes = maxbytes-1; // leave room for null
-	RxBuffer[0]=0;  // set buf empty initially
-	*BytesReceived=0;
-/*
-	if (RxBytes > 0) 
-	{
-*/
+		/*
+		int nRet = 0;
 
-		*BytesReceived = ftStatus = ftdi_read_data(ftdi,(unsigned char *)RxBuffer,RxBytes);
-		if (ftStatus >= FT_OK)
+		do  // loop until no more data available or buffer full
 		{
-		  RxBuffer[*BytesReceived]=0;  // null terminate
+			nRet = recv(ConnectSocket, RxBuffer + Offset, maxbytes - Offset - 1, 0);
+			if(nRet != SOCKET_ERROR)
+			{
+				Offset += nRet;
+			}
+			if(Offset >= maxbytes - 1)
+			{
+				Offset = maxbytes - 1;
+				break;
+			}
+			if (nRet == SOCKET_ERROR)
+			{
+				int error = WSAGetLastError();
+				if (error == WSAEWOULDBLOCK)
+				{
+					nRet = 0;
+				}
+				else
+				{
+					wchar_t ErrMsg[1024];
+					_swprintf_p(ErrMsg, 1024, Translate("SOCKET ERROR: %d"), error);
+					ErrorMessageBox(ErrMsg);
+					closesocket(ConnectSocket);
+					ConnectSocket = NULL;
+					Failed();
+					Mutex->Unlock();
+					return 1;
+				}
+			}
 		}
-		else 
+		while (nRet > 0 && maxbytes - Offset - 1 > 0);
+		RxBuffer[Offset] = 0;
+		*BytesReceived = Offset;
+		*/
+	}
+	else
+	{
+/*
+		ftStatus = FT_GetStatus(ftHandle, &RxBytes, &TxBytes, &EventDWord);
+
+		if (ftStatus != FT_OK)
 		{
-			log_info("FAIL:ftdi_read_data status: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
 			Failed();
 			Mutex->Unlock();
 			return 1;
 		}
-/*
-	}
+
+		if ((int)RxBytes > maxbytes) RxBytes = maxbytes - 1; // leave room for null
 */
+		RxBytes = maxbytes-1; // leave room for null
+		RxBuffer[0] = 0;  // set buf empty initially
+		*BytesReceived = 0;
+
+		if (RxBytes > 0) 
+		{
+			*BytesReceived = ftStatus = ftdi_read_data(ftdi,(unsigned char *)RxBuffer,RxBytes);
+			if (ftStatus >= FT_OK)
+			{
+		  		RxBuffer[*BytesReceived] = 0;  // null terminate
+			}
+			else 
+			{
+				log_info("FAIL:ftdi_read_data status: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
+				Failed();
+				Mutex->Unlock();
+				return 1;
+			}
+		}
+	}
+
 	Mutex->Unlock();
 	return 0;
 }
@@ -515,10 +895,11 @@ int CKMotionIO::ReadLineTimeOutRaw(char *buf, int TimeOutms)
 	int TotalBytes, result;
 	uint32_t NBytesRead;
 	char *p;
-	char ReadBuffer[MAX_LINE];
+	char ReadBuffer[MAX_LINE+10];
 	int i,freespace;
 	bool FirstTime=true;
 	static bool ErrorDisplayed=false;
+	CHiResTimer Timer;
 
 
 	if (ErrorDisplayed) return 1;
@@ -526,10 +907,10 @@ int CKMotionIO::ReadLineTimeOutRaw(char *buf, int TimeOutms)
 	Mutex->Lock();
 
 	strcpy(buf,m_SaveChars);
-	TotalBytes=strlen(buf);
+	TotalBytes=(int)strlen(buf);
 	m_SaveChars[0]=0; // remember we used them
 
-	uint32_t t0=timeGetTime();
+	Timer.Start();
 
 	while (!Done)
 	{ 
@@ -600,7 +981,7 @@ int CKMotionIO::ReadLineTimeOutRaw(char *buf, int TimeOutms)
 			Done=true;
 		}
 
-		if (!NO_KMOTION_TIMEOUT && !Done && (int)(timeGetTime()-t0) > TimeOutms) 
+		if (!NO_KMOTION_TIMEOUT && !Done && Timer.Elapsed_Seconds() * 1000.0 > TimeOutms) 
 		{
 			Mutex->Unlock();
 			return 2;  // return with timeout indication
@@ -634,15 +1015,61 @@ int CKMotionIO::WriteLineWithEcho(const char *s)
     strcpy(s2,s);
 	strcat(s2,"\r"); // Add CR
 
-	length = strlen(s2);
+	length = (int)strlen(s2);
 
 	Mutex->Lock();
-	ftStatus = ftdi_write_data(ftdi,(unsigned char *)s2,length);
+
+	if((unsigned int)Actual_ID > MAX_USB_ID)
+	{
+		if (SendSocketNonBlock(s2, length)) return 1;
+	}
+	else
+	{
+		ftStatus = ftdi_write_data(ftdi,(unsigned char *)s2,length);
+	}
 	Mutex->Unlock();
 
 	return 0;
 }
 
+int CKMotionIO::SendSocketNonBlock(char *s2, int length)
+{
+#ifndef _KMOTIONX
+	DWORD BytesWritten;
+
+	do
+	{
+		BytesWritten = send(ConnectSocket, s2, length, 0);  // non blocking call
+
+		if (BytesWritten == SOCKET_ERROR)
+		{
+			int error = WSAGetLastError();
+			if (error != WSAEWOULDBLOCK)
+			{
+				wchar_t ErrMsg[1024];
+				_swprintf_p(ErrMsg, 1024, Translate("SOCKET ERROR: %d"), error);
+				ErrorMessageBox(ErrMsg);
+				closesocket(ConnectSocket);
+				ConnectSocket = NULL;
+				Failed();
+				Mutex->Unlock();
+				return 1;
+			}
+		}
+		else
+		{
+			length -= BytesWritten;
+			s2 += BytesWritten;
+
+			if (length == 0) break;
+
+			Sleep(0);
+		}
+
+	} while (true);
+#endif	
+	return 0;
+}
 int CKMotionIO::SetLatency(uint8_t LatencyTimer)
 {
 	int ftStatus;
@@ -698,23 +1125,23 @@ int CKMotionIO::WriteLineReadLine(const char *send, char *response)
 		return 1;
 	}
 
-	if (ReadLineTimeOut(response,3000))
+	if (ReadLineTimeOut(response,1000000))
 	{
 		Mutex->Unlock();
-		//TODO this fails occasionally maybe because timeout is 1000000 in newer code
+		//TODO this fails occasionally
+		//Might be fixed because timeout is increased to 1000000 in newer code
 		debug("ReadLineTimeOut failed.");
 		return 1;
 	}
-	//TODO handle if response len < 2
-	response[strlen(response)-2]=0;  // remove the /r /n
+
+	response[(int)strlen(response)-2]=0;  // remove the /r /n
 
 	Mutex->Unlock();
 
 	return 0;
 }
 
-#define CONNECT_TIMEOUT 1000
-#define CONNECT_TIMEOUT_USEC CONNECT_TIMEOUT*1000
+#define CONNECT_TIMEOUT_USEC CONNECT_TIMEOUT*1000*1000
 
 int CKMotionIO::FlushInputBuffer()
 {
@@ -723,67 +1150,83 @@ int CKMotionIO::FlushInputBuffer()
 	int BytesWritten;
 	char s[64];
 	unsigned char RxBuffer[500];
-	//TODO
-	//ftdi_usb_purge_buffers is deprecated use
-	//ftdi_tcioflush(ftdi)
-	//instead. Maybe we can skip the ugly hack below
-	// discard any data in the read queue in the driver
-  ftStatus = ftdi_usb_purge_buffers(ftdi);
+	CHiResTimer Timer;
+
+	ftStatus = 	ftdi_tcioflush(ftdi);
 	if (ftStatus < FT_OK){
-		log_info("ftdi_usb_purge_buffers failed: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
+		log_info("ftdi_tcioflush failed: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
 		return 1;
 	}
+	// discard any data in the read queue in the driver
 
+	Timer.Start();
+// #ifdef __APPLE__
+// 	//On OS X we need this ugly hack.
+// 	//Even if KMotionServer is shutdown, sending abort char only works on first connect since device is connected or power cycled.
+// 	//If sending abort is skipped on subsequent attempts everything seems to work anyway.
+// 	//However if anything is else is written to the device before sending abort it starts working as expected.
+// 	//My suspicion after looking (into libusb code) is that the device is cached somehow,
+// 	//and not resetted(buffers?) or handshaked properly in the underlying USB driver (IOUSBFamily)
 
-	uint32_t t0=timeGetTime();
-#ifdef __APPLE__
-	//On OS X we need this ugly hack.
-	//Even if KMotionServer is shutdown, sending abort char only works on first connect since device is connected or power cycled.
-	//If sending abort is skipped on subsequent attempts everything seems to work anyway.
-	//However if anything is else is written to the device before sending abort it starts working as expected.
-	//My suspicion after looking (into libusb code) is that the device is cached somehow,
-	//and not resetted(buffers?) or handshaked properly in the underlying USB driver (IOUSBFamily)
+// 	//A dummy write seems to kickstart the whole thing
 
-	//A dummy write seems to kickstart the whole thing
+// 	strcpy(s,"\x1b\x01ReadBit0\r"); // write message no echo, Use a message that KFlop understands not to confuse it
+//   //We don't care about error handling here since things seems to start working regardless of the result here.
+// 	//It just needs to be done.
 
-	strcpy(s,"\x1b\x01ReadBit0\r"); // write message no echo, Use a message that KFlop understands not to confuse it
-  //We don't care about error handling here since things seems to start working regardless of the result here.
-	//It just needs to be done.
+// 	ftdi_write_data(ftdi,(unsigned char *)s,1);
+//   do
+//   {
+//       BytesReceived = ftdi_read_data(ftdi,RxBuffer, sizeof(RxBuffer) / sizeof(char));
+//   }
+//   while (BytesReceived > 0 && Timer.Elapsed_Seconds() < CONNECT_TIMEOUT);
 
-	ftdi_write_data(ftdi,(unsigned char *)s,1);
-  do
-  {
-      BytesReceived = ftdi_read_data(ftdi,RxBuffer, sizeof(RxBuffer) / sizeof(char));
-  }
-  while (BytesReceived > 0 && timeGetTime()-t0 < CONNECT_TIMEOUT);
-
-#endif
+// #endif
 
 	if (SendAbortOnConnect)
 	{
+		CHiResTimer Timer;
 		// send flush command to DSP
 
 		s[0]=ABORT_CHAR;
 		s[1]=0;
 
-    BytesWritten = ftStatus = ftdi_write_data(ftdi,(unsigned char *)s,1);
-    if (ftStatus < FT_OK){
-      log_info("FAIL: ftdi_write_data status: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
-      return 1;
-    }
-    if (BytesWritten != 1){
-      log_info("FAIL:bytes written expected 1 actual value: %d", BytesWritten);
-      return 1;
-    }
+		BytesWritten = ftStatus = ftdi_write_data(ftdi,(unsigned char *)s,1);
+		if (ftStatus < FT_OK){
+			log_info("FAIL: ftdi_write_data status: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
+      		return 1;
+    	}
+    	if (BytesWritten != 1){
+      		log_info("FAIL:bytes written expected 1 actual value: %d", BytesWritten);
+			return 1;
+		}
+
+
+		// wait and be sure chars are transmitted
+/*
+		Timer.Start();
+		do
+		{
+			ftStatus=FT_GetStatus(ftHandle,&RxBytes,&TxBytes,&EventDWord);
+			if (ftStatus != FT_OK) 
+				return 1;
+		}
+		while (TxBytes != 0 && Timer.Elapsed_Seconds() < CONNECT_TIMEOUT);
+
+		if (TxBytes != 0) return 1;
+*/		
 
     // wait for a fixed time for the abort acknowledge
     // to come back which is exactly 3 characters ESC C \r
-    do
+	
+	Timer.Start();
+
+	do
     {
       BytesReceived = ftStatus = ftdi_read_data(ftdi,RxBuffer,3);
       usleep(CONNECT_TIMEOUT_USEC/10);
     }
-    while (BytesReceived == 0 && timeGetTime()-t0 < CONNECT_TIMEOUT);
+    while (BytesReceived == 0 && Timer.Elapsed_Seconds() < CONNECT_TIMEOUT);
 
 
 
@@ -829,7 +1272,12 @@ int CKMotionIO::Failed()
 	Mutex->Lock();
 	
 	m_Connected = false;
-	
+
+	if(ConnectSocket)
+	{
+		//closesocket(ConnectSocket);
+		ConnectSocket = NULL;
+	}
     if (_ftdi_usb_close(ftdi) < 0)
     {
       log_info("unable to close ftdi device: (%s)", ftdi_get_error_string(ftdi));
@@ -966,8 +1414,8 @@ void CKMotionIO::ReleaseToken()
 
 int CKMotionIO::LogToConsole(char *s)
 {
-	debug("LogToConsole %s",s);
-	int board = this - KMotionLocal.KMotionIO;
+	int board = (int)(this - KMotionLocal.KMotionIO);
+	debug("LogToConsole board: %d %s",board, s);
 
 	if (ConsoleHandler)
 		ConsoleHandler(board,s);
@@ -980,7 +1428,7 @@ int CKMotionIO::HandleDiskIO(char *s)
 	static FILE *f=NULL;
 	static FILE *fr=NULL;
 
-	int len = strlen(s);
+	int len = (int)strlen(s);
 
 	if (len > 2) s[len-2]=0;  // strip off the CR LF
 
@@ -1069,7 +1517,7 @@ int CKMotionIO::ReadSendNextLine(FILE *fr)
 			}
 			*dst = '\0';
 
-			int n = strlen(s);
+			int n = (int)strlen(s);
 
 			Mutex->Lock();
 

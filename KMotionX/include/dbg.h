@@ -6,7 +6,7 @@
 #include <errno.h>
 #include <string.h>
 #ifdef KMX_DEBUG
-#define debug(M, ...) fprintf(stderr, "DEBUG %s.%s:%d: " M "\n", __FILE__, __func__, __LINE__, ##__VA_ARGS__)
+#define debug(M, ...) fprintf(stderr, "DEBUG %s::%s:%d: " M "\n", __FILE__, __func__, __LINE__, ##__VA_ARGS__)
 #else
 #define debug(M, ...)
 #endif

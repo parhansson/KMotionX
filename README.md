@@ -34,6 +34,10 @@ Setup and install required dependencies on your platform
 
 [Raspberry Pi](KMotionX/doc/RaspberryPi.md)
 
+## Install TI compiler
+
+[Download compiler](https://www.ti.com/tool/C6000-CGT)
+
 ## Install KMotionX
 
 ###### 1. Build KMotionX
