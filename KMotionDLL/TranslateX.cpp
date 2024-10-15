@@ -1,7 +1,7 @@
-#include "StdAfx.h"
+#include <KMotionX.h>
 #include "KMotionDLL.h"
 #include "Translate.h"
-#include "dbg.h"
+//#include "dbg.h"
 
 CTranslate Trans;
 

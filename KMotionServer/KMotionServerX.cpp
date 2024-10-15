@@ -89,7 +89,8 @@ const char ENUM_NAMES[][35]={
 
 #define BUFSIZE 4096
 #define PIPE_TIMEOUT 10000
-
+FILE *file_err = NULL;
+FILE *file_out = NULL;
 CKMotionDLL_Direct KMotionDLL;
 void * InstanceThread(void *ptr);
 void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, unsigned short *cbReplyBytes, int hPipe);
@@ -118,7 +119,12 @@ void MyErrExitThread(const char *s, int thread_socket){
 
 void MyErrExit(const char *s)
 {
-
+	if(file_err != NULL){
+		fclose(file_err);
+	}
+	if(file_out != NULL){
+		fclose(file_out);
+	}
 	syslog(LOG_ERR, "%s", s);
 	closelog();
 	exit(1);
@@ -250,7 +256,12 @@ int main(int argc, char **argv)
 			share = 1;
 			return 0;
 		}
-		
+		if(strcmp("-redirect_streams", argv[1])==0){
+			file_err = freopen("kmx_server_stderr", "a", stderr);	
+			setvbuf(file_err, NULL, _IOLBF, 0);
+			file_out = freopen("kmx_server_stdout", "a", stdout);
+			setvbuf(file_out, NULL, _IOLBF, 0);	
+		}
 	}
 	KMotionDLL.FindKognas();  // setup background Thread to find/keep track of on-line Kognas
     

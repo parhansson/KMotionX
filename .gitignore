@@ -3,8 +3,9 @@ config.h
 config.mak
 /**/.settings/
 /KMotionX/swig
-*.obj
 *.out
+*.d
+*.o
 .DS_Store
 
 ## Ignore Visual Studio temporary files, build results, and

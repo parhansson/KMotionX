@@ -73,6 +73,10 @@ If your user is not in that group fix users groups or change the rule before plu
 ```
 sudo cp KMotionX/usb/etc/udev/rules.d/10.kflop.rules /etc/udev/rules.d/
 ```
+Reload rules
+```
+sudo udevadm control --reload-rules && udevadm trigger
+```
 
 ###### 3. Execute examples or install [KMotionXCNC](https://github.com/parhansson/KMotionXCNC "CNC application")
 Plug in your KFlop to an available USB port.

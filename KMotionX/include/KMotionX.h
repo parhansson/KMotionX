@@ -74,6 +74,8 @@ extern char* _strupr(char* s);
 extern char* _strlwr(char* s);
 extern uint32_t GetTickCount();
 extern uint32_t timeGetTime();
+extern FILE *kmx_stderr;
+extern FILE *kmx_stdout;
 #else // not _KMOTIONX Probably Windows
 
 //downloaded from http://msinttypes.googlecode.com/svn/trunk/stdint.h

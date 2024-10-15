@@ -21,6 +21,9 @@
 
 #define SECONDS_PER_MONTH 2629743
 
+FILE *kmx_stderr = stderr;
+FILE *kmx_stdout = stdout;
+
 uint32_t GetTickCount()
 {
 	struct timeval tv;
@@ -98,6 +101,13 @@ namespace kmx
 		std::string narrowString = converter.to_bytes(wideString);
 		return narrowString;
 	}
+	std::wstring strtowstr(char *narrowString)
+	{
+
+		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+		std::wstring wideString = converter.from_bytes(narrowString);
+		return wideString;
+	}
 	// Convert std::string to std::wstring
 	std::wstring strtowstr(std::string narrowString)
 	{
@@ -106,6 +116,20 @@ namespace kmx
 		std::wstring wideString = converter.from_bytes(narrowString);
 		return wideString;
 	}
+
+	// string inputString = "This docment uses 3 other docments to docment the docmentation";
+	// string outputString = replaceAll(errString, "docment", "document");
+	std::string replaceAll(std::string str, const std::string &from, const std::string &to)
+	{
+		size_t start_pos = 0;
+		while ((start_pos = str.find(from, start_pos)) != std::string::npos)
+		{
+			str.replace(start_pos, from.length(), to);
+			start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+		}
+		return str;
+	}
+
 	uint8_t randomInt()
 	{
 		uint8_t random_number;
@@ -183,7 +207,7 @@ namespace kmx
 #ifdef _DEAMON
 		snprintf(command, MAX_PATH, "%s/%s", getBinPath(), "KMotionServer");
 #else
-		snprintf(command, MAX_PATH, "%s/%s", getBinPath(), "KMotionServer &");
+		snprintf(command, MAX_PATH, "%s/%s", getBinPath(), "KMotionServer -redirect_streams &");
 #endif
 
 #if defined(__APPLE__) && defined(_DEAMON)
