@@ -87,6 +87,7 @@ namespace kmx
 	char customOptions[256] = "-g";
 	int tcc_vers = OLD_COMPILER ? 16 : 26;
 	char installPath[MAX_PATH] = {0};
+	char machineDataPath[MAX_PATH] = {0};
 	char binPath[MAX_PATH] = {0};
 	char localLanguageFilePath[MAX_PATH] = {0};
 
@@ -141,10 +142,87 @@ namespace kmx
 		random_number = rand() % 127 + 1;
 		return random_number;
 	}
+
+	/**
+	 * Original kmotion code MainPath
+	 * read from ~/.kmxrc
+	 * a directory containing
+	 * Data/emc.var
+	 * Data/Default.set 		(optional)
+	 * Data/Default.tbl 		(optional)
+	 * Data/Kinematics.txt 		(optional)
+	 * Data/LocalLanguage.txt	(optional)
+	 */
+	extern const char *getMachineDataPath()
+	{
+		if (machineDataPath[0])
+		{
+			return machineDataPath;
+		}
+		const size_t maxKey_len = 50;
+		char rc_file[MAX_PATH];
+		char * envPath;
+		if ((envPath = getenv("HOME")) == NULL){
+			perror("Failed to get user home dir");
+			strncpy(machineDataPath, getInstallPath(), MAX_PATH);
+			log_info("Using Machine configuration path=%s", machineDataPath);
+			return machineDataPath;
+		}
+		snprintf(rc_file, MAX_PATH, "%s/.kmxrc", envPath);
+		FILE *file = fopen(rc_file, "r");
+		if (file == NULL)
+		{
+			perror("Kunde inte öppna filen");
+			strncpy(machineDataPath, getInstallPath(), MAX_PATH);
+		}
+		else
+		{
+
+			const char *searchKey = "machineDataPath";
+			char key[maxKey_len];
+			char value[MAX_PATH];
+			int found = 0;
+			char line[maxKey_len + MAX_PATH + 1];
+			while (fgets(line, sizeof(line), file))
+			{
+				char *equalSign = strchr(line, '=');
+				if (equalSign)
+				{
+					*equalSign = '\0'; // Avskilj nyckel från värde
+					strncpy(key, line, maxKey_len);
+
+					strncpy(value, equalSign + 1, MAX_PATH);
+					value[strcspn(value, "\n")] = 0; // Ta bort newline
+
+					if (strcmp(key, searchKey) == 0)
+					{
+						found = 1;
+						break;
+					}
+				}
+			}
+
+			fclose(file);
+			if (found)
+			{
+				strncpy(machineDataPath, value, MAX_PATH);
+			}
+			else
+			{
+				strncpy(machineDataPath, getInstallPath(), MAX_PATH);
+			}
+		}
+		log_info("Using Machine configuration path=%s", machineDataPath);
+		return machineDataPath;
+	}
+
+	/**
+	 * Original kmotion code MainPathRoot
+	 */
 	const char *getInstallPath()
 	{
-		char cwd[MAX_PATH];
-		getcwd(cwd, MAX_PATH);
+		// char cwd[MAX_PATH];
+		// getcwd(cwd, MAX_PATH);
 
 		if (!installPath[0])
 		{
@@ -166,6 +244,7 @@ namespace kmx
 				else
 				{
 					// Is HOME not ever set?
+					snprintf(installPath, MAX_PATH, "~/.kmotionx");
 					// homedir = getpwuid(getuid())->pw_dir;
 				}
 			}

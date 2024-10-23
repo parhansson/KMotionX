@@ -63,6 +63,8 @@ private:
   bool isRegisteredRoute(struct mg_connection *conn);
   bool isUploadRequest(struct mg_connection *conn);
   bool isApiRequest(struct mg_connection *conn);
+  bool isMachineDataRequest(struct mg_connection *conn);
+  
   void setInterpreterActionParams(struct json_token *jsontoken, int indexOffset, int count, const char* pathTemplate);
 
 };

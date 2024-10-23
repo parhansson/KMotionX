@@ -94,6 +94,7 @@ namespace kmx {
     BOARD_TYPE_KFLOP=2,
     BOARD_TYPE_KOGNA=3,
   };
+  extern const char * getMachineDataPath();
   extern const char * getInstallPath();
   extern const char * getBinPath();
   extern const char * getLocalLanguageFilePath();

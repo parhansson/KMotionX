@@ -7,8 +7,13 @@
 
 #include "WebController.h"
 #include <dirent.h>
+#include <stdio.h>
 #include "json.h"
 #include "utils.h"
+
+//This should be a const * that can be set as startup parameter
+//Or even better read from kmxrc
+#define ALLOWED_ORIGIN "*"
 
 //Emits json resonse
 #define EMIT_RESPONSE_PARAM(fmt,...) w += json_emit(gp_response+w, MAX_RESPONSE-w, fmt, ##__VA_ARGS__);
@@ -223,6 +228,16 @@ int WebController::DoCallback(const char *data){
 }
 
 int WebController::OnEventRequest(struct mg_connection *conn) {
+  if (!strcmp(conn->request_method, "OPTIONS")) {
+    //Dont let mongoose handle preflight request
+    mg_send_status(conn, 204);
+    mg_send_header(conn, "Access-Control-Allow-Origin", ALLOWED_ORIGIN);
+    mg_send_header(conn, "Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+    mg_send_header(conn, "Access-Control-Allow-Headers", "Content-Type, Authorization");
+    mg_send_header(conn, "Access-Control-Max-Age", "3600");
+    return MG_TRUE;
+  }
+
   if (conn->is_websocket) {
     char * content = strndup(conn->content, conn->content_len);
     //debug("MG_REQUEST websocket. content:\"%s\"",content);
@@ -235,10 +250,25 @@ int WebController::OnEventRequest(struct mg_connection *conn) {
   } else if (isApiRequest(conn)) {
     //Starts with /api but can be anything
     return HandleApiRequest(conn);
+  } else if(isMachineDataRequest(conn)){
+      //This is just to send headers for cors
+      //mongoose sends file if we remove this
+      //but the acces controll headers will be missing
+      //results in cors errors
+      //It is possible to define MONGOOSE_USE_EXTRA_HTTP_HEADERS
+      //to force extra headers but that wont be dynamic if needed
+      char file[MAX_PATH];
+      snprintf(file, sizeof(file), ".%s", conn->uri);
+      char headers[128];
+      snprintf(headers, sizeof(headers), "%s: %s\r\n", "Access-Control-Allow-Origin", ALLOWED_ORIGIN);
+      mg_send_file(conn, file, headers);
+      return MG_MORE;
   } else if(isRegisteredRoute(conn)){
-    const char * file = "kmx/index.html";
+    //This might be removed. Will be handled in nginx
+    // Might also come in hande when developing
+    const char * file = "index.html";
     const char * headers ="";
-    mg_send_file(conn, file,headers);
+    mg_send_file(conn, file, headers);
     return MG_MORE;
   }
   return MG_FALSE;
@@ -310,7 +340,9 @@ bool WebController::isUploadRequest(struct mg_connection *conn){
   //strcmp(conn->uri, "/upload") == conn->uri;
   return strstr(conn->uri, "/upload") == conn->uri;
 }
-
+bool WebController::isMachineDataRequest(struct mg_connection *conn){
+  return strstr(conn->uri, "/settings") == conn->uri;
+}
 bool WebController::isApiRequest(struct mg_connection *conn){
   return strstr(conn->uri, "/api") == conn->uri;
 }
@@ -345,6 +377,7 @@ void WebController::HandleUploadRequest(struct mg_connection *conn){
   if (fp != NULL) {
 
     //Sends HTTP/1.1 200 OK
+    mg_send_header(conn, "Access-Control-Allow-Origin", ALLOWED_ORIGIN);
     mg_send_header(conn, "Content-Type", "text/plain");
 
     // Temp file will be destroyed after fclose(), do something with the
@@ -434,6 +467,7 @@ int WebController::HandleApiRequest(struct mg_connection *conn) {
     debug("%s/%s/%s\n", argv[0],argv[1],argv[2]);
     result = HandleJsonRequest(conn,argv[1],argv[2]);
   } else {
+    mg_send_header(conn, "Access-Control-Allow-Origin", ALLOWED_ORIGIN);
     mg_send_header(conn, "Content-Type", "text/plain");
     mg_printf_data(conn, "KMotionCNC API # query_string %s\n", (char *) conn->query_string);
     mg_printf_data(conn, "KMotionCNC API # uri %s\n", (char *) tofree);
@@ -538,7 +572,7 @@ int WebController::HandleJsonRequest(struct mg_connection *conn, const char *obj
   } else {
     log_info("API not implemented %s",object);
   }
-
+  mg_send_header(conn, "Access-Control-Allow-Origin", ALLOWED_ORIGIN);
   mg_send_header(conn, "Content-Type", "application/json");
 
   //Need to send some data or connection will not be closed
@@ -555,14 +589,17 @@ int WebController::HandleJsonRequest(struct mg_connection *conn, const char *obj
 }
 
 int WebController::OpenFile(struct mg_connection *conn, struct json_token *paramtoken){
-    char * file = NULL;//"ng2/index.html";
-    toks(paramtoken, &file, 0);
-    if (file != NULL) {
-      const char * headers = "";
-      mg_send_file(conn, file, headers);
-      free(file);
-      return MG_MORE;
-    }
+  char * file = NULL;//"ng2/index.html";
+  toks(paramtoken, &file, 0);
+  if (file != NULL) {
+    char headers[128];
+    snprintf(headers, sizeof(headers), "%s: %s\r\n", "Access-Control-Allow-Origin", ALLOWED_ORIGIN);
+    mg_send_file(conn, file, headers);
+    free(file);
+    return MG_MORE;
+  }
+  //Not needed here. Will result in 404 somehow
+  //mg_send_header(conn, "Access-Control-Allow-Origin", ALLOWED_ORIGIN);
   return MG_TRUE;
 }
 

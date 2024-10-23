@@ -23,6 +23,7 @@
 
 #include "mongoose.h"
 #include "handler.h"
+#include "KMotionX.h"  // KMOtion DLL Header
 
 #ifdef _WIN32
 #include <windows.h>
@@ -499,6 +500,7 @@ static void set_options(char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
+  s_default_document_root = kmx::getMachineDataPath();
   init_server_name();
   start_mongoose(argc, argv);
   initHandler();
