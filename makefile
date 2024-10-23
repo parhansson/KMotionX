@@ -9,6 +9,7 @@ SUBDIRS+=KMotionServer
 SUBDIRS+=KMotionX/examples/test
 SUBDIRS+=KMotionX/examples/KFlopConsole
 SUBDIRS+=KMotionX/examples/ExecuteGCode
+SUBDIRS+=KMotionX/examples/kmxWeb
 SUBDIRS+=TCC67
 
 ifeq ($(BUILD_JNI),true)
@@ -60,11 +61,14 @@ install: subdirs
 	cp -R $(BUILD_ROOT)/DSP_KOGNA/ $(kmxhome)/DSP_KOGNA
 	cp "$(BUILD_ROOT)/KMotion/Data/emc.var" "$(kmxhome)/Data/"
 	cp "$(BUILD_ROOT)/C Programs/BlinkKFLOP.c" "$(kmxhome)/C Programs/"
+	ln -sf $(addprefix $(kmxhome)/bin/,$(KMXPROGS)) $(bindir)
 
 
 uninstall:
 	rm -fv $(foreach P,$(KMXLIBS),"$(kmxdir)/$P")
 	rm -rfv "$(includedir)/kmx"
+	rm -fv $(foreach P,$(KMXPROGS),"$(bindir)/$P")
+	rm -fv $(foreach P,$(KMXPROGS),"$(kmxhome)/bin/$P")
 
 clean:
 #rm -f *.o *~
