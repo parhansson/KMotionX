@@ -53,8 +53,10 @@ case "$cpu" in
       armv7a|armv7l)
         cpuver=7
       ;;
+      arm64|aarch64)
+        cpuver=8  # ARMv8 is the base architecture for ARM64
+      ;;
     esac
-    cpu="armv4l"
   ;;
   alpha)
     cpu="alpha"
@@ -251,9 +253,16 @@ MULTIARCH_TRIPLET=`$cc --print-multiarch 2>/dev/null`
 if test -n "$MULTIARCH_TRIPLET"; then
   LD_LIB_PATH="$LD_LIB_PATH /usr/lib/$MULTIARCH_TRIPLET /lib/$MULTIARCH_TRIPLET"
 fi
-#if test "$targetos" = "Darwin" ; then
- #LD_LIB_PATH="$LD_LIB_PATH /opt/local/lib"
-#fi
+if test "$targetos" = "Darwin" ; then
+    #only use directories that acutally exist
+    LD_LIB_PATH=""
+    for dir in /usr/local/lib /opt/homebrew/lib; do
+        if [ -d "$dir" ]; then
+            LD_LIB_PATH="$LD_LIB_PATH $dir"
+        fi
+    done
+    LD_LIB_PATH=$(echo "$LD_LIB_PATH" | xargs)  # Remove any leading/trailing whitespace
+fi
 
 
 checklib (){
@@ -383,32 +392,41 @@ if test "$build_java_binding" = "yes" ; then
   echo "JAVA_HOME=$java_home" >> config.mak
 fi
 
-if test "$cpu" = "x86" ; then
-  echo "CPU=i386" >> config.mak
-  echo "#define HOST_I386 1" >> $TMPH
-elif test "$cpu" = "x86-64" ; then
-  echo "CPU=x86-64" >> config.mak
-  echo "#define HOST_X86_64 1" >> $TMPH
-elif test "$cpu" = "armv4l" ; then
-  echo "CPU=arm" >> config.mak
-  echo "#define HOST_ARM 1" >> $TMPH
-  echo "#define TCC_ARM_VERSION $cpuver" >> $TMPH
-elif test "$cpu" = "powerpc" ; then
-  echo "CPU=ppc" >> config.mak
-  echo "#define HOST_PPC 1" >> $TMPH
-elif test "$cpu" = "mips" ; then
-  echo "CPU=mips" >> config.mak
-  echo "#define HOST_MIPS 1" >> $TMPH
-elif test "$cpu" = "s390" ; then
-  echo "CPU=s390" >> config.mak
-  echo "#define HOST_S390 1" >> $TMPH
-elif test "$cpu" = "alpha" ; then
-  echo "CPU=alpha" >> config.mak
-  echo "#define HOST_ALPHA 1" >> $TMPH
-else
-  echo "Unsupported CPU"
-  exit 1
-fi
+case "$cpu" in
+  x86)
+    echo "CPU=i386" >> config.mak
+    echo "#define HOST_I386 1" >> $TMPH
+    ;;
+  x86-64)
+    echo "CPU=x86-64" >> config.mak
+    echo "#define HOST_X86_64 1" >> $TMPH
+    ;;
+  arm* | aarch64)
+    echo "CPU=arm" >> config.mak
+    echo "#define HOST_ARM 1" >> $TMPH
+    echo "#define TCC_ARM_VERSION $cpuver" >> $TMPH
+    ;;
+  powerpc)
+    echo "CPU=ppc" >> config.mak
+    echo "#define HOST_PPC 1" >> $TMPH
+    ;;
+  mips)
+    echo "CPU=mips" >> config.mak
+    echo "#define HOST_MIPS 1" >> $TMPH
+    ;;
+  s390)
+    echo "CPU=s390" >> config.mak
+    echo "#define HOST_S390 1" >> $TMPH
+    ;;
+  alpha)
+    echo "CPU=alpha" >> config.mak
+    echo "#define HOST_ALPHA 1" >> $TMPH
+    ;;
+  *)
+    echo "Unsupported CPU"
+    exit 1
+    ;;
+esac
 
 diff $TMPH config.h >/dev/null 2>&1
 if test $? -ne 0 ; then

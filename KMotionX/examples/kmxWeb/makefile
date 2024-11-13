@@ -7,10 +7,12 @@ W_FLAGS+=-Wno-overloaded-virtual
 
 SOURCES=utils.cpp frozen.cpp mongoose.cpp json.cpp handler.cpp webserver.cpp
 SOURCES+=MessageQueue.cpp AbstractController.cpp FileStatus.cpp KmxController.cpp WebController.cpp
+IDIR+=$(BUILD_ROOT)/KMotionDLL
+IDIR+=$(BUILD_ROOT)/GCodeInterpreter
 IDIR+=$(includedir)/kmx/DSP_KFLOP
-IDIR+=$(includedir)/kmx/KMotionX
-IDIR+=$(includedir)/kmx/KMotion
-IDIR+=$(includedir)/kmx/GCodeInterpreter
+#IDIR+=$(includedir)/kmx/KMotionX
+#IDIR+=$(includedir)/kmx/KMotion
+#IDIR+=$(includedir)/kmx/GCodeInterpreter
 #DEFS+=-DNS_STACK_SIZE=500
 LD_LIBS+=KMotionX
 LD_LIBS+=KMotion
