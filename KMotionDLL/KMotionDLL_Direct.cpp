@@ -22,8 +22,13 @@
 
 CKMotionDLL_Direct::CKMotionDLL_Direct()
 { 
-}
 
+}
+CKMotionDLL_Direct::~CKMotionDLL_Direct()
+{ 
+	//mutex libusb etc
+	::CleanupFindKFLOPs();
+}
 void CKMotionDLL_Direct::FindKognas(void)
 {
 	::FindKognas();
@@ -113,8 +118,8 @@ int CKMotionDLL_Direct::ListLocations(int *nlocations, int *list)
 	*nlocations=0;
 
 
-	KognaListMutex->Lock();  // no time-out interval
-	if (1/*dwWaitResult == WAIT_OBJECT_0*/)
+	int dwWaitResult = pthread_mutex_lock(KognaListMutex);;  // no time-out interval
+	if (dwWaitResult == 0) // Equivalent to WAIT_OBJECT_0
 	{
 		// go through the list and copy Kogna IPs to User's list
 		for (i = 0; i < nKognas; i++)
@@ -123,12 +128,12 @@ int CKMotionDLL_Direct::ListLocations(int *nlocations, int *list)
 			list[(*nlocations)++] = 0xFF000000 | Kognas[i].KognaSerialNumber;	// Add additional to list by Serial Number
 		}
 
-		KognaListMutex->Unlock();
+		pthread_mutex_unlock(KognaListMutex);
 	}
 
 
-	KFLOPListMutex->Lock();  // no time-out interval
-	if (1/*dwWaitResult == WAIT_OBJECT_0*/)
+	dwWaitResult = pthread_mutex_lock(KFLOPListMutex);;  // no time-out interval
+	if (dwWaitResult == 0) // Equivalent to WAIT_OBJECT_0
 	{
 		// go through the list and copy Kogna IPs to User's list
 		for (unsigned int i = 0; i < nKFLOPs; i++)
@@ -136,7 +141,7 @@ int CKMotionDLL_Direct::ListLocations(int *nlocations, int *list)
 			list[(*nlocations)++] = KFLOPs[i].LocId;				// Add KFLOP IP to list
 		}
 
-		KFLOPListMutex->Unlock();
+		pthread_mutex_unlock(KFLOPListMutex);
 	}
 
 

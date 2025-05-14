@@ -1,8 +1,10 @@
 #ifdef _KMOTIONX
 #ifndef PING_H_
 #define PING_H_
+#include "dbg.h"
 int FindKognas();
 int FindKFLOPs();
+void CleanupFindKFLOPs();
 #define MAX_KOGNAS 16
 #define MAX_KFLOPS 16
 
@@ -19,16 +21,31 @@ extern KOGNA_INFO Kognas[MAX_KOGNAS];  // Kogna Online list
 extern volatile bool FirstKognasScanComplete;
 
 extern uint8_t nKFLOPs;
-//PH dumy struct for convenience
+//struct mimicing FT_DEVICE_LIST_INFO_NODE for convenience
+// typedef struct _ft_device_list_info_node {
+// 	ULONG Flags;
+//  ULONG Type;
+// 	ULONG ID;
+// 	DWORD LocId;
+// 	char SerialNumber[16];
+// 	char Description[64];
+// 	FT_HANDLE ftHandle;
+// } FT_DEVICE_LIST_INFO_NODE;
+
 typedef struct
 {
     int LocId;
+    char SerialNumber[16]; 
+    char Description[64];
+    char Manufacturer[64];
+    uint16_t vid;
+    uint16_t pid; 
 } KFLOP_INFO;
 
 extern KFLOP_INFO KFLOPs[MAX_KFLOPS];  // KFLOP Online list
 
-extern CMutex *KognaListMutex;
-extern CMutex *KFLOPListMutex;
+extern pthread_mutex_t *KognaListMutex;
+extern pthread_mutex_t *KFLOPListMutex;
 #endif //PING_H_
 #else
 #pragma once

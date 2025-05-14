@@ -9,6 +9,7 @@ W_FLAGS+=-Wno-unused-but-set-variable
 W_FLAGS+=-Wno-unused-variable
 W_FLAGS+=-Wno-unknown-pragmas
 W_FLAGS+=-Wno-unused-private-field
+W_FLAGS+=-Wno-register
 
 SOURCES=canon_stand_alone.cpp CoordMotion.cpp driver.cpp GCodeInterpreter.cpp Kinematics.cpp Kinematics3Rod.cpp PT2D.cpp PT3D.cpp rs274ngc.cpp SetupTracker.cpp TrajectoryPlanner.cpp
 SOURCES+=KinematicsGeppetto.cpp KinematicsGeppettoExtrude.cpp Kinematics5AxisGimbalAB.cpp Kinematics5AxisGimbalCB.cpp

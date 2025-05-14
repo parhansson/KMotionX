@@ -18,6 +18,7 @@ endif
 
 KMXPROGS+=KMotionServer$(EXESUF)
 KMXPROGS+=tcc67$(EXESUF)
+KMXPROGS+=kmxWeb$(EXESUF)
 KMXLIBS+=libGCodeInterpreter$(LIBEXT)
 KMXLIBS+=libKMotion$(LIBEXT)
 KMXLIBS+=libKMotionX$(LIBEXT)

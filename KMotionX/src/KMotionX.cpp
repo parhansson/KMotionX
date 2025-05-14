@@ -17,7 +17,13 @@
 #include <locale>
 #include <codecvt>
 #include <string>
+#include <stdexcept>
 #include "KMotionX.h"
+#include <cstdio>	 // For vsnprintf
+#include <cstdlib>	 // For malloc, free
+#include <stdexcept> // For runtime_error
+#include <cstdarg>	 // For va_list
+#include <vector>
 
 #define SECONDS_PER_MONTH 2629743
 
@@ -95,27 +101,111 @@ namespace kmx
 	int verifySubpath(const char *path, const char *subpath, bool isdir);
 	int testExecuteAccess(const char *file);
 
-	// Convert std::wstring to std::string
-	std::string wstrtostr(std::wstring wideString)
+	// variadic function for formatting strings with multiple arguments
+	std::wstring format(const wchar_t *format, ...)
 	{
-		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-		std::string narrowString = converter.to_bytes(wideString);
-		return narrowString;
-	}
-	std::wstring strtowstr(char *narrowString)
-	{
+		// std::wstring format(const wchar_t* format, ...) {
+		va_list args;
+		va_start(args, format);
+		// Calculate the size of the formatted string
+		int size = std::vswprintf(nullptr, 0, format, args);
+		va_end(args);
 
-		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-		std::wstring wideString = converter.from_bytes(narrowString);
-		return wideString;
-	}
-	// Convert std::string to std::wstring
-	std::wstring strtowstr(std::string narrowString)
-	{
+		if (size < 0)
+			throw std::runtime_error("Formatting error");
 
-		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-		std::wstring wideString = converter.from_bytes(narrowString);
-		return wideString;
+		std::vector<wchar_t> buf(size + 1);
+		va_start(args, format);
+		// Format the string with the provided arguments
+		std::vswprintf(buf.data(), buf.size(), format, args);
+		va_end(args);
+
+		return std::wstring(buf.data());
+	}
+
+	// Convert std::wstring to UTF-8 encoded std::string
+	std::string wstrtostr(const std::wstring &wideString)
+	{
+		std::string result;
+		result.reserve(wideString.size());
+
+		for (wchar_t wc : wideString)
+		{
+			if (wc <= 0x7F)
+			{
+				result.push_back(static_cast<char>(wc)); // 1-byte sequence
+			}
+			else if (wc <= 0x7FF)
+			{
+				result.push_back(static_cast<char>(0xC0 | ((wc >> 6) & 0x1F))); // 2-byte sequence
+				result.push_back(static_cast<char>(0x80 | (wc & 0x3F)));
+			}
+			else if (wc <= 0xFFFF)
+			{
+				result.push_back(static_cast<char>(0xE0 | ((wc >> 12) & 0x0F))); // 3-byte sequence
+				result.push_back(static_cast<char>(0x80 | ((wc >> 6) & 0x3F)));
+				result.push_back(static_cast<char>(0x80 | (wc & 0x3F)));
+			}
+			else if (wc <= 0x10FFFF)
+			{
+				result.push_back(static_cast<char>(0xF0 | ((wc >> 18) & 0x07))); // 4-byte sequence
+				result.push_back(static_cast<char>(0x80 | ((wc >> 12) & 0x3F)));
+				result.push_back(static_cast<char>(0x80 | ((wc >> 6) & 0x3F)));
+				result.push_back(static_cast<char>(0x80 | (wc & 0x3F)));
+			}
+		}
+
+		return result;
+	}
+	// Convert UTF-8 encoded char* to std::wstring
+	std::wstring strtowstr(const char *narrowString)
+	{
+		std::wstring result;
+		size_t length = std::strlen(narrowString);
+		result.reserve(length); // Reserve space
+
+		for (size_t i = 0; i < length;)
+		{
+			wchar_t wc = 0;
+			unsigned char c = narrowString[i];
+
+			if (c <= 0x7F)
+			{ // 1-byte sequence
+				wc = c;
+				i += 1;
+			}
+			else if ((c & 0xE0) == 0xC0)
+			{ // 2-byte sequence
+				wc = (c & 0x1F) << 6;
+				wc |= (narrowString[++i] & 0x3F);
+				i += 1;
+			}
+			else if ((c & 0xF0) == 0xE0)
+			{ // 3-byte sequence
+				wc = (c & 0x0F) << 12;
+				wc |= (narrowString[++i] & 0x3F) << 6;
+				wc |= (narrowString[++i] & 0x3F);
+				i += 1;
+			}
+			else if ((c & 0xF8) == 0xF0)
+			{ // 4-byte sequence
+				wc = (c & 0x07) << 18;
+				wc |= (narrowString[++i] & 0x3F) << 12;
+				wc |= (narrowString[++i] & 0x3F) << 6;
+				wc |= (narrowString[++i] & 0x3F);
+				i += 1;
+			}
+
+			result.push_back(wc);
+		}
+
+		return result;
+	}
+
+	// Convert UTF-8 encoded std::string to std::wstring
+	std::wstring strtowstr(const std::string &narrowString)
+	{
+		return strtowstr(narrowString.c_str());
 	}
 
 	// string inputString = "This docment uses 3 other docments to docment the docmentation";
@@ -161,8 +251,9 @@ namespace kmx
 		}
 		const size_t maxKey_len = 50;
 		char rc_file[MAX_PATH];
-		char * envPath;
-		if ((envPath = getenv("HOME")) == NULL){
+		char *envPath;
+		if ((envPath = getenv("HOME")) == NULL)
+		{
 			perror("Failed to get user home dir");
 			strncpy(machineDataPath, getInstallPath(), MAX_PATH);
 			log_info("Using Machine configuration path=%s", machineDataPath);

@@ -12,6 +12,8 @@ W_FLAGS+=-Wno-unused-private-field
 
 LD_LIBS+=KMotionX
 LD_LIBS+=$(FTDILIB)
+LD_LIBS+=usb-1.0
+LD_LIBS+=pthread
 
 SOURCES=COFFMAIN.cpp CLOAD.cpp KMotionDLL_Direct.cpp KMotionDLL.cpp KMotionLocal.cpp TranslateX.cpp
 
@@ -21,6 +23,7 @@ SOURCES+=Ping.cpp
 else
 SOURCES+=KmotionIOX.cpp
 SOURCES+=PingX.cpp
+#SOURCES+=PingXHotplug.cpp
 IFLAGS+=$(IFLAG_FTDI)
 endif
 

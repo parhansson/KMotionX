@@ -310,8 +310,8 @@ bool CKMotionIO::RequestedDeviceAvail(std::wstring *Reason)
 	
 	if (TryKFLOP) 
 	{
-		KFLOPListMutex->Lock();  // no time-out interval
-		if (1/*dwWaitResult == WAIT_OBJECT_0*/)
+		int dwWaitResult = pthread_mutex_lock(KFLOPListMutex);  // no time-out interval
+		if (dwWaitResult == 0) // Equivalent to WAIT_OBJECT_0
 		{
 			if (nKFLOPs > 0)
 			{
@@ -334,13 +334,13 @@ bool CKMotionIO::RequestedDeviceAvail(std::wstring *Reason)
 						{
 							Actual_ID = KFLOPs[i].LocId;  // assign it
 							Mutex->Unlock();
-							KFLOPListMutex->Unlock();
+							pthread_mutex_unlock(KFLOPListMutex);
 							return true;
 						}
 					}
 
 					Mutex->Unlock();
-					KFLOPListMutex->Unlock();
+					pthread_mutex_unlock(KFLOPListMutex);
 					if (Reason) *Reason = Translate("No KMotion devices available");
 					return false;
 				}
@@ -357,7 +357,7 @@ bool CKMotionIO::RequestedDeviceAvail(std::wstring *Reason)
 				if (i == nKFLOPs)
 				{
 					Mutex->Unlock();
-					KFLOPListMutex->Unlock();
+					pthread_mutex_unlock(KFLOPListMutex);
 					if (Reason)
 					{
 						wchar_t dyn_buf[150];
@@ -369,14 +369,14 @@ bool CKMotionIO::RequestedDeviceAvail(std::wstring *Reason)
 				else // match
 				{
 					Mutex->Unlock();
-					KFLOPListMutex->Unlock();
+					pthread_mutex_unlock(KFLOPListMutex);
 					return true;
 				}
 			}
 			else
 			{
 				Mutex->Unlock();
-				KFLOPListMutex->Unlock();
+				pthread_mutex_unlock(KFLOPListMutex);
 				if (Reason) *Reason = Translate("No KMotion devices available");
 				return false;
 			}

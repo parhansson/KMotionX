@@ -4,6 +4,7 @@ include $(BUILD_ROOT)/config.mak
 W_FLAGS+=-Wno-deprecated-register
 W_FLAGS+=-Wno-unknown-pragmas
 W_FLAGS+=-Wno-overloaded-virtual
+W_FLAGS+=-Wno-register
 
 SOURCES=utils.cpp frozen.cpp mongoose.cpp json.cpp handler.cpp webserver.cpp
 SOURCES+=MessageQueue.cpp AbstractController.cpp FileStatus.cpp KmxController.cpp WebController.cpp

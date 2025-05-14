@@ -41,6 +41,8 @@ class KMOTIONDLL_API CKMotionDLL_Direct {
 public:
 	CKMotionDLL_Direct(void);
 
+	~CKMotionDLL_Direct();
+
 	void FindKognas();
 
 	int MapBoardToIndex(int board);

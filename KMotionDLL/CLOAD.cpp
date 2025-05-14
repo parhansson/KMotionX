@@ -48,6 +48,10 @@
 /*   mralloc()          - Application version of realloc().                   */
 /*                                                                            */
 /******************************************************************************/
+#if __cplusplus >= 201703L
+    #define register // Empty definition to be compatible with older compilers
+#endif
+
 #include "StdAfx.h"
 
 #define KMotionBd 1

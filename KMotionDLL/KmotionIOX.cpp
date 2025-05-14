@@ -353,8 +353,8 @@ bool CKMotionIO::RequestedDeviceAvail(std::wstring *Reason)
 	
 	if (TryKFLOP) 
 	{
-		KFLOPListMutex->Lock();  // no time-out interval
-		if (1/*dwWaitResult == WAIT_OBJECT_0*/)
+		int dwWaitResult = pthread_mutex_lock(KFLOPListMutex);  // no time-out interval
+		if (dwWaitResult == 0) // Equivalent to WAIT_OBJECT_0
 		{
 			if (nKFLOPs > 0)
 			{
@@ -377,13 +377,13 @@ bool CKMotionIO::RequestedDeviceAvail(std::wstring *Reason)
 						{
 							Actual_ID = KFLOPs[i].LocId;  // assign it
 							Mutex->Unlock();
-							KFLOPListMutex->Unlock();
+							pthread_mutex_unlock(KFLOPListMutex);
 							return true;
 						}
 					}
 
 					Mutex->Unlock();
-					KFLOPListMutex->Unlock();
+					pthread_mutex_unlock(KFLOPListMutex);
 					if (Reason) *Reason = Translate("No KMotion devices available");
 					return false;
 				}
@@ -400,26 +400,24 @@ bool CKMotionIO::RequestedDeviceAvail(std::wstring *Reason)
 				if (i == nKFLOPs)
 				{
 					Mutex->Unlock();
-					KFLOPListMutex->Unlock();
+					pthread_mutex_unlock(KFLOPListMutex);
 					if (Reason)
 					{
-						wchar_t dyn_buf[150];
-						swprintf(dyn_buf,150, Translate("KMotion not found on USB Location %08X\r\rUnable to open device").c_str(), Requested_ID);
-						*Reason = dyn_buf;
+						*Reason = kmx::format(Translate("KMotion not found on USB Location {:08X}\r\rUnable to open device").c_str(), Requested_ID);  // Convert back to std::wstring
 					} 
 					return false;
 				}
 				else // match
 				{
 					Mutex->Unlock();
-					KFLOPListMutex->Unlock();
+					pthread_mutex_unlock(KFLOPListMutex);
 					return true;
 				}
 			}
 			else
 			{
 				Mutex->Unlock();
-				KFLOPListMutex->Unlock();
+				pthread_mutex_unlock(KFLOPListMutex);
 				if (Reason) *Reason = Translate("No KMotion devices available");
 				return false;
 			}
@@ -492,9 +490,24 @@ Timer.Start();
 	// to be there, try for a while to open it
 	for (;;) 
 	{
-		ftStatus = ftdi_usb_open_desc_index(ftdi, VENDOR, PRODUCT, NULL, NULL, Actual_ID);
+		// Actual_ID > 255 we have packed both bus and adress into this integer
+		uint8_t bus = (Actual_ID >> 8) & 0xFF;  // Extract the higher byte
+    	uint8_t addr = Actual_ID & 0xFF;         // Extract the lower byte
+		if(bus > 0){
+			ftStatus = ftdi_usb_open_bus_addr(ftdi, bus, addr);
+			if (ftStatus != FT_OK){
+				log_info("ftdi_usb_open_bus_addr failed: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
+				log_info("Failed connecting to bus %d and addr: %d", bus, addr );
+			}
+		} else {
+			ftStatus = ftdi_usb_open_desc_index(ftdi, VENDOR, PRODUCT, NULL, NULL, Actual_ID);
+			if (ftStatus != FT_OK){
+				log_info("ftdi_usb_open_desc_index failed: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
+				log_info("Failed connecting to index Actual_ID: %d", Actual_ID );
+			}
+		}
 
-		if (ftStatus == FT_OK)
+		if (ftStatus == FT_OK) 
 		{
 			// FT_Open OK, use ftHandle to access device
 
@@ -544,11 +557,14 @@ Timer.Start();
 		}
 		else
 		{
-			log_info("ftdi_usb_open_desc_index failed: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
 			// FT_Open failed
-
+			//Close handle
+			if(_ftdi_usb_close(ftdi) < FT_OK){
+				log_info("_ftdi_usb_close failed: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
+			}
 			if (Timer.Elapsed_Seconds() > TIME_TO_TRY_TO_OPEN)
 			{
+				log_info("Timer.Elapsed_Seconds() > TIME_TO_TRY_TO_OPEN: %f", Timer.Elapsed_Seconds());
 				ErrorMessageBox(Translate("Unable to open KMotion device").c_str());
 				Mutex->Unlock();
 				return 1;
@@ -717,14 +733,14 @@ int CKMotionIO::ReadBytesAvailable(char *RxBuffer, int maxbytes, uint32_t *Bytes
 		RxBuffer[0] = 0;  // set buf empty initially
 		*BytesReceived = 0;
 
-		if (RxBytes > 0) 
+		if (RxBytes > 0)
 		{
 			*BytesReceived = ftStatus = ftdi_read_data(ftdi,(unsigned char *)RxBuffer,RxBytes);
 			if (ftStatus >= FT_OK)
 			{
-		  		RxBuffer[*BytesReceived] = 0;  // null terminate
+				RxBuffer[*BytesReceived] = 0;  // null terminate
 			}
-			else 
+			else
 			{
 				log_info("FAIL:ftdi_read_data status: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
 				Failed();
@@ -798,7 +814,7 @@ int CKMotionIO::CheckForReady()
 
 						DetectedError = true;
 					}
-					
+
 					
 					// check for "Ready"
 					if (strcmp(beg,"Ready\r\n"))  
@@ -981,7 +997,7 @@ int CKMotionIO::ReadLineTimeOutRaw(char *buf, int TimeOutms)
 			Done=true;
 		}
 
-		if (!NO_KMOTION_TIMEOUT && !Done && Timer.Elapsed_Seconds() * 1000.0 > TimeOutms) 
+		if (!NO_KMOTION_TIMEOUT && !Done && Timer.Elapsed_Seconds() * 1000.0 > TimeOutms)
 		{
 			Mutex->Unlock();
 			return 2;  // return with timeout indication
@@ -1018,7 +1034,7 @@ int CKMotionIO::WriteLineWithEcho(const char *s)
 	length = (int)strlen(s2);
 
 	Mutex->Lock();
-
+	
 	if((unsigned int)Actual_ID > MAX_USB_ID)
 	{
 		if (SendSocketNonBlock(s2, length)) return 1;
@@ -1027,10 +1043,12 @@ int CKMotionIO::WriteLineWithEcho(const char *s)
 	{
 		ftStatus = ftdi_write_data(ftdi,(unsigned char *)s2,length);
 	}
+
 	Mutex->Unlock();
 
 	return 0;
 }
+
 
 int CKMotionIO::SendSocketNonBlock(char *s2, int length)
 {
@@ -1133,7 +1151,7 @@ int CKMotionIO::WriteLineReadLine(const char *send, char *response)
 		debug("ReadLineTimeOut failed.");
 		return 1;
 	}
-
+	
 	response[(int)strlen(response)-2]=0;  // remove the /r /n
 
 	Mutex->Unlock();
@@ -1272,13 +1290,13 @@ int CKMotionIO::Failed()
 	Mutex->Lock();
 	
 	m_Connected = false;
-
+	
 	if(ConnectSocket)
 	{
 		//closesocket(ConnectSocket);
 		ConnectSocket = NULL;
 	}
-    if (_ftdi_usb_close(ftdi) < 0)
+    if(_ftdi_usb_close(ftdi) < 0)
     {
       log_info("unable to close ftdi device: (%s)", ftdi_get_error_string(ftdi));
     }
@@ -1378,8 +1396,8 @@ int CKMotionIO::KMotionLock(const char *CallerID)
 	}
 	else
 	{
-	  debug("KMOTION_IN_USE");
-	  result=KMOTION_IN_USE;
+		debug("KMOTION_IN_USE");
+		result=KMOTION_IN_USE;
 	}
 
 	Mutex->Unlock();
@@ -1593,7 +1611,7 @@ int CKMotionIO::ServiceConsole()
 
 			if (!timeout)
 			{
-				if (b[0]==0x1b)                       // skip over esc if there is one
+				if (b[0]==0x1b)                       // skip over esc if there is one    
 					LogToConsole(b+1);
 				else
 					LogToConsole(b);

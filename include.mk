@@ -7,7 +7,7 @@ IDIR_ALL=$(BUILD_ROOT)/KMotionX/include $(BUILD_ROOT)/DSP_KFLOP $(IDIR)
 IFLAGS+=$(addprefix -I,$(IDIR_ALL))
 
 CFLAGS+=-g -c -fmessage-length=0 -fPIC -MMD -MP
-CFLAGS+=-std=c++0x
+CFLAGS+=-std=c++20
 #exceptions on warnings default
 CFLAGS+=-Wall
 #wflag set by others might exclude specific warnings
