@@ -39,7 +39,9 @@ typedef struct
     char Description[64];
     char Manufacturer[64];
     uint16_t vid;
-    uint16_t pid; 
+    uint16_t pid;
+    uint8_t bus_number;
+    uint8_t device_address;     
 } KFLOP_INFO;
 
 extern KFLOP_INFO KFLOPs[MAX_KFLOPS];  // KFLOP Online list

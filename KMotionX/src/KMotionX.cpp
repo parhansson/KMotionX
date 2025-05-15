@@ -102,25 +102,26 @@ namespace kmx
 	int testExecuteAccess(const char *file);
 
 	// variadic function for formatting strings with multiple arguments
-	std::wstring format(const wchar_t *format, ...)
+
+	std::wstring format(const wchar_t *wformat, ...)
 	{
-		// std::wstring format(const wchar_t* format, ...) {
+		std::string format = wstrtostr(wformat);
 		va_list args;
-		va_start(args, format);
+		va_start(args, wformat);
 		// Calculate the size of the formatted string
-		int size = std::vswprintf(nullptr, 0, format, args);
+		int size = std::vsnprintf(nullptr, 0, format.c_str(), args);
 		va_end(args);
 
 		if (size < 0)
 			throw std::runtime_error("Formatting error");
 
-		std::vector<wchar_t> buf(size + 1);
-		va_start(args, format);
+		std::vector<char> buf(size + 1);
+		va_start(args, wformat);
 		// Format the string with the provided arguments
-		std::vswprintf(buf.data(), buf.size(), format, args);
+		std::vsnprintf(buf.data(), buf.size(), format.c_str(), args);
 		va_end(args);
 
-		return std::wstring(buf.data());
+		return strtowstr(buf.data());
 	}
 
 	// Convert std::wstring to UTF-8 encoded std::string
@@ -243,33 +244,45 @@ namespace kmx
 	 * Data/Kinematics.txt 		(optional)
 	 * Data/LocalLanguage.txt	(optional)
 	 */
-	extern const char *getMachineDataPath()
+	const char *getMachineDataPath()
 	{
 		if (machineDataPath[0])
 		{
 			return machineDataPath;
 		}
+		const char *searchKey = "machineDataPath";
+
+		if(getResourceValue(searchKey, machineDataPath, MAX_PATH)){
+			strncpy(machineDataPath, getInstallPath(), MAX_PATH);
+			log_info("Using Machine configuration path=%s", machineDataPath);
+			return machineDataPath;
+		}
+		log_info("Using Machine configuration path=%s", machineDataPath);
+		return machineDataPath;
+	}
+
+	int getResourceValue(const char *searchKey, char * result, size_t maxLen)
+	{
+		// Read the ~/.kmxrc file
+	
 		const size_t maxKey_len = 50;
 		char rc_file[MAX_PATH];
 		char *envPath;
 		if ((envPath = getenv("HOME")) == NULL)
 		{
 			perror("Failed to get user home dir");
-			strncpy(machineDataPath, getInstallPath(), MAX_PATH);
-			log_info("Using Machine configuration path=%s", machineDataPath);
-			return machineDataPath;
+			return -1;
 		}
+
 		snprintf(rc_file, MAX_PATH, "%s/.kmxrc", envPath);
 		FILE *file = fopen(rc_file, "r");
 		if (file == NULL)
 		{
-			perror("Kunde inte öppna filen");
-			strncpy(machineDataPath, getInstallPath(), MAX_PATH);
+			perror("Cannot open file .kmxrc");
+			return -1;
 		}
 		else
 		{
-
-			const char *searchKey = "machineDataPath";
 			char key[maxKey_len];
 			char value[MAX_PATH];
 			int found = 0;
@@ -296,17 +309,17 @@ namespace kmx
 			fclose(file);
 			if (found)
 			{
-				strncpy(machineDataPath, value, MAX_PATH);
+				strncpy(result, value, maxLen);
+				return 0;
 			}
 			else
 			{
-				strncpy(machineDataPath, getInstallPath(), MAX_PATH);
+				log_info("Key '%s' not found in .kmxrc", searchKey);
+				return -1;
 			}
 		}
-		log_info("Using Machine configuration path=%s", machineDataPath);
-		return machineDataPath;
 	}
-
+	// check if the path is a valid directory
 	/**
 	 * Original kmotion code MainPathRoot
 	 */

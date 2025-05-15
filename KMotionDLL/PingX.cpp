@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include <stdio.h>
 #include "Ping.h"
+#include <libusb-1.0/libusb.h>
 
 #pragma comment(lib, "iphlpapi.lib")
 #pragma comment(lib, "ws2_32.lib")
@@ -35,7 +36,7 @@ int nKognas = 0;
 KOGNA_INFO Kognas[MAX_KOGNAS]; // Adapter List
 bool volatile FirstKognasScanComplete = false;
 
-uint8_t nKFLOPs;
+uint8_t nKFLOPs = 0;
 KFLOP_INFO KFLOPs[MAX_KFLOPS]; // KFLOP Online list
 int FindKognas()
 {
@@ -70,10 +71,8 @@ int FindKFLOPs()
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED); // Don't want threads (particualrly main)
                                                                  // waiting on each other
     pthread_t thr;
-    //-----------------DO NOT COMMIT---------------------------
-    // TODO skip scanning for now since this creates a deadlock
-    // BUT NOW WE TRY WITH THIS
-    //--------------------------------------------------------
+
+    // Create a thread to scan for KFLOPs
     if (pthread_create(&thr, &attr, &::ScanKFLOPs, NULL))
     {
         log_err("Could not create thread");
@@ -96,6 +95,7 @@ void *ScanKFLOPs(void *lpdwParam)
     char SerialNumber[16];
     char Description[64];
     struct ftdi_context *ftdi;
+    uint8_t nDevsBefore;
 
     if (!(ftdi = ftdi_new()))
     {
@@ -108,7 +108,7 @@ void *ScanKFLOPs(void *lpdwParam)
     // for test start two kflpConsole program and se if they mix up console answers
     // They still do, this is not the correct solution
     // Maybe LocId should be the same for different processes then just init randomValue with 0
-    uint8_t locIdSeed = 0; // kmx::randomInt();
+
     for (;;)
     {
         //log_info("Scanning for KFLOPs");
@@ -116,8 +116,9 @@ void *ScanKFLOPs(void *lpdwParam)
         int dwWaitResult = pthread_mutex_lock(KFLOPListMutex); // no time-out interval
         if (dwWaitResult == 0) // Equivalent to WAIT_OBJECT_0
         { 
+            //numDevs = ftStatus = ftdi_usb_find_all(ftdi, &devlist, 0, 0);
             numDevs = ftStatus = ftdi_usb_find_all(ftdi, &devlist, VENDOR, PRODUCT);
-            // numDevs = ftStatus = ftdi_usb_find_all(ftdi, &devlist, 0x2341, 0x8037);
+            nDevsBefore = nKFLOPs;
             nKFLOPs = 0;
             if (numDevs > 0)
             {
@@ -132,14 +133,22 @@ void *ScanKFLOPs(void *lpdwParam)
                     }
                     else
                     {
-                        // debug("%d '%s' '%s'", ftStatus, Manufacturer, Description);
                         if (strstr(Description, "KFLOP") != NULL ||
                             strstr(Description, "KMotion") != NULL ||
                             strstr(Description, "Dynomotion") != NULL)
                         {
-                            KFLOPs[nKFLOPs].LocId = i + locIdSeed;
-                            // strncpy(KFLOPs[nKFLOPs].Description, Description, 64);
-                            // strncpy(KFLOPs[nKFLOPs].SerialNumber, SerialNumber, 16);
+                            uint8_t bus_number = libusb_get_bus_number(curdev->dev);
+                            uint8_t device_address = libusb_get_device_address(curdev->dev);
+                            KFLOPs[nKFLOPs].bus_number = bus_number;
+                            KFLOPs[nKFLOPs].device_address = device_address;
+                            KFLOPs[nKFLOPs].LocId = (bus_number << 8) | device_address;
+                            strncpy(KFLOPs[nKFLOPs].Description, Description, 64);
+                            strncpy(KFLOPs[nKFLOPs].SerialNumber, SerialNumber, 16);
+
+                            // log_info("Device %d: LocId=%d, Bus=%u, Address=%u, SerialNumber=%s, Description=%s",
+                            //         i, KFLOPs[nKFLOPs].LocId,
+                            //         KFLOPs[nKFLOPs].bus_number, KFLOPs[nKFLOPs].device_address, KFLOPs[nKFLOPs].SerialNumber, KFLOPs[nKFLOPs].Description);
+
                             nKFLOPs++;
                         }
                     }
@@ -157,9 +166,22 @@ void *ScanKFLOPs(void *lpdwParam)
                 // this means ftStatus < 0
                 log_err("ftdi_usb_find_all failed: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
             }
-            // KFLOPListMutex->Unlock();
             //  Unlock the mutex after updating
             pthread_mutex_unlock(KFLOPListMutex);
+            if(nDevsBefore != nKFLOPs)
+            {
+                // Notify the main thread that the list has changed
+                // This is a placeholder for actual notification logic
+                log_info("KFLOP list updated: %d devices found", nKFLOPs);
+                for (size_t i = 0; i < 16; i++)
+                {
+                    // Notify the main thread or perform any necessary actions
+                    // For example, you could use a condition variable or an event
+                    // to signal that the list has changed.
+                    log_info("Device %d: Bus %d, Address %d, LocId=%d, SerialNumber=%s, Description=%s", i, KFLOPs[i].bus_number, KFLOPs[i].device_address, KFLOPs[i].LocId, KFLOPs[i].SerialNumber, KFLOPs[i].Description);
+                }
+                
+            }
         } else {
             log_err("pthread_mutex_lock failed: %d", dwWaitResult);
         }

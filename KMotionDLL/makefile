@@ -23,6 +23,7 @@ SOURCES+=Ping.cpp
 else
 SOURCES+=KmotionIOX.cpp
 SOURCES+=PingX.cpp
+#Hotplug works but do not scan for devices on startup
 #SOURCES+=PingXHotplug.cpp
 IFLAGS+=$(IFLAG_FTDI)
 endif

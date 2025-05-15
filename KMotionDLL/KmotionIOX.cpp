@@ -403,7 +403,8 @@ bool CKMotionIO::RequestedDeviceAvail(std::wstring *Reason)
 					pthread_mutex_unlock(KFLOPListMutex);
 					if (Reason)
 					{
-						*Reason = kmx::format(Translate("KMotion not found on USB Location {:08X}\r\rUnable to open device").c_str(), Requested_ID);  // Convert back to std::wstring
+						std::wstring translated = Translate("KMotion not found on USB Location %d\n\nUnable to open device");
+						*Reason = kmx::format(translated.c_str(), Requested_ID);  // Convert back to std::wstring
 					} 
 					return false;
 				}
@@ -411,6 +412,7 @@ bool CKMotionIO::RequestedDeviceAvail(std::wstring *Reason)
 				{
 					Mutex->Unlock();
 					pthread_mutex_unlock(KFLOPListMutex);
+					log_info("Using specific location %d", Requested_ID);
 					return true;
 				}
 			}
@@ -491,15 +493,18 @@ Timer.Start();
 	for (;;) 
 	{
 		// Actual_ID > 255 we have packed both bus and adress into this integer
-		uint8_t bus = (Actual_ID >> 8) & 0xFF;  // Extract the higher byte
-    	uint8_t addr = Actual_ID & 0xFF;         // Extract the lower byte
-		if(bus > 0){
-			ftStatus = ftdi_usb_open_bus_addr(ftdi, bus, addr);
+		uint8_t bus_number = (Actual_ID >> 8) & 0xFF;  // Extract the higher byte
+    	uint8_t device_address = Actual_ID & 0xFF;         // Extract the lower byte
+		if(bus_number > 0){
+			log_info("Connecting to device with bus_number: %d device_address: %d", bus_number, device_address);
+			ftStatus = ftdi_usb_open_bus_addr(ftdi, bus_number, device_address);
 			if (ftStatus != FT_OK){
 				log_info("ftdi_usb_open_bus_addr failed: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
-				log_info("Failed connecting to bus %d and addr: %d", bus, addr );
+				log_info("Failed connecting to bus %d and addr: %d", bus_number, device_address );
 			}
 		} else {
+			log_info("Connecting to device by index with bus_number: %d device_address: %d", bus_number, device_address);
+			//Open by index this is does notwork well becaues 0 is used as a special case
 			ftStatus = ftdi_usb_open_desc_index(ftdi, VENDOR, PRODUCT, NULL, NULL, Actual_ID);
 			if (ftStatus != FT_OK){
 				log_info("ftdi_usb_open_desc_index failed: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));

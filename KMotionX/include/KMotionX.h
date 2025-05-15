@@ -91,6 +91,7 @@ namespace kmx
     BOARD_TYPE_KOGNA = 3,
   };
   extern const char *getMachineDataPath();
+  extern int getResourceValue(const char *searchKey, char * result, size_t maxLen);
   extern const char *getInstallPath();
   extern const char *getBinPath();
   extern const char *getLocalLanguageFilePath();
@@ -100,8 +101,8 @@ namespace kmx
   extern int getCompileCommand(const char *Name, const char *OutFile, uint32_t LoadAddress, const int BoardType, char *command, int cmd_len);
 
 
-  //extern std::wstring format(const std::wstring& format, ...);
-  extern std::wstring format(const wchar_t* format, ...);
+
+  extern std::wstring format(const wchar_t *wformat, ...);
   // extern std::string wstrtostr(std::wstring wideString);
   extern std::string wstrtostr(const std::wstring &wideString);
   // extern std::wstring strtowstr(std::string narrowString);

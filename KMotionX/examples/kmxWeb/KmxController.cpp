@@ -93,6 +93,7 @@ int KmxController::readStatus(){
   //if (ThreadIsExecuting) HostStatus += HOST_JOB_ACTIVE_BIT;
   int result = km->GetStatus(main_status,false); //already locked
   if(result){
+      log_info("GetStatus failed: %d\n", result);
       connected = false;
       setSimulationMode(true);
       Interpreter->Abort();

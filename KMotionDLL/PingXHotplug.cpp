@@ -7,8 +7,8 @@
 #include <pthread.h>
 #include <string.h>
 
-#define VID 0x0403 // Replace with your Vendor ID (example: FTDI default)
-#define PID 0xF231 // Replace with your Product ID (example: FTDI default)
+// #define VID 0x0403 // Replace with your Vendor ID (example: FTDI default)
+// #define PID 0xF231 // Replace with your Product ID (example: FTDI default)
 
 void *ScanKFLOPs(void *lpdwParam);
 
@@ -32,7 +32,7 @@ int FindKognas()
     KognaListMutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
 
     // Initialize the mutex
-    pthread_mutex_init(KFLOPListMutex, NULL);
+    pthread_mutex_init(KognaListMutex, NULL);
 
     return 0;
 }
@@ -49,8 +49,18 @@ void CleanupFindKFLOPs()
     {
         pthread_mutex_destroy(KFLOPListMutex);
     }
+
     free(KFLOPListMutex);
+
     KFLOPListMutex = NULL;
+    
+    if (KognaListMutex != NULL)
+    {
+        pthread_mutex_destroy(KognaListMutex);
+    }
+    
+    free(KognaListMutex);
+    KognaListMutex = NULL;
 }
 int FindKFLOPs()
 {
@@ -61,6 +71,8 @@ int FindKFLOPs()
         log_err("Failed to allocate memory for mutex");
         exit(EXIT_FAILURE);
     }
+    // Initialize the mutex
+    pthread_mutex_init(KFLOPListMutex, NULL);
 
     int rc;
     // Initialize libusb
@@ -78,15 +90,14 @@ int FindKFLOPs()
         return 1;
     }
 
-    // Initialize the mutex
-    pthread_mutex_init(KFLOPListMutex, NULL);
+
 
     // Register the hotplug callback
     rc = libusb_hotplug_register_callback(ctx,
                                           LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED | LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT,
                                           LIBUSB_HOTPLUG_ENUMERATE,
-                                          // LIBUSB_HOTPLUG_MATCH_ANY, LIBUSB_HOTPLUG_MATCH_ANY,
-                                          VID, PID,
+                                          VENDOR, // LIBUSB_HOTPLUG_MATCH_ANY
+                                          PRODUCT, //LIBUSB_HOTPLUG_MATCH_ANY
                                           LIBUSB_HOTPLUG_MATCH_ANY,
                                           hotplug_callback, NULL, &hp_handle);
     if (rc != LIBUSB_SUCCESS)
@@ -138,7 +149,7 @@ void add_device(libusb_device *device, libusb_device_descriptor *desc)
 {
     uint16_t vid = desc->idVendor;
     uint16_t pid = desc->idProduct;
-    if (vid == VID && pid == PID)
+    if (vid == VENDOR && pid == PRODUCT)
     {
 
         // Lock the mutex before updating the device list
@@ -149,6 +160,7 @@ void add_device(libusb_device *device, libusb_device_descriptor *desc)
             if (nKFLOPs < MAX_KFLOPS)
             {
                 struct ftdi_context *ftdi = ftdi_new();
+        
                 if (!ftdi)
                 {
                     log_err("Failed to create ftdi context");
@@ -157,27 +169,46 @@ void add_device(libusb_device *device, libusb_device_descriptor *desc)
                 }
 
                 // Open FTDI device
-                if (ftdi_usb_open_dev(ftdi, device) == 0)
+    
+                if (1 || ftdi_usb_open_dev(ftdi, device) == 0)
                 {
                     KFLOP_INFO *info = &KFLOPs[nKFLOPs];
-                    info->vid = desc->idVendor;
-                    info->pid = desc->idProduct;
+                    info->vid = vid;
+                    info->pid = pid;
 
                     // Get bus number and device address
                     // TODO maybe we should use both bus and device adress for better accuracy
                     // OR serialnumber
+     
+                    //libusb_get_device_string(LIBUSB_DEVICE_STRING_MANUFACTURER) is a new featerue not yet released
                     uint8_t bus_number = libusb_get_bus_number(device);
                     uint8_t device_address = libusb_get_device_address(device);
                     // hack to pack bus and address into LocId
                     info->LocId = (bus_number << 8) | device_address;
+                    info->bus_number = bus_number;
+                    info->device_address = device_address;
+
                     // Print bus number and device address
                     log_info("Device on bus %03u address %03u connected", bus_number, device_address);
 
                     // Get the serial number and description
+                    
                     if (ftdi_usb_get_strings(ftdi, device, info->Manufacturer, sizeof(info->Manufacturer), info->Description, sizeof(info->Description), info->SerialNumber, sizeof(info->SerialNumber)) == 0)
                     {
-                        nKFLOPs++;
+                        log_err("Failed to get device strings");
                     }
+                    else
+                    {
+                        nKFLOPs++;
+                        log_info("KFLOP list updated: %d devices found", nKFLOPs);
+                        for (size_t i = 0; i < 16; i++)
+                        {
+                            // Notify the main thread or perform any necessary actions
+                            // For example, you could use a condition variable or an event
+                            // to signal that the list has changed.
+                            log_info("Device %d: Bus %d, Address %d, LocId=%d, SerialNumber=%s, Description=%s", i, KFLOPs[i].bus_number, KFLOPs[i].device_address, KFLOPs[i].LocId, KFLOPs[i].SerialNumber, KFLOPs[i].Description);
+                        }
+                    }   
 
                     ftdi_usb_close(ftdi);
                 }
