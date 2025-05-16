@@ -72,16 +72,24 @@ int KmxController::Initialize(){
 
   //Try without simulation on startup
   setSimulationMode(false);
+  
+  if(km->WaitToken(false,100) == KMOTION_LOCKED){
+    connected = true;
+    if(readStatus()){
+      connected = false;
+    } else {
+      //if (FirstStartup)
+      //{
+        //FirstStartup=false;
+        if (Interpreter->InvokeAction(ACTION_PROG_START,FALSE))  // Special Command
+        {
+          AfxMessageBox("Unable to perform Startup Action");
+        }
+      //}
 
-  if(!readStatus()){
-  //if (FirstStartup)
-  //{
-    //FirstStartup=false;
-    if (Interpreter->InvokeAction(ACTION_PROG_START,FALSE))  // Special Command
-    {
-      AfxMessageBox("Unable to perform Startup Action");
     }
-  //}
+    
+    km->ReleaseToken();
 
   }
   return 0;
@@ -93,16 +101,14 @@ int KmxController::readStatus(){
   //if (ThreadIsExecuting) HostStatus += HOST_JOB_ACTIVE_BIT;
   int result = km->GetStatus(main_status,false); //already locked
   if(result){
-      log_info("GetStatus failed: %d\n", result);
-      connected = false;
+      //log_info("GetStatus failed: %d", result);
       setSimulationMode(true);
       Interpreter->Abort();
       // error reading status
       km->Failed();
       debug("GetStatus failed\n");
-   } else {
-      connected = true;
-   }
+   } 
+
   return result;
 }
 
@@ -407,8 +413,13 @@ void KmxController::Poll() {
   //only perform poll when locked
   //Timeout must be short enough not to be reentering if multiple threads are calling poll
   if(msPast(&tval_status,200)){
-    if(km->WaitToken(false,100) == KMOTION_LOCKED){
-
+    int result = km->WaitToken(false,100);
+    if(result == KMOTION_LOCKED){
+      if(!connected){
+        //changed from not connected to connected
+        log_info("Connected to KFLOP");
+      }
+      connected = true;
       if(!simulate){
         // Note only service the console
         // after we have the token so we
@@ -417,10 +428,9 @@ void KmxController::Poll() {
             //TODO not verified that this works.
             DoErrorMessage(">ServiceConsole Failed\n");
         }
-        if(readStatus()){
-          //return;
-        }
       }
+
+      readStatus();
       km->ReleaseToken();
 
       //TODO
@@ -428,6 +438,8 @@ void KmxController::Poll() {
       //ServiceKFLOPCommands();
       //}
 
+    } else {
+      connected = false;
     }
     UpdateClient();
 

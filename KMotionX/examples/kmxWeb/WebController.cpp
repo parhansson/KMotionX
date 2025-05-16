@@ -266,7 +266,8 @@ int WebController::OnEventRequest(struct mg_connection *conn) {
   } else if(isRegisteredRoute(conn)){
     //This might be removed. Will be handled in nginx
     // Might also come in hande when developing
-    const char * file = "index.html";
+    //const char * file = "index.html";
+    const char * file = "kmx/index.html";
     const char * headers ="";
     mg_send_file(conn, file, headers);
     return MG_MORE;
