@@ -1691,7 +1691,10 @@ int CKMotionDLL::CheckKMotionVersion(int *type, bool GetBoardTypeOnly, bool Wait
 	{
 		// Get the firmware date from the KMotion Card which
 		// will be in PT (Pacific Time)
-		ReleaseToken();
+		if (Wait)
+			ReleaseToken();
+		else
+			PipeCmd(ENUM_ReleaseToken);  // KMotionLock took only the server's token, not PipeMutex
 		result = WriteLineReadLine("Version",BoardVersion);
 
 		if (result) return result;
@@ -2367,9 +2370,9 @@ int CKMotionDLL::GetStatus(MAIN_STATUS& status, bool lock)
 
 	memset(p, 0, sizeof(status));  // clear all
 
+	// Only release the token if we took it here. With lock false the caller holds it and releases it
 	if (!ReadStatus)
 	{
-		if (!lock)ReleaseToken();  // was already locked?
 		return 0;  // if wrong status version exit silently  
 	}
 
@@ -2383,7 +2386,7 @@ int CKMotionDLL::GetStatus(MAIN_STATUS& status, bool lock)
 	snprintf(s, 2570, "GetStatus");
 	if (WriteLine(s))
 	{
-		ReleaseToken();
+		if (lock) ReleaseToken();
 		return 1;
 	}
 
@@ -2411,7 +2414,7 @@ int CKMotionDLL::GetStatus(MAIN_STATUS& status, bool lock)
 
 		if (result!=1)
 		{
-			ReleaseToken();
+			if (lock) ReleaseToken();
 			return 1;
 		}
 
@@ -2424,7 +2427,7 @@ int CKMotionDLL::GetStatus(MAIN_STATUS& status, bool lock)
 		}
 		else
 		{
-			ReleaseToken();
+			if (lock) ReleaseToken();
 			return 1;
 		}
 
@@ -2440,7 +2443,7 @@ int CKMotionDLL::GetStatus(MAIN_STATUS& status, bool lock)
 			}
 		}
 	} 
-	ReleaseToken(); 
+	if (lock) ReleaseToken(); 
 
 	if (!ReadStatus)  // Wrong Version?
 	{
