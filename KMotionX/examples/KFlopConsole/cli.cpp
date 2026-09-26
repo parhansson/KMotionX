@@ -167,7 +167,8 @@ void cleanup() {
     // Perform cleanup tasks here
     // Example: Closing files, freeing memory, etc.
 
-    KM->Disconnect();
+    // No KM->Disconnect(): KMotionServer would close the USB connection for every client, such as a
+    // kmxWeb that is running GCode. The server closes it itself when its last client goes
     delete KM;
 }
 void cleanupAndExit(int exitcode) {
