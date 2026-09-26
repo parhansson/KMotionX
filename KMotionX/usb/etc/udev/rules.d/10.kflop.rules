@@ -1,1 +1,2 @@
 SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="f231", GROUP="plugdev", MODE="0666", SYMLINK+="kflop"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{manufacturer}=="Dynomotion", GROUP="plugdev", MODE="0666", SYMLINK+="kflop", ENV{ID_MM_DEVICE_IGNORE}="1"

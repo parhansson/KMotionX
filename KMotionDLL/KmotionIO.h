@@ -29,6 +29,7 @@ typedef int SOCKET;
 
 #define VENDOR 0x0403
 #define PRODUCT 0xf231
+#define PRODUCT_FTDI_DEFAULT 0x6001  // FTDI default PID, some KFLOPs are programmed with it
 
 #ifdef LIB_FTDI
 #define FT_OK 0

@@ -86,6 +86,29 @@ int FindKFLOPs()
     return 0;
 }
 
+// KFLOPs may use the Dynomotion PID or the FTDI default PID (built-in Windows drivers)
+// so find both and return them as one list
+static int FindKFLOPCandidates(struct ftdi_context *ftdi, struct ftdi_device_list **devlist)
+{
+    struct ftdi_device_list *more, **tail;
+
+    int n = ftdi_usb_find_all(ftdi, devlist, VENDOR, PRODUCT);
+    if (n < 0)
+        return n;
+
+    int n2 = ftdi_usb_find_all(ftdi, &more, VENDOR, PRODUCT_FTDI_DEFAULT);
+    if (n2 < 0)
+    {
+        ftdi_list_free(devlist);
+        return n2;
+    }
+
+    for (tail = devlist; *tail != NULL; tail = &(*tail)->next)
+        ;
+    *tail = more;
+    return n + n2;
+}
+
 void *ScanKFLOPs(void *lpdwParam)
 {
     int ftStatus;
@@ -117,7 +140,7 @@ void *ScanKFLOPs(void *lpdwParam)
         if (dwWaitResult == 0) // Equivalent to WAIT_OBJECT_0
         { 
             //numDevs = ftStatus = ftdi_usb_find_all(ftdi, &devlist, 0, 0);
-            numDevs = ftStatus = ftdi_usb_find_all(ftdi, &devlist, VENDOR, PRODUCT);
+            numDevs = ftStatus = FindKFLOPCandidates(ftdi, &devlist);
             nDevsBefore = nKFLOPs;
             nKFLOPs = 0;
             if (numDevs > 0)
