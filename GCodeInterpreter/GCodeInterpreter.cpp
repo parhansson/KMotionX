@@ -93,7 +93,9 @@ MOTION_PARAMS *CGCodeInterpreter::GetMotionParams()
 }
 
 #ifdef _KMOTIONX
-void * DoExecuteShell(void *lpdwParam)
+// static so it cannot be confused with the DoExecuteShell() in libKMotion (KmotionIOX.cpp).
+// On Linux both are global and the first one loaded wins, so Cycle Start never ran the GCode
+static void * DoExecuteShell(void *lpdwParam)
 {
 	CGCodeInterpreter *p=(CGCodeInterpreter*)lpdwParam;
 
