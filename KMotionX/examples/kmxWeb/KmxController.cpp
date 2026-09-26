@@ -144,14 +144,19 @@ void KmxController::Step(){
 }
 void KmxController::Reset(){
   currentLine = 0;
-  //Interpreter->CoordMotion->m_PreviouslyStopped = STOPPED_NONE;
+  if (!interpreting) {
+    CM->m_PreviouslyStopped = STOPPED_NONE;
+  }
 }
 
 void KmxController::CycleStart() {
   if (interpreting) {
     Halt();
   } else {
-    interpret(2, current_gcode_file->path , currentLine, -1, true);
+    // Only initialize the interpreter when starting from the top. After a Halt it has restored
+    // its state at the stopped line (units, modes, offsets) and CoordMotion knows where in that
+    // line motion stopped. Initializing threw both away. KMotionCNC never restarts here either
+    interpret(2, current_gcode_file->path , currentLine, -1, currentLine == 0);
   }
 
 }
@@ -252,6 +257,12 @@ void KmxController::interpret(int BoardType,char *InFile,int start,int end,bool 
     //Interpreter->CoordMotion->ClearHalt();
     //TODO CheckForResume
     Interpreter->InvokeAction(ACTION_CYCLE_START,FALSE);  // Do Special Action
+    // Initializing the interpreter used to be the only thing that passed settings changes to the
+    // trajectory planner. KMotionCNC also does this before every run
+    CM->SetTPParams();
+    if (!restart && !simulate) {
+      ForgetStopIfMoved();
+    }
     // Set before the interpreter thread starts. A short program can complete (and clear
     // interpreting in OnCompleteCallback) before Interpret() returns
     interpreting = true;
@@ -259,6 +270,26 @@ void KmxController::interpret(int BoardType,char *InFile,int start,int end,bool 
          ::StatusCallback, ::CompleteCallback)) {
       interpreting = false;
     }
+  }
+}
+
+// If the machine was moved (jogged) after a Halt, KMotionCNC asks how to get back to where it
+// stopped. There is no such dialog here, so continue the stopped line from where the machine is
+// now, as initializing the interpreter used to do. Otherwise a stopped arc would start from the
+// old stop point and the axes would jump there
+void KmxController::ForgetStopIfMoved(){
+  double x, y, z, a, b, c;
+
+  if (!CM->m_PreviouslyStopped || CM->ReadCurAbsPosition(&x, &y, &z, &a, &b, &c, true)) return;
+
+  if ((CM->x_axis >= 0 && x != CM->m_StoppedMachinex) ||
+      (CM->y_axis >= 0 && y != CM->m_StoppedMachiney) ||
+      (CM->z_axis >= 0 && z != CM->m_StoppedMachinez) ||
+      (CM->a_axis >= 0 && a != CM->m_StoppedMachinea) ||
+      (CM->b_axis >= 0 && b != CM->m_StoppedMachineb) ||
+      (CM->c_axis >= 0 && c != CM->m_StoppedMachinec)) {
+    log_info("Machine moved since it stopped. Resuming line %d from here", currentLine + 1);
+    CM->m_PreviouslyStopped = STOPPED_NONE;
   }
 }
 
