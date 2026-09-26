@@ -6,6 +6,19 @@
 #include "rs274ngc.h"
 #include "GCodeInterpreter.h"
 #include "HiResTimer.h"
+#include <mutex>
+
+// A button action clears an earlier Abort, which re-initializes the trajectory planner, in its own
+// thread. It must not do that while GCode is running, so starting GCode and that clearing share
+// AbortMutex, and GCodeThreads counts the GCode threads started but not yet finished
+static std::mutex AbortMutex;
+static int GCodeThreads = 0;
+
+static void GCodeThreadDone()
+{
+	std::lock_guard<std::mutex> lock(AbortMutex);
+	GCodeThreads--;
+}
 
 #ifdef _KMOTIONX
 void * DoInvokeShell(void * lpdwParam);
@@ -67,7 +80,11 @@ int CGCodeInterpreter::Interpret(
 			  G_COMPLETE_CALLBACK *CompleteFn)
 {
 	CoordMotion->m_board_type=board_type;
-	CoordMotion->ClearAbort();
+	{
+		std::lock_guard<std::mutex> lock(AbortMutex);
+		CoordMotion->ClearAbort();
+		GCodeThreads++;
+	}
 	CoordMotion->m_AxisDisabled=false;
 	CoordMotion->RapidParamsDirty=true;
 
@@ -80,7 +97,7 @@ int CGCodeInterpreter::Interpret(
 	m_Halt=m_HaltNextLine=false;
 	CoordMotion->ClearHalt();
 
-	LaunchExecution();	
+	if (LaunchExecution()) GCodeThreadDone();
 	
 	return 0;
 }
@@ -106,6 +123,7 @@ static void * DoExecuteShell(void *lpdwParam)
 	p->DoExecuteComplete();
 
 	p->m_InterpretThreadID = -1;
+	GCodeThreadDone();
 
 	pthread_exit(0);
 	return 0;
@@ -122,6 +140,7 @@ DWORD DoExecuteShell(LPDWORD lpdwParam)
 	p->DoExecuteComplete();
 
 	p->m_InterpretThreadID = -1;
+	GCodeThreadDone();
 
 	return 0;
 }
@@ -695,11 +714,17 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 
 	if (FlushBeforeUnbufferedOperation && CoordMotion->m_Simulate) return 0;
 
-	// If we were called from a button and we had been previously aborted then clear the Abort and any Halt
-	if (!FlushBeforeUnbufferedOperation && CoordMotion->GetAbort())
+	// If we were called from a button and we had been previously aborted then clear the Abort and any Halt.
+	// Not while GCode is running though: it has yet to act on them (E-Stop sets both and then invokes the
+	// Stop action) and the planner would be re-initialized under it. The next Interpret() clears them
+	if (!FlushBeforeUnbufferedOperation)
 	{
-		CoordMotion->ClearAbort();
-		CoordMotion->ClearHalt();
+		std::lock_guard<std::mutex> lock(AbortMutex);
+		if (CoordMotion->GetAbort() && GCodeThreads == 0)
+		{
+			CoordMotion->ClearAbort();
+			CoordMotion->ClearHalt();
+		}
 	}
 	
 
