@@ -174,6 +174,7 @@ void KmxController::EmergencyStop()
 
       if (km->WriteLine(s)){
         log_info("Command failed: %s\n", s);
+        km->ReleaseToken();
         return;
       }
     }
@@ -187,6 +188,7 @@ void KmxController::EmergencyStop()
       snprintf(s, MAX_LINE, "DISABLEAXIS%d",i);
       if (km->WriteLine(s)){
         log_info("Command failed: %s\n", s);
+        km->ReleaseToken();
         return;
       }
     }
