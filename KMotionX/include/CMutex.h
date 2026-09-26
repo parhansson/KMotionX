@@ -38,6 +38,7 @@ either expressed or implied, of the FreeBSD Project.
 #define CMUTEX_
 #include <mutex>
 #include <chrono>
+#include <atomic>
 
 typedef struct _securityAttr {
   uint32_t  nLength;
@@ -68,6 +69,11 @@ private:
 #else
 #endif
 	bool lock;
+	// The thread holding the mutex (0 when free) and how many times it has locked it. Only the
+	// holder changes them, and it clears owner before its last unlock, so an Unlock() from any other
+	// thread (such as a second ReleaseToken) can never pass the ownership check
+	std::atomic<long> owner{0};
+	int lockCount = 0;
 
 
 };
