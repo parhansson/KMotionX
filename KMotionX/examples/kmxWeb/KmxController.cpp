@@ -433,6 +433,13 @@ void KmxController::Poll() {
       readStatus();
       km->ReleaseToken();
 
+      // The DROs need to know which KFLOP channels are X,Y,Z... The interpreter only asks
+      // KFLOP when a program starts, so refresh it here too (also picks up init program changes)
+      if(!simulate && !interpreting){
+        int x, y, z, a, b, c;
+        Interpreter->CoordMotion->GetAxisDefinitions(&x, &y, &z, &a, &b, &c);
+      }
+
       //TODO
       //if(!simulate){
       //ServiceKFLOPCommands();
