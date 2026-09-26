@@ -250,10 +250,12 @@ void KmxController::interpret(int BoardType,char *InFile,int start,int end,bool 
     //Interpreter->CoordMotion->ClearHalt();
     //TODO CheckForResume
     Interpreter->InvokeAction(ACTION_CYCLE_START,FALSE);  // Do Special Action
-    if (!Interpreter->Interpret(BoardType, InFile, start, end, restart,
+    // Set before the interpreter thread starts. A short program can complete (and clear
+    // interpreting in OnCompleteCallback) before Interpret() returns
+    interpreting = true;
+    if (Interpreter->Interpret(BoardType, InFile, start, end, restart,
          ::StatusCallback, ::CompleteCallback)) {
-      interpreting = true;
-      //enqueueState();
+      interpreting = false;
     }
   }
 }
