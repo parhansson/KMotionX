@@ -336,7 +336,10 @@ void KmxController::OnCompleteCallback(int status, int line_no, int sequence_num
   }
 
   int id = CreateCompleteCallbackData(status, line_no, sequence_number, err, blocking, &buf);
-  if(strlen(err)>0){
+  // 1005 means the program stopped where it can be resumed. After a Halt that completion
+  // carries the text "GCode Aborted", which is not an error, so it goes to the status log
+  // only. Real errors keep going to the error log
+  if(strlen(err)>0 && status != 1005){
     OnErrorMessageCallback(err);
   }
 
