@@ -146,6 +146,7 @@ private:
   CCoordMotion *CM;
 
   void interpret(int BoardType,char *InFile,int start,int end,bool restart);
+  void ForgetStopIfMoved();
   void setSimulationMode(bool enable);
   int readStatus();
   bool msPast(struct timeval *tval_last, int ms);
