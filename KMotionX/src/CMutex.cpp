@@ -46,9 +46,6 @@ either expressed or implied, of the FreeBSD Project.
 #define mutex_debug(M, ...)
 #endif
 
-long int owner;
-int lockCount;
-
 CMutex::CMutex()
 {
 	lock = false;
@@ -121,7 +118,8 @@ int CMutex::Unlock()
 	if (owner == tid && lockCount > 0)
 	{
 		mutex_debug("Unlocking Mutex[%s] thread: %ld lockCount: %d", name.c_str(), tid, lockCount);
-		lockCount--;
+		if (--lockCount == 0)
+			owner = 0;
 		mutex.unlock();
 		mutex_debug("Unlocked Mutex[%s] thread: %ld lockCount: %d", name.c_str(), tid, lockCount);
 		return 1;

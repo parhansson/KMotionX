@@ -36,6 +36,7 @@ either expressed or implied, of the FreeBSD Project.
 #ifndef MESSAGEBOX_H_
 #define MESSAGEBOX_H_
 #include <string>
+#include <stdint.h>
 
 /*
  * MessageBox() Flags from WinUser.h

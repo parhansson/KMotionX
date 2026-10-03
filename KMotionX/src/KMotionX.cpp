@@ -7,6 +7,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <cstring>
 #include <assert.h>
 #include <time.h>
 #include <sys/time.h>

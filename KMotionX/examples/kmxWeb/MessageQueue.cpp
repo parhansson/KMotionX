@@ -8,6 +8,7 @@
 #include "MessageQueue.h"
 #include "KMotionX.h"
 #include <stdlib.h>
+#include <cstring>
 #include "dbg.h"
 
 
