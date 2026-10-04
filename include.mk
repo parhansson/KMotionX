@@ -1,7 +1,5 @@
 ODIR=build
 BINDIR=$(BUILD_ROOT)/bin
-LD_LIB_PATH+=$(BINDIR)
-#LD_LIB_PATH+=../bin
 # add KMotionX include first
 IDIR_ALL=$(BUILD_ROOT)/KMotionX/include $(BUILD_ROOT)/DSP_KFLOP $(IDIR)
 IFLAGS+=$(addprefix -I,$(IDIR_ALL))
@@ -20,15 +18,17 @@ ifeq ($(OSNAME),Linux)
 LDFLAGS+=-shared
 else ifeq ($(OSNAME),Darwin)
 LDFLAGS+=-dynamiclib
-LDFLAGS+=-install_name '$(kmxdir)/$(EXECUTABLE)'
+LDFLAGS+=-install_name '@rpath/$(EXECUTABLE)'
 endif
 endif
 LDFLAGS+=$(addprefix -l,$(LD_LIBS))
-LDFLAGS+=$(addprefix -L,$(LD_LIB_PATH))
-LDFLAGS+=-Wl,-rpath,$(realpath $(kmxdir))
-#LDFLAGS+=-Wl,-rpath $(realpath $(BINDIR))
-#LDFLAGS+=-Wl,-rpath,$$ORIGIN
-#LDFLAGS+=-Wl,-z,origin
+LDFLAGS+=-L$(BINDIR)
+ifeq ($(OSNAME),Linux)
+LDFLAGS+=-Wl,-rpath,'$$ORIGIN'
+else ifeq ($(OSNAME),Darwin)
+LDFLAGS+=-Wl,-rpath,@loader_path
+endif
+LDFLAGS+=-Wl,-rpath,$(RUNTIME_LIBDIR)
 
 
 

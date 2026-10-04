@@ -2,12 +2,18 @@
 
 This is only tested on 14.04.
 
-###### 1. Install g++
+###### 1. Install build tools
 ```
-sudo apt-get install g++
+sudo apt-get install g++ pkg-config
 ```
-###### 2. Install libftdi
-Skip this step if you will be using ftd2xx driver. However libftdi works a lot better on linux libftdi is an open source ftdi driver that might be used as replacement when running on Linux or MacOSX
+`pkg-config` supplies the include and linker flags for the default libftdi build.
+If it is already installed, there is no need to install it again.
+
+###### 2. Install libftdi and libusb development packages
+Skip libftdi if you are using the ftd2xx driver. The default build uses the
+open-source libftdi driver.
 ```
-sudo apt-get install libftdi1-dev
+sudo apt-get install libftdi1-dev libusb-1.0-0-dev
 ```
+Check that both packages are visible with
+`pkg-config --modversion libftdi1 libusb-1.0` before running `./configure`.

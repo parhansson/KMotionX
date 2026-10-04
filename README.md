@@ -28,6 +28,10 @@ This guide contains four sections. How to install on Mac OS X, Ubuntu, Rasbian (
 
 Setup and install required dependencies on your platform
 
+The default libftdi build uses `pkg-config` to locate libftdi1 and libusb. Install
+`pkg-config` (or `pkgconf`) and the development packages described in the
+platform guides below before running `./configure`.
+
 [Mac OS X](KMotionX/doc/MacOSX.md)
 
 [Ubuntu](KMotionX/doc/Ubuntu.md)
@@ -58,14 +62,32 @@ Configure build for your platform and flavours
 ```
 ./configure
 ```
+By default, KMotionX installs under `$HOME/.local` and `make install` does
+not need `sudo`. To install system-wide instead, configure with
+`--prefix=/usr/local` and use `sudo make install`.
+If the libraries are installed under a custom prefix, make their `.pc` files
+visible before configuring:
+```
+export PKG_CONFIG_PATH="/path/to/prefix/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+./configure
+```
+You can check discovery with `pkg-config --modversion libftdi1 libusb-1.0`.
+For the proprietary ftd2xx driver instead, run `./configure --ftd2xx`.
+If the driver is outside your compiler's library search path, specify its
+directory with `./configure --ftd2xx --ftd2xx-libdir=/path/to/driver/lib`.
+`--libdir` controls where KMotionX installs its own libraries; it is not a
+search path for dependencies. The build uses the build directory and the
+configured KMotionX installation directory to locate its libraries at runtime.
 Build project
 ```
 make
 ```
-Install project (some platforms (MacOS) do not require 'sudo' just make install')
+Install project
 ```
-sudo make install
+make install
 ```
+Add `$HOME/.local/bin` to your `PATH` if you want to run the installed commands
+by name.
 
 ###### 2. Install KFLOP device rules (Linux only)
 This will install a rule that tell your system to grant read and write access to the kflop device for users in group "plugdev"

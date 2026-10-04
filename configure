@@ -6,6 +6,7 @@ prefix=""
 execprefix=""
 bindir=""
 libdir=""
+ftd2xx_libdir=""
 kmxdir=""
 includedir=""
 mandir=""
@@ -16,9 +17,9 @@ use_ftd2xx="no"
 build_java_binding="no"
 simulate_load_coff="no"
 cc="gcc"
+pkg_config=${PKG_CONFIG:-pkg-config}
 libsuf=""
 exesuf=""
-LD_LIB_PATH="/usr/local/lib"
 LD_LIBS="stdc++ m"
 TMPN="./conftest-$$"
 TMPH=$TMPN.h
@@ -90,6 +91,8 @@ for opt do
   ;;
   --libdir=*) libdir=`echo $opt | cut -d '=' -f 2`
   ;;
+  --ftd2xx-libdir=*) ftd2xx_libdir=${opt#*=}
+  ;;
   --includedir=*) includedir=`echo $opt | cut -d '=' -f 2`
   ;;
   --sharedir=*) sharedir=`echo $opt | cut -d '=' -f 2`
@@ -101,6 +104,8 @@ for opt do
   --docdir=*) docdir=`echo $opt | cut -d '=' -f 2`
   ;;  
   --cc=*) cc=`echo $opt | cut -d '=' -f 2`
+  ;;
+  --pkg-config=*) pkg_config=${opt#*=}
   ;;
   --ftd2xx) 
 		use_libftdi="no"
@@ -138,7 +143,7 @@ if test "$mingw32" = "yes" ; then
     EXESUF=".exe"
 else
     if test -z "$prefix" ; then
-    prefix="/usr/local"
+    prefix="$HOME/.local"
     fi
     if test -z "$sharedir" ; then
     sharedir="${prefix}/share"
@@ -204,7 +209,9 @@ Standard options:
 Advanced options (experts only):
   --coffload               Enables coff loading (disabled by default due to non tested functionality)
   --ftd2xx                 Use ftd2xx driver instead of libftdi
+  --ftd2xx-libdir=DIR      directory containing the ftd2xx library
   --cc=CC                  use C compiler CC [$cc]
+  --pkg-config=PATH        use pkg-config executable [$pkg_config]
 EOF
 #echo "NOTE: The object files are build at the place where configure is launched"
 exit 1
@@ -248,58 +255,49 @@ else
   exit 1
 fi
 
-#Configure library path (multiarch paths if applicable)
-MULTIARCH_TRIPLET=`$cc --print-multiarch 2>/dev/null`
-if test -n "$MULTIARCH_TRIPLET"; then
-  LD_LIB_PATH="$LD_LIB_PATH /usr/lib/$MULTIARCH_TRIPLET /lib/$MULTIARCH_TRIPLET"
-fi
-if test "$targetos" = "Darwin" ; then
-    #only use directories that acutally exist
-    LD_LIB_PATH=""
-    for dir in /usr/local/lib /opt/homebrew/lib; do
-        if [ -d "$dir" ]; then
-            LD_LIB_PATH="$LD_LIB_PATH $dir"
-        fi
-    done
-    LD_LIB_PATH=$(echo "$LD_LIB_PATH" | xargs)  # Remove any leading/trailing whitespace
-fi
-
-
-checklib (){
-	libpath=`echo $LD_LIB_PATH | sed 's/ / -L/g'`
-	echo "Check in paths $libpath"
-	haslib=`$cc -L$libpath -l$1 2>&1 > /dev/null | grep main -c` 
-# -wc option does not longer work on mac anymore
-#	haslib=`$cc -L$libpath -l$1 2>&1 > /dev/null | grep main -wc` 
-	if test "$haslib" = "0" ; then
-		echo "Checking library lib$1 not found"
-		retval=0
-	else
-		echo "Checking library lib$1 found"
-		retval=1
-	fi
-	return "$retval"
-}
-
 #Configure ftdi libraries
 if test "$use_libftdi" = "yes" ; then
-	checklib ftdi1
-	if [ "$?" -eq 1 ] ; then
-	     ftdi_lib="ftdi1"
-       iflag_ftdi=$(libftdi1-config --cflags)
-	else
-    #TODO drop support for ftdi only ftdi1
-		checklib ftdi
-		if [ "$?" -eq 1 ] ; then
-		     ftdi_lib="ftdi"
-         iflag_ftdi=$(libftdi-config --cflags)
-		fi
-	fi
+  if test -n "$ftd2xx_libdir"; then
+    echo "configure: --ftd2xx-libdir requires --ftd2xx." >&2
+    exit 1
+  fi
+  if ! command -v "$pkg_config" >/dev/null 2>&1; then
+    echo "configure: pkg-config not found ($pkg_config). Install pkg-config or set PKG_CONFIG." >&2
+    exit 1
+  fi
+  if "$pkg_config" --exists libftdi1; then
+    ftdi_pkg=libftdi1
+    ftdi_lib=ftdi1
+  elif "$pkg_config" --exists libftdi; then
+    ftdi_pkg=libftdi
+    ftdi_lib=ftdi
+  else
+    echo "configure: libftdi1 (or legacy libftdi) not found by pkg-config. Install its development package or set PKG_CONFIG_PATH." >&2
+    exit 1
+  fi
+  if ! "$pkg_config" --exists libusb-1.0; then
+    echo "configure: libusb-1.0 not found by pkg-config. Install its development package or set PKG_CONFIG_PATH." >&2
+    exit 1
+  fi
+  iflag_ftdi=$("$pkg_config" --cflags "$ftdi_pkg" libusb-1.0) || exit 1
+  ftdi_libs=$("$pkg_config" --libs "$ftdi_pkg" libusb-1.0) || exit 1
 else
-	checklib ftd2xx
-	if [ "$?" -eq 1 ] ; then
-	     ftdi_lib="ftd2xx"
-	fi
+  ftdi_lib=ftd2xx
+  # The proprietary driver does not ship a pkg-config module.
+  set --
+  if test -n "$ftd2xx_libdir"; then
+    if ! test -d "$ftd2xx_libdir"; then
+      echo "configure: ftd2xx library directory does not exist: $ftd2xx_libdir" >&2
+      exit 1
+    fi
+    set -- "-L$ftd2xx_libdir"
+  fi
+  if ! printf 'int main(void) { return 0; }\n' | "$cc" -x c - -o "$TMPN" "$@" -lftd2xx >/dev/null 2>&1; then
+    echo "configure: libftd2xx not found by the linker. Use --ftd2xx-libdir=DIR if needed." >&2
+    rm -f "$TMPN"
+    exit 1
+  fi
+  rm -f "$TMPN"
 fi
 
 
@@ -313,17 +311,17 @@ Manual directory      $mandir
 Info directory        $infodir
 Doc directory         $docdir
 C compiler            $cc
-Target OS        	    $targetos
-CPU              	    $cpu
-LD_LIB_PATH     	    $LD_LIB_PATH
-MULTIARCH_TRIPLET  	  $MULTIARCH_TRIPLET
-Lib suffix       	    $libsuf
-Use libftdi      	    $use_libftdi
-Use ftd2xx       	    $use_ftd2xx
-FTDI driver      	    $ftdi_lib
-Java binding     	    $build_java_binding
-Simulate load coff	  $simulate_load_coff
-Java Home        	    $java_home
+Target OS             $targetos
+CPU                   $cpu
+ftd2xx library dir     $ftd2xx_libdir
+Lib suffix            $libsuf
+Use libftdi           $use_libftdi
+Use ftd2xx            $use_ftd2xx
+FTDI driver           $ftdi_lib
+pkg-config            $pkg_config
+Java binding          $build_java_binding
+Simulate load coff    $simulate_load_coff
+Java Home             $java_home
 EOF
 
 echo "Creating config.mak and config.h"
@@ -335,6 +333,7 @@ kmxhome=$kmxhome
 prefix=$prefix
 bindir=\$(DESTDIR)$bindir
 kmxdir=\$(DESTDIR)$kmxdir
+RUNTIME_LIBDIR=$kmxdir
 libdir=\$(DESTDIR)$libdir
 includedir=\$(DESTDIR)$includedir
 mandir=\$(DESTDIR)$mandir
@@ -347,11 +346,12 @@ OSNAME=$targetos
 ARCH=$arch
 CFLAGS=$ARCH_C_FLAGS
 LDFLAGS=$ARCH_LD_FLAGS
-LD_LIB_PATH=$LD_LIB_PATH
 LD_LIBS=$LD_LIBS
 LIBEXT=$libsuf
 EXESUF=$exesuf
 IFLAG_FTDI=$iflag_ftdi
+FTDI_LIBS=$ftdi_libs
+FTD2XX_LIBDIR=$ftd2xx_libdir
 EOF
 
 print_inc() {

@@ -49,6 +49,7 @@ install: subdirs
 	mkdir -p "$(includedir)/kmx/KMotionX"
 	mkdir -p "$(kmxhome)/bin"
 	$(INSTALL) -m755 $(addprefix $(BUILD_ROOT)/bin/,$(KMXPROGS)) "$(kmxhome)/bin"
+	mkdir -p "$(bindir)"
 	mkdir -p $(kmxhome)
 	mkdir -p "$(kmxhome)/Data"
 	mkdir -p "$(kmxhome)/C Programs"

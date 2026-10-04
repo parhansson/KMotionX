@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include <stdio.h>
 #include "Ping.h"
-#include <libusb-1.0/libusb.h>
+#include <libusb.h>
 
 #pragma comment(lib, "iphlpapi.lib")
 #pragma comment(lib, "ws2_32.lib")
