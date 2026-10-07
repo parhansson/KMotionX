@@ -997,7 +997,13 @@ CANON_SPINDLE_MODE GET_EXTERNAL_SPINDLE_MODE()
 void GET_EXTERNAL_PARAMETER_FILE_NAME(char *filename, int max_size)
 {
 	if (GC->VarsFile[0] == 0)
-		snprintf(filename, max_size, "%s%cData%cemc.var",GC->CoordMotion->MainPathRoot, PATH_SEPARATOR, PATH_SEPARATOR);
+		snprintf(filename, max_size, "%s%c%s%cemc.var", GC->CoordMotion->MainPathRoot, PATH_SEPARATOR,
+#ifdef _KMOTIONX
+			"data",
+#else
+			"Data",
+#endif
+			PATH_SEPARATOR);
 	else
 		strcpy(filename, GC->VarsFile);
 }

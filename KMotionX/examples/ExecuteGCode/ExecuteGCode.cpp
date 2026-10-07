@@ -97,11 +97,9 @@ int main(int argc, char *argv[])
 	snprintf(tmp_path, MAX_PATH, "%s/../KMotionX/examples/ExecuteGCode/Stepper3Axis.c", rootDir);
 	realpath(tmp_path, setup_cfile);
 
-	snprintf(tmp_path, MAX_PATH, "%s/../C Programs/BlinkKFLOP.c", rootDir);
-	realpath(tmp_path, m4_cfile);
+	snprintf(m4_cfile, MAX_PATH, "%s/c-programs/BlinkKFLOP.c", kmx::getMachineDataPath());
 
-	snprintf(tmp_path, MAX_PATH, "%s/../KMotion/Data/Default.tbl", rootDir);
-	realpath(tmp_path, tool_file);
+	snprintf(tool_file, MAX_PATH, "%s/data/Default.tbl", kmx::getMachineDataPath());
 
 	// strcpy(setup_cfile,m4_cfile);
 	snprintf(tmp_path, MAX_PATH, "%s/../GCode Programs/SimpleCircle.ngc", rootDir);

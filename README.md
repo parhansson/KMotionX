@@ -89,6 +89,58 @@ make install
 Add `$HOME/.local/bin` to your `PATH` if you want to run the installed commands
 by name.
 
+The installed `kmxWeb` command lives in `bin`. Private `KMotionServer` and
+`tcc67` helpers live in `libexec/kmx` and need not be on `PATH`; shared
+libraries live in `lib/kmx`, and bundled DSP files and headers live in
+`share/kmx/DSP_KFLOP` and `share/kmx/DSP_KOGNA`. These directories follow
+`--prefix` (or the corresponding configure directory options).
+
+Machine configuration is separate from installed application files. An ordinary
+`make install` seeds `$HOME/.kmotionx/default-machine/data` with `emc.var`,
+`Default.tbl`, and `Kinematics.txt` (which selects `Kinematics3Rod`), and
+`$HOME/.kmotionx/default-machine/c-programs` with `BlinkKFLOP.c`. Existing
+machine files are never overwritten on reinstall or removed on uninstall.
+`make install DESTDIR=...` stages only prefix-owned files and skips machine
+seeding. The default machine layout is:
+
+```text
+$HOME/.kmotionx/default-machine/
+├── data/
+│   ├── emc.var
+│   ├── Default.tbl
+│   └── Kinematics.txt
+└── c-programs/
+    └── BlinkKFLOP.c
+```
+
+To select another machine, create `$HOME/.kmxrc` with, for example:
+
+```ini
+machineDataPath=/home/user/machines/router
+```
+
+The value names the **machine root**, not its `data` directory. In this example,
+the selected machine has this layout:
+
+```text
+/home/user/machines/router/
+├── data/
+│   ├── emc.var
+│   ├── Default.tbl
+│   └── Kinematics.txt
+└── c-programs/
+```
+
+Every selected machine requires those three files in `data`; `c-programs` holds
+default relative C-program names. Without `$HOME/.kmxrc`, the default machine
+root above is used. Directory names are lowercase.
+
+The optional user-wide language file is `$HOME/.kmotionx/data/LocalLanguage.txt`
+(lowercase `data`), not part of a machine. Older files under
+`$HOME/.kmotionx/Data`, `C Programs`, or `DSP_*` are not automatically used:
+copy any machine files you need into the corresponding lowercase directories
+under `default-machine`. DSP files now always come from installed `share/kmx`.
+
 ###### 2. Install KFLOP device rules (Linux only)
 This will install a rule that tell your system to grant read and write access to the kflop device for users in group "plugdev"
 If your user is not in that group fix users groups or change the rule before pluging the device in.

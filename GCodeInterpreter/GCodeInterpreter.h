@@ -81,7 +81,7 @@ typedef int G_M_USER_CALLBACK(int mCode);
 typedef int G_SCREENSCRIPT_CALLBACK(const char *FileName);
 
 #ifdef _KMOTIONX
-#define C_PROGRAMS_DIR                  "/C Programs/"
+#define C_PROGRAMS_DIR                  "/c-programs/"
 #else
 #define C_PROGRAMS_DIR                  "\\C Programs\\"
 #endif

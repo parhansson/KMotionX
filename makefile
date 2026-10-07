@@ -16,8 +16,8 @@ ifeq ($(BUILD_JNI),true)
 SUBDIRS+=KMotionX/JNI
 endif
 
-KMXPROGS+=KMotionServer$(EXESUF)
-KMXPROGS+=tcc67$(EXESUF)
+KMXHELPERS+=KMotionServer$(EXESUF)
+KMXHELPERS+=tcc67$(EXESUF)
 KMXPROGS+=kmxWeb$(EXESUF)
 KMXLIBS+=libGCodeInterpreter$(LIBEXT)
 KMXLIBS+=libKMotion$(LIBEXT)
@@ -47,30 +47,39 @@ install: subdirs
 	mkdir -p "$(includedir)/kmx/GCodeInterpreter"
 	mkdir -p "$(includedir)/kmx/KMotion"
 	mkdir -p "$(includedir)/kmx/KMotionX"
-	mkdir -p "$(kmxhome)/bin"
-	$(INSTALL) -m755 $(addprefix $(BUILD_ROOT)/bin/,$(KMXPROGS)) "$(kmxhome)/bin"
+	mkdir -p "$(kmxlibexecdir)"
+	$(foreach P,$(KMXHELPERS),$(INSTALL) -m755 "$(BUILD_ROOT)/bin/$P" "$(kmxlibexecdir)/$P";)
 	mkdir -p "$(bindir)"
-	mkdir -p $(kmxhome)
-	mkdir -p "$(kmxhome)/Data"
-	mkdir -p "$(kmxhome)/C Programs"
+	$(foreach P,$(KMXPROGS),$(INSTALL) -m755 "$(BUILD_ROOT)/bin/$P" "$(bindir)/$P";)
 	$(INSTALL) -m644 $(addprefix $(BUILD_ROOT)/,$(DSP_HEADERS)) "$(includedir)/kmx/DSP_KFLOP"
 	$(INSTALL) -m644 $(addprefix $(BUILD_ROOT)/,$(GCI_HEADERS)) "$(includedir)/kmx/GCodeInterpreter"
 	$(INSTALL) -m644 $(addprefix $(BUILD_ROOT)/,$(KM_HEADERS)) "$(includedir)/kmx/KMotion"
 	$(INSTALL) -m644 $(addprefix $(BUILD_ROOT)/KMotionX/include/,$(KMX_HEADERS)) "$(includedir)/kmx/KMotionX"
-	cp -R $(BUILD_ROOT)/KMotionX/include/ftdi "$(includedir)/kmx/KMotionX"
-	cp -R $(BUILD_ROOT)/KMotionX/include/win "$(includedir)/kmx/KMotionX"
-	cp -R $(BUILD_ROOT)/DSP_KFLOP/ $(kmxhome)/DSP_KFLOP
-	cp -R $(BUILD_ROOT)/DSP_KOGNA/ $(kmxhome)/DSP_KOGNA
-	cp "$(BUILD_ROOT)/KMotion/Data/emc.var" "$(kmxhome)/Data/"
-	cp "$(BUILD_ROOT)/C Programs/BlinkKFLOP.c" "$(kmxhome)/C Programs/"
-	ln -sf $(addprefix $(kmxhome)/bin/,$(KMXPROGS)) $(bindir)
+	cp -R "$(BUILD_ROOT)/KMotionX/include/ftdi" "$(includedir)/kmx/KMotionX"
+	cp -R "$(BUILD_ROOT)/KMotionX/include/win" "$(includedir)/kmx/KMotionX"
+	mkdir -p "$(kmxdatadir)/DSP_KFLOP" "$(kmxdatadir)/DSP_KOGNA"
+	cp -R "$(BUILD_ROOT)/DSP_KFLOP/." "$(kmxdatadir)/DSP_KFLOP/"
+	cp -R "$(BUILD_ROOT)/DSP_KOGNA/." "$(kmxdatadir)/DSP_KOGNA/"
+	@if test -z "$(DESTDIR)"; then \
+	  machine_root="$(HOME)/.kmotionx/default-machine"; \
+	  mkdir -p "$$machine_root/data" "$$machine_root/c-programs"; \
+	  for file in emc.var Default.tbl Kinematics.txt; do \
+	    if test ! -e "$$machine_root/data/$$file"; then \
+	      $(INSTALL) -m644 "$(BUILD_ROOT)/KMotionX/default-machine/data/$$file" "$$machine_root/data/$$file"; \
+	    fi; \
+	  done; \
+	  if test ! -e "$$machine_root/c-programs/BlinkKFLOP.c"; then \
+	    $(INSTALL) -m644 "$(BUILD_ROOT)/KMotionX/default-machine/c-programs/BlinkKFLOP.c" "$$machine_root/c-programs/BlinkKFLOP.c"; \
+	  fi; \
+	else echo "DESTDIR set: skipping user machine seeding"; fi
 
 
 uninstall:
 	rm -fv $(foreach P,$(KMXLIBS),"$(kmxdir)/$P")
 	rm -rfv "$(includedir)/kmx"
 	rm -fv $(foreach P,$(KMXPROGS),"$(bindir)/$P")
-	rm -fv $(foreach P,$(KMXPROGS),"$(kmxhome)/bin/$P")
+	rm -fv $(foreach P,$(KMXHELPERS),"$(kmxlibexecdir)/$P")
+	rm -rfv "$(kmxdatadir)/DSP_KFLOP" "$(kmxdatadir)/DSP_KOGNA"
 
 clean:
 #rm -f *.o *~

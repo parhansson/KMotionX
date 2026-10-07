@@ -783,16 +783,22 @@ int CKinematics::Initialize()
 int CKinematics::GetParameter(const char* key, double *v)
 {
 	char kinFile[MAX_PATH];
-	snprintf(kinFile, MAX_PATH, "%s%cData%cKinematics.txt",MainPath,PATH_SEPARATOR,PATH_SEPARATOR);
+	snprintf(kinFile, MAX_PATH, "%s%c%s%cKinematics.txt", MainPath, PATH_SEPARATOR,
+#ifdef _KMOTIONX
+		"data",
+#else
+		"Data",
+#endif
+		PATH_SEPARATOR);
 
 	FILE *f = fopen(kinFile,"rt");
 
 	if (!f) return 1;
 
-	while (!feof(f))
+	while (true)
 	{
 		char s[81], *p;
-		fgets(s, 80, f);
+		if (!fgets(s, sizeof(s), f)) break;
 
 		p = strstr(s, key);
 

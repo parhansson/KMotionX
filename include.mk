@@ -28,7 +28,7 @@ LDFLAGS+=-Wl,-rpath,'$$ORIGIN'
 else ifeq ($(OSNAME),Darwin)
 LDFLAGS+=-Wl,-rpath,@loader_path
 endif
-LDFLAGS+=-Wl,-rpath,$(RUNTIME_LIBDIR)
+LDFLAGS+=-Wl,-rpath,"$(RUNTIME_LIBDIR)"
 
 
 

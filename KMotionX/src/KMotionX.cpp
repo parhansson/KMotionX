@@ -25,6 +25,9 @@
 #include <stdexcept> // For runtime_error
 #include <cstdarg>	 // For va_list
 #include <vector>
+#include <sstream>
+#include <cerrno>
+#include "../../config.h"
 
 #define SECONDS_PER_MONTH 2629743
 
@@ -93,14 +96,18 @@ namespace kmx
 	char customCompiler[256] = KMX_COMPILER;
 	char customOptions[256] = "-g";
 	int tcc_vers = OLD_COMPILER ? 16 : 26;
-	char installPath[MAX_PATH] = {0};
+	char kmotionXHomePath[MAX_PATH] = {0};
 	char machineDataPath[MAX_PATH] = {0};
-	char binPath[MAX_PATH] = {0};
 	char localLanguageFilePath[MAX_PATH] = {0};
 
-	int verifyInstallRoot(const char *rootpath);
-	int verifySubpath(const char *path, const char *subpath, bool isdir);
 	int testExecuteAccess(const char *file);
+	static std::string shellQuote(const std::string &value)
+	{
+		std::string quoted = "'";
+		for (char c : value)
+			quoted += c == '\'' ? "'\\''" : std::string(1, c);
+		return quoted + "'";
+	}
 
 	// variadic function for formatting strings with multiple arguments
 
@@ -235,184 +242,165 @@ namespace kmx
 		return random_number;
 	}
 
-	/**
-	 * Original kmotion code MainPath
-	 * read from ~/.kmxrc
-	 * a directory containing
-	 * Data/emc.var
-	 * Data/Default.set 		(optional)
-	 * Data/Default.tbl 		(optional)
-	 * Data/Kinematics.txt 		(optional)
-	 * Data/LocalLanguage.txt	(optional)
-	 */
+	// ~/.kmxrc may select a machine root containing data/ and c-programs/.
 	const char *getMachineDataPath()
 	{
 		if (machineDataPath[0])
 		{
 			return machineDataPath;
 		}
-		const char *searchKey = "machineDataPath";
-
-		if(getResourceValue(searchKey, machineDataPath, MAX_PATH)){
-			strncpy(machineDataPath, getInstallPath(), MAX_PATH);
-			log_info("Using Machine configuration path=%s", machineDataPath);
-			return machineDataPath;
+		char selected[MAX_PATH] = {0};
+		int rc = getResourceValue("machineDataPath", selected, sizeof(selected));
+		if (rc == -2)
+			throw std::runtime_error("Invalid or overlong machineDataPath in ~/.kmxrc");
+		if (rc)
+		{
+			const char *home = getenv("HOME");
+			if (!home || snprintf(selected, sizeof(selected), "%s/.kmotionx/default-machine", home) >= sizeof(selected))
+				throw std::runtime_error("HOME is missing or default machine path is too long");
 		}
+		for (const char *file : {"data/emc.var", "data/Default.tbl", "data/Kinematics.txt"})
+		{
+			std::string path = std::string(selected) + "/" + file;
+			if (access(path.c_str(), R_OK))
+				throw std::runtime_error("Required machine file missing or unreadable: " + path);
+		}
+		memcpy(machineDataPath, selected, strlen(selected) + 1);
 		log_info("Using Machine configuration path=%s", machineDataPath);
 		return machineDataPath;
 	}
 
 	int getResourceValue(const char *searchKey, char * result, size_t maxLen)
 	{
-		// Read the ~/.kmxrc file
-	
-		const size_t maxKey_len = 50;
+		if (!result || !maxLen) return -1;
+		result[0] = '\0';
 		char rc_file[MAX_PATH];
-		char *envPath;
-		if ((envPath = getenv("HOME")) == NULL)
-		{
-			perror("Failed to get user home dir");
-			return -1;
-		}
-
-		snprintf(rc_file, MAX_PATH, "%s/.kmxrc", envPath);
+		const char *home = getenv("HOME");
+		if (!home || snprintf(rc_file, sizeof(rc_file), "%s/.kmxrc", home) >= sizeof(rc_file)) return -1;
 		FILE *file = fopen(rc_file, "r");
 		if (file == NULL)
 		{
-			perror("Cannot open file .kmxrc");
+			if (errno != ENOENT) perror(rc_file);
 			return -1;
 		}
-		else
+		char line[MAX_PATH * 2];
+		while (fgets(line, sizeof(line), file))
 		{
-			char key[maxKey_len];
-			char value[MAX_PATH];
-			int found = 0;
-			char line[maxKey_len + MAX_PATH + 1];
-			while (fgets(line, sizeof(line), file))
+			if (!strchr(line, '\n') && !feof(file))
 			{
-				char *equalSign = strchr(line, '=');
-				if (equalSign)
+				int c;
+				while ((c = fgetc(file)) != '\n' && c != EOF) {}
+				fclose(file);
+				return -2;
+			}
+			char *equalSign = strchr(line, '=');
+			if (equalSign)
+			{
+				*equalSign++ = '\0';
+				equalSign[strcspn(equalSign, "\r\n")] = '\0';
+				if (!strcmp(line, searchKey))
 				{
-					*equalSign = '\0'; // Avskilj nyckel från värde
-					strncpy(key, line, maxKey_len);
-
-					strncpy(value, equalSign + 1, MAX_PATH);
-					value[strcspn(value, "\n")] = 0; // Ta bort newline
-
-					if (strcmp(key, searchKey) == 0)
+					if (!*equalSign || strlen(equalSign) >= maxLen)
 					{
-						found = 1;
-						break;
+						fclose(file);
+						return -2;
 					}
+					memcpy(result, equalSign, strlen(equalSign) + 1);
+					fclose(file);
+					return 0;
 				}
 			}
-
-			fclose(file);
-			if (found)
-			{
-				strncpy(result, value, maxLen);
-				return 0;
-			}
-			else
-			{
-				log_info("Key '%s' not found in .kmxrc", searchKey);
-				return -1;
-			}
 		}
+		fclose(file);
+		return -1;
 	}
-	// check if the path is a valid directory
-	/**
-	 * Original kmotion code MainPathRoot
-	 */
-	const char *getInstallPath()
+	const char *getKMotionXHomePath()
 	{
-		// char cwd[MAX_PATH];
-		// getcwd(cwd, MAX_PATH);
-
-		if (!installPath[0])
+		if (!kmotionXHomePath[0])
 		{
-			// To run on git location for debugging use environment vars
-			// check ENV KMOTIONX_HOME this overrides default install location
+			// KMOTIONX_HOME overrides the user-wide home path, not the install prefix.
 			char *envPath;
 			if ((envPath = getenv("KMOTIONX_HOME")) != NULL)
 			{
-				strcpy(installPath, envPath);
+				snprintf(kmotionXHomePath, sizeof(kmotionXHomePath), "%s", envPath);
 			}
 			else
 			{
-				// No KMOTIONX_HOME environment variable set.
-				// Check in $HOME/.kmotionx
 				if ((envPath = getenv("HOME")) != NULL)
 				{
-					snprintf(installPath, MAX_PATH, "%s/.kmotionx", envPath);
+					snprintf(kmotionXHomePath, MAX_PATH, "%s/.kmotionx", envPath);
 				}
 				else
 				{
-					// Is HOME not ever set?
-					snprintf(installPath, MAX_PATH, "~/.kmotionx");
+					snprintf(kmotionXHomePath, MAX_PATH, "~/.kmotionx");
 					// homedir = getpwuid(getuid())->pw_dir;
 				}
 			}
 
-			if (verifyInstallRoot(installPath))
-			{
-				log_info("No valid KMOTIONX_HOME found in %s\n Please set KMOTIONX_HOME or run make install again", installPath);
-				exit(1);
-			}
-			else
-			{
-				log_info("Using KMOTIONX_HOME=%s", installPath);
-			}
+			log_info("Using user-wide KMotionX path=%s", kmotionXHomePath);
 		}
-		return installPath;
+		return kmotionXHomePath;
+	}
+
+	const char *getInstallPath()
+	{
+		return getKMotionXHomePath();
 	}
 
 	const char *getLocalLanguageFilePath()
 	{
 		if (!localLanguageFilePath[0])
 		{
-			snprintf(localLanguageFilePath, MAX_PATH, "%s/Data/LocalLanguage.txt", getInstallPath());
+			const char *home = getenv("HOME");
+			if (!home || snprintf(localLanguageFilePath, sizeof(localLanguageFilePath), "%s/.kmotionx/data/LocalLanguage.txt", home) >= sizeof(localLanguageFilePath))
+				throw std::runtime_error("HOME is missing or user-wide language path is too long");
 		}
 		return localLanguageFilePath;
 	}
 
-	const char *getBinPath()
+	const char *getLibexecPath()
 	{
-		if (!binPath[0])
-		{
-			snprintf(binPath, MAX_PATH, "%s/bin", getInstallPath());
-		}
-		return binPath;
+		return KMX_LIBEXECDIR;
+	}
+
+	const char *getResourcePath()
+	{
+		return KMX_DATADIR;
+	}
+
+	const char *getBinPath() // legacy helper lookup API
+	{
+		return getLibexecPath();
 	}
 
 	int LaunchServer()
 	{
-		char command[1024];
+		std::string server = std::string(getLibexecPath()) + "/KMotionServer";
+		std::string command = shellQuote(server);
 #ifdef _DEAMON
-		snprintf(command, MAX_PATH, "%s/%s", getBinPath(), "KMotionServer");
 #else
-		snprintf(command, MAX_PATH, "%s/%s", getBinPath(), "KMotionServer -redirect_streams &");
+		command += " -redirect_streams &";
 #endif
 
 #if defined(__APPLE__) && defined(_DEAMON)
 		// The daemon is currently not supported on MacOs
-		log_info("Launch KMotionServer first: %s", command);
+		log_info("Launch KMotionServer first: %s", command.c_str());
 		PipeMutex->Unlock();
 		exit(1);
 #endif
-		log_info("Launching KMotionServer: '%s'", command);
-		return system(command);
+		log_info("Launching KMotionServer: %s", command.c_str());
+		return system(command.c_str());
 	}
 
 	int getDspFile(char *OutFile, const int BoardType)
 	{
 		if (BoardType == BOARD_TYPE_KOGNA)
 		{
-			snprintf(OutFile, MAX_PATH, "%s%cDSPKOGNA%cDSPKOGNA.out", getInstallPath(), PATH_SEPARATOR, PATH_SEPARATOR);
+			snprintf(OutFile, MAX_PATH, "%s/DSP_KOGNA/DSPKOGNA.out", getResourcePath());
 		}
 		else
 		{
-			snprintf(OutFile, MAX_PATH, "%s%cDSP_KFLOP%cDSPKFLOP.out", getInstallPath(), PATH_SEPARATOR, PATH_SEPARATOR);
+			snprintf(OutFile, MAX_PATH, "%s/DSP_KFLOP/DSPKFLOP.out", getResourcePath());
 		}
 		return 0;
 	}
@@ -420,9 +408,11 @@ namespace kmx
 	int getCompiler(char *Compiler, int MaxCompilerLen)
 	{
 		// char Compiler[MAX_PATH + 1];
-		strncpy(Compiler, customCompiler, MaxCompilerLen);
-		if (Compiler[0] == '/')
+		if (!Compiler || MaxCompilerLen <= 0) return -1;
+		Compiler[0] = '\0';
+		if (customCompiler[0] == '/')
 		{
+			snprintf(Compiler, MaxCompilerLen, "%s", customCompiler);
 			// try if compiler is accessible on absolute path
 			if (testExecuteAccess(Compiler) == 0)
 				return 0;
@@ -430,18 +420,18 @@ namespace kmx
 		else
 		{
 			// try in the released directory next
-			snprintf(Compiler, MAX_PATH, "%s/%s", getBinPath(), customCompiler);
+			snprintf(Compiler, MaxCompilerLen, "%s/%s", getLibexecPath(), customCompiler);
 			if (testExecuteAccess(Compiler) == 0)
 				return 0;
 
 			// this is for development only
-			snprintf(Compiler, MAX_PATH, "%s/TCC67/%s", getInstallPath(), customCompiler);
+			snprintf(Compiler, MaxCompilerLen, "%s/TCC67/%s", getKMotionXHomePath(), customCompiler);
 			if (testExecuteAccess(Compiler) == 0)
 				return 0;
 
 			if (Compiler[0] != '.')
 			{ // check if compiler is present in current dir
-				snprintf(Compiler, MAX_PATH, "./%s", customCompiler);
+				snprintf(Compiler, MaxCompilerLen, "./%s", customCompiler);
 				if (testExecuteAccess(Compiler) == 0)
 					return 0;
 			}
@@ -453,11 +443,11 @@ namespace kmx
 	void SetCustomCompiler(const char *compiler, const char *options, int tcc_minor_version)
 	{
 		if (compiler)
-			strncpy(customCompiler, compiler, sizeof(customCompiler));
+			snprintf(customCompiler, sizeof(customCompiler), "%s", compiler);
 		else
 			strcpy(customCompiler, KMX_COMPILER);
 		if (options)
-			strncpy(customOptions, options, sizeof(customOptions));
+			snprintf(customOptions, sizeof(customOptions), "%s", options);
 		else
 			customOptions[0] = 0;
 		if (tcc_minor_version)
@@ -469,7 +459,7 @@ namespace kmx
 		char Compiler[MAX_PATH + 1];
 		if (getCompiler(Compiler, sizeof(Compiler)))
 		{
-			strncpy(command, Compiler, cmd_len);
+			if (cmd_len > 0) snprintf(command, cmd_len, "%s", Compiler);
 			return 1;
 		}
 
@@ -483,27 +473,29 @@ namespace kmx
 		getPath(BindTo, IncSrcPath1);
 
 		getPath(Name, IncSrcPath2);
+		std::istringstream options(customOptions);
+		std::string option, quotedOptions;
+		while (options >> option) quotedOptions += " " + shellQuote(option);
+		std::string quotedCompiler = shellQuote(Compiler);
+		std::string quotedInc1 = shellQuote(IncSrcPath1);
+		std::string quotedInc2 = shellQuote(IncSrcPath2);
+		std::string quotedOutput = shellQuote(OutFile);
+		std::string quotedSource = shellQuote(Name);
+		std::string quotedDsp = shellQuote(BindTo);
 
+		int written;
 		if (tcc_vers < 26)
-			snprintf(command, cmd_len, "%s -text %08X %s -nostdinc -I\"%s\" -I\"%s\" -o \"%s\" \"%s\" \"%s\" 2>&1",
-					 Compiler,
+			written = snprintf(command, cmd_len, "%s -text %08X%s -nostdinc -I%s -I%s -o %s %s %s 2>&1",
+					 quotedCompiler.c_str(),
 					 LoadAddress,
-					 customOptions,
-					 IncSrcPath1,
-					 IncSrcPath2,
-					 OutFile,
-					 Name,
-					 BindTo);
+					 quotedOptions.c_str(),
+					 quotedInc1.c_str(), quotedInc2.c_str(), quotedOutput.c_str(), quotedSource.c_str(), quotedDsp.c_str());
 		else
-			snprintf(command, cmd_len, "%s -Wl,-Ttext,%08X %s -Wl,--oformat,coff -static -nostdinc -nostdlib -I\"%s\" -I\"%s\" -o \"%s\" \"%s\" \"%s\" 2>&1",
-					 Compiler,
+			written = snprintf(command, cmd_len, "%s -Wl,-Ttext,%08X%s -Wl,--oformat,coff -static -nostdinc -nostdlib -I%s -I%s -o %s %s %s 2>&1",
+					 quotedCompiler.c_str(),
 					 LoadAddress,
-					 customOptions,
-					 IncSrcPath1,
-					 IncSrcPath2,
-					 OutFile,
-					 Name,
-					 BindTo);
+					 quotedOptions.c_str(),
+					 quotedInc1.c_str(), quotedInc2.c_str(), quotedOutput.c_str(), quotedSource.c_str(), quotedDsp.c_str());
 
 		// Original TCC67 Windows version shipped with KMotion
 		// tcc -text 80050000 -g -nostdinc -I./DSP_KFLOP -I./ -o Gecko3Axis.out Gecko3Axis.c ./DSP_KFLOP/DSP_KFLOP.out
@@ -512,6 +504,11 @@ namespace kmx
 
 		// compile with debug flag is currently not supported -g
 		// c67-tcc -Wl,-Ttext,80050000 -Wl,--oformat,coff -static -nostdinc -nostdlib -I./ -o ~/Desktop/Gecko3AxisOSX.out Gecko3Axis.c DSPKFLOP.out
+		if (written < 0 || written >= cmd_len)
+		{
+			snprintf(command, cmd_len, "Compiler command is too long");
+			return 1;
+		}
 		return 0;
 	}
 
@@ -519,69 +516,8 @@ namespace kmx
 	{
 		debug("Testing file for existance execute permissions %s", file);
 		// log_info("Checking access=%s",file);
-		struct stat *sb;
-		sb = (struct stat *)malloc(sizeof(struct stat));
-		int result = -1;
-		if (stat(file, sb) == 0)
-		{
-			// check that file is real file and is executable
-			if (S_ISREG(sb->st_mode) && sb->st_mode & S_IXUSR)
-			{
-				result = 0;
-			}
-		}
-		free(sb);
-		return result;
-	}
-
-	int verifyInstallRoot(const char *root)
-	{
-		int error = verifySubpath(root, "bin/", true) |
-					verifySubpath(root, "bin/tcc67", false) |
-					verifySubpath(root, "bin/KMotionServer", false) |
-					verifySubpath(root, "Data/", true) |
-					verifySubpath(root, "Data/emc.var", false) |
-					// verifySubpath(root, "GCode Programs/Default.set", false) |
-					// verifySubpath(root, "GCode Programs/Default.tbl", false) |
-					verifySubpath(root, "DSP_KFLOP/", true) |
-					verifySubpath(root, "DSP_KFLOP/DSPKFLOP.out", false) |
-					verifySubpath(root, "DSP_KFLOP/KMotionDef.h", false) |
-					verifySubpath(root, "DSP_KFLOP/PC-DSP.h", false) |
-					// verifySubpath(root, "DSP_KFLOP/PC2.c", false) |
-					verifySubpath(root, "DSP_KOGNA/", true) |
-					verifySubpath(root, "DSP_KOGNA/DSPKOGNA.out", false) |
-					verifySubpath(root, "DSP_KOGNA/KMotionDef.h", false) |
-					verifySubpath(root, "DSP_KOGNA/PC-DSP.h", false);
-		// verifySubpath(root, "DSP_KOGNA/PC2.c", false) |
-		return error;
-	}
-
-	int verifySubpath(const char *path, const char *subpath, bool isdir)
-	{
-		char actualpath[MAX_PATH];
-		if (path[strlen(path) - 1] == '/')
-		{
-			snprintf(actualpath, MAX_PATH, "%s%s", path, subpath);
-		}
-		else
-		{
-			snprintf(actualpath, MAX_PATH, "%s/%s", path, subpath);
-		}
-		// file exists and read user has read permissions
-		int result = access(actualpath, F_OK | R_OK);
-
-		if (result)
-		{
-			if (isdir)
-			{
-				printf("Directory not found %s\n", actualpath);
-			}
-			else
-			{
-				printf("File not found %s\n", actualpath);
-			}
-		}
-		return result;
+		struct stat sb;
+		return stat(file, &sb) == 0 && S_ISREG(sb.st_mode) && access(file, X_OK) == 0 ? 0 : -1;
 	}
 
 	void getPath(const char *file, char *path)

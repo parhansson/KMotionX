@@ -65,8 +65,8 @@ CCoordMotion::CCoordMotion(CKMotionDLL *KM)
 	// Save for everybody what directory we are installed in
 #ifdef _KMOTIONX
 
-	snprintf(MainPath, MAX_PATH, "%s/KMotion",kmx::getInstallPath());
-	snprintf(MainPathRoot, MAX_PATH,"%s",kmx::getInstallPath());
+	snprintf(MainPath, MAX_PATH, "%s", kmx::getMachineDataPath());
+	snprintf(MainPathRoot, MAX_PATH, "%s", kmx::getMachineDataPath());
 
 #else
 	CString Path;
@@ -133,15 +133,20 @@ CCoordMotion::CCoordMotion(CKMotionDLL *KM)
 	m_TCP_affects_actuators = true;  // assume Tool Center Point has effects except for simple cases
 	// check for a special Kinematics File
 	char kinFile[MAX_PATH];
-	snprintf(kinFile, MAX_PATH, "%s%cData%cKinematics.txt",MainPath,PATH_SEPARATOR,PATH_SEPARATOR);
+	snprintf(kinFile, MAX_PATH, "%s%c%s%cKinematics.txt", MainPath, PATH_SEPARATOR,
+#ifdef _KMOTIONX
+		"data",
+#else
+		"Data",
+#endif
+		PATH_SEPARATOR);
 
 	FILE *f = fopen(kinFile,"rt");
 
 	if (f)
 	{
 		char s[81];
-		fgets(s, 80, f);
-		// one exists, check if it is calling for Geppetto otherwise assume it is the 3Rod
+		if (!fgets(s, sizeof(s), f)) s[0] = '\0';
 
 		if (strstr(s, "5AxisTableAC") != NULL)
 			Kinematics = new CKinematics5AxisTableAC;
@@ -163,15 +168,28 @@ CCoordMotion::CCoordMotion(CKMotionDLL *KM)
 			Kinematics = new CKinematicsScara;
 		else if (strstr(s, "Kinematics2AxisRobot") != NULL)
 			Kinematics = new CKinematics2AxisRobot;
-		else
+		else if (strstr(s, "Kinematics3Rod") != NULL)
 			Kinematics = new CKinematics3Rod;
+		else
+		{
+#ifdef _KMOTIONX
+			fclose(f);
+			throw std::runtime_error(std::string("Unknown or empty kinematics model in ") + kinFile);
+#else
+			Kinematics = new CKinematics3Rod;
+#endif
+		}
 		
 		fclose(f);
 	}
 	else
 	{
+#ifdef _KMOTIONX
+		throw std::runtime_error(std::string("Required kinematics file missing: ") + kinFile);
+#else
 		m_TCP_affects_actuators = false;
 		Kinematics = new CKinematics;
+#endif
 	}
 
 	Kinematics->MainPath = MainPath;
