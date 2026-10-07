@@ -72,10 +72,10 @@ int CKinematics5AxisGimbalCB::TransformCADtoActuators(double x, double y, double
 	if (m_MotionParams.TCP_Active)
 	{
 		// Determine where the TCP rotated point would be relative to origin when oriented at the desired angles.
-		Rotate3(0, 0, 0, m_MotionParams.TCP_X, m_MotionParams.TCP_Y, (m_MotionParams.TCP_Z + PivotToChuckLength), 0, b, c, &TCP_Rotated_x, &TCP_Rotated_y, &TCP_Rotated_z);
+		Rotate3(0, 0, 0, m_MotionParams.TCP_X, m_MotionParams.TCP_Y, (m_MotionParams.TCP_Z + PivotToChuckLength), 0, -b, c, &TCP_Rotated_x, &TCP_Rotated_y, &TCP_Rotated_z);
 	
-		
-		
+	
+	
 		// Translate from TCP to end effector origin
 		x += TCP_Rotated_x - m_MotionParams.TCP_X;
 		y += TCP_Rotated_y - m_MotionParams.TCP_Y;

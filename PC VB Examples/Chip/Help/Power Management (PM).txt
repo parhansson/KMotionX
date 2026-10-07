@@ -1,0 +1,53 @@
+---------------------------------
+Power Management
+---------------------------------
+
+Power management is used to keep the steppers on when you need them and turn them off 
+when you don't. Stepper motors consume maximum power when idle. They hold torque and
+get hot. If you shut off power the motor has (almost) no holding torque. Most lead 
+screw or geared machines will hold position if you shut off the power when the motor 
+is not moving, but belt machines generally do not.
+
+In either case it's usually a good idea to keep all motors powered during a machining
+cycle to maintain absolute machine position. Depending on your machine you either may
+want to remove power some number of seconds after the machining cycle, or leave the 
+motors powered on for as long as the machine is on.
+
+You also generally want to use power management to de-power the machine if it's left 
+unattended for an extended time. You don't want to leave the steppers on for extended 
+idle times such as walking away from your machine and leaving it on overnight with the
+motors idling.
+
+The power management commands let you set up the right set of actions for your machine
+and use. Per-Motor Commands
+
+Setting    Description 	Notes
+ 1PM = 0   Always disabled
+ 1PM = 1   Always enabled
+ 1PM = 2   Enabled in cycle
+ 1PM = 3   Enabled while moving
+
+These commands affect all motors and take effect as soon as they are issued.
+
+Motor Disabled (0)
+This will turn off motor power and prevent the motor from turning on. 
+Disabling the motor will prevent that axis from participating in any move. 
+The motor will not be affected by ME or MD commands. This setting takes effect 
+immediately.
+
+Motor Always Powered (1)
+This will turn on motor power and leave it on until the board is shut down. The motor 
+will not be affected by me or md commands. You generally do not want to use this mode
+as it will leave the motors on for extended periods of time if you do not power down 
+the machine. Better to set a long motor power timeout and use Powered In Cycle (2)
+
+Motor Powered In Cycle (2)
+
+This will turn on the motor power at the start of any move on any axis (a "cycle"), 
+and will de-energize the motors mt seconds after the cycle is complete (all motion 
+stops). The timeout interval is set by the mt value (see Global Power Management 
+Commands). 
+
+Motor Powered When Moving (3)
+This will turn on the motor power only when that axis is moving, and will remove power
+mt seconds after that axis stops moving.

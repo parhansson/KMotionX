@@ -38,6 +38,11 @@ either expressed or implied, of the FreeBSD Project.
 #define CMUTEX_
 #include <mutex>
 #include <chrono>
+#include <atomic>
+
+typedef struct _securityAttr {
+  uint32_t  nLength;
+} *lpsecurityAttr;
 
 
 #define TMUTEX
@@ -47,27 +52,28 @@ class CMutex
 
 public:
 	CMutex();
-	CMutex(int initiallyOwn,const char *name ,int n);
+	CMutex(int initiallyOwn,const char *name ,lpsecurityAttr lpsaAttribute = NULL);
 
 	//Specifies the amount of time to wait for the synchronization object to be available (signaled).
 	//If INFINITE, Lock will wait until the object is signaled before returning.
 	//DWORD TimeOut_ms = INFINITE = 4294967295
-	int Lock(int TimeOut_ms/* = 4294967295*/);
-	void Lock();
-	void Unlock();
-	//CMutex(FALSE,"KMotionPipe",NULL)
+	int Lock(uint32_t TimeOut_ms = 4294967295);
+	int Unlock();
 	virtual ~CMutex();
 
 private:
-//	string value;
-//	char *buffer;
-	const char *name;
+	std::string name;
 #if defined(TMUTEX)
 	std::recursive_timed_mutex  mutex;
 	//std::timed_mutex  mutex;
 #else
 #endif
 	bool lock;
+	// The thread holding the mutex (0 when free) and how many times it has locked it. Only the
+	// holder changes them, and it clears owner before its last unlock, so an Unlock() from any other
+	// thread (such as a second ReleaseToken) can never pass the ownership check
+	std::atomic<long> owner{0};
+	int lockCount = 0;
 
 
 };

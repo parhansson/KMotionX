@@ -50,12 +50,17 @@ CKMotion_dotNet_InteropApp::CKMotion_dotNet_InteropApp()
 }
 
 
-netCONSOLE_HANDLER *ConsoleHandler=NULL;    
+netCONSOLE_HANDLER* ConsoleHandler = NULL;
+netCONSOLE_HANDLER_WIDE* ConsoleHandlerW = NULL;
 
 //KMotion Callbacks
-int LocalConsoleHandler(const char *buf)
+int LocalConsoleHandler(const char* buf)
 {
 	return ConsoleHandler(buf);
+}
+int LocalConsoleHandlerW(const wchar_t* buf)
+{
+	return ConsoleHandlerW(buf);
 }
 
 netERRMSG_HANDLER *ErrorHandler=NULL;    
@@ -149,17 +154,17 @@ first_end, second_end,first_axis,second_axis,rotation,axis_end_point, a, b, c, f
 
 //Standard Kmotion Members
 
-extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_New(int *handle, int board)
+extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_New(HANDLE64 *handle, int board)
 {
 	CKMotionDLL *KM; // one instance of the interface class
 
 	KM = new CKMotionDLL(board);
 	KM->BoardID = board;
-	*handle=(int)KM; 
+	*handle=(HANDLE64)KM; 
 	return 1L;
 }
  
-extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_Free(int *handle)
+extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_Free(HANDLE64 *handle)
 {
 	CKMotionDLL *KM; // one instance of the interface class
 	KM=*(CKMotionDLL **)handle;
@@ -267,11 +272,10 @@ extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_LoadCoffPack(vo
 	return rslt;
 }
 
-
-extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_SimpleCompileAndLoadCoff(void *handle, int Thread, const char *Name)
+extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_SimpleCompileAndLoadCoff(void* handle, int Thread, const char* Name)
 {
-	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
-	int rslt=KM_dll->CompileAndLoadCoff(Name,Thread);
+	CKMotionDLL* KM_dll = (CKMotionDLL*)handle;
+	int rslt = KM_dll->CompileAndLoadCoff(Name, Thread);
 	return rslt;
 }
 
@@ -282,10 +286,13 @@ extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_CompileAndLoadC
 	return rslt;
 }
 
-extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_Compile(void *handle,const int boardtype, int Thread, const char *Name, const char *OutFile, char *Err, int MaxErrLen)
+extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_Compile(void *handle,const int boardtype, int Thread, const char *Name, char **Err, int MaxErrLen)
 {
+	CString OutFile;
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
-	int rslt=KM_dll->Compile(Name, OutFile, boardtype, Thread, Err, MaxErrLen);
+	KM_dll->ConvertToOut(Thread, Name, OutFile.GetBuffer(MAX_PATH), MAX_PATH);
+	OutFile.ReleaseBuffer();
+	int rslt=KM_dll->Compile(Name, OutFile, boardtype, Thread, *Err, MaxErrLen);
 	return rslt;
 }
 
@@ -360,562 +367,484 @@ extern "C" __declspec(dllexport) void __stdcall KM_dotnet_Interop_ExtractCoffVer
 	KM_dll->ExtractCoffVersionString(InFile, Version);
 }
 
-
-
-extern "C" __declspec(dllexport) 	bool  __stdcall KM_dotnet_Interop_MainStatus_GetStatus(void *handle, bool lock,
-			int *versionandsize,
-            int adc[24],
-            int dac[8],
-            int pwm[16],
-            double position[8],
-            double destination[8],
-            unsigned char *outputchan0,
-            int *inputmodes,
-            int *inputmodes2,
-            int *outputmodes,
-            int *outputmodes2,
-            int *enables,
-            int *axisdone,
-            int bitsdirection[2],
-            int bitsstate[2],
-            int *snapbitsdirection0,
-            int *snapbitsdirection1,
-            int *snapbitsstate0,
-            int *snapbitsstate1,
-            int *kanalgobitsstateinputs,
-            int *kanalogbitsstateoutputs,
-            int *runonstartup,
-            int *threadactive,
-            int *stopimmediatestate,
-            double *timestamp,
-            int pccomm[8],
-            int *virtualbits,
-            int *virtualbitsex0)
+extern "C" __declspec(dllexport) 	bool  __stdcall KM_dotnet_Interop_MainStatus_GetStatus(void* handle, bool lock, MAIN_STATUS * m)
 {
-	
-	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
-	MAIN_STATUS m ;
-	
-	 KM_dll->GetStatus(m,lock);
-	 *versionandsize = m.VersionAndSize;
-	 for(int i = 0; i < 24; i++)
-	 {
-       adc[i] = m.ADC[i];
-	 } 
-	 for(int i = 0; i < 8; i++)
-	 {
-       dac[i] = m.DAC[i];
-	 }  	
-	 for(int i = 0; i < 16; i++)
-	 {
-       pwm[i] = m.PWM[i];
-	 }   
-	 for(int i = 0; i < 8; i++)
-	 {
-       position[i] = m.Position[i];
-	 }  	
-	 for(int i = 0; i < 8; i++)
-	 {
-       destination[i] = m.Dest[i];
-	 }   	
-	 for(int i = 0; i < 8; i++)
-	 {
-       outputchan0[i] = m.OutputChan0[i];
-	 }  	  
-     *inputmodes = m.InputModes;
-     *inputmodes2 = m.InputModes2;
-     *outputmodes = m.OutputModes;
-     *outputmodes2 = m.OutputModes2;
-     *enables = m.Enables;
-     *axisdone = m.AxisDone; 	
-	 for(int i = 0; i < 2; i++)
-	 {
-       bitsdirection[i] = m.BitsDirection[i];
-	 }   
-	 for(int i = 0; i < 2; i++)
-	 {
-       bitsstate[i] = m.BitsState[i];
-	 }    
-     *snapbitsdirection0 = m.SnapBitsDirection0;
-     *snapbitsdirection1 = m.SnapBitsDirection1;
-     *snapbitsstate0 = m.SnapBitsState0;
-     *snapbitsstate1 = m.SnapBitsState1;
-     *kanalgobitsstateinputs = m.KanalogBitsStateInputs;
-     *kanalogbitsstateoutputs = m.KanalogBitsStateOutputs;
-     *runonstartup = m.RunOnStartUp;
-     *threadactive = m.ThreadActive;
-     *stopimmediatestate = m.StopImmediateState;
-     *timestamp = m.TimeStamp;  
-	 for(int i = 0; i < 8; i++)
-	{
-       pccomm[i] = m.PC_comm[i];
-	}
-     *virtualbits = m.VirtualBits;
-     *virtualbitsex0 = m.VirtualBitsEx0;
-
-       return true;
-	}
- 
+	CKMotionDLL* KM_dll = (CKMotionDLL*)handle;
+	KM_dll->GetStatus(*m, lock);
+	return true;
+}
   
 //Coordinated Motion Members
 //SET MOTION_PARAMS
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_BreakAngle(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_BreakAngle(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->BreakAngle;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_BreakAngle(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_BreakAngle(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->BreakAngle = value;
 }
 
-
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_CollinearTol(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_CollinearTol(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->CollinearTol;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_CollinearTol(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_CollinearTol(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams(); 
 	p->CollinearTol = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_CornerTol(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_CornerTol(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->CornerTol;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_CornerTol(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_CornerTol(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->CornerTol = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_FacetAngle(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_FacetAngle(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->FacetAngle;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_FacetAngle(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_FacetAngle(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->FacetAngle = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_TPLookahead(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_TPLookahead(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->TPLookahead;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_TPLookahead(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_TPLookahead(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->TPLookahead = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_RadiusA(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_RadiusA(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->RadiusA;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_RadiusA(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_RadiusA(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->RadiusA = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_RadiusB(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_RadiusB(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->RadiusB;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_RadiusB(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_RadiusB(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->RadiusB = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_RadiusC(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_RadiusC(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->RadiusC;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_RadiusC(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_RadiusC(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->RadiusC = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxAccelX(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxAccelX(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->MaxAccelX;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxAccelX(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxAccelX(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->MaxAccelX = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxAccelY(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxAccelY(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->MaxAccelY;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxAccelY(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxAccelY(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->MaxAccelY = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxAccelZ(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxAccelZ(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->MaxAccelZ;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxAccelZ(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxAccelZ(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->MaxAccelZ = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxAccelA(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxAccelA(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->MaxAccelA;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxAccelA(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxAccelA(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->MaxAccelA = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxAccelB(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxAccelB(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->MaxAccelB;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxAccelB(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxAccelB(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->MaxAccelB = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxAccelC(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxAccelC(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->MaxAccelC;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxAccelC(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxAccelC(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->MaxAccelC = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxVelX(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxVelX(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->MaxVelX;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxVelX(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxVelX(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->MaxVelX = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxVelY(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxVelY(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->MaxVelY;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxVelY(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxVelY(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->MaxVelY = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxVelZ(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxVelZ(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->MaxVelZ;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxVelZ(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxVelZ(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->MaxVelZ = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxVelA(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxVelA(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->MaxVelA;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxVelA(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxVelA(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->MaxVelA = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxVelB(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxVelB(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->MaxVelB;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxVelB(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxVelB(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->MaxVelB = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxVelC(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxVelC(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->MaxVelC;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxVelC(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxVelC(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->MaxVelC = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_CountsPerInchX(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_CountsPerInchX(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->CountsPerInchX;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_CountsPerInchX(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_CountsPerInchX(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->CountsPerInchX = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_CountsPerInchY(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_CountsPerInchY(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->CountsPerInchY;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_CountsPerInchY(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_CountsPerInchY(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->CountsPerInchY = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_CountsPerInchZ(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_CountsPerInchZ(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->CountsPerInchZ;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_CountsPerInchZ(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_CountsPerInchZ(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->CountsPerInchZ = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_CountsPerInchA(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_CountsPerInchA(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->CountsPerInchA;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_CountsPerInchA(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_CountsPerInchA(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->CountsPerInchA = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_CountsPerInchB(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_CountsPerInchB(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->CountsPerInchB;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_CountsPerInchB(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_CountsPerInchB(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->CountsPerInchB = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_CountsPerInchC(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_CountsPerInchC(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->CountsPerInchC;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_CountsPerInchC(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_CountsPerInchC(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->CountsPerInchC = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxLinearLength(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxLinearLength(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->MaxLinearLength;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxLinearLength(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxLinearLength(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->MaxLinearLength = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxRapidFRO(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_MaxRapidFRO(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->MaxRapidFRO;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxRapidFRO(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_MaxRapidFRO(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->MaxRapidFRO = value;
 }
 
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_UseOnlyLinearSegments(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_UseOnlyLinearSegments(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->UseOnlyLinearSegments;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_UseOnlyLinearSegments(int *handle, bool value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_UseOnlyLinearSegments(HANDLE64 *handle, bool value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->UseOnlyLinearSegments = value;
 }
 
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_DoRapidsAsFeeds(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_DoRapidsAsFeeds(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->DoRapidsAsFeeds;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_DoRapidsAsFeeds(int *handle, bool value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_DoRapidsAsFeeds(HANDLE64 *handle, bool value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->DoRapidsAsFeeds = value;
 }
 
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_ArcsToSegs(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_ArcsToSegs(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->ArcsToSegs;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_ArcsToSegs(int *handle, bool value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_ArcsToSegs(HANDLE64 *handle, bool value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->ArcsToSegs = value;
 }
 
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_DegreesA(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_DegreesA(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->DegreesA;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_DegreesA(int *handle, bool value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_DegreesA(HANDLE64 *handle, bool value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->DegreesA = value;
 }
 
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_DegreesB(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_DegreesB(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->DegreesB;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_DegreesB(int *handle, bool value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_DegreesB(HANDLE64 *handle, bool value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->DegreesB = value;
 }
 
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_DegreesC(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_DegreesC(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	return p->DegreesC;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_DegreesC(int *handle, bool value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_DegreesC(HANDLE64 *handle, bool value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	MOTION_PARAMS *p=CM_dll->GetMotionParams();
 	p->DegreesC = value;
 }
 
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_TCP_Active(HANDLE64 *handle)
+{
+	CCoordMotion *CM_dll=(CCoordMotion *)handle;
+	MOTION_PARAMS *p=CM_dll->GetMotionParams();
+	return p->TCP_Active;
+}
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_TCP_Active(HANDLE64 *handle, bool value)
+{
+	CCoordMotion *CM_dll=(CCoordMotion *)handle;
+	MOTION_PARAMS *p=CM_dll->GetMotionParams();
+	p->TCP_Active = value;
+}
+
  
 //Coordinated Motion Rest
 
-extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_CoordMotion_New(int *KmotionDLLhandle, int *handle)
+extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_CoordMotion_New(int *KmotionDLLhandle, HANDLE64 *handle)
 {
 	
 	CKMotionDLL *KM_dll=(CKMotionDLL *)KmotionDLLhandle;
 	CCoordMotion *CM;  
 	CM = new CCoordMotion(KM_dll); 
-	*handle=(int)CM;  
+	*handle=(HANDLE64)CM;  
 }
 
-extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_CoordMotion_Free(int *handle)
+extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_CoordMotion_Free(HANDLE64 *handle)
 {
 	CCoordMotion *CM; // one instance of the interface class
 	CM= *(CCoordMotion **)handle;
@@ -923,133 +852,133 @@ extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_CoordMotion_
 	*handle=0L; 
 }
 
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_DownloadInit(int *handle)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_DownloadInit(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	CM_dll->DownloadInit();
 }
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_CheckMotionHalt(int *handle, bool Coord)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_CheckMotionHalt(HANDLE64 *handle, bool Coord)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->CheckMotionHalt(Coord); 
 }
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_ExecutionStop(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_ExecutionStop(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->ExecutionStop(); 
 }
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_Get_FeedRateOverride(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_Get_FeedRateOverride(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->GetFeedRateOverride(); 
 }
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_Get_FeedRateRapidOverride(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_Get_FeedRateRapidOverride(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->GetFeedRateRapidOverride(); 
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_FeedRateOverride(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_FeedRateOverride(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     CM_dll->SetFeedRateOverride(value); 
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_FeedRateRapidOverride(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_FeedRateRapidOverride(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     CM_dll->SetFeedRateRapidOverride(value); 
 }
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_Get_SpindleRateOverride(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_Get_SpindleRateOverride(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->GetSpindleRateOverride(); 
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_SpindleRateOverride(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_SpindleRateOverride(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     CM_dll->SetSpindleRateOverride(value); 
 }
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_Get_HardwareFRORange(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_Get_HardwareFRORange(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->GetHardwareFRORange(); 
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_HardwareFRORange(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_HardwareFRORange(HANDLE64 *handle, double value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     CM_dll->SetHardwareFRORange(value); 
 }
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_Get_AxisDestination(int *handle, int axis, double *value)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_Get_AxisDestination(HANDLE64 *handle, int axis, double *value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->GetDestination(axis, value); 
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_Get_AxisPosition(int *handle, int axis, double *value)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_Get_AxisPosition(HANDLE64 *handle, int axis, double *value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	return CM_dll->GetPosition(axis, value); 
 }
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_Get_Abort(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_Get_Abort(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->GetAbort(); 
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_Abort(int *handle)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_Abort(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	 
     CM_dll->SetAbort(); 
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Clear_Abort(int *handle)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Clear_Abort(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     CM_dll->ClearAbort(); 
 }
 
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_Get_Halt(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_Get_Halt(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->GetHalt(); 
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_Halt(int *handle)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_Halt(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     CM_dll->SetHalt(); 
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Clear_Halt(int *handle)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Clear_Halt(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     CM_dll->ClearHalt();
 }
 
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_FlushSegments(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_FlushSegments(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->FlushSegments();
 }
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_WaitForSegmentsFinished(int *handle, BOOL NoErrorOnDisable)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_WaitForSegmentsFinished(HANDLE64 *handle, BOOL NoErrorOnDisable)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->WaitForSegmentsFinished(NoErrorOnDisable);
 }
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_WaitForMoveXYZABCFinished(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_WaitForMoveXYZABCFinished(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->WaitForMoveXYZABCFinished();
 }
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_DoKMotionCmd(int *handle, const char *s, BOOL FlushBeforeUnbufferedOperation)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_DoKMotionCmd(HANDLE64 *handle, const char *s, BOOL FlushBeforeUnbufferedOperation)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->DoKMotionCmd(s, FlushBeforeUnbufferedOperation);
 }
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_DoKMotionBufCmd(int *handle, const char *s)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_DoKMotionBufCmd(HANDLE64 *handle, const char *s)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->DoKMotionBufCmd(s);
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_KinematicsReadGeoTable(int *handle, const char *filename)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_KinematicsReadGeoTable(HANDLE64 *handle, const char *filename)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	return CM_dll->Kinematics->ReadGeoTable(filename);
@@ -1059,21 +988,21 @@ extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_Ki
 
  
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_MeasurePointAppendToFile(int *handle, const char *name)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_MeasurePointAppendToFile(HANDLE64 *handle, const char *name)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->MeasurePointAppendToFile(name);
 }
 
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_StraightTraverse
-(int *handle, double x, double y, double z, double a, double b, double c, bool NoCallback)
+(HANDLE64 *handle, double x, double y, double z, double a, double b, double c, bool NoCallback)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->StraightTraverse(x, y, z, a, b, c, NoCallback);
 }
 
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_ArcFeed
-	(int *handle, double DesiredFeedRate_in_per_sec, int plane,
+	(HANDLE64 *handle, double DesiredFeedRate_in_per_sec, int plane,
 	double first_end, double second_end, 
 	double first_axis, double second_axis, int rotation,
 	double axis_end_point, double a, double b, double c, int sequence_number, int ID)
@@ -1083,7 +1012,7 @@ extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_Ar
 }
 
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_ArcFeedAccel
-	(int *handle, double DesiredFeedRate_in_per_sec, double DesiredAccel, int plane,
+	(HANDLE64 *handle, double DesiredFeedRate_in_per_sec, double DesiredAccel, int plane,
 	double first_end, double second_end, 
 	double first_axis, double second_axis, int rotation,
 	double axis_end_point, double a, double b, double c, int sequence_number, int ID)
@@ -1093,21 +1022,21 @@ extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_Ar
 }
 
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_StraightFeed
-(int *handle, double DesiredFeedRate_in_per_sec, double x, double y, double z, double a, double b, double c, int sequence_number, int ID)
+(HANDLE64 *handle, double DesiredFeedRate_in_per_sec, double x, double y, double z, double a, double b, double c, int sequence_number, int ID)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->StraightFeed(DesiredFeedRate_in_per_sec, x, y, z, a, b, c, sequence_number, ID);
 }
 
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_StraightFeedAccel
-(int *handle, double DesiredFeedRate_in_per_sec, double DesiredAccel, double x, double y, double z, double a, double b, double c, int sequence_number, int ID)
+(HANDLE64 *handle, double DesiredFeedRate_in_per_sec, double DesiredAccel, double x, double y, double z, double a, double b, double c, int sequence_number, int ID)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->StraightFeedAccel(DesiredFeedRate_in_per_sec, DesiredAccel, x, y, z, a, b, c, sequence_number, ID);
 }
  
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_ReadAndSyncCurPositions
-(int *handle, double *x, double *y, double *z, double *a, double *b, double *c)
+(HANDLE64 *handle, double *x, double *y, double *z, double *a, double *b, double *c)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	
@@ -1125,92 +1054,92 @@ extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_Re
 }
 
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_ReadCurAbsPosition
-(int *handle, double *x, double *y, double *z, double *a, double *b, double *c, bool snap)
+(HANDLE64 *handle, double *x, double *y, double *z, double *a, double *b, double *c, bool snap)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->ReadCurAbsPosition(x, y, z, a, b, c, snap);
 }
 
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_SetStraightTraverseCallback(int *handle, netSTRAIGHT_TRAVERSE_CALLBACK *p)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_SetStraightTraverseCallback(HANDLE64 *handle, netSTRAIGHT_TRAVERSE_CALLBACK *p)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     StraightTransverseHandler = p;
     CM_dll->SetStraightTraverseCallback(LocalStraightTransverseHandler); 
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_SetStraightFeedCallback(int *handle, netSTRAIGHT_FEED_CALLBACK *p)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_SetStraightFeedCallback(HANDLE64 *handle, netSTRAIGHT_FEED_CALLBACK *p)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     StraightFeedHandler = p;
     CM_dll->SetStraightFeedCallback(LocalStraightFeedHandler);  
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_SetArcFeedCallback(int *handle, netARC_FEED_CALLBACK *p)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_SetArcFeedCallback(HANDLE64 *handle, netARC_FEED_CALLBACK *p)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     ArcFeedHandler = p;
     CM_dll->SetArcFeedCallback(LocalArcFeedHandler);  
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_DownloadDoneSegments( int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_DownloadDoneSegments( HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->DownloadDoneSegments();
 }
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_OutputSegment(int *handle, int iseg)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_OutputSegment(HANDLE64 *handle, int iseg)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->OutputSegment(iseg);
 }
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_DoSpecialCommand(int *handle, int iseg)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_DoSpecialCommand(HANDLE64 *handle, int iseg)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->DoSpecialCommand(iseg);
 }
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_DoRateAdjustments(int *handle, int i0, int i1)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_DoRateAdjustments(HANDLE64 *handle, int i0, int i1)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->DoRateAdjustments(i0, i1);
 }
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_GetAxisDefinitions(int *handle, int *x, int *y, int *z, int *a, int *b, int *c)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_GetAxisDefinitions(HANDLE64 *handle, int *x, int *y, int *z, int *a, int *b, int *c)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->GetAxisDefinitions(x, y, z, a, b, c);
 }
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_SetAxisDefinitions(int *handle, int x, int y, int z, int a, int b, int c)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_SetAxisDefinitions(HANDLE64 *handle, int x, int y, int z, int a, int b, int c)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->SetAxisDefinitions(x, y, z, a, b, c);
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_SetTPParams(int *handle)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_SetTPParams(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     CM_dll->SetTPParams();
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_Dwell(int *handle, double seconds, int sequence_number)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_Dwell(HANDLE64 *handle, double seconds, int sequence_number)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->Dwell(seconds, sequence_number);
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_DownloadedSegmentCount(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_DownloadedSegmentCount(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->m_nsegs_downloaded;
 }
  
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_TotalDownloadedTime(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_TotalDownloadedTime(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->m_TotalDownloadedTime;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_TimeAlreadyExecuted(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_TimeAlreadyExecuted(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->m_TimeAlreadyExecuted;
 }
  
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_RemainingTime(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_RemainingTime(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return (CM_dll->m_TotalDownloadedTime) - (CM_dll->m_TimeAlreadyExecuted);
@@ -1219,12 +1148,12 @@ extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion
 
 
 
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_Get_Simulate(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_Get_Simulate(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->m_Simulate; 
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_Simulate(int *handle, bool value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_Simulate(HANDLE64 *handle, bool value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	CM_dll->m_Simulate = value;
@@ -1232,12 +1161,12 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_S
  
 
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_Get_PreviouslyStopped(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_Get_PreviouslyStopped(HANDLE64 *handle)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
     return CM_dll->m_PreviouslyStopped; 
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_PreviouslyStopped(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_PreviouslyStopped(HANDLE64 *handle, int value)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
 	CM_dll->m_PreviouslyStopped = value;
@@ -1245,7 +1174,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_S
  
 //RS274 Interpreter Exports
 
-extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_GCodeInterpreter_New(int *CoordMotionhandle, int *handle)
+extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_GCodeInterpreter_New(int *CoordMotionhandle, HANDLE64 *handle)
 {
 	
 	CCoordMotion *CM_dll=(CCoordMotion *)CoordMotionhandle;
@@ -1255,10 +1184,10 @@ extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_GCodeInterpr
  
 	strcpy(GC->ToolFile,"");
 	strcpy(GC->SetupFile,"");
-	*handle=(int)GC;  
+	*handle=(HANDLE64)GC;  
 }
 
-extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_GCodeInterpreter_Free(int *handle)
+extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_GCodeInterpreter_Free(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC; // one instance of the interface class
 	GC= *(CGCodeInterpreter **)handle;
@@ -1266,25 +1195,25 @@ extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_GCodeInterpr
 	*handle=0L; 
 }
 
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_InitializeInterpreter(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_InitializeInterpreter(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	GC_dll->p_setup->origin_index = 0;
 	return GC_dll->InitializeInterp() != 0;
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_SetOrigin(int *handle, int index, double x, double y, double z, double a, double b, double c)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_SetOrigin(HANDLE64 *handle, int index, double x, double y, double z, double a, double b, double c)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->SetOrigin(index, x, y, z, a, b, c);
 }
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_GetOrigin(int *handle, int index, double *x, double *y, double *z, double *a, double *b, double *c)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_GetOrigin(HANDLE64 *handle, int index, double *x, double *y, double *z, double *a, double *b, double *c)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetOrigin(index, x, y, z, a, b, c);
 }
 
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_M_CodeAction(int *handle, int index, int type, double val1, double val2,double val3,double val4,double val5, char *string)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_M_CodeAction(HANDLE64 *handle, int index, int type, double val1, double val2,double val3,double val4,double val5, char *string)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
     GC_dll->McodeActions[index].Action = type;
@@ -1295,7 +1224,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 	GC_dll->McodeActions[index].dParams[4] = val5;
 	strncpy(GC_dll->McodeActions[index].String,string, 255); 
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_M_CodeAction(int *handle, int index, int *type, double *val1, double *val2,double *val3,double *val4,double *val5, char **string)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_M_CodeAction(HANDLE64 *handle, int index, int *type, double *val1, double *val2,double *val3,double *val4,double *val5, char **string)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	*type = GC_dll->McodeActions[index].Action;
@@ -1310,13 +1239,13 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 //Setup Parameters
 	//Acutator Origins, Positions and Offsets
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_GetInterpretThreadID(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_GetInterpretThreadID(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll = (CGCodeInterpreter *)handle;
 	return GC_dll->m_InterpretThreadID;
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_GetInvokeThreadID(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_GetInvokeThreadID(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll = (CGCodeInterpreter *)handle;
 	return GC_dll->m_InvokeThreadID;
@@ -1327,221 +1256,221 @@ extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpret
 	return GetCurrentThreadId();
 }
 
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_GetInitializeOnExecute(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_GetInitializeOnExecute(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll = (CGCodeInterpreter *)handle;
 	return GC_dll->m_InitializeOnExecute;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_SetInitializeOnExecute(int *handle, bool value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_SetInitializeOnExecute(HANDLE64 *handle, bool value)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	GC_dll->m_InitializeOnExecute = value;
 }
 
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_GetReadToolFile(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_GetReadToolFile(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->m_ReadToolFile;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_SetReadToolFile(int *handle, bool value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_SetReadToolFile(HANDLE64 *handle, bool value)
 {
     CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	GC_dll->m_ReadToolFile = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_A_Axis_Offset(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_A_Axis_Offset(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->AA_axis_offset;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_A_Axis_Offset(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_A_Axis_Offset(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->AA_axis_offset = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_A_Current_Position(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_A_Current_Position(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->AA_current;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_A_Current_Position(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_A_Current_Position(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->AA_current = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_A_Origin_Offset(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_A_Origin_Offset(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->AA_origin_offset;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_A_Origin_Offset(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_A_Origin_Offset(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->AA_origin_offset = value;
 }
  
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_B_Axis_Offset(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_B_Axis_Offset(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->BB_axis_offset;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_B_Axis_Offset(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_B_Axis_Offset(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->BB_axis_offset = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_B_Current_Position(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_B_Current_Position(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->BB_current;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_B_Current_Position(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_B_Current_Position(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->BB_current = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_B_Origin_Offset(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_B_Origin_Offset(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->BB_origin_offset;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_B_Origin_Offset(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_B_Origin_Offset(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->BB_origin_offset = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_C_Axis_Offset(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_C_Axis_Offset(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->CC_axis_offset;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_C_Axis_Offset(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_C_Axis_Offset(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->CC_axis_offset = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_C_Current_Position(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_C_Current_Position(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->CC_current;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_C_Current_Position(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_C_Current_Position(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->CC_current = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_C_Origin_Offset(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_C_Origin_Offset(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->CC_origin_offset;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_C_Origin_Offset(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_C_Origin_Offset(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->CC_origin_offset = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_X_Axis_Offset(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_X_Axis_Offset(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->axis_offset_x;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_X_Axis_Offset(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_X_Axis_Offset(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->axis_offset_x = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_X_Current_Position(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_X_Current_Position(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->current_x;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_X_Current_Position(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_X_Current_Position(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->current_x = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_X_Origin_Offset(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_X_Origin_Offset(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->origin_offset_x;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_X_Origin_Offset(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_X_Origin_Offset(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->origin_offset_x = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Y_Axis_Offset(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Y_Axis_Offset(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->axis_offset_y;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Y_Axis_Offset(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Y_Axis_Offset(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->axis_offset_y = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Y_Current_Position(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Y_Current_Position(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->current_y;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Y_Current_Position(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Y_Current_Position(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->current_y = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Y_Origin_Offset(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Y_Origin_Offset(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->origin_offset_y;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Y_Origin_Offset(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Y_Origin_Offset(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->origin_offset_y = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Z_Axis_Offset(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Z_Axis_Offset(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->axis_offset_z;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Z_Axis_Offset(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Z_Axis_Offset(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->axis_offset_z = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Z_Current_Position(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Z_Current_Position(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->current_z;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Z_Current_Position(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Z_Current_Position(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->current_z = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Z_Origin_Offset(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Z_Origin_Offset(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->origin_offset_z;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Z_Origin_Offset(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Z_Origin_Offset(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->origin_offset_z = value;
@@ -1549,213 +1478,213 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
  
 
 	//Modals
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ControlMode(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ControlMode(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->control_mode;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ControlMode(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ControlMode(HANDLE64 *handle, int value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->control_mode = value;
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_LengthUnits(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_LengthUnits(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->length_units;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_LengthUnits(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_LengthUnits(HANDLE64 *handle, int value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->length_units = value;
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_OriginIndex(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_OriginIndex(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->origin_index;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_OriginIndex(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_OriginIndex(HANDLE64 *handle, int value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->origin_index = value;
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_WorkPlane(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_WorkPlane(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->plane;
 } 
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_WorkPlane(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_WorkPlane(HANDLE64 *handle, int value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->plane = value;
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_PercentFlag(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_PercentFlag(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->percent_flag;
 } 
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ProbeComplete(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ProbeComplete(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->probe_flag;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ProbeComplete(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ProbeComplete(HANDLE64 *handle, int value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->probe_flag = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ProgramX(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ProgramX(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->program_x;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ProgramX(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ProgramX(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->program_x = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ProgramY(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ProgramY(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->program_y;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ProgramY(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ProgramY(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->program_y = value;
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_SequenceNumber(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_SequenceNumber(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->sequence_number;
 } 
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_CurrentLine(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_CurrentLine(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->current_line;
 } 
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_CurrentLine(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_CurrentLine(HANDLE64 *handle, int value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->current_line = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_TraverseSpeed(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_TraverseSpeed(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->traverse_rate;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_TraverseSpeed(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_TraverseSpeed(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->traverse_rate = value;
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_LineLength(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_LineLength(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->line_length;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_FileName(int *handle, char *file)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_FileName(HANDLE64 *handle, char *file)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	file = GC_dll->p_setup->filename;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_LineText(int *handle, char *line)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_LineText(HANDLE64 *handle, char *line)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	line = GC_dll->GetRealTimeState()->linetext;
 }
 
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_CurrentMotionMode(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_CurrentMotionMode(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->motion_mode;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_CurrentMotionMode(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_CurrentMotionMode(HANDLE64 *handle, int value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->motion_mode = value;
 }
  
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Active_GCode(int *handle, int index)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Active_GCode(HANDLE64 *handle, int index)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->active_g_codes[index];
 }  
  
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Active_MCode(int *handle, int index)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Active_MCode(HANDLE64 *handle, int index)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->active_m_codes[index];
 }  
  
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Active_Setting(int *handle, int index)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Active_Setting(HANDLE64 *handle, int index)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->active_settings[index];
 } 
  
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_DistanceMode(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_DistanceMode(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->distance_mode;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_DistanceMode(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_DistanceMode(HANDLE64 *handle, int value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->distance_mode = (value == 0) ? MODE_ABSOLUTE : MODE_INCREMENTAL;
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_FeedMode(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_FeedMode(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->feed_mode;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_FeedMode(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_FeedMode(HANDLE64 *handle, int value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->feed_mode = value;
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_FloodCoolantOn(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_FloodCoolantOn(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->flood;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_FloodCoolantOn(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_FloodCoolantOn(HANDLE64 *handle, int value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->flood = value;
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_MistCoolantOn(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_MistCoolantOn(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->mist;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_MistCoolantOn(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_MistCoolantOn(HANDLE64 *handle, int value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->mist = value;
 }
  
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_BlockDelete(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_BlockDelete(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->block_delete;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_BlockDelete(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_BlockDelete(HANDLE64 *handle, int value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->block_delete = value;
@@ -1764,153 +1693,153 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 
 
 	//Tooling Params 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_CurrentToolSlot(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_CurrentToolSlot(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->current_slot;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_CurrentToolSlot(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_CurrentToolSlot(HANDLE64 *handle, int value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->current_slot = value;
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_SelectedToolSlot(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_SelectedToolSlot(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->selected_tool_slot;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_SelectedToolSlot(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_SelectedToolSlot(HANDLE64 *handle, int value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->selected_tool_slot = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ToolXOffset(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ToolXOffset(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->tool_xoffset;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ToolYOffset(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ToolYOffset(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->tool_yoffset;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ToolLengthOffset(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ToolLengthOffset(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->tool_length_offset;
 }
 
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ToolXOffset(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ToolXOffset(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->tool_xoffset = value;
 }
 
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ToolYOffset(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ToolYOffset(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->tool_yoffset = value;
 }
 
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ToolLengthOffset(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ToolLengthOffset(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->tool_length_offset = value;
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ToolLengthOffsetIndex(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ToolLengthOffsetIndex(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->length_offset_index;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ToolLengthOffsetIndex(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ToolLengthOffsetIndex(HANDLE64 *handle, int value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->length_offset_index = value;
 }
  
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_RadiusComp(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_RadiusComp(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->cutter_radius_compensation;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_RadiusComp(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_RadiusComp(HANDLE64 *handle, int value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->cutter_radius_compensation = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_RadiusCompValue(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_RadiusCompValue(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->cutter_comp_radius;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_RadiusCompValue(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_RadiusCompValue(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->cutter_comp_radius = value;
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_RadiusCompSide(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_RadiusCompSide(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->cutter_comp_side;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_RadiusCompSide(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_RadiusCompSide(HANDLE64 *handle, int value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->cutter_comp_side = value;
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_AllowSpindleSpeedOverride(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_AllowSpindleSpeedOverride(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->speed_override;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_AllowSpindleSpeedOverride(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_AllowSpindleSpeedOverride(HANDLE64 *handle, int value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->speed_override = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_SpindleSpeed(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_SpindleSpeed(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->speed;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_SpindleSpeed(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_SpindleSpeed(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->speed = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_FeedRate(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_FeedRate(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->feed_rate;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_FeedRate(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_FeedRate(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->feed_rate = value;
 }
  
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_SpindleDirection(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_SpindleDirection(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->spindle_turning;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_SpindleDirection(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_SpindleDirection(HANDLE64 *handle, int value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->spindle_turning = value;
 }
  
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_SetTool(int *handle, int index, int slot, int id, 
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_SetTool(HANDLE64 *handle, int index, int slot, int id, 
 																							  double length, double diameter, double xoffset, double yoffset)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
@@ -1918,11 +1847,12 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 	 GC_dll->p_setup->tool_table[index].slot = slot;
 	 GC_dll->p_setup->tool_table[index].id = id;
 	 GC_dll->p_setup->tool_table[index].length = length;
+	 GC_dll->p_setup->tool_table[index].diameter = diameter;
 	 GC_dll->p_setup->tool_table[index].xoffset = xoffset;
 	 GC_dll->p_setup->tool_table[index].yoffset = yoffset;
 } 
 
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_GetTool(int *handle, int index, int *slot, int *id, 
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_GetTool(HANDLE64 *handle, int index, int *slot, int *id, 
 																							  double *length, double *diameter, double *xoffset, double *yoffset)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
@@ -1935,328 +1865,365 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 } 
 
 	//Fixed Cycle Params
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_CC(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_CC(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->cycle_cc;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_CC(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_CC(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->cycle_cc = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_I(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_I(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->cycle_i;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_I(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_I(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->cycle_i = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_J(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_J(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->cycle_j;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_J(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_J(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->cycle_j = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_K(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_K(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->cycle_k;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_K(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_K(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->cycle_k = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_L(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_L(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->cycle_l;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_L(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_L(HANDLE64 *handle, double value)
 {
  	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->AA_axis_offset = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_P(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_P(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->cycle_p;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_P(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_P(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->cycle_p = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_Q(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_Q(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->cycle_q;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_Q(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_Q(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->cycle_q = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_R(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_R(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->cycle_r;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_R(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_R(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->cycle_r = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_Z(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_Z(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->cycle_z;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_Z(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_Z(HANDLE64 *handle, double value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->cycle_z = value;
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_RetractMode(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Cycle_RetractMode(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->retract_mode;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_RetractMode(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Cycle_RetractMode(HANDLE64 *handle, int value)
 {
 	 CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->p_setup->retract_mode = (value == 0) ? R_PLANE : OLD_Z;
 }
 
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_block_p_flag(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_block_p_flag(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->block1.p_flag==ON;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_block_p_number(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_block_p_number(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->block1.p_number;
 }
 
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_block_q_flag(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_block_q_flag(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->block1.q_flag==ON;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_block_q_number(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_block_q_number(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->block1.q_number;
 }
 
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_block_r_flag(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_block_r_flag(int* handle)
 {
-	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->GetRealTimeState()->block1.r_flag==ON;
+	CGCodeInterpreter* GC_dll = (CGCodeInterpreter*)handle;
+	return GC_dll->GetRealTimeState()->block1.r_flag == ON;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_block_r_number(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_block_r_number(int* handle)
 {
-	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
+	CGCodeInterpreter* GC_dll = (CGCodeInterpreter*)handle;
 	return GC_dll->GetRealTimeState()->block1.r_number;
+}
+
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_block_d_flag(int* handle)
+{
+	CGCodeInterpreter* GC_dll = (CGCodeInterpreter*)handle;
+	return GC_dll->GetRealTimeState()->block1.d_flag == ON;
+}
+
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_block_d_number(int* handle)
+{
+	CGCodeInterpreter* GC_dll = (CGCodeInterpreter*)handle;
+	return GC_dll->GetRealTimeState()->block1.d_number;
 }
 
 
 
 //Resume Parameters
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_CanResume(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_CanResume(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->m_Resume;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_CanResume(int *handle, bool value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_CanResume(HANDLE64 *handle, bool value)
 {
      CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->m_Resume = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeSafeZ(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeSafeZ(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->m_ResumeSafeZ;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeSafeZ(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeSafeZ(HANDLE64 *handle, double value)
 {
      CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->m_ResumeSafeZ = value;
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeSafeRelAbs(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeSafeRelAbs(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->m_ResumeSafeRelAbs;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeSafeRelAbs(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeSafeRelAbs(HANDLE64 *handle, int value)
 {
      CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->m_ResumeSafeRelAbs = value;
 }
 
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeMoveToSafeZ(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeMoveToSafeZ(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->m_ResumeMoveToSafeZ != 0;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeMoveToSafeZ(int *handle, bool value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeMoveToSafeZ(HANDLE64 *handle, bool value)
 {
      CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->m_ResumeMoveToSafeZ = value;
 }
 
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeTraverseXY(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeTraverseXY(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->m_ResumeTraverseXY != 0;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeTraverseXY(int *handle, bool value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeTraverseXY(HANDLE64 *handle, bool value)
 {
      CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->m_ResumeTraverseXY = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeTraverseSafeX(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeTraverseSafeX(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->m_ResumeTraverseSafeX;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeTraverseSafeX(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeTraverseSafeX(HANDLE64 *handle, double value)
 {
      CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->m_ResumeTraverseSafeX = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeTraverseSafeY(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeTraverseSafeY(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->m_ResumeTraverseSafeY;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeTraverseSafeY(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeTraverseSafeY(HANDLE64 *handle, double value)
 {
      CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->m_ResumeTraverseSafeY = value;
 }
 
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeSafeStartSpindle(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeSafeStartSpindle(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->m_ResumeSafeStartSpindle != 0;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeSafeStartSpindle(int *handle, bool value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeSafeStartSpindle(HANDLE64 *handle, bool value)
 {
      CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->m_ResumeSafeStartSpindle = value;
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeSafeSpindleCWCCW(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeSafeSpindleCWCCW(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->m_ResumeSafeSpindleCWCCW;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeSafeSpindleCWCCW(int *handle, int value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeSafeSpindleCWCCW(HANDLE64 *handle, int value)
 {
      CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->m_ResumeSafeSpindleCWCCW = value;
 }
 
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeDoSafeFeedZ(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeDoSafeFeedZ(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->m_ResumeDoSafeFeedZ != 0;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeDoSafeFeedZ(int *handle, bool value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeDoSafeFeedZ(HANDLE64 *handle, bool value)
 {
      CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->m_ResumeDoSafeFeedZ = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeFeedSafeZ(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeFeedSafeZ(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->m_ResumeFeedSafeZ;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeFeedSafeZ(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeFeedSafeZ(HANDLE64 *handle, double value)
 {
      CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->m_ResumeFeedSafeZ = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeResumeFeedRate(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeResumeFeedRate(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->m_ResumeResumeFeedRate;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeResumeFeedRate(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeResumeFeedRate(HANDLE64 *handle, double value)
 {
      CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->m_ResumeResumeFeedRate = value;
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeZFeedRate(int *handle)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeZFeedRate(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->m_ResumeZFeedRate;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeZFeedRate(int *handle, double value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeZFeedRate(HANDLE64 *handle, double value)
 {
      CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->m_ResumeZFeedRate = value;
 }
 
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeRestoreFeedRate(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_ResumeRestoreFeedRate(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->m_ResumeRestoreFeedRate != 0;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeRestoreFeedRate(int *handle, bool value)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_ResumeRestoreFeedRate(HANDLE64 *handle, bool value)
 {
      CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	 GC_dll->m_ResumeRestoreFeedRate = value;
 }
 
+
+// Parameter methods
+
+extern "C" __declspec(dllexport) double __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_Parameter(HANDLE64* handle, int index)
+{
+	CGCodeInterpreter* GC_dll = (CGCodeInterpreter*)handle;
+	if (index >= 0 && index < RS274NGC_MAX_PARAMETERS)
+	{
+		return GC_dll->GetRealTimeState()->parameters[index];
+	}
+	return 0;
+}
+
+extern "C" __declspec(dllexport) bool __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_Parameter(HANDLE64* handle, int index, double value)
+{
+	CGCodeInterpreter* GC_dll = (CGCodeInterpreter*)handle;
+	if (index >= 0 && index < RS274NGC_MAX_PARAMETERS)
+	{
+		GC_dll->p_setup->parameters[index] = value;
+		return true;
+	}
+	return false;
+}
+
+
 //Functions
 
 
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_G_COMPLETE_CALLBACK(int *handle, netG_COMPLETE_CALLBACK *p)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_G_COMPLETE_CALLBACK(HANDLE64 *handle, netG_COMPLETE_CALLBACK *p)
 {
     G_CompleteHandler = p;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_G_STATUS_CALLBACK(int *handle, netG_STATUS_CALLBACK *p)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_G_STATUS_CALLBACK(HANDLE64 *handle, netG_STATUS_CALLBACK *p)
 {
     G_StatusHandler = p;
 }
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_G_USER_CALLBACK(int *handle, netG_USER_CALLBACK *p)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_G_USER_CALLBACK(HANDLE64 *handle, netG_USER_CALLBACK *p)
 {
     CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
     G_UserCallbackHandler = p;
 	GC_dll->SetUserCallback(&Local_G_USER_CALLBACK); 
 }
 
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_G_USER_MCODE_CALLBACK(int *handle, netG_USER_MCODE_CALLBACK *p)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_G_USER_MCODE_CALLBACK(HANDLE64 *handle, netG_USER_MCODE_CALLBACK *p)
 {
     CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
     G_UserMCodeCallbackHandler = p;
@@ -2265,69 +2232,69 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 
 
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_ChangeFixtureNumber(int *handle, int fixture)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_ChangeFixtureNumber(HANDLE64 *handle, int fixture)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->ChangeFixtureNumber(fixture);
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_InchesToUserUnits(int *handle, double inches)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_InchesToUserUnits(HANDLE64 *handle, double inches)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->InchesToUserUnits(inches);
 }
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_UserUnitsToInches(int *handle, double units)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_UserUnitsToInches(HANDLE64 *handle, double units)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->UserUnitsToInches(units);
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_ConvertAbsToUserUnitsX(int *handle, double x)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_ConvertAbsToUserUnitsX(HANDLE64 *handle, double x)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->ConvertAbsToUserUnitsX(x);
 }
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_ConvertAbsToUserUnitsY(int *handle, double y)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_ConvertAbsToUserUnitsY(HANDLE64 *handle, double y)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->ConvertAbsToUserUnitsY(y);
 }
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_ConvertAbsToUserUnitsZ(int *handle, double z)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_ConvertAbsToUserUnitsZ(HANDLE64 *handle, double z)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->ConvertAbsToUserUnitsZ(z);
 }
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_ConvertAbsToUserUnitsA(int *handle, double a)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_ConvertAbsToUserUnitsA(HANDLE64 *handle, double a)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->ConvertAbsToUserUnitsA(a);
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_ConvertAbsToUserUnitsB(int *handle, double b)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_ConvertAbsToUserUnitsB(HANDLE64 *handle, double b)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->ConvertAbsToUserUnitsB(b);
 }
 
-extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_ConvertAbsToUserUnitsC(int *handle, double c)
+extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_GCodeInterpreter_ConvertAbsToUserUnitsC(HANDLE64 *handle, double c)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->ConvertAbsToUserUnitsC(c);
 }
 
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_SetFeedRate(int *handle, double feedrate)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_SetFeedRate(HANDLE64 *handle, double feedrate)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	GC_dll->SetFeedRate(feedrate);
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_InvokeAction(int *handle, int i, BOOL FlushBeforeUnbufferedOperation)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_InvokeAction(HANDLE64 *handle, int i, BOOL FlushBeforeUnbufferedOperation)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->InvokeAction(i, FlushBeforeUnbufferedOperation);
 }
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Interpret(int *handle,
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_Interpret(HANDLE64 *handle,
 				  int board_type,
 		          const char *fname,
 			      int start, int end,
@@ -2341,53 +2308,53 @@ extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpret
 
 
 
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_ExecutePC(int *handle, const char *Name)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_ExecutePC(HANDLE64 *handle, const char *Name)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->ExecutePC(Name);
 }
   
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_DoExecute(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_DoExecute(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->DoExecute();
 }
-extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_DoExecuteComplete(int *handle)
+extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_DoExecuteComplete(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->DoExecuteComplete();
 }
 
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_SetHalt(int *handle)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_SetHalt(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	GC_dll->Halt();
 }
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_GetHalt(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_GetHalt(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetHalt();
 }
 
-extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_SetAbort(int *handle)
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_SetAbort(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	GC_dll->Abort();
 }
-extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_GetAbort(int *handle)
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_GCodeInterpreter_GetAbort(HANDLE64 *handle)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetAbort();
 }
  
  extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_ReadAndSyncCurPositions
-(int *handle, double *x, double *y, double *z, double *a, double *b, double *c)
+(HANDLE64 *handle, double *x, double *y, double *z, double *a, double *b, double *c)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->ReadAndSyncCurPositions(x,y,z,a,b,c);
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_ReadCurInterpreterPosition
-(int *handle, double *x, double *y, double *z, double *a, double *b, double *c)
+(HANDLE64 *handle, double *x, double *y, double *z, double *a, double *b, double *c)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	double dx;
@@ -2409,7 +2376,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 }
 
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_ReadCurMachinePosition
-(int *handle, double *x, double *y, double *z, double *a, double *b, double *c)
+(HANDLE64 *handle, double *x, double *y, double *z, double *a, double *b, double *c)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	double dx;
@@ -2431,7 +2398,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 }
 
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_ConvertAbsoluteToMachine
-(int *handle, double x, double y, double z, double a, double b, double c, 
+(HANDLE64 *handle, double x, double y, double z, double a, double b, double c, 
 			  double *xp, double *yp, double *zp, double *ap, double *bp, double *cp)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
@@ -2439,7 +2406,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 }
 
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_ConvertAbsoluteToInterpreterCoord
-(int *handle, double x, double y, double z, double a, double b, double c, 
+(HANDLE64 *handle, double x, double y, double z, double a, double b, double c, 
 			  double *xp, double *yp, double *zp, double *ap, double *bp, double *cp)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
@@ -2450,7 +2417,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_GCodeInterpreter_SetToolFile(void *handle, char *file)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle; 
-    size_t length = strlen(file);
+    size_t length = (int)strlen(file);
 	  
 	for(size_t i = 0; i < 260; i++)
 	{
@@ -2464,15 +2431,23 @@ extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_GCodeInterpr
 }
 extern "C" __declspec(dllexport) 	char*   __stdcall KM_dotnet_Interop_GCodeInterpreter_GetToolFile(void *handle)
 {
-	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;  
-	return GC_dll->ToolFile;
+	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
+	char* s = GC_dll->ToolFile;
+	ULONG ulSize = (int)strlen(s) + sizeof(char);
+	char* pszReturn = NULL;
+
+	pszReturn = (char*)::CoTaskMemAlloc(ulSize);
+	// Copy the contents of s
+	// to the memory pointed to by pszReturn.
+	strcpy(pszReturn, s);
+	return pszReturn;
 }
 
 
 extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_GCodeInterpreter_SetSetupFile(void *handle, char *file)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle; 
-	size_t length = strlen(file);
+	size_t length = (int)strlen(file);
 
 	for(int i = 0; i < 260; i++)
 	{
@@ -2487,14 +2462,22 @@ extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_GCodeInterpr
 
 extern "C" __declspec(dllexport) 	char*   __stdcall KM_dotnet_Interop_GCodeInterpreter_GetSetupFile(void *handle)
 {
-	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;  
-	return GC_dll->SetupFile;
+	CGCodeInterpreter* GC_dll = (CGCodeInterpreter*)handle;
+	char* s = GC_dll->SetupFile;
+	ULONG ulSize = (int)strlen(s) + sizeof(char);
+	char* pszReturn = NULL;
+
+	pszReturn = (char*)::CoTaskMemAlloc(ulSize);
+	// Copy the contents of s
+	// to the memory pointed to by pszReturn.
+	strcpy(pszReturn, s);
+	return pszReturn;
 }
 
 extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_GCodeInterpreter_SetVarsFile(void *handle, char *file)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle; 
-	size_t length = strlen(file);
+	size_t length = (int)strlen(file);
 
 	for(int i = 0; i < 260; i++)
 	{
@@ -2509,8 +2492,16 @@ extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_GCodeInterpr
 
 extern "C" __declspec(dllexport) 	char*   __stdcall KM_dotnet_Interop_GCodeInterpreter_GetVarsFile(void *handle)
 {
-	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;  
-	return GC_dll->VarsFile;
+	CGCodeInterpreter* GC_dll = (CGCodeInterpreter*)handle;
+	char* s = GC_dll->VarsFile;
+	ULONG ulSize = (int)strlen(s) + sizeof(char);
+	char* pszReturn = NULL;
+
+	pszReturn = (char*)::CoTaskMemAlloc(ulSize);
+	// Copy the contents of s
+	// to the memory pointed to by pszReturn.
+	strcpy(pszReturn, s);
+	return pszReturn;
 }
 
 

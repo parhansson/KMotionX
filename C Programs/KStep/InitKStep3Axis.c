@@ -6,7 +6,7 @@
 
 int main() 
 {
-	double T0, LastX=0, LastY=0, LastZ=0, Tau;
+	double Tau, T0, LastX=0, LastY=0, LastZ=0;
 	
 	KStepPresent=TRUE;      // enable KSTEP input multiplexing
 	FPGA(KAN_TRIG_REG)=4;  	// Mux PWM0 to JP7 Pin5 IO 44 for KSTEP 
@@ -188,10 +188,10 @@ int main()
 	
 	SetBitDirection(45,1);  // set Enable Signal as Output
 	SetBit(45);				// Enable the amplifiers
-	
+//	
 //  Add a small amount of Coordinated Motion Path smoothing if desired
-//	Tau = 0.001;  // seconds for Low Pass Filter Time Constant
-//	KLP = exp(-TIMEBASE/Tau);
+	Tau = 0.0005;  // seconds for Low Pass Filter Time Constant
+	KLP = exp(-TIMEBASE/Tau);
 	KLP=0; // force to 0 to disable
 //	printf("Tau=%f KLP=%f\n",Tau,KLP);
 	
@@ -216,5 +216,4 @@ int main()
 		}
 	}
 
-    return 0;
 }

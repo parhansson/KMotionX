@@ -1430,7 +1430,6 @@ namespace KFlopWebNC.Model
                 switch (command.Type)
                 {
                     case MCODE_TYPE.M_Action_Callback:
-
                         break;
                     case MCODE_TYPE.M_Action_DAC:
                         p0 = command.Bit1;
@@ -1442,23 +1441,19 @@ namespace KFlopWebNC.Model
                     case MCODE_TYPE.M_Action_Program:
                         p0 = command.Thread;
                         p1 = command.VAR;
-
-                        sdata = command.FileName;
-                        break;
-                    case MCODE_TYPE.M_Action_Program_PC:
-                        p0 = command.Thread;
-                        p1 = command.VAR;
-
                         sdata = command.FileName;
                         break;
                     case MCODE_TYPE.M_Action_Program_wait:
                         p0 = command.Thread;
                         p1 = command.VAR;
-
                         sdata = command.FileName;
                         break;
                     case MCODE_TYPE.M_Action_Program_wait_sync:
-
+                        p0 = command.Thread;
+                        p1 = command.VAR;
+                        sdata = command.FileName;
+                        break;
+                    case MCODE_TYPE.M_Action_Program_PC:
                         sdata = command.FileName;
                         break;
                     case MCODE_TYPE.M_Action_Setbit:

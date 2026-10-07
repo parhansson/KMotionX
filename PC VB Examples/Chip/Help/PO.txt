@@ -1,0 +1,23 @@
+---------------------------------
+1PO, 2PO. 3PO, 4PO - POlarity
+---------------------------------
+
+Set to one of the following:
+
+    0 = Normal motor polarity
+    1 = Invert motor polarity
+
+Polarity sets which direction the motor will turn when presented with positive and
+negative Gcode coordinates. It's affected by how you wired the motors and by mechanical
+factors. Set polarity so the indicated axis travels in the correct orientation for your
+machine.
+
+Travel in X and Y is dependent on the conventions for your particular machine and CAD 
+setup. Typically X is left/right movement, and Y is towards and away from you, but 
+people often set up the machine to agree with the visualization their CAD program 
+provides, and can depend on where you stand when operating the machine. Typically X+ 
+moves to the right, X- to the left, Y+ away from you, and Y- towards you. Z is by 
+convention the cutting axis, which is the vertical axis on a typical milling machine. 
+Z+ should move up, and Z- should move down, into the work.
+
+ 3PO = 0        Set polarity to normal

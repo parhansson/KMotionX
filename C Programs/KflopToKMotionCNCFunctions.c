@@ -1,6 +1,15 @@
 #define CANON_UNITS_INCHES 1
 #define CANON_UNITS_MM 2
 
+int DoPCFloat(int cmd, float f);
+int DoPCInt(int cmd, int i);
+int DoPCIntNoWait(int cmd, int i);
+int DoPCNoWait(int cmd);
+int DoPC(int cmd);
+int SetVars(int varoff, int n, int poff);
+int GetVars(int varoff, int n, int poff);
+
+
 double GetUserDataDouble(int i)
 {
 	double d;
@@ -46,6 +55,7 @@ int GetDROs(double *DROx, double *DROy, double *DROz, double *DROa, double *DROb
 	*DROa=GetUserDataDouble(TMP+3);
 	*DROb=GetUserDataDouble(TMP+4);
 	*DROc=GetUserDataDouble(TMP+5);
+	return 0;
 }
 
 int GetMachine(double *Machinex, double *Machiney, double *Machinez, double *Machinea, double *Machineb, double *Machinec)
@@ -57,6 +67,7 @@ int GetMachine(double *Machinex, double *Machiney, double *Machinez, double *Mac
 	*Machinea=GetUserDataDouble(TMP+3);
 	*Machineb=GetUserDataDouble(TMP+4);
 	*Machinec=GetUserDataDouble(TMP+5);
+	return 0;
 }
 
 int GetMiscSettings(int *Units, int *TWORD, int *HWORD, int *DWORD)
@@ -67,12 +78,31 @@ int GetMiscSettings(int *Units, int *TWORD, int *HWORD, int *DWORD)
 	*TWORD = persist.UserData[TMP+1];
 	*HWORD = persist.UserData[TMP+2];
 	*DWORD = persist.UserData[TMP+3];
+	return 0;
+}
+
+int GetToolTableIndexFromID(int ToolID, int *TIndex)
+{
+	persist.UserData[PC_COMM_PERSIST+2] = TMP;       	// persist offset 
+	if (DoPCInt(PC_COMM_GET_TOOLTABLE_INDEX,ToolID)) return 1; 
+	
+	*TIndex = persist.UserData[TMP];
+	return 0;
+}
+
+int GetToolSlotAndID(int *Slot, int *ID)
+{
+	if (DoPCInt(PC_COMM_GET_TOOL_SLOT_ID,TMP)) return 1; 
+	
+	*Slot = persist.UserData[TMP];
+	*ID = persist.UserData[TMP+1];
+	return 0;
 }
 
 int GetFixtureIndex(int *FixtureIndex)
 {
 	if (GetVars(5220,1,TMP)) return 1;  // Download to persist TMP
-	*FixtureIndex=GetUserDataDouble(TMP);
+	*FixtureIndex=(int)GetUserDataDouble(TMP);
 	return 0;
 }
 
@@ -96,6 +126,7 @@ int GetToolLength(int index, double *Length)
 	persist.UserData[PC_COMM_PERSIST+2] = TMP;       	// persist offset (doubles)
 	if (DoPCInt(PC_COMM_GET_TOOLTABLE_LENGTH,index)) return 1; // Tool index and Cmd
 	*Length=GetUserDataDouble(TMP);
+	return 0;
 }
 
 // Change a Tool Length offset, value to be passed up is at specified persist offset
@@ -112,6 +143,7 @@ int GetToolDiameter(int index, double *Diameter)
 	persist.UserData[PC_COMM_PERSIST+2] = TMP;       	// persist offset (doubles)
 	if (DoPCInt(PC_COMM_GET_TOOLTABLE_DIAMETER,index)) return 1; // Tool index and Cmd
 	*Diameter=GetUserDataDouble(TMP);
+	return 0;
 }
 
 // Change a Tool Diameter, value to be passed up is at specified persist offset
@@ -128,6 +160,7 @@ int GetToolOffsetX(int index, double *OffsetX)
 	persist.UserData[PC_COMM_PERSIST+2] = TMP;       	// persist offset (doubles)
 	if (DoPCInt(PC_COMM_GET_TOOLTABLE_OFFSETX,index)) return 1; // Tool index and Cmd
 	*OffsetX=GetUserDataDouble(TMP);
+	return 0;
 }
 
 // Change a Tool X offset, value to be passed up is at specified persist offset
@@ -144,6 +177,7 @@ int GetToolOffsetY(int index, double *OffsetY)
 	persist.UserData[PC_COMM_PERSIST+2] = TMP;       	// persist offset (doubles)
 	if (DoPCInt(PC_COMM_GET_TOOLTABLE_OFFSETY,index)) return 1; // Tool index and Cmd
 	*OffsetY=GetUserDataDouble(TMP);
+	return 0;
 }
 
 // Change a Tool Y offset, value to be passed up is at specified persist offset
@@ -163,8 +197,8 @@ int SetVars(int varoff, int n, int poff)
 
 int GetVars(int varoff, int n, int poff)
 {
-	persist.UserData[PC_COMM_PERSIST+2] = n;       // number of elements
-	persist.UserData[PC_COMM_PERSIST+3] = poff;    // persist offset (doubles)
+	persist.UserData[PC_COMM_PERSIST+2] = n;       // number of Vars
+	persist.UserData[PC_COMM_PERSIST+3] = poff;    // first VAR to get
 	return DoPCInt(PC_COMM_GET_VARS,varoff);       // Var index and Cmd
 }
 
@@ -177,7 +211,6 @@ int GetVars(int varoff, int n, int poff)
 int MsgBox(char *s, int Flags)
 {
 	char *p=(char *)gather_buffer+GATH_OFF*sizeof(int);
-	int i;
 	
 	do // copy to gather buffer w offset 0
 	{
@@ -194,8 +227,9 @@ int MsgBox(char *s, int Flags)
 // successful the User Response;
 int MsgBoxGetResponse(int *response)
 {
+	int result;
 	*response=-1;
-	int result=persist.UserData[PC_COMM_PERSIST];
+	result=persist.UserData[PC_COMM_PERSIST];
 	if (result==0)
 		*response=persist.UserData[PC_COMM_PERSIST+3];
 
@@ -209,7 +243,6 @@ int MsgBoxGetResponse(int *response)
 int MsgBoxNoWait(char *s, int Flags)
 {
 	char *p=(char *)gather_buffer+GATH_OFF*sizeof(int);
-	int i;
 	
 	do // copy to gather buffer w offset 0
 	{
@@ -226,23 +259,35 @@ int MsgBoxNoWait(char *s, int Flags)
 // selected cancel.  returns 0 if the operator selected "Set" 
 int InputBox(char *s, float *value)
 {
-	char *p=(char *)gather_buffer+GATH_OFF*sizeof(int);
-	int i;
-	
+	char *p = (char *)gather_buffer + GATH_OFF * sizeof(int);
+
 	do // copy to gather buffer w offset 0
 	{
 		*p++ = *s++;
-	}while (s[-1]);
-	
-	DoPCInt(PC_COMM_INPUT,GATH_OFF);
-	*value = *(float *)&persist.UserData[PC_COMM_PERSIST+2];  // return the value
-	return persist.UserData[PC_COMM_PERSIST+3];
+	} while (s[-1]);
+
+	DoPCInt(PC_COMM_INPUT, GATH_OFF);
+	*value = *(float *)&persist.UserData[PC_COMM_PERSIST + 2];  // return the value
+	return persist.UserData[PC_COMM_PERSIST + 3];
+}
+
+// Execute Screen Script
+int ScreenScript(char *s)
+{
+	char *p = (char *)gather_buffer + GATH_OFF * sizeof(int);
+
+	do // copy to gather buffer w offset 0
+	{
+		*p++ = *s++;
+	} while (s[-1]);
+
+	return DoPCInt(PC_COMM_SCREEN_SCRIPT, GATH_OFF);
 }
 
 
 // Write a string to a DRO Label on the screen.
 // Put the string into the gather buffer at the specified offset (in words)
-// Then place the offset in the specified persit variable
+// Then place the offset in the specified persist variable
 // KMotionCNC will upload and display the message and then
 // clear the persist variable.
 //
@@ -263,6 +308,31 @@ void DROLabel(int gather_offset, int persist_var, char *s)
 	persist.UserData[persist_var] = gather_offset; // set gather offset
 	return;
 }
+	
+// Write a string to an Edit Control on the screen.
+// Put the string into the gather buffer at the specified offset (in words)
+// Then place the negative offset in the specified persist variable
+// Negative offset is used to avoid confusion between reading and writing
+// using the same persist variable.  KMotionCNC will upload and display the message and then
+// clear the persist variable.
+//
+// in order to avoid any possibility of an unterminated message
+// write the message in reverse so the termination is added first
+
+void SetEditControl(int gather_offset, int persist_var, char *s)
+{
+	char *p=(char *)gather_buffer+gather_offset*sizeof(int);
+	int i,n;
+	
+	// first find length of string
+	for (n=0; n<256; n++) if (s[n]==0) break;
+
+	// now copy string backwards
+	for (i=n; i>=0; i--) p[i]=s[i]; 
+	
+	persist.UserData[persist_var] = -gather_offset; // set gather offset
+	return;
+}
 
 // Write a float to a Persist Variable
 
@@ -280,7 +350,6 @@ void WriteVarFloat(int persist_var, float v)
 int GetEditControl(char *s, int Var, int offset)
 {
 	char *p=(char *)gather_buffer+offset*sizeof(int);
-	int result;
 	
 	persist.UserData[Var]=offset;
 	if (DoPCInt(PC_GET_EDIT_CELL,Var)<0)
@@ -315,7 +384,6 @@ int GetEditControlDouble(double *d, int Var, int offset)
 int MDI(char *s)
 {
 	char *p=(char *)gather_buffer+GATH_OFF*sizeof(int);
-	int i;
 	
 	do // copy to gather buffer w offset 0
 	{
@@ -330,7 +398,6 @@ int MDI(char *s)
 // Put a Float as a parameter and pass the command to the App
 int DoPCFloat(int cmd, float f)
 {
-	int result;
 	persist.UserData[PC_COMM_PERSIST+1] = *(int*)&f;
 	return DoPC(cmd);
 }
@@ -338,7 +405,6 @@ int DoPCFloat(int cmd, float f)
 // Put an integer as a parameter and pass the command to the App
 int DoPCInt(int cmd, int i)
 {
-	int result;
 	persist.UserData[PC_COMM_PERSIST+1] = i;
 	return DoPC(cmd);
 }
@@ -367,7 +433,6 @@ int DoPC(int cmd)
 // (Don't wait for response)
 int DoPCIntNoWait(int cmd, int i)
 {
-	int result;
 	persist.UserData[PC_COMM_PERSIST+1] = i;
 	return DoPCNoWait(cmd);
 }
@@ -379,9 +444,6 @@ int DoPCIntNoWait(int cmd, int i)
 
 int DoPCNoWait(int cmd)
 {
-	int result;
-	
 	persist.UserData[PC_COMM_PERSIST]=cmd;
-	
 	return 0;
 }

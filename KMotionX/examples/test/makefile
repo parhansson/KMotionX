@@ -1,4 +1,7 @@
 include $(BUILD_ROOT)/config.mak
+
+W_FLAGS+=-Wno-unknown-pragmas
+
 SOURCES=test.cpp
 IDIR+=$(BUILD_ROOT)/KMotionDLL
 

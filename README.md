@@ -9,7 +9,7 @@ Please raise an issue if you find something.
 The complicated features found in CNC control applications such as KMotionCNC is not in this repository. 
 See [KMotionXCNC](https://github.com/parhansson/KMotionXCNC "CNC application")
 
-#### Current status KMotion 4.34
+#### Current status KMotion 5.3.2
 
 Runs on Linux and Mac OS.
 
@@ -33,6 +33,10 @@ Setup and install required dependencies on your platform
 [Ubuntu](KMotionX/doc/Ubuntu.md)
 
 [Raspberry Pi](KMotionX/doc/RaspberryPi.md)
+
+## Install TI compiler
+
+[Download compiler](https://www.ti.com/tool/C6000-CGT)
 
 ## Install KMotionX
 
@@ -68,6 +72,10 @@ This will install a rule that tell your system to grant read and write access to
 If your user is not in that group fix users groups or change the rule before pluging the device in.
 ```
 sudo cp KMotionX/usb/etc/udev/rules.d/10.kflop.rules /etc/udev/rules.d/
+```
+Reload rules
+```
+sudo udevadm control --reload-rules && udevadm trigger
 ```
 
 ###### 3. Execute examples or install [KMotionXCNC](https://github.com/parhansson/KMotionXCNC "CNC application")

@@ -191,7 +191,7 @@ public:
 
 
 	MCODE_ACTION McodeActions[MAX_MCODE_ACTIONS];
-	int ExecutePC(const char *Name);
+	int ExecutePC(const char *Name, bool NoWait = false);
 	
 	MOTION_PARAMS *GetMotionParams();  // returns a pointer to the GCode Parameters
 
@@ -205,7 +205,7 @@ public:
 	bool m_HaltNextLine;
 	int m_CurrentLine;
 	int m_GCodeReads;
-	char m_InFile[MAX_PATH];
+	std::string m_InFile;
 	int m_exitcode;
 	int m_InvokeExitcode;
 	int DoExecute();
@@ -290,6 +290,7 @@ public:
 extern CCoordMotion *CM;
 extern CGCodeInterpreter *GC;
 
+std::wstring Translate(std::string s);
 
 #endif
 

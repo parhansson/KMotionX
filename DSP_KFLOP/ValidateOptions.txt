@@ -1,0 +1,10 @@
+// if something is supressed don't warn if there are no instances of it
+unmatchedSuppression
+// allow casting integer pointers to double pointers and such
+invalidPointerCast
+// allow variables to be declaired earlier than they need to be
+variableScope
+// allow shifting by a signed integer
+shiftNegative
+// allow unused functions
+unusedFunction

@@ -45,6 +45,8 @@ class GCODEINTERPRETER_API CKinematics
 {
 public:
 	int Solve(double *A, int N);
+	int GetParameter(const char *, double * v);
+	void removeChar(char * s, int c);
 	int MaxAccelInDirection(double dx, double dy, double dz, double da, double db, double dc, double du, double dv, double *accel);
 	int MaxRateInDirection(double dx, double dy, double dz, double da, double db, double dc, double du, double dv, double *rate);
 	int MaxRateInDirection(double dx, double dy, double dz, double da, double db, double dc, double *rate);
@@ -56,6 +58,7 @@ public:
 	virtual int TransformActuatorstoCAD(double *Acts, double *x, double *y, double *z, double *a, double *b, double *c, bool NoGeo = false);
 	virtual int TransformActuatorstoCAD(double *Acts, double *x, double *y, double *z, double *a, double *b, double *c, double *u, double *v, bool NoGeo = false);
 	virtual int ComputeAnglesOption(int is);
+	virtual int Initialize();
 	int InvertTransformCADtoActuators(double *Acts, double *xr, double *yr, double *zr, double *ar, double *br, double *cr, bool NoGeo = false);
 	virtual int RemapForNonStandardAxes(double *x, double *y, double *z, double *a, double *b, double *c);
 
@@ -80,6 +83,8 @@ public:
 	int NRows,NCols;
 	double GeoSpacingX,GeoSpacingY;
 	double GeoOffsetX,GeoOffsetY;  // Machine coordinates of grid point row=0 col=0
+
+	const char *MainPath;
 };
 
 #endif // !defined(AFX_KINEMATICS_H__F0E3BA96_734F_4D32_85DD_8B2FA813C991__INCLUDED_)

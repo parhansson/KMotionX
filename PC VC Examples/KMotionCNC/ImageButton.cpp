@@ -305,7 +305,7 @@ void CImageButton::DrawItem(LPDRAWITEMSTRUCT dis)
 					if (!ErrorDisplayed)
 					{
 						ErrorDisplayed = true;
-						AfxMessageBox("Can't open button image:" + idfile);
+						MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Can't open button image:") + (CStringW) idfile, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 					}
 					return;
 				}
@@ -328,7 +328,7 @@ void CImageButton::DrawItem(LPDRAWITEMSTRUCT dis)
 					if (!ErrorDisplayed)
 					{
 						ErrorDisplayed = true;
-						AfxMessageBox("Can't open button image:" + idfile);
+						MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Can't open button image:") + (CStringW) idfile, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 					}
 					return;
 				}
@@ -818,7 +818,6 @@ BOOL CImageButton::OnBnClicked()
 
 			TheFrame->KMotionDLL->WriteLine(s);
 			Toggled = !Toggled;  // try to avoid flicker
-			return FALSE;
 		}
 		else // if no Var Specifed then just Toggle the State
 		{

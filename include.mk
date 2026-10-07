@@ -4,12 +4,13 @@ LD_LIB_PATH+=$(BINDIR)
 #LD_LIB_PATH+=../bin
 # add KMotionX include first
 IDIR_ALL=$(BUILD_ROOT)/KMotionX/include $(BUILD_ROOT)/DSP_KFLOP $(IDIR)
-IFLAGS=$(addprefix -I,$(IDIR_ALL))
-
-W_FLAGS=-Wall -Wno-unknown-pragmas
+IFLAGS+=$(addprefix -I,$(IDIR_ALL))
 
 CFLAGS+=-g -c -fmessage-length=0 -fPIC -MMD -MP
-CFLAGS+=-std=c++0x
+CFLAGS+=-std=c++20
+#exceptions on warnings default
+CFLAGS+=-Wall
+#wflag set by others might exclude specific warnings
 CFLAGS+=$(W_FLAGS)
 CFLAGS+=$(IFLAGS)
 CFLAGS+=$(DEFS)

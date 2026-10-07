@@ -38,6 +38,7 @@
 #include "VERSION.h"
 #include "COFF.h"
 #include "CLOAD.h"
+#include "Translate.h"
 
 
 #define MIN(a,b) ((a)<(b)?(a):(b))
@@ -140,15 +141,14 @@ int LoadCoff(CKMotionDLL *KMotionDLLtoUse, const char *Name, unsigned int *Entry
 
 	if (!fin)
 	{ 
-		char s2[300]="can't open file : ";
-		strcat(s2,Name);
-		AfxMessageBox(s2,MB_OK|MB_SYSTEMMODAL);
+		std::wstring s2 = /*TRAN*/Trans.Translate("can't open file : ");
+		MessageBoxW(NULL,s2 + kmx::strtowstr(Name),L"KMotion",MB_OK | MB_SYSTEMMODAL);
 		return 1;
 	}
 	
 	if (!cload()) 
 	{ 
-		AfxMessageBox("error loading file",MB_OK|MB_SYSTEMMODAL); 
+//	no message might be ELF		MessageBoxW(NULL, Translate("error loading file"),MB_OK|MB_SYSTEMMODAL, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL); 
 		fclose(fin);
 		return 1;
 	}
@@ -208,11 +208,11 @@ int mem_write(unsigned char *buffer, int nbytes, T_ADDR addr, int page)
 		}
 
 
-		sprintf(s,"LOADFLASH %X %X",addr,nbytes);
+		snprintf(s, 256, "LOADFLASH %X %X",addr,nbytes);
 	}
 	else
 	{
-		sprintf(s,"LOADDATA %X %X",addr,nbytes);
+		snprintf(s, 256,"LOADDATA %X %X",addr,nbytes);
 	}
 #ifdef SIMULATE_LOADCOFF
 	printf("%s:%d %s\n",__FILE__,__LINE__,s);
@@ -234,9 +234,9 @@ int mem_write(unsigned char *buffer, int nbytes, T_ADDR addr, int page)
 		for (k=0; k<BytesPerLine && i+k<nbytes; k++)
 		{
 			if (k+1<BytesPerLine && i+k+1<nbytes)
-				sprintf(x,"%02X ",buffer[i+k]);
+				snprintf(x, 256,"%02X ",buffer[i+k]);
 			else
-				sprintf(x,"%02X",buffer[i+k]);
+				snprintf(x, 256,"%02X",buffer[i+k]);
 
 			strcat(s,x);
 		}

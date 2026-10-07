@@ -1,58 +1,100 @@
+<!DOCTYPE html>
 <html>
-
 <head>
-<meta http-equiv="Content-Language" content="en-us">
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+<meta name="keywords" content="ethernet 16-axis controller, cnc control, motion control, cnc boards, 4-axis, 8-axis, stepper, brushless, DC motor, servo, encoder, adc, dac, motion controller, automated motion, manufacturing, Mach3">
+<meta name="description" content="Manufacturer of premium motion control products for CNC Manufacturing, Robotics and Automation">
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-<title>SnapAmp Motor Diagnostic Tutorial</title>
-  
+<meta http-equiv="Content-Language" content="en-us">
+
+<title>SnapAmp Stepper Motor Diagnostic Tutorial</title>
+
+<link rel="stylesheet" type="text/css" href="../css/style.css">
+<link rel="stylesheet" href="../css/prism.css" data-noprefix />
+<script src="../js/prism.js"></script>
 </head>
 
 <body>
 
-<p><i><b><font size="4">SnapAmp Stepper Motor Diagnostic Tutorial</font></b></i></p>
-<p>Shown below is a plotted motion of 400 cycles (1600 full steps) with quite 
-gradual acceleration up to a velocity of 255 cycles/sec (1000 sps)</p>
-<p>A noise from the motor is heard during about the middle half of the motion.&nbsp; 
-Here the motor position and current in both stepper coils is plotted.&nbsp; </p>
-<p>
-<img border="0" src="SnapAmpTutorial/AxisCurrentChatter.PNG" width="897" height="580">
-</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>Zooming in on the beginning of the motion shows nice current waveforms 90 
-degrees out of phase.</p>
-<p>
-<img border="0" src="SnapAmpTutorial/AxisCurrentChatterBeginning.PNG" width="897" height="580"></p>
-<p>&nbsp;</p>
-<p>Here is a plot of the Velocity and the commanded output Voltage of one of the 
-coils.&nbsp; Note how as the Velocity increases the lead compensation (set at 
-55) increases the amplitude.&nbsp; Referring back to the first current plot 
-above we can see that the current amplitude is maintained at about 1.4 amps 
-throughout the motion.&nbsp; Showing the lead compensation is set properly.</p>
-<p>
-<img border="0" src="SnapAmpTutorial/AxisVelocityChatter.PNG" width="897" height="580"></p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>Zooming in on the current waveform at around 1 second where the motor noise 
-seems to begin.</p>
-<p>
-<img border="0" src="SnapAmpTutorial/AxisCurrentChatter1sec.PNG" width="897" height="580"></p>
-<p>&nbsp;</p>
-<p>Zooming still further at 0.98 seconds where the odd behavior seems most 
-pronounced.</p>
-<p>
-<img border="0" src="SnapAmpTutorial/AxisCurrentChatter1secZoom.PNG" width="897" height="580"></p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>Current Waveforms with no Lead - Current drops and motor immediately stalls</p>
-<p>
-<img border="0" src="SnapAmpTutorial/AxisCurrentNoLead.PNG" width="897" height="580"></p>
-<p>&nbsp;</p>
+<div id="logo"><a href="../index.htm"></a></div>
 
-<p>Zooming in on the initial stall region</p>
-<p>
-<img border="0" src="SnapAmpTutorial/AxisCurrentNoLeadZoomStall.PNG" width="897" height="580"></p>
+<div id="home">
+<a href="../index.htm">Table of contents</a> |  
+	<script>
+		if (navigator.userAgent.indexOf("NT 6.2") == -1){
+			document.write('<a href="https://www.dynomotion.com">Dynomotion home page</a>')
+		} else {
+			document.write('<a href="https://www.dynomotion.com" target="_blank">Dynomotion home page</a>')
+		}
+	</script>
+</div>
+	
+<div id="searchNav">
 
+	<div class="gcse-search">
+					<script>
+					  if (document.location.protocol  ==  'https:') {
+					  (function() {
+					  var cx = '012657033059195044748:9fmjmlufts0';
+					  var gcse = document.createElement('script');
+					  gcse.type = 'text/javascript';
+					  gcse.async = true;
+					  gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+					      '//cse.google.com/cse.js?cx=' + cx;
+					  var s = document.getElementsByTagName('script')[0];
+					  s.parentNode.insertBefore(gcse, s);
+					})();
+					  }
+				      </script> 
+				      <gcse:search> </gcse:search>  
+
+	       </div>
+</div>	
+
+	
+
+
+<div id="google_translate_element" style="background: transparent;" align="right"><script type="text/javascript">
+if (navigator.userAgent.indexOf("NT 6.2") == -1) {
+		function googleTranslateElementInit() {
+	  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,de,fr,it,es,pt,ru,uk,ar,zh-CN,zh-TW,ko,iw,hi,ja,tr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+		}						}
+	</script>
+	<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+	</script>
+</div>		
+<div id="main">
+
+<h1>SnapAmp Stepper Motor Diagnostic Tutorial</h1>
+
+<p>Shown below is a plotted motion of 400 cycles (1600 full steps) with quite gradual acceleration up to a velocity of 255 cycles/sec (1000 sps).</p>
+
+<p>A noise from the motor is heard during about the middle half of the motion. Here the motor position and current in both stepper coils is plotted.</p>
+<p><img src="SnapAmpTutorial/AxisCurrentChatter.PNG" width="897" height="580" alt="AxisCurrentChatter" /></p>
+
+<p>Zooming in on the beginning of the motion shows nice current waveforms 90 degrees out of phase.</p>
+<p><img src="SnapAmpTutorial/AxisCurrentChatterBeginning.PNG" width="897" height="580" alt="AxisCurrentChatterBeginning" /></p>
+
+<p>Here is a plot of the Velocity and the commanded output Voltage of one of the coils. Note how as the Velocity increases the lead compensation (set at 55) increases the amplitude. Referring back to the first current plot above we can see that the current amplitude is maintained at about 1.4 amps throughout the motion. Showing the lead compensation is set properly.</p>
+<p><img src="SnapAmpTutorial/AxisVelocityChatter.PNG" width="897" height="580" alt="AxisVelocityChatter" /></p>
+
+<p>Zooming in on the current waveform at around 1 second where the motor noise seems to begin.</p>
+<p><img src="SnapAmpTutorial/AxisCurrentChatter1sec.PNG" width="897" height="580" alt="AxisCurrentChatter1sec" /></p>
+
+<p>Zooming still further at 0.98 seconds where the odd behavior seems most pronounced.</p>
+<p><img src="SnapAmpTutorial/AxisCurrentChatter1secZoom.PNG" width="897" height="580" alt="AxisCurrentChatter1secZoom" /></p>
+
+<p>Current Waveforms with no Lead - Current drops and motor immediately stalls.</p>
+<p><img src="SnapAmpTutorial/AxisCurrentNoLead.PNG" width="897" height="580" alt="AxisCurrentNoLead" /></p>
+
+<p>Zooming in on the initial stall region.</p>
+<p><img src="SnapAmpTutorial/AxisCurrentNoLeadZoomStall.PNG" width="897" height="580" alt="AxisCurrentNoLeadZoomStall" /></p>
+
+	</div>
 </body>
 
 </html>

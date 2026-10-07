@@ -1,0 +1,515 @@
+@charset "utf-8";
+/* CSS Document */
+
+
+/* Main elements */
+
+body { 
+	font-family:  sans-serif; 
+	color: #333333;
+	font-size: 1em;
+	line-height: 1.4;
+}
+
+#main {
+	position: absolute; 
+	top: 125px; 
+	width: 1060px;
+	}
+
+
+#logo { 
+	position:absolute; 
+	left:12px; 
+	top:5px; 
+	width: 220px; 
+	height: 63px; 
+	background: url(../images/Logo220New.png); 
+	background-color: transparent; }
+
+#logo a { 
+	display: block;  
+	width: 100%;  
+	height: 100%; 
+	background-color: transparent;  }
+
+#logo a span { 
+	display: none;}
+
+#topNav { 
+	position:absolute; 
+	left:12px; 
+	top:35px; 
+	height:100px; 
+	background-color: #ffffff; }
+
+#searchNav { 
+	background: transparent;
+	position:absolute; 
+	left: 710px; 
+	width: 300px; 
+	top: 15px;
+	margin:0;
+	padding:0;
+	font-size: 10px; 
+}
+
+#searchNav table { 
+	border: 0;
+	margin: 0;
+}
+
+#cse-search-form {
+ 
+   	-webkit-border-radius: 0;
+   	-moz-border-radius: 0;
+   	border-radius: 0;
+   	background: #f2f2f2;
+   	padding: 0;  
+	margin:0;
+}
+
+.gsc-search-box-tools .gsc-search-box .gsc-input .gsc-input-box, .gsc-search-box-tools .gsc-search-box .gsc-input .gsc-input-box-focus {
+
+	-webkit-border-top-left-radius: 0;
+	-webkit-border-bottom-left-radius: 0;
+	-moz-border-radius-topleft: 0;
+	-moz-border-radius-bottomleft: 0;
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 1;
+	border: 1px solid #dadada;
+	padding: 0;
+	margin: 0;
+	font-size: 10px !important; 
+}
+
+
+.gsib_a {
+
+	height: 2px;    
+	padding: 0px 9px 4px 9px;
+}
+
+#google_translate_element {
+
+	background: transparent;
+	position: absolute;
+	left: 725px;
+	top: 70px;
+}
+
+#home {
+
+	font: normal 0.75em Arial, Helvetica, sans-serif; 
+	background: transparent;
+	position: absolute;
+	left: 20px;
+	top: 90px;
+}
+
+#back {
+	background: transparent;
+	position: absolute;
+	left: 925px;
+	top: 30px;
+	font: 80% sans-serif; 
+	color: #333333;
+}
+
+
+/* Console Screen-specific css */
+
+#ConsoleSidebar {
+    float:left;
+    width:340px;
+}
+
+#console {
+	font-size: .75em;
+	
+}
+.indent {
+	margin-left: 30px;
+}
+
+.indent2 {
+	margin-left: 90px;
+}
+
+#cmd h2 { 
+	font: bold 1.3em Arial, Helvetica, sans-serif; 
+	font-style: normal;
+	margin: 1em .5em 1em .5em; 
+}	
+
+/* Typographic elements */
+
+p { margin: 1em; }
+
+#sidebar p { margin: 0.25em; }
+ 
+h1 {
+	font: bold 1.7em Arial, Helvetica, sans-serif; 
+	font-style: italic;
+	color:#920D0F;
+	margin: .5em;
+}
+
+
+h2 { 
+	font: bold 1.3em Arial, Helvetica, sans-serif; 
+	font-style: italic;
+	margin: 1em .5em 1em .5em; }
+
+h3 { 
+	font: bold 1.1em Arial, Helvetica, sans-serif; 
+	font-style: italic;
+	margin: 1em;
+}
+
+h4 { 
+	font: bold 100% Arial, Helvetica, sans-serif; 
+	margin: 1em .5em 1em .5em;
+}
+
+h5 { 
+	font: bold 80% Arial, Helvetica, sans-serif; 
+	margin: 1em .5em 1em .5em;
+}
+
+h6 { 
+	font: bold 150% Arial, Helvetica, sans-serif; 
+	margin: 1em .5em 1em .5em;
+}
+
+
+ol li {
+	margin-left: 10px;
+}
+
+th {
+	color: #FFFFFF;
+}
+.small { 
+	font: 80% sans-serif; 
+	/*color: #333333;*/
+}
+
+.small img {
+	border: 1px #CCCCCC;
+}
+
+.code { 
+	font: 90% Courier New; 
+	color: #333333; 
+	line-height: 1.4; 
+	margin: 5px; }
+
+.codeGreen { 
+	font: 90% Courier New; 
+	color: #038A06; 
+	line-height: 1.4; 
+	margin: 5px; }
+
+.codeRed { 
+	font: 90% Courier New; 
+	color: #FF0000; 
+	line-height: 1.4; 
+	margin: 5px; }
+
+.codeBlue{ 
+	font: 90% Courier New; 
+	color: #0E26DF; 
+	line-height: 1.4; 
+	margin: 5px; }
+
+.warning {
+	color: #920D0F;
+	font-weight: bold;
+}
+
+/* Images */
+
+img, a.imgLink { border: 0px; }
+img { 
+	border-width: 0;
+	margin: 0 5px 0 5px;
+}
+
+iframe {
+	margin-left: 15px;
+}
+
+/* 2 Column CSS for pages with a smaller sidebar on the left */
+
+#sidebar {
+    float:left;
+    width:340px;
+}
+
+/* 2 Column CSS for pages with a very small sidebar on the left */
+
+#sidebarKMDLL {
+    float:left;
+    width:240px;
+}
+
+#sidebarKMDLL h3 {
+	margin: 1em;
+}
+
+#sidebarKMDLL p {
+	font: 1em Consolas, "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", Monaco, "Courier New", "monospace"; 
+	color:#000;
+	margin: .5em;
+}
+
+
+#content {
+    float:left;
+    width:720px;
+}
+
+#content h4 {
+	font: bold 1.3em Consolas, "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", Monaco, "Courier New", "monospace"; 
+	color:#000;
+	margin: .5em;
+}
+
+
+/* 2 Column CSS */
+
+#con2 {
+	clear:left;
+	float:left;
+	width:100%;
+	overflow:hidden;
+	background:#ffffff; /* column 2 background colour */
+}
+
+#con1 {
+	float:left;
+	width:100%;
+	position:relative;
+	right:50%;
+	background:#ffffff; /* column 1 background colour */
+}
+
+#co1 {
+	float:left;
+	width:46%;
+	position:relative;
+	left:52%;
+	overflow:hidden;
+}
+
+#co2 {
+	float:left;
+	width:46%;
+	position:relative;
+	left:56%;
+	overflow:hidden;
+}
+
+ .clear {
+      clear: both;
+    }
+
+/* 3 Column CSS */
+
+#container3 {
+	clear:left;
+	float:left;
+	width:100%;
+	overflow:hidden;
+	}
+
+#container2 {
+	clear:left;
+	float:left;
+	width:100%;
+	position:relative;
+	right:33.333%;
+	}
+
+#container1 {
+	float:left;
+	width:100%;
+	position:relative;
+	right:33.33%;
+	}
+
+#col1 {
+	float:left;
+	width:27%;
+	position:relative;
+	left:68.67%;
+	overflow:hidden;
+}
+
+#col2 {
+	float:left;
+	width:27%;
+	position:relative;
+	left:72.67%;
+	overflow:hidden;
+}
+
+#col3 {
+	float:left;
+	width:35%;
+	position:relative;
+	left:76.67%;
+	overflow:hidden;
+   	padding-left: 1.5em;
+    	text-indent:-1.5em;
+}
+
+#col4 {
+	float:left;
+	width:95%;
+	position:relative;
+
+	overflow:hidden;
+   	padding-left: 1.5em;
+    	text-indent:-1.5em;
+}
+
+#col3Console {
+	float:left;
+	width:95%;
+	position:relative;
+	left:5%;
+	overflow:hidden;
+    	padding-left: 1.5em;
+    	text-indent:-1.5em;
+}
+
+/* Tables */
+
+table {  
+    border: 1px solid #333;
+	color: #333;
+    font-family: Arial, sans-serif;
+	font-size: 85%;
+    width: 85%; 
+    border-collapse: collapse; 
+	border-spacing: 0; 
+	table-layout: fixed;
+	margin: 1em;
+}
+
+tr:nth-child(odd) { 
+	background: #fff;
+}
+
+tr:nth-child(even) {
+	background: #dae5f4;
+}
+
+td, th {  
+    height: 30px; 
+    transition: all 0.3s;  
+}
+
+th {  
+    background: #335FBB;
+    font-weight: bold;
+	color: #fff;
+	border: 1px solid #fff;
+}
+
+.subheader {  
+    background: #5888e6;
+}
+
+td {  
+    text-align: center;
+	border: 1px solid #333;
+}
+
+/* Column widths */
+
+.col10 {
+  width: 10%;
+}
+.col15 {
+  width: 15%;
+}
+.col20 {
+  width: 20%;
+}
+.col30 {
+  width: 30%;
+}
+.col40 {
+  width: 40%;
+}
+.col50 {
+  width: 50%;
+}
+.col60 {
+  width: 60%;
+}
+.col70 {
+  width: 70%;
+}
+.col80 {
+  width: 80%;
+}
+.col90 {
+  width: 90%;
+}
+
+.tableSmall {  
+    border: 1px solid #333;
+	color: #333;
+    font-family: Arial, sans-serif;
+	font-size: 70%;
+    width: 200px; 
+    border-collapse: 
+    collapse; border-spacing: 0; 
+}
+
+.tableSmall tr, th, td {  
+    width: 100px; 
+}
+
+.tableMedium {  
+    border: 1px solid #333;
+	color: #333;
+    font-family: Arial, sans-serif;
+	font-size: 70%;
+    width: 600px; 
+    border-collapse: 
+    collapse; border-spacing: 0; 
+}
+
+.tableMedium tr, th, td {  
+    width: 100px; 
+}
+
+.header { 
+	background: #ccc;
+	color: #000;
+	font-weight: bold;
+	text-align: left;
+	padding-left: 10px;
+} 
+
+.table .noborder tr, th, td {  
+    border: 0;
+	
+}
+
+/* Link Styles -- not yet implemented
+
+
+a:link { text-decoration: none; color: #9C1A1C; }
+a:visited { text-decoration: none; color: #9C1A1C; }
+a:hover { text-decoration: none; color: #FFFFFF; background-color: #1C424E; }
+a:active { text-decoration: none; color: #FFFFFF; background-color:#1C424E; }
+
+
+ */
+

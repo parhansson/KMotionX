@@ -15,8 +15,8 @@ static char THIS_FILE[] = __FILE__;
 // CSetValue dialog
 
 
-CSetValue::CSetValue(CWnd* pParent /*=NULL*/)
-	: CDialog(CSetValue::IDD, pParent)
+CSetValue::CSetValue(int DialogID, CWnd* pParent)
+	: CDialog(DialogID, pParent)
 {
 	//{{AFX_DATA_INIT(CSetValue)
 		// NOTE: the ClassWizard will add member initialization here
@@ -38,6 +38,7 @@ BEGIN_MESSAGE_MAP(CSetValue, CDialog)
 	//{{AFX_MSG_MAP(CSetValue)
 	ON_WM_CLOSE()
 	//}}AFX_MSG_MAP
+	ON_BN_CLICKED(IDUSEDRO2, &CSetValue::OnUsedDRO2)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -79,7 +80,8 @@ void CSetValue::OnOK()
 	}
 	else
 	{
-		AfxMessageBox("Invalid Entry");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Entry"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		return;
 	}
 
 	
@@ -108,4 +110,11 @@ BOOL CSetValue::OnInitDialog()
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
+}
+
+
+void CSetValue::OnUsedDRO2()
+{
+	m_Value = halfDRO;
+	CDialog::OnOK();
 }

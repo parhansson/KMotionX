@@ -1,0 +1,13 @@
+---------------------------------
+1MA, 2MA, 3MA, 4MA - Map motor to axis
+---------------------------------
+
+Axes must be input as numbers, with X=0, Y=1, Z=2, A=3, B=4 and C=5. 
+As you might expect, mapping motor 1 to X will cause X movement to drive motor 1. 
+The example below is a way to run a dual-Y gantry such  as a 4 motor Shapeoko setup.
+Movement in Y will drive both motor2 and motor4.
+
+ 1MA = 0     Maps motor 1 to the X axis
+ 2MA = 1     Maps motor 2 to the Y axis
+ 3MA = 2     Maps motor 3 to the Z axis
+ 4MA = 1     Maps motor 4 to the Y axis

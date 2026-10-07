@@ -1,1181 +1,415 @@
+<!DOCTYPE html>
 <html>
 <head>
-    <meta content="en-us" http-equiv="Content-Language">
-    <meta content="Microsoft FrontPage 6.0" name="GENERATOR">
-    <meta content="FrontPage.Editor.Document" name="ProgId">
-    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
 
-    <title>Commands</title>
-    <style>
-<!--
-    div.Section1
-    {page:Section1;}
-    span.SpellE
-    {}
-    -->
-    </style>
-        
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+<meta name="keywords" content="ethernet 16-axis controller, cnc control, motion control, cnc boards, 4-axis, 8-axis, stepper, brushless, DC motor, servo, encoder, adc, dac, motion controller, automated motion, manufacturing, Mach3">
+<meta name="description" content="Manufacturer of premium motion control products for CNC Manufacturing, Robotics and Automation">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+
+<title>Script Commands</title>
+
+<link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 
 <body>
-    <p style=
-    "font-style: italic; margin-bottom: 0; margin-top: 0; text-align: left">
-    <font face="Arial" size="3">
-    <strong>Commands ( by category):</strong></font></p>
-	<br />
-    <table border="1" id="table1" width="706">
-        <tr>
-            <td valign="top" width="229">
-                <div class="Section1">
-                    <p style=
-                    "margin-bottom: -3px; margin-top: 0; text-align: left">
-                    <b><font face="Arial" size="2">Parameters</font></b></p>
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#Accel"><span class="SpellE" style=
-                    "line-height:150%;font-family:Arial"><font size="1">Accel</font></span><font face="Arial" size="1">
-					</font>
-                    <span style=
-                    'line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;A&gt;</font></span></a></p>
 
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#BacklashAmount"><span class="SpellE"
-                    style="line-height:150%;font-family:Arial"><font size="1">
-					BacklashAmount</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;A&gt;</font></span></a></p>
+<div id="logo"><a href="index.htm"></a></div>
 
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#BacklashMode"><span class="SpellE" style=
-                    "line-height:150%;font-family:Arial"><font size="1">
-					BacklashMode</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;M&gt;</font></span></a></p>
+<div id="home">
+	<a href="index.htm">Table of contents</a> | 
+	<script>
+		if (navigator.userAgent.indexOf("NT 6.2") == -1){
+			document.write('<a href="https://www.dynomotion.com">Dynomotion home page</a>')
+		} else {
+			document.write('<a href="https://www.dynomotion.com" target="_blank">Dynomotion home page</a>')
+		}
+	</script>
+</div>
+<div id="searchNav">
 
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#BacklashRate"><span class="SpellE" style=
-                    "line-height:150%;font-family:Arial"><font size="1">
-					BacklashRate</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;R&gt;</font></span></a></p>
+	<div class="gcse-search">
+					<script>
+					  if (document.location.protocol  ==  'https:') {
+					  (function() {
+					  var cx = '012657033059195044748:9fmjmlufts0';
+					  var gcse = document.createElement('script');
+					  gcse.type = 'text/javascript';
+					  gcse.async = true;
+					  gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+					      '//cse.google.com/cse.js?cx=' + cx;
+					  var s = document.getElementsByTagName('script')[0];
+					  s.parentNode.insertBefore(gcse, s);
+					})();
+					  }
+				      </script> 
+				      <gcse:search> </gcse:search>  
 
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#CommutationOffset"><span class="SpellE"
-                    style=
-                    "line-height:150%;font-family:Arial"><font size="1">
-					CommutationOffset</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;X&gt;</font></span></a></p>
+	       </div>
+</div>	
 
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <span style='line-height:150%;font-family:Arial'><a href=
-                    "Cmd.htm#D"><font size="1">D&lt;N&gt;=&lt;M&gt;</font></a></span></p>
+	
 
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#DeadBandGain"><span class="SpellE" style=
-                    "line-height:150%;font-family:Arial"><font size="1">
-					DeadBandGain</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;M&gt;</font></span></a></p>
 
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#DeadBandRange"><span class="SpellE" style=
-                    "line-height:150%;font-family:Arial"><font size="1">
-					DeadBandRange</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;M&gt;</font></span></a></p>
+<div id="google_translate_element" style="background: transparent;" align="right"><script type="text/javascript">
+if (navigator.userAgent.indexOf("NT 6.2") == -1) {
+		function googleTranslateElementInit() {
+	  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,de,fr,it,es,pt,ru,uk,ar,zh-CN,zh-TW,ko,iw,hi,ja,tr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+		}						}
+	</script>
+	<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+	</script>
+</div>		
+<div id="main">
+ 	<div id="console">
+<h1>Commands (by category):</h1>
+    
+<div id="container3">
+	<div id="container2">
+		<div id="container1">
+		
+			<div id="col1">
 
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <span style='line-height:150%;font-family: Arial'><a href=
-                    "Cmd.htm#Dest"><font size="1">Dest</font><font size="1">&lt;N&gt;=&lt;M&gt;</font></a></span></p>
+				<h6>Parameters</h6>
+                <p><a href="Cmd.htm#Accel">Accel<em>&lt;N&gt;=&lt;A&gt;</em></a></p>
+                <p><a href="Cmd.htm#BacklashAmount">BacklashAmount<em>&lt;N&gt;=&lt;A&gt;</em></a></p>
+                <p><a href="Cmd.htm#BacklashMode">BacklashMode<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#BacklashRate">BacklashRate<em>&lt;N&gt;=&lt;R&gt;</em></a></p>
+                <p><a href="Cmd.htm#CommutationOffset">CommutationOffset<em>&lt;N&gt;=&lt;X&gt;</em></a></p>
+                <p><a href="Cmd.htm#D">D<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#DeadBandGain">DeadBandGain<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#DeadBandRange">DeadBandRange<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#Dest">Dest<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#FFAccel">FFAccel<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#FFVel">FFVel<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#I">I<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#IIR">IIR<em>&lt;N&gt; &lt;M&gt;=&lt;A1&gt; &lt;A2&gt; &lt;B0&gt; &lt;B1&gt; &lt;B2&gt;</em></a></p>
+                <p><a href="Cmd.htm#InputChan0">InputChan<em>&lt;M&gt; &lt;N&gt;=&lt;C&gt;</em></a></p>
+                <p><a href="Cmd.htm#InputGain0">InputGain<em>&lt;M&gt; &lt;N&gt;=&lt;G&gt;</em></a></p>
+                <p><a href="Cmd.htm#InputMode">InputMode<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#InputOffset0">InputOffset<em>&lt;M&gt; &lt;N&gt;=&lt;O&gt;</em></a></p>
+                <p><a href="Cmd.htm#InvDistPerCycle">InvDistPerCycle<em>&lt;N&gt;=&lt;X&gt;</em></a></p>
+                <p><a href="Cmd.htm#Jerk">Jerk<em>&lt;N&gt;=&lt;J&gt;</em></a></p>
+                <p><a href="Cmd.htm#Lead">Lead<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#LimitSwitch">LimitSwitch<em>&lt;N&gt;=&lt;H&gt;</em></a></p>
+                <p><a href="Cmd.htm#LimitSwitchNegBit">LimitSwitchNegBit<em>&lt;N&gt;=&lt;B&gt;</em></a></p>
+                <p><a href="Cmd.htm#LimitSwitchPosBit">LimitSwitchPosBit<em>&lt;N&gt;=&lt;B&gt;</em></a></p>
+                <p><a href="Cmd.htm#MasterAxis">MasterAxis<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#MaxErr">MaxErr<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#MaxFollowingError">MaxFollowingError<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#MaxI">MaxI<em>&lt;N&gt; &lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#MaxOutput">MaxOutput<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#OutputChan0">OutputChan<em>&lt;M&gt; &lt;N&gt;=&lt;C&gt;</em></a></p>
+                <p><a href="Cmd.htm#OutputGain">OutputGain<em>&lt;N&gt;=&lt;G&gt;</em></a></p>
+                <p><a href="Cmd.htm#OutputOffset">OutputOffset<em>&lt;N&gt;=&lt;O&gt;</em></a></p>
+                <p><a href="Cmd.htm#OutputMode">OutputMode<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#P">P<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#Pos">Pos<em>&lt;N&gt;=&lt;P&gt;</em></a></p>
+                <p><a href="Cmd.htm#SlaveGain">SlaveGain<em>&lt;N&gt;=&lt;G&gt;</em></a></p>
+                <p><a href="Cmd.htm#SoftLimitNeg">SoftLimitNeg<em>&lt;N&gt;=&lt;G&gt;</em></a></p>
+                <p><a href="Cmd.htm#SoftLimitPos">SoftLimitPos<em>&lt;N&gt;=&lt;G&gt;</em></a></p>
+                <p><a href="Cmd.htm#StepperAmplitude"> StepperAmplitude<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#Vel">Vel<em>&lt;N&gt;=&lt;V&gt;</em></a></p>
+                
+                <h6>User Threads</h6>
+                
+                <p><a href="Cmd.htm#EntryPoint">EntryPoint<em>&lt;N&gt; &lt;H&gt;</em></a></p>
+                <p><a href="Cmd.htm#CheckThread">CheckThread<em>&lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#Execute">Execute<em>&lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#Kill">Kill<em>&lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#LoadData">LoadData<em>&lt;H&gt; &lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#SetStartupThread"> SetStartupThread<em>&lt;N&gt; &lt;M&gt;</em></a></p>
+    
+			</div>
+			
+			<div id="col2">
 
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#FFAccel"><span class="SpellE" style=
-                    "line-height:150%;font-family:Arial"><font size="1">FFAccel</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;M&gt;</font></span></a></p>
+			     <h6>I/O Commands/Status</h6>
 
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#FFVel"><span class="SpellE" style=
-                    "line-height:150%;font-family:Arial"><font size="1">FFVel</font></span><font face="Arial" size="1">
-					</font>
-                    <span style=
-                    'line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;M&gt;</font></span></a></p>
-   
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '><span style='line-height:150%;font-family:Arial'><a href=
-                    "Cmd.htm#I"><font size="1">I&lt;N&gt;=&lt;M&gt;</font></a></span></p>
+                <p><a href="Cmd.htm#ADC">ADC<em>&lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#ClearBit">ClearBit<em>&lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#ClearBitBuf">ClearBitBuf<em>&lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#DAC">DAC<em>&lt;N&gt; &lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#GetBitDirection">GetBitDirection<em>&lt;N&gt;</em></a></p>
+				<p><a href="Cmd.htm#GetVirtualBits">GetVirtualBits</a></p>
+				<p><a href="Cmd.htm#LED">LED<em>&lt;N&gt;=&lt;B&gt;</em></a></p>
+                <p><a href="Cmd.htm#ReadBit">ReadBit<em>&lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#ReadDiskData">ReadDiskData<em>&lt;S&gt;&lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#SetBit">SetBit<em>&lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#SetBitBuf">SetBitBuf<em>&lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#SetBitDirection">SetBitDirection<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#SetStateBit">SetStateBit<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#SetStateBitBuf">SetStateBitBuf<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#SPISetMode">SPISetMode<em>&lt;N&gt;=&lt;N&gt;</em></a><em></em></p>
+                <p><a href="Cmd.htm#WaitBitBuf">WaitBitBuf<em>&lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#WaitNotBitBuf">WaitNotBitBuf<em>&lt;N&gt;</em></a></p>
 
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <span style='line-height:150%;font-family: Arial'><a href=
-                    "Cmd.htm#IIR"><font size="1">IIR</font><font size="1">&lt;N&gt; 
-					&lt;M&gt;=&lt;A1&gt; &lt;A2&gt; &lt;B0&gt; &lt;B1&gt; &lt;B2&gt;</font></a></span></p>
+                <h6>Output Stage</h6>
 
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#InputChan0"><span class="SpellE" style=
-                    "line-height:150%;font-family:Arial"><font size="1">
-					InputChan</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;M&gt; 
-					&lt;N&gt;=&lt;C&gt;</font></span></a></p>
+                <p><a href="Cmd.htm#3PH">3PH<em>&lt;N&gt;=&lt;M&gt; &lt;A&gt;</em></a></p>
+				<p><a href="Cmd.htm#4PH">4PH<em>&lt;N&gt;=&lt;M&gt; &lt;A&gt;</em></a></p>
+				<p><a href="Cmd.htm#GetKognaPWMEne">GetKognaPWMEne<em>&lt;N&gt;=&lt;N&gt;</em></a></p>
+				<p><a href="Cmd.htm#GetKognaPWMLength">GetKognaPWMLength<em>&lt;N&gt;=&lt;N&gt;</em></a></p>
+				<p><a href="Cmd.htm#HRPWM">HRPWMSetMode<em>&lt;N&gt;=&lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#PWM">PWM<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#PWMC">PWMC<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+				<p><a href="Cmd.htm#PWMR">PWMR<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+				<p><a href="Cmd.htm#SetKognaPWMEne">SetKognaPWMEne<em>&lt;N&gt;=&lt;N&gt;</em></a></p>
+				<p><a href="Cmd.htm#SetKognaPWMLength">SetKognaPWMLength<em>&lt;N&gt;=&lt;N&gt;</em></a></p>
 
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#InputGain0"><span class="SpellE" style=
-                    "line-height:150%;font-family:Arial"><font size="1">
-					InputGain</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;M&gt; 
-					&lt;N&gt;=&lt;G&gt;</font></span></a></p>
+                <h6>Gather Commands</h6>
 
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#InputMode"><span class="SpellE" style=
-                    "line-height:150%;font-family:Arial"><font size="1">
-					InputMode</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;M&gt;</font></span></a></p>
+                <p><a href="Cmd.htm#CheckDoneGather">CheckDoneGather</a></p>
+                <p><a href="Cmd.htm#GatherMove">GatherMove<em>&lt;N&gt; &lt;M&gt;&lt;L&gt;</em></a></p>
+                <p><a href="Cmd.htm#GatherStep">GatherStep<em>&lt;N&gt; &lt;M&gt;&lt;L&gt;</em></a></p>
+                <p><a href="Cmd.htm#GetGather">GetGather<em>&lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#GetGatherDec">GetGatherDec<em>&lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#GetGatherHex">GetGatherHex<em>&lt;N&gt; &lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#GetInject">GetInject<em>&lt;N&gt; &lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#Inject">Inject<em>&lt;N&gt; &lt;F&gt;&lt;A&gt;</em></a></p>
+                <p><a href="Cmd.htm#SetGatherDec">SetGatherDec<em>&lt;N&gt; &lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#SetGatherHex">SetGatherHex<em>&lt;N&gt; &lt;M&gt;</em></a></p>
 
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#InputOffset0"><span class="SpellE" style=
-                    "line-height:150%;font-family:Arial"><font size="1">
-					InputOffset</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;M&gt; 
-					&lt;N&gt;=&lt;O&gt;</font></span></a></p>
+                <h6>FLASH Commands</h6>
 
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <span style='line-height:150%; font-family:Arial'><a href=
-                    "Cmd.htm#InvDistPerCycle"><font size="1">InvDistPerCycle</font><font size="1">&lt;N&gt;=&lt;X&gt;</font></a></span></p>
-
-					<p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <span style='line-height:150%;font-family: Arial'><a href=
-                    "Cmd.htm#Jerk"><font size="1">Jerk&lt;N&gt;=&lt;J&gt;</font></a></span></p>
-
-                   <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '><span style='line-height:150%;font-family: Arial'><a href=
-                    "Cmd.htm#Lead"><font size="1">Lead&lt;N&gt;=&lt;M&gt;</font></a></span></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#LimitSwitch"><span class="SpellE" style=
-                    "line-height:150%;font-family:Arial"><font size="1">
-					LimitSwitch</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;H&gt;</font></span></a></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#MasterAxis"><span class=
-                    "SpellE"><span style=
-                    'line-height: 150%;font-family:Arial'><font size="1">Ma</font></span><font size="1"><span style=
-                    "font-family: Arial">sterAxis</span></font></span><span style=
-                    'line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;M&gt;</font></span></a></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#MaxErr"><span class="SpellE" style=
-                    "line-height: 150%;font-family:Arial"><font size="1">MaxErr</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;M&gt;</font></span></a></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#MaxFollowingError"><span class="SpellE"
-                    style=
-                    "line-height:150%;font-family:Arial"><font size="1">
-					MaxFollowingError</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;M&gt;</font></span></a></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#MaxI"><span class="SpellE" style=
-                    "line-height: 150%;font-family:Arial"><font size="1">MaxI</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt; 
-					&lt;M&gt;</font></span></a></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#MaxOutput"><span class="SpellE" style=
-                    "line-height:150%;font-family:Arial"><font size="1">
-					MaxOutput</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;M&gt;</font></span></a></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#OutputChan0"><span class="SpellE" style=
-                    "line-height:150%;font-family:Arial"><font size="1">
-					OutputChan</font><font size="1">&lt;M&gt; &lt;N&gt;=&lt;C&gt;</font></span></a></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <span class="SpellE" style=
-                    "line-height:150%;font-family:Arial"><a href=
-                    "Cmd.htm#OutputGain"><font size="1">OutputGain</font><font size="1">&lt;N&gt;=&lt;G&gt;</font></a></span></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <span class="SpellE" style=
-                    "line-height:150%;font-family:Arial"><a href=
-                    "Cmd.htm#OutputOffset"><font size="1">OutputOffset</font><font size="1">&lt;N&gt;=&lt;O&gt;</font></a></span></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#OutputMode"><span class="SpellE" style=
-                    "line-height:150%;font-family:Arial"><font size="1">
-					OutputMode</font><font size="1">&lt;N&gt;=&lt;M&gt;</font></span></a></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <span style='line-height:150%;font-family:Arial'><a href=
-                    "Cmd.htm#P"><span class=
-                    "SpellE"><font size="1">P</font></span><font size="1">&lt;N&gt;=&lt;M&gt;</font></a></span></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <span style='line-height:150%;font-family: Arial'><a href=
-                    "Cmd.htm#Pos"><font size="1">Pos&lt;N&gt;=&lt;P&gt;</font></a></span></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#SlaveGain"><span class=
-                    "SpellE"><span style=
-                    'line-height:150%;font-family:Arial'><font size="1">S</font></span><font size="1"><span style=
-                    "font-family: Arial">laveGain</span></font></span><span style=
-                    'line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;G&gt;</font></span></a></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#SoftLimitNeg"><span class=
-                    "SpellE"><span style=
-                    'line-height:150%;font-family:Arial'><font size="1">S</font></span><font size="1"><span style=
-                    "font-family: Arial">oftLimitNeg</span></font></span><span style=
-                    'line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;G&gt;</font></span></a></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#SoftLimitPos"><span class=
-                    "SpellE"><span style=
-                    'line-height:150%;font-family:Arial'><font size="1">S</font></span><font size="1"><span style=
-                    "font-family: Arial">oftLimitPos</span></font></span><span style=
-                    'line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;G&gt;</font></span></a></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#StepperAmplitude"><span class="SpellE"
-                    style=
-                    "line-height:150%;font-family:Arial"><font size="1">
-					StepperAmplitude</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;M&gt;</font></span></a></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <a href="Cmd.htm#Vel"><span class="SpellE" style=
-                    "line-height: 150%;font-family:Arial"><font size="1">Vel</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;V&gt;</font></span></a></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <font face="Arial" size="1">&nbsp;</font></p>
-
-                    <p style=
-                    "margin-bottom: -3px; margin-top: 0; text-align: left">
-                    <font face="Arial" size="1">&nbsp;</font></p>
-
-                    <p style=
-                    "margin-bottom: -3px; margin-top: 0; text-align: left"><b>
-					<font face="Arial" size="2">User Threads</font></b></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left'>
-                    <a href="Cmd.htm#EntryPoint"><span class="SpellE" style=
-                    "line-height:150%;font-family:Arial"><font size="1">
-					EntryPoint</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt; 
-					&lt;H&gt;</font></span></a></p>
-
-                    <p style=
-                    "margin-bottom: -3px; margin-top: 0; text-align: left">
-                    <span class="SpellE"><a href=
-                    "Cmd.htm#CheckThread"><span style=
-                    'line-height:150%;font-family:Arial'><font size="1">
-					CheckThread</font><font size="1">&lt;N&gt;</font></span></a></span></p>
-
-                    <p style=
-                    "margin-bottom: -3px; margin-top: 0; text-align: left">
-                    </p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left'>
-                    <span style='line-height:150%;font-family: Arial'><a href=
-                    "Cmd.htm#Execute"><font size="1">Execute&lt;N&gt;</font></a></span></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left'>
-                    <span style='line-height:150%;font-family: Arial'><a href=
-                    "Cmd.htm#Kill"><font size="1">Kill&lt;N&gt;</font></a></span></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left'>
-                    <a href="Cmd.htm#LoadData"><span style=
-                    'line-height:150%;font-family:Arial'><font size="1">LoadData</font><font size="1"> 
-					&lt;H&gt; &lt;N&gt;</font></span></a></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left'>
-                    <a href="Cmd.htm#SetStartupThread"><span style=
-                    'line-height:150%;font-family:Arial'><font size="1">
-					SetStartupThread</font><font size="1">&lt;N&gt; &lt;M&gt;</font></span></a></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <font face="Arial" size="1">&nbsp;</font></p>
-                </div>
-            </td>
-
-            <td valign="top">
-                <p style="margin-bottom: -3px; margin-top: 0; text-align: left">
-                <b><font face="Arial" size="2">I/O Commands/Status</font></b></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family: Arial'><a href=
-                "Cmd.htm#ADC"><font size="1">ADC&lt;N&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#ClearBit"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">ClearBit</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#ClearBitBuf"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">ClearBitBuf</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family: Arial'><a href=
-                "Cmd.htm#DAC"><font size="1">DAC</font><font size="1">&lt;N&gt; &lt;M&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#GetBitDirection"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">
-				GetBitDirection</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;</font></span></a></p>
+                <p><a href="Cmd.htm#ClearFlashImage">ClearFlashImage</a></p>
+                <p><a href="Cmd.htm#Flash">Flash</a></p>
+                <p><a href="Cmd.htm#LoadFlash">LoadFlash<em>&lt;H&gt; &lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#ProgFlashImage">ProgFlashImage</a></p>
 				
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#GetVirtualBits"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">
-				GetVirtualBits</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#ReadBit"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">ReadBit</font></span><span style=
-                'line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#SetBit"><span class="SpellE" style=
-                "line-height: 150%;font-family:Arial"><font size="1">SetBit</font></span><span style=
-                'line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#SetBitBuf"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">SetBitBuf</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#SetBitDirection"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">
-				SetBitDirection</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;M&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#SetStateBit"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">SetStateBit</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;M&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#SetStateBitN=B"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">
-				SetStateBitBuf</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;M&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#WaitBitBuf"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">WaitBitBuf</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#WaitNotBitBuf"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">
-				WaitNotBitBuf</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <font face="Arial" size="1">&nbsp;</font></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <font face="Arial" size="1">&nbsp;</font></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <font face="Arial" size="1">&nbsp;</font></p>
-
-                <p style="margin-bottom: -3px; margin-top: 0; text-align: left">
-                <b><font face="Arial" size="2">Output Stage</font></b></p>
-
-                <div class="Section1">
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <span style='line-height:150%;font-family:Arial'><a href=
-                    "Cmd.htm#3PH"><font size="1">3PH&lt;N&gt;=&lt;M&gt; &lt;A&gt;</font></a></span></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <span style='line-height:150%;font-family: Arial'><a href=
-                    "Cmd.htm#4PH"><font size="1">4PH&lt;N&gt;=&lt;M&gt; &lt;A&gt;</font></a></span></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <span style='line-height:150%;font-family: Arial'><a href=
-                    "Cmd.htm#PWM"><font size="1">PWM&lt;N&gt;=&lt;M&gt;</font></a></span></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <span style='line-height:150%;font-family: Arial'><a href=
-                    "Cmd.htm#PWMC"><font size="1">PWMC</font><font size="1">&lt;N&gt;=&lt;M&gt;</font></a></span></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <span style='line-height:150%;font-family: Arial'><a href=
-                    "Cmd.htm#PWMR"><font size="1">PWMR</font><font size="1">&lt;N&gt;=&lt;M&gt;</font></a></span></p>
-
-                    <p style=
-                    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                    <font face="Arial" size="1">&nbsp;</font></p>
-                </div>
-
-                <p style="margin-bottom: -3px; margin-top: 0; text-align: left">
-                <font face="Arial" size="1">&nbsp;</font></p>
-
-                <p style="margin-bottom: -3px; margin-top: 0; text-align: left">
-                <b><font face="Arial" size="2">Gather Commands</font></b></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><a href=
-                "Cmd.htm#CheckDoneGather"><font size="1">CheckDoneGather</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#GatherMove"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">GatherMove</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt; 
-				&lt;M&gt; &lt;L&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#GatherStep"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">GatherStep</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt; 
-				&lt;M&gt; &lt;L&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#GetGather"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">GetGather</font></span><font face="Arial" size="1">
-				</font>
-                <span style=
-                'line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#GetGatherDec"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">GetGatherDec</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#GetGatherHex"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">GetGatherHex</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt; 
-				&lt;M&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#GetInject"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">GetInject</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt; 
-				&lt;M&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family: Arial'><a href=
-                "Cmd.htm#Inject"><font size="1">Inject&lt;N&gt; &lt;F&gt; &lt;A&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#SetGatherDec"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">SetGatherDec</font></span><font face="Arial" size="1">
-				</font>
-                <span style='line-height:150%;font-family:Arial'><font size="1">
-				&lt;N&gt; &lt;M&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#SetGatherHex"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">SetGatherHex</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt; 
-				&lt;M&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <font face="Arial" size="1">&nbsp;</font></p>
-
-                <p style="margin-bottom: -3px; margin-top: 0; text-align: left">
-                <font face="Arial" size="1">&nbsp;</font></p>
-
-                <p style="margin-bottom: -3px; margin-top: 0; text-align: left">
-                <b><font face="Arial" size="2">FLASH Commands</font></b></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#ClearFlashImage"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">
-				ClearFlashImage</font></span><font size="1" face="Arial"> </font>
-                </a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family: Arial'><a href=
-                "Cmd.htm#Flash"><font size="1">Flash</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#LoadFlash"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">LoadFlash</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;H&gt; 
-				&lt;N&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><a href=
-                "Cmd.htm#ProgFlashImage"><font size="1">ProgFlashImage</font></a></span></p>
-            </td>
-
-            <td valign="top" width="290">
-                <p style="margin-bottom: -3px; margin-top: 0; text-align: left">
-                <b><font face="Arial" size="2">Motion Commands</font></b></p>
-
-    <p style=
-    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-    <span style='line-height:150%;font-family: Arial'>
-	<a href=
-    "Cmd.htm#Arc"><font size="1">Arc &lt;XC&gt; &lt;YC&gt; &lt;RX&gt;
-    &lt;RY&gt;</font></a></span></p>
-
-    <p style=
-    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-    <span style="font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font size="1"><font face="Arial">
-	</font><a href="Cmd.htm#Arc">
-    <span style='line-height:150%;font-family: Arial'>&lt;θ0&gt; &lt;<span class=
-    "SpellE">dθ</span>&gt;</span><font face="Arial"> </font> <span style=
-    'line-height:150%;font-family: Arial'>&lt;Z0&gt;
-    &lt;A0&gt;&nbsp; &lt;B0&gt; &lt;C0&gt;</span></a><font face="Arial"> </font>
-	</font></p>
-
-    <p style=
-    'margin-bottom: -6px; margin-top: 0; text-align: left; '>
-    <span style=
-    'line-height:150%;font-family: Arial'><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font face="Arial" size="1">
-	</font>
-    <span style='line-height:150%;font-family: Arial'><font size="1">&nbsp;<a href="Cmd.htm#Arc">&lt;Z1&gt; &nbsp;&lt;A1&gt; &nbsp;&lt;B1&gt; &nbsp;&lt;C1&gt;</a></font></span></p>
-
-    <p style=
-    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-    <span style="font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font face="Arial" size="1">
-	</font>
-    <span style='line-height:150%;font-family: Arial'>
-	<a href=
-    "Cmd.htm#Arc"><font size="1">&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt;
-    &lt;tF&gt;</font></a></span></p>
-
-    <p style=
-    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-    <a href="Cmd.htm#ArcXZ"><span class="SpellE" style=
-    "line-height: 150%;font-family:Arial"><font size="1">ArcXZ</font></span><font face="Arial" size="1">
-	</font> <span style=
-    'line-height:150%;font-family:Arial'><font size="1">&lt;XC&gt; &lt;ZC&gt; &lt;RX&gt;
-    &lt;RZ&gt;</font></span></a></p>
-
-    <p style=
-    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-    <span style=
-    "font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font size="1"><font face="Arial">
-	</font><span style='line-height:150%;font-family:Arial'>
-	<a href="Cmd.htm#ArcHexXZ">&lt;θ0&gt; &lt;<span class="SpellE">dθ</span>&gt;
-    &lt;Y0&gt;</a></span><a href="Cmd.htm#ArcHexXZ"><font face="Arial"> </font> <span style=
-    'line-height:150%;font-family: Arial'>&lt;A0&gt;&nbsp; &lt;B0&gt; &lt;C0&gt;</span></a><font face="Arial">
-	</font></font></p>
-
-    <p style=
-    'margin-bottom: -6px; margin-top: 0; text-align: left; '>
-    <span style=
-    "font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font size="1"><a href="Cmd.htm#ArcXZ"><span style='line-height:150%;font-family:Arial'>&lt;Y1&gt;</span><font face="Arial">
-	</font></a></font> <span style=
-    'line-height:150%;font-family: Arial'><font size="1">
-	<a href="Cmd.htm#ArcXZ">&lt;A1&gt;
-    &lt;B1&gt; &nbsp;&lt;C1&gt;</a></font></span></p>
-
-    <p style=
-    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-    <span style=
-    "font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font face="Arial" size="1">
-	</font>
-    <span style='line-height:150%;font-family:Arial'>
-	<a href=
-    "Cmd.htm#ArcXZ"><font size="1">&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt;
-    &lt;tF&gt;</font></a></span></p>
-
-    <p style=
-    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-    <span style='line-height:150%;font-family: Arial'>
-	<a href=
-    "Cmd.htm#ArcYZ"><font size="1">ArcYZ &lt;YC&gt; &lt;ZC&gt; &lt;RY&gt;
-    &lt;RZ&gt;</font></a></span></p>
-
-    <p style=
-    'margin-bottom: 0px; margin-top: 0; text-align: left; '>
-    <span style="font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font size="1"><font face="Arial">
-	</font><a href="Cmd.htm#ArcYZ">
-    <span style='line-height:150%;font-family: Arial'>&lt;θ0&gt; &lt;<span class="SpellE">dθ</span>&gt;
-    &lt;X0&gt;</span><font face="Arial"> </font> <span style=
-    'line-height:150%;font-family: Arial'>&lt;A0&gt;&nbsp; &lt;B0&gt; &lt;C0&gt;</span><font face="Arial">
-	</font></a></font></p>
-
-    <p style=
-    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-    <span style="font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font size="1"><font face="Arial">
-	</font><a href="Cmd.htm#ArcHexYZ">
-    <span style='line-height:150%;font-family: Arial'>&lt;X1&gt;</span><font face="Arial">
-	</font> <span style=
-    'line-height:150%;font-family: Arial'>&lt;A1&gt; &nbsp;&lt;B1&gt; &nbsp;&lt;C1&gt;</span></a></font></p>
-
-    <p style=
-    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-    <span style="font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font face="Arial" size="1">
-	</font>
-    <span style='line-height:150%;font-family: Arial'>
-	<a href=
-    "Cmd.htm#ArcYZ"><font size="1">&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt;
-    &lt;tF&gt;</font></a></span></p>
-
-    <p style=
-    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-    <a href="Cmd.htm#ArcHex"><span class="SpellE" style=
-    "line-height: 150%;font-family:Arial"><font size="1">ArcHex</font></span><font face="Arial" size="1">
-	</font> <span style=
-    'line-height:150%;font-family:Arial'><font size="1">&lt;XC&gt; &lt;YC&gt; &lt;RX&gt;
-    &lt;RY&gt;</font></span></a></p>
-
-    <p style=
-    'margin-bottom: 0px; margin-top: 0; text-align: left; '>
-    <span style=
-    "font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font size="1"><font face="Arial">
-	</font><span style=
-    'line-height:150%;font-family:Arial'><a href="Cmd.htm#ArcHex">&lt;θ0&gt; &lt;<span class=
-    "SpellE">dθ</span>&gt; &lt;Z0&gt;</a></span><a href="Cmd.htm#ArcHex"><font face="Arial">
-	</font> <span style=
-    'line-height:150%;font-family: Arial'>&lt;A0&gt;&nbsp; &lt;B0&gt; &lt;C0&gt;</span><font face="Arial">
-	</font></a></font></p>
-
-    <p style=
-    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-    <span style=
-    "font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font size="1"><a href="Cmd.htm#ArcHex"><span style=
-    'line-height:150%;font-family:Arial'>&lt;Z1&gt;</span><font face="Arial">
-	</font> <span style=
-    'line-height:150%;font-family: Arial'>&lt;A1&gt; &nbsp;&lt;B1&gt; &nbsp;&lt;C1&gt;</span></a></font></p>
-
-    <p style=
-    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-    <span style=
-    "font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font face="Arial" size="1">
-	</font>
-    <span style='line-height:150%;font-family:Arial'>
-	<a href=
-    "Cmd.htm#ArcHex"><font size="1">&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt;
-    &lt;tF&gt;</font></a></span></p>
-
-    <p style=
-    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-    <span style='line-height:150%;font-family: Arial'>
-	<a href=
-    "Cmd.htm#ArcHexXZ"><font size="1">ArcHexXZ&lt;XC&gt; &lt;ZC&gt; &lt;RX&gt;
-    &lt;RZ&gt;</font></a></span></p>
-
-    <p style=
-    'margin-bottom: 0px; margin-top: 0; text-align: left; '>
-    <span style="font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font size="1"><font face="Arial">
-	</font><a href="Cmd.htm#ArcHexXZ">
-    <span style='line-height:150%;font-family: Arial'>&lt;θ0&gt; &lt;<span class="SpellE">dθ</span>&gt;
-    &lt;Y0&gt;</span><font face="Arial"> </font> <span style=
-    'line-height:150%;font-family: Arial'>&lt;A0&gt;&nbsp; &lt;B0&gt; &lt;C0&gt;</span><font face="Arial">
-	</font></a></font></p>
-
-    <p style=
-    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-    <span style="font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font size="1"><font face="Arial">
-	</font><a href="Cmd.htm#ArcHexXZ">
-    <span style='line-height:150%;font-family: Arial'>&lt;Y1&gt;</span><font face="Arial">
-	</font> <span style=
-    'line-height:150%;font-family: Arial'>&lt;A1&gt; &nbsp;&lt;B1&gt; &nbsp;&lt;C1&gt;</span></a></font></p>
-
-    <p style=
-    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-    <span style="font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font face="Arial" size="1">
-	</font>
-    <span style='line-height:150%;font-family: Arial'>
-	<a href=
-    "Cmd.htm#ArcHexXZ"><font size="1">&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt;
-    &lt;tF&gt;</font></a></span></p>
-
-    <p style=
-    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-    <a href="Cmd.htm#ArcHexYZ"><span class="SpellE" style=
-    "line-height: 150%;font-family:Arial"><font size="1">ArcHexYZ</font></span><font face="Arial" size="1">
-	</font> <span style=
-    'line-height:150%;font-family:Arial'><font size="1">&lt;YC&gt; &lt;ZC&gt; &lt;RY&gt;
-    &lt;RZ&gt;</font></span></a></p>
-
-    <p style=
-    'margin-bottom: 0px; margin-top: 0; text-align: left; '>
-    <span style=
-    "font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font size="1"><font face="Arial">
-	</font><span style='line-height:150%;font-family:Arial'>
-	<a href="Cmd.htm#ArcHexYZ">&lt;θ0&gt; &lt;<span class=
-    "SpellE">dθ</span>&gt; &lt;X0&gt;</a></span><a href="Cmd.htm#ArcHexYZ"><font face="Arial">
-	</font> <span style=
-    'line-height:150%;font-family: Arial'>&lt;A0&gt;&nbsp; &lt;B0&gt; &lt;C0&gt;</span><font face="Arial">
-	</font></a></font></p>
-
-    <p style=
-    'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-    <span style=
-    "font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font size="1"><a href="Cmd.htm#ArcHexYZ"><span style='line-height:150%;font-family:Arial'>&lt;X1&gt;</span><font face="Arial">
-	</font> <span style=
-    'line-height:150%;font-family: Arial'>&lt;A1&gt; &nbsp;&lt;B1&gt; &nbsp;&lt;C1&gt;</span></a><font face="Arial">
-	</font></font></p>
-
-    <p style=
-    'margin-bottom: 0px; margin-top: 0; text-align: left; '>
-    <span style=
-    "font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font face="Arial" size="1">
-	</font>
-    <span style='line-height:150%;font-family:Arial'>
-	<a href=
-    "Cmd.htm#ArcHexYZ"><font size="1">&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt;
-    &lt;tF&gt;</font></a></span></p>
-
-    			<p style=
-                'margin-bottom: 0px; margin-top: 0; text-align: left; '>
-                <font face="Arial" size="1"><a href="Cmd.htm#BegRapidBuf">
-				BegRapidBuf</a></font></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#CheckDone"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">CheckDone&lt;N&gt</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#CheckDone"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">CheckDoneBuf</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><a href=
-                "Cmd.htm#CheckDoneXYZABC"><font size="1">CheckDoneXYZABC</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><a href=
-                "Cmd.htm#ConfigSpindle"><font size="1">ConfigSpindle</font><font size="1"> 
-				&lt;T&gt; &lt;A&gt; &lt;U&gt; &lt;W&gt; &lt;C&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><a href=
-                "Cmd.htm#DefineCS"><font size="1">DefineCS</font><font size="1"> 
-				&lt;X&gt; &lt;Y&gt; &lt;Z&gt; &lt;A&gt; &lt;B&gt; &lt;C&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span class="SpellE"><a href="Cmd.htm#DefineCSEX"><span style=
-                'line-height:150%;font-family:Arial'><font size="1">DefineCSEX</font><font size="1"> 
-				&lt;X&gt; &lt;Y&gt; &lt;Z&gt; &lt;A&gt; &lt;B&gt;</font></span><font size="1"><font face="Arial">
-				</font> <span style=
-                'line-height:150%;font-family:Arial'>&lt;C&gt; &lt;U&gt; &lt;V&gt;</span></font></a><font face="Arial" size="1">
-				</font></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#DisableAxis"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">DisableAxis</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#EndRapidBuf"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">EndRapidBuf</font></span></a></p>
-
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#EnableAxis"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">EnableAxis</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#EnableAxisDest"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">
-				EnableAxisDest</font></span><span style='line-height:150%;font-family:Arial'><font size="1">&lt;N&gt; 
-				&lt;M&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#Enabled"><font size="1">Enabled&lt;N&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#ExecBuf"><font size="1">ExecBuf</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#ExecTime"><font size="1">ExecTime</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#FlushBuf"><font size="1">FlushBuf</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#GetSpindleRPS"><font size="1">GetSpindleRPS</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#GetStopState"><font size="1">GetStopState</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '><span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#Jog"><font size="1">Jog&lt;N&gt;=&lt;V&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family: Arial'>
-				<font size="1"><a href="Cmd.htm#Linear">Linear &lt;X0&gt; &lt;Y0&gt; &lt;Z0&gt; 
-				&lt;A0&gt; &lt;B0&gt; &lt;C0&gt;</a></font></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style=
-                "font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><a href="Cmd.htm#Linear"><font face="Arial" size="1">
-				</font><font size="1">
-                <span style='line-height:150%;font-family: Arial'>&lt;X1&gt; &lt;Y1&gt; &lt;Z1&gt; 
-				&lt;A1&gt; &lt;B1&gt; &lt;C1&gt;</span></font></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style=
-                "font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font face="Arial" size="1">
-				</font>
-                <span style='line-height:150%;font-family: Arial'><a href=
-                "Cmd.htm#Linear"><font size="1">&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family: Arial'><a href=
-                "Cmd.htm#LinearEx"><font size="1">LinearEx</font><font size="1"> 
-				&lt;X0&gt; &lt;Y0&gt; &lt;Z0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt; &lt;U0&gt; &lt;V0&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style=
-                "font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font face="Arial" size="1">
-				</font>
-                <span style=
-                'line-height:150%;font-family: Arial'><font size="1">&nbsp;&nbsp;&nbsp;
-				<a href="Cmd.htm#LinearEx">&lt;X1&gt; &lt;Y1&gt; &lt;Z1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt; &lt;U1&gt; 
-				&lt;V1&gt;</a> </font></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style=
-                "font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font face="Arial" size="1">
-				</font>
-                <span style='line-height:150%;font-family: Arial'><a href=
-                "Cmd.htm#LinearEx"><font size="1">&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#LinearHex"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">LinearHex</font></span><font size="1"><font face="Arial">
-				</font>
-                <span style='line-height:150%;font-family:Arial'>&lt;X0&gt; &lt;Y0&gt; &lt;Z0&gt; 
-				&lt;A0&gt;</span><font face="Arial"> </font></font> <span style=
-                'line-height:150%;font-family: Arial'><font size="1">&lt;B0&gt; &lt;C0&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style=
-                "font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font face="Arial" size="1">
-				</font>
-                <span style='line-height:150%;font-family:Arial'><font size="1"><a href=
-                "Cmd.htm#LinearHex">&lt;X1&gt; &lt;Y1&gt; &lt;Z1&gt; &lt;A1&gt;
-                <span style='line-height:150%;font-family: Arial'>&lt;B1&gt; &lt;C1&gt;</span></a> 
-				</font> </span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left'>
-                <span style=
-                "font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font face="Arial" size="1">
-				</font>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#LinearHex"><font size="1">&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#LinearHexEx"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">LinearHex</font></span><font size="1"><span style='line-height:150%;font-family:Arial'>Ex 
-				&lt;X0&gt; &lt;Y0&gt; &lt;Z0&gt; &lt;A0&gt;</span><font face="Arial"> </font></font> <span style=
-                'line-height:150%;font-family: Arial'><font size="1">&lt;B0&gt; &lt;C0&gt; 
-				&lt;U0&gt; &lt;V0&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style=
-                "font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font face="Arial" size="1">
-				</font>
-                <span style='line-height:150%;font-family:Arial'><font size="1"><a href=
-                "Cmd.htm#LinearHexEx">&lt;X1&gt; &lt;Y1&gt; &lt;Z1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt; <span style=
-                'line-height:150%;font-family: Arial'>&lt;U1&gt; &lt;V1&gt;</span></a> 
-				</font> </span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left'>
-                <span style=
-                "font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font face="Arial" size="1">
-				</font>
-                <span style='line-height:150%;font-family:Arial'><font size="1">&nbsp;&nbsp;
-				</font>
-                <a href="Cmd.htm#LinearHexEx"><font size="1">&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><a href=
-                "Cmd.htm#LinHex1"><font size="1">LinHex1 <span style=
-                'line-height:150%;font-family:Arial'>&lt;X1&gt; &lt;Y1&gt; &lt;Z1&gt; &lt;A1&gt;</span> <span style=
-                'line-height:150%;font-family: Arial'>&lt;B1&gt; &lt;C1&gt;</span></font></a><font size="1">
-				</font> </span></p>
-
-                <p style=
-                'margin-bottom: 0px; margin-top: 0; text-align: left'>
-                <span style=
-                "font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font face="Arial" size="1">
-				</font>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#LinHex1"><font size="1">&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <font face="Arial" size="1">
-                <a href="Cmd.htm#LinHex2"><span class="SpellE">LinHex2</span>
-                &nbsp;&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</a></font></p>
-
-                <p style=
-                'line-height: 100%; margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <font face="Arial" size="1">&nbsp;</font></p>
-
-                <p style=
-                'line-height: 100%; margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#LinHexEx1"><font face="Arial"><span class=
-                "SpellE"><font size="1">LinHexEx1</font></span><font size="1"> 
-				&lt;X1&gt; &lt;Y1&gt; &lt;Z1&gt; &lt;A1&gt; </font></font> <span style=
-                'line-height:150%;font-family: Arial'><font size="1">&lt;B1&gt; &lt;C1&gt; 
-				&lt;U1&gt; &lt;V1&gt;</font></span></a></p>
-
-                <p style=
-                'line-height: 100%; margin-bottom: -3px; margin-top: 0; text-align: left'>
-                <span style=
-                "font-family: Arial"><font size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><font face="Arial"><font size="1">
-				</font>
-                <a href="Cmd.htm#LinHexEx1"><font size="1">&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</font></a></font></p>
-				<p style=
-                'line-height: 100%; margin-bottom: -3px; margin-top: 0; text-align: left'>&nbsp;
-                </p>
-
-                <p style=
-                'margin-bottom: 0px; margin-top: 0; text-align: left; '>
-                <font face="Arial" size="1">
-                <a href="Cmd.htm#Move">Move&lt;N&gt;=&lt;M&gt;</a></font></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#MoveAtVel"><font size="1">MoveAtVel&lt;N&gt;=&lt;M&gt;</font></a></span></p>
-
-				<p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '><span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#MoveExp"><font size="1">MoveExp&lt;N&gt;=&lt;D&gt; &lt;T&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <a href="Cmd.htm#MoveRel"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">MoveRel</font></span><span style=
-                'line-height:150%;font-family:Arial'><font size="1">&lt;N&gt;=&lt;M&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family: Arial'><a href=
-                "Cmd.htm#MoveRelAtVel"><font size="1">MoveRelAtVel&lt;N&gt;=&lt;M&gt; &lt;V&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '><a href="Cmd.htm#MoveXYZABC"><span class="SpellE" style=
-                "line-height:150%;font-family:Arial"><font size="1">MoveXYZABC</font></span><font face="Arial" size="1">
-				</font>
-                <span style='line-height:150%;font-family:Arial'><font size="1">
-				&lt;X&gt; &lt;Y&gt; &lt;Z&gt; &lt;A&gt; &lt;B&gt; &lt;C&gt;</font></span></a></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#OpenBuf"><font size="1">OpenBuf</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#SetFRO"><font size="1">SetFRO &lt;F&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#SetFROTemp"><font size="1">SetFROTemp &lt;F&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#SetFROwRate"><font size="1">SetFROwRate &lt;F&gt; &lt;R&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#SetFROwRateTemp"><font size="1">SetFROwRateTemp &lt;F&gt; &lt;R&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#SetRapidFRO"><font size="1">SetRapidFRO &lt;F&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#SetRapidFROwRate"><font size="1">SetRapidFROwRate &lt;F&gt; &lt;R&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#StopImmediate"><font size="1">StopImmediate&lt;M&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#TrigThread"><font size="1">TrigThread &lt;S&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#Zero"><font size="1">Zero&lt;N&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <font face="Arial" size="1">&nbsp;</font></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <font face="Arial" size="1">&nbsp;</font></p>
-
-                <p style="margin-bottom: -3px; margin-top: 0; text-align: left">
-                <b><font face="Arial" size="2">Misc Commands</font></b></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#Echo"><font size="1">Echo &lt;S&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#FPGA"><font size="1">FPGA &lt;N&gt; &lt;M&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#FPGAW"><font size="1">FPGAW &lt;N&gt; &lt;M&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#GetPersistDec"><font size="1">GetPersistDec &lt;N&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#GetPersistHex"><font size="1">GetPersistHex &lt;N&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#GetStatus"><font size="1">GetStatus</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#Reboot!"><font size="1">Reboot!</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#SetPersistDec"><font size="1">SetPersistDec &lt;O&gt; &lt;D&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#SetPersistHex"><font size="1">SetPersistHex &lt;O&gt; &lt;H&gt;</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <span style='line-height:150%;font-family:Arial'><a href=
-                "Cmd.htm#Version"><font size="1">Version</font></a></span></p>
-
-                <p style=
-                'margin-bottom: -3px; margin-top: 0; text-align: left; '>
-                <font face="Arial" size="1">&nbsp;</font></p>
-            </td>
-        </tr>
-    </table>
-
-    <div class="Section1">
-        <p style=
-        'margin-bottom: 0; margin-top: 0; text-align: left; '>
-        <font face="Arial" size="1">&nbsp;</font></p>
-
-        <p style=
-        'margin-bottom: 0; margin-top: 0; text-align: left; '>
-        <font face="Arial" size="1">&nbsp;</font></p>
-
-        <p style=
-        'margin-bottom: 0; margin-top: 0; text-align: left; '>
-        <font face="Arial" size="1">&nbsp;</font></p>
-
-        <p style=
-        'margin-bottom: 0; margin-top: 0; text-align: left; '>
-        <font face="Arial" size="1">&nbsp;</font></p>
-
-        <p style=
-        'margin-bottom: 0; margin-top: 0; text-align: left; '>
-        <font face="Arial" size="1">&nbsp;</font></p>
-    </div>
+				
+                                
+                <h6>Misc Commands</h6>
+                                
+                <p><a href="Cmd.htm#Echo">Echo<em>&lt;S&gt;</em></a></p>
+                <p><a href="Cmd.htm#FPGA">FPGA<em>&lt;N&gt; &lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#FPGAW">FPGAW<em>&lt;N&gt; &lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#GetAllDestHex">GetAllDestHex</a></p>
+                <p><a href="Cmd.htm#GetAllDestVelHex">GetAllDestVelHex</a></p>
+                <p><a href="Cmd.htm#GetIpAddr">GetIpAddr</a></p>
+                <p><a href="Cmd.htm#GetSerialNumber">GetSerialNumber<em>&lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#GetPersistDec">GetPersistDec<em>&lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#GetPersistHex">GetPersistHex<em>&lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#GetStatus">GetStatus</a></p>
+                <p><a href="Cmd.htm#LED">LED</a></p>
+                <p><a href="Cmd.htm#Reboot!">Reboot!</a></p>
+                <p><a href="Cmd.htm#SetIpAddr">SetIpAddr<em>&lt;D&gt;&lt;D&gt;&lt;D&gt;&lt;&lt;D&gt;</em></a></p>
+                <p><a href="Cmd.htm#SetPersistDec">SetPersistDec<em>&lt;O&gt; &lt;D&gt;</em></a></p>
+                <p><a href="Cmd.htm#SetPersistHex">SetPersistHex<em>&lt;O&gt; &lt;H&gt;</em></a></p>
+                <p><a href="Cmd.htm#SetSerialNumber">SetSerialNumber</a></p>
+                <p><a href="Cmd.htm#USB">USB</a><br>
+				</p>
+                <p><a href="Cmd.htm#Version">Version</a></p>
+            
+				
+           
+			</div>
+
+			
+		  <div id="col3">
+	
+<h6>Motion Commands</h6>
+				
+<p><a href="Cmd.htm#Arc">Arc<em>&lt;XC&gt; &lt;YC&gt; &lt;RX&gt; &lt;RY&gt; &lt;&#952;0&gt; &lt;d&#952;&gt;<br />
+&lt;Z0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt;<br />
+&lt;Z1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt;<br />
+&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+
+<p><a href="Cmd.htm#ArcEx">ArcEx<em>&lt;XC&gt; &lt;YC&gt; &lt;RX&gt; &lt;RY&gt; &lt;&#952;0&gt; &lt;d&#952;&gt;<br />
+&lt;Z0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt; &lt;U0&gt; &lt;V0&gt;<br />
+&lt;Z1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt; &lt;U1&gt; &lt;V1&gt;<br />
+&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+
+<p><a href="Cmd.htm#ArcP">ArcP<em>&lt;XC&gt; &lt;YC&gt; &lt;RX&gt; &lt;RY&gt; &lt;&#952;0&gt; &lt;d&#952;&gt;<br />
+&lt;Z0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt; &lt;U0&gt; &lt;V0&gt;<br />
+&lt;XP0&gt; &lt;YP0&gt; &lt;ZP0&gt; &lt;AP0&gt; &lt;BP0&gt; &lt;CP0&gt; &lt;UP0&gt; &lt;VP0&gt;<br />
+&lt;Z1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt; &lt;U1&gt; &lt;V1&gt;<br />
+&lt;XP1&gt; &lt;YP1&gt; &lt;ZP1&gt; &lt;AP1&gt; &lt;BP1&gt; &lt;CP1&gt; &lt;UP1&gt; &lt;VP1&gt;<br />
+&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+				
+<p><a href="Cmd.htm#ArcXZ">ArcZX<em>&lt;ZC&gt; &lt;XC&gt; &lt;RX&gt; &lt;RY&gt; &lt;&#952;0&gt; &lt;d&#952;&gt;<br />
+&lt;Y0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt;<br />
+&lt;Y1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt;<br />
+&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+
+<p><a href="Cmd.htm#ArcXZEx">ArcXZEx<em>&lt;XC&gt; &lt;ZC&gt; &lt;RX&gt; &lt;RY&gt; &lt;&#952;0&gt; &lt;d&#952;&gt;<br />
+&lt;Y0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt; &lt;U0&gt; &lt;V0&gt;<br />
+&lt;Y1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt; &lt;U1&gt; &lt;V1&gt;<br />
+&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+
+<p><a href="Cmd.htm#ArcXZP">ArcXZP<em>&lt;XC&gt; &lt;ZC&gt; &lt;RX&gt; &lt;RY&gt; &lt;&#952;0&gt; &lt;d&#952;&gt;<br />
+&lt;Y0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt; &lt;U0&gt; &lt;V0&gt;<br />
+&lt;XP0&gt; &lt;YP0&gt; &lt;ZP0&gt; &lt;AP0&gt; &lt;BP0&gt; &lt;CP0&gt; &lt;UP0&gt; &lt;VP0&gt;<br />
+&lt;Y1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt; &lt;U1&gt; &lt;V1&gt;<br />
+&lt;XP1&gt; &lt;YP1&gt; &lt;ZP1&gt; &lt;AP1&gt; &lt;BP1&gt; &lt;CP1&gt; &lt;UP1&gt; &lt;VP1&gt;<br />
+&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+				
+<p><a href="Cmd.htm#ArcYZ">ArcYZ<em>&lt;YC&gt; &lt;ZC&gt; &lt;RX&gt; &lt;RY&gt; &lt;&#952;0&gt; &lt;d&#952;&gt;<br />
+&lt;X0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt;<br />
+&lt;X1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt;<br />
+&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+
+<p><a href="Cmd.htm#ArcYZEx">ArcYZEx<em>&lt;YC&gt; &lt;ZC&gt; &lt;RX&gt; &lt;RY&gt; &lt;&#952;0&gt; &lt;d&#952;&gt;<br />
+&lt;X0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt; &lt;U0&gt; &lt;V0&gt;<br />
+&lt;X1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt; &lt;U1&gt; &lt;V1&gt;<br />
+&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+
+<p><a href="Cmd.htm#ArcYZP">ArcYZP<em>&lt;YC&gt; &lt;ZC&gt; &lt;RX&gt; &lt;RY&gt; &lt;&#952;0&gt; &lt;d&#952;&gt;<br />
+&lt;X0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt; &lt;U0&gt; &lt;V0&gt;<br />
+&lt;XP0&gt; &lt;YP0&gt; &lt;ZP0&gt; &lt;AP0&gt; &lt;BP0&gt; &lt;CP0&gt; &lt;UP0&gt; &lt;VP0&gt;<br />
+&lt;X1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt; &lt;U1&gt; &lt;V1&gt;<br />
+&lt;XP1&gt; &lt;YP1&gt; &lt;ZP1&gt; &lt;AP1&gt; &lt;BP1&gt; &lt;CP1&gt; &lt;UP1&gt; &lt;VP1&gt;<br />
+&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>	
+				
+<p><a href="Cmd.htm#ArcHex">ArcHex<em>&lt;XC&gt; &lt;YC&gt; &lt;RX&gt; &lt;RY&gt; &lt;&#952;0&gt; &lt;d&#952;&gt;<br />
+&lt;Z0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt;<br />
+&lt;Z1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt;<br />
+&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+
+<p><a href="Cmd.htm#ArcHexEx">ArcHexEx<em>&lt;XC&gt; &lt;YC&gt; &lt;RX&gt; &lt;RY&gt; &lt;&#952;0&gt; &lt;d&#952;&gt;<br />
+&lt;Z0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt; &lt;U0&gt; &lt;V0&gt;<br />
+&lt;Z1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt; &lt;U1&gt; &lt;V1&gt;<br />
+&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+
+<p><a href="Cmd.htm#ArcHexP">ArcHexP<em>&lt;XC&gt; &lt;YC&gt; &lt;RX&gt; &lt;RY&gt; &lt;&#952;0&gt; &lt;d&#952;&gt;<br />
+&lt;Z0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt; &lt;U0&gt; &lt;V0&gt;<br />
+&lt;XP0&gt; &lt;YP0&gt; &lt;ZP0&gt; &lt;AP0&gt; &lt;BP0&gt; &lt;CP0&gt; &lt;UP0&gt; &lt;VP0&gt;<br />
+&lt;Z1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt; &lt;U1&gt; &lt;V1&gt;<br />
+&lt;XP1&gt; &lt;YP1&gt; &lt;ZP1&gt; &lt;AP1&gt; &lt;BP1&gt; &lt;CP1&gt; &lt;UP1&gt; &lt;VP1&gt;<br />
+&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>		
+				
+<p><a href="Cmd.htm#ArcHexXZ">ArcHexZX<em>&lt;ZC&gt; &lt;XC&gt; &lt;RX&gt; &lt;RY&gt; &lt;&#952;0&gt; &lt;d&#952;&gt;<br />
+&lt;Y0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt;<br />
+&lt;Y1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt;<br />
+&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+
+<p><a href="Cmd.htm#ArcHexXZEx">ArcHexZXEx<em>&lt;ZC&gt; &lt;XC&gt; &lt;RX&gt; &lt;RY&gt; &lt;&#952;0&gt; &lt;d&#952;&gt;<br />
+&lt;Y0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt; &lt;U0&gt; &lt;V0&gt;<br />
+&lt;Y1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt; &lt;U1&gt; &lt;V1&gt;<br />
+&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+
+<p><a href="Cmd.htm#ArcHexXZP">ArcHexZXP<em>&lt;ZC&gt; &lt;XC&gt; &lt;RX&gt; &lt;RY&gt; &lt;&#952;0&gt; &lt;d&#952;&gt;<br />
+&lt;Y0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt; &lt;U0&gt; &lt;V0&gt;<br />
+&lt;XP0&gt; &lt;YP0&gt; &lt;ZP0&gt; &lt;AP0&gt; &lt;BP0&gt; &lt;CP0&gt; &lt;UP0&gt; &lt;VP0&gt;<br />
+&lt;Y1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt; &lt;U1&gt; &lt;V1&gt;<br />
+&lt;XP1&gt; &lt;YP1&gt; &lt;ZP1&gt; &lt;AP1&gt; &lt;BP1&gt; &lt;CP1&gt; &lt;UP1&gt; &lt;VP1&gt;<br />
+&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>	
+				
+<p><a href="Cmd.htm#ArcHexYZ">ArcHexYZ<em>&lt;YC&gt; &lt;ZC&gt; &lt;RX&gt; &lt;RY&gt; &lt;&#952;0&gt; &lt;d&#952;&gt;<br />
+&lt;X0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt;<br />
+&lt;X1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt;<br />
+&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+
+<p><a href="Cmd.htm#ArcHexYZEx">ArcHexYZEx<em>&lt;YC&gt; &lt;ZC&gt; &lt;RX&gt; &lt;RY&gt; &lt;&#952;0&gt; &lt;d&#952;&gt;<br />
+&lt;X0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt; &lt;U0&gt; &lt;V0&gt;<br />
+&lt;X1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt; &lt;U1&gt; &lt;V1&gt;<br />
+&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+
+<p><a href="Cmd.htm#ArcHexYZP">ArcHexYZP<em>&lt;YC&gt; &lt;ZC&gt; &lt;RX&gt; &lt;RY&gt; &lt;&#952;0&gt; &lt;d&#952;&gt;<br />
+&lt;X0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt; &lt;U0&gt; &lt;V0&gt;<br />
+&lt;XP0&gt; &lt;YP0&gt; &lt;ZP0&gt; &lt;AP0&gt; &lt;BP0&gt; &lt;CP0&gt; &lt;UP0&gt; &lt;VP0&gt;<br />
+&lt;X1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt; &lt;U1&gt; &lt;V1&gt;<br />
+&lt;XP1&gt; &lt;YP1&gt; &lt;ZP1&gt; &lt;AP1&gt; &lt;BP1&gt; &lt;CP1&gt; &lt;UP1&gt; &lt;VP1&gt;<br />
+&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+				
+				
+				
+                <p><a href="Cmd.htm#BegRapidBuf">BegRapidBuf</a></p>
+                <p><a href="Cmd.htm#CheckDone">CheckDone<em>&lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#CheckDone">CheckDoneBuf</a></p>
+                <p><a href="Cmd.htm#CheckDoneXYZABC">CheckDone<em>XYZABC</em></a></p>
+                <p><a href="Cmd.htm#ConfigSpindle">ConfigSpindle<em>&lt;T&gt; &lt;A&gt; &lt;U&gt; &lt;W&gt; &lt;C&gt;</em></a></p>
+                <p><a href="Cmd.htm#DefineCS">DefineCS<em>&lt;X&gt; &lt;Y&gt; &lt;Z&gt; &lt;A&gt; &lt;B&gt; &lt;C&gt;</em></a></p>
+                <p><a href="Cmd.htm#DefineCSEX">DefineCSEX<em>&lt;X&gt; &lt;Y&gt; &lt;Z&gt; &lt;A&gt; &lt;B&gt; &lt;C&gt; &lt;U&gt; &lt;V&gt;</em></a></p>
+                <p><a href="Cmd.htm#DefineCSP">DefineCSP<em>=&lt;XP&gt;&lt;YP&gt;&lt;ZP&gt;&lt;AP&gt;&lt;BP&gt;&lt;CP&gt;&lt;UP&gt;&lt;VP&gt;</em></a></p>
+                <p><a href="Cmd.htm#DisableAxis">DisableAxis<em>&lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#EndRapidBuf">EndRapidBuf</a></p>
+                <p><a href="Cmd.htm#EnableAxis">EnableAxis<em>&lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#EnableAxisDest">EnableAxisDest<em>&lt;N&gt; &lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#Enabled">Enabled<em>&lt;N&gt;</em></a></p>
+                <p><a href="Cmd.htm#ExecBuf">ExecBuf</a></p>
+                <p><a href="Cmd.htm#ExecTime">ExecTime</a></p>
+                <p><a href="Cmd.htm#FlushBuf">FlushBuf</a></p>
+                <p><a href="Cmd.htm#GetSpindleRPS">GetSpindleRPS</a></p>
+                <p><a href="Cmd.htm#GetStopState">GetStopState</a></p>
+                <p><a href="Cmd.htm#Jog">Jog<em>&lt;N&gt;=&lt;V&gt;</em></a></p>
+                <p><a href="Cmd.htm#JogAtAccel">JogAtAccel<em>&lt;N&gt;=&lt;V&gt;&lt;A&gt;</em></a></p>
+			  		  
+			  
+                <p><a href="Cmd.htm#Linear">Linear<em>&lt;X0&gt; &lt;Y0&gt; &lt;Z0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt;<br />
+                &lt;X1&gt; &lt;Y1&gt; &lt;Z1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt;<br />
+                &lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+			  
+                <p><a href="Cmd.htm#LinearEx">LinearEx<em>&lt;X0&gt; &lt;Y0&gt; &lt;Z0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt; &lt;U0&gt; &lt;V0&gt;<br />
+                &lt;X1&gt; &lt;Y1&gt; &lt;Z1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt; &lt;U1&gt; &lt;V1&gt;<br />
+                &lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+			  
+                <p><a href="Cmd.htm#LinearP">LinearP<em>&lt;X0&gt; &lt;Y0&gt; &lt;Z0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt; &lt;U0&gt; &lt;V0&gt;<br />
+                &lt;XP0&gt; &lt;YP0&gt; &lt;ZP0&gt; &lt;AP0&gt; &lt;BP0&gt; &lt;CP0&gt; &lt;UP0&gt; &lt;VP0&gt;<br />
+                &lt;X0&gt; &lt;Y0&gt; &lt;Z0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt; &lt;U0&gt; &lt;V0&gt;<br />
+                &lt;XP1&gt; &lt;YP1&gt; &lt;ZP1&gt; &lt;AP1&gt; &lt;BP1&gt; &lt;CP1&gt; &lt;UP1&gt; &lt;VP1&gt;<br />
+                &lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+			  
+                <p><a href="Cmd.htm#LinearHex">LinearHex<em>&lt;X0&gt; &lt;Y0&gt; &lt;Z0&gt; &lt;A0&gt; &lt;B0&gt; &lt;C0&gt;<br />
+                &lt;X1&gt; &lt;Y1&gt; &lt;Z1&gt; &lt;A1&gt; &lt;B1&gt; &lt; C1&gt;<br />
+                &lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+			  
+                <p><a href="Cmd.htm#LinearHexEx">LinearHexEx<em>&lt;X0&gt; &lt;Y0&gt; &lt;Z0&gt;&lt;A0&gt; &lt;B0&gt; &lt;C0&gt; &lt;U0&gt;&lt;V0&gt;<br />
+                &lt;X1&gt; &lt;Y1&gt; &lt;Z1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt; &lt;U1&gt; &lt;V1&gt;<br />
+                &lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+			  
+                <p><a href="Cmd.htm#LinearHexP">LinearHexP<em>&lt;X0&gt; &lt;Y0&gt; &lt;Z0&gt;&lt;A0&gt; &lt;B0&gt; &lt;C0&gt; &lt;U0&gt;&lt;V0&gt;<br />
+                &lt;XP0&gt; &lt;YP0&gt; &lt;ZP0&gt; &lt;AP0&gt; &lt;BP0&gt; &lt;CP0&gt; &lt;UP0&gt; &lt;VP0&gt;<br />
+                &lt;X1&gt; &lt;Y1&gt; &lt;Z1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt; &lt;U1&gt; &lt;V1&gt;<br />
+                &lt;XP1&gt; &lt;YP1&gt; &lt;ZP1&gt; &lt;AP1&gt; &lt;BP1&gt; &lt;CP1&gt; &lt;UP1&gt; &lt;VP1&gt;<br />
+                &lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+			  
+                <p><a href="Cmd.htm#LHex1">LHex1<em>&lt;X1&gt; &lt;Y1&gt; &lt;Z1&gt; &lt;A1&gt;&lt;B1&gt; &lt;C1&gt;<br />
+                &lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+			  
+                <p><a href="Cmd.htm#LHexEx1">LHexEx1<em>&lt;X1&gt; &lt;Y1&gt; &lt;Z1&gt; &lt;A1&gt; &lt;B1&gt; &lt;C1&gt; &lt;U1&gt; &lt;V1&gt;<br />
+                &lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+			  
+                <p><a href="Cmd.htm#LHexP1">LHexP1<em>&lt;X1&gt; &lt;Y1&gt; &lt;Z1&gt; &lt;A1&gt;&lt;B1&gt; &lt;C1&gt; &lt;U1&gt;&lt;V1&gt;<br />
+                &lt;XP1&gt; &lt;YP1&gt; &lt;ZP1&gt; &lt;AP1&gt; &lt;BP1&gt; &lt;CP1&gt; &lt;UP1&gt; &lt;VP1&gt;<br />
+                &lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+			  
+                <p><a href="Cmd.htm#LHex2">LHex2<em>&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+			  
+                <p><a href="Cmd.htm#LHexP2">LHexP2<em>&lt;a&gt; &lt;b&gt; &lt;c&gt; &lt;d&gt; &lt;tF&gt;</em></a></p>
+			  
+                <p><a href="Cmd.htm#Move">Move<em>&lt;N&gt;=&lt;M</em>&gt;</a></p>
+                <p><a href="Cmd.htm#MoveAtVel">MoveAtVel<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#MoveAtVelAccel">MoveAtVelAccel<em>&lt;N&gt;=&lt;D&gt; &lt;V&gt;&lt;A&gt;</em></a></p>
+                <p><a href="Cmd.htm#MoveExp">MoveExp<em>&lt;N&gt;=&lt;D&gt; &lt;T&gt;</em></a></p>
+                <p><a href="Cmd.htm#MoveRel">MoveRel<em>&lt;N&gt;=&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#MoveRelAtVel">MoveRelAtVel<em>&lt;N&gt;=&lt;M&gt; &lt;V&gt;</em></a></p>
+			    <p><a href="Cmd.htm#MoveRelAtVelAccel">MoveRelAtVelAccel<em>&lt;N&gt;=&lt;D&gt; &lt;V&gt;&lt;A&gt;</em></a></p>
+			    <p><a href="Cmd.htm#MoveRelAtVelAccelSoft">MoveRelAtVelAccelSoft<em>&lt;N&gt;=&lt;D&gt; &lt;V&gt;&lt;A&gt;</em></a></p>
+            <p><a href="Cmd.htm#MoveXYZABC">MoveXYZABC<em>&lt;X&gt; &lt;Y&gt; &lt;Z&gt; &lt;A&gt; &lt;B&gt; &lt;C&gt;</em></a></p>
+                <p><a href="Cmd.htm#OpenBuf">OpenBuf</a></p>
+                <p><a href="Cmd.htm#SetFRO">SetFRO<em>&lt;F&gt;</em></a></p>
+                <p><a href="Cmd.htm#SetFROTemp">SetFROTemp<em>&lt;F&gt;</em></a></p>
+                <p><a href="Cmd.htm#SetFROwRate">SetFROwRate<em>&lt;F&gt; &lt;R&gt;</em></a></p>
+                <p><a href="Cmd.htm#SetFROwRateTemp">SetFROwRateTemp<em>&lt;F&gt; &lt;R&gt;</em></a></p>
+                <p><a href="Cmd.htm#SetRapidFRO">SetRapidFRO<em>&lt;F&gt;</em></a></p>
+                <p><a href="Cmd.htm#SetRapidFROwRate">SetRapidFROwRate<em>&lt;F&gt; &lt;R&gt;</em></a></p>
+                <p><a href="Cmd.htm#StopImmediate">StopImmediate<em>&lt;M&gt;</em></a></p>
+                <p><a href="Cmd.htm#TrigThread">TrigThread<em>&lt;S&gt;</em></a></p>
+                <p> <a href="Cmd.htm#Zero">Zero<em>&lt;N&gt;</em></a></p>
+			</div>
+		</div>
+	</div>
+</div>
+
+</div>  
+    
+<p>&nbsp;</p>
+	</div>
+	
 </body>
 </html>

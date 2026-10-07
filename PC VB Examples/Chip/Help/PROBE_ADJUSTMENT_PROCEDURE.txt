@@ -1,0 +1,10 @@
+1. Loosen all screws (with probe mounted, towards front)
+2. Preload by tightening until probe moves + 1/4 turn
+3. Measure V1 front and back
+4. Target = Front + ((Front - Back) / 2)
+   Turning wrench away makes measurement smaller
+5. After getting V1 front and back the same, tweek v2 and V3 to same target.
+6. Measure V1 but DO NOT CHANGE V1
+7. Target = (V1 - ((V2 + V3) / 2)) / 3
+8. Tweek V2 and 3 to target
+9. Go to step 6

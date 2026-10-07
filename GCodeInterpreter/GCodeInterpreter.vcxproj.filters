@@ -72,6 +72,18 @@
     <ClCompile Include="Kinematics5AxisGimbalCB.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Kinematics5AxisTableAGimbalB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="KinematicsScara.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Kinematics2AxisRobot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Kinematics5AxisTableAB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="canon.h">
@@ -141,6 +153,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Kinematics5AxisGimbalCB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Kinematics5AxisTableAGimbalB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KinematicsScara.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Kinematics2AxisRobot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Kinematics5AxisTableAB.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

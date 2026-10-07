@@ -1,0 +1,17 @@
+(G90 G81 G98 X1 Y0 Z-5 R-10)
+#1 = 1 (X Drill location)
+#2 = 0 (Y Drill location)
+#3 = -5 (Z Drill Depth)
+#4 = -10 (R Retract height)
+M98 P81 F100
+
+M98 P81 #1=2 #2=2 (Drill at 2,2)
+M98 P81 #1=3 #2=1 (Drill at 3,2)
+M30 
+
+O81 (Canned drill cycle subroutine)
+G0 Z#4 (Goto retract height)
+G0 X#1 Y#2 (Goto Drill location)
+G1 Z#3 (Drill)
+G0 Z#4 (retract)
+M99

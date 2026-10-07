@@ -180,7 +180,7 @@ int no_output_printf(const char *format, ...);
 
 
 
-main()
+void main()
 {
 	GlobalStatus = IDLE;
 	Init();
@@ -463,7 +463,7 @@ int DoSequence(HOMING_PARAMS *Tasks, int Count)
 	//It should not be that much of a concern, as the first move to sensor was simultaneous and that was the largest travel distance
 	for(j = 0; j < Count; j++)
 	{
-		int Axis=Tasks[j].AxisChannel;
+		Axis=Tasks[j].AxisChannel;
 		
 		//Move away from sensor and stop as soon as axis is off
 		//All sequences perform this first
@@ -610,6 +610,7 @@ int DoSequence(HOMING_PARAMS *Tasks, int Count)
 			GlobalStatus = COMPLETE;
 		}
 	}
+	return 0;
 }
 
 void MoveToSensor(int axis, int isneg, float speed)

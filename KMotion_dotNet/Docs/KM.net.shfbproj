@@ -13,8 +13,8 @@
     <RootNamespace>KMotion_dotNet_Help</RootNamespace>
     <Name>KMotion_dotNet_Help</Name>
     <!-- SHFB properties -->
-    <FrameworkVersion>.NET Framework 4.5</FrameworkVersion>
-    <OutputPath>.\Help\</OutputPath>
+    <FrameworkVersion>.NET Framework 4.8</FrameworkVersion>
+    <OutputPath>Help\</OutputPath>
     <HtmlHelpName>KMotion.Net</HtmlHelpName>
     <Language>en-US</Language>
     <TransformComponentArguments>
@@ -43,7 +43,7 @@
       <NamespaceSummaryItem name="KMotion_dotNet" isDocumented="True">Primary Namespace for all Dynomotion .net objects Manipulate IO, Command single axis movement, issue coordinated motion profiles and interpret RS274(G-code) The Dynomotion devices are truly amazing and versatile</NamespaceSummaryItem>
     </NamespaceSummaries>
     <HelpFileFormat>HtmlHelp1, Website</HelpFileFormat>
-    <SyntaxFilters>None</SyntaxFilters>
+    <SyntaxFilters>C#, Visual Basic, Managed C++</SyntaxFilters>
     <PresentationStyle>VS2013</PresentationStyle>
     <CleanIntermediates>True</CleanIntermediates>
     <KeepLogFile>True</KeepLogFile>
@@ -51,6 +51,11 @@
     <IndentHtml>False</IndentHtml>
     <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
     <SaveComponentCacheCapacity>100</SaveComponentCacheCapacity>
+    <VisibleItems>Attributes, ExplicitInterfaceImplementations, InheritedMembers, InheritedFrameworkMembers, Internals, Protected, ProtectedInternalAsProtected, NonBrowsable</VisibleItems>
+    <NamingMethod>MemberName</NamingMethod>
+    <ContentPlacement>AboveNamespaces</ContentPlacement>
+    <ComponentPath>..\..\PC VCS Examples\ExtendedLoggingKflop\packages\EWSoftware.SHFB.NETFramework.4.8.0.2\tools\</ComponentPath>
+    <WarnOnMissingSourceContext>False</WarnOnMissingSourceContext>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform
 			 the build.  The others are optional common platform types that may appear. -->
@@ -91,5 +96,11 @@
     <PostBuildEvent>
     </PostBuildEvent>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug64' ">
+    <OutputPath>bin\Debug64\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release64' ">
+    <OutputPath>bin\Release64\</OutputPath>
   </PropertyGroup>
 </Project>

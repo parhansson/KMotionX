@@ -1,0 +1,19 @@
+---------------------------------
+aRA - Radius value
+---------------------------------
+
+The radius value is used by rotational axes only (A, B and C) to convert linear units
+to degrees when in radius mode.
+
+For example; if the A radius is set to 10 mm it means that a value of 62.8318531 mm 
+will make the A axis travel one full revolution - as 62.383... is the circumference 
+of the circle of radius R ( 2PIR, or 10 * 2 * 3.14159...) (Assuming $nTR = 360 -- 
+see note below). Receiving the gcode block G0 A62.83 will turn the A axis one full 
+revolution (360 degrees) from a starting position of 0. All internal computations and 
+settings are still in degrees - it's just that gcode units received for the axis are 
+converted to degrees using the specified radius.
+
+Note that the Travel per Revolution value (1TR) is used but unaffected in radius mode.
+The degrees per revolution still applies, it's just that the degrees were computed based
+on the radius and the Gcode axis values. See Travel per Revolution (See 1TR) in the 
+motor group. 

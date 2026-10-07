@@ -19,7 +19,4 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <Library Include="..\..\..\KMotion\Release\KMotion_dotNet_Interop.lib" />
-  </ItemGroup>
 </Project>

@@ -127,8 +127,8 @@ int CTexture::ReadFile(char *filename,
 		return ReadFileRAW(filename,width,height,depth);
 
 	// Unrecognized file format
-	CString message;
-	message.Format("CTexture::ReadFile : invalid file redirection : %s\n",filename);
+	CStringW message;
+	message.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("CTexture::ReadFile : invalid file redirection : %s\n"),filename);
 	AfxMessageBox(string);
 
 	return 0;
@@ -155,7 +155,7 @@ int CTexture::ReadFileBMP(char *filename)
 		#ifdef _DEBUG
 		  afxDump << "File could not be opened " << ex.m_cause << "\n";
 		#endif
-		AfxMessageBox("Unable to open file for reading");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to open file for reading"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 0;
 	}
 
@@ -170,7 +170,7 @@ int CTexture::ReadFileBMP(char *filename)
 		#ifdef _DEBUG
 				afxDump << "Error during reading " << e->m_cause << "\n";
 		#endif
-		AfxMessageBox("Error during reading file header");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error during reading file header"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		file.Close();
 		return 0;
 	}
@@ -186,7 +186,7 @@ int CTexture::ReadFileBMP(char *filename)
   WORD sign = ((WORD) ('M' << 8) | 'B');
 	if(FileHeader.bfType != sign)
 	{
-		AfxMessageBox("Invalid BMP file");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid BMP file"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		file.Close();
 		return 0;
 	}
@@ -201,7 +201,7 @@ int CTexture::ReadFileBMP(char *filename)
 		#ifdef _DEBUG
 				afxDump << "Error during reading " << e->m_cause << "\n";
 		#endif
-		AfxMessageBox("Error during reading image header");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error during reading image header"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		file.Close();
 		return 0;
 	}
@@ -226,7 +226,7 @@ int CTexture::ReadFileBMP(char *filename)
 	if(m_Header.biPlanes != 1 ||
 		 m_Header.biBitCount != 24)
 	{
-		AfxMessageBox("Texture file must have 24 bits depth");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Texture file must have 24 bits depth"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		file.Close();
 		return 0;
 	}
@@ -256,7 +256,7 @@ int CTexture::ReadFileBMP(char *filename)
 		#ifdef _DEBUG
 				afxDump << "Error during reading " << e->m_cause << "\n";
 		#endif
-		AfxMessageBox("Error during reading image");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error during reading image"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		file.Close();
 		return 0;
 	}
@@ -346,7 +346,7 @@ int CTexture::ReadFileRAW(char *filename,
 		#ifdef _DEBUG
 		  afxDump << "File could not be opened " << ex.m_cause << "\n";
 		#endif
-		AfxMessageBox("Unable to open file for reading");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to open file for reading"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 0;
 	}
 
@@ -368,7 +368,7 @@ int CTexture::ReadFileRAW(char *filename,
 		#ifdef _DEBUG
 				afxDump << "Error during reading " << e->m_cause << "\n";
 		#endif
-		AfxMessageBox("Error during reading image");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error during reading image"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		file.Close();
 		return 0;
 	}
@@ -410,9 +410,9 @@ int CTexture::SaveFile(char *filename)
 		return SaveFileBMP(filename);
 
 	// Unrecognized file format
-	CString message;
-	message.Format("CTexture::SaveFile : invalid file redirection : %s\n",filename);
-	AfxMessageBox(message);
+	CStringW message;
+	message.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("CTexture::SaveFile : invalid file redirection : %s\n"),filename);
+	MessageBoxW(NULL, message, L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
 
 	return 0;
 }
@@ -426,7 +426,7 @@ int CTexture::SaveFileRAW(char *filename)
 	// Check for valid image
 	if((m_Width * m_Height * m_Depth) == 0)
 		{
-		AfxMessageBox("CTexture::SaveFileRAW : invalid image");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("CTexture::SaveFileRAW : invalid image"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 0;
 		}
 
@@ -440,7 +440,7 @@ int CTexture::SaveFileRAW(char *filename)
 		#ifdef _DEBUG
 		  afxDump << "File could not be opened " << ex.m_cause << "\n";
 		#endif
-		AfxMessageBox("Unable to open file for writing");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to open file for writing"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 0;
 	}
 
@@ -454,7 +454,7 @@ int CTexture::SaveFileRAW(char *filename)
 		#ifdef _DEBUG
 				afxDump << "Error during writing " << e->m_cause << "\n";
 		#endif
-		AfxMessageBox("Error during writing image");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error during writing image"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		file.Close();
 		return 0;
 	}
@@ -491,7 +491,7 @@ int CTexture::SaveFileBMP(char *filename)
 		#ifdef _DEBUG
 		  afxDump << "File could not be opened " << ex.m_cause << "\n";
 		#endif
-		AfxMessageBox("Unable to open file for writing");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to open file for writing"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 0;
 	}
 
@@ -520,7 +520,7 @@ int CTexture::SaveFileBMP(char *filename)
 		#ifdef _DEBUG
 				afxDump << "Error during writing " << e->m_cause << "\n";
 		#endif
-		AfxMessageBox("Error during writing file header");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error during writing file header"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		file.Close();
 		return 0;
 	}
@@ -536,7 +536,7 @@ int CTexture::SaveFileBMP(char *filename)
 		#ifdef _DEBUG
 				afxDump << "Error during writing " << e->m_cause << "\n";
 		#endif
-		AfxMessageBox("Error during writing image header");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error during writing image header"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		file.Close();
 		return 0;
 	}
@@ -567,7 +567,7 @@ int CTexture::SaveFileBMP(char *filename)
 		#ifdef _DEBUG
 				afxDump << "Error during writing " << e->m_cause << "\n";
 		#endif
-		AfxMessageBox("Error during writing image");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error during writing image"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		file.Close();
 		return 0;
 	}

@@ -109,10 +109,7 @@ typedef struct Operand {
 } Operand;
 
 static const uint8_t reg_to_size[5] = {
-	0,0,1,0,2 // tktk 
-// tktk     [OP_REG8] = 0,
-// tktk     [OP_REG16] = 1,
-// tktk     [OP_REG32] = 2,
+	0,0,1,0,2 
 };
     
 #define WORD_PREFIX_OPCODE 0x66
@@ -283,7 +280,7 @@ static void parse_operand(TCCState *s1, Operand *op)
         if (!op->e.sym) {
             if (op->e.v == (uint8_t)op->e.v)
                 op->type |= OP_IM8;
-            if (op->e.v == (uint8_t)op->e.v)  // tktk 
+            if (op->e.v == (uint8_t)op->e.v)  
                 op->type |= OP_IM8S;
             if (op->e.v == (uint16_t)op->e.v)
                 op->type |= OP_IM16;
@@ -377,7 +374,7 @@ static inline void asm_modrm(int reg, Operand *op)
         /* fist compute displacement encoding */
         if (op->e.v == 0 && !op->e.sym && op->reg != 5) {
             mod = 0x00;
-        } else if (op->e.v == (uint8_t)op->e.v && !op->e.sym) {  //tktk
+        } else if (op->e.v == (uint8_t)op->e.v && !op->e.sym) {  
             mod = 0x40;
         } else {
             mod = 0x80;
@@ -773,7 +770,7 @@ static void asm_compute_constraints(uint8_t *regs_allocated,
         if (!is_output && (isnum(*str) || *str == '[')) {
             /* this is a reference to another constraint */
             k = find_constraint(operands, nb_operands1, str, NULL);
-            if (k >= j)  // tktk 
+            if (k >= j)   
                 error("invalid reference in constraint %d ('%s')",
                       j, str);
             op->ref_index = k;

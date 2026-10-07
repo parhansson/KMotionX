@@ -43,7 +43,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>3.5</OldToolsVersion>
@@ -93,6 +93,72 @@
     <NoWarn>40000,42016,42017,42018,42019,42032,42353,42354,42355</NoWarn>
     <PlatformTarget>x86</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release64|AnyCPU'">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>..\..\KMotion\Release64\</OutputPath>
+    <DefineConstants>Win32=True</DefineConstants>
+    <DocumentationFile>JoggerNET.xml</DocumentationFile>
+    <NoWarn>40000,42016,42017,42018,42019,42032,42353,42354,42355</NoWarn>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release64|x86'">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>..\..\KMotion\Release64\</OutputPath>
+    <DefineConstants>Win32=True</DefineConstants>
+    <DocumentationFile>JoggerNET.xml</DocumentationFile>
+    <NoWarn>40000,42016,42017,42018,42019,42032,42353,42354,42355</NoWarn>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug64|AnyCPU'">
+    <OutputPath>..\..\KMotion\Debug64\</OutputPath>
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineDebug>true</DefineDebug>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug64|x86'">
+    <OutputPath>..\..\KMotion\Debug64\</OutputPath>
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineDebug>true</DefineDebug>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>..\..\KMotion\Debug\</OutputPath>
+    <DefineConstants>Win32=True</DefineConstants>
+    <DocumentationFile>JoggerNET.xml</DocumentationFile>
+    <NoWarn>40000,42016,42017,42018,42019,42032,42353,42354,42355</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>..\..\KMotion\Release\</OutputPath>
+    <DefineConstants>Win32=True</DefineConstants>
+    <DocumentationFile>JoggerNET.xml</DocumentationFile>
+    <NoWarn>40000,42016,42017,42018,42019,42032,42353,42354,42355</NoWarn>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release64|x64'">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>..\..\KMotion\Release64\</OutputPath>
+    <DefineConstants>Win32=True</DefineConstants>
+    <DocumentationFile>JoggerNET.xml</DocumentationFile>
+    <NoWarn>40000,42016,42017,42018,42019,42032,42353,42354,42355</NoWarn>
+    <PlatformTarget>x64</PlatformTarget>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug64|x64'">
+    <OutputPath>..\..\KMotion\Debug64\</OutputPath>
+    <PlatformTarget>x64</PlatformTarget>
+    <Prefer32Bit>true</Prefer32Bit>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineDebug>true</DefineDebug>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic.Compatibility">

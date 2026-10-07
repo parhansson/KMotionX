@@ -43,7 +43,7 @@ protected:
 	virtual void BuildPropPageArray ();
 	//{{AFX_MSG(CMySheet)
 	//}}AFX_MSG
-	afx_msg LONG OnResizePage (UINT, LONG);
+	afx_msg LRESULT OnResizePage (WPARAM, LPARAM);
 	afx_msg void OnHelp();
 	DECLARE_MESSAGE_MAP()
 

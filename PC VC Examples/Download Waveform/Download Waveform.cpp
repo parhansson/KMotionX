@@ -19,6 +19,7 @@ int main(int argc, char* argv[])
 	int i,board=0;
 	char s[MAX_LINE],s2[16];
 	int data[N];
+	int BoardType = BOARD_TYPE_UNKNOWN;
 
 	KM = new CKMotionDLL(0);  // create as board 0
 
@@ -26,6 +27,11 @@ int main(int argc, char* argv[])
 
 	for (i=0;i<N; i++) data[i]=i;
 
+	// KFLOP/Kogna have different line length deterime which is in use
+	int L = 256;  // put up to 256 per line
+	if (KM->CheckKMotionVersion(&BoardType, true)) MyError();
+	if (BoardType == BOARD_TYPE_KFLOP)
+		L = 8;  // KFLOP does 8 per line                                       
 
 
 	// first get the token for the board to allow uninterrupted access
@@ -47,7 +53,7 @@ int main(int argc, char* argv[])
 
 		strncat(s,s2,10);  // append the hex string
 
-		if (((i%8) == 7) || i==N-1)  // every 8 or on the last send it
+		if (((i%L) == L-1) || i==N-1)  // every 8 or on the last send it
 		{
 			if (KM->WriteLine(s))  MyError();
 			s[0]=0;

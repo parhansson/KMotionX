@@ -1,97 +1,233 @@
+<!DOCTYPE html>
+
 <html>
 
 <head>
-<meta http-equiv="Content-Language" content="en-us">
+
+
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+
+<meta http-equiv="Pragma" content="no-cache"/>
+
+<meta http-equiv="Expires" content="0"/>
+
+
+
+
+
+<meta name="keywords" content="ethernet 16-axis controller, cnc control, motion control, cnc boards, 4-axis, 8-axis, stepper, brushless, DC motor, servo, encoder, adc, dac, motion controller, automated motion, manufacturing, Mach3">
+
+<meta name="description" content="Manufacturer of premium motion control products for CNC Manufacturing, Robotics and Automation">
+
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+
+<meta http-equiv="Content-Language" content="en-us">
+
 <title>G Code Offsets</title>
+
+
+
+<link rel="stylesheet" type="text/css" href="../css/style.css">
+
+<link rel="stylesheet" href="../css/prism.css" data-noprefix />
+
+<script src="../js/prism.js"></script>
 
 </head>
 
+
+
 <body>
 
-<p><u><i><b><font size="4" face="Arial">G Code Offsets</font></b></i></u></p>
-<p>&nbsp;</p>
-<p><font face="Arial"><i>KMotionCNC</i> supports G Code <i>Fixture Offsets</i> (G54 through G59.9) 
-as well as a Global Offset (G92).&nbsp; So there are two methods that may be 
-used to offset a G Code Program.&nbsp; Both may be used concurrently. </font> </p>
-<p><font face="Arial">The following formula is used:</font></p>
-<p><font face="Arial"><i>Tool Position&nbsp; =&nbsp; Programmed Position&nbsp; +&nbsp; Currently 
-Selected Fixture Offset&nbsp; +&nbsp; Global Offset</i></font></p>
-<p><font face="Arial">Fixture Offsets are specified in a straightforward manner by using the G10 L2 
-Pn command to specify the value of the offset.&nbsp; The system has memory to 
-remember 9 fixture offsets.&nbsp; Any of the fixture offsets may then be 
-selected for use using the G54 - G59.9 commands.&nbsp; One and only one fixture 
+
+
+<div id="logo"><a href="../index.htm"></a></div>
+
+<div id="home">
+<a href="../index.htm">Table of contents</a> |  
+	<script>
+		if (navigator.userAgent.indexOf("NT 6.2") == -1){
+			document.write('<a href="https://www.dynomotion.com">Dynomotion home page</a>')
+		} else {
+			document.write('<a href="https://www.dynomotion.com" target="_blank">Dynomotion home page</a>')
+		}
+	</script>
+</div>
+	
+<div id="searchNav">
+
+	<div class="gcse-search">
+					<script>
+					  if (document.location.protocol  ==  'https:') {
+					  (function() {
+					  var cx = '012657033059195044748:9fmjmlufts0';
+					  var gcse = document.createElement('script');
+					  gcse.type = 'text/javascript';
+					  gcse.async = true;
+					  gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+					      '//cse.google.com/cse.js?cx=' + cx;
+					  var s = document.getElementsByTagName('script')[0];
+					  s.parentNode.insertBefore(gcse, s);
+					})();
+					  }
+				      </script> 
+				      <gcse:search> </gcse:search>  
+
+	       </div>
+</div>	
+
+	
+
+
+<div id="google_translate_element" style="background: transparent;" align="right"><script type="text/javascript">
+if (navigator.userAgent.indexOf("NT 6.2") == -1) {
+		function googleTranslateElementInit() {
+	  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,de,fr,it,es,pt,ru,uk,ar,zh-CN,zh-TW,ko,iw,hi,ja,tr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+		}						}
+	</script>
+	<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+	</script>
+</div>		
+<div id="main">
+
+
+
+<h1>G Code Offsets</h1>
+
+
+
+<p><em>KMotionCNC</em> supports G Code <em>Fixture Offsets</em> (G54 through G59.9) 
+
+as well as a Global Offset (G92). So there are two methods that may be 
+
+used to offset a G Code Program. Both may be used concurrently.  </p>
+
+<p>The following formula is used:</p>
+
+<p><em>Tool Position = Programmed Position + Currently 
+
+Selected Fixture Offset + Global Offset</em></p>
+
+<p>Fixture Offsets are specified in a straightforward manner by using the G10 L2 
+
+Pn command to specify the value of the offset. The system has memory to 
+
+remember 9 fixture offsets. Any of the fixture offsets may then be 
+
+selected for use using the G54 - G59.9 commands. One and only one fixture 
+
 offset is always in use (one exception to this is a line containing the G53 
+
 command, which temporarily causes no offsets whatsoever to be used for that one 
-line only).</font></p>
-<p><font face="Arial">The Global Offset is specified in an indirect manner by using the G92 command 
-to declare the current tool position to be a specified programmed position.&nbsp; 
-The specified position may be zero or any location.&nbsp; For example, if it is 
+
+line only).</p>
+
+<p>The Global Offset is specified in an indirect manner by using the G92 command 
+
+to declare the current tool position to be a specified programmed position. 
+
+The specified position may be zero or any location. For example, if it is 
+
 known that a particular G Code program expects a particular location on the part 
+
 to be (-1,-1,-1), then the tool could be physically moved to that point on the 
-part and the command:</font></p>
-<p><font face="Arial">G92 X-1 Y-1 Z-1</font></p>
-<p><font face="Arial">could be entered.&nbsp; The system will then automatically calculate the 
-appropriate Global Offset to make the current programmed position (-1,-1,-1).&nbsp; 
-No physical motion will occur.&nbsp; The Displayed Position will change to the 
-position specified (-1,-1,-1).&nbsp; Any current Fixture Offset will be taken 
-into consideration as well&nbsp; </font> </p>
+
+part and the command:</p>
+
+<p>G92 X-1 Y-1 Z-1</p>
+
+<p>could be entered. The system will then automatically calculate the 
+
+appropriate Global Offset to make the current programmed position (-1,-1,-1). 
+
+No physical motion will occur. The Displayed Position will change to the 
+
+position specified (-1,-1,-1). Any current Fixture Offset will be taken 
+
+into consideration as well  </p>
+
+
+
+<p><strong>Example:</strong></p>
+
+<p>Consider the program shown below. Initially there are no offsets.</p>
+
+
+
+<p>After line N1 is executed,<br />
+
+Tool Position (-0.1,-0.2,-0.3) = Programmed Position (-0.1,-0.2,-0.3) + Fixture Offset (0,0,0) + 
+
+Global Offset (0,0,0)</p>
+
+
+
+<p>After line N2 is executed, no physical motion occurs but a Global Offset of (-0.1,-0.2,-0.3) is calculated 
+
+and:<br />
+
+Tool Position (-0.1,-0.2,-0.3) = Programmed Position(0,0,0) + Fixture Offset (0,0,0) + Global 
+
+Offset (-0.1,-0.2,-0.3)</p>
+
+
+
+<p>After line N3 movement to programmed position of (1,2,3) occurs and:<br />
+
+Tool Position (0.9,1.8,2.7) = Programmed Position(1,2,3) + Fixture Offset (0,0,0) + Global Offset 
+
+(-0.1,-0.2,-0.3)</p>
+
+
+
+<p>After lines N3 and N4 specify a fixture offset and select it for use, no motion occurs but the program 
+
+(displayed) position changes to:<br />
+
+Tool Position (0.9,1.8,2.7) = Programmed Position(0.5,1.3,2.1) + Fixture Offset (0.5,0.7,0.9) + Global 
+
+Offset (-0.1,-0.2,-0.3)</p>
+
+
+
+<p>After line N5 is executed motion to programmed position (1,1,1) occurs and:<br />
+
+Tool Position (1.4,1.5,1.6) = Programmed Position(1,1,1) + Fixture Offset (0.5,0.7,0.9) + Global Offset 
+
+(-0.1,-0.2,-0.3)</p>
+
+
+
+<p>N1 G00 X-0.1 Y-0.2 Z-0.3 &nbsp; &nbsp; &nbsp;(move somewhere)<br />
+
+N2 G92 X0 Y0 Z0  &nbsp; &nbsp; &nbsp;(declare where we are to be zero)<br />
+
+N3 G00 X1 Y2 Z3<br />
+
+<br />
+
+N4 G10 L2 P2 X0.5 Y0.7 Z0.9&nbsp; &nbsp; &nbsp; (Set G55 - fixture offset #2)<br />
+
+N5 G55 &nbsp; &nbsp; &nbsp;(Set to use fixture offset #2)<br />
+
+N6 G00 X1 Y1 Z1<br />
+
+<br />
+
+N7 G53 X0 Y0 Z0<br />
+
+</p>
+
+
+
 <p>&nbsp;</p>
-<p><font face="Arial">Example:</font></p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Consider the program shown below.&nbsp; 
-Initially there are no offsets.&nbsp; </font> </p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">After line N1 is executed,</font></p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Tool Position&nbsp; (-0.1,-0.2,-0.3) 
-= Programmed Position (-0.1,-0.2,-0.3)&nbsp; + Fixture Offset (0,0,0)&nbsp; +&nbsp; 
-Global Offset (0,0,0)</font></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">After line N2 is executed, no 
-physical motion occurs but a Global Offset of (-0.1,-0.2,-0.3) is calculated 
-and:</font></p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Tool Position&nbsp; (-0.1,-0.2,-0.3) 
-= Programmed Position(0,0,0)&nbsp; + Fixture Offset (0,0,0)&nbsp; + Global 
-Offset (-0.1,-0.2,-0.3)</font></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">After line N3 movement to programmed 
-position of (1,2,3) occurs and:</font></p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Tool Position&nbsp; (0.9,1.8,2.7) = 
-Programmed Position(1,2,3)&nbsp; + Fixture Offset (0,0,0)&nbsp; + Global Offset 
-(-0.1,-0.2,-0.3)</font></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">After lines N3 and N4 specify a 
-fixture offset and select it for use, no motion occurs but the program 
-(displayed) position changes to:</font></p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Tool Position&nbsp; (0.9,1.8,2.7) = 
-Programmed Position(0.5,1.3,2.1)&nbsp; + Fixture Offset (0.5,0.7,0.9) + Global 
-Offset (-0.1,-0.2,-0.3)</font></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">After line N5 is executed motion to 
-programmed position (1,1,1) occurs and:</font></p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Tool Position&nbsp; (1.4,1.5,1.6) = 
-Programmed Position(1,1,1)&nbsp; + Fixture Offset (0.5,0.7,0.9) + Global Offset 
-(-0.1,-0.2,-0.3)</font></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p><font face="Arial">N1 G00 X-0.1 Y-0.2 Z-0.3&nbsp;&nbsp;&nbsp;&nbsp; 
-(move somewhere)<br>
-N2 G92 X0 Y0 Z0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-(declare where we are to be zero)<br>
-N3 G00 X1 Y2 Z3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br>
-<br>
-N4 G10 L2 P2 X0.5 Y0.7 Z0.9&nbsp; (Set G55 - fixture offset #2)<br>
-N5 G55&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-(Set to use fixture offset #2)<br>
-N6 G00 X1 Y1 Z1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br>
-<br>
-N7 G53 X0 Y0 Z0<br>
-&nbsp;</font></p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
+
+	</div>
 
 </body>
 
+
+
 </html>
+

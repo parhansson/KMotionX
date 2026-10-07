@@ -243,19 +243,21 @@ namespace KMotion_dotNet
         /// </summary>
         protected void UpdateIOType()
         {
-
-            switch (_IOType)
+            if (_ID < 1024)
             {
-                case IO_TYPE.DIGITAL_IN:
-                    _Controller.WriteLine(String.Format("SetBitDirection{0}={1}", _ID, 0));
-                    break;
+                switch (_IOType)
+                {
+                    case IO_TYPE.DIGITAL_IN:
+                        _Controller.WriteLine(String.Format("SetBitDirection{0}={1}", _ID, 0));
+                        break;
 
-                case IO_TYPE.DIGITAL_OUT:
-                    _Controller.WriteLine(String.Format("SetBitDirection{0}={1}", _ID, 1));
-                    break;
+                    case IO_TYPE.DIGITAL_OUT:
+                        _Controller.WriteLine(String.Format("SetBitDirection{0}={1}", _ID, 1));
+                        break;
 
-                default:
-                    break;
+                    default:
+                        break;
+                }
             }
          
         }

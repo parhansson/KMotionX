@@ -1,0 +1,28 @@
+ID:IDC_FeedRateEdit,Type:EDITTEXT,X:269,Y:476,CX:38,CY:20,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:;;;,Font:MS Sans Serif,FontSize:-10,HotKey:-1,Bold:0,Italic:0,Text:1,ToolTipText:,Script:
+ID:IDC_FeedRateApply,Type:PUSHBUTTON,X:308,Y:475,CX:38,CY:23,Show:1,Var:-1,Style:-1,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:apply,ToolTipText:Apply Entered Feedrate Override Now,Script:
+ID:IDC_SpindleRateEdit,Type:EDITTEXT,X:347,Y:476,CX:38,CY:20,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:;;;,Font:MS Sans Serif,FontSize:-10,HotKey:-1,Bold:0,Italic:0,Text:1,ToolTipText:,Script:
+ID:IDC_SpindleRateApply,Type:PUSHBUTTON,X:386,Y:475,CX:38,CY:23,Show:1,Var:-1,Style:-1,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:apply,ToolTipText:Apply Entered Spindle Speed Override Now,Script:
+ID:IDC_Rapid,Type:CONTROL,X:275,Y:497,CX:42,CY:20,Show:1,Var:-1,Style:6,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:rapid,ToolTipText:,Script:
+ID:IDC_Feed,Type:CONTROL,X:323,Y:497,CX:92,CY:20,Show:1,Var:-1,Style:6,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:feed override,ToolTipText:,Script:
+ID:IDC_FeedSlider,Type:CONTROL,X:275,Y:514,CX:35,CY:206,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:;;;,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_SpindleSlider,Type:CONTROL,X:344,Y:514,CX:35,CY:206,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:;;;,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_SpindleOnCW,Type:PUSHBUTTON,X:383,Y:528,CX:44,CY:39,Show:1,Var:-1,Style:-1,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:on cw,ToolTipText:M3 - Spindle On Clockwise (F9),Script:
+ID:IDC_SpindleOnCCW,Type:PUSHBUTTON,X:383,Y:592,CX:44,CY:39,Show:1,Var:-1,Style:-1,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:on ccw,ToolTipText:M4 - Spindle On Counter Clockwise (F10),Script:
+ID:IDC_SpindleOff,Type:PUSHBUTTON,X:383,Y:653,CX:44,CY:39,Show:1,Var:-1,Style:-1,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:off,ToolTipText:M5 - Spindle Off (F11),Script:
+ID:IDC_STATICFSGROUP,Type:GROUPBOX,X:263,Y:426,CX:168,CY:296,Show:1,Var:-1,Style:-1,BitmapFile:,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_STATIC200,Type:RTEXT,X:314,Y:520,CX:23,CY:13,Show:1,Var:-1,Style:9,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:2.00,ToolTipText:,Script:
+ID:IDC_STATIC100,Type:RTEXT,X:314,Y:561,CX:23,CY:13,Show:1,Var:-1,Style:9,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:1.00,ToolTipText:,Script:
+ID:IDC_STATIC50,Type:RTEXT,X:314,Y:601,CX:23,CY:13,Show:1,Var:-1,Style:9,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:0.50,ToolTipText:,Script:
+ID:IDC_STATIC75,Type:RTEXT,X:314,Y:580,CX:23,CY:13,Show:1,Var:-1,Style:9,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:0.75,ToolTipText:,Script:
+ID:IDC_STATIC150,Type:RTEXT,X:314,Y:536,CX:23,CY:13,Show:1,Var:-1,Style:9,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:1.50,ToolTipText:,Script:
+ID:IDC_STATIC40,Type:RTEXT,X:314,Y:618,CX:23,CY:13,Show:1,Var:-1,Style:9,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:0.40,ToolTipText:,Script:
+ID:IDC_STATIC30,Type:RTEXT,X:314,Y:635,CX:23,CY:13,Show:1,Var:-1,Style:9,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:0.30,ToolTipText:,Script:
+ID:IDC_STATIC20,Type:RTEXT,X:314,Y:660,CX:23,CY:13,Show:1,Var:-1,Style:9,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:0.20,ToolTipText:,Script:
+ID:IDC_STATIC15,Type:RTEXT,X:314,Y:676,CX:23,CY:13,Show:1,Var:-1,Style:9,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:0.15,ToolTipText:,Script:
+ID:IDC_STATIC10,Type:RTEXT,X:314,Y:700,CX:23,CY:13,Show:1,Var:-1,Style:9,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:0.10,ToolTipText:,Script:
+ID:IDC_FeedRateLabel,Type:RTEXT,X:302,Y:458,CX:41,CY:15,Show:1,Var:-1,Style:9,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:      0,ToolTipText:,Script:
+ID:IDC_FeedRateCmd,Type:RTEXT,X:302,Y:440,CX:41,CY:15,Show:1,Var:-1,Style:9,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:      5,ToolTipText:,Script:
+ID:IDC_SpindleRateLabel,Type:RTEXT,X:380,Y:455,CX:41,CY:15,Show:1,Var:-1,Style:9,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:    0.0,ToolTipText:,Script:
+ID:IDC_SpindleRateCmd,Type:RTEXT,X:380,Y:439,CX:41,CY:15,Show:1,Var:-1,Style:9,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text: 1000.0,ToolTipText:,Script:
+ID:IDC_Cust2,Type:CONTROL,X:353,Y:440,CX:20,CY:28,Show:1,Var:-1,Style:10,BitmapFile:SR.png;SRCSS.png,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:S,ToolTipText:,Script:
+ID:IDC_Cust3,Type:CONTROL,X:272,Y:440,CX:20,CY:28,Show:1,Var:-1,Style:10,BitmapFile:FR.png;FR32.png,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:F,ToolTipText:,Script:

@@ -4,7 +4,7 @@
 //
 // Measure output ratio for first 0-7 counts then at 240
  
-
+#if 0
 float V[]=
 {
 0.001,  // count = 0
@@ -16,8 +16,23 @@ float V[]=
 0.074,  // count = 6
 0.079   // count = 7
 };
+#endif
 
-float V240=0.970;
+float V[]=
+{
+0.008,  // count = 0
+0.032,  // count = 1
+0.040,  // count = 2
+0.046,  // count = 3
+0.051,  // count = 4
+0.055,  // count = 5
+0.058,  // count = 6
+0.063   // count = 7
+};
+
+
+//float V240=0.970;
+float V240=0.9409;
 
 int CorrectAnalog(float v)
 {
@@ -36,5 +51,6 @@ int CorrectAnalog(float v)
 	
 	r = (int)(7.5 + (v-V[7])/(V240-V[7])*(240.0f-7.0f));
 	if (r>255) r=255;
+	
 	return r;
 }

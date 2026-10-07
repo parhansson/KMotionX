@@ -6,7 +6,7 @@
 //
 // Modify this program for the input bit you are using for your probe.  As
 // written the program keeps moving until the bit goes high.  If the polarity
-// of your probe is opposit this then remove the NOT Symbol '!' applied to the
+// of your probe is opposite this then remove the NOT Symbol '!' applied to the
 // ReadBit result. 
 //
 // For Example:

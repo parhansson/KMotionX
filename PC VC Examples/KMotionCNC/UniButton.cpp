@@ -31,7 +31,7 @@ CUniButton::CUniButton()
 	Reset();
 }
 
-void CUniButton::Reset()
+void CUniButton::Reset(bool KeepText)
 {
 	m_bUseRTL = 0;	//dont use right to left reading order
 	m_dwDefaultSSAflags = 0;
@@ -57,11 +57,15 @@ void CUniButton::Reset()
 
 
 	m_font.CreateFontIndirect(&lfont);
-	mTextDefined = mFontDefined = false;
+	mFontDefined = false;
 	ToolTipText = "";
 	Script = "";
 	Value = 0;
-	m_szText[0]=0;
+	if (!KeepText)
+	{
+		m_szText[0]=0;
+		mTextDefined = false;
+	}
 	m_HotKey = -1;
 	m_MouseOver = false;
 	m_OriginalStyle = BS_OWNERDRAW;

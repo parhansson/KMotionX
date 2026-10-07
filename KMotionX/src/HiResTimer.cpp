@@ -148,7 +148,7 @@ void CHiResTimer::DisplayDiff(int t1, int t0)
 {
 	char s[128];
 
-	sprintf(s, "From sample %d to %d was %f us",t1,t0,Diff_us(t1,t0));
+	snprintf(s, 128, "From sample %d to %d was %f us",t1,t0,Diff_us(t1,t0));
 
 	if (MessageDisplayed) return;
 
@@ -164,7 +164,7 @@ void CHiResTimer::DisplaySplit()
 
 	for (int i=0; i<nSplit-1; i++)
 	{
-		sprintf(s,"From sample %d to %d was %10.2f us %s\n",i+1,i,Diff_us(i+1,i),Desc[i+1]);
+		snprintf(s,MAX_TEXT + 96, "From sample %d to %d was %10.2f us %s\n",i+1,i,Diff_us(i+1,i),Desc[i+1]);
 	}
 
 	if (MessageDisplayed) return;

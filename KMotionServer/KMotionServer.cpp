@@ -44,6 +44,16 @@ CKMotionServerApp::CKMotionServerApp()
 {
 	// TODO: add construction code here,
 	// Place all significant initialization in InitInstance
+
+	// only allow one instance of KMotionServer.exe
+	CMutex *KSMutex = new CMutex(FALSE, "KMotionServer", NULL);
+
+	bool Locked = KSMutex->Lock(100);
+	if (!Locked)
+	{
+		delete KSMutex;
+		exit(0);
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////

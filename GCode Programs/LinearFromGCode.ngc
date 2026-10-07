@@ -1,4 +1,5 @@
 (CMD,OpenBuf)
-(CMD,Linear 10 10 10 10 10 10 20 20 20 20 20 20 0 0 25 0 0.04)
+(CMD,Linear 10 10 10 10 10 10 20 20 20 20 20 20 0 0 1 0 1.0)
 (CMD,ExecBuf) 
+(CMD,FlushBuf)
 M2

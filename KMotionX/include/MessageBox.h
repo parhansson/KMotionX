@@ -35,14 +35,8 @@ either expressed or implied, of the FreeBSD Project.
 
 #ifndef MESSAGEBOX_H_
 #define MESSAGEBOX_H_
-
-/*
-typedef int AFX_MESSAGE_BOX_CALLBACK(const char* value, int type = NULL);
-typedef int AFX_MESSAGE_BOX_CALLBACK2(const char* value);
-
-AFX_MESSAGE_BOX_CALLBACK AfxMessageBox;
-AFX_MESSAGE_BOX_CALLBACK2 AfxMessageBox;
-*/
+#include <string>
+#include <stdint.h>
 
 /*
  * MessageBox() Flags from WinUser.h
@@ -118,15 +112,23 @@ AFX_MESSAGE_BOX_CALLBACK2 AfxMessageBox;
 #define MB_MISCMASK                 0x0000C000L
 
 
-#define IDCANCEL 1
-#define IDYES 64
-#define IDNO 65
+#define IDOK                1
+#define IDCANCEL            2
+#define IDABORT             3
+#define IDRETRY             4
+#define IDIGNORE            5
+#define IDYES               6
+#define IDNO                7
+
+
 #ifdef __cplusplus
 extern int AfxMessageBox(const char* value, int type = 0/*NULL*/);
+extern int MessageBoxW(long hwnd, const wchar_t* value,const wchar_t* title, int type);
+extern int MessageBoxW(long hwnd, std::wstring value,const wchar_t* title, int type);
+extern int MessageBox(long hwnd,const char* value,const char* title, int type);
 #endif
-extern int MessageBox(int whatisthis,const char* value,const char* title, int type);
 
-typedef int MB_USER_CALLBACK(const char *title, const char *msg, int options);
+typedef int MB_USER_CALLBACK(const wchar_t *title, const wchar_t *msg, uint32_t uType);
 extern MB_USER_CALLBACK *mb_callback;
 
 #endif /* MESSAGEBOX_H_ */

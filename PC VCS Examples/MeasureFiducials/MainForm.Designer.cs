@@ -116,9 +116,11 @@
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.CalGridYTextBox = new System.Windows.Forms.TextBox();
             this.TargetBarWidthTolTextBoxX = new System.Windows.Forms.TextBox();
+            this.OrthoTextBox = new System.Windows.Forms.TextBox();
             this.CalColsTextBox = new System.Windows.Forms.TextBox();
             this.TargetBarWidthTextBoxX = new System.Windows.Forms.TextBox();
             this.label34 = new System.Windows.Forms.Label();
+            this.label37 = new System.Windows.Forms.Label();
             this.TargetBarWidthTextBoxY = new System.Windows.Forms.TextBox();
             this.label32 = new System.Windows.Forms.Label();
             this.SaveTargetParameter = new System.Windows.Forms.Button();
@@ -161,8 +163,6 @@
             this.RefX = new System.Windows.Forms.TextBox();
             this.GoView = new System.Windows.Forms.Button();
             this.GoRef = new System.Windows.Forms.Button();
-            this.label37 = new System.Windows.Forms.Label();
-            this.OrthoTextBox = new System.Windows.Forms.TextBox();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -187,7 +187,7 @@
             // JogXPos
             // 
             this.JogXPos.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.JogXPos.Location = new System.Drawing.Point(677, 320);
+            this.JogXPos.Location = new System.Drawing.Point(677, 324);
             this.JogXPos.Name = "JogXPos";
             this.JogXPos.Size = new System.Drawing.Size(65, 44);
             this.JogXPos.TabIndex = 5;
@@ -200,7 +200,7 @@
             // JogXNeg
             // 
             this.JogXNeg.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.JogXNeg.Location = new System.Drawing.Point(519, 320);
+            this.JogXNeg.Location = new System.Drawing.Point(519, 324);
             this.JogXNeg.Name = "JogXNeg";
             this.JogXNeg.Size = new System.Drawing.Size(65, 44);
             this.JogXNeg.TabIndex = 5;
@@ -242,7 +242,7 @@
             this.label2.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(603, 331);
+            this.label2.Location = new System.Drawing.Point(603, 335);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(58, 31);
             this.label2.TabIndex = 9;
@@ -334,7 +334,7 @@
             // JogYNeg
             // 
             this.JogYNeg.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.JogYNeg.Location = new System.Drawing.Point(598, 368);
+            this.JogYNeg.Location = new System.Drawing.Point(598, 372);
             this.JogYNeg.Name = "JogYNeg";
             this.JogYNeg.Size = new System.Drawing.Size(65, 44);
             this.JogYNeg.TabIndex = 12;
@@ -347,7 +347,7 @@
             // JogYPos
             // 
             this.JogYPos.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.JogYPos.Location = new System.Drawing.Point(598, 282);
+            this.JogYPos.Location = new System.Drawing.Point(598, 286);
             this.JogYPos.Name = "JogYPos";
             this.JogYPos.Size = new System.Drawing.Size(65, 44);
             this.JogYPos.TabIndex = 11;
@@ -699,17 +699,16 @@
             this.MapFile.BackColor = System.Drawing.SystemColors.Control;
             this.MapFile.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.MapFile.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.MapFile.Location = new System.Drawing.Point(8, 402);
+            this.MapFile.Location = new System.Drawing.Point(8, 405);
             this.MapFile.Name = "MapFile";
             this.MapFile.Size = new System.Drawing.Size(413, 13);
             this.MapFile.TabIndex = 16;
-            this.MapFile.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // panelVideo
             // 
             this.panelVideo.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.panelVideo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelVideo.Location = new System.Drawing.Point(689, 277);
+            this.panelVideo.Location = new System.Drawing.Point(689, 281);
             this.panelVideo.Name = "panelVideo";
             this.panelVideo.Size = new System.Drawing.Size(1, 34);
             this.panelVideo.TabIndex = 18;
@@ -720,7 +719,7 @@
             this.Sight.AutoSize = true;
             this.Sight.Checked = true;
             this.Sight.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.Sight.Location = new System.Drawing.Point(545, 232);
+            this.Sight.Location = new System.Drawing.Point(545, 236);
             this.Sight.Name = "Sight";
             this.Sight.Size = new System.Drawing.Size(50, 17);
             this.Sight.TabIndex = 20;
@@ -730,7 +729,7 @@
             // MagFactor
             // 
             this.MagFactor.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.MagFactor.Location = new System.Drawing.Point(693, 296);
+            this.MagFactor.Location = new System.Drawing.Point(693, 300);
             this.MagFactor.Name = "MagFactor";
             this.MagFactor.Size = new System.Drawing.Size(59, 20);
             this.MagFactor.TabIndex = 21;
@@ -742,7 +741,7 @@
             // 
             this.label11.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(694, 278);
+            this.label11.Location = new System.Drawing.Point(694, 282);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(63, 13);
             this.label11.TabIndex = 17;
@@ -752,7 +751,7 @@
             // 
             this.ViewCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.ViewCheckBox.AutoSize = true;
-            this.ViewCheckBox.Location = new System.Drawing.Point(543, 254);
+            this.ViewCheckBox.Location = new System.Drawing.Point(543, 258);
             this.ViewCheckBox.Name = "ViewCheckBox";
             this.ViewCheckBox.Size = new System.Drawing.Size(49, 17);
             this.ViewCheckBox.TabIndex = 20;
@@ -811,11 +810,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(2, 8);
+            this.tabControl1.Location = new System.Drawing.Point(-6, 11);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(780, 445);
+            this.tabControl1.Size = new System.Drawing.Size(780, 449);
             this.tabControl1.TabIndex = 24;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.TabChanged);
             // 
@@ -872,7 +871,7 @@
             this.tabPage1.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage1.Size = new System.Drawing.Size(772, 419);
+            this.tabPage1.Size = new System.Drawing.Size(772, 423);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Align";
             // 
@@ -891,7 +890,7 @@
             // JogCNeg
             // 
             this.JogCNeg.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.JogCNeg.Location = new System.Drawing.Point(463, 346);
+            this.JogCNeg.Location = new System.Drawing.Point(463, 350);
             this.JogCNeg.Name = "JogCNeg";
             this.JogCNeg.Size = new System.Drawing.Size(39, 29);
             this.JogCNeg.TabIndex = 24;
@@ -904,7 +903,7 @@
             // JogCPos
             // 
             this.JogCPos.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.JogCPos.Location = new System.Drawing.Point(388, 347);
+            this.JogCPos.Location = new System.Drawing.Point(388, 351);
             this.JogCPos.Name = "JogCPos";
             this.JogCPos.Size = new System.Drawing.Size(39, 29);
             this.JogCPos.TabIndex = 25;
@@ -917,7 +916,7 @@
             // JogZPos
             // 
             this.JogZPos.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.JogZPos.Location = new System.Drawing.Point(427, 302);
+            this.JogZPos.Location = new System.Drawing.Point(427, 306);
             this.JogZPos.Name = "JogZPos";
             this.JogZPos.Size = new System.Drawing.Size(39, 29);
             this.JogZPos.TabIndex = 26;
@@ -930,7 +929,7 @@
             // JogZNeg
             // 
             this.JogZNeg.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.JogZNeg.Location = new System.Drawing.Point(427, 382);
+            this.JogZNeg.Location = new System.Drawing.Point(427, 386);
             this.JogZNeg.Name = "JogZNeg";
             this.JogZNeg.Size = new System.Drawing.Size(39, 29);
             this.JogZNeg.TabIndex = 27;
@@ -946,7 +945,7 @@
             this.groupBox8.Controls.Add(this.ProfileRadioTheta);
             this.groupBox8.Controls.Add(this.ProfileRadioZ);
             this.groupBox8.Controls.Add(this.ProfileRadioXY);
-            this.groupBox8.Location = new System.Drawing.Point(477, 232);
+            this.groupBox8.Location = new System.Drawing.Point(477, 236);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Size = new System.Drawing.Size(60, 78);
             this.groupBox8.TabIndex = 23;
@@ -992,7 +991,7 @@
             this.ProfileCheckBox.AutoSize = true;
             this.ProfileCheckBox.Checked = true;
             this.ProfileCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ProfileCheckBox.Location = new System.Drawing.Point(697, 252);
+            this.ProfileCheckBox.Location = new System.Drawing.Point(697, 256);
             this.ProfileCheckBox.Name = "ProfileCheckBox";
             this.ProfileCheckBox.Size = new System.Drawing.Size(60, 17);
             this.ProfileCheckBox.TabIndex = 20;
@@ -1004,7 +1003,7 @@
             // 
             this.TargetCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.TargetCheckBox.AutoSize = true;
-            this.TargetCheckBox.Location = new System.Drawing.Point(697, 230);
+            this.TargetCheckBox.Location = new System.Drawing.Point(697, 234);
             this.TargetCheckBox.Name = "TargetCheckBox";
             this.TargetCheckBox.Size = new System.Drawing.Size(57, 17);
             this.TargetCheckBox.TabIndex = 20;
@@ -1018,7 +1017,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ViewScreen.Location = new System.Drawing.Point(477, 0);
             this.ViewScreen.Name = "ViewScreen";
-            this.ViewScreen.Size = new System.Drawing.Size(300, 191);
+            this.ViewScreen.Size = new System.Drawing.Size(300, 195);
             this.ViewScreen.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.ViewScreen.TabIndex = 19;
             this.ViewScreen.TabStop = false;
@@ -1040,7 +1039,7 @@
             // AlignC
             // 
             this.AlignC.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.AlignC.Location = new System.Drawing.Point(697, 376);
+            this.AlignC.Location = new System.Drawing.Point(697, 380);
             this.AlignC.Name = "AlignC";
             this.AlignC.Size = new System.Drawing.Size(58, 29);
             this.AlignC.TabIndex = 11;
@@ -1051,7 +1050,7 @@
             // AlignZ
             // 
             this.AlignZ.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.AlignZ.Location = new System.Drawing.Point(507, 376);
+            this.AlignZ.Location = new System.Drawing.Point(507, 380);
             this.AlignZ.Name = "AlignZ";
             this.AlignZ.Size = new System.Drawing.Size(50, 33);
             this.AlignZ.TabIndex = 11;
@@ -1062,7 +1061,7 @@
             // AlignAllButton
             // 
             this.AlignAllButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.AlignAllButton.Location = new System.Drawing.Point(598, 226);
+            this.AlignAllButton.Location = new System.Drawing.Point(598, 230);
             this.AlignAllButton.Name = "AlignAllButton";
             this.AlignAllButton.Size = new System.Drawing.Size(91, 49);
             this.AlignAllButton.TabIndex = 11;
@@ -1073,7 +1072,7 @@
             // AlignXY
             // 
             this.AlignXY.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.AlignXY.Location = new System.Drawing.Point(543, 277);
+            this.AlignXY.Location = new System.Drawing.Point(543, 281);
             this.AlignXY.Name = "AlignXY";
             this.AlignXY.Size = new System.Drawing.Size(50, 38);
             this.AlignXY.TabIndex = 11;
@@ -1085,7 +1084,7 @@
             // 
             this.AlignResults2.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.AlignResults2.Font = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.AlignResults2.Location = new System.Drawing.Point(485, 211);
+            this.AlignResults2.Location = new System.Drawing.Point(485, 215);
             this.AlignResults2.Name = "AlignResults2";
             this.AlignResults2.Size = new System.Drawing.Size(290, 17);
             this.AlignResults2.TabIndex = 17;
@@ -1094,7 +1093,7 @@
             // 
             this.AlignResults.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.AlignResults.Font = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.AlignResults.Location = new System.Drawing.Point(485, 194);
+            this.AlignResults.Location = new System.Drawing.Point(485, 198);
             this.AlignResults.Name = "AlignResults";
             this.AlignResults.Size = new System.Drawing.Size(290, 17);
             this.AlignResults.TabIndex = 17;
@@ -1114,7 +1113,7 @@
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.pictureBox1.Image = global::MeasureFiducials.Properties.Resources.ArrowC;
             this.pictureBox1.InitialImage = global::MeasureFiducials.Properties.Resources.ArrowC;
-            this.pictureBox1.Location = new System.Drawing.Point(411, 320);
+            this.pictureBox1.Location = new System.Drawing.Point(411, 324);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(77, 30);
@@ -1132,7 +1131,7 @@
             this.tabPage2.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage2.Size = new System.Drawing.Size(772, 419);
+            this.tabPage2.Size = new System.Drawing.Size(772, 545);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Settings";
             // 
@@ -1192,6 +1191,15 @@
             this.TargetBarWidthTolTextBoxX.Text = "0";
             this.TargetBarWidthTolTextBoxX.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
+            // OrthoTextBox
+            // 
+            this.OrthoTextBox.Location = new System.Drawing.Point(604, 47);
+            this.OrthoTextBox.Name = "OrthoTextBox";
+            this.OrthoTextBox.Size = new System.Drawing.Size(33, 20);
+            this.OrthoTextBox.TabIndex = 23;
+            this.OrthoTextBox.Text = "0";
+            this.OrthoTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
             // CalColsTextBox
             // 
             this.CalColsTextBox.Location = new System.Drawing.Point(534, 46);
@@ -1218,6 +1226,15 @@
             this.label34.Size = new System.Drawing.Size(33, 13);
             this.label34.TabIndex = 20;
             this.label34.Text = "GridY";
+            // 
+            // label37
+            // 
+            this.label37.AutoSize = true;
+            this.label37.Location = new System.Drawing.Point(642, 51);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(31, 13);
+            this.label37.TabIndex = 20;
+            this.label37.Text = "ortho";
             // 
             // TargetBarWidthTextBoxY
             // 
@@ -1634,29 +1651,11 @@
             this.GoRef.UseVisualStyleBackColor = true;
             this.GoRef.Click += new System.EventHandler(this.GoRef_Click);
             // 
-            // label37
-            // 
-            this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(642, 51);
-            this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(31, 13);
-            this.label37.TabIndex = 20;
-            this.label37.Text = "ortho";
-            // 
-            // OrthoTextBox
-            // 
-            this.OrthoTextBox.Location = new System.Drawing.Point(604, 47);
-            this.OrthoTextBox.Name = "OrthoTextBox";
-            this.OrthoTextBox.Size = new System.Drawing.Size(33, 20);
-            this.OrthoTextBox.TabIndex = 23;
-            this.OrthoTextBox.Text = "0";
-            this.OrthoTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(785, 447);
+            this.ClientSize = new System.Drawing.Size(785, 457);
             this.Controls.Add(this.tabControl1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(801, 474);

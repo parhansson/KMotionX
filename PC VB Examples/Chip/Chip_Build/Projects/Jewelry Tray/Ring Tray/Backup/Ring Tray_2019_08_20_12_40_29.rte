@@ -1,0 +1,9 @@
+Header~Fixture~Jewelry Tray
+Operation~Ring Dish~~0.500 Ball Nose~Fixture~Fixed~4.6344~3.7616~0~0~~
+Task~~Bolted Mount~00:06:58~Ring Tray Dish Coarse 0_500 BN.chp~0~-8~.75~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Jewelry Tray\Ring Tray
+Task~~Bolted Mount~00:10:04~Ring Tray Dish Fine 0_500 BN.chp~0~-8~.75~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Jewelry Tray\Ring Tray
+Operation~Ring Dish Chamfer~~0.650 Chamfer (Large)~Fixture~Fixed~4.2494~3.3588~0~0~~
+Task~~Bolted Mount~00:06:22~Ring Tray Chamfer.chp~0~-8~.75~12~8~~$$DEFAULT_BUILD_ROOT$$\Projects\Jewelry Tray\Ring Tray
+Operation~Ring Dish Holes~~0.500 End Mill~Fixture~Fixed~4.6344~3.7616~0~0~~
+Task~~Bolted Mount~00:00:19~Ring Dish Cleanout 0_500 EM.chp~0~-8~.75~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Jewelry Tray\Ring Tray
+Task~~Bolted Mount~00:04:17~Ring Tray Dish Hole 0_500 EM.chp~0~-8~.75~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Jewelry Tray\Ring Tray

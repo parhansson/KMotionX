@@ -10,8 +10,6 @@ void GetCurVelAccel(CHAN *ch, double *CurVel, double *CurAccel);
 
 void CheckDistToStop(CHAN *ch)
 {
-	double Jerk,t0,t1,t2;	
-	int Nstates;
 	double TotalDist, CurVel, CurAccel, StopDest;
 	
 	// Get current Velocity and Acceleration for the Axis
@@ -105,7 +103,7 @@ void CalcStopDist(double V0, double A0, double Amax, double Jmax, double *TotalD
 		Alim =  Amax;
 	}	
 	// calc time to peak acceleration
-	t0 = (-A0 / J + sqrtf(0.5*A0*A0/(J * J) + (-V0) / J));
+	t0 = (-A0 / J + sqrtf((float)(0.5*A0*A0/(J * J) + (-V0) / J)));
 	
 	Apeak = A0 + J * t0;
 	

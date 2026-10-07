@@ -1563,6 +1563,11 @@ int CScintillaCtrl::GetFirstVisibleLine(BOOL bDirect)
   return Call(SCI_GETFIRSTVISIBLELINE, 0, 0, bDirect);
 }
 
+int CScintillaCtrl::SetFirstVisibleLine(int Line, BOOL bDirect)
+{
+	return Call(SCI_SETFIRSTVISIBLELINE, Line, 0, bDirect);
+}
+
 int CScintillaCtrl::GetLine(int line, char* text, BOOL bDirect)
 {
   return Call(SCI_GETLINE, static_cast<WPARAM>(line), reinterpret_cast<LPARAM>(text), bDirect);

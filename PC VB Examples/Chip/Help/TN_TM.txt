@@ -1,0 +1,16 @@
+---------------------------------
+xTN, xTM - Travel Minimum, Travel Maximum
+---------------------------------
+
+Defines the maximum extent of travel in that axis. This is used during homing. 
+See Homing for more details on how this is used.
+
+Both values can be positive or negative, but maximum must be greater than minimum or equal
+to minimum. If minimum and maximum are equal the axis is treated as an infinite axis 
+(i.e. no limits). This is useful for rotary axes - for example:
+
+ XTN = -1
+ XTM = -1
+or
+ XTN = 0
+ XTM = 0

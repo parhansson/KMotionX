@@ -1,0 +1,18 @@
+Header~Fixture~Jewelry Tray Setup
+Operation~Flatten~~2.500 Fly Cutter~Fixture~Fixed~4.0384~2.9901~0~1.0205~
+Task~~Upper Left~00:00:44~Flatten  0_050 deep.chp~0~-9~0~1.2~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Material Prep\12 x 8 Flatten Blank
+Task~~Upper Left~00:02:35~Flatten  0_050 deep.chp~0~-9~0~1.1~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Material Prep\12 x 8 Flatten Blank
+Task~~Upper Left~00:02:32~Flatten  0_050 deep.chp~0~-9~0~1.05~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Material Prep\12 x 8 Flatten Blank
+Task~~Upper Left~00:01:10~Flatten  0_050 deep.chp~0~-9~0~1~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Material Prep\12 x 8 Flatten Blank
+Task~~Upper Left~00:02:33~Flatten  0_050 deep.chp~0~-9~0~.95~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Material Prep\12 x 8 Flatten Blank
+Task~~Upper Left~00:02:36~Flatten  0_050 deep.chp~0~-9~0~.9~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Material Prep\12 x 8 Flatten Blank
+Task~~Upper Left~00:02:33~Flatten  0_050 deep.chp~0~-9~0~.85~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Material Prep\12 x 8 Flatten Blank
+Task~~Upper Left~00:02:33~Flatten  0_050 deep.chp~0~-9~0~.8~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Material Prep\12 x 8 Flatten Blank
+Operation~Mount Holes Drill~~1/4-20 Clearance Drill~Fixture~Fixed~4.726~3.7066~0~0.0045~
+Task~~Upper Left~00:02:03~Mount Holes 0_250 Clearance Drill.chp~0~-8~0~.75~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Material Prep\12 x 8 Flatten Blank
+Operation~Mount Holes Drill Tap~~4-40 Tap Drill~Fixture~Movable~6~6~0~1.0205~Load tool 0.75 below brush
+Task~~Upper Left~00:04:40~Mount Holes 0_250 Clerance Drill.chp~0~-8~0~.75~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Material Prep\12 x 8
+Operation~Resurface~~2.500 Fly Cutter~Fixture~Movable~4.0384~3.1905~0~1.0205~
+Task~~Upper Left~00:01:05~Resurface 0_010 Deep.chp~0~-9~0~1~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Material Prep\12 x 8
+Task~~Upper Left~00:02:19~Resurface 0_050 Deep.chp~0~-9~0~1~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Material Prep\12 x 8
+Task~~Upper Left~00:02:33~Resurface 0_100 Deep.chp~0~-9~0~1~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Material Prep\12 x 8

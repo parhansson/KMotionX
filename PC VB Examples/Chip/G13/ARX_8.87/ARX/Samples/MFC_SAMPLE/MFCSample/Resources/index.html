@@ -1,0 +1,109 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, target-densityDpi=device-dpi, user-scalable=no" />
+        <style>
+            body
+            {
+                background-image:url('g700.jpg');
+                background-color: black;
+                background-repeat:no-repeat;
+                background-attachment:fixed;
+                background-position:center; 
+            }
+
+            h1
+            {
+                    color:rgb(255,255,255);
+                    text-align:center;
+            }
+            h2
+            {
+                    color:rgb(255, 101, 0);
+                    text-align:left;
+            }
+            #clickTestDiv
+            {
+                    color:rgb(3, 3, 3);
+                    background-color:#9006a0;
+                    text-align:left;
+                    font-family: 'Oswald';
+                    font-size: 20px;
+                    width: 250px;
+                    margin-left:auto;
+                    margin-right:auto;
+                    border:solid;
+                    height:20%;
+            }
+            #childTest
+            {
+                width:70%;
+                height:60%;
+                margin-left: auto;
+                margin-right:auto;
+                text-align:center;
+                background:red;
+            }
+            #progressbar {
+              background-color: gray;
+              border-radius: 13px; 
+              padding: 3px;
+            }
+
+            #progressbarProgress {
+               background-color: orange;
+               width: 0%; 
+               height: 20px;
+               border-radius: 10px;
+            }
+            #randomImage
+            {
+                position:absolute;
+                left:100px;
+            }
+            #firstButton {
+                background-color: #21b55a;
+                -moz-border-radius: 5px;
+                -webkit-border-radius: 5px;
+                border-radius:6px;
+                color: #fff;
+                font-family: 'Oswald';
+                font-size: 40px;
+                text-decoration:none;
+                color:#0d0d0d;
+                display:block;
+                width: 300px;
+                margin-left:auto;
+                margin-right:auto;
+                cursor: pointer;
+                border:solid;
+            }
+            img { 
+                color: red; 
+                text-align: center; 
+            }
+            
+        </style>
+    </head>
+    <script src="alert.js"></script>
+    <body>
+        <h1 id ="appletTitle"> Logitech Gamepanel App Sample</h1>
+        <h2 class ="sectionTitle" id ="progressTitle">Progress Bar</h2>
+        <div id="progressbar">
+             <div id ="progressbarProgress"></div>
+        </div>
+        <br />
+        <h2 class ="sectionTitle ignoreTapEvents" id ="imageTitle">Random image from bitmap</h2>
+        <img src="randomImage.png" id="randomImage" alt="Load the image from bitmap from the sample"/><br /><br /><br /><br />
+        <h2 class ="sectionTitle" id ="tapDemoTitle">Tap on tags demo</h2>
+        <button id="firstButton">Click Me!</button> <br />
+        <div id="clickTestDiv" class="ignoreTapEvents">parent Div - ignoring tap events <div id="childTest">child Div receiving tap events</div></div>
+       
+        <script>
+            function moveRandomImage() {
+                document.getElementById('randomImage').style.left = Math.floor((Math.random() * screen.width *0.6) + 1);
+            }
+
+            setInterval(function () { moveRandomImage() }, 1000);
+        </script>
+    </body>
+</html>

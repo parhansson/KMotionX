@@ -12,7 +12,7 @@
 #include "PC.h"
 
 
-char Commands[][MAX_CMD_LENGTH] = {
+const char Commands[][MAX_CMD_LENGTH] = {
 //start 
 "EXECUTE D1 7",								// ExecuteN/Begin execution of thread N/ie. Execute1
 "ENTRYPOINT D1 7 H",						// EntryPointN H/Set Execution Start Address of/Thread N to hex address H/ie. Entrypoint1 80070000
@@ -28,11 +28,14 @@ char Commands[][MAX_CMD_LENGTH] = {
 "PWM D0 15 =D-255 255",  					// PWMN=D/Set PWM channel N to locked anti-phase mode/and to value D (range -256 to 256)/ie. PWM0=-99
 "MOVEREL D0 7 =G",							// MoveRelN=D/Move axis N relative to current dest D units/ie. MoveRel0=100.1      
 "MOVERELATVEL D0 7 =GG",					// MoveRelAtVelN=D V/Move axis N relative to current dest D units/using specified Velocity/ie. MoveRelAtVel0=100.1 30.0      
+"MOVERELATVELACCEL D0 7 =GGG",				// MoveRelAtVelAccelN=D V A/Move axis N relative to current dest D units/using specified Velocity and Acceleration/ie. MoveRelAtVelAccel0=100.1 30.0 2000.0      
 "MOVEXYZABC GGGGGG",   						// MoveXYZABC=D D D D D D/Move the 6 axes defined to be x,y,z,a,b,c/(each axis moves independently)/ie. MoveXYZABC 100.1 200.2 300.3 400.4 500.5 600.6
 "MOVE D0 7 =G",								// MoveN=D/Move axis N to absolute coordinates D/ie. Move0=100.1            
 "MOVEATVEL D0 7 =GG",						// MoveAtVelN=D V/Move axis N to absolute coordinates D at specified Velocity/ie. MoveAtVel0=100.1 30.0            
+"MOVEATVELACCEL D0 7 =GGG",					// MoveAtVelAccelN=D V A/Move axis N to absolute coordinates D at specified Velocity and Acceleration/ie. MoveAtVelAccel0=100.1 30.0 2000.0            
 "MOVEEXP D0 7 =GG",							// MoveExpN=D T/Move axis N to absolute coordinates D exponentially at Time Constant T/ie. MoveExp0=100.1 1.0            
 "JOG D0 7 =G",								// JogN=V/Move axis N at velocity V/Uses Accel and Jerk parameters for the axis/Specify zero Vel to decel to stop/ie. Jog0=-200.5
+"JOGATACCEL D0 7 =GG",						// JogAtAccelN=V A/Move axis N at velocity V using specified Acceleration/Uses Jerk parameter for the axis/Specify zero Vel to decel to stop/ie. JogAtAccel0=-200.5 5000.0
 "ADC D0 7",									// ADCN/Display ADC channel N (0 through 7)/range -2048 to 2047/Channels 0-3 are 10V inputs/Channels 4-7 are Motor Currents/ie. ADC0      
 "DAC D0 7 =D-2048 2047",					// DACN=M/Set DAC N (0..7) to/value M (-2048..2047)/ie. DAC0=2000
 "3PH D0 7 =GG",								// 3PHN=D A/Set PWMs of axis N for Magnitude D phase angle A/Magnitude is -230 ,, +230/Angle in Commutation cycles/ie. 3PH0=230 0.5
@@ -60,7 +63,7 @@ char Commands[][MAX_CMD_LENGTH] = {
 "SETPERSISTHEX D0 199 H",   				// SetPersistHex O D/Write a single word into the Persist Array/at decimal offset O/a single 32-bit value specified as an unsigned hex number/ie. SetPersistHex 10 FFFFFFFF      
 "GETPERSISTDEC D0 199",   					// GetPersistDec O/Read a single word from the Persist Array/at decimal offset O/a single 32-bit value displayed as a signed decimal number/ie. GetPersistDec 10      
 "GETPERSISTHEX D0 199",   					// GetPersistHex O/Read a single word from the Persist Array/at decimal offset O/a single 32-bit value displayed as an unsigned hex number/ie. GetPersistHex 10      
-"GETVIRTUALBITS D0 31 D0 31",   			// GetVirtualBits O N/Read Virtual IO Bits as 32 bit Hexidecimal words/at decimal word offset O for N decimal words/as unsigned hex numbers/ie. GetVirtualBits 1 2      
+"GETVIRTUALBITS D0 31 D0 32",   			// GetVirtualBits O N/Read Virtual IO Bits as 32 bit Hexadecimal words/at decimal word offset O for N decimal words/as unsigned hex numbers/ie. GetVirtualBits 1 2      
 "GETGATHER D1 40000",						// GetGather N/Upload N data points from previous/GatherMove or GatherStep command/ie. GetGather 1000
 "INJECT D0 7 GG",							// InjectN F A/Inject random stimulus into axis N/with cutoff frequency of F (Hz)/of amplitude A (Position units)/ie. InjectN 100.0 20.0      
 "SETBITDIRECTION D0 167 *D0 1",				// SetBitDirectionN D/define IO bit N (0..30)/as input (D=0) or output (D=1)/ie. SetBitDirection0=1
@@ -103,6 +106,7 @@ char Commands[][MAX_CMD_LENGTH] = {
 "SETFROWRATETEMP G G",						// SetFROwRateTemp F R/Temporarily Set Feed Rate Override (1.0 = Normal Feed Rate) with rate/based on caller specified time (in seconds)/to change from FRO 1.0 to 0.0/Force regardless of FeedHold, don't save as last FRO/ie. FRO 0.9 0.25
 "GETSTOPSTATE ",							// GetStopState/Get State of StopImmediate/0=none,1=stopping indep,2=stopping coord, 3=stopped indep, 4=stopped coord/ie. GetStopState 
 "GETSPINDLERPS ",							// GetSpindleRPS/Get measured Spindle RPM in Revs per second/i.e. GetSpindleRPS
+"GETALLDESTVELHEX ",						// GetAllDestVelHex/Get all 8 Axis Destinations and Velocities as 64 bit doubles/Each as 2 32-bit Hexadecimal Values (low|high)/i.e. GetAllDestVelHex
 "CONFIGSPINDLE D0 1 D0 7 GGG",				// ConfigSpindle T A U W C/Configure Spindle Settings/Type 0=none 1=encoder/Axis used for encoder/UpdateTimeSecs - delta time for measurement/Tau - low pass filter time constant (threading)/CountsPerRev - encoder counts per rev/i.e. ConfigureSpindle 1 0 0.2 0.1 4096.0
 "TRIGTHREAD G",								// TrigThread S/Trigger Coordinated Motion Threading Motion/B=Base Spindle Speed (RPS) that coordinated motion was planned for/i.e. TrigThread 10.0
 "ECHO ",									// Echo S/Echo String S back to the Console/ie.Echo Hello 

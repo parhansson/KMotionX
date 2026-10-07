@@ -7,6 +7,9 @@
 #include "EXDISP.H"
 #include "IHelp.h"
 #include "MainFrm.h"
+#include <cstdio>
+#include <windows.h>
+#include <tlhelp32.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -21,6 +24,8 @@ static char THIS_FILE[] = __FILE__;
 CIHelp::CIHelp(CWnd* pParent /*=NULL*/)
 	: CDlgX(pParent)
 {
+	FirstTime = EdgeHelpClient = true;
+
 	//{{AFX_DATA_INIT(CIHelp)
 		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
@@ -117,25 +122,147 @@ void CIHelp::OnPaint()
 }
 
 
+struct handle_data {
+	unsigned long process_id;
+	HWND window_handle;
+};
+
+BOOL is_main_window(HWND handle)
+{
+	return GetWindow(handle, GW_OWNER) == (HWND)0 && IsWindowVisible(handle);
+}
+
+BOOL CALLBACK enum_windows_callback(HWND handle, LPARAM lParam)
+{
+	handle_data& data = *(handle_data*)lParam;
+	unsigned long process_id = 0;
+	GetWindowThreadProcessId(handle, &process_id);
+	if (data.process_id != process_id || !is_main_window(handle))
+		return TRUE;
+	data.window_handle = handle;
+	return FALSE;
+}
+
+HWND find_main_window(unsigned long process_id)
+{
+	handle_data data;
+	data.process_id = process_id;
+	data.window_handle = 0;
+	EnumWindows(enum_windows_callback, (LPARAM)&data);
+	return data.window_handle;
+}
+
+HWND CIHelp::FindEdgeHelpWindow()
+{
+	HWND hlc = NULL;
+	PROCESSENTRY32 entry;
+	entry.dwSize = sizeof(PROCESSENTRY32);
+
+	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+
+	if (Process32First(snapshot, &entry) == TRUE)
+	{
+		while (Process32Next(snapshot, &entry) == TRUE)
+		{
+			if (stricmp(entry.szExeFile, "DynoWebHelp.exe") == 0)
+			{
+				HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, entry.th32ProcessID);
+
+				hlc = find_main_window(entry.th32ProcessID);
+
+				CloseHandle(hProcess);
+				break;
+			}
+		}
+	}
+
+	CloseHandle(snapshot);
+
+	return hlc;
+}
+
 
 int CIHelp::Show(CString s)
 {
-    COleVariant noArg;
+	if (FirstTime)
+	{
+		FirstTime = false;
+		CString Path = TheFrame->MainPath + "\\Help\\" + "UseIEHelp.txt";
+		
+		FILE *f = fopen(Path, "rt");
+		if (f)
+		{
+			fclose(f);
+			EdgeHelpClient = false;
+		}
+	}
 
 	CString Path = TheFrame->MainPath + "\\Help\\" + s;
 
-	if (m_hWnd)
-		BringWindowToTop();
-	else
-		Create(IDD_Help,TheFrame);
+	if (EdgeHelpClient)  // should we use the Edge Based Help Client?
+	{
+		HWND hlc = FindEdgeHelpWindow();
+		if (!hlc)
+		{
+			// not found launch it
+			CString DynoHelp = "\"" + TheFrame->MainPathRoot + "\\DynoWebHelp\\bin\\x86\\Release\\net462-windows\\DynoWebHelp.exe\"";
+			int result = TheFrame->GCodeDlg.Interpreter->ExecutePC(DynoHelp, true);
 
-	
-	// Set To the desired URL.
+			if (result)
+			{
+				MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Can't Execute DynoWebHelp at:\r\r" + DynoHelp),
+					L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
 
-    m_Web.Navigate(Path,&noArg,&noArg,&noArg,&noArg);
+				EdgeHelpClient = false;
+			}
+			else
+			{
+				int i;
+				for (i=0; i<50; i++)
+				{
+					hlc = FindEdgeHelpWindow();
+					if (hlc) break;
+					Sleep(50);
+				}
+
+				Sleep(2500);  // Seems sending message too quickly causes it to crash
+
+				if (!hlc)
+				{
+					MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Can't Find DynoWebHelp at:\r\r" + DynoHelp),
+						L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
+
+					EdgeHelpClient = false;
+				}
+			}
+		}
 
 
-	InvalidateRect(NULL,FALSE);
+		CStringW strDataToSend = Path;
+		COPYDATASTRUCT cpd;
+		cpd.dwData = 0;
+		cpd.cbData = (strDataToSend.GetLength() + 1) * 2;
+		cpd.lpData = (PVOID)strDataToSend.GetBuffer(cpd.cbData);
+		::SendMessage(hlc, WM_COPYDATA, (WPARAM)::GetDesktopWindow(), (LPARAM)&cpd);
+	}
+
+	if (!EdgeHelpClient)  // should we use the Edge Based Help Client?
+	{
+		COleVariant noArg;
+
+		if (m_hWnd)
+			BringWindowToTop();
+		else
+			Create(IDD_Help, TheFrame);
+
+
+		// Set To the desired URL.
+
+		m_Web.Navigate(Path, &noArg, &noArg, &noArg, &noArg);
+
+
+		InvalidateRect(NULL, FALSE);
+	}
 	return 0;
 }
 
@@ -160,13 +287,13 @@ int CIHelp::TryToSetIEVersionToUse(int Version, bool Silent)
 
 		if (dwErrorCode == ERROR_ACCESS_DENIED)
 		{
-			if (!Silent) AfxMessageBox("Can't Set IE Emulation Version for Help to work properly - Access Denied");
+			if (!Silent) MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Can't Set IE Emulation Version for Help to work properly - Access Denied"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 			return 1;
 		}
 
 		if (dwErrorCode != ERROR_SUCCESS)
 		{
-			if (!Silent) AfxMessageBox("Can't Set IE Emulation Version for Help to work properly");
+			if (!Silent) MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Can't Set IE Emulation Version for Help to work properly"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 			return 1;
 		}
 
@@ -185,7 +312,7 @@ int CIHelp::TryToSetIEVersionToUse(int Version, bool Silent)
 			// doesn't exist try to add it
 			if (ERROR_SUCCESS != RegCreateKeyEx(HKEY_CURRENT_USER, (CString)Name, 0L, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS | KEY_WOW64_32KEY, NULL, &key, NULL))
 			{
-				if (!Silent) AfxMessageBox("Can't Set IE Emulation Version for Help to work properly");
+				if (!Silent) MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Can't Set IE Emulation Version for Help to work properly"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 				return 1;
 			}
 
@@ -208,7 +335,7 @@ int CIHelp::TryToSetIEVersionToUse(int Version, bool Silent)
 
 			if (LastSlash == -1)
 			{
-				if (!Silent) AfxMessageBox("Can't Set IE Emulation Version for Help to work properly");
+				if (!Silent) MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Can't Set IE Emulation Version for Help to work properly"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 				return 1;
 			}
 
@@ -216,7 +343,7 @@ int CIHelp::TryToSetIEVersionToUse(int Version, bool Silent)
 			
 			if (ERROR_SUCCESS != RegSetValueEx(key, s, 0, REG_DWORD, (const BYTE*)&nValue, sizeof(nValue)))
 			{ 
-				if (!Silent) AfxMessageBox("Can't Set IE Emulation Version for Help to work properly");
+				if (!Silent) MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Can't Set IE Emulation Version for Help to work properly"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 				return 1;
 			}
 		}

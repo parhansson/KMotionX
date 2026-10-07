@@ -44,11 +44,13 @@ public:
 		m_clrBkgnd = clrBkgnd;
 		DetermineOwnerDraw();
 	};
-	void SetText(WCHAR *szText)
+	void SetText(const wchar_t *szText)
 	{
 		mTextDefined = szText[0] != 0;
+		bool Changed = m_szText != szText;
 		wcscpy(m_szText,szText);
 		DetermineOwnerDraw();
+		if (Changed) Invalidate();  // make sure is redrawn if changed
 	};
 	void SetRTL(int bRTL)
 	{
@@ -89,7 +91,6 @@ protected:
 	_AlignHorz m_HorzAlign;
 	_AlignVert m_VertAlign;
 	bool mFontDefined, mTextDefined;
-	WCHAR m_szText[200];
 	SIZE CalcTXTUnicode(HDC hDC, WCHAR *Sstr);
 	void PlotTXTUnicode(
 		HDC      hDC,               // In   Device
@@ -108,6 +109,7 @@ protected:
      // ClassWizard generated virtual function overrides
      //{{AFX_VIRTUAL(CUniButton)
 public:
+	WCHAR m_szText[200];
 	bool DrawPushed;
 	int HandleButtonDown();
 	 CStringW ToolTipText;
@@ -119,7 +121,7 @@ public:
 	 bool m_OriginalStyleValid;
      virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
 	 int Var;
-	 void Reset();
+	 void Reset(bool KeepText = false);
 
 
      //}}AFX_VIRTUAL

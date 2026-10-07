@@ -339,6 +339,9 @@
     <ClCompile Include="..\src\XPM.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\StdAfx.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\win32\ScintRes.rc">
@@ -407,6 +410,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\WindowAccessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\StdAfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

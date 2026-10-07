@@ -1,103 +1,117 @@
+<!DOCTYPE html>
 <html>
-
 <head>
-<meta http-equiv="Content-Language" content="en-us">
-<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
-<meta name="ProgId" content="FrontPage.Editor.Document">
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+<meta name="keywords" content="ethernet 16-axis controller, cnc control, motion control, cnc boards, 4-axis, 8-axis, stepper, brushless, DC motor, servo, encoder, adc, dac, motion controller, automated motion, manufacturing, Mach3">
+<meta name="description" content="Manufacturer of premium motion control products for CNC Manufacturing, Robotics and Automation">
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-<title>Mach3 Plugin Passing DROs</title>
-    <style type="text/css">
-        .auto-style1 {
-            font-size: small;
-        }
-    </style>
-    
+<meta http-equiv="Content-Language" content="en-us">
+
+<title>Mach3 Plugin - Passing DROs</title>
+
+<link rel="stylesheet" type="text/css" href="../css/style.css">
+<link rel="stylesheet" href="../css/prism.css" data-noprefix />
+<script src="../js/prism.js"></script>
 </head>
 
 <body>
 
-<p style="margin-top: 0; margin-bottom: 0"><b><i><font face="Arial" size="5">&nbsp;</font><font face="Arial" size="6">Mach3 
-Plugin - Passing DROs</font></i></b></p>
-<p style="margin-top: 0; margin-bottom: 0"><b><i><font face="Arial" size="4">&nbsp;</font></i></b></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<div id="cg_msg_content" style="width: 669px; height: 592px; margin-left: 10px; margin-right: 10px; margin-top: 0px; margin-bottom: 10px">
-	<div style="FONT-FAMILY: arial, helvetica, sans-serif; FONT-SIZE: 10pt">
-		<div style="FONT-FAMILY: arial, helvetica, sans-serif; FONT-SIZE: 10pt">
-			<div>
-				<div>
-					<div>
-						<font color="#000000"><strong><u>Mechanism for 
-						transfering values back and forth between Mach3 and 
-						KFLOP</u></strong></font></div>
-					<div>
-						&nbsp;</div>
-					<div>
-						&nbsp;</div>
-					<div>
-						<font color="#000000">Mach3 User DROs 1 to 50 map to 
-						KFlop UserData 0 to 99 (2 words each double)</font></div>
-				</div>
-				<div>
-					&nbsp;</div>
-				<div>
-					&nbsp;</div>
-				<div>
-					<font color="#000000">To&nbsp;Read from&nbsp;KFLOP to Mach3 use 
-					NotifyPlugins codes 18001 to 18050</font></div>
-			</div>
-			<div>
-				<font color="#000000">To Write&nbsp;from Mach3 to KFLOP use 
-				NotifyPlugins codes 19001 to 19050</font></div>
-			<div>
-				&nbsp;</div>
-			<div>
-				&nbsp;</div>
-			<div>
-				<strong><font color="#000000"><u>Example MACH3 SIDE</u></font></strong></div>
-			<div>
-				&nbsp;</div>
-			<div>
-				<font color="#000000" face="Courier New, courier, monaco, monospace, sans-serif">
-				SetOEMDRO(1007,123.456)&nbsp; 'Put a value in a Mach DRO<br>
-				NotifyPlugins(19007)&nbsp;&nbsp;&nbsp;&nbsp; 'Send it to KFLOP<br>
-				Sleep(3000)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'Wait for KFLOP to modify and copy it<br>
-				NotifyPlugins(18008)&nbsp;&nbsp;&nbsp;&nbsp; 'Read the result from KFLOP<br>
-				x=GetOEMDRO(1008)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'Check the value passed back <br>
-				<br>
-&nbsp;</font></div>
-			<div>
-				<font color="#000000" face="arial, helvetica, sans-serif">
-				<strong><u>Example KFLOP SIDE</u></strong></font></div>
-			<div>
-				&nbsp;</div>
-			<div>
-				<font color="#000000" face="Courier New, courier, monaco, monospace, sans-serif">
-				#include &quot;KMotionDef.h&quot;</font></div>
-			<div>
-				<font color="#000000" face="Courier New, courier, monaco, monospace, sans-serif">
-				#define DROIN 7<br>
-				#define DROOUT 8<br>
-				main()<br>
-				{<br>
-				&nbsp;&nbsp;&nbsp; double *pin&nbsp; = (double *)&amp;persist.UserData[(DROIN -1)*2];<br>
-				&nbsp;&nbsp;&nbsp; double *pout = (double *)&amp;persist.UserData[(DROOUT-1)*2];</font></div>
-			<div>
-				<font color="#000000" face="Courier New, courier, monaco, monospace, sans-serif">
-				&nbsp;&nbsp;&nbsp; for(;;)<br>
-				&nbsp;&nbsp;&nbsp; {<br>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Delay_sec(2);<br>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *pout = *pin + 999;<br>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf(&quot;DROIN %d = %f DROOUT %d = %f\n&quot;,DROIN,*pin,DROOUT,*pout);<br>
-				&nbsp;&nbsp;&nbsp; }<br>
-				}</div>
-			</font><br>
-&nbsp;</div>
-	</div>
-</div>
-<p>&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<div id="logo"><a href="../index.htm"></a></div>
 
+<div id="home">
+<a href="../index.htm">Table of contents</a> |  
+	<script>
+		if (navigator.userAgent.indexOf("NT 6.2") == -1){
+			document.write('<a href="https://www.dynomotion.com">Dynomotion home page</a>')
+		} else {
+			document.write('<a href="https://www.dynomotion.com" target="_blank">Dynomotion home page</a>')
+		}
+	</script>
+</div>
+	
+<div id="searchNav">
+
+	<div class="gcse-search">
+					<script>
+					  if (document.location.protocol  ==  'https:') {
+					  (function() {
+					  var cx = '012657033059195044748:9fmjmlufts0';
+					  var gcse = document.createElement('script');
+					  gcse.type = 'text/javascript';
+					  gcse.async = true;
+					  gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+					      '//cse.google.com/cse.js?cx=' + cx;
+					  var s = document.getElementsByTagName('script')[0];
+					  s.parentNode.insertBefore(gcse, s);
+					})();
+					  }
+				      </script> 
+				      <gcse:search> </gcse:search>  
+
+	       </div>
+</div>	
+
+	
+
+
+<div id="google_translate_element" style="background: transparent;" align="right"><script type="text/javascript">
+if (navigator.userAgent.indexOf("NT 6.2") == -1) {
+		function googleTranslateElementInit() {
+	  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,de,fr,it,es,pt,ru,uk,ar,zh-CN,zh-TW,ko,iw,hi,ja,tr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+		}						}
+	</script>
+	<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+	</script>
+</div>		
+<div id="main">
+
+<h1>Mach3 Plugin - Passing DROs</h1>
+
+<h2>Mechanism for transfering values back and forth between Mach3 and KFLOP/Kogna</h2>
+				
+<p>Mach3 User DROs 1 to 50 map to KFLOP/Kogna UserData 0 to 99 (2 words each double)</p>
+<p>ToRead from KFLOP/Kogna to Mach3 use NotifyPlugins codes 18001 to 18050</p>
+<p>To Write from Mach3 to KFLOP/Kogna use NotifyPlugins codes 19001 to 19050</p>
+
+<h2>Example MACH3 Side</h2>
+			
+<pre>
+	<code>
+	SetOEMDRO(1007,123.456) 'Put a value in a Mach DRO
+	NotifyPlugins(19007) 	'Send it to KFLOP
+	Sleep(3000) 		'Wait for KFLOP to modify and copy it
+	NotifyPlugins(18008) 	'Read the result from KFLOP
+	x=GetOEMDRO(1008) 	'Check the value passed back
+	</code>
+</pre>
+
+<h2>Example KFLOP/Kogna Side</h2>
+
+<pre>
+	<code>
+	#include &quot;KMotionDef.h&quot;
+	#define DROIN 7
+	#define DROOUT 8
+	main()
+	{
+		double *pin = (double *)&amp;persist.UserData[(DROIN -1)*2];
+		double *pout = (double *)&amp;persist.UserData[(DROOUT-1)*2];
+		for(;;)>
+		{
+			Delay_sec(2);
+			*pout = *pin + 999;>
+			printf(&quot;DROIN %d = %f DROOUT %d = %f\n&quot;,DROIN,*pin,DROOUT,*pout);
+		}
+	}
+	</code>
+</pre>
+
+	<p>&nbsp;</p>
+</div>
 </body>
 
 </html>

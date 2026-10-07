@@ -46,12 +46,12 @@ public:
 		CImageButton::ImageButtons.AddTail(this);
 	}
 
-	void Reset()
+	void Reset(bool KeepText = false)
 	{
 		m_fill = FALSE; ToggleType = false; Var = -1; ErrorDisplayed = Toggled = DrawPushed = ForceDisableFocus = false;
 		m_up_file = ""; m_down_file = ""; m_disabled_file = "";
 		Style = Undefined;
-		CUniButton::Reset();
+		CUniButton::Reset(KeepText);
 	}
 
 	BOOL m_fill; // We want to fill the image

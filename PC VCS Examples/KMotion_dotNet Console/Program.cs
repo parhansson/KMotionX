@@ -71,8 +71,8 @@ namespace sandbox
             //RunHomingRoutineExample();
             RunIOExample();
             //RunAxisExample();
-            RunCoordinatedMotionExample();
-            //RunInterpreterExample(); 
+            //RunCoordinatedMotionExample();
+            RunInterpreterExample(); 
             
             _Controller.Dispose();
             
@@ -370,7 +370,8 @@ namespace sandbox
             //    var miscs = _Controller.Interpreter.SetupParams.Active_MCodes;
             //    Console.WriteLine(String.Format("Active G-Codes :: {0}", string.Join(",", modals.Select(s => s.ToString()).ToArray())));
             //    Console.WriteLine(String.Format("Active M-Codes :: {0}", string.Join(",", miscs.Select(s => s.ToString()).ToArray())));
-                Thread.Sleep(150);
+            //    Console.WriteLine(String.Format("Current Line :: {0}", _Controller.CoordMotion.Interpreter.SetupParams.CurrentLine));
+                Thread.Sleep(500);
             }
         }
 

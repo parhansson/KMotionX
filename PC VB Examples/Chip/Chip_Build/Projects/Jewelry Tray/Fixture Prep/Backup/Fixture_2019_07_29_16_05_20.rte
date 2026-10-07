@@ -1,0 +1,4 @@
+Header~Fixture~Jewelry Tray
+Operation~Fixture Holes~~0.125 End Mill~Fixture~Movable~0.8~1.7~
+Task~~Upper Left~~Fixture Holes 0_125 EM.chp~0~-8~.9~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Jewelry Tray\Fixture Prep
+Task~~Upper Left~~Fixture Holes test.chp~0~-8~.9~12~8~Top Left~$$DEFAULT_BUILD_ROOT$$\Projects\Jewelry Tray\Fixture Prep

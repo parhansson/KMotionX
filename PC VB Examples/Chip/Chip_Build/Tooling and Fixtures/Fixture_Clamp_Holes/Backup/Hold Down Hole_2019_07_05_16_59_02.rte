@@ -1,0 +1,4 @@
+Header~Fixture~General
+Operation~Hold Down Hole~~0.125 End Mill~Current XY~Movable~0.8~1.7~4~
+Task~~Upper Left~00:01:12~Fixture Holddown hole 0_125 EM.chp~0~0~.75~0~0~Top Left~$$DEFAULT_BUILD_ROOT$$\Tooling and Fixtures\Fixture_Clamp_Holes
+Task~~Upper Left~00:00:40~Fixture Holddown countersink 0_125 EM.chp~0~0~.75~0~0~Top Left~$$DEFAULT_BUILD_ROOT$$\Tooling and Fixtures\Fixture_Clamp_Holes

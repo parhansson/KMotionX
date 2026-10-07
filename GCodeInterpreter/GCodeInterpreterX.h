@@ -32,13 +32,16 @@
 #include "TrajectoryPlanner.h"
 #include "Kinematics.h"
 #include "Kinematics3Rod.h"
-#include "Kinematics3Rod.h"
 #include "KinematicsGeppetto.h"
 #include "KinematicsGeppettoExtrude.h"
 #include "Kinematics5AxisGimbalAB.h"
+#include "Kinematics5AxisTableAGimbalB.h"
 #include "Kinematics5AxisGimbalCB.h"
 #include "Kinematics5AxisTableAC.h"
+#include "Kinematics5AxisTableAB.h"
 #include "Kinematics5AxisTableBC.h"
+#include "KinematicsScara.h"
+#include "Kinematics2AxisRobot.h"
 #include "GCodeInterpreter.h"
 
 #endif /* GCODEINTERPRETERX_H_ */

@@ -106,7 +106,7 @@ bool SocketWrapper::Open(unsigned int port, const char* hostname)
 	}
 
     char port_s[10];
-    sprintf(port_s, "%u", port);
+    snprintf(port_s, 10, "%u", port);
 
 	struct addrinfo hints, *result;
 	

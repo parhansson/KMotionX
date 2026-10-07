@@ -286,6 +286,7 @@ public:
   long FindText(int flags, TextToFind* ft, BOOL bDirect = TRUE);
   long FormatRange(BOOL draw, RangeToFormat* fr, BOOL bDirect = TRUE);
   int GetFirstVisibleLine(BOOL bDirect = TRUE);
+  int SetFirstVisibleLine(int Line, BOOL bDirect = TRUE);
   int GetLine(int line, char* text, BOOL bDirect = TRUE);
   int GetLineCount(BOOL bDirect = TRUE);
   void SetMarginLeft(int pixelWidth, BOOL bDirect = TRUE);

@@ -167,18 +167,18 @@ ID:IDC_But27,Type:PUSHBUTTON,X:1046,Y:608,CX:35,CY:18,Show:0,Var:-1,Style:-1,Bit
 ID:IDC_But28,Type:PUSHBUTTON,X:1046,Y:640,CX:35,CY:18,Show:0,Var:-1,Style:-1,BitmapFile:;,Colors:,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
 ID:IDC_But29,Type:PUSHBUTTON,X:1046,Y:673,CX:35,CY:18,Show:0,Var:-1,Style:-1,BitmapFile:;,Colors:,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
 ID:IDC_But30,Type:PUSHBUTTON,X:69,Y:509,CX:47,CY:109,Show:1,Var:1025,Style:3,BitmapFile:Images\GreenLED_off.png;Images\GreenLED_on.png,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:#2,ToolTipText:,Script:
-ID:IDC_But31,Type:PUSHBUTTON,X:1151,Y:88,CX:75,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;808080;;,Font:Arial,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:ΠΑΧΟΣ 2mm,ToolTipText:,Script:Action:4;3;0;0;0;0;ATSALAKIS\Param_2.c
-ID:IDC_But32,Type:PUSHBUTTON,X:1151,Y:120,CX:75,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;808080;;,Font:Arial,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:ΠΑΧΟΣ 4mm,ToolTipText:,Script:Action:4;3;0;0;0;0;ATSALAKIS\Param_4.c
-ID:IDC_But33,Type:PUSHBUTTON,X:1151,Y:153,CX:75,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;808080;;,Font:Arial,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:ΠΑΧΟΣ 6mm,ToolTipText:,Script:Action:4;3;0;0;0;0;ATSALAKIS\Param_6.c
-ID:IDC_But34,Type:PUSHBUTTON,X:1151,Y:185,CX:75,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;808080;;,Font:Arial,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:ΠΑΧΟΣ 10mm,ToolTipText:,Script:Action:4;3;0;0;0;0;ATSALAKIS\Param_10.c
-ID:IDC_But35,Type:PUSHBUTTON,X:1151,Y:218,CX:75,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;808080;;,Font:Arial,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:ΠΑΧΟΣ 16mm,ToolTipText:,Script:Action:4;3;0;0;0;0;ATSALAKIS\Param_16.c
-ID:IDC_But36,Type:PUSHBUTTON,X:1151,Y:250,CX:75,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;808080;;,Font:Arial,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:ΠΑΧΟΣ 20mm,ToolTipText:,Script:Action:4;3;0;0;0;0;ATSALAKIS\Param_20.c
-ID:IDC_But37,Type:PUSHBUTTON,X:1151,Y:283,CX:75,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;808080;;,Font:Arial,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:ΠΑΧΟΣ 25mm,ToolTipText:,Script:Action:4;3;0;0;0;0;ATSALAKIS\Param_25.c
-ID:IDC_But38,Type:PUSHBUTTON,X:1151,Y:315,CX:75,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;808080;;,Font:Arial,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:ΠΑΧΟΣ 30mm,ToolTipText:,Script:Action:4;3;0;0;0;0;ATSALAKIS\Param_30.c
-ID:IDC_But39,Type:PUSHBUTTON,X:1151,Y:538,CX:80,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;FF8000;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:9-12.5mm,ToolTipText:,Script:Action:4;3;0;0;0;0;ATSALAKIS\Param_9125.c
-ID:IDC_But40,Type:PUSHBUTTON,X:1151,Y:570,CX:80,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;FF8000;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:12.5-20mm,ToolTipText:,Script:Action:4;3;0;0;0;0;ATSALAKIS\Param_12520.c
-ID:IDC_But41,Type:PUSHBUTTON,X:1151,Y:603,CX:80,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;FF8000;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:20-35mm,ToolTipText:,Script:Action:4;3;0;0;0;0;ATSALAKIS\Param_2035.c
-ID:IDC_But42,Type:PUSHBUTTON,X:1151,Y:635,CX:80,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;FF8000;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:35-60mm,ToolTipText:,Script:Action:4;3;0;0;0;0;ATSALAKIS\Param_3560.c
+ID:IDC_But31,Type:PUSHBUTTON,X:1151,Y:88,CX:75,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;808080;;,Font:Arial,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:ΠΑΧΟΣ 2mm,ToolTipText:,Script:
+ID:IDC_But32,Type:PUSHBUTTON,X:1151,Y:120,CX:75,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;808080;;,Font:Arial,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:ΠΑΧΟΣ 4mm,ToolTipText:,Script:
+ID:IDC_But33,Type:PUSHBUTTON,X:1151,Y:153,CX:75,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;808080;;,Font:Arial,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:ΠΑΧΟΣ 6mm,ToolTipText:,Script:
+ID:IDC_But34,Type:PUSHBUTTON,X:1151,Y:185,CX:75,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;808080;;,Font:Arial,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:ΠΑΧΟΣ 10mm,ToolTipText:,Script:
+ID:IDC_But35,Type:PUSHBUTTON,X:1151,Y:218,CX:75,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;808080;;,Font:Arial,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:ΠΑΧΟΣ 16mm,ToolTipText:,Script:
+ID:IDC_But36,Type:PUSHBUTTON,X:1151,Y:250,CX:75,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;808080;;,Font:Arial,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:ΠΑΧΟΣ 20mm,ToolTipText:,Script:
+ID:IDC_But37,Type:PUSHBUTTON,X:1151,Y:283,CX:75,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;808080;;,Font:Arial,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:ΠΑΧΟΣ 25mm,ToolTipText:,Script:
+ID:IDC_But38,Type:PUSHBUTTON,X:1151,Y:315,CX:75,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;808080;;,Font:Arial,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:ΠΑΧΟΣ 30mm,ToolTipText:,Script:
+ID:IDC_But39,Type:PUSHBUTTON,X:1151,Y:538,CX:80,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;FF8000;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:9-12.5mm,ToolTipText:,Script:
+ID:IDC_But40,Type:PUSHBUTTON,X:1151,Y:570,CX:80,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;FF8000;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:12.5-20mm,ToolTipText:,Script:
+ID:IDC_But41,Type:PUSHBUTTON,X:1151,Y:603,CX:80,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;FF8000;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:20-35mm,ToolTipText:,Script:
+ID:IDC_But42,Type:PUSHBUTTON,X:1151,Y:635,CX:80,CY:18,Show:1,Var:-1,Style:1,BitmapFile:;,Colors:FFFFFF;FF8000;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:35-60mm,ToolTipText:,Script:
 ID:IDC_But43,Type:PUSHBUTTON,X:1041,Y:673,CX:80,CY:18,Show:0,Var:-1,Style:-1,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
 ID:IDC_But44,Type:PUSHBUTTON,X:1038,Y:510,CX:80,CY:18,Show:0,Var:-1,Style:-1,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
 ID:IDC_But45,Type:PUSHBUTTON,X:1038,Y:543,CX:80,CY:18,Show:0,Var:-1,Style:-1,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:Label,ToolTipText:,Script:
@@ -226,3 +226,23 @@ ID:IDC_SingleStep,Type:PUSHBUTTON,X:635,Y:601,CX:50,CY:33,Show:1,Var:-1,Style:-1
 ID:IDC_ToolSetup,Type:PUSHBUTTON,X:686,Y:601,CX:50,CY:33,Show:1,Var:-1,Style:-1,BitmapFile:GC_ToolSetup.png;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:T Setup,ToolTipText:Configure Machine Tool Settings: Mcodes  User Buttons  Files  Trajectory Planner,Script:
 ID:IDC_GView,Type:PUSHBUTTON,X:740,Y:601,CX:50,CY:33,Show:1,Var:-1,Style:-1,BitmapFile:GC_GView.png;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:GViewer,ToolTipText:Launch G Code Viewer,Script:
 ID:IDC_TOOLBAR,Type:TOOLBAR,X:450,Y:374,CX:522,CY:0,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:Segoe UI,FontSize:12,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Edit20,Type:EDITTEXT,X:766,Y:33,CX:16,CY:12,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Edit21,Type:EDITTEXT,X:766,Y:53,CX:16,CY:12,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Edit22,Type:EDITTEXT,X:766,Y:73,CX:16,CY:12,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Edit23,Type:EDITTEXT,X:766,Y:93,CX:16,CY:12,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Edit24,Type:EDITTEXT,X:766,Y:113,CX:16,CY:12,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Edit25,Type:EDITTEXT,X:766,Y:133,CX:16,CY:12,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Edit26,Type:EDITTEXT,X:766,Y:153,CX:16,CY:12,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Edit27,Type:EDITTEXT,X:766,Y:173,CX:16,CY:12,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Edit28,Type:EDITTEXT,X:766,Y:193,CX:16,CY:12,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Edit29,Type:EDITTEXT,X:766,Y:213,CX:16,CY:12,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Edit30,Type:EDITTEXT,X:766,Y:233,CX:16,CY:12,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Edit31,Type:EDITTEXT,X:766,Y:253,CX:16,CY:12,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Edit32,Type:EDITTEXT,X:766,Y:273,CX:16,CY:12,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Edit33,Type:EDITTEXT,X:766,Y:293,CX:16,CY:12,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Edit34,Type:EDITTEXT,X:766,Y:313,CX:16,CY:12,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Edit35,Type:EDITTEXT,X:766,Y:333,CX:16,CY:12,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Edit36,Type:EDITTEXT,X:766,Y:353,CX:16,CY:12,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Edit37,Type:EDITTEXT,X:766,Y:373,CX:16,CY:12,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Edit38,Type:EDITTEXT,X:766,Y:393,CX:16,CY:12,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_Edit39,Type:EDITTEXT,X:766,Y:413,CX:16,CY:12,Show:0,Var:-1,Style:-1,BitmapFile:,Colors:,Font:,FontSize:10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:

@@ -157,7 +157,7 @@ void testConvertToOut(int thread,const char *file){
 
 }
 void testCheckForReady(){
-	if(KM->CheckForReady()){
+	if(KM->CheckForReady() == KMOTION_READY){
 		printf("CheckForReady succeded\n"); //This is actually failure isn't it?
 	} else {
 		printf("CheckForReady failed\n");

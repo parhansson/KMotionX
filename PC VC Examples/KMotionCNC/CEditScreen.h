@@ -28,6 +28,8 @@ public:
 	void Reset();
 	void GetPersistText(void);
 	static int SavePersists(void);
+	CStringW GetWText();
+	void SetWText(CStringW w);
 	static bool PersistDirty;
 	int GetID();
 	CString GetIDName();

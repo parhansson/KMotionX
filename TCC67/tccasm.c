@@ -81,7 +81,7 @@ static void asm_expr_unary(TCCState *s1, ExprValue *pe)
         if (pe->sym)
             error("invalid operation with label");
         if (op == '-')
-            pe->v = - ((signed)pe->v);  // tktk 
+            pe->v = - ((signed)pe->v);  
         else
             pe->v = ~pe->v;
         break;
@@ -515,7 +515,7 @@ static int find_constraint(ASMOperand *operands, int nb_operands,
             index = (index * 10) + (*name) - '0';
             name++;
         }
-        if (index >= nb_operands)  // tktk
+        if (index >= nb_operands)
             index = -1;
     } else if (*name == '[') {
         name++;

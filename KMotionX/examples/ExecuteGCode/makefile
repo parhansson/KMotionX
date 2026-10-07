@@ -1,4 +1,7 @@
 include $(BUILD_ROOT)/config.mak
+W_FLAGS+=-Wno-overloaded-virtual
+W_FLAGS+=-Wno-unknown-pragmas
+
 SOURCES=ExecuteGCode.cpp
 IDIR+=$(BUILD_ROOT)/KMotionDLL
 IDIR+=$(BUILD_ROOT)/GCodeInterpreter

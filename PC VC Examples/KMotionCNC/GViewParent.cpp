@@ -148,7 +148,7 @@ void CGViewParent::AddAxisToScene()
 	}
 	else
 	{
-		AfxMessageBox("Unable to load GCode Axis Image file:"+m_AxisShapeFile);
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to load GCode Axis Image file:") + (CStringW)m_AxisShapeFile, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 	}
 }
 
@@ -229,7 +229,7 @@ void CGViewParent::AddToolToScene()
 		if (!MessDisplayed)
 		{
 			MessDisplayed=true;
-			AfxMessageBox("Unable to load GCode Tool Image file:"+file);
+			MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to load GCode Tool Image file:") + (CStringW)file, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 			MessDisplayed=false;
 		}
 	}
@@ -241,16 +241,6 @@ void CGViewParent::AddToolToScene()
 BOOL CGViewParent::OnInitDialog() 
 {
 	InitializeScene();
-
-	if (m_FirstScreenDisplay)
-	{
-		m_FirstScreenDisplay=false;
-		if (TheFrame->GCodeDlg.m_Lathe)
-			OnXz();
-		else
-			OnXy();
-	}
-
 
 	unsigned int size = m_view.m_SceneGraph.NbObject();
 	for(unsigned int i=0; i<size; i++)
@@ -275,6 +265,8 @@ BOOL CGViewParent::OnInitDialog()
 
 void CGViewParent::SetViewDistance(ViewDir View) 
 {
+	float xScaling, yScaling, zScaling, aspect=1.0, limiting_size;
+	float FillFactor = 0.75f;
 	CGViewDlg *GVDlg = &TheFrame->GViewDlg;
 
 	FindExtents();
@@ -294,38 +286,97 @@ void CGViewParent::SetViewDistance(ViewDir View)
 	float sizez = m_maxz-m_minz;
 	float midz = (m_maxz+m_minz)/2;
 
-	float max_size = sizex;
-	if (sizey > max_size) max_size = sizey; 
-	if (sizez > max_size) max_size = sizez; 
+	// compute scaling such 
+	if (View == VIEWXY)
+	{
+		xScaling = FillFactor * ORTHO_HEIGHT * m_view.m_aspect / sizex;  // do this for ortho mode
+		yScaling = FillFactor * ORTHO_HEIGHT / sizey;
 
-	float xScaling = 0.85f * (2.0f * m_view.m_aspect) / sizex;  // do this for ortho mode
-	float yScaling = 0.85f * 2.0f / sizey;
+		if (xScaling > yScaling)
+		{
+			limiting_size = sizey;
+			m_view.m_Scaling0 = yScaling;
+		}
+		else
+		{
+			limiting_size = sizex;
+			aspect = m_view.m_aspect;
+			m_view.m_Scaling0 = xScaling;
+		}
+	}
+	else if (View == VIEWYZ)
+	{
+		yScaling = FillFactor * ORTHO_HEIGHT * m_view.m_aspect / sizey;  // do this for ortho mode
+		zScaling = FillFactor * ORTHO_HEIGHT / sizez;
 
-	if (xScaling > yScaling)
-		m_view.m_Scaling0 = yScaling;
+		if (yScaling > zScaling)
+		{
+			limiting_size = sizez;
+			m_view.m_Scaling0 = zScaling;
+		}
+		else
+		{
+			limiting_size = sizey;
+			aspect = m_view.m_aspect;
+			m_view.m_Scaling0 = yScaling;
+		}
+	}
+	else if (View == VIEWXZ)
+	{
+		xScaling = FillFactor * ORTHO_HEIGHT * m_view.m_aspect / sizex;  // do this for ortho mode
+		zScaling = FillFactor * ORTHO_HEIGHT / sizez;
+
+		if (xScaling > zScaling)
+		{
+			limiting_size = sizez;
+			m_view.m_Scaling0 = zScaling;
+		}
+		else
+		{
+			limiting_size = sizex;
+			aspect = m_view.m_aspect;
+			m_view.m_Scaling0 = xScaling;
+		}
+	}
+
+	float Scale0;
+	if (m_view.m_Ortho)
+		Scale0 = m_view.m_Scaling0;
 	else
-		m_view.m_Scaling0 = xScaling;
-
+		Scale0 = 1.0f;
 
 	if (View==VIEWXY)
 	{
-		m_view.m_xTranslation = -midx;
-		m_view.m_yTranslation = -midy;
+		m_view.m_xTranslation = -midx * Scale0;
+		m_view.m_yTranslation = -midy * Scale0;
 	}
 	else if (View==VIEWYZ)
 	{
-		m_view.m_xTranslation = -midz;
-		m_view.m_yTranslation = -midy;
+		m_view.m_xTranslation = -midy * Scale0;
+		m_view.m_yTranslation = -midz * Scale0;
 	}
 	else if (View==VIEWXZ)
 	{
-		m_view.m_xTranslation = -midz;
-		m_view.m_yTranslation = -midx;
+		m_view.m_xTranslation = -midx * Scale0;
+		m_view.m_yTranslation = -midz * Scale0;
 	}
 
-	m_view.m_zTranslation0 = m_view.m_zTranslation = -midz -1.75 * max_size;
- 
-	m_view.m_SpeedTranslation = max_size / 500.0f;;
+
+	float tanT = tanf(45.0 / 2.0 * PI / 180.0);
+	m_view.m_zTranslation0_Ortho = ORTHO_CAMERA_Z / aspect;
+	m_view.m_zTranslation0_Persp = -midz - limiting_size / (2.0 * FillFactor * tanT * aspect);
+	m_view.m_SpeedTranslation_Ortho = ORTHO_HEIGHT / (m_view.m_cy * aspect);
+	m_view.m_SpeedTranslation_Persp = limiting_size / (m_view.m_cy * aspect * FillFactor);
+
+
+	if (m_view.m_Ortho)
+	{
+		m_view.m_zTranslation = m_view.m_zTranslation0_Ortho;
+	}
+	else
+	{
+		m_view.m_zTranslation = m_view.m_zTranslation0_Persp;
+	}
 }
 
 
@@ -339,26 +390,44 @@ void CGViewParent::OnXy()
 
 void CGViewParent::OnXz() 
 {
-	if (TheFrame->GCodeDlg.m_XPosFront)
+	if (TheFrame->GCodeDlg.m_Lathe)
 	{
-		m_view.m_xRotation = 0.0f;
-		m_view.m_yRotation = 90.0f;
-		m_view.m_zRotation = -90.0f;
+		if (TheFrame->GCodeDlg.m_XPosFront)
+		{
+			m_view.m_xRotation = 0.0f;
+			m_view.m_yRotation = 90.0f;
+			m_view.m_zRotation = -90.0f;
+		}
+		else
+		{
+			m_view.m_xRotation = 0.0f;
+			m_view.m_yRotation = 90.0f;
+			m_view.m_zRotation = 90.0f;
+		}
 	}
 	else
 	{
-		m_view.m_xRotation = 0.0f;
-		m_view.m_yRotation = 90.0f;
-		m_view.m_zRotation = 90.0f;
+		m_view.m_xRotation = -90.0f;
+		m_view.m_yRotation = 0.0f;
+		m_view.m_zRotation = 0.0f;
 	}
 	SetViewDistance(VIEWXZ);
 }
 
 void CGViewParent::OnYz() 
 {
-	m_view.m_xRotation = 0.0f;
-	m_view.m_yRotation = 90.0f;
-	m_view.m_zRotation = 0.0f;
+	if (TheFrame->GCodeDlg.m_Lathe)
+	{
+		m_view.m_xRotation = 0.0f;
+		m_view.m_yRotation = 90.0f;
+		m_view.m_zRotation = 0.0f;
+	}
+	else
+	{
+		m_view.m_xRotation = -90.0f;
+		m_view.m_yRotation = 0.0f;
+		m_view.m_zRotation = -90.0f;
+	}
 	SetViewDistance(VIEWYZ);
 }
 
@@ -431,6 +500,20 @@ void CGViewParent::OnOrtho()
 	m_view.m_Ortho = GVDlg->m_Ortho!=0;
 	m_view.SetupOpenGL();
 	m_view.Invalidate();
+
+
+	if (m_view.m_Ortho)
+	{
+		m_view.m_xTranslation *= m_view.m_Scaling0;
+		m_view.m_yTranslation *= m_view.m_Scaling0;
+		m_view.m_zTranslation = -(m_view.m_zTranslation - m_view.m_zTranslation0_Persp) * m_view.m_Scaling0 + m_view.m_zTranslation0_Ortho;
+	}
+	else if (m_view.m_Scaling0 != 0.0)
+	{
+		m_view.m_xTranslation /= m_view.m_Scaling0;
+		m_view.m_yTranslation /= m_view.m_Scaling0;
+		m_view.m_zTranslation = -(m_view.m_zTranslation - m_view.m_zTranslation0_Ortho) / m_view.m_Scaling0 + m_view.m_zTranslation0_Persp;
+	}
 }
 
 void CGViewParent::OnShowTool()
@@ -440,7 +523,7 @@ void CGViewParent::OnShowTool()
 
 	if (GVDlg->m_ToolShapeFile.IsEmpty())
 	{
-		AfxMessageBox("Tool Image VRML file is blank.  Please specify a valid VRML file in the G Viewer Setup");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Tool Image VRML file is blank.  Please specify a valid VRML file in the G Viewer Setup"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 	}
 	
 	for (int i=StartIndexTool; i<EndIndexTool; i++)
@@ -561,10 +644,21 @@ void CGViewParent::ChangeToolPosition()
 	{
 		if (Dlg->m_ConnectedForStatus)
 		{
-			if (CM->ReadCurAbsPosition(&x,&y,&z,&a,&b,&c))
-			{
-				return;
-			}
+			// use destinations from last status read
+
+			// Get either the Actuator Position or Dest depending on whether there is
+			// a feedback device and the User is requesting to display feedback and
+			// also the current Destination regardless.
+			double Acts[6], ActsDest[6];
+			bool DisplayedEnc0, DisplayedEnc1, DisplayedEnc2, DisplayedEnc3, DisplayedEnc4, DisplayedEnc5;
+			if (TheFrame->GCodeDlg.GetAxisDRO(CM->x_axis, &Acts[0], &ActsDest[0], &DisplayedEnc0))return;
+			if (TheFrame->GCodeDlg.GetAxisDRO(CM->y_axis, &Acts[1], &ActsDest[1], &DisplayedEnc1))return;
+			if (TheFrame->GCodeDlg.GetAxisDRO(CM->z_axis, &Acts[2], &ActsDest[2], &DisplayedEnc2))return;
+			if (TheFrame->GCodeDlg.GetAxisDRO(CM->a_axis, &Acts[3], &ActsDest[3], &DisplayedEnc3))return;
+			if (TheFrame->GCodeDlg.GetAxisDRO(CM->b_axis, &Acts[4], &ActsDest[4], &DisplayedEnc4))return;
+			if (TheFrame->GCodeDlg.GetAxisDRO(CM->c_axis, &Acts[5], &ActsDest[5], &DisplayedEnc5))return;
+
+			CM->Kinematics->TransformActuatorstoCAD(ActsDest, &x, &y, &z, &a, &b, &c);
 		}
 	}
 

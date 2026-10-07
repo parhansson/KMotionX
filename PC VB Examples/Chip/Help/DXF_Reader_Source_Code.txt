@@ -1,0 +1,141 @@
+using System.IO;
+using System.Drawing.Drawing2D;
+using System.Data;
+
+
+
+private void menuItem2_Click(object sender, System.EventArgs e) //Opens openfile
+						//dialog to select a DXF file
+{
+    inputFileTxt = "";
+
+    openFileDialog1.InitialDirectory = "c:\\ "; //sets the initial directory of the
+					//openfile dialog
+    openFileDialog1.Filter = "DXF files (*.dxf)|*.dxf|All files (*.*)|*.*" ; //filters the
+								//visible files...
+    openFileDialog1.FilterIndex = 1 ;
+
+    if (openFileDialog1.ShowDialog() ==
+		System.Windows.Forms.DialogResult.OK) //open file dialog is shown here...
+                                                         //if "cancel" button is clicked then
+                                                         //nothing will be done...
+    {
+        inputFileTxt = openFileDialog1.FileName; //filename is taken
+					//(file path is also included to this
+                                                //name example: c:\windows\system\blabla.dxf
+
+        int ino = inputFileTxt.LastIndexOf("\\ "); 	//index no. of the last "\"
+						//(that is before the filename)
+                                                  	//is found here
+
+        newCanvas = new Canvas(); //a new canvas is created...
+        newCanvas.MdiParent = this; //...its mdiparent is set...
+        newCanvas.Text = inputFileTxt.Substring
+		(ino+1, inputFileTxt.Length - ino - 1); //...filename is
+                                                   //extracted from the text.(blabla.dxf).
+        newCanvas.MinimumSize = new Size (500, 400); //...canvas minimum size is set...
+
+        if(inputFileTxt.Length > 0)
+        {
+            newCanvas.ReadFromFile(inputFileTxt); //the filename is sent to the method
+					//for data extraction and interpretation...
+        }
+
+        newCanvas.Show(); //the canvas is displayed...
+        newCanvas.Activate();
+        newCanvas.Focus();
+    }
+
+    openFileDialog1.Dispose();
+}
+
+
+public void ReadFromFile (string textFile) 	//Reads a text file
+                                           	//(in fact a DXF file) for importing an
+					//Autocad drawing.
+{
+    string line1, line2; //these line1 and line2 is used for getting the a/m data groups...
+
+    line1 = "0"; //line1 and line2 are initialized here...
+    line2 = "0";
+    long position = 0;
+
+    theSourceFile = new FileInfo (textFile); 	//the source file is set.
+    StreamReader reader = null; 		//a reader is prepared...
+
+    try
+    {
+        reader = theSourceFile.OpenText(); 	//the reader is set ...
+    }
+    catch (FileNotFoundException e)
+    {
+        MessageBox.Show(e.FileName.ToString() + " cannot be found");
+    }
+    catch
+    {
+        MessageBox.Show("An error occurred while opening the DXF file");
+        return;
+    }
+
+    ////////////////////////////////////////////////////////////////////
+    //This part interprets the drawing objects found in the DXF file...
+    ////////////////////////////////////////////////////////////////////
+
+    do
+    {
+        if (line1 == "0" && line2 == "LINE")
+            LineModule(reader);
+        else if (line1 == "0" && line2 == "LWPOLYLINE")
+            PolylineModule(reader);
+        else if (line1 == "0" && line2 == "CIRCLE")
+            CircleModule(reader);
+        else if (line1 == "0" && line2 == "ARC")
+            ArcModule(reader);
+
+        GetLineCouple (reader, out line1, out line2); //the related method is called
+                                                      //for iterating through the text file
+                                                 //and assigning values to line1 and line2...
+    } while (line2 != "EOF");
+
+    ////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
+
+    reader.DiscardBufferedData(); 	//reader is cleared...
+    theSourceFile = null;
+    reader.Close(); 		//...and closed.
+}
+
+
+
+protected override void OnPaintBackground
+(System.Windows.Forms.PaintEventArgs e) //all drawing is made here in OnPaintBackground...
+{
+    base.OnPaintBackground(e);    //you must pass "e" to the base method
+
+    ...
+
+    Graphics g = e.Graphics;
+    Rectangle rect = new Rectangle(this.pictureBox1.Location, this.pictureBox1.Size);
+                              //In fact the pictureBox1 is hidden, the sole purpose of it is
+                              //to get its dimensions for defining the drawing area.
+
+    System.Drawing.Drawing2D.LinearGradientBrush brush =
+			new System.Drawing.Drawing2D.LinearGradientBrush(
+    rect,
+    Color.SteelBlue,
+    Color.Black,
+    System.Drawing.Drawing2D.LinearGradientMode.ForwardDiagonal);
+
+    if (this.WindowState != FormWindowState.Minimized)
+    {
+        e.Graphics.FillRectangle(brush, rect); //gradient background
+        Draw(g); //All drawing is made here...
+    }
+
+    brush.Dispose();
+}
+
+
+
+
+

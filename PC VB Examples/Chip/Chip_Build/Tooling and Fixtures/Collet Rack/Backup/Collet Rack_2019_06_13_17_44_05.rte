@@ -1,0 +1,12 @@
+Header~Fixture~General
+Operation~Pockets~~0.250 End Mill~6~Movable~4~~~
+Task~~Upper Left~~Pockets.chp~0~-3.75~.75~22.5~3.5~Top Left~$$DEFAULT_BUILD_ROOT$$\Tooling and Fixtures\Collet Rack
+Operation~Chamfer~~0.500 Chamfer~6~Movable~4~~~
+Task~~Upper Left~~Chamfer.chp~0~-3.75~.75~22.5~3.5~Top Left~$$DEFAULT_BUILD_ROOT$$\Tooling and Fixtures\Collet Rack
+Operation~Numbering~~0.001 Engraver~6~Movable~4~~~
+Task~~Upper Left~~Numbering 1.chp~0~-3.75~.75~22.5~3.5~Top Left~$$DEFAULT_BUILD_ROOT$$\Tooling and Fixtures\Collet Rack
+Task~~Upper Left~~Numbering 2.chp~0~-3.75~.75~22.5~3.5~Top Left~$$DEFAULT_BUILD_ROOT$$\Tooling and Fixtures\Collet Rack
+Task~~Upper Left~~Numbering 3.chp~0~-3.75~.75~22.5~3.5~Top Left~$$DEFAULT_BUILD_ROOT$$\Tooling and Fixtures\Collet Rack
+Task~~Upper Left~~Numbering 4.chp~0~-3.75~.75~22.5~3.5~Top Left~$$DEFAULT_BUILD_ROOT$$\Tooling and Fixtures\Collet Rack
+Operation~Tool Dish~~1.000 Ball Nose~6~Movable~1.7~~~
+Task~~Upper Left~~Tool Dish 1_000 Dish.chp~0~-3.75~.75~22.5~3.5~Top Left~$$DEFAULT_BUILD_ROOT$$\Tooling and Fixtures\Collet Rack

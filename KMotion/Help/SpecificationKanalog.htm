@@ -1,245 +1,213 @@
+<!DOCTYPE html>
 <html>
-
 <head>
-<meta http-equiv="Content-Language" content="en-us">
-<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
-<meta name="ProgId" content="FrontPage.Editor.Document">
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+<meta name="keywords" content="ethernet 16-axis controller, cnc control, motion control, cnc boards, 4-axis, 8-axis, stepper, brushless, DC motor, servo, encoder, adc, dac, motion controller, automated motion, manufacturing, Mach3">
+<meta name="description" content="Manufacturer of premium motion control products for CNC Manufacturing, Robotics and Automation">
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-	   
-</head>
-<title>Hardware</title>
+<meta http-equiv="Content-Language" content="en-us">
+
+<title>Kanalog Hardware and Software Specification</title>
+
+<link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 
 <body>
 
-<div align="left">
- <p> <i><font face="Arial Black" size="5">Kanalog 1.0 Hardware</font></i></p>
-   <table border="1" id="table1" bgcolor="#999966" align="left" width="600" height="663" cellpadding="2">
-    <!-- MSTableType="nolayout" -->
+<div id="logo"><a href="index.htm"></a></div>
+
+<div id="home">
+	<a href="index.htm">Table of contents</a> | 
+	<script>
+		if (navigator.userAgent.indexOf("NT 6.2") == -1){
+			document.write('<a href="https://www.dynomotion.com">Dynomotion home page</a>')
+		} else {
+			document.write('<a href="https://www.dynomotion.com" target="_blank">Dynomotion home page</a>')
+		}
+	</script>
+</div>
+<div id="searchNav">
+
+	<div class="gcse-search">
+					<script>
+					  if (document.location.protocol  ==  'https:') {
+					  (function() {
+					  var cx = '012657033059195044748:9fmjmlufts0';
+					  var gcse = document.createElement('script');
+					  gcse.type = 'text/javascript';
+					  gcse.async = true;
+					  gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+					      '//cse.google.com/cse.js?cx=' + cx;
+					  var s = document.getElementsByTagName('script')[0];
+					  s.parentNode.insertBefore(gcse, s);
+					})();
+					  }
+				      </script> 
+				      <gcse:search> </gcse:search>  
+
+	       </div>
+</div>	
+
+	
+
+
+<div id="google_translate_element" style="background: transparent;" align="right"><script type="text/javascript">
+if (navigator.userAgent.indexOf("NT 6.2") == -1) {
+		function googleTranslateElementInit() {
+	  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,de,fr,it,es,pt,ru,uk,ar,zh-CN,zh-TW,ko,iw,hi,ja,tr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+		}						}
+	</script>
+	<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+	</script>
+</div>		
+<div id="main">
+
+<h1>Kanalog 1.0 Hardware</h1>
+  
+   <table class="tableMedium">
+   
     <tr>
-      <td valign="top" bgcolor="#333300" width="109">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <span style="letter-spacing: 1px; font-weight:700">
-      <font face="Arial" size="2" color="#FFFFFF">Function</font></span></td>
-      <td valign="top" bgcolor="#333300">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <span style="letter-spacing: 1px; font-weight:700">
-      <font face="Arial" size="2" color="#FFFFFF">Parameter</font></span></td>
-      <td valign="top" bgcolor="#333300" height="24" width="302">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <span style="letter-spacing: 1px; font-weight:700">
-      <font face="Arial" size="2" color="#FFFFFF">Specification</font></span></td>
+      <th>Parameter</th>
+      <th>Specification</th>
     </tr>
     <tr>
-      <td valign="top" align="left" width="109">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <b><font face="Arial" size="2">Analog</font></b></td>
-      <td valign="top" align="left">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">DAC 
-		Outputs</font></p>
-      <p style="margin-top: 0; margin-bottom: 0">&nbsp;<p style="margin-top: 0; margin-bottom: 0">&nbsp;<p style="margin-top: 0; margin-bottom: 0">
-		<font face="Arial" size="2">ADC Inputs</font></td>
-      <td valign="top" height="38" align="left" width="302">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">(8) 
-		+/- 10V&nbsp; @ 10ma, recommended load &gt;2Kohm</font></p>
-		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-		12 bit - update rate 11.1KHz all 8 channels</font></p>
-		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">(8) 
-		+/- 10V 100Kohm input Impedance</font></p>
-		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-		12 bit - update rate 11.1KHz all 8 channels</font></p>
-      </td>
+      <td colspan="2" class="header">Analog</td>
+     </tr>
+    <tr>
+      <td>DAC Outputs</td>
+      <td>(8) +/- 10V&nbsp; @ 10ma, recommended load &gt;2Kohm<br />
+          12 bit - update rate 11.1KHz all 8 channels</td>
     </tr>
     <tr>
-      <td valign="top" bgcolor="#808000" align="left" width="109">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <b><font face="Arial" size="2">Optos</font></b></td>
-      <td bgcolor="#808000" align="left" valign="top">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-		Opto Isolated Outputs</font><p style="margin-top: 0; margin-bottom: 0">&nbsp;<p style="margin-top: 0; margin-bottom: 0">
-		<font face="Arial" size="2">Opto Isolated Inputs</font></td>
-      <td bgcolor="#808000" height="66" align="left" valign="top" width="302">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">(8) 
-		Max differential voltage 80V&nbsp; 25ma</font><p style="margin-top: 0; margin-bottom: 0">&nbsp;<p style="margin-top: 0; margin-bottom: 0">
-		<font face="Arial" size="2">(8) 3-24V input, internal 10KOhm series 
-		resistor</font></td>
+      <td>ADC Inputs</td>
+      <td>(8) +/- 10V 100Kohm input Impedance<br />
+		  12 bit - update rate 11.1KHz all 8 channels</td>
     </tr>
     <tr>
-      <td valign="top" bgcolor="#999966" align="left" width="109">
-      <b><font face="Arial" size="2">Differential</font></b></td>
-      <td bgcolor="#999966" align="left" valign="top">
-      <font face="Arial" size="2">Differential Input Receivers</font></td>
-      <td height="55" bgcolor="#999966" align="left" valign="top" width="302">
-      <font FACE="Arial" SIZE="2">
-		<p ALIGN="LEFT" style="margin-top: 0; margin-bottom: 0">(16) ANSI 
-		TIA/EIA-422-B, ANSI TIA/EIA-423-B</p>
-		<p ALIGN="LEFT" style="margin-top: 0; margin-bottom: 0">+/-7V common 
-		mode range, 200mv sensitivity</p>
-		<p ALIGN="LEFT" style="margin-top: 0; margin-bottom: 0">Internal 470ohm 
-		termination</font></td>
+      <td colspan="2" class="header">Optos</td>
+     </tr>
+    <tr>
+      <td>Opto Isolated Outputs</td>
+      <td>(8) Max differential voltage 80V&nbsp; 25ma</td>
     </tr>
     <tr>
-      <td valign="top" bgcolor="#808000" align="left" width="109">
-      <b><font face="Arial" size="2">Relay Drivers</font></b></td>
-      <td bgcolor="#808000" align="left" valign="top">
-      <font face="Arial" size="2">N channel FET Switches</font></td>
-      <td height="43" bgcolor="#808000" align="left" valign="top" width="302">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">(8) 
-		24V @ 1 Amp max</font></p>
-		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-		Open Drain switches to ground</font></td>
+      <td>Opto Isolated Inputs</td>
+      <td>(8) 3-24V input, internal 10KOhm series resistor</td>
     </tr>
     <tr>
-      <td valign="top" bgcolor="#999966" align="left" width="109">
-      <b><font face="Arial" size="2">Digital I/O</font></b></td>
-      <td bgcolor="#999966" align="left" valign="top">
-      <font face="Arial" size="2">GPIO - LVTTL </font></td>
-      <td height="26" bgcolor="#999966" align="left" valign="top" width="302">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">(8) 
-		Outputs Source/Sink 12ma</font></p>
-		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-		(8) Inputs LVTTL, 3.3V 1µa max</font></td>
+      <td colspan="2" class="header">Differential</td>
+     </tr>
+    <tr>
+      <td>Differential Input Receivers</td>
+      <td>(16) ANSI TIA/EIA-422-B, ANSI TIA/EIA-423-B<br />
+		+/-7V common mode range, 200mv sensitivity<br />
+		Internal 470ohm termination</td>
+    </tr>
+    <tr>
+      <td colspan="2" class="header">Relay Drivers</td>
+     </tr>
+    <tr>
+      <td>N channel FET Switches</td>
+      <td>(8) 24V @ 1 Amp max<br />
+		  Open Drain switches to ground</td>
+    </tr>
+    <tr>
+      <td colspan="2"  class="header">Digital I/O</td>
+     </tr>
+    <tr>
+      <td>GPIO - LVTTL </td>
+      <td>(8) Outputs Source/Sink 12ma<br />
+		  (8) Inputs LVTTL, 3.3V 1µa max</td>
     </tr>
   	<tr>
-      <td valign="top" bgcolor="#808000" align="left" width="109">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <b>
-      <font size="2" face="Arial">±15V</font></b></td>
-      <td bgcolor="#808000" align="left" valign="top">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      On-board DC-DC Generator</font></td>
-      <td height="26" bgcolor="#808000" align="left" valign="top" width="302">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">2 
-      Watts (70ma each supply)</font></td>
+  	  <td colspan="2" class="header">&plusmn;15V</td>
+     </tr>
+  	<tr>
+      <td>On-board DC-DC Generator</td>
+      <td>2 Watts (70ma each supply)</td>
     </tr>
 	<tr>
-      <td valign="top" bgcolor="#999966" align="left" width="109">
-      <b><font face="Arial" size="2">RS232</font></b></td>
-      <td bgcolor="#999966" align="left" valign="top">
-      <font face="Arial" size="2">Driver/Receiver</font></td>
-      <td height="24" bgcolor="#999966" align="left" valign="top" width="302">
-      <p style="margin-top: 0; margin-bottom: 0">
-		<span class="Apple-style-span" style="border-collapse: collapse; color: rgb(0, 0, 0); font-family: Arial; font-style: normal; font-variant: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-align: left; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-border-horizontal-spacing: 0px; -webkit-border-vertical-spacing: 0px; -webkit-text-decorations-in-effect: none; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0">
-		<font size="2">EIA/TIA-232-F</font></span></td>
+	  <td colspan="2" class="header">RS232</td>
+     </tr>
+	<tr>
+      <td>Driver/Receiver</td>
+      <td>EIA/TIA-232-F</td>
     </tr>
 	<tr>
-      <td valign="top" bgcolor="#808000" align="left" width="109">
-      <b><font face="Arial" size="2">Terminal Strips</font></b></td>
-      <td bgcolor="#808000" align="left" valign="top">
-      <font face="Arial" size="2">Screw Terminals</font></td>
-      <td height="26" bgcolor="#808000" align="left" valign="top" width="302">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">112 
-		Pluggable Screw Terminals</font></p>
-		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-		(7) x 16 pin</font></p>
-		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-		5mm pitch </font></td>
+	  <td colspan="2" class="header">Terminal Strips</td>
+     </tr>
+	<tr>
+      <td>Screw Terminals</td>
+      <td>112 Pluggable Screw Terminals<br />
+		  (7) x 16 pin<br />
+		  5mm pitch </td>
     </tr>
 	<tr>
-      <td valign="top" bgcolor="#999966" align="left" width="109">
-      <b><font face="Arial" size="2">Watchdog</font></b></td>
-      <td bgcolor="#999966" align="left" valign="top">
-      <font face="Arial" size="2">Charge Pump</font></td>
-      <td height="24" bgcolor="#999966" align="left" valign="top" width="302">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">DSP 
-		communication enables</font></p>
-		<p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-		(1) Relay Driver, FET Switch 24V @ 1A</font></p>
-		<p style="margin-top: 0; margin-bottom: 0">&nbsp;</td>
+	  <td colspan="2" class="header">Watchdog</td>
+     </tr>
+	<tr>
+      <td>Charge Pump</td>
+      <td>DSP communication enables<br />
+		  (1) Relay Driver, FET Switch 24V @ 1A<br />
+	  </td>
     </tr>
 	<tr>
-      <td valign="top" align="left" width="109" bgcolor="#808000">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <b>
-      <font face="Arial" size="2">Logic Supply</font></b></td>
-      <td align="left" valign="top" bgcolor="#808000">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Voltage</font></p>
-      <p style="margin-top: 0; margin-bottom: 0">
-		<font face="Arial" size="2">Typical Current</font></td>
-      <td height="25" align="left" valign="top" width="302" bgcolor="#808000">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">+5V 
-		±10%</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font size="2" face="Arial">0.5 
-		A</font></td>
+	  <td colspan="2" class="header">Logic Supply</td>
+     </tr>
+	<tr>
+	  <td>Voltage</td>
+	  <td>+5V &plusmn;10%</td>
+     </tr>
+	<tr>
+      <td>Typical Current</td>
+      <td>0.5 A</td>
     </tr>
 	<tr>
-      <td valign="top" align="left" width="109">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <b>
-      <font face="Arial" size="2">Environment</font></b></td>
-      <td align="left" valign="top">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Operating Temperature<br>
-      Storage Temperature<br>
-      Humidity</font></td>
-      <td height="54" align="left" valign="top" width="302">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      0-40º C</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      0-40º C<br>
-      20-90% Relative Humidity, non-condensing</font></td>
+	  <td colspan="2" class="header">Environment</td>
+     </tr>
+	<tr>
+      <td>Operating Temperature</td>
+      <td>0-40º C</td>
     </tr>
 	<tr>
-      <td valign="top" bgcolor="#808000" align="left" width="109">
-      <p style="margin-top: 0; margin-bottom: 0">
-      <b>
-      <font face="Arial" size="2">Dimensions</font></b></td>
-      <td bgcolor="#808000" align="left" valign="top">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Length</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Width</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-      Height</font></td>
-      <td height="66" bgcolor="#808000" align="left" valign="top" width="302">
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">8.5 
-      inches (216mm)</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">7.0 
-      inches (178 mm)</font></p>
-      <p style="margin-top: 0; margin-bottom: 0"><font face="Arial" size="2">
-		0.75inches (19 mm)</font></td>
+	  <td>Storage Temperature</td>
+	  <td>0-40&ordm; C</td>
+     </tr>
+	<tr>
+	  <td>Humidity</td>
+	  <td>20-90% Relative Humidity, non-condensing</td>
+     </tr>
+	<tr>
+	  <td colspan="2" class="header">Dimensions</td>
+     </tr>
+	<tr>
+      <td>Length</td>
+      <td>8.5 inches (216 mm)</td>
     </tr>
 	<tr>
-      <td valign="top" bgcolor="#999966" align="left" width="109">
-      <b><font size="2">Green</font></b></td>
-      <td bgcolor="#999966" align="left" valign="top">
-      <font size="2">RoHS</font></td>
-      <td height="22" bgcolor="#999966" align="left" valign="top" width="302">
-      <font size="2">Compliant</font></td>
+	  <td>Width</td>
+	  <td>7.0 inches (178 mm)</td>
+     </tr>
+	<tr>
+	  <td>Height</td>
+	  <td>0.75 inches (19 mm)</td>
+     </tr>
+	<tr>
+	  <td colspan="2" class="header">Green</td>
+     </tr>
+	<tr>
+      <td>RoHS</td>
+      <td>Compliant</td>
     </tr>
   </table>
-  <p style="margin-top: 0; margin-bottom: 0">&nbsp;</div>
-<div align="left">
-&nbsp;<p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-  <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p></div>
-
+  
+<p>&nbsp;</p>
+	</div>
+	
 </body>
 
 </html>

@@ -103,6 +103,9 @@
     <ClCompile Include="task.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Trips.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bode.h">
@@ -132,9 +135,6 @@
     <ClInclude Include="KMotionDef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PC-DSP.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PC.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -151,6 +151,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="task.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Trips.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

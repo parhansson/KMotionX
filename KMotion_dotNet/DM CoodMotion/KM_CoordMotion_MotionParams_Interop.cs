@@ -197,6 +197,12 @@ namespace KMotion_dotNet
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern void KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_DegreesC(IntPtr handle, bool value);
 
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("KMotion_dotNet_Interop.dll")]
+        static extern bool KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_TCP_Active(IntPtr handle);
+        [DllImport("KMotion_dotNet_Interop.dll")]
+        static extern void KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_TCP_Active(IntPtr handle, bool value);
+
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern void KM_dotnet_Interop_CoordMotion_SetTPParams(IntPtr handle);
     }

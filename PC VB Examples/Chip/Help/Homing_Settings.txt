@@ -1,0 +1,46 @@
+---------------------------------
+Homing Settings
+---------------------------------
+
+Please see TinyG Homing for details and more help on homing settings:
+
+ xSN - Minimum switch mode
+ xSX - Maximum switch mode
+ xSV - Homing Search Velocity
+ xLV - Homing Latch Velocity
+ xLB - Homing Latch Backoff
+ xZB - Homing Zero Backoff
+
+By way of example, my Shapeoko is set up this way:
+
+ ST 	Switch Type 	1=NC
+ XJH 	X Homing Jerk 	10000000000 (10 billion)
+ XSN 	X Minimum Switch Mode 	3=limit-and-homing
+ XSX 	X Maximum Switch Mode 	2=limit-only
+ XTM 	X Travel Maximum 	180 mm
+ XSV 	X Homing Search Velocity 	3000 mm/min
+ XLV 	X Homing Latch Velocity 	100 mm/min
+ XLB 	X Homing Latch Backoff 	20 mm
+ XZB 	X Homing Zero Backoff 	3 mm
+		
+ YJH 	Y Homing Jerk 	10000000000 (10 billion)
+ YSN 	Y Minimum Switch Mode 	3=limit-and-homing
+ YSX 	Y Maximum Switch Mode 	2=limit-only
+ YTM 	Y Travel Maximum 	180 mm
+ YSV 	Y Homing Search Velocity 	3000 mm/min
+ YLV 	Y Homing Latch Velocity 	100 mm/min
+ YLB 	Y Homing Latch Backoff 	20 mm
+ YZB 	Y Homing Zero Backoff 	3 mm
+		
+ ZJH 	X Homing Jerk 	100000000 (100 million)
+ ZSN 	Z Minimum Switch Mode 	0=disabled (with NC switches it's important all unused
+                                   switches are disabled)
+ ZSX 	Z Maximum Switch Mode 	3=limit-and-homing
+ ZTM 	Z Travel Maximum 	100 mm
+ ZSV 	Z Homing Search Velocity 	1000 mm/min
+ ZLV 	Z Homing Latch Velocity 	100 mm/min
+ ZLB 	Z Homing Latch Backoff 	10 mm
+ ZZB 	Z Homing Zero Backoff 	5 mm
+		
+ ASN 	A Minimum Switch Mode 	0=disabled
+ ASX 	A Maximum Switch Mode 	0=disabled

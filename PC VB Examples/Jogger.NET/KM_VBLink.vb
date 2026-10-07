@@ -1,38 +1,44 @@
 Option Strict Off
 Option Explicit On
+#Disable Warning BC40000
+Imports System.Runtime.InteropServices
+Imports System.Text
+Imports System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel
+
+
 Module Module1
-	Dim global_KM_Handle As Integer
-	
-	Private Declare Function KMViaVB_Test1 Lib "KMViaVB" () As Integer
-	Private Declare Function KMViaVB_Test2 Lib "KMViaVB" (ByVal handle As Integer) As Integer
-	Private Declare Function KMViaVB_Test3 Lib "KMViaVB" (ByRef handle As Integer) As Integer
-	
-    Private Declare Function KMViaVB_New Lib "KMViaVB" (ByRef handle As Integer, ByVal board As Integer) As Integer
-	Private Declare Function KMViaVB_Free Lib "KMViaVB" (ByRef handle As Integer) As Integer
-	
-    Private Declare Function KMViaVB_WriteLineReadLine Lib "KMViaVB" (ByVal handle As Integer, ByVal s As String, ByRef rtrn As String) As Integer
-    Private Declare Function KMViaVB_WriteLine Lib "KMViaVB" (ByVal handle As Integer, ByVal s As String) As Integer
-    Private Declare Function KMViaVB_WriteLineWithEcho Lib "KMViaVB" (ByVal handle As Integer, ByVal s As String) As Integer
-    Private Declare Function KMViaVB_ReadLineTimeOut Lib "KMViaVB" (ByVal handle As Integer, ByRef buf As String, ByVal TimeOutms As Integer) As Integer
-    Private Declare Function KMViaVB_WaitToken Lib "KMViaVB" (ByVal handle As Integer) As Integer
-    Private Declare Function KMViaVB_KMotionLock Lib "KMViaVB" (ByVal handle As Integer) As Integer
-    Private Declare Function KMViaVB_USBLocation Lib "KMViaVB" (ByVal handle As Integer) As Integer
-    Private Declare Sub KMViaVB_ReleaseToken Lib "KMViaVB" (ByVal handle As Integer)
-    Private Declare Function KMViaVB_Failed Lib "KMViaVB" (ByVal handle As Integer) As Integer
-    Private Declare Function KMViaVB_CheckForReady Lib "KMViaVB" (ByVal handle As Integer) As Integer
-    Private Declare Function KMViaVB_LoadCoff Lib "KMViaVB" (ByVal handle As Integer, ByVal Thread As Integer, ByVal Name As String, ByVal PackToFlash As Integer) As Integer
-    Private Declare Function KMViaVB_CompileAndLoadCoff Lib "KMViaVB" (ByVal handle As Integer, ByVal Thread As Integer, ByVal Name As String, ByRef Err As String, ByVal MaxErrLen As Integer) As Integer
-    Private Declare Function KMViaVB_ServiceConsole Lib "KMViaVB" (ByVal handle As Integer) As Integer
-    Private Declare Function KMViaVB_ListLocations Lib "KMViaVB" (ByVal handle As Integer, ByRef nlocations As Integer, ByRef List As Integer) As Integer
-	
-	
+    Dim global_KM_Handle As Int64
+
+    Private Declare Function KMViaVB_Test1 Lib "KMViaVB" () As Integer
+    Private Declare Function KMViaVB_Test2 Lib "KMViaVB" (ByVal handle As Integer) As Integer
+    Private Declare Function KMViaVB_Test3 Lib "KMViaVB" (ByRef handle As Int64) As Integer
+
+    Private Declare Function KMViaVB_New Lib "KMViaVB" (ByRef handle As Int64, ByVal board As Integer) As Integer
+    Private Declare Function KMViaVB_Free Lib "KMViaVB" (ByRef handle As Int64) As Integer
+
+    Private Declare Function KMViaVB_WriteLineReadLine Lib "KMViaVB" (ByVal handle As Int64, ByVal s As String, ByRef rtrn As String) As Integer
+    Private Declare Function KMViaVB_WriteLine Lib "KMViaVB" (ByVal handle As Int64, ByVal s As String) As Integer
+    Private Declare Function KMViaVB_WriteLineWithEcho Lib "KMViaVB" (ByVal handle As Int64, ByVal s As String) As Integer
+    Private Declare Function KMViaVB_ReadLineTimeOut Lib "KMViaVB" (ByVal handle As Int64, ByRef buf As String, ByVal TimeOutms As Integer) As Integer
+    Private Declare Function KMViaVB_WaitToken Lib "KMViaVB" (ByVal handle As Int64) As Integer
+    Private Declare Function KMViaVB_KMotionLock Lib "KMViaVB" (ByVal handle As Int64) As Integer
+    Private Declare Function KMViaVB_USBLocation Lib "KMViaVB" (ByVal handle As Int64) As Integer
+    Private Declare Sub KMViaVB_ReleaseToken Lib "KMViaVB" (ByVal handle As Int64)
+    Private Declare Function KMViaVB_Failed Lib "KMViaVB" (ByVal handle As Int64) As Integer
+    Private Declare Function KMViaVB_CheckForReady Lib "KMViaVB" (ByVal handle As Int64) As Integer
+    Private Declare Function KMViaVB_LoadCoff Lib "KMViaVB" (ByVal handle As Int64, ByVal Thread As Integer, ByVal Name As String, ByVal PackToFlash As Integer) As Integer
+    Private Declare Function KMViaVB_CompileAndLoadCoff Lib "KMViaVB" (ByVal handle As Int64, ByVal Thread As Integer, ByVal Name As String, ByRef Err As IntPtr, ByVal MaxErrLen As Integer) As Integer
+    Private Declare Function KMViaVB_ServiceConsole Lib "KMViaVB" (ByVal handle As Int64) As Integer
+    Private Declare Function KMViaVB_ListLocations Lib "KMViaVB" (ByVal handle As Int64, ByRef nlocations As Integer, ByRef List As Integer) As Integer
+
+
     Public Delegate Function EventHandler(ByVal parm As String) As Short
     Dim handler As New EventHandler(AddressOf ConsoleCallback)
-    Private Declare Function KMViaVB_SetConsoleCallback Lib "KMViaVB" (ByVal handle As Integer, ByVal pFunc As EventHandler) As Integer
+    Private Declare Function KMViaVB_SetConsoleCallback Lib "KMViaVB" (ByVal handle As Int64, ByVal pFunc As EventHandler) As Integer
     Public ConsoleMessage As String
 
     Private Sub MarshalPre(ByRef s As String)
-        s = Space(255)
+        s = Space(2560)
     End Sub
     Private Sub MarshalPost(ByRef s As String)
         Dim p As Short
@@ -57,6 +63,7 @@ Module Module1
 
         KMViaVB_New(global_KM_Handle, 0)
         Debug.Print(VB6.TabLayout(Hex(global_KM_Handle), Hex(KM_Open)))
+        Return 0
     End Function
     Public Function KM_WriteLineReadLine(ByVal s As String, ByRef rtrn As String) As Integer
         If global_KM_Handle = 0 Then
@@ -193,6 +200,8 @@ Module Module1
         KM_LoadCoff = KMViaVB_LoadCoff(global_KM_Handle, Thread, Name, PackToFlash)
     End Function
     Public Function KM_CompileAndLoadCoff(ByVal Thread As Integer, ByVal Name As String, ByRef Err As String, ByVal MaxErrLen As Integer) As Integer
+        Dim ptr As IntPtr = Marshal.AllocHGlobal((MaxErrLen + 1) * 2) ' 2 bytes per wide char
+
         If global_KM_Handle = 0 Then
             KM_Open()
             If global_KM_Handle = 0 Then
@@ -200,9 +209,9 @@ Module Module1
                 Exit Function
             End If
         End If
-        MarshalPre(Err)
-        KM_CompileAndLoadCoff = KMViaVB_CompileAndLoadCoff(global_KM_Handle, Thread, Name, Err, MaxErrLen)
-        MarshalPost(Err)
+        KM_CompileAndLoadCoff = KMViaVB_CompileAndLoadCoff(global_KM_Handle, Thread, Name, ptr, MaxErrLen)
+        Err = Marshal.PtrToStringUni(ptr)
+        Marshal.FreeHGlobal(ptr)
     End Function
 
     Public Function KM_Close__() As Integer
@@ -252,6 +261,7 @@ Module Module1
 
     Function ConsoleCallback(ByVal Msg As String) As Integer
         ConsoleMessage = ConsoleMessage & Msg
+        Return 0
     End Function
 
 

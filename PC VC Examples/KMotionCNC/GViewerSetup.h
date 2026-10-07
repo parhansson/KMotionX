@@ -30,11 +30,11 @@ public:
 	double	m_BoxOffsetX;
 	double	m_BoxOffsetY;
 	double	m_BoxOffsetZ;
-	float	m_AxisSize;
-	float	m_ToolSize;
-	float	m_ToolOffX;
-	float	m_ToolOffY;
-	float	m_ToolOffZ;
+	double	m_AxisSize;
+	double	m_ToolSize;
+	double	m_ToolOffX;
+	double	m_ToolOffY;
+	double	m_ToolOffZ;
 	BOOL m_IncludeA;
 	BOOL m_IncludeB;
 	BOOL m_IncludeC;

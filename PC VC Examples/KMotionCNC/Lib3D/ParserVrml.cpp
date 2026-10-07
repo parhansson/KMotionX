@@ -258,9 +258,9 @@ int CParserVrml::OffsetToStringBeginLine(char *string)
 	while(m_IndexBuffer < m_SizeFile)
 	{
 		ReadLine();
-		if(strncmp(m_pBufferLine,string,strlen(string)) == 0)
+		if(strncmp(m_pBufferLine,string,(int)strlen(string)) == 0)
 		{
-			m_IndexBuffer -= strlen(m_pBufferLine)+1;
+			m_IndexBuffer -= (int)strlen(m_pBufferLine)+1;
 			/*
 			TRACE("  begin line : %c%c%c%c%c...\n",m_pBuffer[m_IndexBuffer],
 				                                     m_pBuffer[m_IndexBuffer+1],
@@ -284,7 +284,7 @@ int CParserVrml::OffsetToString(char *string)
 		char *adr = strstr(m_pBufferLine,string);
 		if(strstr(m_pBufferLine,string) != NULL)
 		{
-			m_IndexBuffer = m_IndexBuffer - strlen(m_pBufferLine) - 1 + (adr-m_pBufferLine);
+			m_IndexBuffer = m_IndexBuffer - (int)strlen(m_pBufferLine) - 1 + (adr-m_pBufferLine);
 			ASSERT(m_IndexBuffer >= 0);
 			/*
 			TRACE("  offset to string : %c%c%c%c%c... IndexBuffer : %d\n",m_pBuffer[m_IndexBuffer],
@@ -313,7 +313,7 @@ int CParserVrml::OffsetToStringBefore(char *string,
 			return 0;
 		if(strstr(m_pBufferLine,string) != NULL)
 		{
-			m_IndexBuffer = m_IndexBuffer - strlen(m_pBufferLine) - 1 + (adr-m_pBufferLine);
+			m_IndexBuffer = m_IndexBuffer - (int)strlen(m_pBufferLine) - 1 + (adr-m_pBufferLine);
 			ASSERT(m_IndexBuffer >= 0);
 			/*
 			TRACE("  offset to string : %c%c%c%c%c... IndexBuffer : %d\n",m_pBuffer[m_IndexBuffer],
@@ -638,7 +638,7 @@ int CParserVrml::SizeMesh(int *pNbVertex,
 		return 0;
 	}
 
-	m_IndexBuffer += strlen("Coordinate { point [") + 1;
+	m_IndexBuffer += (int)strlen("Coordinate { point [") + 1;
 
 	// Cur : x y z,
 	// End : x y z]
@@ -674,7 +674,7 @@ int CParserVrml::SizeMesh(int *pNbVertex,
 			return 0;
 		}
 
-		m_IndexBuffer += strlen("TextureCoordinate { point [") + 1;
+		m_IndexBuffer += (int)strlen("TextureCoordinate { point [") + 1;
 
 		// Cur : x y,
 		// End : x y]
@@ -705,7 +705,7 @@ int CParserVrml::SizeMesh(int *pNbVertex,
 		TRACE("invalid mesh\n");
 		return 0;
 	}
-	m_IndexBuffer += strlen("coordIndex [") + 1;
+	m_IndexBuffer += (int)strlen("coordIndex [") + 1;
 
 	// Cur : int, int, int, -1,
 	// End : int, int, int, -1]
@@ -747,7 +747,7 @@ int CParserVrml::SizeMesh(int *pNbVertex,
 			TRACE("invalid texture coordinate index\n");
 			return 0;
 		}
-		m_IndexBuffer += strlen("texCoordIndex [") + 1;
+		m_IndexBuffer += (int)strlen("texCoordIndex [") + 1;
 
 		// Cur : int, int, int, -1,
 		// End : int, int, int, -1]
@@ -820,7 +820,7 @@ int CParserVrml::StoreMesh(CArray3d<CVertex3d> *pArrayVertex,
 		TRACE("invalid mesh\n");
 		return 0;
 	}
-	m_IndexBuffer += strlen("Coordinate { point [") + 1;
+	m_IndexBuffer += (int)strlen("Coordinate { point [") + 1;
 	// Cur : x y z,
 	// End : x y z]
 	int success;
@@ -850,7 +850,7 @@ int CParserVrml::StoreMesh(CArray3d<CVertex3d> *pArrayVertex,
 			TRACE("invalid texture coordinate\n");
 			return 0;
 		}
-		m_IndexBuffer += strlen("TextureCoordinate { point [") + 1;
+		m_IndexBuffer += (int)strlen("TextureCoordinate { point [") + 1;
 		// Cur : x y,
 		// End : x y
 		int success;
@@ -884,7 +884,7 @@ int CParserVrml::StoreMesh(CArray3d<CVertex3d> *pArrayVertex,
 		TRACE("invalid mesh\n");
 		return 0;
 	}
-	m_IndexBuffer += strlen("coordIndex [") + 1;
+	m_IndexBuffer += (int)strlen("coordIndex [") + 1;
 
 	// Cur : int, int, int, -1,
 	// End : int, int, int, -1]
@@ -932,7 +932,7 @@ int CParserVrml::StoreMesh(CArray3d<CVertex3d> *pArrayVertex,
 			TRACE("invalid mesh\n");
 			return 0;
 		}
-		m_IndexBuffer += strlen("texCoordIndex [") + 1;
+		m_IndexBuffer += (int)strlen("texCoordIndex [") + 1;
 
 		// Cur : int, int, int, -1,
 		// End : int, int, int, -1]

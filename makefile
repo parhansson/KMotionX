@@ -9,6 +9,7 @@ SUBDIRS+=KMotionServer
 SUBDIRS+=KMotionX/examples/test
 SUBDIRS+=KMotionX/examples/KFlopConsole
 SUBDIRS+=KMotionX/examples/ExecuteGCode
+SUBDIRS+=KMotionX/examples/kmxWeb
 SUBDIRS+=TCC67
 
 ifeq ($(BUILD_JNI),true)
@@ -17,6 +18,7 @@ endif
 
 KMXPROGS+=KMotionServer$(EXESUF)
 KMXPROGS+=tcc67$(EXESUF)
+KMXPROGS+=kmxWeb$(EXESUF)
 KMXLIBS+=libGCodeInterpreter$(LIBEXT)
 KMXLIBS+=libKMotion$(LIBEXT)
 KMXLIBS+=libKMotionX$(LIBEXT)
@@ -41,6 +43,7 @@ install: subdirs
 	$(INSTALL) -m755 $(addprefix $(BUILD_ROOT)/bin/,$(KMXLIBS)) "$(kmxdir)"
 	mkdir -p "$(includedir)/kmx"
 	mkdir -p "$(includedir)/kmx/DSP_KFLOP"
+	mkdir -p "$(includedir)/kmx/DSP_KOGNA"
 	mkdir -p "$(includedir)/kmx/GCodeInterpreter"
 	mkdir -p "$(includedir)/kmx/KMotion"
 	mkdir -p "$(includedir)/kmx/KMotionX"
@@ -56,14 +59,17 @@ install: subdirs
 	cp -R $(BUILD_ROOT)/KMotionX/include/ftdi "$(includedir)/kmx/KMotionX"
 	cp -R $(BUILD_ROOT)/KMotionX/include/win "$(includedir)/kmx/KMotionX"
 	cp -R $(BUILD_ROOT)/DSP_KFLOP/ $(kmxhome)/DSP_KFLOP
-	cp -R $(BUILD_ROOT)/DSP_KMotion/ $(kmxhome)/DSP_KMotion
+	cp -R $(BUILD_ROOT)/DSP_KOGNA/ $(kmxhome)/DSP_KOGNA
 	cp "$(BUILD_ROOT)/KMotion/Data/emc.var" "$(kmxhome)/Data/"
 	cp "$(BUILD_ROOT)/C Programs/BlinkKFLOP.c" "$(kmxhome)/C Programs/"
+	ln -sf $(addprefix $(kmxhome)/bin/,$(KMXPROGS)) $(bindir)
 
 
 uninstall:
 	rm -fv $(foreach P,$(KMXLIBS),"$(kmxdir)/$P")
 	rm -rfv "$(includedir)/kmx"
+	rm -fv $(foreach P,$(KMXPROGS),"$(bindir)/$P")
+	rm -fv $(foreach P,$(KMXPROGS),"$(kmxhome)/bin/$P")
 
 clean:
 #rm -f *.o *~

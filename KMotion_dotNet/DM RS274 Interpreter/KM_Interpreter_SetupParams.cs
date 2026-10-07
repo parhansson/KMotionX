@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
+using System.Xml;
 
 namespace KMotion_dotNet
 {
@@ -1003,7 +1004,29 @@ namespace KMotion_dotNet
                 }
             }
 
-            
+            /// <summary>
+            /// Gets d flag (d word present) in current GCode Block
+            /// </summary>
+            public bool block_d_flag
+            {
+                get
+                {
+                    return Get_block_d_flag();
+                }
+            }
+
+            /// <summary>
+            /// Gets d number (d word) in current GCode Block
+            /// </summary>
+            public double block_d_number
+            {
+                get
+                {
+                    return Get_block_d_number();
+                }
+            }
+
+
             #endregion
 
             #region Property Dispatchers
@@ -4046,11 +4069,58 @@ namespace KMotion_dotNet
                 }
             }
 
-            
-            
-            
-            
-            
+
+
+
+
+
+            private bool Get_block_d_flag()
+            {
+                try
+                {
+                    return KM_dotnet_Interop_GCodeInterpreter_Get_block_d_flag(_InstanceHandle);
+                }
+                catch (DllNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                        this.ToString(), "Get_block_d_flag"));
+                }
+                catch (EntryPointNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                       this.ToString(), "Get_block_d_flag"));
+                }
+                catch (Exception e)
+                {
+                    throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                      this.ToString(), "Get_block_d_flag"));
+                }
+            }
+
+
+            private double Get_block_d_number()
+            {
+                try
+                {
+                    return KM_dotnet_Interop_GCodeInterpreter_Get_block_d_number(_InstanceHandle);
+                }
+                catch (DllNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                        this.ToString(), "Get_block_d_number"));
+                }
+                catch (EntryPointNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                       this.ToString(), "Get_block_d_number"));
+                }
+                catch (Exception e)
+                {
+                    throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                      this.ToString(), "Get_block_d_number"));
+                }
+            }
+
             private void Set_Cycle_RetractMode(int value)
             {
                 try
@@ -4141,6 +4211,72 @@ namespace KMotion_dotNet
                       this.ToString(), "Get_Tool"));
                 }
             }
+
+            #region Parameter Methodos
+
+            /// <summary>
+            /// Get GCode parameter by index.
+            /// </summary>
+            /// <param name="index">Parameter index.</param>
+            /// <returns>Parameter value.</returns>
+            public double GetParameter(int index)
+            {
+                double value;
+                try
+                {
+                    value = KM_dotnet_Interop_GCodeInterpreter_Get_Parameter(_InstanceHandle, index);
+                }
+                catch (DllNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                        this.ToString(), "GetParameter"));
+                }
+                catch (EntryPointNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                       this.ToString(), "GetParameter"));
+                }
+                catch (Exception e)
+                {
+                    throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                      this.ToString(), "GetParameter"));
+                }
+                return value;
+            }
+
+            /// <summary>
+            /// Set parameter value.
+            /// </summary>
+            /// <remarks>Will return false if out of range.</remarks>
+            /// <param name="index">Index of parameter.</param>
+            /// <param name="value">Value of parameter.</param>
+            /// <returns>True is successful.</returns>
+            public bool SetParameter(int index, double value)
+            {
+                bool result;
+
+                try
+                {
+                    result = KM_dotnet_Interop_GCodeInterpreter_Set_Parameter(_InstanceHandle, index, value);
+                }
+                catch (DllNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                        this.ToString(), "SetParameter"));
+                }
+                catch (EntryPointNotFoundException e)
+                {
+                    throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                       this.ToString(), "SetParameter"));
+                }
+                catch (Exception e)
+                {
+                    throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                      this.ToString(), "SetParameter"));
+                }
+                return result;
+            }
+            #endregion
         }
     }
 }

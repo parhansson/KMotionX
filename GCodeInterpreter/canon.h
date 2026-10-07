@@ -4,8 +4,8 @@
 #include <stdio.h>		// FILE
 
 
-extern char Output[2560];
-extern char ErrorOutput[2560];
+extern std::string Output;
+extern std::string ErrorOutput;
 extern int ErrorFileLineNumber;
 extern int line_number;
 
@@ -67,6 +67,7 @@ typedef int CANON_PLANE;
 #define CANON_PLANE_XZ 3
 
 typedef int CANON_UNITS;
+#define CANON_UNITS_UNDEFINED -1
 #define CANON_UNITS_INCHES 1
 #define CANON_UNITS_MM 2
 #define CANON_UNITS_CM 3
@@ -128,7 +129,7 @@ struct CANON_VECTOR {
 	y = _y;
 	z = _z;
     }
-    double x, y, z;
+    double x=0, y=0, z=0;
 };
 
 struct CANON_POSITION {
@@ -158,8 +159,10 @@ struct CANON_TOOL_TABLE {
     double diameter;
     double xoffset;
     double yoffset;
-	char Comment[256];
-	char ToolImage[MAX_PATH];
+    double FeedTime;
+    double FeedDist;
+    std::string Comment;
+	std::string ToolImage;
 };
 
 /* Initialization */
@@ -455,7 +458,7 @@ extern void USE_SPINDLE_FORCE();
 extern void USE_NO_SPINDLE_FORCE();
 
 /* Tool Functions */
-extern void USE_TOOL_LENGTH_OFFSET(double length, double xoffset, double yoffset);
+extern void USE_TOOL_LENGTH_OFFSET(double length, double xoffset, double yoffset, bool TCP_Mode);
 
 extern void CHANGE_TOOL(int slot);	/* slot is slot number */
 
@@ -504,7 +507,7 @@ controller.
 An attempt to move an axis while it is clamped should result in an
 error condition in the controller. */
 
-extern void COMMENT(char *s);
+extern void COMMENT(const wchar_t *s);
 
 /* This function has no physical effect. If commands are being printed or
 logged, the comment command is printed or logged, including the string

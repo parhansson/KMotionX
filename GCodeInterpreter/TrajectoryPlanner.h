@@ -120,7 +120,7 @@ typedef struct  // 2nd order polynomial for a single trip state
 } TP_COEFF;
 
 
-typedef struct
+typedef struct SEGMENT_STRUCT
 {
 	double dx;			// path length of segment
 	double MaxVel,OrigVel;
@@ -234,6 +234,8 @@ void AdjustSegVelocity(int i);
 void AdjustSegVelocityCircle(int i, double A);
 
 void RoundCorner(int i);
+bool CheckCollinear(SEGMENT *s0, SEGMENT *s1, SEGMENT *s2, double tol);
+
 
 void SetSegmentVelAccels(int i, double Vel, double Accel, double Decel);
 void SetSegmentVelAccelJerk(int i, double Vel, double Accel, double Jerk);
@@ -241,6 +243,8 @@ void GetSegmentDirection(int i, double *dx, double *dy, double *dz, double *da, 
 
 void CalcFinalDirectionOfSegment(SEGMENT *p,double &dx, double &dy, double &dz, double &da, double &db, double &dc, double &du, double &dv);
 void CalcBegDirectionOfSegment(SEGMENT *p,double &dx, double &dy, double &dz, double &da, double &db, double &dc, double &du, double &dv);
+bool PureAngle(double dx, double dy, double dz, double da, double db, double dc, double du, double dv, MOTION_PARAMS* MP);
+bool PureAngle(SEGMENT* p);
 
 SEGMENT *GetSegPtr(int i);
 int TPMOD(int i);

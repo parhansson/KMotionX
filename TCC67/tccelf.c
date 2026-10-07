@@ -769,7 +769,7 @@ static void tcc_add_runtime(TCCState *s1)
 
     snprintf(buf, sizeof(buf), "%s/%s", tcc_lib_path, "libtcc1.o");
 
-// tktk don't add any runtime for now
+//  don't add any runtime for now
 //    tcc_add_file(s1, buf);
 
 #ifdef CONFIG_TCC_BCHECK
@@ -803,7 +803,7 @@ static void tcc_add_runtime(TCCState *s1)
     }
 #endif
     /* add libc if not memory output */
-// tktk     if (s1->output_type != TCC_OUTPUT_MEMORY) {
+//      if (s1->output_type != TCC_OUTPUT_MEMORY) {
 //        tcc_add_library(s1, "c");
 //        tcc_add_file(s1, CONFIG_TCC_CRT_PREFIX "/crtn.o");
 //    }
@@ -1413,13 +1413,12 @@ int tcc_output_file(TCCState *s1, const char *filename)
 
         /* get entry point address */
         if (file_type == TCC_OUTPUT_EXE)
-// tktk            ehdr.e_entry = (unsigned long)tcc_get_symbol(s1, "_start");
+//             ehdr.e_entry = (unsigned long)tcc_get_symbol(s1, "_start");
             ehdr.e_entry = (unsigned long)tcc_get_symbol(s1, "main");
         else
             ehdr.e_entry = text_section->sh_addr; /* XXX: is it correct ? */
     }
 
-	// tktk
     C67_main_entry_point = tcc_get_symbol(s1, "main");
     
 //	sort_syms(s1, symtab_section);
@@ -1463,8 +1462,7 @@ int tcc_output_file(TCCState *s1, const char *filename)
 
 #if (DO_C67)
 
-	// tktk now write a coff file
-
+	//  now write a coff file
 	WriteCoff(s1,filename);
 
 #else
@@ -1485,7 +1483,7 @@ int tcc_output_file(TCCState *s1, const char *filename)
     for(i=1;i<s1->nb_sections;i++) {
         s = s1->sections[section_order[i]];
         if (s->sh_type != SHT_NOBITS) {
-            while (offset < (int)s->sh_offset) {  // tktk 
+            while (offset < (int)s->sh_offset) {
                 fputc(0, f);
                 offset++;
             }

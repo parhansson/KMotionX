@@ -15,26 +15,6 @@
             
             Use the configuration methods to set the desired parameters
             </summary>
-            <summary>
-            Axis class for KM_Controller
-            Use to control a single axis channel
-             
-            The axis channel can be configured via a c program and the KM_Controller
-            
-            or
-            
-            Use the configuration methods to set the desired parameters
-            </summary>
-            <summary>
-            Axis class for KM_Controller
-            Use to control a single axis channel
-             
-            The axis channel can be configured via a c program and the KM_Controller
-            
-            or
-            
-            Use the configuration methods to set the desired parameters
-            </summary>
         </member>
         <member name="T:KMotion_dotNet.KM_Axis.KM_Axis_TuningParams">
             <summary>
@@ -879,6 +859,11 @@
             Whether Axis C is in units of Degrees
             </summary>
         </member>
+        <member name="P:KMotion_dotNet.KM_MotionParams.TCP_Active">
+            <summary>
+            Whether RTCP (Kinematics) is Active or not.
+            </summary>
+        </member>
         <member name="M:KMotion_dotNet.KM_MotionParams.#ctor(System.IntPtr)">
             <summary>
             Primary constructor for the KM_MotionParams object
@@ -1266,6 +1251,18 @@
         <member name="M:KMotion_dotNet.KM_MotionParams.Set_DegreesC(System.Boolean)">
             <summary>
             Property setter Accessor for DegreesC
+            </summary>
+            <param name="value">DegreesC to set (whether axis is in units of degrees)</param>
+        </member>
+        <member name="M:KMotion_dotNet.KM_MotionParams.Get_TCP_Active">
+            <summary>
+            Property getter Accessor for TCP_Active (Kinematics)
+            </summary>
+            <returns>Current TCP_Active</returns>
+        </member>
+        <member name="M:KMotion_dotNet.KM_MotionParams.Set_TCP_Active(System.Boolean)">
+            <summary>
+            Property setter Accessor for TCP_Active
             </summary>
             <param name="value">DegreesC to set (whether axis is in units of degrees)</param>
         </member>
@@ -1675,6 +1672,16 @@
             Gets r number (r word) in current GCode Block
             </summary>
         </member>
+        <member name="P:KMotion_dotNet.KM_Interpreter.KM_Interpreter_SetupParams.block_d_flag">
+            <summary>
+            Gets d flag (d word present) in current GCode Block
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_Interpreter.KM_Interpreter_SetupParams.block_d_number">
+            <summary>
+            Gets d number (d word) in current GCode Block
+            </summary>
+        </member>
         <member name="M:KMotion_dotNet.KM_Interpreter.KM_Interpreter_SetupParams.SetTool(System.Int32,System.Int32,System.Int32,System.Double,System.Double,System.Double,System.Double)">
             <summary>
             Updates the given tool table location
@@ -1698,6 +1705,22 @@
             <param name="diameter">Tool Diameter Offset</param>
             <param name="xoffset">Tool X Offset</param>
             <param name="yoffset">Tool Y Offset</param>
+        </member>
+        <member name="M:KMotion_dotNet.KM_Interpreter.KM_Interpreter_SetupParams.GetParameter(System.Int32)">
+            <summary>
+            Get GCode parameter by index.
+            </summary>
+            <param name="index">Parameter index.</param>
+            <returns>Parameter value.</returns>
+        </member>
+        <member name="M:KMotion_dotNet.KM_Interpreter.KM_Interpreter_SetupParams.SetParameter(System.Int32,System.Double)">
+            <summary>
+            Set parameter value.
+            </summary>
+            <remarks>Will return false if out of range.</remarks>
+            <param name="index">Index of parameter.</param>
+            <param name="value">Value of parameter.</param>
+            <returns>True is successful.</returns>
         </member>
         <member name="T:KMotion_dotNet.KM_Interpreter.KM_GCodeInterpreterCompleteHandler">
             <summary>
@@ -3250,6 +3273,30 @@
             <param name="hex">1 or 2 character string</param>
             <returns>byte</returns>
         </member>
+        <member name="T:KMotion_dotNet.BOARD_TYPE">
+            <summary>
+            Type of Board Currently KFLOP or Kogna
+            
+            <remarks>
+            Used where the Controllers Capabilities differ
+            </remarks>
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.BOARD_TYPE.UNKNOWN">
+            <summary>
+            Board type not yet determined
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.BOARD_TYPE.KFLOP">
+            <summary>
+            Controller is KFLOP
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.BOARD_TYPE.KOGNA">
+            <summary>
+            Controller is Kogna
+            </summary>
+        </member>
         <member name="T:KMotion_dotNet.CANON_PLANE">
             <summary>
             Represents the axis pair for executing arc segments
@@ -3891,18 +3938,29 @@
             Locally maintained Main_Status struct
             </summary>
         </member>
-        <member name="M:KMotion_dotNet.KM_Controller.#ctor">
+        <member name="M:KMotion_dotNet.KM_Controller.#ctor(System.Boolean)">
             <summary>
             Default constructor for the KM_Controller object
             
             Use this for single board applications
             </summary>
+            <param name="DoNotObtainConsoleMessages">Set true
+            if Console Messages should not be handled by this App
+            Defaults to false.</param>
         </member>
-        <member name="M:KMotion_dotNet.KM_Controller.#ctor(System.Int32)">
+        <member name="M:KMotion_dotNet.KM_Controller.#ctor(System.Int32,System.Boolean)">
             <summary>
             Multiple board constructor for attaching this object to a specific board address
             </summary>
-            <param name="boardnumber">device ID</param>
+            <param name="boardnumber">device ID 
+            0=any KFLOP/Kogna found
+            less than or equal to 0x00FFFFFF assume USB Location ID
+            greater than or equal to 0xFF00XXXX Kogna with Serial Number XXXX
+            Otherwise assume Static IP Address ie.
+            0xC0A80A64 -> 192.168.10.100</param>
+            <param name="DoNotObtainConsoleMessages">Set true
+            if Console Messages should not be handled by this App
+            Defaults to false.</param>
         </member>
         <member name="M:KMotion_dotNet.KM_Controller.WriteLineReadLine(System.String)">
             <summary>
@@ -4047,8 +4105,8 @@
         <member name="M:KMotion_dotNet.KM_Controller.GetBoardType">
             <summary>
             Gets the board type
-            1 = KMotion
-            2 = KFlop
+            BOARD_TYPE.KFLOP = 2 = KFlop  8 Axes Controller
+            BOARD_TYPE.KOGNA = 3 = Kogna 16 Axis Controller
             </summary>
             <returns>Board Type we are talking to</returns>
         </member>
@@ -4506,29 +4564,377 @@
             Toggle a Digital Output Bit
             </summary>
         </member>
+        <member name="T:KMotion_dotNet.StatusConsts">
+            <summary>
+            Defines form PC-DSP.h defining number of available devices
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.StatusConsts.N_PC_COMM_PERSIST">
+            <summary>
+            Number of Persist variable included in Status Upload
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.StatusConsts.N_DACS">
+            <summary>
+            Number of Kanalog DACs
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.StatusConsts.N_ADCS">
+            <summary>
+            Number of Kanalog ADCs
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.StatusConsts.N_PWMS">
+            <summary>
+            Number 8-bit PWMS on IO Pins
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.StatusConsts.N_ENCS">
+            <summary>
+            Number Encoder Inputs on KFLOP 0 - 7
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.StatusConsts.N_ENCS_KOGNA">
+            <summary>
+            Number Encoder Inputs on Kogna 0 - 19
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.StatusConsts.N_DACS_KOGNA">
+            <summary>
+            Number DACs on Kogna
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.StatusConsts.N_ADCS_KOGNA">
+            <summary>
+            Number ADCs on KOGNA
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.StatusConsts.N_ADCS_SNAP">
+            <summary>
+            Number ADCs on SnapAmp per SnapAmpA
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.StatusConsts.N_PWMS_SNAP">
+            <summary>
+            Number PWMs on SnapAmp per SnapAmpA
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.StatusConsts.N_ENCS_SNAP">
+            <summary>
+            Number Encoder Inputs on SnapAmp 0 - 19
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.StatusConsts.N_CHANNELS_KOGNA">
+            <summary>
+            Number Axis Channels available for Kogna 
+            (KFLOP has only 8 fields for additional channels will be zero)
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.StatusConsts.N_IO_PWMS">
+            <summary>
+            Number 8-bit PWMs for Kogna/KFLOP
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.StatusConsts.N_KOGNA_HRPWM">
+            <summary>
+            Number 12-bit (High Resolution) HRPWMs for Kogna
+            </summary>
+        </member>
+        <member name="T:KMotion_dotNet.KM_MainStatusRaw">
+            <summary>
+            This structure matches exactly the binary form as the Kogna/KFLOP
+            MAIN_STATUS Structure so it can be uploaded as a binary image.
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.VersionAndSize">
+            <summary>
+            Bulk status record packed version and size info 
+            bits 16-23 = version, bits 0-15 = size in words
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.ADC">
+            <summary>
+            Bulk status record ADC values (8 Kanalog + 2 x 8 SnapAmp)
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.DAC">
+            <summary>
+            Bulk status record DAC values (8 Kanalog)
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.PWM">
+            <summary>
+            Bulk status record PWM values (8 obsolete PWMS + 2 x 4 SnapAmp)
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.Position">
+            <summary>
+            Bulk status record Axis Measured positions (Encoder or other sensing device)
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.Destination">
+            <summary>
+            Bulk status record Axis Commanded Destinations
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.OutputChan0">
+            <summary>
+            Bulk status record Axis First output channel specified
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.InputModes">
+            <summary>
+            Bulk status record feedback selected input modes 
+            4 bits for each axis (not sure why only using 16 of 32 bits) 
+            Axes 0-3
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.InputModes2">
+            <summary>
+            Bulk status record feedback selected input modes #2
+            4 bits for each axis
+            Axes 4-7
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.InputModes3">
+            <summary>
+            Bulk status record feedback selected input modes #3
+            4 bits for each axis
+            Axes 8-11
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.InputModes4">
+            <summary>
+            Bulk status record feedback selected input modes #4
+            4 bits for each axis
+            Axes 12-15
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.OutputModes">
+            <summary>
+            Bulk status record feedback selected output modes
+            Axes 0-3
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.OutputModes2">
+            <summary>
+            Bulk status record feedback selected output modes #2
+            Axes 4-7
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.OutputModes3">
+            <summary>
+            Bulk status record feedback selected output modes #3
+            Axes 8-11
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.OutputModes4">
+            <summary>
+            Bulk status record feedback selected output modes #4
+            Axes 11-15
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.Enables">
+            <summary>
+            Bulk status record Current axis enables
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.AxisDone">
+            <summary>
+            Bulk status record Current axis completes
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.BitsDirection">
+            <summary>
+            Bulk status record Current KFLOP 64 IO Bit directions (inputs vs outputs)
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.BitsDirection200">
+            <summary>
+            Bulk status record Current Kogna IO Bit directions (inputs vs outputs)
+            Kogna - 24 bits 200-223 of I/O direction 1 = output
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.BitsDirection280">
+            <summary>
+            Bulk status record Current Kogna IO Bit directions (inputs vs outputs)
+            Kogna - 10 bits 280-289 of I/O direction 1 = output
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.BitsState">
+            <summary>
+            Bulk status record Current KFLOP/Kogna 64 IO Bit states
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.BitsState200">
+            <summary>
+            Bulk status record Current KFLOP/Kogna 64 IO Bit states
+            Kogna - 90 bits 200-289 of state lsb=I/O bit200
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.PinMuxModes">
+            <summary>
+            Bulk status record 
+            Kogna - 10 Pin function modes 2 bits per pin 4 HRPWM + 6 SPI
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.Kogna_ADC">
+            <summary>
+            Bulk status record Kogna 4 ADCs
+            format  12 bits data (signed extended to 16 bits)
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.Kogna_DAC">
+            <summary>
+            Bulk status record Kogna 8 DACSs
+            format  12 bits data (signed extended to 16 bits)
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.Kogna_PWM_Prescale">
+            <summary>
+            Bulk status record Kogna 
+            Prescale sets frequency of all 8 8-bit PWMs
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.Kogna_PWM">
+            <summary>
+            Bulk status record Kogna 
+            current pulse settings of all 8 8-bit IO PWMs
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.Kogna_PWM_Enables">
+            <summary>
+            Bulk status record Kogna 
+            current PWM Enables to control Pin of all 8 8-bit IO PWMs
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.HRPWMPeriod01">
+            <summary>
+            Bulk status record Kogna 
+            current Kogna HRPWMs Periods (common for HRPWM 0 and 1)
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.HRPWMPeriod2">
+            <summary>
+            Bulk status record Kogna 
+            current Kogna HRPWM Periods (for HRPWM 2)
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.HRPWMPeriod3">
+            <summary>
+            Bulk status record Kogna 
+            current Kogna HRPWM Periods (for HRPWM 3)
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.HRPWM">
+            <summary>
+            Bulk status record Kogna 
+            current Kogna Kogna 4 HRPWMs Pulse widths
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.SnapBitsDirection0">
+            <summary>
+            Bulk status record Current SnapAmp #0 IO Bit directions (inputs vs outputs)
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.SnapBitsDirection1">
+            <summary>
+            Bulk status record Current SnapAmp #1 IO Bit directions (inputs vs outputs)
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.SnapBitsState0">
+            <summary>
+            Bulk status record Current SnapAmp #0 IO Bit States
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.SnapBitsState1">
+            <summary>
+            Bulk status record Current SnapAmp #1 IO Bit States
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.KanalogBitsStateInputs">
+            <summary>
+            Bulk status record Current Kanalog Input Bit States
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.KanalogBitsStateOutputs">
+            <summary>
+            Bulk status record Current Kanalog Output Bit States
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.RunOnStartUp">
+            <summary>
+            Bulk status record Current Boot Thread Startup Enables 
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.ThreadActive">
+            <summary>
+            Bulk status record Current Thread Execution State 
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.StopImmediateState">
+            <summary>
+            Bulk status record current StopImmediate (feedhold) state 
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.TimeStamp">
+            <summary>
+            Bulk status record Time Stamp in seconds of when status was acquired 
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.PC_comm">
+            <summary>
+            Bulk status record KFLOP-PC 8 Communication variables 100-107
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.VirtualBits">
+            <summary>
+            Bulk status record Virtual bits packed 16 per word 48-63
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatusRaw.VirtualBitsEx0">
+            <summary>
+            Bulk status record Extended Virtual bits packed 32 per word
+            1024-1055
+            </summary>
+        </member>
         <member name="T:KMotion_dotNet.KM_MainStatus">
             <summary>
             Bulk status record uploaded from KFLOP
             </summary>
         </member>
+        <member name="F:KMotion_dotNet.KM_MainStatus.MainStatus">
+            <summary>        
+            This structure matches exactly the binary form as the Kogna/KFLOP
+            MAIN_STATUS Structure so it can be uploaded as a binary image.
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_MainStatus._TicksAtUpdate">
+            <summary>
+            Time in milliseconds since Windows Started where
+            Status record was last uploaded
+            Note: rolls over every 49 days
+            </summary>
+        </member>
         <member name="P:KMotion_dotNet.KM_MainStatus.VersionAndSize">
             <summary>
             Bulk status record packed version and size info 
+            bits 16-23 = version, bits 0-15 = size in words
             </summary>
         </member>
         <member name="P:KMotion_dotNet.KM_MainStatus.ADC">
             <summary>
-            Bulk status record ADC values (Kanalog)
+            Bulk status record ADC values (8 Kanalog + 2 x 8 SnapAmp)
             </summary>
         </member>
         <member name="P:KMotion_dotNet.KM_MainStatus.DAC">
             <summary>
-            Bulk status record DAC values (Kanalog)
+            Bulk status record DAC values (8 Kanalog)
             </summary>
         </member>
         <member name="P:KMotion_dotNet.KM_MainStatus.PWM">
             <summary>
-            Bulk status record PWM values (SnapAmp)
+            Bulk status record PWM values (8 obsolete PWMS + 2 x 4 SnapAmp)
             </summary>
         </member>
         <member name="P:KMotion_dotNet.KM_MainStatus.Position">
@@ -4548,22 +4954,50 @@
         </member>
         <member name="P:KMotion_dotNet.KM_MainStatus.InputModes">
             <summary>
-            Bulk status record feedback selected input modes
+            Bulk status record feedback selected input modes 
+            Axes 0-3
             </summary>
         </member>
         <member name="P:KMotion_dotNet.KM_MainStatus.InputModes2">
             <summary>
             Bulk status record feedback selected input modes #2
+            Axes 4-7
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_MainStatus.InputModes3">
+            <summary>
+            Bulk status record feedback selected input modes #3
+            Axes 8-11
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_MainStatus.InputModes4">
+            <summary>
+            Bulk status record feedback selected input modes #4
+            Axes 12-15
             </summary>
         </member>
         <member name="P:KMotion_dotNet.KM_MainStatus.OutputModes">
             <summary>
             Bulk status record feedback selected output modes
+            Axes 0-3
             </summary>
         </member>
         <member name="P:KMotion_dotNet.KM_MainStatus.OutputModes2">
             <summary>
             Bulk status record feedback selected output modes #2
+            Axes 4-7
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_MainStatus.OutputModes3">
+            <summary>
+            Bulk status record feedback selected output modes #3
+            Axes 8-11
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_MainStatus.OutputModes4">
+            <summary>
+            Bulk status record feedback selected output modes #4
+            Axes 11-15
             </summary>
         </member>
         <member name="P:KMotion_dotNet.KM_MainStatus.Enables">
@@ -4578,12 +5012,90 @@
         </member>
         <member name="P:KMotion_dotNet.KM_MainStatus.BitsDirection">
             <summary>
-            Bulk status record Current KFLOP IO Bit directions (inputs vs outputs)
+            Bulk status record Current KFLOP 64 IO Bit directions (inputs vs outputs)
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_MainStatus.BitsDirection200">
+            <summary>
+            Bulk status record Current Kogna IO Bit directions (inputs vs outputs)
+            Kogna - 24 bits 200-223 of I/O direction 1 = output
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_MainStatus.BitsDirection280">
+            <summary>
+            Bulk status record Current Kogna IO Bit directions (inputs vs outputs)
+            Kogna - 10 bits 280-289 of I/O direction 1 = output
             </summary>
         </member>
         <member name="P:KMotion_dotNet.KM_MainStatus.BitsState">
             <summary>
-            Bulk status record Current IO Bit states
+            Bulk status record Current KFLOP/Kogna 64 IO Bit states
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_MainStatus.BitsState200">
+            <summary>
+            Bulk status record Current KFLOP/Kogna 64 IO Bit states
+            Kogna - 90 bits 200-289 of state lsb=I/O bit200
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_MainStatus.PinMuxModes">
+            <summary>
+            Bulk status record 
+            Kogna - 10 Pin function modes 2 bits per pin 4 HRPWM + 6 SPI
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_MainStatus.Kogna_ADC">
+            <summary>
+            Bulk status record Kogna 4 ADCs
+            format  12 bits data (signed extended to 16 bits)
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_MainStatus.Kogna_DAC">
+            <summary>
+            Bulk status record Kogna 8 DACSs
+            format  12 bits data (signed extended to 16 bits)
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_MainStatus.Kogna_PWM_Prescale">
+            <summary>
+            Bulk status record Kogna 
+            Prescale sets frequency of all 8 8-bit PWMs
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_MainStatus.Kogna_PWM">
+            <summary>
+            Bulk status record Kogna 
+            current pulse settings of all 8 8-bit IO PWMs
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_MainStatus.Kogna_PWM_Enables">
+            <summary>
+            Bulk status record Kogna 
+            current PWM Enables to control Pin of all 8 8-bit IO PWMs
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_MainStatus.HRPWMPeriod01">
+            <summary>
+            Bulk status record Kogna 
+            current Kogna HRPWMs Periods (common for HRPWM 0 and 1)
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_MainStatus.HRPWMPeriod2">
+            <summary>
+            Bulk status record Kogna 
+            current Kogna HRPWM Periods (for HRPWM 2)
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_MainStatus.HRPWMPeriod3">
+            <summary>
+            Bulk status record Kogna 
+            current Kogna HRPWM Periods (for HRPWM 3)
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_MainStatus.HRPWM">
+            <summary>
+            Bulk status record Kogna 
+            current Kogna Kogna 4 HRPWMs Pulse widths
             </summary>
         </member>
         <member name="P:KMotion_dotNet.KM_MainStatus.SnapBitsDirection0">
@@ -4633,22 +5145,23 @@
         </member>
         <member name="P:KMotion_dotNet.KM_MainStatus.TimeStamp">
             <summary>
-            Bulk status record Time Stamp of when status was acquired 
+            Bulk status record Time Stamp in seconds of when status was acquired 
             </summary>
         </member>
         <member name="P:KMotion_dotNet.KM_MainStatus.PC_comm">
             <summary>
-            Bulk status record KFLOP-PC Communication variables 
+            Bulk status record KFLOP-PC 8 Communication variables 100-107
             </summary>
         </member>
         <member name="P:KMotion_dotNet.KM_MainStatus.VirtualBits">
             <summary>
-            Bulk status record Virtual bits packed 16 per word
+            Bulk status record Virtual bits packed 16 per word 48-63
             </summary>
         </member>
         <member name="P:KMotion_dotNet.KM_MainStatus.VirtualBitsEx0">
             <summary>
-            Bulk status record Extended Virtual bits packed 16 per word
+            Bulk status record Extended Virtual bits packed 32 per word
+            1024-1055
             </summary>
         </member>
         <member name="P:KMotion_dotNet.KM_MainStatus.TicksAtUpdate">
@@ -4674,7 +5187,7 @@
             <summary>
             Bulk status record PWM values (SnapAmp)
             </summary>
-            <param name="index">channel number to get</param>
+            <param name="index">channel number to get (8 obsolete + 2 x 4 SnapAmp)</param>
             <returns>value</returns>
         </member>
         <member name="M:KMotion_dotNet.KM_MainStatus.GetPosition(System.Int32)">
@@ -4700,14 +5213,14 @@
         </member>
         <member name="M:KMotion_dotNet.KM_MainStatus.GetInputMode(System.Int32)">
             <summary>
-            Bulk status record feedback selected input mode
+            Bulk status record feedback selected 4-bit input mode
             </summary>
             <param name="axischannel">Axis Number</param>
             <returns>value</returns>
         </member>
         <member name="M:KMotion_dotNet.KM_MainStatus.GetOutputMode(System.Int32)">
             <summary>
-            Bulk status record feedback selected output mode
+            Bulk status record 4-bit output mode
             </summary>
             <param name="axischannel">Axis Number</param>
             <returns>value</returns>
@@ -4728,16 +5241,79 @@
         </member>
         <member name="M:KMotion_dotNet.KM_MainStatus.GetKFlopBitDirection(System.Int32)">
             <summary>
-            Bulk status record Current KFLOP IO Bit directions (inputs vs outputs)
+            Bulk status record Current KFLOP/Kogna 64 IO Bit directions (inputs vs outputs)
+            </summary>
+            <param name="index">IO Bit Number</param>
+            <returns>value 0=input 1=output</returns>
+        </member>
+        <member name="M:KMotion_dotNet.KM_MainStatus.GetBitDirection200(System.Int32)">
+            <summary>
+            Bulk status record Current Kogna 24 IO Bit directions for Bits 200-223(inputs vs outputs)
+            </summary>
+            <param name="index">IO Bit Number</param>
+            <returns>value 0=input 1=output</returns>
+        </member>
+        <member name="M:KMotion_dotNet.KM_MainStatus.GetBitDirection280(System.Int32)">
+            <summary>
+            Bulk status record Current Kogna 10 IO Bit directions for Bits 280-289(inputs vs outputs)
             </summary>
             <param name="index">IO Bit Number</param>
             <returns>value 0=input 1=output</returns>
         </member>
         <member name="M:KMotion_dotNet.KM_MainStatus.GetKFlopBitState(System.Int32)">
             <summary>
-            Bulk status record Current IO Bit states
+            Bulk status record Current KFLOP/Kogna 64 IO Bit states
             </summary>
             <param name="index">IO Bit Number</param>
+            <returns>value</returns>
+        </member>
+        <member name="M:KMotion_dotNet.KM_MainStatus.GetBitState200(System.Int32)">
+            <summary>
+            Bulk status record Current Kogna 90 IO Bit states (Bits 200-289)
+            </summary>
+            <param name="index">IO Bit Number</param>
+            <returns>value</returns>
+        </member>
+        <member name="M:KMotion_dotNet.KM_MainStatus.GetPinMuxModes(System.Int32)">
+            <summary>
+            Bulk status record Current Kogna 10 Pin function modes 2 bits per pin 4 HRPWM + 6 SPI
+            </summary>
+            <param name="index">device selector 0-9 (0-3 HRPWM, 4-9 SPI)</param>
+            <returns>value</returns>
+        </member>
+        <member name="M:KMotion_dotNet.KM_MainStatus.GetKognaADC(System.Int32)">
+            <summary>
+            Bulk status record Current Kogna ADC
+            </summary>
+            <param name="index">channel 0-3</param>
+            <returns>value</returns>
+        </member>
+        <member name="M:KMotion_dotNet.KM_MainStatus.GetKognaDAC(System.Int32)">
+            <summary>
+            Bulk status record Current Kogna DAC
+            </summary>
+            <param name="index">channel 0-7</param>
+            <returns>value</returns>
+        </member>
+        <member name="M:KMotion_dotNet.KM_MainStatus.GetKognaPWM(System.Int32)">
+            <summary>
+            Bulk status record Current Kogna 8-bit PWM pulse setting
+            </summary>
+            <param name="index">channel 0-7</param>
+            <returns>value</returns>
+        </member>
+        <member name="M:KMotion_dotNet.KM_MainStatus.GetKognaPWMEnables(System.Int32)">
+            <summary>
+            Bulk status record Current Kogna 8-bit PWM Enables
+            </summary>
+            <param name="index">channel 0-7</param>
+            <returns>value</returns>
+        </member>
+        <member name="M:KMotion_dotNet.KM_MainStatus.GetKognaHRPWM(System.Int32)">
+            <summary>
+            Bulk status record Current Kogna Hi-Res 12-bit PWM pulse setting
+            </summary>
+            <param name="index">channel 0-3</param>
             <returns>value</returns>
         </member>
         <member name="M:KMotion_dotNet.KM_MainStatus.GetSnapBitsDirection0(System.Int32)">
@@ -4814,42 +5390,8 @@
             <summary>
             Bulk status record Current Extended Virtual Bit States 
             </summary>
-            <param name="index">Bit Offset</param>
+            <param name="index">Bit Offset 0-31 where 0 returns Virtual bit 1024</param>
             <returns>value</returns>
-        </member>
-        <member name="M:KMotion_dotNet.KM_MainStatus.GetStatus(System.Int32,System.Int32[],System.Int32[],System.Int32[],System.Double[],System.Double[],System.Int32[],System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32[],System.Int32[],System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Double,System.Int32[],System.Int32,System.Int32)">
-            <summary>
-            Create Bulk status record  
-            </summary>
-            <param name="versionandsize">packed Version and size</param>
-            <param name="adc">adc value array</param>
-            <param name="dac">dac value array</param>
-            <param name="pwm">Snap Amp PWM value array</param>
-            <param name="position">position value array</param>
-            <param name="destination">destination value array</param>
-            <param name="outputchan0">packed output channel 0 array</param>
-            <param name="inputmodes">packed input modes channels 0-3</param>
-            <param name="inputmodes2">packed input modes channels 4-7</param>
-            <param name="outputmodes">packed output modes channels 0-3</param>
-            <param name="outputmodes2">packed output modes channels 4-7</param>
-            <param name="enables">packed Enables</param>
-            <param name="axisdone">packed axisdone</param>
-            <param name="bitsdirection">packed bit direction array</param>
-            <param name="bitsstate">packed bit state array</param>
-            <param name="snapbitsdirection0">packed bit directions for SnapAmp 0</param>
-            <param name="snapbitsdirection1">packed bit directions for SnapAmp 1</param>
-            <param name="snapbitsstate0">packed bit states for SnapAmp 0</param>
-            <param name="snapbitsstate1">packed bit states for SnapAmp 1</param>
-            <param name="kanalgobitsstateinputs">packed input bit states for Kanalog</param>
-            <param name="kanalogbitsstateoutputs">packed output bit states for Kanalo</param>
-            <param name="runonstartup">packed startup bits for User Threads</param>
-            <param name="threadactive">packed Thread Active bits for User Threads</param>
-            <param name="stopimmediatestate">Feed Hold Status State</param>
-            <param name="timestamp">Timestamp - time since KFLOP boot of Status capture</param>
-            <param name="pccomm">KFLOP Persist variables included in Status for communication</param>
-            <param name="virtualbits">packed bit states for Virtual bits</param>
-            <param name="virtualbitsex0">packed bit states for first 32 Extended Virtual bits</param>
-            <returns>0=successful</returns>
         </member>
         <member name="T:KMotion_dotNet.KM_AxisGroup">
             <summary>

@@ -55,7 +55,7 @@ void AFXAPI AfxTextFloatFormat(CDataExchange* pDX, int nIDC,
 		::GetWindowText(hWndCtrl, szBuffer, _countof(szBuffer));
 		double d;
 		// tktk fix microsoft bug if (_sntscanf_s(szBuffer, _countof(szBuffer), _T("%lf"), &d) != 1)
-		if (_sntscanf_s(szBuffer, strlen(szBuffer), _T("%lf"), &d) != 1)
+		if (_sntscanf_s(szBuffer, (int)strlen(szBuffer), _T("%lf"), &d) != 1)
 		{
 			AfxMessageBox(AFX_IDP_PARSE_REAL);
 			pDX->Fail();            // throws exception

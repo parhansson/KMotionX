@@ -1,5 +1,6 @@
-G92.1
+G92.1 (clear offset)
 G1X1
-G92X10
-G92.2
-G92.3
+G92X10 (compute offset to set DRO to 10)
+G92.2  (Clear Leave Vars)
+G92.3  (Load Vars)
+M30

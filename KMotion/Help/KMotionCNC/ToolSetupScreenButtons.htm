@@ -1,24 +1,76 @@
+<!DOCTYPE html>
 <html>
-
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-<title>Tool Setup Screen User Buttons</title>
-<style>
-<!--
- table.MsoNormalTable
-	{mso-style-parent:"";
-	line-height:115%;
-	font-size:11.0pt;
-	font-family:"Calibri","sans-serif";
-	}
--->
-</style>
 
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+
+<meta name="keywords" content="ethernet 16-axis controller, cnc control, motion control, cnc boards, 4-axis, 8-axis, stepper, brushless, DC motor, servo, encoder, adc, dac, motion controller, automated motion, manufacturing, Mach3">
+<meta name="description" content="Manufacturer of premium motion control products for CNC Manufacturing, Robotics and Automation">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<title>Tool Setup Screen - User Buttons</title>
+
+<link rel="stylesheet" type="text/css" href="../css/style.css">
+<link rel="stylesheet" href="../css/prism.css" data-noprefix />
+<script src="../js/prism.js"></script>
 </head>
 
 <body>
 
-<p><i><b><font size="5" face="Arial">Tool Setup Screen - User Buttons</font></b></i></p>
+<div id="logo"><a href="../index.htm"></a></div>
+
+<div id="home">
+<a href="../index.htm">Table of contents</a> |  
+	<script>
+		if (navigator.userAgent.indexOf("NT 6.2") == -1){
+			document.write('<a href="https://www.dynomotion.com">Dynomotion home page</a>')
+		} else {
+			document.write('<a href="https://www.dynomotion.com" target="_blank">Dynomotion home page</a>')
+		}
+	</script>
+</div>
+	
+<div id="searchNav">
+
+	<div class="gcse-search">
+					<script>
+					  if (document.location.protocol  ==  'https:') {
+					  (function() {
+					  var cx = '012657033059195044748:9fmjmlufts0';
+					  var gcse = document.createElement('script');
+					  gcse.type = 'text/javascript';
+					  gcse.async = true;
+					  gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+					      '//cse.google.com/cse.js?cx=' + cx;
+					  var s = document.getElementsByTagName('script')[0];
+					  s.parentNode.insertBefore(gcse, s);
+					})();
+					  }
+				      </script> 
+				      <gcse:search> </gcse:search>  
+
+	       </div>
+</div>	
+
+	
+
+
+<div id="google_translate_element" style="background: transparent;" align="right"><script type="text/javascript">
+if (navigator.userAgent.indexOf("NT 6.2") == -1) {
+		function googleTranslateElementInit() {
+	  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,de,fr,it,es,pt,ru,uk,ar,zh-CN,zh-TW,ko,iw,hi,ja,tr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+		}						}
+	</script>
+	<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+	</script>
+</div>		
+<div id="main">
+	
+<h1>Tool Setup Screen - User Buttons</h1>
+
 <p>
 <map name="FPMap0">
 <area href="#Custom_Buttons" shape="rect" coords="8, 38, 692, 416">
@@ -27,913 +79,623 @@
 <area href="ToolSetupScreenFiles.htm" shape="rect" coords="157, 23, 244, 39">
 <area href="ToolSetupScreenTP.htm" shape="rect" coords="239, 21, 337, 41">
 </map>
-<img border="0" src="KMotionCNCfiles/ToolSetupButtons.PNG" usemap="#FPMap0"></p>
+<img src="KMotionCNCfiles/ToolSetupButtons.PNG" usemap="#FPMap0" alt="Tool Setuo Screen" />
+<br />
+	<span class="small">(Click on image to jump to related help)</span></p>
 
-<p><font face="Arial"><i>(Click on Image to Jump to 
-		related help)</i></font></p>
-<p><font face="Arial">The Tool Setup Screen allows <i>KMotionCNC</i> to be configured for a 
-particular machine tool.&nbsp; Each machine tool is likely to have different 
-motion resolution, speeds, and acceleration limits.&nbsp; It is also likely to 
-different I/O requirements with regard to Spindle control and such.&nbsp; 
-Additionally&nbsp; a machine may have different initialization and homing 
-requirements.&nbsp; <i>KMotionCNC</i> has a flexible mechanism for defining what 
-type of action is to be performed for various M Codes and Custom Buttons. </font> </p>
-<p><i><b><font size="4" face="Arial"><a name="Custom_Buttons">Custom Buttons</a></font></b></i></p>
-<p>
-<font face="Arial">
-<img border="2" src="KMotionCNCfiles/CustomActions.png" align="left" hspace="15"></font></p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p><font face="Arial">Custom Button Actions function in exactly the same manner as the 
+<p>The Tool Setup Screen allows <em>KMotionCNC</em> to be configured for a 
+particular machine tool. Each machine tool is likely to have different 
+motion resolution, speeds, and acceleration limits. It is also likely to 
+different I/O requirements with regard to Spindle control and such. 
+Additionally a machine may have different initialization and homing 
+requirements. <em>KMotionCNC</em> has a flexible mechanism for defining what 
+type of action is to be performed for various M Codes and Custom Buttons.</p>
+
+<h2><a name="Custom_Buttons">Custom Buttons</a></h2>
+
+<p><img src="KMotionCNCfiles/CustomActions.png" align="left" alt="Custom buttons" /></p>
+
+<p>Custom Button Actions function in exactly the same manner as the 
 <a href="ToolSetupScreenM3.htm#G_Code_Actions_-_M3_-_M9">G Code 
 Actions</a> described on the M3-M9 Tab with the only difference being that they are invoked by 
-the User pushing a button rather than&nbsp; by a command encountered within a G 
-Code Program.&nbsp; There is an additional Parameter above the Action Type which is the Title to be placed on the Custom Button.&nbsp; The 
-example above shows buttons defined with titles &quot;INIT&quot;, &quot;HOME&quot;, 
-and &quot;M3&quot;.&nbsp; Up 
-to 10 buttons may be defined.&nbsp; Common uses for the Buttons are to invoke 
-programs that initialize and/or home the machine.&nbsp; Any Button with an empty 
-title field will cause the button to be hidden on the main <i>KMotionCNC </i>
-screen.&nbsp;&nbsp; See <a href="KMotionCNC.htm#Custom_Buttons">here</a> for how 
-these defined buttons will appear in the main <i>KMotionCNC</i> Screen.</font></p>
-<p><font face="Arial">A Hot Key can also be assigned so that pushing that 
-specific Key will triger the Action as if the button was clicked with the mouse.&nbsp; 
-The Screen must have focus for the Hot Key to work.&nbsp; See below for a list 
-of numeric Virtual Key Codes:</font></p>
-<p class="MsoNormal" style="line-height: normal"><b>
-<span style="font-size: 13.5pt; font-family: Arial">Key Codes</span></b></p>
-<table class="MsoNormalTable" border="0" cellpadding="0">
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><b><span style="font-size: 12.0pt; font-family: Arial">Value</span></b></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><b><span style="font-size: 12.0pt; font-family: Arial">Description</span></b></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">1</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">Left mouse button</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">2</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">Right mouse button</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">3</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">CANCEL key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">4</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">Middle mouse 
-		button</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">8</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">BACKSPACE key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">9</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">TAB key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">12</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">CLEAR key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">13</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">ENTER key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">16</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">SHIFT key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">17</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">CTRL key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">18</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">MENU key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">19</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">PAUSE key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">20</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">CAPS LOCK key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">27</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">ESC key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">32</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">SPACEBAR key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">33</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">PAGE UP key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">34</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">PAGE DOWN key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">35</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">END key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">36</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">HOME key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">37</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">LEFT ARROW key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">38</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">UP ARROW key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">39</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">RIGHT ARROW key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">40</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">DOWN ARROW key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">41</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">SELECT key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">42</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">PRINT SCREEN key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">43</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">EXECUTE key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">44</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">SNAPSHOT key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">45</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">INS key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">46</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">DEL key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">47</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">HELP key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">144</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">NUM LOCK key</span></td>
-	</tr>
-</table>
-<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-normal"><span style="font-size: 12.0pt; font-family: Arial">&nbsp;</span></p>
-<p class="MsoNormal" style="line-height: normal"><b>
-<span style="font-size: 13.5pt; font-family: Arial">KeyA Through KeyZ Are the 
-Same as Their ASCII Equivalents: 'A' Through 'Z'</span></b></p>
-<table class="MsoNormalTable" border="0" cellpadding="0">
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><b><span style="font-size: 12.0pt; font-family: Arial">Value</span></b></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><b><span style="font-size: 12.0pt; font-family: Arial">Description</span></b></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">65</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">A key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">66</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">B key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">67</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">C key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">68</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">D key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">69</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">E key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">70</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">F key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">71</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">G key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">72</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">H key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">73</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">I key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">74</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">J key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">75</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">K key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">76</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">L key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">77</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">M key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">78</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">N key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">79</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">O key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">80</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">P key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">81</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">Q key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">82</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">R key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">83</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">S key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">84</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">T key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">85</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">U key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">86</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">V key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">87</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">W key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">88</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">X key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">89</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">Y key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">90</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">Z key</span></td>
-	</tr>
-</table>
-<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-normal"><span style="font-size: 12.0pt; font-family: Arial">&nbsp;</span></p>
-<p class="MsoNormal" style="line-height: normal"><b>
-<span style="font-size: 13.5pt; font-family: Arial">Key0 Through Key9 Are the 
-Same as Their ASCII Equivalents: '0' Through '9</span></b></p>
-<table class="MsoNormalTable" border="0" cellpadding="0">
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><b><span style="font-size: 12.0pt; font-family: Arial">Value</span></b></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><b><span style="font-size: 12.0pt; font-family: Arial">Description</span></b></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">48</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">0 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">49</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">1 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">50</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">2 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">51</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">3 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">52</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">4 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">53</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">5 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">54</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">6 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">55</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">7 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">56</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">8 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">57</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">9 key</span></td>
-	</tr>
-</table>
-<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-normal"><span style="font-size: 12.0pt; font-family: Arial">&nbsp;</span></p>
-<p class="MsoNormal" style="line-height: normal"><b>
-<span style="font-size: 13.5pt; font-family: Arial">Keys on the Numeric Keypad</span></b></p>
-<table class="MsoNormalTable" border="0" cellpadding="0">
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><b><span style="font-size: 12.0pt; font-family: Arial">Value</span></b></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><b><span style="font-size: 12.0pt; font-family: Arial">Description</span></b></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">96</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">0 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">97</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">1 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">98</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">2 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">99</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">3 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">100</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">4 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">101</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">5 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">102</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">6 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">103</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">7 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">104</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">8 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">105</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">9 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">106</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">MULTIPLICATION 
-		SIGN (*) key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">107</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">PLUS SIGN (+) key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">108</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">ENTER (keypad) key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">109</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">MINUS SIGN (-) key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">110</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">DECIMAL POINT(.) 
-		key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">111</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">DIVISION SIGN (/) 
-		key</span></td>
-	</tr>
-</table>
-<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-normal"><span style="font-size: 12.0pt; font-family: Arial">&nbsp;</span></p>
-<p class="MsoNormal" style="line-height: normal"><b>
-<span style="font-size: 13.5pt; font-family: Arial">Function Keys</span></b></p>
-<table class="MsoNormalTable" border="0" cellpadding="0">
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><b><span style="font-size: 12.0pt; font-family: Arial">Value</span></b></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><b><span style="font-size: 12.0pt; font-family: Arial">Description</span></b></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">112</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">F1 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">113</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">F2 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">114</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">F3 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">115</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">F4 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">116</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">F5 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">117</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">F6 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">118</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">F7 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">119</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">F8 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">120</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">F9 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">121</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">F10 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">122</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">F11 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">123</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">F12 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">124</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">F13 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">125</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">F14 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">126</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">F15 key</span></td>
-	</tr>
-	<tr>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">127</span></td>
-		<td valign="top" style="padding:.75pt .75pt .75pt .75pt">
-		<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal"><span style="font-size: 12.0pt; font-family: Arial">F16 key</span></td>
-	</tr>
-</table>
-<p class="MsoNormal"><font face="Arial">&nbsp;</font></p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
+the User pushing a button rather than by a command encountered within a G 
+Code Program. There is an additional Parameter above the Action Type which is the Title to be placed on the Custom Button. The example above shows buttons defined with titles &quot;INIT&quot;, &quot;HOME&quot;, 
+and &quot;M3&quot;. Up to 10 buttons may be defined. Common uses for the Buttons are to invoke 
+programs that initialize and/or home the machine. Any Button with an empty 
+title field will cause the button to be hidden on the main <em>KMotionCNC </em>
+screen. See <a href="KMotionCNC.htm#Custom_Buttons">here</a> for how 
+these defined buttons will appear in the main <em>KMotionCNC</em> Screen.</p>
 
+<p>A Hot Key can also be assigned so that pushing that 
+specific Key will triger the Action as if the button was clicked with the mouse. 
+The Screen must have focus for the Hot Key to work. See below for a list 
+of numeric Virtual Key Codes:</p>
+
+<h2>Key Codes</h2>
+
+<table class="tableSmall">
+	<tr>
+		<th>Value</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td>1</td>
+		<td>Left mouse button</td>
+	</tr>
+	<tr>
+		<td>2</td>
+		<td>Right mouse button</td>
+	</tr>
+	<tr>
+		<td>3</td>
+		<td>CANCEL key</td>
+	</tr>
+	<tr>
+		<td>4</td>
+		<td>Middle mouse button</td>
+	</tr>
+	<tr>
+		<td>
+		8</td>
+		<td>
+		BACKSPACE key</td>
+	</tr>
+	<tr>
+		<td>9</td>
+		<td>TAB key</td>
+	</tr>
+	<tr>
+		<td>12</td>
+		<td>CLEAR key</td>
+	</tr>
+	<tr>
+		<td>13</td>
+		<td>ENTER key</td>
+	</tr>
+	<tr>
+		<td>16</td>
+		<td>SHIFT key</td>
+	</tr>
+	<tr>
+		<td>17</td>
+		<td>CTRL key</td>
+	</tr>
+	<tr>
+		<td>18</td>
+		<td>MENU key</td>
+	</tr>
+	<tr>
+		<td>19</td>
+		<td>PAUSE key</td>
+	</tr>
+	<tr>
+		<td>20</td>
+		<td>CAPS LOCK key</td>
+	</tr>
+	<tr>
+		<td>27</td>
+		<td>ESC key</td>
+	</tr>
+	<tr>
+		<td>32</td>
+		<td>SPACEBAR key</td>
+	</tr>
+	<tr>
+		<td>33</td>
+		<td>PAGE UP key</td>
+	</tr>
+	<tr>
+		<td>34</td>
+		<td>PAGE DOWN key</td>
+	</tr>
+	<tr>
+		<td>35</td>
+		<td>END key</td>
+	</tr>
+	<tr>
+		<td>36</td>
+		<td>HOME key</td>
+	</tr>
+	<tr>
+		<td>37</td>
+		<td>LEFT ARROW key</td>
+	</tr>
+	<tr>
+		<td>38</td>
+		<td>UP ARROW key</td>
+	</tr>
+	<tr>
+		<td>39</td>
+		<td>RIGHT ARROW key</td>
+	</tr>
+	<tr>
+		<td>40</td>
+		<td>DOWN ARROW key</td>
+	</tr>
+	<tr>
+		<td>41</td>
+		<td>SELECT key</td>
+	</tr>
+	<tr>
+		<td>42</td>
+		<td>PRINT SCREEN key</td>
+	</tr>
+	<tr>
+		<td>43</td>
+		<td>EXECUTE key</td>
+	</tr>
+	<tr>
+		<td>44</td>
+		<td>SNAPSHOT key</td>
+	</tr>
+	<tr>
+		<td>45</td>
+		<td>INS key</td>
+	</tr>
+	<tr>
+		<td>46</td>
+		<td>DEL key</td>
+	</tr>
+	<tr>
+		<td>47</td>
+		<td>HELP key</td>
+	</tr>
+	<tr>
+		<td>144</td>
+		<td>NUM LOCK key</td>
+	</tr>
+</table>
+
+<h3>KeyA Through KeyZ Are the Same as Their ASCII Equivalents: 'A' Through 'Z'</h3>
+
+<table class="tableSmall">
+	<tr>
+		<th>Value</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td>
+		65</td>
+		<td>
+		A key</td>
+	</tr>
+	<tr>
+		<td>
+		66</td>
+		<td>
+		B key</td>
+	</tr>
+	<tr>
+		<td>
+		67</td>
+		<td>
+		C key</td>
+	</tr>
+	<tr>
+		<td>
+		68</td>
+		<td>
+		D key</td>
+	</tr>
+	<tr>
+		<td>
+		69</td>
+		<td>
+		E key</td>
+	</tr>
+	<tr>
+		<td>
+		70</td>
+		<td>
+		F key</td>
+	</tr>
+	<tr>
+		<td>
+		71</td>
+		<td>
+		G key</td>
+	</tr>
+	<tr>
+		<td>
+		72</td>
+		<td>
+		H key</td>
+	</tr>
+	<tr>
+		<td>
+		73</td>
+		<td>
+		I key</td>
+	</tr>
+	<tr>
+		<td>
+		74</td>
+		<td>
+		J key</td>
+	</tr>
+	<tr>
+		<td>
+		75</td>
+		<td>
+		K key</td>
+	</tr>
+	<tr>
+		<td>
+		76</td>
+		<td>
+		L key</td>
+	</tr>
+	<tr>
+		<td>
+		77</td>
+		<td>
+		M key</td>
+	</tr>
+	<tr>
+		<td>
+		78</td>
+		<td>
+		N key</td>
+	</tr>
+	<tr>
+		<td>
+		79</td>
+		<td>
+		O key</td>
+	</tr>
+	<tr>
+		<td>
+		80</td>
+		<td>
+		P key</td>
+	</tr>
+	<tr>
+		<td>
+		81</td>
+		<td>
+		Q key</td>
+	</tr>
+	<tr>
+		<td>
+		82</td>
+		<td>
+		R key</td>
+	</tr>
+	<tr>
+		<td>
+		83</td>
+		<td>
+		S key</td>
+	</tr>
+	<tr>
+		<td>
+		84</td>
+		<td>
+		T key</td>
+	</tr>
+	<tr>
+		<td>
+		85</td>
+		<td>
+		U key</td>
+	</tr>
+	<tr>
+		<td>
+		86</td>
+		<td>
+		V key</td>
+	</tr>
+	<tr>
+		<td>
+		87</td>
+		<td>
+		W key</td>
+	</tr>
+	<tr>
+		<td>
+		88</td>
+		<td>
+		X key</td>
+	</tr>
+	<tr>
+		<td>
+		89</td>
+		<td>
+		Y key</td>
+	</tr>
+	<tr>
+		<td>
+		90</td>
+		<td>
+		Z key</td>
+	</tr>
+</table>
+
+<h3>Key0 Through Key9 Are the Same as Their ASCII Equivalents: '0' Through '9</h3>
+
+<table class="tableSmall">
+	<tr>
+		<th>Value</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td>
+		48</td>
+		<td>
+		0 key</td>
+	</tr>
+	<tr>
+		<td>
+		49</td>
+		<td>
+		1 key</td>
+	</tr>
+	<tr>
+		<td>
+		50</td>
+		<td>
+		2 key</td>
+	</tr>
+	<tr>
+		<td>
+		51</td>
+		<td>
+		3 key</td>
+	</tr>
+	<tr>
+		<td>
+		52</td>
+		<td>
+		4 key</td>
+	</tr>
+	<tr>
+		<td>
+		53</td>
+		<td>
+		5 key</td>
+	</tr>
+	<tr>
+		<td>
+		54</td>
+		<td>
+		6 key</td>
+	</tr>
+	<tr>
+		<td>
+		55</td>
+		<td>
+		7 key</td>
+	</tr>
+	<tr>
+		<td>
+		56</td>
+		<td>
+		8 key</td>
+	</tr>
+	<tr>
+		<td>
+		57</td>
+		<td>
+		9 key</td>
+	</tr>
+</table>
+
+<h3>Keys on the Numeric Keypad</h3>
+
+<table class="tableSmall">
+	<tr>
+		<th>Value</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td>
+		96</td>
+		<td>
+		0 key</td>
+	</tr>
+	<tr>
+		<td>
+		97</td>
+		<td>
+		1 key</td>
+	</tr>
+	<tr>
+		<td>
+		98</td>
+		<td>
+		2 key</td>
+	</tr>
+	<tr>
+		<td>
+		99</td>
+		<td>
+		3 key</td>
+	</tr>
+	<tr>
+		<td>
+		100</td>
+		<td>
+		4 key</td>
+	</tr>
+	<tr>
+		<td>
+		101</td>
+		<td>
+		5 key</td>
+	</tr>
+	<tr>
+		<td>
+		102</td>
+		<td>
+		6 key</td>
+	</tr>
+	<tr>
+		<td>
+		103</td>
+		<td>
+		7 key</td>
+	</tr>
+	<tr>
+		<td>
+		104</td>
+		<td>
+		8 key</td>
+	</tr>
+	<tr>
+		<td>
+		105</td>
+		<td>
+		9 key</td>
+	</tr>
+	<tr>
+		<td>
+		106</td>
+		<td>
+		MULTIPLICATION 
+		SIGN (*) key</td>
+	</tr>
+	<tr>
+		<td>
+		107</td>
+		<td>
+		PLUS SIGN (+) key</td>
+	</tr>
+	<tr>
+		<td>
+		108</td>
+		<td>
+		ENTER (keypad) key</td>
+	</tr>
+	<tr>
+		<td>
+		109</td>
+		<td>
+		MINUS SIGN (-) key</td>
+	</tr>
+	<tr>
+		<td>
+		110</td>
+		<td>
+		DECIMAL POINT(.) 
+		key</td>
+	</tr>
+	<tr>
+		<td>
+		111</td>
+		<td>
+		DIVISION SIGN (/) 
+		key</td>
+	</tr>
+</table>
+
+<h3>Function Keys</h3>
+
+<table class="tableSmall">
+	<tr>
+		<th>Value</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td>
+		112</td>
+		<td>
+		F1 key</td>
+	</tr>
+	<tr>
+		<td>
+		113</td>
+		<td>
+		F2 key</td>
+	</tr>
+	<tr>
+		<td>
+		114</td>
+		<td>
+		F3 key</td>
+	</tr>
+	<tr>
+		<td>
+		115</td>
+		<td>
+		F4 key</td>
+	</tr>
+	<tr>
+		<td>
+		116</td>
+		<td>
+		F5 key</td>
+	</tr>
+	<tr>
+		<td>
+		117</td>
+		<td>
+		F6 key</td>
+	</tr>
+	<tr>
+		<td>
+		118</td>
+		<td>
+		F7 key</td>
+	</tr>
+	<tr>
+		<td>
+		119</td>
+		<td>
+		F8 key</td>
+	</tr>
+	<tr>
+		<td>
+		120</td>
+		<td>
+		F9 key</td>
+	</tr>
+	<tr>
+		<td>
+		121</td>
+		<td>
+		F10 key</td>
+	</tr>
+	<tr>
+		<td>
+		122</td>
+		<td>
+		F11 key</td>
+	</tr>
+	<tr>
+		<td>
+		123</td>
+		<td>
+		F12 key</td>
+	</tr>
+	<tr>
+		<td>
+		124</td>
+		<td>
+		F13 key</td>
+	</tr>
+	<tr>
+		<td>
+		125</td>
+		<td>
+		F14 key</td>
+	</tr>
+	<tr>
+		<td>
+		126</td>
+		<td>
+		F15 key</td>
+	</tr>
+	<tr>
+		<td>
+		127</td>
+		<td>
+		F16 key</td>
+	</tr>
+</table>
+</p>
+
+<p>&nbsp;</p>
+	</div>
 </body>
 
 </html>

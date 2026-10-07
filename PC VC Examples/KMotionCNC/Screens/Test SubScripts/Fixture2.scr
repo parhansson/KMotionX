@@ -1,0 +1,4 @@
+ID:IDC_fixture,Type:CONTROL,X:300,Y:364,CX:75,CY:22,Show:1,Var:-1,Style:-1,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:-10,HotKey:-1,Bold:0,Italic:0,Text:,ToolTipText:,Script:
+ID:IDC_EditFixtures,Type:PUSHBUTTON,X:293,Y:390,CX:44,CY:20,Show:1,Var:-1,Style:-1,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:edit,ToolTipText:Open Edit/Save Fixture Offset Screen...,Script:
+ID:IDC_SetFixture,Type:PUSHBUTTON,X:341,Y:390,CX:44,CY:20,Show:1,Var:-1,Style:-1,BitmapFile:;,Colors:;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:0,Italic:0,Text:set,ToolTipText:Set Fixture Offset to move Origin here,Script:
+ID:IDC_STATICFIXTURE_GROUP,Type:PUSHBUTTON,X:288,Y:343,CX:104,CY:18,Show:1,Var:-1,Style:0,BitmapFile:;,Colors:FF0000;;;,Font:MS Sans Serif,FontSize:11,HotKey:-1,Bold:1,Italic:0,Text:fixture offset,ToolTipText:,Script:

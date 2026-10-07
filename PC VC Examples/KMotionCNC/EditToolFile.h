@@ -9,7 +9,7 @@ class CEditToolFile : public CDialog
 
 public:
 	CEditToolFile(CWnd* pParent = NULL);   // standard constructor
-	void GetTool(int Tool, int &Slot, int &ID, double &Length, double &Diameter, double &Xoffset, double &Yoffset, CString &Comment, CString &Image);
+	void GetTool(int Tool, int &Slot, int &ID, double &Length, double &Diameter, double &Xoffset, double &Yoffset, double &FeedTime, double &FeedDist, CString &Comment, CString &Image);
 	virtual ~CEditToolFile();
 
 #define MAX_TOOLS 100
@@ -18,18 +18,21 @@ public:
 	enum { IDD = IDD_EditToolFile };
 
 protected:
+	virtual BOOL OnInitDialog();
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
-	void PutTool(int Tool, int Slot, int ID, double Length, double Diameter, double Xoffset, double Yoffset, CString Comment, CString Image);
-	void PutToolID(int Tool, int Slot, int ID, double Length, double Diameter, double Xoffset, double Yoffset, CString Comment, CString Image);
-	void GetToolID(int Tool, int &Slot, int &ID, double &Length, double &Diameter, double &Xoffset, double &Yoffset, CString &Comment, CString &Image);
+	void PutTool(int Tool, int Slot, int ID, double Length, double Diameter, double Xoffset, double Yoffset, double FeedTime, double FeedDist, CString Comment, CString Image);
+	void PutToolID(int Tool, int Slot, int ID, double Length, double Diameter, double Xoffset, double Yoffset, double FeedTime, double FeedDist, CString Comment, CString Image);
+	void GetToolID(int Tool, int &Slot, int &ID, double &Length, double &Diameter, double &Xoffset, double &Yoffset, double &FeedTime, double &FeedDist, CString &Comment, CString &Image);
 	void PutToolsToScreen(int page);
 	void GetToolsFromScreen(int page);
 	void SortToolTable();
 	void DoImageDir(CString &Image);
-
+	void DoResetFeed(int i);
 	void DDX_Text_Blank(CDataExchange* pDX, int nIDC, int& value);
+	void DDX_Text_Blank_Inches(CDataExchange* pDX, int nIDC, double& value);
 	void DDX_Text_Blank(CDataExchange* pDX, int nIDC, double& value);
+	void DDX_Text_Blank_Seconds(CDataExchange* pDX, int nIDC, double& value);
 	void DDV_MinMaxInt_Blank(CDataExchange* pDX, int value, int minVal, int maxVal);
 	void DDV_MinMaxDouble_Blank(CDataExchange* pDX, double const& value, double minVal, double maxVal);
 	
@@ -39,11 +42,14 @@ protected:
 	double m_Diameter[MAX_TOOLS];
 	double m_Xoffset[MAX_TOOLS];
 	double m_Yoffset[MAX_TOOLS];
+	double m_FeedTime[MAX_TOOLS];
+	double m_FeedDist[MAX_TOOLS];
 	CString m_Comment[MAX_TOOLS];
 	CString m_Image[MAX_TOOLS];
 	CString CurrentDirectory;
 
 	int m_prevID;
+	int Units;
 
 
 	DECLARE_MESSAGE_MAP()
@@ -52,6 +58,8 @@ public:
 	void ChangeDiameter(int Tool, double Diameter);
 	void ChangeOffsetX(int Tool, double OffsetX);
 	void ChangeOffsetY(int Tool, double OffsetY);
+	void ChangeFeedTime(int Tool, double FeedTime);
+	void ChangeFeedDist(int Tool, double FeedDist);
 
 	int m_Slot0;
 	int m_Slot1;
@@ -173,6 +181,46 @@ public:
 	double m_Yoffset17;
 	double m_Yoffset18;
 	double m_Yoffset19;
+	double m_FeedTime0;
+	double m_FeedTime1;
+	double m_FeedTime2;
+	double m_FeedTime3;
+	double m_FeedTime4;
+	double m_FeedTime5;
+	double m_FeedTime6;
+	double m_FeedTime7;
+	double m_FeedTime8;
+	double m_FeedTime9;
+	double m_FeedTime10;
+	double m_FeedTime11;
+	double m_FeedTime12;
+	double m_FeedTime13;
+	double m_FeedTime14;
+	double m_FeedTime15;
+	double m_FeedTime16;
+	double m_FeedTime17;
+	double m_FeedTime18;
+	double m_FeedTime19;
+	double m_FeedDist0;
+	double m_FeedDist1;
+	double m_FeedDist2;
+	double m_FeedDist3;
+	double m_FeedDist4;
+	double m_FeedDist5;
+	double m_FeedDist6;
+	double m_FeedDist7;
+	double m_FeedDist8;
+	double m_FeedDist9;
+	double m_FeedDist10;
+	double m_FeedDist11;
+	double m_FeedDist12;
+	double m_FeedDist13;
+	double m_FeedDist14;
+	double m_FeedDist15;
+	double m_FeedDist16;
+	double m_FeedDist17;
+	double m_FeedDist18;
+	double m_FeedDist19;
 	CString m_Comment0;
 	CString m_Comment1;
 	CString m_Comment2;
@@ -244,4 +292,26 @@ public:
 	afx_msg void OnBnClickedImagedir17();
 	afx_msg void OnBnClickedImagedir18();
 	afx_msg void OnBnClickedImagedir19();
+
+	afx_msg void OnBnClickedResetFeed0();
+	afx_msg void OnBnClickedResetFeed1();
+	afx_msg void OnBnClickedResetFeed2();
+	afx_msg void OnBnClickedResetFeed3();
+	afx_msg void OnBnClickedResetFeed4();
+	afx_msg void OnBnClickedResetFeed5();
+	afx_msg void OnBnClickedResetFeed6();
+	afx_msg void OnBnClickedResetFeed7();
+	afx_msg void OnBnClickedResetFeed8();
+	afx_msg void OnBnClickedResetFeed9();
+	afx_msg void OnBnClickedResetFeed10();
+	afx_msg void OnBnClickedResetFeed11();
+	afx_msg void OnBnClickedResetFeed12();
+	afx_msg void OnBnClickedResetFeed13();
+	afx_msg void OnBnClickedResetFeed14();
+	afx_msg void OnBnClickedResetFeed15();
+	afx_msg void OnBnClickedResetFeed16();
+	afx_msg void OnBnClickedResetFeed17();
+	afx_msg void OnBnClickedResetFeed18();
+	afx_msg void OnBnClickedResetFeed19();
+	afx_msg void OnBnClickedResetallfeed();
 };

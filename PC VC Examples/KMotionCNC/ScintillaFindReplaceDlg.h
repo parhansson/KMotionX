@@ -20,6 +20,7 @@ public:
   BOOL Create(BOOL bFindDialogOnly, LPCTSTR lpszFindWhat, LPCTSTR lpszReplaceWith = NULL, DWORD dwFlags = FR_DOWN, CWnd* pParentWnd = NULL);
   BOOL GetRegularExpression() const { return m_bRegularExpression; };
   void SetRegularExpression(BOOL bRegularExpression) { m_bRegularExpression = bRegularExpression; };
+  void SetFindWhat(LPCTSTR lpszFindWhat);
 
 protected:
 	//{{AFX_MSG(CScintillaFindReplaceDlg)

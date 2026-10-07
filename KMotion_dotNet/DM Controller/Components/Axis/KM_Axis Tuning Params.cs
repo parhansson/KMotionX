@@ -28,17 +28,7 @@ using System.Diagnostics;
 
 namespace KMotion_dotNet
 {
-    /// <summary>
-    /// Axis class for KM_Controller
-    /// Use to control a single axis channel
-    ///  
-    /// The axis channel can be configured via a c program and the KM_Controller
-    /// 
-    /// or
-    /// 
-    /// Use the configuration methods to set the desired parameters
-    /// </summary>
-    public partial class KM_Axis
+     public partial class KM_Axis
     {
         /// <summary>
         /// KFLOP Axis Channel parameters for Tuning and motion profiles

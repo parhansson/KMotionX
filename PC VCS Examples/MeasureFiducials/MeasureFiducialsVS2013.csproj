@@ -40,7 +40,7 @@
   <ItemGroup>
     <Reference Include="KMotion_dotNet, Version=1.0.1.0, Culture=neutral, PublicKeyToken=fcaf9556d6f68c3a, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\KMotion\Release\KMotion_dotNet.dll</HintPath>
+      <HintPath>..\..\KMotion\$(Configuration)\KMotion_dotNet.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />

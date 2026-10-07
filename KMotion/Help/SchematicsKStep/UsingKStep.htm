@@ -1,416 +1,286 @@
+<!DOCTYPE html>
 <html>
-
 <head>
-<meta http-equiv="Content-Language" content="en-us">
-<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
-<meta name="ProgId" content="FrontPage.Editor.Document">
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+<meta name="keywords" content="ethernet 16-axis controller, cnc control, motion control, cnc boards, 4-axis, 8-axis, stepper, brushless, DC motor, servo, encoder, adc, dac, motion controller, automated motion, manufacturing, Mach3">
+<meta name="description" content="Manufacturer of premium motion control products for CNC Manufacturing, Robotics and Automation">
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+
 <title>Using KStep</title>
-<style>
-<!--
-div.Section1
-	{page:Section1;}
--->
-</style>
-  
+
+<link rel="stylesheet" type="text/css" href="../css/style.css">
+<link rel="stylesheet" href="../css/prism.css" data-noprefix />
+<script src="../js/prism.js"></script>
 </head>
 
 <body>
 
-<p style="margin-top: 0; margin-bottom: 0"><i><b>
-<font face="Arial Black" size="5">Using KSTEP</font></b></i></p>
-<ul><font face="Arial">
-<li><a href="#config">Configuring KFLOP for use with KStep</a></li>
+<div id="logo"><a href="../index.htm"></a></div>
+
+<div id="home">
+<a href="../index.htm">Table of contents</a> |  
+	<script>
+		if (navigator.userAgent.indexOf("NT 6.2") == -1){
+			document.write('<a href="https://www.dynomotion.com">Dynomotion home page</a>')
+		} else {
+			document.write('<a href="https://www.dynomotion.com" target="_blank">Dynomotion home page</a>')
+		}
+	</script>
+</div>
+	
+<div id="searchNav">
+
+	<div class="gcse-search">
+					<script>
+					  if (document.location.protocol  ==  'https:') {
+					  (function() {
+					  var cx = '012657033059195044748:9fmjmlufts0';
+					  var gcse = document.createElement('script');
+					  gcse.type = 'text/javascript';
+					  gcse.async = true;
+					  gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+					      '//cse.google.com/cse.js?cx=' + cx;
+					  var s = document.getElementsByTagName('script')[0];
+					  s.parentNode.insertBefore(gcse, s);
+					})();
+					  }
+				      </script> 
+				      <gcse:search> </gcse:search>  
+
+	       </div>
+</div>	
+
+	
+
+
+<div id="google_translate_element" style="background: transparent;" align="right"><script type="text/javascript">
+if (navigator.userAgent.indexOf("NT 6.2") == -1) {
+		function googleTranslateElementInit() {
+	  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,de,fr,it,es,pt,ru,uk,ar,zh-CN,zh-TW,ko,iw,hi,ja,tr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+		}						}
+	</script>
+	<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+	</script>
+</div>		
+<div id="main">
+
+<h1>Using KStep</h1>
+
+<ul>
+<li><a href="#config">Configuring KFLOP/Kogna for use with KStep</a></li>
 <li><a href="#enable">Enable KStep Amplifiers</a></li>
 <li><a href="#digital">Digital Status</a></li>
 <li><a href="#relay">Relay Driver Outputs</a></li>
 <li><a href="#2ksteps">Connecting and Using 2 KSteps</a></li>
 <li><a href="#analog">Analog Output</a></li>
-</font>
-	</ul>
-<p><font face="Arial">KStep is a high efficiency 4-axis microstepping drive that can drive four motors with up to 5Amps @ 48V each.
-  In addition to the 4 motor drives, KStep also provides additional I/O features:<br>
-</font></p>
-<font face="Arial">
+</ul>
+
+<p>KStep is a high efficiency 4-axis microstepping drive that can drive four motors with up to 5Amps @ 48V each.
+  In addition to the 4 motor drives, KStep also provides additional I/O features:</p>
+
 <ul>
   <li>Sixteen (16) 12-24V tolerant optically isolated filtered inputs</li>
   <li>Two (2) optically isolated relay driver type outputs, each good for 0.1A @ 30V</li>
   <li>One (1) isolated PMW to Analog output</li>
 </ul>
-All controller signals are 3.3V/LVTTL compatible.  An on-board voltage clamp circuit to protect against regenerative over voltage is also included.
-KStep is designed to snap together with KFLOP for easy plug and play operation.  A single 26-pin ribbon cable provides all the logic, power, Step/Dir Signals,
-Enable, Relay driver, Analog PWM, and Optically isolated input connections between the Kstep and KFLOP boards.  If necessary, two KSteps can be connected to a
-single KFLOP to drive a total of 8 motors. &nbsp; </font>
-</p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0">
-<img border="0" src="KStep550.png" width="550" height="464"></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<i><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<font size="4">Figure 1 - KStep</font></b></i></font></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p style="margin-top: 0; margin-bottom: 0">
-<img border="0" src="KStepKFLOPCloseUp855.png" width="855" height="639"></p>
-<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<i><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<font size="4">Figure 2 - KStep + KFLOP</font></b></i></font></p>
-<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<div class="Section1">
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><i><b>
-	<font face="Arial" size="4"><a name="config"></a>Configuring KFLOP for use with KStep</font></b></i></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Configuring KStep is fairly straightforward, as it is normally used in an open loop system (although it is possible to operate in
-	<a href="../ClosedLoopStep/ClosedLoopStepper.htm">closed loop stepper mode</a>) 
-	so all feedback, servo, PID, Filter, Feedforward and commutation parameters are not used and can be ignored.  KStep is effectively a
-	<a href="../StepAndDirection/StepAndDir.htm">Step/Dir</a> driver, so it makes use of the Step/Dir Output mode in KFLOP (See the items circled in red below - Note that output mode type "Step Dir" is selected).  The screen shown is the Output Channel selection for KStep Motor channel #0.  Note that output channel 8 is selected instead of 0 as you might assume.  As KStep requires a LVTTL signal, rather than using Output channels 0 through 4, Output channels 8 through 11 respectively should be used instead, as they provide a LVTTL signal.  See <a href="../StepAndDirection/StepAndDir.htm">here</a> 
-	for more information.&nbsp; An output gain of -1 may be specified to reverse the direction of motion.</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Note: for the pulse polarity and pulse time to be set properly, the following line of C Code needs to be executed after every power up.  
-FPGA(STEP_PULSE_LENGTH_ADD) = 63 + 0x80; // set polarity and pulse length to 4us
-When using the default settings, there is marginal timing on direction setup which may result in "drift" caused by a microstep in the wrong direction when changing directions.  This line of Code is already included in the Example C Initialization Programs (i.e. InitKStep3Axis.c)</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">	
-	FPGA(STEP_PULSE_LENGTH_ADD) = 63 + 0x80; // set polarity and pulse length to 
-	4us<br>
-&nbsp;</font></p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Example Axis 
-	configurations are also provided as KStepAxis0.mot, KStepAxis1.mot, 
-	KStepAxis2.mot, KStepAxis3.mot</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
-	<img border="0" src="ConfigStepDir.png" width="293" height="373"></font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Example Axis configurations are provided in the C:\KMotion431\KMotion\Motors directory (assuming a default install location). KStepAxis0.mot, KStepAxis1.mot, KStepAxis2.mot and KStepAxis3.mot are the most basic configurations.   
-Limit switch options are also configured on this screen.  KStep's optically isolated 12-24V Inputs are commonly used to connect Limit switches and are referenced as Input Bits 168 through 183 inclusive.  If you are using NC (normally closed) type limit switches, this means that the inputs are normally high and become low when activated.  In this case the "Stop when low" option should be selected.  If using NO (normally open) type limit switches, this means the inputs are normally low, and become high when activated.  In this case, the "Stop when low" option should be cleared.   For more info see
-	<a href="../ConfigurationScreen/ConfigurationScreen.htm#Limit_Switch_Options">
-	here</a>.</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">
-	<img border="0" src="KStepLimits.png" width="327" height="156"></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Motion profile 
-	settings on the Step Response Screen are used</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
-	<img border="0" src="KStepProfile.png" width="128" height="108"></font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><b><i>
-	<font face="Arial" size="4"><a name="enable"></a>Enable KStep Amplifiers</font></i></b></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">An amplifier enable signal is required to enable the KStep Full Bridge Amplifiers.  One signal enables all four of the KStep amplifiers.  The enable signal is positive true, meaning the drives are enabled when a 3.3V LVTTL (sourcing) signal is received.  When using a 26-pin ribbon cable to connect KStep (JP 36) and KFLOP (JP 7), this signal is routed to KFLOP's IO 45, which must be set as an output, and also set high to enable the drives.  Note that the enable signal is only optically isolated from VBB and GND when KSTEP is in isolated mode.</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">If JP36 is not being used to connect KFLOP to KStep, then a 3.3V enable signal may be applied to a screw terminal on J6 instead.  If two KSteps are being used (for driving 8 motors), then the screw terminals on J6 should be used as an output on the first KStep to daisy chain the enable signal to the second KStep. </font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">For testing 
-	purposes KStep may be enabled using the Digital I/O Screen as shown below.</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">
-	<img border="0" src="DigitalEnable.png" width="479" height="533"></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">From C code the Amplifiers can be enabled with the following code.</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0pt">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-	SetBitDirection(45,1);&nbsp; <span style="color:green">// set Enable Signal as 
-	Output</span></span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0pt">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-	SetBit(45);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:green">// Enable the KStep 
-	Amplifiers</span></span></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">It's possible to write code to enable the amplifiers as soon as motion is detected and disabled after a period of time with no motion.  Here is an example:</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-bottom: .0001pt">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<span style="color:blue">double</span> T0, LastX=0, LastY=0, LastZ=0;</span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<span style="color:blue">for</span> (;;) <span style="color:green">// loop 
-	forever</span></span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {</span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-	WaitNextTimeSlice();</span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
-	</p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<span style="color:green">// Service Amplifier disable after no activity for 
-	a while</span></span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<span style="color:blue">if</span> (ch0-&gt;Dest != LastX || ch1-&gt;Dest != LastY 
-	|| ch2-&gt;Dest != LastZ)</span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {</span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<span style="color:green">// we moved - enable KStep Amplifers</span></span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-	SetBit(45);</span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-	T0 = Time_sec();&nbsp; <span style="color:green">// record the time and position 
-	of last motion</span></span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-	LastX=ch0-&gt;Dest;</span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-	LastY=ch1-&gt;Dest;</span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-	LastZ=ch2-&gt;Dest; </span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<span style="color:blue">else</span></span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {</span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<span style="color:blue">if</span> (Time_sec() &gt; T0 + 10.0) ClearBit(45);</span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><b><i>
-	<font face="Arial" size="4"><a name="digital"></a>Digital Status</font></i></b></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The state of the Optically Isolated 12-24V Digital Inputs can be observed by selecting the "Virtual/KSTEP" Tab on the Digital I/O Screen.  Each input will be marked as active if current is flowing through the optical isolation circuit.  For input circuits and pinouts
-	<a href="ConnectorsKStep.htm#Optically_isolated_Inputs">see</a>.&nbsp; The KStep Opto Inputs are actually virtual inputs that are multiplexed in through KFLOP I/O.  KFLOP can perform this multiplexing automatically by setting the global variable <b>KStepPresent.</b>&nbsp; The following line 
-	of C code should be added to your Init.c program:</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">KStepPresent=TRUE;</font></p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">&nbsp;</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">
-	<img border="0" src="KStepDigital.png" width="479" height="533"></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;
-	</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><b><i>
-	<font face="Arial" size="4"><a name="relay"></a>Relay Driver Outputs</font></i></b></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The Optically Isolated 24V outputs can be observed and controlled by selecting the KFLOP tab on the Digital I/O Screen.  Each output will be marked as active if current is flowing through the optical isolation circuit.  The KStep outputs are the same as the standard KFLOP outputs except they are optically isolated and amplified to handle up to 24V.  For output circuit and pinouts
-	<a href="ConnectorsKStep.htm#Relay_Driver_Outputs">see</a>.</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;
-	</p>
-	<p style="margin-top: 0; margin-bottom: 0">
-	<img border="0" src="DigitalRelayOutputs.png" width="479" height="533"></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;
-	</p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-family: Arial">To make use of the outputs within a C program the following C code shows an example of enabling both the outputs, turning them on, then turning them off. </span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-	SetBitDirection(0,1);&nbsp; <span style="color:green">//set as output</span></span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-	SetBitDirection(1,1);&nbsp; <span style="color:green">//set as output</span></span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SetBit(0);&nbsp;
-	<span style="color:green">// turn output on</span></span></p>
-	<p class="MsoNormal" style="margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; line-height: 115%; font-family: Courier New">
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SetBit(1);&nbsp; <span style="color:green">// turn output on</span></span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-	ClearBit(0);&nbsp; <span style="color:green">// turn output o</span></span><font size="2" color="#008000"><span style="font-family: Courier New">ff</span></font></p>
-	<p class="MsoNormal" style="margin-top: 0; margin-bottom: 0">
-	<span style="font-size: 10.0pt; line-height: 115%; font-family: Courier New">
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ClearBit(1);&nbsp; <span style="color:green">// turn output o</span></span><font size="2" color="#008000"><span style="font-family: Courier New">ff</span></font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;
-	</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><b><i>
-	<font face="Arial" size="4"><a name="2ksteps"></a>Connecting and Using 2 KSteps</font></i></b></p>
-  <p></p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial"> Connect the RJ45 cable between KFLOP JP5 and KStep#2 JP26.&nbsp; KFLOP's   Step/Dir Generators 4-7 will then be connected to KStep#2. Configure as   OutputChan0 12-15 to drive in TTL mode as required by KStep. <br>
-        <br>
-    You will also need to provide power, GND, and Enable to KStep.&nbsp; The   simplest method is usually to connect the 4 pins on J6 between the 2   KSteps. </font></p>
-	<p><font face="Arial">See <a href="2KSteps.htm">images</a>.</font></p>
-	<p>&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><b><i>
-  <font face="Arial" size="4"><a name="analog"></a>Analog Output</font></i></b></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial"> The KStep Analog output is a low Speed (10ms time constant) isolated analog output that is commonly used as a VFD Spindle Speed Control signal.  KFLOP outputs a 3.3V digital PWM on IO 44 to KSTEP which optically isolates and filters it to create an analog signal.  Isolated power and ground (often supplied by the VFD) are required.  The analog output voltage will be a proportion of the supplied voltage relative to the duty cycle of the PWM signal.  For example a 75% high duty cycle will provide a voltage which is approximately 75% of the supplied voltage.</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-  <p style="margin-top: 0; margin-bottom: 0"><font face="Arial">To configure KFLOP to output the appropriate PWM signal into KSTEP the configuration code below should be used.  There is an FPGA option to move PWM0 (which normally is output on connector JP6 with the other 7 PWM outputs) over to JP7 Pin5 IO 44.  IO 44 must be configured as an output; the PWM Prescale dividers set to a reasonable value (like?), and then enable PWM.</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: .0001pt">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-	FPGA(KAN_TRIG_REG)=4;&nbsp; <span style="color:green">// Mux PWM0 to JP7 Pin5 IO 
-	44 for KSTEP </span></span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: .0001pt">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-	SetBitDirection(44,1);&nbsp; <span style="color:green">// define bit as an output</span></span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: .0001pt">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-	FPGA(IO_PWMS_PRESCALE) = 46;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:green">// divide 
-	clock by 46 (1.4 KHz)</span></span></p>
-	<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: .0001pt">
-	<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-	FPGA(IO_PWMS+1) = 1;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:green">// Enable</span></span></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">The Analog output has nonlinearity near the 0% duty cycle region due to opto coupler pulse shaping effects.  The nonlinearity can be mostly corrected in software through calibration.  Below is a raw uncorrected analog output with a PWM frequency of 1.4KHz (PWM Prescale = 46).</font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">
-	<img border="0" src="AnalogRaw.png" width="601" height="507"></font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0"><font face="Arial">Using a correction algorithm where the PWM value that will most closely produce the desired output voltage is determined from a table lookup approach for the first 7 PWM counts, and a simple linear interpolation is used for determining PWM settings 7 through 240 the linearized results are shown below. Although the signal is now linear, the resolution is low for settings below ~5% full scale.  </font></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	<p style="margin-top: 0; margin-bottom: 0">
-	<img border="0" src="AnalogCorrected.png" width="603" height="502"></p>
-	<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
-	</div>
 
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-family: Arial">Below is the C function used to linearize the 
-output.</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;</p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New; color: green">// 
-PWM-&gt;Analog Correction</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New; color: green">//</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New; color: green">// 
-assume very non-linear for first few count and linear thereafter </span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New; color: green">//</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New; color: green">// 
-Measure output ratio for first 0-7 counts then at 240</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New; color: green">&nbsp;</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New; color: blue">float</span><span style="font-size: 10.0pt; font-family: Courier New"> 
-V[]=</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">{</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">0.001,&nbsp;
-<span style="color:green">// count = 0</span></span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">0.031,&nbsp;
-<span style="color:green">// count = 1</span></span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">0.044,&nbsp;
-<span style="color:green">// count = 2</span></span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">0.054,&nbsp;
-<span style="color:green">// count = 3</span></span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">0.062,&nbsp;
-<span style="color:green">// count = 4</span></span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">0.069,&nbsp;
-<span style="color:green">// count = 5</span></span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">0.074,&nbsp;
-<span style="color:green">// count = 6</span></span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">0.079&nbsp;&nbsp;
-<span style="color:green">// count = 7</span></span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">};</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New; color: blue">float</span><span style="font-size: 10.0pt; font-family: Courier New"> 
-V240=0.970;</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New; color: blue">int</span><span style="font-size: 10.0pt; font-family: Courier New"> 
-CorrectAnalog(<span style="color:blue">float</span> v)</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">{</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<span style="color:blue">int</span> r;</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<span style="color:blue">float</span> v2=2.0f*v;</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<span style="color:green">// compare with half way points to determine closest 
-count</span></span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<span style="color:blue">if</span> (v2 &lt; V[1]+V[0]) <span style="color:blue">
-return</span> 0;</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<span style="color:blue">if</span> (v2 &lt; V[2]+V[1]) <span style="color:blue">
-return</span> 1;</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<span style="color:blue">if</span> (v2 &lt; V[3]+V[2]) <span style="color:blue">
-return</span> 2;</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<span style="color:blue">if</span> (v2 &lt; V[4]+V[3]) <span style="color:blue">
-return</span> 3;</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<span style="color:blue">if</span> (v2 &lt; V[5]+V[4]) <span style="color:blue">
-return</span> 4;</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<span style="color:blue">if</span> (v2 &lt; V[6]+V[5]) <span style="color:blue">
-return</span> 5;</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<span style="color:blue">if</span> (v2 &lt; V[7]+V[6]) <span style="color:blue">
-return</span> 6;</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<span style="color:green">// must be 7 or higher do linear interpolation</span></span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r = (<span style="color:blue">int</span>)(7.5 
-+ (v-V[7])/(V240-V[7])*(240.0f-7.0f));</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<span style="color:blue">if</span> (r&gt;255) r=255;</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Courier New">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<span style="color:blue">return</span> r;</span></p>
-<p class="MsoNormal" style="margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; line-height: 115%; font-family: Courier New">}</span></p>
+<p>All controller signals are 3.3V/LVTTL compatible.  An on-board voltage clamp circuit to protect against regenerative over voltage is also included. KStep is designed to snap together with KFLOP/Kogna for easy plug and play operation.  A single 26-pin ribbon cable provides all the logic, power, Step/Dir Signals, Enable, Relay driver, Analog PWM, and Optically isolated input connections between the KStep and KFLOP/Kogna boards.  If necessary, two KSteps can be connected to a single KFLOP/Kogna to drive a total of 8 motors.</p>
+
+<p class="small"><img src="KStep550.png" width="550" height="464" alt="KStep" /><br />
+Figure 1 - KStep</p>
+
+<p class="small"><img src="KStepKFLOPCloseUp855.png" width="855" height="639" alt="KStep" /><br />
+Figure 2 - KStep + KFLOP</p>
+
+	<h2><a name="config"></a>Configuring KFLOP/Kogna for use with KStep</h2>
+	
+	<p>Configuring KStep is fairly straightforward, as it is normally used in an open loop system (although it is possible to operate in <a href="../ClosedLoopStep/ClosedLoopStepper.htm">closed loop stepper mode</a>) 
+	so all feedback, servo, PID, Filter, Feedforward and commutation parameters are not used and can be ignored.  KStep is effectively a <a href="../StepAndDirection/StepAndDir.htm">Step/Dir</a> driver, so it makes use of the Step/Dir Output mode in KFLOP/Kogna (See the items circled in red below - Note that output mode type "Step Dir" is selected).  The screen shown is the Output Channel selection for KStep Motor channel #0.  Note that output channel 8 is selected instead of 0 as you might assume.  As KStep requires a LVTTL signal, rather than using Output channels 0 through 4, Output channels 8 through 11 respectively should be used instead, as they provide a LVTTL signal.  See <a href="../StepAndDirection/StepAndDir.htm">here</a> for more information. An output gain of -1 may be specified to reverse the direction of motion.</p>
+	
+	<p>Note: for the pulse polarity and pulse time to be set properly, the following line of C Code needs to be executed after every power up:</p>
+	<pre>
+		<code class="language-c">
+	FPGA(STEP_PULSE_LENGTH_ADD) = 63 + 0x80;	// set polarity and pulse length to 4&mu;s		
+		</code>
+	</pre>  
+	<p>When using the default settings, there is marginal timing on direction setup which may result in "drift" caused by a microstep in the wrong direction when changing directions.  This line of Code is already included in the Example C Initialization Programs (i.e. InitKStep3Axis.c): </p>
+	<pre>
+		<code class="language-c">		
+	FPGA(STEP_PULSE_LENGTH_ADD) = 63 + 0x80;	// set polarity and pulse length to 4&mu;s		
+		</code>
+	</pre>
+	<p>Example Axis configurations are also provided as KStepAxis0.mot, KStepAxis1.mot, KStepAxis2.mot, KStepAxis3.mot</p>
+	
+	<p><img src="ConfigStepDir.png" width="293" height="373" alt="ConfigStepDir" /></p>
+	
+	<p>Example Axis configurations are provided in the C:\KMotion431\KMotion\Motors directory (assuming a default install location). KStepAxis0.mot, KStepAxis1.mot, KStepAxis2.mot and KStepAxis3.mot are the most basic configurations. Limit switch options are also configured on this screen.  KStep's optically isolated 12-24V Inputs are commonly used to connect Limit switches and are referenced as Input Bits 168 through 183 inclusive.  If you are using NC (normally closed) type limit switches, this means that the inputs are normally high and become low when activated.  In this case the "Stop when low" option should be selected.  If using NO (normally open) type limit switches, this means the inputs are normally low, and become high when activated.  In this case, the "Stop when low" option should be cleared. For more info see
+	<a href="../ConfigurationScreen/ConfigurationScreen.htm#Limit_Switch_Options">here</a>.</p>
+		
+	<p><img src="KStepLimits.png" width="327" height="156" alt="KStep Limits" /></p>
+	
+	<p>Motion profile settings on the Step Response Screen are used.</p>
+	
+	<p><img src="KStepProfile.png" width="128" height="108" alt="KStep Profile" /></p>
+		
+	<h2><a name="enable"></a>Enable KStep Amplifiers</h2>
+	
+	<p>An amplifier enable signal is required to enable the KStep Full Bridge Amplifiers.  One signal enables all four of the KStep amplifiers.  The enable signal is positive true, meaning the drives are enabled when a 3.3V LVTTL (sourcing) signal is received.  When using a 26-pin ribbon cable to connect KStep (JP 36) and KFLOP/Kogna (JP 7), this signal is routed to KFLOP's IO 45, which must be set as an output, and also set high to enable the drives.  Note that the enable signal is only optically isolated from VBB and GND when KStep is in isolated mode.</p>
+	
+	<p>If JP36 is not being used to connect KFLOP/Kogna to KStep, then a 3.3V enable signal may be applied to a screw terminal on J6 instead.  If two KSteps are being used (for driving 8 motors), then the screw terminals on J6 should be used as an output on the first KStep to daisy chain the enable signal to the second KStep. </p>
+	
+	<p>For testing purposes KStep may be enabled using the Digital I/O Screen as shown below.</p>
+	
+	<p><img src="DigitalEnable.png" width="479" height="533" alt="DigitalEnable" /></p>
+	
+	<p>From C code the Amplifiers can be enabled with the following code:</p>
+	
+	<pre>
+		<code class="language-c">
+	SetBitDirection(45,1); 	// set Enable Signal as Output
+	SetBit(45); 			// Enable the KStep Amplifiers
+		</code>
+	</pre>
+	
+	<p>It's possible to write code to enable the amplifiers as soon as motion is detected and disabled after a period of time with no motion.  Here is an example:</p>
+	
+	<pre>
+		<code class="language-c">
+	double T0, LastX=0, LastY=0, LastZ=0;
+	for (;;) 	// loop forever
+	{
+		WaitNextTimeSlice();
+	
+		// Service Amplifier disable after no activity for a while</span>
+		if (ch0-&gt;Dest != LastX || ch1-&gt;Dest != LastY || ch2-&gt;Dest != LastZ)
+		{
+			// we moved - enable KStep Amplifers>
+			SetBit(45); 
+			T0 = Time_sec(); 	// record the time and position of last motion< 
+			LastX=ch0-&gt;Dest;
+			LastY=ch1-&gt;Dest;
+			LastZ=ch2-&gt;Dest; 
+		}
+		else
+		{
+			if (Time_sec() &gt; T0 + 10.0) ClearBit(45);
+		}
+	}
+		</code>
+	</pre>
+		
+	<h2><a name="digital"></a>Digital Status</h2>
+	
+	<p>The state of the Optically Isolated 12-24V Digital Inputs can be observed by selecting the "Virtual/KStep" Tab on the Digital I/O Screen.  Each input will be marked as active if current is flowing through the optical isolation circuit.  For input circuits and pinouts	<a href="ConnectorsKStep.htm#Optically_isolated_Inputs">see</a>. The KStep Opto Inputs are actually virtual inputs that are multiplexed in through KFLOP/Kogna I/O.  KFLOP/Kogna can perform this multiplexing automatically by setting the global variable <b>KStepPresent.</b> The following line of C code should be added to your Init.c program:</p>
+	
+	<pre>
+		<code class="language-c">
+		KStepPresent=TRUE;	
+		</code>
+	</pre>
+	
+	<p><img src="KStepDigital.png" width="479" height="533" alt="KStep Digital IO"></p>
+	
+	<h2><a name="relay"></a>Relay Driver Outputs</h2>
+	
+	<p>The Optically Isolated 24V outputs can be observed and controlled by selecting the KFLOP/Kogna tab on the Digital I/O Screen.  Each output will be marked as active if current is flowing through the optical isolation circuit.  The KStep outputs are the same as the standard KFLOP/Kogna outputs except they are optically isolated and amplified to handle up to 24V.  For output circuit and pinouts see <a href="ConnectorsKStep.htm#Relay_Driver_Outputs">Relay Driver Outputs</a>.</p>
+	
+	<p><img src="DigitalRelayOutputs.png" width="479" height="533" alt="Digital Relay Outputs" /></p>
+	
+	<p>To make use of the outputs within a C program the following C code shows an example of enabling both the outputs, turning them on, then turning them off.</p>
+	
+	<pre>
+		<code class="language-c">
+		SetBitDirection(0,1);	//set as output
+		SetBitDirection(1,1);	//set as output
+		
+		SetBit(0);	// turn output on
+		SetBit(1); 	// turn output on
+		
+		ClearBit(0); 	// turn output of
+		ClearBit(1); 	// turn output off	
+		</code>
+	</pre>
+	
+	<h2><a name="2ksteps"></a>Connecting and Using 2 KSteps</h2>
+  	
+    <p>Connect the RJ45 cable between KFLOP/Kogna JP5 and KStep#2 JP26. KFLOP's/Kogna's Step/Dir Generators 4-7 will then be connected to KStep#2. Configure as   OutputChan0 12-15 to drive in TTL mode as required by KStep.</p>
+       
+    <p>You will also need to provide power, GND, and Enable to KStep. The   simplest method is usually to connect the 4 pins on J6 between the 2 KSteps. See <a href="2KSteps.htm">Connecting and using 2 KSteps</a>.</p>
+    
+	<h2><a name="analog"></a>Analog Output</h2>
+	
+	<p>The KStep Analog output is a low Speed (10ms time constant) isolated analog output that is commonly used as a VFD Spindle Speed Control signal.  KFLOP/Kogna outputs a 3.3V digital PWM on IO 44 to KStep which optically isolates and filters it to create an analog signal.  Isolated power and ground (often supplied by the VFD) are required.  The analog output voltage will be a proportion of the supplied voltage relative to the duty cycle of the PWM signal.  For example a 75% high duty cycle will provide a voltage which is approximately 75% of the supplied voltage.</p>
+	
+	<p>To configure KFLOP/Kogna to output the appropriate PWM signal into KStep the configuration code below should be used.  There is an FPGA option to move PWM0 (which normally is output on connector JP6 with the other 7 PWM outputs) over to JP7 Pin5 IO 44.  IO 44 must be configured as an output; the PWM Prescale dividers set to a reasonable value, and then enable PWM.</p>
+	
+	<pre>
+		<code class="language-c">
+		FPGA(KAN_TRIG_REG)=4; 			// Mux PWM0 to JP7 Pin5 IO 44 for KStep
+		SetBitDirection(44,1); 			// define bit as an output
+		FPGA(IO_PWMS_PRESCALE) = 46;	// divide clock by 46 (1.4 KHz)
+		FPGA(IO_PWMS+1) = 1;  			// Enable	
+		</code>
+	</pre>
+	
+	<p>The Analog output has nonlinearity near the 0% duty cycle region due to opto coupler pulse shaping effects.  The nonlinearity can be mostly corrected in software through calibration.  Below is a raw uncorrected analog output with a PWM frequency of 1.4KHz (PWM Prescale = 46).</p>
+		
+	<p><img src="AnalogRaw.png" width="601" height="507" alt="Analog Raw" /></p>
+		
+	<p>Using a correction algorithm where the PWM value that will most closely produce the desired output voltage is determined from a table lookup approach for the first 7 PWM counts, and a simple linear interpolation is used for determining PWM settings 7 through 240 the linearized results are shown below. Although the signal is now linear, the resolution is low for settings below ~5% full scale. </p>
+		
+	<p><img src="AnalogCorrected.png" width="603" height="502" alt="Analog Corrected" /></p>
+	
+	<p>Below is the C function used to linearize the output.</p>
+	<pre>
+		<code class="language-c">
+	// PWM-&gt;Analog Correction
+	//
+	// assume very non-linear for first few count and linear thereafter
+	//
+	// Measure output ratio for first 0-7 counts then at 240
+
+	float V[]=
+	{
+	0.001,	// count = 0
+	0.031,	// count = 1
+	0.044,	// count = 2
+	0.054,	// count = 3
+	0.062,	// count = 4
+	0.069,	// count = 5
+	0.074,	// count = 6
+	0.079	// count = 7
+	;
+	
+	float V240=0.970;
+	
+	int CorrectAnalog(float v)
+	{
+		int r;
+		float v2=2.0f*v;
+		// compare with half way points to determine closest count
+		if (v2 &lt; V[1]+V[0]) return 0;
+		if (v2 &lt; V[2]+V[1]) return 1;
+		if (v2 &lt; V[3]+V[2]) return 2;
+		if (v2 &lt; V[4]+V[3]) return 3;
+		if (v2 &lt; V[5]+V[4]) return 4;
+		if (v2 &lt; V[6]+V[5]) return 5;
+		if (v2 &lt; V[7]+V[6]) return 6;
+		// must be 7 or higher do linear interpolation
+
+		r = (int<)(7.5 + (v-V[7])/(V240-V[7])*(240.0f-7.0f));
+		if (r&gt;255) r=255;
+		return< r;
+
+}		</code>
+	</pre>
+
+<p>&nbsp;</p>
+</div>
 
 </body>
 

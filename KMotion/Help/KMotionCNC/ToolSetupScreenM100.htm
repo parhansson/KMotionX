@@ -1,14 +1,76 @@
+<!DOCTYPE html>
 <html>
-
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-<title>Tool Setup Screen M100</title>
 
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+
+<meta name="keywords" content="ethernet 16-axis controller, cnc control, motion control, cnc boards, 4-axis, 8-axis, stepper, brushless, DC motor, servo, encoder, adc, dac, motion controller, automated motion, manufacturing, Mach3">
+<meta name="description" content="Manufacturer of premium motion control products for CNC Manufacturing, Robotics and Automation">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<title>Tool Setup Screen - M100 - M119</title>
+
+<link rel="stylesheet" type="text/css" href="../css/style.css">
+<link rel="stylesheet" href="../css/prism.css" data-noprefix />
+<script src="../js/prism.js"></script>
 </head>
 
 <body>
 
-<p><i><b><font size="5" face="Arial">Tool Setup Screen - M100 - M119</font></b></i></p>
+<div id="logo"><a href="../index.htm"></a></div>
+
+<div id="home">
+<a href="../index.htm">Table of contents</a> |  
+	<script>
+		if (navigator.userAgent.indexOf("NT 6.2") == -1){
+			document.write('<a href="https://www.dynomotion.com">Dynomotion home page</a>')
+		} else {
+			document.write('<a href="https://www.dynomotion.com" target="_blank">Dynomotion home page</a>')
+		}
+	</script>
+</div>
+	
+<div id="searchNav">
+
+	<div class="gcse-search">
+					<script>
+					  if (document.location.protocol  ==  'https:') {
+					  (function() {
+					  var cx = '012657033059195044748:9fmjmlufts0';
+					  var gcse = document.createElement('script');
+					  gcse.type = 'text/javascript';
+					  gcse.async = true;
+					  gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+					      '//cse.google.com/cse.js?cx=' + cx;
+					  var s = document.getElementsByTagName('script')[0];
+					  s.parentNode.insertBefore(gcse, s);
+					})();
+					  }
+				      </script> 
+				      <gcse:search> </gcse:search>  
+
+	       </div>
+</div>	
+
+	
+
+
+<div id="google_translate_element" style="background: transparent;" align="right"><script type="text/javascript">
+if (navigator.userAgent.indexOf("NT 6.2") == -1) {
+		function googleTranslateElementInit() {
+	  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,de,fr,it,es,pt,ru,uk,ar,zh-CN,zh-TW,ko,iw,hi,ja,tr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+		}						}
+	</script>
+	<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+	</script>
+</div>		
+<div id="main">
+
+<h1>Tool Setup Screen - M100 - M119</h1>
+
 <p>
 <map name="FPMap0">
 <area href="#G_Code_Actions_M100-M119" shape="rect" coords="11, 48, 693, 438">
@@ -17,27 +79,29 @@
 <area href="ToolSetupScreenFiles.htm" shape="rect" coords="170, 22, 256, 45">
 <area href="ToolSetupScreenTP.htm" shape="rect" coords="254, 24, 350, 46">
 </map>
-<img border="0" src="KMotionCNCfiles/ToolSetupM100.PNG" width="700" height="477" usemap="#FPMap0"></p>
+<img border="0" src="KMotionCNCfiles/ToolSetupM100.PNG" width="700" height="477" usemap="#FPMap0" /><br />
+<span class="small">(Click on image to jump to related help)</span></p>
 
-<p><font face="Arial"><i>(Click on Image to Jump to 
-		related help)</i></font></p>
-<p><font face="Arial">The Tool Setup Screen allows <i>KMotionCNC</i> to be configured for a 
-particular machine tool.&nbsp; Each machine tool is likely to have different 
-motion resolution, speeds, and acceleration limits.&nbsp; It is also likely to 
-different I/O requirements with regard to Spindle control and such.&nbsp; 
-Additionally&nbsp; a machine may have different initialization and homing 
-requirements.&nbsp; <i>KMotionCNC</i> has a flexible mechanism for defining what 
-type of action is to be performed for various M Codes and Custom Buttons. </font> </p>
-<p><i><b><font size="4" face="Arial"><a name="G_Code_Actions_M100-M119">G Code Actions 
-M100-M119</a></font></b></i></p>
-<p><font face="Arial">This Tool Setup Screen Tab allows the user to define up to 
+<p>The Tool Setup Screen allows <em>KMotionCNC</em> to be configured for a 
+particular machine tool. Each machine tool is likely to have different 
+motion resolution, speeds, and acceleration limits. It is also likely to 
+different I/O requirements with regard to Spindle control and such. 
+Additionally a machine may have different initialization and homing 
+requirements. <em>KMotionCNC</em> has a flexible mechanism for defining what 
+type of action is to be performed for various M Codes and Custom Buttons.</p>
+
+<h2><a name="G_Code_Actions_M100-M119">G Code Actions M100-M119</a></h2>
+
+<p>This Tool Setup Screen Tab allows the user to define up to 
 20 custom general purpose M codes that can be used to change IO bits, or execute 
-User C programs, or execute Windows Programs.&nbsp; The action to be performed 
-is defined in a similar manner as the&nbsp;
-<a href="ToolSetupScreenM3.htm#G_Code_Actions_-_M3_-_M9">GCode Actions M3-M9</a> 
-however parameters may also be passed from GCode to a KFLOP User C Program.&nbsp;
-<a href="MCodesWithParams.htm">See also</a>.</font></p>
+User C programs, or execute Windows Programs. The action to be performed 
+is defined in a similar manner as the <a href="ToolSetupScreenM3.htm#G_Code_Actions_-_M3_-_M9">GCode 
+Actions M3-M9</a> however parameters may also be passed from GCode to a KFLOP/Kogna User C Program.
+See also <a href="MCodesWithParams.htm">MCodes with Parameters</a>.</p>
 
+<p>&nbsp;</p>
+	</div>
+	
 </body>
 
 </html>

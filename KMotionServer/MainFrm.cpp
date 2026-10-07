@@ -106,7 +106,7 @@ void CMainFrame::Dump(CDumpContext& dc) const
 
 DWORD ServerMain(void) ;
 
-void CMainFrame::OnTimer(UINT nIDEvent) 
+void CMainFrame::OnTimer(UINT_PTR nIDEvent) 
 {
 	ServerMain();
 

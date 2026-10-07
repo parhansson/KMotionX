@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+<meta name="keywords" content="cnc control, motion control, cnc boards, 4-axis, 8-axis, stepper, brushless, DC motor, servo, encoder, adc, dac, motion controller, automated motion, manufacturing, Mach3">
+<meta name="description" content="Manufacturer of premium motion control products for CNC Manufacturing, Robotics and Automation">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+
+<title>Step and Direction Setup</title>
+
+<link rel="stylesheet" type="text/css" href="../css/style.css">
+<link rel="stylesheet" href="../css/prism.css" data-noprefix />
+<script src="../js/prism.js"></script>
+	
+</head>
+
+<body>
+
+<div id="logo"><a href="../index.htm"></a></div>
+
+<div id="home">
+<a href="../index.htm">Table of contents</a> |  
+	<script>
+		if (navigator.userAgent.indexOf("NT 6.2") == -1){
+			document.write('<a href="https://www.dynomotion.com">Dynomotion home page</a>')
+		} else {
+			document.write('<a href="https://www.dynomotion.com" target="_blank">Dynomotion home page</a>')
+		}
+	</script>
+</div>
+	
+<div id="searchNav">
+
+	<div class="gcse-search">
+					<script>
+					  if (document.location.protocol  ==  'https:') {
+					  (function() {
+					  var cx = '012657033059195044748:9fmjmlufts0';
+					  var gcse = document.createElement('script');
+					  gcse.type = 'text/javascript';
+					  gcse.async = true;
+					  gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+					      '//cse.google.com/cse.js?cx=' + cx;
+					  var s = document.getElementsByTagName('script')[0];
+					  s.parentNode.insertBefore(gcse, s);
+					})();
+					  }
+				      </script> 
+				      <gcse:search> </gcse:search>  
+
+	       </div>
+</div>	
+
+	
+
+
+<div id="google_translate_element" style="background: transparent;" align="right"><script type="text/javascript">
+if (navigator.userAgent.indexOf("NT 6.2") == -1) {
+		function googleTranslateElementInit() {
+	  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,de,fr,it,es,pt,ru,uk,ar,zh-CN,zh-TW,ko,iw,hi,ja,tr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+		}						}
+	</script>
+	<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+	</script>
+</div>		
+<div id="main">
+
+<h1>Configuring Step and Direction Outputs for Kogna</h1>
+<p>Kogna supports connection to motor amplifiers that utilize step and 
+  direction (or <a href="#Quadrature">quadrature</a> or <a href="#CW/CCW">CW/CCW Pulses</a>) 
+  inputs to control the motion. Step and direction motor 
+  amplifiers are typically used with stepper motors with or without micro-stepping 
+  capability. Each &quot;step&quot; causes the motor amplifier to advance the motor 
+  position one step in the direction specified by the &quot;Direction&quot; signal. 
+  Some Servo Amplifiers may also operate in Step/Direction Mode. Only two digital output signals are required for this interface.  </p>
+<p>Fine micro-stepping resolution combined with high motor RPM can result in step 
+  rates in the megahertz. For example, a 200 step/rev stepping motor 
+  with 128:1 micro-stepping running at 3000 RPM requires:</p>
+
+<p><em>3000 RPM / 60 Sec/Min * 200 steps/rev * 128 µsteps/full step = 1.28 MHz
+  µsteps/sec</em></p>
+
+<p>Kogna has 16 axes of Step and Direction. Output pulses up to 2.5 MHz can be generated. </p>
+<p>Kogna features 12 Axes of +5V Differential Drivers (24 differntial drivers to 48 connector pins). The first 8 Step/Dir Generators can be independently configured to drive a pair of differential Drivers or 3.3V KFLOP compatible pins with an 8-bit R/W FPGA Register called STEP_DIR_TO_DIFF. Each bit muxes the corresponding Step/Dir Generator. Writing a '1' to the bit will Connect the Step/Dir Generator to the differential Driver. Kogna will automatically control the corresponding Differential Enable Bits based on  bit 7 of the Axis Configuration OutputChannel number so this is not normally necessary to be set by a User. For example to multiplex all 8  to differential Drivers the following C Code might be used:</p>
+<p> FPGA(STEP_DIR_TO_DIFF) = 0xFF;</p>
+<p></p>
+<p>The first 8 Axes of Step/Dir outputs can also operate in a Single Ended KFLOP compatible manner where they are normally hard wired to IO bits 8 through 
+  15 on JP7 and IO bits 36 through 43 on JP5. Additionally the first 4 Step/Dir 
+  outputs can be multiplexed to connectors JP4 and JP6 if desired. This may 
+  be required if JP7 is used for some other purpose such as interfacing to the 
+  Kanalog I/O Expander. A global <a href="#Global_Register">multiplexing bit</a> is used to switch the 
+  outputs to the alternate connectors. </p>
+
+<p>Note that the first 8 of 10 I/O pins of Aux #0 and Aux #1 have internal 150 
+Ohm pull down resistors. Therefore Pins JP4-13, JP4-14, JP6-13 and JP6-14 
+may not be used in Open Collector mode. </p>
+<p>&nbsp;</p>
+<p> Axis output channel settings 0-255 are allowed for Kogna. Although only 16 Step and Direction generators are available for Kogna. By adding specific constants to the channel number the operation mode and output mode of each Step/Dir   Generator can be changed independently.  Not all Output Drive modes are valid for all Generators.</p>
+<p> <br>
+  Adding 8 to the channel number uses the same generator to be used except   the output pins are actively driven (high and low) as 3.3V LVTTL signals   instead of only driven low as open collector outputs. <br>
+  <br>
+  Adding 16 to the channel number switches the generator from Step/Dir to   Quadrature output mode. <br>
+  <br>
+  Adding 48 to the channel number switches the generator from Step/Dir to   CW/CCW output mode.</p>
+<p>Adding 64 to the channel number switches to the second bank of 8 generators (this is to maintain legacy compatibility with KFLOP's channel 8 Axes numbering scheme)</p>
+<p>Adding 128 to the channel number selects Differntial Output mode and pins (only available on Generators 0-11)</p>
+<p></p>
+<p><img src="StepDirChanKey.png" width="480" height="432" alt=""/></p>
+<p>&nbsp;</p>
+<p><img src="StepDirChanFlowChart.png" width="432" height="672" alt=""/></p>
+<p>Step/Dir Generators 8-11 will always drive diffential Drivers 16-23 whenever they are enabled. </p>
+<p>Any IO pin not being driven by a Step/Dir Generator may be used for other purposes such as GPIO.</p>
+<p>If an axis channel is selected as a Step and Direction axis and enabled, the 
+corresponding 2 output pins will be automatically configured as outputs (if necessary) and they 
+may not be used as general purpose IO.</p>
+<p>See diagram below. For a larger image click <a href="LargeStepDirDiagram.html">here</a>.</p>
+<p><img src="KognaStepDirOptions.png" width="912" height="960" alt=""/></p>
+
+<p>The tables below lists the IO Bit and Pin numbers associated with the Step/Dir Generator and the Mode and Multiplex option:</p>
+
+
+  <p>Generators 0-3 have 3 options:</p>
+  <table class="table" style="width:60%;">
+		<tr>
+		  <th style="width:20%;"></th>
+		  <th colspan="2" style="width:30%; background:#58f;">Enable Diff = 1</th>
+		  <th colspan="4" style="width:60%;">Enable Diff = 0</th>
+    </tr>
+		<tr>
+			<th></th>
+			<th colspan="2" style="width:30%; background:#58f;">Mux = X</th>
+			<th colspan="2">Mux = 0</th>
+			<th colspan="2">Mux = 1</th>
+		</tr>
+		<tr>
+			<th>Signal</th>
+			<th style="background:#58f;">IO Bit</th>
+			<th style="background:#58f;">Pins</th>
+			<th>IO Bit</th>
+			<th>Pin</th>
+			<th>IO Bit</th>
+			<th>Pin</th>
+		</tr>
+		<tr>
+			<td>Step 0</td>
+			<td>250</td>
+			<td>JP10 - 1 &amp; 2</td>
+			<td>8</td>
+			<td>JP7 - 15</td>
+			<td>22</td>
+			<td>JP4 - 13</td>
+		</tr>
+		<tr>
+			<td>Direction 0</td>
+			<td>251</td>
+			<td>JP10 - 3 &amp; 4</td>
+			<td>9</td>
+			<td>JP7 - 16</td>
+			<td>23</td>
+			<td>JP4 - 14</td>
+		</tr>
+		<tr>
+			<td>Step 1</td>
+			<td>252</td>
+			<td>JP10 - 5 &amp; 6</td>
+			<td>10</td>
+			<td>JP7 - 17</td>
+			<td>24</td>
+			<td>JP4 - 15</td>
+	  </tr>
+		<tr>
+			<td>Direction 1</td>
+			<td>253</td>
+			<td>JP10 - 7 &amp; 8</td>
+			<td>11</td>
+			<td>JP7 - 18</td>
+			<td>25</td>
+			<td>JP4 - 16</td>
+		</tr>
+		<tr>
+			<td>Step 2</td>
+			<td>254</td>
+			<td>JP10 - 9 &amp; 10</td>
+			<td>12</td>
+			<td>JP7 - 19</td>
+			<td>32</td>
+			<td>JP6 - 13</td>
+		</tr>
+		<tr>
+			<td>Direction 2</td>
+			<td>255</td>
+			<td>JP10 - 11 &amp; 12</td>
+			<td>13</td>
+			<td>JP7 - 25</td>
+			<td>33</td>
+			<td>JP6 - 14</td>
+		</tr>
+		<tr>
+			<td>Step 3</td>
+			<td>256</td>
+			<td>JP10 - 13 &amp; 14</td>
+			<td>14</td>
+			<td>JP7 - 21</td>
+			<td>34</td>
+			<td>JP6 - 15</td>
+		</tr>
+		<tr>
+			<td>Direction 3</td>
+			<td>257</td>
+			<td>JP10 - 15 &amp; 16</td>
+			<td>15</td>
+			<td>JP7 - 22</td>
+			<td>35</td>
+			<td>JP6 - 16</td>
+		</tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>Generators 4-7 have 2 options:</p>
+<table class="table" style="width:44%;">
+	  <tr>
+	  		<th style="width:20%;">&nbsp;</th>
+		  	<th colspan="2" style="width:30%; background:#58f;">Enable Diff = 1</th>
+			<th style="width:30%;" colspan="2">Enable Diff = 0</th>
+   	</tr>
+		<tr>
+			<th>Signal</th>
+			<th style="background:#58f;">IO Bit</th>
+			<th style="background:#58f;">Pins</th>
+			<th>IO Bit</th>
+			<th>Pin</th>
+		</tr>
+		<tr>
+			<td>Step 4</td>
+			<td>258</td>
+			<td>JP10 - 17 &amp; 18</td>
+			<td>36</td>
+			<td>JP5 - 1</td>
+		</tr>
+		<tr>
+			<td>Direction 4</td>
+			<td>259</td>
+			<td>JP10 -19 &amp; 20</td>
+			<td>37</td>
+			<td>JP5 - 2</td>
+		</tr>
+		<tr>
+			<td>Step 5</td>
+			<td>260</td>
+			<td>JP10 - 21 &amp; 22</td>
+			<td>38</td>
+			<td>JP5 - 3</td>
+		</tr>
+		<tr>
+			<td>Direction 5</td>
+			<td>261</td>
+			<td>JP10 - 23 * 24</td>
+			<td>39</td>
+			<td>JP5 - 4</td>
+		</tr>
+		<tr>
+			<td>Step 6</td>
+			<td>262</td>
+			<td>JP10 - 25 &amp; 26</td>
+			<td>40</td>
+			<td>JP5 - 5</td>
+		</tr>
+		<tr>
+			<td>Direction 6</td>
+			<td>263</td>
+			<td>JP10 - 27 &amp; 28</td>
+			<td>41</td>
+			<td>JP5 - 6</td>
+		</tr>
+		<tr>
+			<td>Step 7</td>
+			<td>264</td>
+			<td>JP10 - 29 &amp; 30</td>
+			<td>42</td>
+			<td>JP5 - 7</td>
+		</tr>
+		<tr>
+			<td>Direction 7</td>
+			<td>265</td>
+			<td>JP10 - 10 &amp; 32</td>
+			<td>43</td>
+			<td>JP5 - 8</td>
+		</tr>
+  </table>
+	<p>&nbsp;</p>
+	<p>Generators 8-11 are Differntial only:</p>
+<table class="table" style="width:295px;">
+	  <tr>
+			<th style="width:20%;">Signal</th>
+			<th style="width:15%;">IO Bit</th>
+			<th style="width:15%;">Pins</th>
+    </tr>
+		<tr>
+			<td>Step 8</td>
+			<td>266</td>
+			<td>JP14 - 1 &amp; 2</td>
+		</tr>
+		<tr>
+			<td>Direction 8</td>
+			<td>267</td>
+			<td>JP14 - 3 &amp; 4</td>
+		</tr>
+		<tr>
+			<td>Step 9</td>
+			<td>268</td>
+			<td>JP14 - 5 &amp; 6</td>
+		</tr>
+		<tr>
+			<td>Direction 9</td>
+			<td>269</td>
+			<td>JP14 - 7 &amp; 8</td>
+		</tr>
+		<tr>
+			<td>Step 10</td>
+			<td>270</td>
+			<td>JP14 - 9 &amp; 10</td>
+		</tr>
+		<tr>
+			<td>Direction 10</td>
+			<td>271</td>
+			<td>JP14 - 11 &amp; 12</td>
+		</tr>
+		<tr>
+			<td>Step 11</td>
+			<td>272</td>
+			<td>JP14 - 13 &amp; 14</td>
+		</tr>
+		<tr>
+			<td>Direction 11</td>
+			<td>273</td>
+			<td>JP14 - 15 &amp; 16</td>
+		</tr>
+  </table>
+
+	<p>&nbsp;</p>
+	<p>Generators 11-15 3.3V IO only:</p>
+<table class="table" style="width:295px;">
+	  <tr>
+			<th style="width:20%;">Signal</th>
+			<th style="width:15%;">IO Bit</th>
+			<th style="width:15%;">Pin</th>
+    </tr>
+		<tr>
+			<td>Step 12</td>
+			<td>200</td>
+			<td>JP12 - 11</td>
+		</tr>
+		<tr>
+			<td>Direction 12</td>
+			<td>201</td>
+			<td>JP11 -12</td>
+		</tr>
+		<tr>
+			<td>Step 13</td>
+			<td>202</td>
+			<td>JP12 - 13</td>
+		</tr>
+		<tr>
+			<td>Direction 13</td>
+			<td>203</td>
+			<td>JP12 - 14</td>
+		</tr>
+		<tr>
+			<td>Step 14</td>
+			<td>204</td>
+			<td>JP12 - 15</td>
+		</tr>
+		<tr>
+			<td>Direction 14</td>
+			<td>205</td>
+			<td>JP12 - 16</td>
+		</tr>
+		<tr>
+			<td>Step 15</td>
+			<td>206</td>
+			<td>JP12 - 17</td>
+		</tr>
+		<tr>
+			<td>Direction 15</td>
+			<td>207</td>
+			<td>JP12 - 18</td>
+		</tr>
+  </table>
+	
+<p>&nbsp;</p>
+<p>The simplest method to configure a Step/Dir Axis and its various channels and modes is to use the KMotion.exe Configuration Screen shown below. To configure an axis as step and direction, on the Configuration Screen   select output mode as "Step Dir" and select which of the 16 available   Step and Direction generators should be used by setting the appropriate   Output Channel 0 setting. Also select the appropriate operational mode and output Drive mode. See below.</p>
+
+<p><img src="StepDirModes.png" width="565" height="668" alt="ConfigStepDir" /></p>
+
+<p>&nbsp;</p>
+
+<p>If your amplifier has opto coupler inputs driven by +5V then a 5V Differential Drive Output is the best choice. Either as single ended 5V signals (by using one of the 5V differential outputs) or differential 5V signals. Differential signals allow faster step rates.</p>
+<p>If a Differntial Drive Output is not available then a 3.3V output must be used. In this case open-collector mode is likely to work better. The diagram below shows how the open collector mode works driving the LED of an Opto Coupler with the anode connected to +5V.</p>
+
+<p><img src="OpenCollector.PNG" width="450" height="280" alt="OpenCollector" /></p>
+
+<p>However if the amplifier has standard logic inputs then LVTTL outputs should work better as the pin is actively driven high and low.. </p>
+<p><a name="Quadrature">Quadrature</a> outputs are required for some amplifiers. 
+  Quadrature outputs output two A B phases instead of Step/Dir signals. An 
+  advantage is that only one signal edge transition takes place for each &quot;step&quot; as 
+  opposed to a complete pulse and any Direction Setup Time and Minimum pulse time 
+  is avoided. Quadrature mode is selected by adding 16 to the Output Channel 
+  Number.</p>
+
+<p><a name="CW/CCW">CW/CCW</a> Mode is also available. In this mode instead of having a 
+  Direction signal there is a separate output for CW and CCW Pulses. This 
+  mode avoids any Direction Setup Time as well. CW/CCW mode is selected by 
+  adding 48 to the Output Channel Number.</p>
+
+<p><img src="AllModes.png" width="647" height="623" alt="AllModes" /></p>
+
+<p>The table below summarizes the Output Channel Number to specify to select  the desired Generator and Mode:</p>
+  <table class="table" style="color:#B51214 width:90%">
+		<tr>
+			<th style="width:10%"></th>
+			<th colspan="3" style="background:#58f; width:30%">Step/Dir mode +0</th>
+			<th style="width:30%" colspan="3">Quadrature mode +16</th>
+			<th style="background:#58f; width:30%" colspan="3">CW/CCW mode +48</th>
+		</tr>
+		<tr>
+			<th>Generator</th>
+			<th style="background:#58f"><p style="margin:0 0 0 0">Differential</p>
+		    <p style="margin:0 0 0 0">+128</p></th>
+			<th style="background:#58f"><p style="margin:0 0 0 0">Open</p>
+		    <p style="margin:0 0 0 0"> Collector</p>
+		    <p style="margin:0 0 0 0">+0</p></th>
+			<th style="background:#58f"><p style="margin:0 0 0 0">LVTTL</p>
+		    <p style="margin:0 0 0 0">+8</p></th>
+			<th><p style="margin:0 0 0 0">Differential</p>
+		    <p style="margin:0 0 0 0">+128</p></th>
+			<th><p style="margin:0 0 0 0">Open</p>
+		    <p style="margin:0 0 0 0"> Collector</p>
+		    <p style="margin:0 0 0 0">+0</p></th>
+			<th><p style="margin:0 0 0 0">LVTTL</p>
+		    <p style="margin:0 0 0 0">+8</p></th>
+			<th style="background:#58f"><p style="margin:0 0 0 0">Differential</p>
+		    <p style="margin:0 0 0 0">+128</p></th>
+			<th style="background:#58f"><p style="margin:0 0 0 0">Open</p>
+		    <p style="margin:0 0 0 0"> Collector</p>
+		    <p style="margin:0 0 0 0">+0</p></th>
+			<th style="background:#58f"><p style="margin:0 0 0 0">LVTTL</p>
+		    <p style="margin:0 0 0 0">+8</p></th>
+		</tr>
+		<tr>
+			<td>0</td>
+			<td>128</td>
+			<td>0</td>
+			<td>8</td>
+			<td>144</td>
+			<td>16</td>
+			<td>24</td>
+			<td>176</td>
+			<td>48</td>
+			<td>56</td>
+		</tr>
+		<tr>
+			<td>1</td>
+			<td>129</td>
+			<td>1</td>
+			<td>9</td>
+			<td>145</td>
+			<td>17</td>
+			<td>25</td>
+			<td>177</td>
+			<td>49</td>
+			<td>57</td>
+		</tr>
+		<tr>
+			<td>2</td>
+			<td>130</td>
+			<td>2</td>
+			<td>10</td>
+			<td>146</td>
+			<td>18</td>
+			<td>26</td>
+			<td>178</td>
+			<td>50</td>
+			<td>58</td>
+		</tr>
+		<tr>
+			<td>3</td>
+			<td>131</td>
+			<td>3</td>
+			<td>11</td>
+			<td>147</td>
+			<td>19</td>
+			<td>27</td>
+			<td>179</td>
+			<td>51</td>
+			<td>59</td>
+		</tr>
+		<tr>
+			<td>4</td>
+			<td>132</td>
+			<td>4</td>
+			<td>12</td>
+			<td>148</td>
+			<td>20</td>
+			<td>28</td>
+			<td>180</td>
+			<td>52</td>
+			<td>60</td>
+		</tr>
+		<tr>
+			<td>5</td>
+			<td>133</td>
+			<td>5</td>
+			<td>13</td>
+			<td>149</td>
+			<td>21</td>
+			<td>29</td>
+			<td>181</td>
+			<td>53</td>
+			<td>61</td>
+		</tr>
+		<tr>
+			<td>6</td>
+			<td>134</td>
+			<td>6</td>
+			<td>14</td>
+			<td>150</td>
+			<td>22</td>
+			<td>30</td>
+			<td>182</td>
+			<td>54</td>
+			<td>62</td>
+		</tr>
+		<tr>
+			<td>7</td>
+			<td>135</td>
+			<td>7</td>
+			<td>15</td>
+			<td>151</td>
+			<td>23</td>
+			<td>31</td>
+			<td>183</td>
+			<td>55</td>
+			<td>63</td>
+		</tr>
+		<tr>
+			<td>8</td>
+			<td>192</td>
+			<td>64</td>
+			<td>72</td>
+			<td>208</td>
+			<td>80</td>
+			<td>88</td>
+			<td>192</td>
+			<td>112</td>
+			<td>120</td>
+		</tr>
+		<tr>
+			<td>9</td>
+			<td>193</td>
+			<td>65</td>
+			<td>73</td>
+			<td>209</td>
+			<td>81</td>
+			<td>89</td>
+			<td>193</td>
+			<td>113</td>
+			<td>121</td>
+		</tr>
+		<tr>
+			<td>10</td>
+			<td>194</td>
+			<td>66</td>
+			<td>74</td>
+			<td>210</td>
+			<td>82</td>
+			<td>90</td>
+			<td>194</td>
+			<td>114</td>
+			<td>122</td>
+		</tr>
+		<tr>
+			<td>11</td>
+			<td>195</td>
+			<td>67</td>
+			<td>75</td>
+			<td>211</td>
+			<td>83</td>
+			<td>91</td>
+			<td>195</td>
+			<td>115</td>
+			<td>123</td>
+		</tr>
+		<tr>
+			<td>12</td>
+			<td>N/A</td>
+			<td>68</td>
+			<td>76</td>
+			<td>N/A</td>
+			<td>84</td>
+			<td>92</td>
+			<td>N/A</td>
+			<td>116</td>
+			<td>124</td>
+		</tr>
+		<tr>
+			<td>13</td>
+			<td>N/A</td>
+			<td>69</td>
+			<td>77</td>
+			<td>N/A</td>
+			<td>85</td>
+			<td>93</td>
+			<td>N/A</td>
+			<td>117</td>
+			<td>125</td>
+		</tr>
+		<tr>
+			<td>14</td>
+			<td>N/A</td>
+			<td>71</td>
+			<td>78</td>
+			<td>N/A</td>
+			<td>86</td>
+			<td>94</td>
+			<td>N/A</td>
+			<td>118</td>
+			<td>126</td>
+		</tr>
+		<tr>
+			<td>15</td>
+			<td>N/A</td>
+			<td>71</td>
+			<td>79</td>
+			<td>N/A</td>
+			<td>87</td>
+			<td>95</td>
+			<td>N/A</td>
+			<td>119</td>
+			<td>127</td>
+		</tr>
+	</table>
+	
+<p>&nbsp;</p>
+<p>For a table mapping from Output Channel Number to Generator and mode see <a href="StepAndDirOutputChanToMode.htm">here</a>.</p>
+<p>&nbsp;</p>
+<p>Note when configuring the motion profile for a Step and Direction Axis the appropriate maximum Velocity, Acceleration, and Jerk should be set in units of steps/sec, steps/sec<sup>2</sup>, and steps/sec<sup>3</sup> respectively.  From Kogna's perspective a "step" is the movement for a step pulse to the Drive which may or may not actually be a micro-step depending on the Drive and its settings.</p>
+
+<h2><a name="Global_Register">Global Register</a> sets Pulse Width, Polarity, Multiplexor</h2>
+
+<p>To change the Step/Dir Pulse width, Step Pulse Polarity, and connector multiplexor for channels 0-3 a programmable register in Kogna's FPGA may be used. </p>
+
+<p>Kogna has the capability to program the Step pulse width as a 6-bit value. The default setting is 2us. The pulse length may be adjusted from 1 to 63 of 16.67 MHz clocks. Which corresponds to 60ns to 3.78us. Using a long pulse length limits the maximum frequency that can be generated. For example with the default pulse length of 2us the frequency should not exceed 1/(2 x 2us) = 250KHz. </p>
+
+<p>Kogna sets the Direction output 1.92us before generating a Step Pulse. With the maximum Step Pulse length of 3.78us the maximum Direction Setup time to the trailing edge of the Step Pulse is 5.7us. </p>
+
+<p>Setting Bit-6 high of the register can be set high to multiplex Step/Dir generators 0-3 from JP7 to JP4 and JP6.</p>
+
+<p>Setting Bit-7 high will invert the Step Output pulse so that it pulses High rather than Low. Some Amplifiers (Geckos) prefer this mode. If the drive &quot;steps&quot; on the falling edge of the pulse, then this option will provide more setup time for the Direction Signal. </p>
+
+<p>A User C Program must be used to change the FPGA register. The following statement should be used:</p>
+
+<pre>
+	<code class="language-c">
+	FPGA(STEP_PULSE_LENGTH_ADD)=32;					// set the pulse time to ~ 2&mu;s
+	FPGA(STEP_PULSE_LENGTH_ADD)=32 + 0x40;			// set the pulse time to ~ 2&mu;s and multiplex to JP4 and JP6
+	FPGA(STEP_PULSE_LENGTH_ADD)=32 + 0x80;			// set the pulse time to ~ 2&mu;s and pulse the Step High
+	FPGA(STEP_PULSE_LENGTH_ADD)=32 + 0x40 + 0x80 	// set the pulse time to ~ 2&mu;s, mux to JP4 and JP6, and pulse the Step High
+	</code>
+</pre>
+
+<h2>Example Configuration for a IM804 Amplifier and Rapidsyn Stepper</h2>
+<p><img src="StepDirLayoutKogna.jpg" width="295" height="495" alt="StepDirLayout" /></p>
+
+<h2>Layout - KMotion - Amplifier - Motor</h2>
+<p><img src="IM804.jpg" width="522" height="347" alt="Amplifier - Motor" /></p>
+
+<p>Amplifier Connections - resistors set coil currents (1500 ohms = 3A) and idle standby current (270 ohms = 0.5A). DIP Switches set 
+to ON-OFF-OFF-ON for 128:1 micro-stepping.</p>
+
+<p><img src="RapidsynMotor.JPG" width="336" height="493"></p>
+<p>Rapidsyn stepper motor. Note coil winding's centertaps are not used.</p>
+
+<p><img src="ConfigStepDir.PNG" width="567" height="669"></p>
+<p>Axis channel 0 configures as &quot;Step Dir&quot; mode and using Step and Direction generator 0.</p>
+
+<p><img src="MoveResponse.PNG" width="893" height="575"></p>
+<p>Max Velocity 1.6 x 10<sup>6</sup> steps/sec (1.6e6 / 128 = 12,500 sps = 
+3750 RPM). Note this (and most) steppers lose most all of their useful 
+torque above several thousand full steps per second. The high speed 
+demonstrated here is intended to demonstrate KMotion's ability to generate high 
+pulse rates.</p>
+
+<p>Max Acceleration 6 x 10<sup>6</sup> steps/sec<sup>2</sup>.</p>
+<p>Max Jerk 2 x 10<sup>8</sup> steps/sec<sup>3</sup>.</p>
+<p>1 x 10<sup>6</sup> count Move performed and data captured over 3 seconds.</p>
+<p>Pushing Move downloads all parameters, enables the axis, performs the movement, and plots the result.</p>
+
+<p><img src="DiditalStepOutputs.PNG" width="675" height="532"></p>
+<p>Note after the axis has been enabled, digital IO bits 8 and 9 have 
+automatically been configured as outputs for use by Step and Direction Generator 
+#0.</p>
+
+<p><a href="http://www.dynomotion.com/Videos/StepAndDir.wmv">Watch a video</a> showing 
+slow and smooth acceleration of this configuration up to 12,500 
+full steps per second (1.6 MHz @ 128 microsteps/full step). </p>
+
+	<p>&nbsp;</p>
+
+</div>
+</body>
+
+</html>

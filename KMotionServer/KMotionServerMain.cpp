@@ -15,7 +15,7 @@
 #include "..\KMotionDLL\FTD2xx.h"
 #include "..\KMotionDLL\KMotionIO.h" 
 #include "..\KMotionDLL\KMotionDLL_Direct.h" 
- 
+
 
 extern CMainFrame *TheFrame;
 
@@ -25,7 +25,9 @@ extern CMainFrame *TheFrame;
 
 CKMotionDLL_Direct KMotionDLL;
 
-void InstanceThread(LPVOID); 
+void InstanceThread(LPVOID);
+void MonitorThread(LPVOID);
+int pid_is_running(DWORD pid);
 void GetAnswerToRequest(char *chRequest, DWORD nInBytes, char *chReply, DWORD *cbReplyBytes, HANDLE hPipe);
 int ConsoleHandler(int board, const char *buf);
  
@@ -34,6 +36,9 @@ int nClients = 0;
 HANDLE ConsolePipeHandle[MAX_BOARDS];
 
 CList<CString,CString> ConsoleList[MAX_BOARDS];
+CList<ULONG, ULONG> ClientList;
+
+CMutex *ClientListMutex;
 
 
 void MyErrExit(char *s)
@@ -51,7 +56,27 @@ void ServerMain(LPVOID lpvParam)
    HANDLE hPipe, hThread; 
    LPTSTR lpszPipename = "\\\\.\\pipe\\kmotionpipe"; 
 
+   ClientListMutex = new CMutex(FALSE, "KMotionClentList", NULL);
+
+
+   KMotionDLL.FindKognas();  // setup background Thread to find/keep track of on-line Kognas
+
+
    for (int i=0; i<MAX_BOARDS; i++) ConsolePipeHandle[i]=NULL;
+
+   // Create a monitor thread to check if any client Process still exist. 
+   hThread = CreateThread(
+	   NULL,              // no security attribute 
+	   0,                 // default stack size 
+	   (LPTHREAD_START_ROUTINE)MonitorThread,
+	   NULL,			  // thread parameter 
+	   0,                 // not suspended 
+	   &dwThreadId);      // returns thread ID 
+
+   if (hThread == NULL)
+	   MyErrExit("CreateThread");
+
+
  
 // The main loop creates an instance of the named pipe and 
 // then waits for a client to connect to it. When the client 
@@ -80,8 +105,8 @@ void ServerMain(LPVOID lpvParam)
       // zero, GetLastError returns ERROR_PIPE_CONNECTED. 
  
       fConnected = ConnectNamedPipe(hPipe, NULL) ? 
-         TRUE : (GetLastError() == ERROR_PIPE_CONNECTED); 
- 
+		  TRUE : (GetLastError() == ERROR_PIPE_CONNECTED); 
+
       if (fConnected) 
       { 
 
@@ -119,7 +144,26 @@ VOID InstanceThread(LPVOID lpvParam)
  
 	hPipe = (HANDLE) lpvParam; 
 
-	while (1) 
+	ULONG ID;
+	BOOL R = GetNamedPipeClientProcessId(hPipe, &ID);
+
+	ClientListMutex->Lock();
+	int i;
+	POSITION pos = ClientList.GetHeadPosition();
+
+	for (i = 0; i < ClientList.GetCount(); i++)
+	{
+		if (ID == ClientList.GetNext(pos))  // already exist ??
+			break;
+	}
+
+	if (i == ClientList.GetCount())  // found ??
+	{
+		ClientList.AddTail(ID);  // no add it.
+	}
+	ClientListMutex->Unlock();
+
+	while (1)
 	{ 
 		// Read client requests from the pipe. 
 		fSuccess = ReadFile( 
@@ -129,7 +173,7 @@ VOID InstanceThread(LPVOID lpvParam)
 			 &cbBytesRead, // number of bytes read 
 			 NULL);        // not overlapped I/O 
 
-      if (! fSuccess || cbBytesRead == 0) 
+      if (!fSuccess || cbBytesRead == 0) 
          break; 
       
 	  GetAnswerToRequest(chRequest, cbBytesRead, chReply, &cbReplyBytes, hPipe); 
@@ -142,7 +186,8 @@ VOID InstanceThread(LPVOID lpvParam)
          &cbWritten,   // number of bytes written 
          NULL);        // not overlapped I/O 
 
-      if (! fSuccess || cbReplyBytes != cbWritten) break; 
+      if (!fSuccess || cbReplyBytes != cbWritten) 
+		  break; 
   } 
  
 // Flush the pipe to allow the client to read the pipe's contents 
@@ -153,9 +198,28 @@ VOID InstanceThread(LPVOID lpvParam)
    DisconnectNamedPipe(hPipe); 
    CloseHandle(hPipe); 
 
+   ClientListMutex->Lock();
+   pos = ClientList.GetHeadPosition();
+   POSITION Prev;
+   for (i = 0; i < ClientList.GetCount(); i++)
+   {
+	   Prev = pos;
+	   if (ID == ClientList.GetNext(pos))  // already exist ??
+		   break;
+   }
 
-   if (--nClients <= 0) exit(0);              // nobody left - terminate server
-   if (KMotionDLL.nInstances() < 2) exit(0);  // nobody left - terminate server
+   if (i < ClientList.GetCount())  // found ??
+   {
+	   ClientList.RemoveAt(Prev);  // yes, remove it.
+   }
+   ClientListMutex->Unlock();
+
+
+   if (--nClients <= 0) 
+	   exit(0);  // nobody left - terminate server
+   
+   if (KMotionDLL.nInstances() < 2) 
+	   exit(0);  // nobody left - terminate server
 } 
  
 
@@ -169,7 +233,8 @@ void GetAnswerToRequest(char *chRequest, DWORD nInBytes, char *chReply, DWORD *c
 	if (code!=ENUM_ListLocations)  // all commands require a board to be mapped, except this command
 	{
 		memcpy(&BoardID, chRequest+4,4);
-		board=KMotionDLL.MapBoardToIndex(BoardID);
+		board=KMotionDLL.MapBoardToIndex(BoardID);  // board is the class instance index
+		KMotionDLL.SetRequested_ID(board, BoardID);
 	}
 
 	chReply[0]=DEST_NORMAL;
@@ -180,7 +245,7 @@ void GetAnswerToRequest(char *chRequest, DWORD nInBytes, char *chReply, DWORD *c
 	case ENUM_WriteLineReadLine:	// Send Code, board, string -- Get Dest byte, Result (int) and string
 		result = KMotionDLL.WriteLineReadLine(board, chRequest+8, chReply+1+4);
 		memcpy(chReply+1, &result,4);
-		*cbReplyBytes = 1+4+strlen(chReply+1+4)+1; // Dest byte, Result int, string, null char
+		*cbReplyBytes = 1+4+(DWORD)strlen(chReply+1+4)+1; // Dest byte, Result int, string, null char
 		break;
 
 	case ENUM_WriteLine:	
@@ -199,7 +264,7 @@ void GetAnswerToRequest(char *chRequest, DWORD nInBytes, char *chReply, DWORD *c
 		memcpy(&TimeOutms, chRequest+8,4);
 		result = KMotionDLL.ReadLineTimeOut(board, chReply+1+4 ,TimeOutms);
 		memcpy(chReply+1, &result,4);
-		*cbReplyBytes = 1+4+strlen(chReply+1+4)+1; // Dest byte, Result int, string, null char
+		*cbReplyBytes = 1+4+(DWORD)strlen(chReply+1+4)+1; // Dest byte, Result int, string, null char
 		break;
 
 	case ENUM_ListLocations:		// Send Code -- Get Dest, Result (int), nlocations (int), List (ints)
@@ -372,4 +437,74 @@ int ConsoleHandler(int board, const char *buf)
 		ConsoleList[board].AddTail(buf);
 	}
 	return 0;
+}
+
+
+// every so often check if any processes are still active
+// if not terminate
+VOID MonitorThread(LPVOID lpvParam)
+{
+	for (;;)
+	{
+		Sleep(500);
+		int i;
+
+		ClientListMutex->Lock();
+		POSITION pos = ClientList.GetHeadPosition();
+
+		if (ClientList.GetCount() > 0)
+		{
+			for (i = 0; i < ClientList.GetCount(); i++)
+			{
+				ULONG ID = ClientList.GetNext(pos);
+
+				if (pid_is_running(ID) == 1)
+				{
+					// Process exists.
+					break;
+				}
+			}
+
+			if (i == ClientList.GetCount())  // any still exist ??
+				exit(0);  // no, terminate
+		}
+		ClientListMutex->Unlock();
+	}
+}
+
+int pid_is_running(DWORD ID)
+{
+	HANDLE hProcess;
+	DWORD exitCode;
+
+	//Special case for PID 0 System Idle Process
+	if (ID == 0) {
+		return 1;
+	}
+
+	//skip testing bogus PIDs
+	if (ID < 0) {
+		return 0;
+	}
+
+//	hProcess = handle_from_pid(pid);
+	hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, ID);
+	if (NULL == hProcess) {
+		//invalid parameter means PID isn't in the system
+		if (GetLastError() == ERROR_INVALID_PARAMETER) {
+			return 0;
+		}
+
+		//some other error with OpenProcess
+		return -1;
+	}
+
+	if (GetExitCodeProcess(hProcess, &exitCode)) {
+		CloseHandle(hProcess);
+		return (exitCode == STILL_ACTIVE);
+	}
+
+	//error in GetExitCodeProcess()
+	CloseHandle(hProcess);
+	return -1;
 }

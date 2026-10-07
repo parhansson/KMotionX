@@ -61,7 +61,7 @@ int CAllToolSetupSheet::AddControlPages()
 	
 	if (GetPageCount() == 0)
 	{
-		AfxMessageBox("No Tool Setup Tabs");
+		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("No Tool Setup Tabs"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 1;
 	}
 
@@ -92,6 +92,8 @@ BOOL CAllToolSetupSheet::OnInitDialog()
 	m_ToolSetupM100Page.InitDialogComplete=TRUE;
 	m_ToolSetupButtonsPage.InitDialogComplete=TRUE;
 	m_ToolSetupTPPage.InitDialogComplete=TRUE;
+	SetActivePage(LastPageViewed);
+
 	return TRUE;
 }
 
@@ -187,16 +189,6 @@ void CAllToolSetupSheet::OnPaint()
 	CMySheet::OnPaint();
 }
 
-void CAllToolSetupSheet::SaveOnExit(FILE * f)
-{
-	fprintf(f,"%d %d %d %d\n",LastMoveX,LastMoveY,LastSizeX,LastSizeY);
-}
-
-void CAllToolSetupSheet::RestoreOnStart(FILE * f)
-{
-	fscanf(f,"%d %d %d %d",&LastMoveX,&LastMoveY,
-						   &LastSizeX,&LastSizeY);
-}
 
 
 BOOL CAllToolSetupSheet::Create(CWnd* pParentWnd , DWORD dwStyle , DWORD dwExStyle)
@@ -207,7 +199,7 @@ BOOL CAllToolSetupSheet::Create(CWnd* pParentWnd , DWORD dwStyle , DWORD dwExSty
 
 BOOL CAllToolSetupSheet::DestroyWindow()
 {
-	// TODO: Add your specialized code here and/or call the base class
+	LastPageViewed = GetActiveIndex();
 
 	return CMySheet::DestroyWindow();
 }

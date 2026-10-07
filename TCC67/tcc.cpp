@@ -8733,7 +8733,6 @@ static void rt_printline(unsigned long wanted_pc)
     fprintf(stderr, "\n");
 }
 
-
 #ifndef WIN32
 
 #ifdef __i386__

@@ -1,3 +1,4 @@
+#Disable Warning BC40000
 <Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> Partial Class frmMain
 #Region "Windows Form Designer generated code "
 	<System.Diagnostics.DebuggerNonUserCode()> Public Sub New()
@@ -45,26 +46,29 @@
 	'It can be modified using the Windows Form Designer.
 	'Do not modify it using the code editor.
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-        Me.components = New System.ComponentModel.Container
+        Me.components = New System.ComponentModel.Container()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
-        Me.TrackBarX = New System.Windows.Forms.TrackBar
+        Me.TrackBarX = New System.Windows.Forms.TrackBar()
+        Me.TrackBarY = New System.Windows.Forms.TrackBar()
+        Me.TrackBarZ = New System.Windows.Forms.TrackBar()
+        Me.TrackBarA = New System.Windows.Forms.TrackBar()
         Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
-        Me._cmdANeg_6 = New System.Windows.Forms.Button
-        Me._cmdAPos_5 = New System.Windows.Forms.Button
-        Me._cmdZDown_4 = New System.Windows.Forms.Button
-        Me._cmdZUp_3 = New System.Windows.Forms.Button
-        Me._cmdYFront_2 = New System.Windows.Forms.Button
-        Me._cmdXRight_1 = New System.Windows.Forms.Button
-        Me.cmdYBack = New System.Windows.Forms.Button
-        Me._cmdXLeft_0 = New System.Windows.Forms.Button
-        Me.USBLocation = New System.Windows.Forms.Label
-        Me.txtAPos = New System.Windows.Forms.Label
-        Me.txtZPos = New System.Windows.Forms.Label
-        Me.txtYPos = New System.Windows.Forms.Label
-        Me.txtXPos = New System.Windows.Forms.Label
-        Me.Label3 = New System.Windows.Forms.Label
-        Me.Label2 = New System.Windows.Forms.Label
-        Me.Label1 = New System.Windows.Forms.Label
+        Me._cmdANeg_6 = New System.Windows.Forms.Button()
+        Me._cmdAPos_5 = New System.Windows.Forms.Button()
+        Me._cmdZDown_4 = New System.Windows.Forms.Button()
+        Me._cmdZUp_3 = New System.Windows.Forms.Button()
+        Me._cmdYFront_2 = New System.Windows.Forms.Button()
+        Me._cmdXRight_1 = New System.Windows.Forms.Button()
+        Me.cmdYBack = New System.Windows.Forms.Button()
+        Me._cmdXLeft_0 = New System.Windows.Forms.Button()
+        Me.USBLocation = New System.Windows.Forms.Label()
+        Me.txtAPos = New System.Windows.Forms.Label()
+        Me.txtZPos = New System.Windows.Forms.Label()
+        Me.txtYPos = New System.Windows.Forms.Label()
+        Me.txtXPos = New System.Windows.Forms.Label()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.Label1 = New System.Windows.Forms.Label()
         Me.cmdANeg = New Microsoft.VisualBasic.Compatibility.VB6.ButtonArray(Me.components)
         Me.cmdAPos = New Microsoft.VisualBasic.Compatibility.VB6.ButtonArray(Me.components)
         Me.cmdXLeft = New Microsoft.VisualBasic.Compatibility.VB6.ButtonArray(Me.components)
@@ -72,24 +76,24 @@
         Me.cmdYFront = New Microsoft.VisualBasic.Compatibility.VB6.ButtonArray(Me.components)
         Me.cmdZDown = New Microsoft.VisualBasic.Compatibility.VB6.ButtonArray(Me.components)
         Me.cmdZUp = New Microsoft.VisualBasic.Compatibility.VB6.ButtonArray(Me.components)
-        Me.CFile = New System.Windows.Forms.RichTextBox
-        Me.CThread = New System.Windows.Forms.RichTextBox
-        Me.CompileLoadCoff = New System.Windows.Forms.Button
-        Me.Label4 = New System.Windows.Forms.Label
-        Me.Label5 = New System.Windows.Forms.Label
-        Me.CompilerOutput = New System.Windows.Forms.RichTextBox
-        Me.Execute = New System.Windows.Forms.Button
-        Me.SetConsoleCallback = New System.Windows.Forms.Button
-        Me.ConsoleMessages = New System.Windows.Forms.RichTextBox
-        Me.Label6 = New System.Windows.Forms.Label
-        Me.Label7 = New System.Windows.Forms.Label
-        Me.ClearMessages = New System.Windows.Forms.Button
-        Me.OpenCFile = New System.Windows.Forms.OpenFileDialog
-        Me.BrowseCFile = New System.Windows.Forms.Button
-        Me.TrackBarY = New System.Windows.Forms.TrackBar
-        Me.TrackBarZ = New System.Windows.Forms.TrackBar
-        Me.TrackBarA = New System.Windows.Forms.TrackBar
+        Me.CFile = New System.Windows.Forms.RichTextBox()
+        Me.CThread = New System.Windows.Forms.RichTextBox()
+        Me.CompileLoadCoff = New System.Windows.Forms.Button()
+        Me.Label4 = New System.Windows.Forms.Label()
+        Me.Label5 = New System.Windows.Forms.Label()
+        Me.CompilerOutput = New System.Windows.Forms.RichTextBox()
+        Me.Execute = New System.Windows.Forms.Button()
+        Me.SetConsoleCallback = New System.Windows.Forms.Button()
+        Me.ConsoleMessages = New System.Windows.Forms.RichTextBox()
+        Me.Label6 = New System.Windows.Forms.Label()
+        Me.Label7 = New System.Windows.Forms.Label()
+        Me.ClearMessages = New System.Windows.Forms.Button()
+        Me.OpenCFile = New System.Windows.Forms.OpenFileDialog()
+        Me.BrowseCFile = New System.Windows.Forms.Button()
         CType(Me.TrackBarX, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.TrackBarY, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.TrackBarZ, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.TrackBarA, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.cmdANeg, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.cmdAPos, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.cmdXLeft, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -97,9 +101,6 @@
         CType(Me.cmdYFront, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.cmdZDown, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.cmdZUp, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.TrackBarY, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.TrackBarZ, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.TrackBarA, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'TrackBarX
@@ -111,6 +112,36 @@
         Me.TrackBarX.TabIndex = 26
         Me.ToolTip1.SetToolTip(Me.TrackBarX, "X Speed")
         Me.TrackBarX.Value = 10
+        '
+        'TrackBarY
+        '
+        Me.TrackBarY.Location = New System.Drawing.Point(109, 190)
+        Me.TrackBarY.Maximum = 20
+        Me.TrackBarY.Name = "TrackBarY"
+        Me.TrackBarY.Size = New System.Drawing.Size(90, 45)
+        Me.TrackBarY.TabIndex = 27
+        Me.ToolTip1.SetToolTip(Me.TrackBarY, "Y Speed")
+        Me.TrackBarY.Value = 10
+        '
+        'TrackBarZ
+        '
+        Me.TrackBarZ.Location = New System.Drawing.Point(206, 190)
+        Me.TrackBarZ.Maximum = 20
+        Me.TrackBarZ.Name = "TrackBarZ"
+        Me.TrackBarZ.Size = New System.Drawing.Size(90, 45)
+        Me.TrackBarZ.TabIndex = 27
+        Me.ToolTip1.SetToolTip(Me.TrackBarZ, "Z Speed")
+        Me.TrackBarZ.Value = 10
+        '
+        'TrackBarA
+        '
+        Me.TrackBarA.Location = New System.Drawing.Point(303, 190)
+        Me.TrackBarA.Maximum = 20
+        Me.TrackBarA.Name = "TrackBarA"
+        Me.TrackBarA.Size = New System.Drawing.Size(90, 45)
+        Me.TrackBarA.TabIndex = 27
+        Me.ToolTip1.SetToolTip(Me.TrackBarA, "A Speed")
+        Me.TrackBarA.Value = 10
         '
         'Timer1
         '
@@ -242,10 +273,10 @@
         Me.USBLocation.Cursor = System.Windows.Forms.Cursors.Default
         Me.USBLocation.Font = New System.Drawing.Font("Arial", 8.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.USBLocation.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.USBLocation.Location = New System.Drawing.Point(112, 238)
+        Me.USBLocation.Location = New System.Drawing.Point(98, 238)
         Me.USBLocation.Name = "USBLocation"
         Me.USBLocation.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me.USBLocation.Size = New System.Drawing.Size(169, 17)
+        Me.USBLocation.Size = New System.Drawing.Size(217, 17)
         Me.USBLocation.TabIndex = 19
         Me.USBLocation.Text = "USB Location"
         '
@@ -499,36 +530,6 @@
         Me.BrowseCFile.Text = "Browse..."
         Me.BrowseCFile.UseVisualStyleBackColor = True
         '
-        'TrackBarY
-        '
-        Me.TrackBarY.Location = New System.Drawing.Point(109, 190)
-        Me.TrackBarY.Maximum = 20
-        Me.TrackBarY.Name = "TrackBarY"
-        Me.TrackBarY.Size = New System.Drawing.Size(90, 45)
-        Me.TrackBarY.TabIndex = 27
-        Me.ToolTip1.SetToolTip(Me.TrackBarY, "Y Speed")
-        Me.TrackBarY.Value = 10
-        '
-        'TrackBarZ
-        '
-        Me.TrackBarZ.Location = New System.Drawing.Point(206, 190)
-        Me.TrackBarZ.Maximum = 20
-        Me.TrackBarZ.Name = "TrackBarZ"
-        Me.TrackBarZ.Size = New System.Drawing.Size(90, 45)
-        Me.TrackBarZ.TabIndex = 27
-        Me.ToolTip1.SetToolTip(Me.TrackBarZ, "Z Speed")
-        Me.TrackBarZ.Value = 10
-        '
-        'TrackBarA
-        '
-        Me.TrackBarA.Location = New System.Drawing.Point(303, 190)
-        Me.TrackBarA.Maximum = 20
-        Me.TrackBarA.Name = "TrackBarA"
-        Me.TrackBarA.Size = New System.Drawing.Size(90, 45)
-        Me.TrackBarA.TabIndex = 27
-        Me.ToolTip1.SetToolTip(Me.TrackBarA, "A Speed")
-        Me.TrackBarA.Value = 10
-        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 14.0!)
@@ -578,6 +579,9 @@
         Me.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.Text = "Jogger"
         CType(Me.TrackBarX, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.TrackBarY, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.TrackBarZ, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.TrackBarA, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.cmdANeg, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.cmdAPos, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.cmdXLeft, System.ComponentModel.ISupportInitialize).EndInit()
@@ -585,9 +589,6 @@
         CType(Me.cmdYFront, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.cmdZDown, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.cmdZUp, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.TrackBarY, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.TrackBarZ, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.TrackBarA, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 

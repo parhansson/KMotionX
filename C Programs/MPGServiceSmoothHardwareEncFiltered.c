@@ -39,6 +39,8 @@ void ServiceMPG(void)
 		Pos = chan[MPG_INPUT_AXIS].Position;
 		K1 = exp(-2*TIMEBASE/TAU1);  // filter coefficients
 		K2 = exp(-2*TIMEBASE/TAU2);
+		K1M = 1.0 - K1;
+		K2M = 1.0 - K2;
 		FirstTime=FALSE;
 	}
 

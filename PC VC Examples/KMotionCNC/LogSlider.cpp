@@ -277,9 +277,16 @@ void CLogSlider::PlotInstant(double f)
 	if (Mid < Top) Mid = Top;
 	if (Mid > Bot) Mid = Bot;
 
-	CPoint start_point(CtrlRect.right+m_offset,Top);
-	CPoint mid_point(CtrlRect.right+m_offset,Mid);
-	CPoint end_point(CtrlRect.right+m_offset,Bot);
+	// offset based on original standard size of 35 and that Sliders widths don't actually change
+	int ScaledOffset = 35 + m_offset;
+
+	if (ScaledOffset < 0) ScaledOffset = 0;
+	if (ScaledOffset >= CtrlRect.right) ScaledOffset = CtrlRect.right-1;
+
+
+	CPoint start_point(ScaledOffset,Top);
+	CPoint mid_point(ScaledOffset,Mid);
+	CPoint end_point(ScaledOffset,Bot);
 
 	SavePen = cdc.SelectObject(&Pen);
 	cdc.SetROP2(R2_COPYPEN);

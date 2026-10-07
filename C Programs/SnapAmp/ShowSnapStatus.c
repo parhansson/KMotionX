@@ -4,6 +4,7 @@ main()
 {
 	int s;
 
+	WaitNextTimeSlice(); // make sure we don't get interrupted
 	s=ReadSnapAmp(SNAP0+SNAP_STATUS);
 
 	printf("Fault          = %d\n",(s>>0)&1);

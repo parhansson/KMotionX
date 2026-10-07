@@ -63,7 +63,7 @@ void COpenglCtl::InitGeometry(void)
 	m_zScaling = 1.0f;
 
 	m_SpeedRotation = 1.0f / 3.0f;
-	m_SpeedTranslation = 1.0f / 50.0f;
+	m_SpeedTranslation_Ortho = m_SpeedTranslation_Persp = 1.0f / 50.0f;
 
 	m_xyRotation = 0;
 
@@ -139,10 +139,16 @@ void COpenglCtl::OnRButtonUp(UINT nFlags, CPoint point)
 
 void COpenglCtl::OnMouseMove(UINT nFlags, CPoint point) 
 {
-	float TimeFactor=1.0;
+	float SpeedTranslation, TimeFactor=1.0f;
 
 	// After 2 seconds of holding the same button reduce the speed
 	if (MouseTimer.Elapsed_Seconds() > 2.0) TimeFactor=0.05f;
+
+
+	if (m_Ortho)
+		SpeedTranslation = m_SpeedTranslation_Ortho;
+	else
+		SpeedTranslation = m_SpeedTranslation_Persp;
 
 	// Both : rotation
 	if(m_LeftButtonDown && m_RightButtonDown)
@@ -166,8 +172,8 @@ void COpenglCtl::OnMouseMove(UINT nFlags, CPoint point)
 	// Left : x / y translation
 	if(m_LeftButtonDown)
 	{
-		m_xTranslation -= (float)(m_LeftDownPos.x - point.x) * m_SpeedTranslation * TimeFactor;
-		m_yTranslation += (float)(m_LeftDownPos.y - point.y) * m_SpeedTranslation * TimeFactor;
+		m_xTranslation -= (float)(m_LeftDownPos.x - point.x) * SpeedTranslation * TimeFactor;
+		m_yTranslation += (float)(m_LeftDownPos.y - point.y) * SpeedTranslation * TimeFactor;
 		m_LeftDownPos = point;
 		InvalidateRect(NULL,FALSE);
 	}
@@ -177,7 +183,13 @@ void COpenglCtl::OnMouseMove(UINT nFlags, CPoint point)
 	// Right : z translation
 	if(m_RightButtonDown)
 	{
-		m_zTranslation += (float)(m_RightDownPos.y - point.y) * m_SpeedTranslation * TimeFactor;
+		if (m_Ortho)
+			m_zTranslation += (float)(m_RightDownPos.y - point.y) * SpeedTranslation * TimeFactor;
+		else
+			m_zTranslation -= (float)(m_RightDownPos.y - point.y) * SpeedTranslation * TimeFactor;
+
+		if (m_Ortho && m_zTranslation < m_zTranslation0_Ortho - ORTHO_HEIGHT) m_zTranslation = m_zTranslation0_Ortho - ORTHO_HEIGHT;
+
 		m_RightDownPos = point;
 		InvalidateRect(NULL,FALSE);
 	}
@@ -185,8 +197,8 @@ void COpenglCtl::OnMouseMove(UINT nFlags, CPoint point)
 	CString s;
 	if (m_Ortho && m_xRotation == 0.0f && m_yRotation == 0.0f && m_yRotation == 0.0f)
 	{
-		float x = ((point.x - m_cx/2.0f) / ((float)m_cx/m_aspect) *  2.0f - m_xTranslation) / m_xScaling;
-		float y = ((point.y - m_cy/2.0f) / ((float)m_cy )         * -2.0f - m_yTranslation) / m_yScaling;
+		float x = ((point.x - m_cx / ORTHO_HEIGHT) / ((float)m_cx/m_aspect) *  ORTHO_HEIGHT - m_xTranslation) / m_xScaling;
+		float y = ((point.y - m_cy / ORTHO_HEIGHT) / ((float)m_cy )         * -ORTHO_HEIGHT - m_yTranslation) / m_yScaling;
 
 		x = TheFrame->GCodeDlg.Interpreter->InchesToUserUnitsX(x);
 		y = TheFrame->GCodeDlg.Interpreter->InchesToUserUnits(y);
@@ -393,8 +405,10 @@ void COpenglCtl::OnPaint()
 		glRotatef(m_yRotation, 0.0, 1.0, 0.0);
 		glRotatef(m_zRotation, 0.0, 0.0, 1.0);
 
-		if (m_zTranslation!=0.0f)
-			m_xScaling = m_yScaling = m_zScaling = m_Scaling0 * m_zTranslation0 / m_zTranslation;
+		if (m_zTranslation - m_zTranslation0_Ortho + ORTHO_HEIGHT > 0.0)
+			m_xScaling = m_yScaling = m_zScaling = m_Scaling0 * ORTHO_HEIGHT / (m_zTranslation - m_zTranslation0_Ortho + ORTHO_HEIGHT);
+		else
+			m_xScaling = m_yScaling = m_zScaling = m_Scaling0 * 10000.0;
 
 		glScalef(m_xScaling, m_yScaling, m_zScaling);
 	}
@@ -467,9 +481,14 @@ void COpenglCtl::SetupOpenGL()
 	glLoadIdentity();
 
 	if (m_Ortho)
-		glOrtho(-1 * m_aspect, 1 * m_aspect, -1, 1, 0.01, 1000.0);
+		glOrtho(-1 * m_aspect, 1 * m_aspect, -1, 1, -1000.0, 1000.0);
 	else
-		gluPerspective(45, m_aspect, 0.01, 1000.0);
+	{
+		// find maximum dimension of "box"
+		double msize = max(TheFrame->GViewDlg.m_BoxX, TheFrame->GViewDlg.m_BoxY);
+		msize = max(msize, TheFrame->GViewDlg.m_BoxZ);
+		gluPerspective(45, m_aspect, msize*20*1e-5, msize*20); // configure near and far Z clip planes
+	}
 
 	glMatrixMode(GL_MODELVIEW);
 
@@ -516,7 +535,7 @@ void COpenglCtl::RenderScene()
 }
 
 
-void COpenglCtl::OnTimer(UINT nIDEvent) 
+void COpenglCtl::OnTimer(UINT_PTR nIDEvent) 
 {
 	if (HiResTimer.nSplit < 1 || HiResTimer.Elapsed_Seconds() > .15)
 	{
@@ -527,7 +546,14 @@ void COpenglCtl::OnTimer(UINT nIDEvent)
 
 BOOL COpenglCtl::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
-	m_zTranslation += (float)(zDelta)* m_SpeedTranslation;
+	if (m_Ortho)
+	{
+		m_zTranslation += (float)(zDelta) * -m_SpeedTranslation_Ortho;
+		if (m_zTranslation < m_zTranslation0_Ortho - ORTHO_HEIGHT) m_zTranslation = m_zTranslation0_Ortho - ORTHO_HEIGHT;
+	}
+	else
+		m_zTranslation += (float)(zDelta)* m_SpeedTranslation_Persp;
+
 
 	InvalidateRect(NULL,FALSE);
 

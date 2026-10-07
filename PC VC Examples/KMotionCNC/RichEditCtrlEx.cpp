@@ -6,6 +6,7 @@
 #include "stdafx.h"
 #include "RichEditCtrlEx.h"
 #include "MainFrm.h"
+#include "Tpcshrd.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -15,7 +16,7 @@ static char THIS_FILE[] = __FILE__;
 
 #define tabsize 4
 
-
+//ExcludeTranslate
 const char cKeyWords[] = 
   "break "
   "case char const continue "
@@ -27,7 +28,7 @@ const char cKeyWords[] =
 
 const char GKeyWords[] = 
   "G0 G2 G3 M2 F ";
-
+//ResumeTranslate
 	
 static UINT WM_FINDREPLACE = ::RegisterWindowMessage(FINDMSGSTRING);
 
@@ -45,7 +46,6 @@ CRichEditCtrlEx::CRichEditCtrlEx()
 	m_bRegularExpression = FALSE;
 	m_SingleLineOnly=FALSE;
 	m_esc_pushed=FALSE;
-	CtrlIsDown=ShiftIsDown=FALSE;
 	ModeCode=-1;
 	ReadWriteVar = -1;
 }
@@ -54,6 +54,10 @@ CRichEditCtrlEx::~CRichEditCtrlEx()
 {
 }
 
+LRESULT CRichEditCtrlEx::OnTabletQuerySystemGestureStatus(WPARAM /*wParam*/, LPARAM /*lParam*/)
+{
+	return 0;
+}
 
 BEGIN_MESSAGE_MAP(CRichEditCtrlEx, CScintillaCtrl)
 	//{{AFX_MSG_MAP(CRichEditCtrlEx)
@@ -76,13 +80,14 @@ BEGIN_MESSAGE_MAP(CRichEditCtrlEx, CScintillaCtrl)
 	ON_COMMAND(ID_ShowLineNumbers, OnShowLineNumbers)
 	ON_COMMAND(ID_MakeReadWrite, OnMakeReadWrite)
     ON_REGISTERED_MESSAGE( WM_FINDREPLACE, OnFindReplaceCmd )
-	//}}AFX_MSG_MAP
+	ON_MESSAGE(WM_TABLET_QUERYSYSTEMGESTURESTATUS, OnTabletQuerySystemGestureStatus)	//}}AFX_MSG_MAP
 	ON_WM_SETFOCUS()
+	ON_WM_KILLFOCUS()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CRichEditCtrlEx message handlers
-
+//ExcludeTranslate
 
 CString StructList="ChanNumber Enable InputMode OutputMode LimitSwitchOptions "
 "LimitSwitchNegBit LimitSwitchPosBit "
@@ -107,7 +112,7 @@ CString GlobalList="ENCODER_MODE ADC_MODE RESOLVER_MODE USER_INPUT_MODE BACKLASH
 "VersionAndBuildTime WriteSnapAmp ReadSnapAmp StopCoordinatedMotion "
 "ResumeCoordinatedMotion ClearStopImmediately StatusRequestCounter "
 "DisableKanalogDetectOnBoot DisableSnapAmpDetectOnBoot KanalogPresent SnapAmpPresent ";
-
+//ResumeTranslate
 
 void CRichEditCtrlEx::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
@@ -116,16 +121,10 @@ void CRichEditCtrlEx::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 	char linebuf[1000];
 	CString List,s;
 
-	if (nChar == VK_SHIFT)
-		ShiftIsDown=false;
-
-	if (nChar == VK_CONTROL)
-		CtrlIsDown=false;
-
 	if (nChar == VK_ESCAPE)
 	{
 		m_esc_pushed=true;
-		m_t0_esc_time=timeGetTime();
+		m_esc_time.Start();
 	}
 
 	int  current  =  GetCurLine(sizeof(linebuf),linebuf);
@@ -274,6 +273,7 @@ void CRichEditCtrlEx::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 	}
 	else 
 */
+	bool ShiftIsDown = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
 	
 	if (ModeCode==MODE_C && nChar == '9' && ShiftIsDown)
 	{
@@ -407,16 +407,14 @@ bool CRichEditCtrlEx::arrow_key(char s)
 	return false;
 }
 
-#define ESC_TIME 20000
+#define ESC_TIME 20.0
 
 
 bool CRichEditCtrlEx::escape_time()
 {
-	DWORD t1=timeGetTime();
-
 	if (m_esc_pushed)
 	{
-		if (t1 - m_t0_esc_time > ESC_TIME)
+		if (m_esc_time.Elapsed_Seconds() > ESC_TIME)
 		{
 			m_esc_pushed=false;
 			return false;
@@ -444,16 +442,18 @@ void CRichEditCtrlEx::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	CString s;
 
-	if (nChar == VK_SHIFT)
-		ShiftIsDown=true;
+	bool ShiftIsDown = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
 
-	if (nChar == VK_CONTROL)
-		CtrlIsDown=true;
+	bool CtrlIsDown = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
 
-	if (CtrlIsDown && nChar=='F')
+	if (CtrlIsDown && nChar == 'F')
 	{
 		OnFind();
-		CtrlIsDown=false;
+	}
+
+	if (CtrlIsDown && nChar == 'H')
+	{
+		OnReplace();
 	}
 
 	if (m_SingleLineOnly && nChar == VK_RETURN)
@@ -519,41 +519,41 @@ void CRichEditCtrlEx::OnContextMenu(CWnd* pWnd, CPoint point)
 	Menu.CreatePopupMenu();
 	
 	if (CanUndo())
-		Menu.AppendMenu(0,ID_Undo,"Undo");
+		Menu.AppendMenu(0,ID_Undo,"Undo (Ctrl-Z)");
 	else
-		Menu.AppendMenu(MF_GRAYED,ID_Undo,"Undo");
+		Menu.AppendMenu(MF_GRAYED,ID_Undo,"Undo (Ctrl-Z)");
 
 
 	if (CanRedo())
-		Menu.AppendMenu(0,ID_Redo,"Redo");
+		Menu.AppendMenu(0,ID_Redo,"Redo (Ctrl-Y)");
 	else
-		Menu.AppendMenu(MF_GRAYED,ID_Redo,"Redo");
+		Menu.AppendMenu(MF_GRAYED,ID_Redo,"Redo (Ctrl-Y)");
 
 
 	Menu.AppendMenu(MF_SEPARATOR);
 	
 	if (GetSelectionEnd() > GetSelectionStart())
 	{
-		Menu.AppendMenu(0,ID_Cut,"Cut");
-		Menu.AppendMenu(0,ID_Copy,"Copy");
+		Menu.AppendMenu(0,ID_Cut,"Cut (Ctrl-X)");
+		Menu.AppendMenu(0,ID_Copy,"Copy (Ctrl-C)");
 	}
 	else
 	{
-		Menu.AppendMenu(MF_GRAYED,ID_Cut,"Cut");
-		Menu.AppendMenu(MF_GRAYED,ID_Copy,"Copy");
+		Menu.AppendMenu(MF_GRAYED,ID_Cut,"Cut (Ctrl-X)");
+		Menu.AppendMenu(MF_GRAYED,ID_Copy,"Copy (Ctrl-C)");
 	}
 	
 	if (CanPaste())
-		Menu.AppendMenu(0,ID_Paste,"Paste");
+		Menu.AppendMenu(0,ID_Paste,"Paste (Ctrl-V)");
 	else
-		Menu.AppendMenu(MF_GRAYED,ID_Paste,"Paste");
+		Menu.AppendMenu(MF_GRAYED,ID_Paste,"Paste (Ctrl-V)");
 	
 
 	Menu.AppendMenu(MF_SEPARATOR);
-	Menu.AppendMenu(0,ID_SelectAll,"Select All");
+	Menu.AppendMenu(0,ID_SelectAll,"Select All (Ctrl-A)");
 	Menu.AppendMenu(MF_SEPARATOR);
-	Menu.AppendMenu(0,ID_Find,"Find...");
-	Menu.AppendMenu(0,ID_Replace,"Replace...");
+	Menu.AppendMenu(0,ID_Find,"Find... (Ctrl-F)");
+	Menu.AppendMenu(0,ID_Replace,"Replace... (Ctrl-H)");
 
 	if (!m_SpecialContext.IsEmpty())
 	{
@@ -632,6 +632,7 @@ void CRichEditCtrlEx::SetupForGCode(int size, CString FontName)
 	SetAStyle(STYLE_DEFAULT, RGB(0, 0, 0), RGB(0xff, 0xff, 0xff), size, FontName);
 	SetAStyle(STYLE_LINENUMBER, RGB(0, 0, 0), RGB(0xff, 0xff, 0xff), size, FontName);
 	StyleClearAll();
+	SetCodePage(SC_CP_UTF8);
 
 		
 	SetAStyle(SCE_GCODE_IDENTIFIER, RGB(0, 0, 0));
@@ -650,6 +651,7 @@ void CRichEditCtrlEx::SetupForGCode(int size, CString FontName)
 	
 	SetTabWidth(tabsize);	
 	AssignCmdKey((SCMOD_CTRL<<16)|('F'), SCI_NULL);
+	AssignCmdKey((SCMOD_CTRL<<16)|('H'), SCI_NULL);
 
 	if (ModeCode==MODE_G && TheFrame->GCodeDlg.m_ShowLineNumbers)
 	{
@@ -677,6 +679,7 @@ void CRichEditCtrlEx::SetupForCCode()
 	//Setup styles
 	SetAStyle(STYLE_DEFAULT, RGB(0, 0, 0), RGB(0xff, 0xff, 0xff), 10, "Courier New");
 	StyleClearAll();
+	SetCodePage(SC_CP_UTF8);
 	SetAStyle(SCE_C_DEFAULT, RGB(0, 0, 0));
 	SetAStyle(SCE_C_COMMENT, RGB(0, 0x80, 0));
 	SetAStyle(SCE_C_COMMENTLINE, RGB(0, 0x80, 0));
@@ -694,6 +697,7 @@ void CRichEditCtrlEx::SetupForCCode()
 	SetTabWidth(tabsize);	
 
 	AssignCmdKey((SCMOD_CTRL<<16)|('F'), SCI_NULL);
+	AssignCmdKey((SCMOD_CTRL<<16)|('H'), SCI_NULL);
 
 #ifndef KMOTION_CNC
 
@@ -982,16 +986,10 @@ void CRichEditCtrlEx::OnTransformSel()
 		return;
 	}
 
-	GetSelText(s.GetBufferSetLength(length+1));
-	s.ReleaseBuffer();
+	GetSelText(TransformDlg.Selection.GetBufferSetLength(length+1));
+	TransformDlg.Selection.ReleaseBuffer();
 
-	if (TransformDlg.DoModal() == IDOK)
-	{
-		if (!TransformDlg.DoTransform(s))
-		{
-			ReplaceSel(s);
-		}
-	}
+	TransformDlg.DoModal();
 }
 
 void CRichEditCtrlEx::AdjustFindDialogPosition()
@@ -1023,12 +1021,19 @@ void CRichEditCtrlEx::OnEditFindReplace(BOOL bFindOnly)
 	ASSERT_VALID(this);
 	
 	m_bFirstSearch = TRUE;
+
+	CString strFind = GetSelText();
+	//if selection is empty or spans multiple lines use old find text
+	if (strFind.IsEmpty() || (strFind.FindOneOf(_T("\n\r")) != -1))
+		strFind = m_strFind;
+
 	if (m_pFindReplaceDlg != NULL)
 	{
 		if (m_bFindOnly == bFindOnly)
 		{
 			m_pFindReplaceDlg->SetActiveWindow();
 			m_pFindReplaceDlg->ShowWindow(SW_SHOW);
+			m_pFindReplaceDlg->SetFindWhat(strFind);
 			return;
 		}
 		else
@@ -1039,11 +1044,6 @@ void CRichEditCtrlEx::OnEditFindReplace(BOOL bFindOnly)
 			ASSERT_VALID(this);
 		}
 	}
-	CString strFind = GetSelText();
-	//if selection is empty or spans multiple lines use old find text
-	if (strFind.IsEmpty() || (strFind.FindOneOf(_T("\n\r")) != -1))
-		strFind = m_strFind;
-	
 	CString strReplace = m_strReplace;
 	m_pFindReplaceDlg = new CScintillaFindReplaceDlg;
 	ASSERT(m_pFindReplaceDlg != NULL);
@@ -1324,13 +1324,23 @@ void CRichEditCtrlEx::OnSetFocus(CWnd* pOldWnd)
 	CScintillaCtrl::OnSetFocus(pOldWnd);
 
 #ifdef KMOTION_CNC
-	if (pOldWnd!=NULL) // are we gaining focus ?
+	if (pOldWnd != NULL) // are we gaining focus ?
 		TheFrame->GCodeDlg.DisableKeyJog();
 #endif
 }
 
 
-void CRichEditCtrlEx::OnToggleBlock() 
+void CRichEditCtrlEx::OnKillFocus(CWnd* pOldWnd)
+{
+	TheFrame->GCodeDlg.EditorCurrentLine[TheFrame->GCodeDlg.m_Thread] = TheFrame->GCodeDlg.m_Editor.GetFirstVisibleLine();
+	TheFrame->GCodeDlg.SelectionStart[TheFrame->GCodeDlg.m_Thread] = TheFrame->GCodeDlg.m_Editor.GetSelectionStart();
+	TheFrame->GCodeDlg.SelectionEnd[TheFrame->GCodeDlg.m_Thread] = TheFrame->GCodeDlg.m_Editor.GetSelectionEnd();
+
+	CScintillaCtrl::OnKillFocus(pOldWnd);
+}
+
+
+void CRichEditCtrlEx::OnToggleBlock()
 {
 	CString s = GetSelText();
 

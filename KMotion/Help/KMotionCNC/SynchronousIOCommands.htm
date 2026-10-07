@@ -1,148 +1,177 @@
+<!DOCTYPE html>
 <html>
-
 <head>
-<meta http-equiv="Content-Language" content="en-us">
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+
+<meta name="keywords" content="ethernet 16-axis controller, cnc control, motion control, cnc boards, 4-axis, 8-axis, stepper, brushless, DC motor, servo, encoder, adc, dac, motion controller, automated motion, manufacturing, Mach3">
+<meta name="description" content="Manufacturer of premium motion control products for CNC Manufacturing, Robotics and Automation">
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
 <title>Synchronous IO Commands Embedded in Coordinated Motion</title>
 
+<link rel="stylesheet" type="text/css" href="../css/style.css">
+<link rel="stylesheet" href="../css/prism.css" data-noprefix />
+<script src="../js/prism.js"></script>
 </head>
 
 <body>
 
-<p><b><u><i><font face="Arial" size="4">Synchronous IO Commands Embedded in 
-Coordinated Motion</font></i></u></b></p>
-<p><font face="Arial">KMotionCNC allows I/O operations to be embedded into the 
-Coordinated Motion Buffer such that the IO commands are output synchronously 
-(within 90us Servo Sample) with motion.&nbsp; (Buffered IO operations can also 
-be inserted with Library calls from custom applications).</font></p>
-<p><font face="Arial">This example shows two MCodes configured to set bits I/O 
-bits 46 and 47 high and also MCode M6 configured to wait for I/O bit 46 to be 
-low.</font></p>
-<p>
-<font face="Arial">
-<img border="0" src="KMotionCNCfiles/ToolSetupBufferedBits.png"></font></p>
-<p>&nbsp;</p>
-<p><font face="Arial">A simple GCode Fragment shows the MCodes embedded within a 
-continuous straight motion right at the point the motion reaches X=1.0.</font></p>
-<p><font face="Arial">The Trajectory Planner normally combines very collinear 
-motion blocks together for smoothing and so forth.&nbsp; But in this case it is 
-careful to not combine segments that cross a buffered I/O boundary.</font></p>
-<p>
-<font face="Arial">
-<img border="0" src="KMotionCNCfiles/BufferedIOGCode.png" width="390" height="240"></font></p>
-<p>&nbsp;</p>
-<p><font face="Arial">Executing the GCode we can observe the IO bits 46 and 67 
-set high as the motion crosses X=1.0</font></p>
-<p>
-<font face="Arial">
-<img border="0" src="KMotionCNCfiles/BufferedIOGCodeViewerPlot.png" width="564" height="454"></font></p>
-<p>&nbsp;</p>
-<p><font face="Arial">The GCode below demonstrates a right-triangle motion path 
-with the I/O commands inserted at a corner.</font></p>
-<p>
-<font face="Arial">
-<img border="0" src="KMotionCNCfiles/BufferedIOGCodeRounded.png" width="372" height="248"></font></p>
-<p>&nbsp;
-</p>
-<p>
-<font face="Arial">With Trajectory Planner Break Angle set to 10 degrees (which 
-is less then 90 degrees) a full stop will occur at the corners.</font></p>
-<p>
-<font face="Arial">
-<img border="0" src="KMotionCNCfiles/BufferedIOTPSettingsNotRounded.png" width="1062" height="105"></font></p>
-<p>&nbsp;
-</p>
-<p>
-<font face="Arial">In this case the IO switches where the instantaneous stop 
-occurs at a corner.</font></p>
-<p>
-<img border="0" src="KMotionCNCfiles/BufferedIOGCodeViewerPlotNotRounded.png" width="556" height="583"></p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p><font face="Arial">To demonstrate what happens with corner rounding an 
-exaggerated corner rounding example is shown below.&nbsp; With a Break Angle 
-greater than 90 degrees a stop will not occur at the corner.&nbsp; Also a large 
-radius (0.1 inches) and large facet angle (20 degrees) corner rounding is 
-configured. </font></p>
-<p>
-<font face="Arial">
-<img border="0" src="KMotionCNCfiles/BufferedIOTPSettingsRounded.png" width="1070" height="113"></font></p>
-<p>&nbsp;</p>
-<p><font face="Arial">To observe exactly what happens we use the KFLOP C Program 
-shown below to real-time capture the XY position when the IO occurs (XY 
-resolution is 10000 counts per inch). </font></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">&nbsp;
-</p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Arial; color: blue">#include</span><span style="font-size: 10.0pt; font-family: Arial">
-<span style="color:#A31515">&quot;KMotionDef.h&quot;</span></span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Arial; color: #A31515">&nbsp;</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Arial">main()</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Arial">{</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Arial">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<span style="color:blue">int</span> New,Last=ReadBit(46);</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Arial">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<span style="color:blue">for</span> (;;)</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Arial">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Arial">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; New = 
-ReadBit(46);</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Arial">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<span style="color:blue">if</span> (New != Last)</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Arial">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Arial">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-Last=New;</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Arial">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-printf(<span style="color:#A31515">&quot;X=%f Y=%f\n&quot;</span>,ch0-&gt;Dest/10000.0,ch1-&gt;Dest/10000.0);&nbsp;
-<span style="color:green">// send message to console</span></span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Arial">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span></p>
-<p class="MsoNormal" style="line-height: normal; text-autospace: none; margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; font-family: Arial">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span></p>
-<p class="MsoNormal" style="margin-top: 0; margin-bottom: 0">
-<span style="font-size: 10.0pt; line-height: 115%; font-family: Arial">}</span></p>
-<p>&nbsp;</p>
-<p><font face="Arial">The captured position is printed as:</font></p>
-<p><i><font face="Arial" size="4">X=0.929315 Y=0.070748</font></i></p>
-<p>&nbsp;</p>
-<p>
-<font face="Arial">
-<img border="0" src="KMotionCNCfiles/BufferedIOGCodeViewerPlotRounded.png" width="556" height="582"></font></p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p><font face="Arial">In addition to embedding outputs into the motion stream, 
-waits for inputs can be embedded.&nbsp; This is inserted as a buffered <b>
-<a href="../Cmd.htm#WaitBitBuf">WaitBitBuf</a> </b>command.&nbsp; When executed if the specified bit is false the 
-motion will stall at that point until the input becomes true.&nbsp; There is a 
-similar command <b><a href="../Cmd.htm#WaitNotBitBuf">WaitNotBitBuf</a></b> that will stall until the input becomes 
-false.&nbsp; MCodes can be configure to insert these commands,&nbsp; Although Wait commands can be inserted anywhere in a motion path it 
-normally is only useful to place them at locations where the motion stops.&nbsp; 
-Such as the very beginning of a path or at a corner where motion comes to a 
-stop.&nbsp; Otherwise an instantaneous stop will occur without any acceleration.&nbsp; 
-Wait commands are useful when motion must proceed instantly on command.&nbsp; 
-This is possible because the motion has already been Interpreted, planned, 
-downloaded, and commanded to execute ahead of time.&nbsp; See the example GCode 
-below where a wait has been inserted at a corner.&nbsp; </font></p>
-<p><font face="Arial">
-<img border="0" src="KMotionCNCfiles/BufferedIOWaitBitBuf.png"></font></p>
-<p>&nbsp;</p>
-<p><font face="Arial">The plot below shows where the wait will stall execution 
-if the specified bit is false.</font></p>
-<p><font face="Arial">
-<img border="0" src="KMotionCNCfiles/BufferedIOWaitGCodeViewer.png" width="556" height="583"></font></p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
+<div id="logo"><a href="../index.htm"></a></div>
 
+<div id="home">
+<a href="../index.htm">Table of contents</a> |  
+	<script>
+		if (navigator.userAgent.indexOf("NT 6.2") == -1){
+			document.write('<a href="https://www.dynomotion.com">Dynomotion home page</a>')
+		} else {
+			document.write('<a href="https://www.dynomotion.com" target="_blank">Dynomotion home page</a>')
+		}
+	</script>
+</div>
+	
+<div id="searchNav">
+
+	<div class="gcse-search">
+					<script>
+					  if (document.location.protocol  ==  'https:') {
+					  (function() {
+					  var cx = '012657033059195044748:9fmjmlufts0';
+					  var gcse = document.createElement('script');
+					  gcse.type = 'text/javascript';
+					  gcse.async = true;
+					  gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+					      '//cse.google.com/cse.js?cx=' + cx;
+					  var s = document.getElementsByTagName('script')[0];
+					  s.parentNode.insertBefore(gcse, s);
+					})();
+					  }
+				      </script> 
+				      <gcse:search> </gcse:search>  
+
+	       </div>
+</div>	
+
+	
+
+
+<div id="google_translate_element" style="background: transparent;" align="right"><script type="text/javascript">
+if (navigator.userAgent.indexOf("NT 6.2") == -1) {
+		function googleTranslateElementInit() {
+	  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,de,fr,it,es,pt,ru,uk,ar,zh-CN,zh-TW,ko,iw,hi,ja,tr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+		}						}
+	</script>
+	<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+	</script>
+</div>		
+<div id="main">
+
+<h1>Synchronous IO Commands Embedded in Coordinated Motion</h1>
+
+<p>KMotionCNC allows I/O operations to be embedded into the 
+Coordinated Motion Buffer such that the IO commands are output synchronously 
+(within 90us Servo Sample) with motion. (Buffered IO operations can also 
+be inserted with Library calls from custom applications).</p>
+
+<p>This example shows two MCodes configured to set bits I/O 
+bits 46 and 47 high and also MCode M6 configured to wait for I/O bit 46 to be 
+low.</p>
+
+<p><img src="KMotionCNCfiles/ToolSetupBufferedBits.png" /></p>
+
+<p>A simple GCode Fragment shows the MCodes embedded within a 
+continuous straight motion right at the point the motion reaches X=1.0.</p>
+<p>The Trajectory Planner normally combines very collinear 
+motion blocks together for smoothing and so forth. But in this case it is 
+careful to not combine segments that cross a buffered I/O boundary.</p>
+
+<p><img src="KMotionCNCfiles/BufferedIOGCode.png" width="390" height="240" /></p>
+
+<p>Executing the GCode we can observe the IO bits 46 and 67 
+set high as the motion crosses X=1.0</p>
+
+<p><img src="KMotionCNCfiles/BufferedIOGCodeViewerPlot.png" width="564" height="454" /></p>
+
+<p>The GCode below demonstrates a right-triangle motion path 
+with the I/O commands inserted at a corner.</p>
+
+<p><img src="KMotionCNCfiles/BufferedIOGCodeRounded.png" width="372" height="248"></p>
+
+<p>With Trajectory Planner Break Angle set to 10 degrees (which 
+is less then 90 degrees) a full stop will occur at the corners.</p>
+
+<p><img src="KMotionCNCfiles/BufferedIOTPSettingsNotRounded.png" width="1062" height="105" /></p>
+
+<p>In this case the IO switches where the instantaneous stop 
+occurs at a corner.</p>
+
+<p><img src="KMotionCNCfiles/BufferedIOGCodeViewerPlotNotRounded.png" width="556" height="583" /></p>
+
+<p>To demonstrate what happens with corner rounding an 
+exaggerated corner rounding example is shown below. With a Break Angle 
+greater than 90 degrees a stop will not occur at the corner. Also a large 
+radius (0.1 inches) and large facet angle (20 degrees) corner rounding is 
+configured. </p>
+
+<p><img src="KMotionCNCfiles/BufferedIOTPSettingsRounded.png" width="1070" height="113" /></p>
+
+<p>To observe exactly what happens we use the KFLOP C Program 
+shown below to real-time capture the XY position when the IO occurs (XY 
+resolution is 10000 counts per inch). </p>
+
+<pre>
+	<code class="language-c">
+	#include &quot;KMotionDef.h&quot;
+	
+	main()
+	{
+		int New,Last=ReadBit(46);
+		for (;;)
+		{
+			New = ReadBit(46);
+			if (New != Last)
+			{
+				Last=New;
+				printf(&quot;X=%f Y=%f\n&quot;,ch0-&gt;Dest/10000.0,ch1-&gt;Dest/10000.0); // send message to console
+			}
+		}
+	}
+	</code>
+</pre>
+	
+<p>The captured position is printed as:</p>
+<p><em>X=0.929315 Y=0.070748</em></p>
+
+<p><img src="KMotionCNCfiles/BufferedIOGCodeViewerPlotRounded.png" width="556" height="582" /></p>
+
+<p>In addition to embedding outputs into the motion stream, 
+waits for inputs can be embedded. This is inserted as a buffered <strong>
+<a href="../Cmd.htm#WaitBitBuf">WaitBitBuf</a> </strong>command. When executed 
+if the specified bit is false the motion will stall at that point until the 
+input becomes true. There is a similar command 
+<strong><a href="../Cmd.htm#WaitNotBitBuf">WaitNotBitBuf</a></strong> that
+ will stall until the input becomes false. MCodes can be configure to insert 
+ these commands, Although Wait commands can be inserted anywhere in a motion path it 
+normally is only useful to place them at locations where the motion stops. 
+Such as the very beginning of a path or at a corner where motion comes to a 
+stop. Otherwise an instantaneous stop will occur without any acceleration. 
+Wait commands are useful when motion must proceed instantly on command. 
+This is possible because the motion has already been Interpreted, planned, 
+downloaded, and commanded to execute ahead of time. See the example GCode 
+below where a wait has been inserted at a corner. </p>
+
+<p><img src="KMotionCNCfiles/BufferedIOWaitBitBuf.png" /></p>
+
+<p>The plot below shows where the wait will stall execution 
+if the specified bit is false.</p>
+
+<p><img src="KMotionCNCfiles/BufferedIOWaitGCodeViewer.png" width="556" height="583" /></p>
+
+<p>&nbsp;</p>
+	</div>
 </body>
 
 </html>

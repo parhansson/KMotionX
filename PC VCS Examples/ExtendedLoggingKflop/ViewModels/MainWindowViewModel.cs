@@ -61,8 +61,8 @@
             RemoveCFile = new TaskCommand(OnRemoveCFileExecuteAsync, OnRemoveCFileCanExecute);
             Download = new TaskCommand(OnDownloadExecuteAsync, OnDownloadCanExecute);
             Execute = new TaskCommand(OnExecuteExecuteAsync, OnExecuteCanExecute);
-            Hault = new TaskCommand(OnHaultExecuteAsync, OnHaultCanExecute);
-            HaultAllCommand = new TaskCommand(OnHaultAllCommandExecuteAsync, OnHaultAllCommandCanExecute);
+            Halt = new TaskCommand(OnHaltExecuteAsync, OnHaltCanExecute);
+            HaltAllCommand = new TaskCommand(OnHaltAllCommandExecuteAsync, OnHaltAllCommandCanExecute);
 
             SetThreadIDCommand = new Command<int?>(OnSetThreadIDCommandExecuteAsync, OnSetThreadIDCommandCanExecute);
 
@@ -281,8 +281,8 @@
         {
             ThreadCPrograms.Remove(SelectedCProgram);
         }
-        public TaskCommand Hault { get; private set; }
-        private bool OnHaultCanExecute()
+        public TaskCommand Halt { get; private set; }
+        private bool OnHaltCanExecute()
         {
             try
             {
@@ -304,7 +304,7 @@
         /// <summary>
         /// Method to invoke when the Edit command is executed.
         /// </summary>
-        private async Task OnHaultExecuteAsync()
+        private async Task OnHaltExecuteAsync()
         {
             try
             {
@@ -622,24 +622,24 @@
             
         }
         /// <summary>
-            /// Gets the HaultAllCommand command.
+            /// Gets the HaltAllCommand command.
             /// </summary>
-        public TaskCommand HaultAllCommand { get; private set; }
+        public TaskCommand HaltAllCommand { get; private set; }
 
         /// <summary>
-        /// Method to check whether the HaultAllCommand command can be executed.
+        /// Method to check whether the HaltAllCommand command can be executed.
         /// </summary>
         /// <returns><c>true</c> if the command can be executed; otherwise <c>false</c></returns>
-        private bool OnHaultAllCommandCanExecute()
+        private bool OnHaltAllCommandCanExecute()
         {
             return true;
 //            return _kserv.KMController.CheckConnected();
         }
         
         /// <summary>
-        /// Method to invoke when the HaultAllCommand command is executed.
+        /// Method to invoke when the HaltAllCommand command is executed.
         /// </summary>
-        private async Task OnHaultAllCommandExecuteAsync()
+        private async Task OnHaltAllCommandExecuteAsync()
         {
             try
             {

@@ -45,8 +45,9 @@
 
 #define NSTEP_SIZES 6
 
-#define MAX_USER_BUTTONS 50
+#define MAX_USER_BUTTONS 90
 #define MAX_EDIT_CONTROLS 40
+#define MAX_COMBO_CONTROLS 40
 
 #define CUSTOM_DLG_FACE 7
 
@@ -58,6 +59,8 @@ class CKMotionCNCDlg : public CDlgX
 // Construction
 public:
 	DECLARE_EASYSIZE
+	HWND hwndTT;  // tool tip for title
+	TOOLINFO ti;
 	void SetStepText(int i,double v,int ID);
 	double CurAbsX,CurAbsY,CurAbsZ,CurAbsA,CurAbsB,CurAbsC;
 	float m_JogSpeedFactor;
@@ -71,6 +74,7 @@ public:
 	bool m_PerformPostHaltCommand;
 	CString CommandHistory[NCOMMAND_HISTORY];
 	int board;
+	int m_BoardType;
 	bool ReadStatus;
 	CKMotionCNCDlg(CWnd* pParent = NULL);	// standard constructor
 	virtual ~CKMotionCNCDlg();
@@ -88,6 +92,10 @@ public:
 	int m_ThreadThatWasLaunched;
 	int m_ThreadThatWasOriginallyStopped;
 	volatile bool ThreadIsExecuting;
+	CString AbreviateFile(CString s, int n);
+	CString FileAbreviated;
+	TRACKMOUSEEVENT Track;
+	bool TrackOn = false;
 	bool EnableJogKeys;
 	bool GCodeThreadActive[N_USER_GCODE_FILES];
 	bool ThreadHadError[N_USER_GCODE_FILES];
@@ -259,12 +267,18 @@ public:
 	bool JobStartTimeValid;
 	bool JobEndTimeValid;
 	double JobStartTimeSecs,JobEndTimeSecs;
+	bool JobDoTimeValid;
+	double JobDoTimeSecs;
 
 	bool m_DoingSimulationRun;
 
 	BOOL m_DisplayGViewer;
 	int m_LastToolDisplayed;
 	int m_LastFixtureDisplayed;
+
+	int EditorCurrentLine[N_USER_THREADS];  // which line to Display
+	long SelectionStart[N_USER_THREADS];  // what to select
+	long SelectionEnd[N_USER_THREADS];  // what to select
 
 
 // Dialog Data
@@ -277,8 +291,10 @@ public:
 	int		m_Thread;
 	int		m_Rapid;
 	BOOL	m_Simulate;
+	BOOL	m_DoTime;
 	BOOL	m_ShowLineNumbers;
 	BOOL	m_ShowMach;
+	int m_LastToolSetupPage;
 	CEditScreen	m_FeedRateEdit;
 	CEditScreen	m_SpindleRateEdit;
 	CDisplay	m_PosC;
@@ -361,6 +377,7 @@ public:
 	CImageButton m_Measure;
 
 	CEditScreen m_UserEditCtrls[MAX_EDIT_CONTROLS];
+	CComboBoxScreen m_UserComboCtrls[MAX_COMBO_CONTROLS];
 
 	CImageButton m_StaticLabelX;
 	CImageButton m_StaticLabelY;
@@ -373,7 +390,9 @@ public:
 	CImageButton m_SimulateStatic;
 	CImageButton m_BlockDeleteStatic;
 	CImageButton m_BlockDeleteStatic2;
-	CImageButton m_StaticUnits;  
+	CImageButton m_DoTimeStatic;
+	CImageButton m_DoTimeStatic2;
+	CImageButton m_StaticUnits;
 	CImageButton m_StaticCoord;
 	CImageButton m_StaticStepSize;
 	CImageButton m_Static_Fixture;
@@ -469,9 +488,11 @@ public:
 // Implementation
 protected:
 	void CKMotionCNCDlg::MakeUnicode(int ID, CImageButton &I);
+
 	void SetBigValues(CDisplay *Disp0, CDisplay *Disp1, CDisplay *Disp2, CDisplay *Disp3, CDisplay *Disp4, CDisplay *Disp5, bool KMotionPresent);
 	void SetBigValueColor(CDisplay *Disp0,int axis, bool KMotionPresent, bool DisplayedEnc);
 	CString LastTitleText;
+	CString LastTitleElapsed;
 	HACCEL  m_hAccelTable;
 	CImageButton m_EmergencyStop;
 	CImageButton m_GO;
@@ -485,16 +506,19 @@ protected:
 	void KillMinusZero(CString &s);
 	HGLOBAL hDIB;
 	HBRUSH hBrush;
+	CString CurrentBackgroundFile;
+	BYTE* m_pvBackBits;
 	// Generated message map functions
 	//{{AFX_MSG(CKMotionCNCDlg)
 	virtual BOOL OnInitDialog();
+	void CreateToolTipForRect(HWND hwndParent);
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnF2();
 	afx_msg void OnESC();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnFeedRateApply();
 	afx_msg void OnSpindleRateApply();
@@ -545,6 +569,7 @@ protected:
 	afx_msg void OnUpdateSingleStep(CCmdUI* pCmdUI);
 	afx_msg void OnGView();
 	afx_msg void OnSimulate();
+	afx_msg void OnDoTime();
 	afx_msg void OnBlockDelete();
 	afx_msg void OnShowMach();
 	afx_msg void OnDropdownfixture();
@@ -553,7 +578,6 @@ protected:
 	afx_msg void OnClose();
 	afx_msg void OnSend();
 	afx_msg void OnDropdownCommand();
-	afx_msg void OnCloseupCommand();
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnBut0();
@@ -591,15 +615,16 @@ protected:
 	DECLARE_MESSAGE_MAP()
 private:
 	void SetStepSizes();
-	int DoActVelocity(int i, double v);
+	int DoActVelocity(int i, double v, CString &c);
+	int DoAllActVelocity(double *V);
 	int StopAxis(int i);
 	double CKMotionCNCDlg::DoJoyAxis(int axis, int joystick);
 	void SetMotionParams();
 	void SetAUserButton(int ID, CString s);
 	void SetUserButtons();
 	void SetDefaultHotKeys();
-	void FillComboWithTools(CComboBox *Box);
-	void FillComboWithCountFixture(int i0, int i1, CComboBox *Box);
+	void FillComboWithTools(CComboBoxScreen *Box);
+	void FillComboWithCountFixture(int i0, int i1, CComboBoxScreen *Box);
 	void MakeSureFileIsntReadOnly(CString FN);
 	int DoJoyStick();
 	int ReadInterpPos(double *x, double *y, double *z, double *a, double *b, double *c);
@@ -610,9 +635,6 @@ private:
 	CBrush *GreenBrush;
 	CBrush *TealBrush;
 	void ThreadChanged();
-	CString SaveUserCommand;
-	CString *SaveUserCommandVar;
-	CComboBox *SaveUserCommandCombo;
 	bool m_ConfigSpindleDirty;
 	bool CSS_BitmapValid;
 	bool CSS_BitmapDisplayed;
@@ -622,6 +644,8 @@ private:
 	void setMainPathAndRoot(LPWSTR arg0);
 	void RoundReasonable(double &v);
 
+	int UnpackSingleAxisDestVel(int axis, CString s, double * d, double * v);
+	int GetCurrentDestsVels(double * ActsDest, double * ActsVel, double * CurAbsX, double * CurAbsY, double * CurAbsZ, double * CurAbsA, double * CurAbsB, double * CurAbsC);
 	CStringW InterprocessString;
 	
 	HWND HWndClient;
@@ -633,6 +657,12 @@ public:
 	int SetVar(int Var, int value);
 
 	void WhenIdle();  // called by Ap pclass when message queue Idle
+
+	int GetBoardType();
+
+	int GetNChans();
+
+	CString convertSeconds(int seconds);
 
 	void HandleToolTableClose();
 
@@ -668,6 +698,9 @@ public:
 	afx_msg void OnRotXY();
 	afx_msg void OnGViewerSetup();
 	afx_msg void OnShowTool();
+	afx_msg void OnNcMouseLeave();
+	afx_msg void OnNcMouseMove(UINT nHitTest, CPoint point);
+	void OnToolTipTextAboutToShow(NMHDR* pNotifyStruct, LRESULT* result);
 };
 
 

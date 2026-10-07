@@ -45,7 +45,7 @@ public:
 	// Generated message map functions
 protected:
 	//{{AFX_MSG(CMotionButton)
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	afx_msg void OnCaptureChanged(CWnd*);
 
