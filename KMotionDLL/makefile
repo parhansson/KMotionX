@@ -11,13 +11,17 @@ W_FLAGS+=-Wno-unused-private-field
 #W_FLAGS+=-Wno-deprecated-declarations
 
 LD_LIBS+=KMotionX
-LD_LIBS+=$(FTDILIB)
-LD_LIBS+=usb-1.0
 LD_LIBS+=pthread
+LDFLAGS+=$(FTDI_LIBS)
 
 SOURCES=COFFMAIN.cpp CLOAD.cpp KMotionDLL_Direct.cpp KMotionDLL.cpp KMotionLocal.cpp TranslateX.cpp
 
 ifeq ($(FTDILIB),ftd2xx)
+LD_LIBS+=ftd2xx
+ifneq ($(FTD2XX_LIBDIR),)
+LDFLAGS+=-L"$(FTD2XX_LIBDIR)"
+LDFLAGS+=-Wl,-rpath,"$(FTD2XX_LIBDIR)"
+endif
 SOURCES+=KmotionIO.cpp
 SOURCES+=Ping.cpp
 else

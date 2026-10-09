@@ -21,9 +21,12 @@ Install gcc and g++ 4.8. This command installs gcc and g++ 4.8 but does not chan
 ```
 sudo apt-get install gcc-4.8 g++-4.8
 ```
-###### 3. Install libftdi
-Skip this step if you will be using ftd2xx driver. However libftdi works a lot better on linux libftdi is an open source ftdi driver that might be used as replacement when running on Linux or MacOSX
+###### 3. Install pkg-config, libftdi and libusb
+The default build uses pkg-config to locate the open-source libftdi driver and
+libusb. Skip libftdi if you are using the ftd2xx driver.
 ```
-sudo apt-get install libftdi-dev
+sudo apt-get install pkg-config libftdi1-dev libusb-1.0-0-dev
 ```
+If `pkg-config` is already installed, you do not need to reinstall it. Check
+discovery with `pkg-config --modversion libftdi1 libusb-1.0`.
 Jump to section "Install KMotionX" or "Install Java" if you will use the Java binding.

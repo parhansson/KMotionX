@@ -91,7 +91,12 @@ namespace kmx
     BOARD_TYPE_KOGNA = 3,
   };
   extern const char *getMachineDataPath();
+  extern const char *getLibexecPath();
+  extern const char *getResourcePath();
   extern int getResourceValue(const char *searchKey, char * result, size_t maxLen);
+  // KMOTIONX_HOME when set, otherwise ~/.kmotionx. Not the configured install prefix.
+  extern const char *getKMotionXHomePath();
+  // Deprecated compatibility alias; use getKMotionXHomePath() instead.
   extern const char *getInstallPath();
   extern const char *getBinPath();
   extern const char *getLocalLanguageFilePath();

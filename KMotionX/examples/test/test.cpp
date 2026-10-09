@@ -165,8 +165,7 @@ void testCheckForReady(){
 }
 void testCompile(){
 	char file[256];
-	strcpy(file,kmx::getInstallPath());
-	strcat(file,"/C Programs/BlinkKFLOP.c");
+	snprintf(file, sizeof(file), "%s/c-programs/BlinkKFLOP.c", kmx::getMachineDataPath());
 	char err[1024];
 	KM->CompileAndLoadCoff(file, 1, err, sizeof(err));
 	if(err[0])
@@ -180,8 +179,7 @@ void testCompile(){
 
 void testExtractCoffVersion(){
 	char file[256];
-		strcpy(file,kmx::getInstallPath());
-		strcat(file,"/DSP_KFLOP/DSPKFLOP.out");
+	kmx::getDspFile(file, kmx::BOARD_TYPE_KFLOP);
 	char Version[81];
 	if(KM->ExtractCoffVersionString(file, Version)){
 		printf("ExtractCoffVersionString failed\n");

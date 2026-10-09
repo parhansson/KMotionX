@@ -912,8 +912,8 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 			{
 #ifdef _KMOTIONX
 				char FileName[MAX_PATH];
-				strcpy(FileName, p->String);
-				if(strchr(FileName,PATH_SEPARATOR) - FileName > -1){
+				snprintf(FileName, sizeof(FileName), "%s", p->String);
+				if (strchr(p->String, PATH_SEPARATOR) == NULL) {
 					snprintf(FileName, MAX_PATH, "%s%s%s", CoordMotion->MainPathRoot, C_PROGRAMS_DIR,  p->String);
 				}
 #else
@@ -936,8 +936,8 @@ int CGCodeInterpreter::InvokeActionDirect(int i, BOOL FlushBeforeUnbufferedOpera
 
 #ifdef _KMOTIONX
 				char FileName[MAX_PATH];
-				strcpy(FileName, p->String);
-				if(strchr(FileName,PATH_SEPARATOR) == NULL){
+				snprintf(FileName, sizeof(FileName), "%s", p->String);
+				if (strchr(p->String, PATH_SEPARATOR) == NULL) {
 					snprintf(FileName, MAX_PATH, "%s%s%s", CoordMotion->MainPathRoot, C_PROGRAMS_DIR,  p->String);
 				}
 #else
