@@ -74,6 +74,8 @@ typedef unsigned int size_t;
 #include "PC-DSP.h"   // contains common structures shared by PC and DSP (both KFLOP and Kogna)
 
 extern unsigned int Kogna_ipAddr;  // IP Address assigned little endian 192.168.10.5 = 0x050AA8C0
+extern BOOL DHCP_Server_Request_Received;  // TRUE if PC requested IP Address from Kogna
+
 
 // Global Host Status that the PC Application can specify as it Requests Global Status
 // to inform KFLOP User threads of its current state.  ie Job Actively running
@@ -261,6 +263,12 @@ void TriggerGather();                             // starts gathering defined it
 
 
 #define TRAJECTORY_EXPONENTIAL 5  // independent axis (exponentially approach Dest a=Ratio per tick, b=Dest)
+#define TRAJECTORY_CUBIC8 6       // Cubic Knot from coord system 0 - each axis has its own cubic
+                                  // position polynomial in time  (x = ((a*t+b)*t+c)*t+d)
+                                  // the 8 coefficient sets (letter order x,y,z,a,b,c,u,v) are
+                                  // packed contiguously as raw doubles beginning at the master 'a'
+                                  // coefficient (a,b,c,d then X.a..Y.d then Z.c..AP.d)
+                                  // axis routing uses assignment bytes x_axis..v_axis as usual
 
 #define LAST_MOTION_JOG 0		  // type of last independent motion was a jog
 #define LAST_MOTION_MOVE 1		  // type of last independent motion was a move
@@ -488,11 +496,30 @@ typedef struct
 
     TRIP_COEFF *c;               	// move profile polynomial coefficients list (up tp MAX_TRIP)
     IIR iir[N_IIR_FILTERS];         // several IIR filters
+
+	// Command delay line (preview compensation for lagging actuators such as
+	// serial servos).  When the global CmdDelay is nonzero every axis's
+	// official commanded reference becomes the trajectory CmdDelay servo
+	// samples ago (DelayedDest) - PID error, feed forward, following error,
+	// and the Step Response Command trace all use it.  Each axis's OUTPUT is
+	// taken CmdLead samples AHEAD of that reference (LeadDest), so an
+	// actuator with a known response lag is commanded early and physically
+	// arrives ON the common reference.  With CmdDelay = 0 (default) all of
+	// these equal Dest and behavior is identical to before.
+
+	int CmdLead;					// output taken this many samples ahead of the
+									// delayed reference (0..CmdDelay), servo samples
+	double DelayedDest;				// official commanded reference (Dest delayed CmdDelay)
+	double PrevDelayedDest;			// previous sample of the above
+	double LeadDest;				// output command tap (delayed CmdDelay-CmdLead)
+	double PrevLeadDest;			// previous sample of the above
+	float cmd_last_vel;				// previous commanded-reference velocity, private to
+									// the servo feed forward (last_vel stays planner domain)
 }CHAN;
 
 // continuously sent by DMA to DACs
 extern short int DAC_Buffer[N_DACS];   //  Kanalog format 12 bits data
-#define DAC(ch, v) DAC_Buffer[ch]=((v-2048)&0xfff)  // set DAC channel to value (range -2048/+2047)
+#define DAC(ch, v) DAC_Buffer[ch]=(((v)-2048)&0xfff)  // set DAC channel to value (range -2048/+2047)
 
 extern short int ADC_BufferIn[N_ADCS];    //  Kanalog format 12 bits data
 #define ADC(ch) (ADC_BufferIn[ch]-2048)   // return ADC reading of specified channel (range -2048/2047)
@@ -504,7 +531,7 @@ extern short int Kogna_ADC_Buffer[N_ADCS_KOGNA];   //  format    12 bits data (s
 
 // Kogna DAC Registers 8 16bit Registers
 #define DAC_TABLE 0x160
-#define KOGNA_DAC(ch, v) Kogna_DAC_Buffer[ch]=((v-2048)&0xfff)  // set DAC channel to value (range -2048/+2047)
+#define KOGNA_DAC(ch, v) Kogna_DAC_Buffer[ch]=(((v)-2048)&0xfff)  // set DAC channel to value (range -2048/+2047)
 
 
 // SNAP AMP 0 ADC values
@@ -517,10 +544,82 @@ extern short int Kogna_ADC_Buffer[N_ADCS_KOGNA];   //  format    12 bits data (s
 // 10,11 Side B Coils Currents A and C
 // 12,13 = Supply Voltages side A and B
 // 14,15 = Temperature side A and B
-extern int ADC_BufferInSnap[2*N_ADCS_SNAP];   //  Snap Amp Current ADC format  16-bits data 
+extern int ADC_BufferInSnap[2*N_ADCS_SNAP];   //  Snap Amp Current ADC format  16-bits data
 
-#define FULL_RANGE_CURRENT 4.85f
-#define MeasuredAxisAmps(axis) ((ADC(axis+4)+2048)*(FULL_RANGE_CURRENT/4096.0f))  // returns measured current in an axis (Amperes)
+// STS3215 Serial Servo telemetry, maintained by the DSP protocol engine for
+// servo IDs claimed by an axis (see SERIAL_SERVO_INPUT_MODE/SERIAL_SERVO_MODE).
+// Position commands broadcast via SYNC_WRITE roughly every millisecond;
+// telemetry is read from one servo per bus cycle round robin.
+// Use the SERVO_CONVERT_* macros in PC-DSP.h for engineering units.
+
+extern int ServoPosition[N_SERIAL_SERVOS];  // accumulated position, servo counts, multi turn
+extern int ServoCurrent[N_SERIAL_SERVOS];   // signed, 6.5mA/count
+extern int ServoVolts[N_SERIAL_SERVOS];     // 0.1V/count
+extern int ServoLoad[N_SERIAL_SERVOS];      // signed, 0-1000 = 0-100%
+extern int ServoTemp[N_SERIAL_SERVOS];      // degrees C
+extern int ServoStatus[N_SERIAL_SERVOS];    // moving<<8 | servo status/error byte
+extern int ServoResult[N_SERIAL_SERVOS];    // last transaction result code, 0 = OK
+extern int ServoErrors[N_SERIAL_SERVOS];    // cumulative communication errors (wraps)
+extern int ServoStale[N_SERIAL_SERVOS];     // servo interrupts since fresh telemetry
+extern int ServoPosValid[N_SERIAL_SERVOS];  // servo has reported its position at least once
+extern int ServoActiveMask;                 // bitmap of servo IDs claimed by an axis
+
+extern int ServoSpeed;    // speed limit sent to all servos, counts/sec (default 3400)
+                          // measured to not affect tracking down to ~1200
+extern int ServoAccel;    // acceleration limit sent to all servos.  0 = no limit,
+                          // measured identical to max 254.  Do NOT use a small
+                          // nonzero value - 10 doubles the servo tracking lag
+extern int ServoBusEXIO;  // 0 = bus on IO0 (default), 1 = bus on EX_IO_13
+                          // (use EX_IO_13 when IO0/IO1 are needed as encoder 0)
+
+// Global command delay in servo samples (90us each), 0 = off (default).
+// See the CmdLead/DelayedDest/LeadDest comment in the CHAN structure.  Change
+// only while axes are stationary - the reference steps by CmdDelay x velocity
+// otherwise.  Note the serial servo lag is VELOCITY DEPENDENT (~40ms at 250
+// counts/s to ~190ms at 2500) - see SerialServoLagVsVel.c and
+// SerialServoLeadSchedule.c; set CmdDelay above the worst case lead needed.
+
+#define CMD_DELAY_MAX 3500           // ~315ms (serial servo lag reaches ~190ms/2100
+                                     //  samples at 2500 counts/s - allow headroom)
+#define CMD_RING_SIZE 4096           // ring samples per axis (power of two > max)
+extern int CmdDelay;
+extern double *CmdDelayRing;         // [N_CHANNELS_KOGNA][CMD_RING_SIZE], SDRAM
+extern int ServoCycleTicks; // extra servo interrupts inserted between bus
+                            // cycles, 0 = run back to back (~1ms cycles)
+
+extern int ServoProtocol;   // 0 = Feetech STS3215 protocol (default)
+                            // 1 = Dynamixel Protocol 2.0 (XL430 etc.)
+                            // One servo family on the bus at a time.  Change
+                            // only with no axes configured for serial servo.
+extern int ServoBaud576;    // 1 = bus at 57600 baud (Dynamixel factory rate)
+                            // ONLY for one-time configuration of new servos
+                            // up to 1 Mbaud - see DxlSetup.c.  Normal
+                            // operation is always 0 (1 Mbaud).
+
+// One configuration read or write to any servo on the bus.  Fill in the
+// fields then set ServoAuxGo = 1; the protocol engine performs it between
+// cyclic transactions and clears ServoAuxGo when finished (typically < 2ms).
+// For reads the value arrives in ServoAuxData.  ServoAuxResult: 0 = OK,
+// else the transaction result code.  Works whether or not any axis claims
+// the bus (with no axes configured the engine runs just to service it).
+
+// (all volatile: the servo interrupt reads/writes them, and results must not
+//  be cached by the compiler across the ServoAuxGo polling loop)
+
+extern volatile int ServoAuxGo;
+extern volatile int ServoAuxID;      // target servo ID 0-253 (or 0xFE broadcast, writes only)
+extern volatile int ServoAuxReg;     // servo control table register address
+                                     // (16 bit for Dynamixel Protocol 2.0)
+extern volatile int ServoAuxData;    // data to write / data read back
+extern volatile int ServoAuxTwo;     // field size: 0 = 1 byte, 1 = 2 bytes,
+                                     // 2 = 4 bytes (4 byte Dynamixel only)
+extern volatile int ServoAuxRead;    // 1 = read, 0 = write
+extern volatile int ServoAuxResult;  // 0 = OK, else transaction result code
+extern volatile int ServoAuxErr;     // servo's error byte from the last
+                                     // validated aux ack (fault flags,
+                                     // 0 = no faults), -1 = no ack seen.
+                                     // NOTE: a servo can ack a write with
+                                     // result 0 yet flag faults here
 
 // SnapAmp PWM control
 
@@ -617,12 +716,97 @@ extern int KStepPresent;       // 0=Not Present, 1=KStep Present, 2=KStepPro Pre
 #define KAN_OUTPUTS 144			// 24 Bits 144-167 (144-151 Opto out, 152-159 FET/Relay Drivers, 160-167 GPOUT)
 #define KAN_NOUTPUTS 24			// 24 output Bits
 
+#define LatchedDiffIn 0x1c0  // FPGA Address for 24 Latched Diff Inputs, read as 32-bit word, write 0's to clear
 
 
 #define STEP_DIR_TO_DIFF 0xA1   // 8-bit read/write register controls mux to connect 0-7 Step/Dir gen to DIFF Outputs
 
 #define RS485_TX_ENABLE_PERIOD 0xA2   // 16-bit write register for Transmit enable period after Start Bit 33.33MHz
 #define RS485_TX_SHORT_PERIOD 0xA3   // 16-bit write register for delay to begin looking for new Start Bit 33.33MHz
+
+
+// Feetech STS3215 Serial Servos - daisy chained on a single 1Mbaud wire on
+// IO0, or EX_IO_13 when ServoBusEXIO = 1.  The FPGA is a dumb byte stream
+// UART with a packet buffer RAM; the DSP does all protocol work (see
+// DoSerialServos in fast.c and KOGNA_FPGA\STS3215_Servos.md).  16-bit
+// registers - use FPGAW, or FPGA64 for the buffer windows (4 words at a time).
+
+#define SERVO_BUS_ADD      0x200   // bit0 = bus enable, bit1 = pin: 0 = IO0, 1 = EX_IO_13,
+                                   // bit2 = baud: 0 = 1 Mbaud, 1 = 57600
+#define SERVO_TXGO_ADD     0x201   // W: length in bytes, starts transmission
+                                   // R: status - busy(15) ovfl(14) ferr(13) rx count(8:0)
+#define SERVO_FLUSH_ADD    0x202   // W: bit0 clears the receive buffer and error flags
+#define SERVO_TXBUF_ADD    0x240   // transmit buffer, 64 words = 128 bytes, low byte first
+#define SERVO_RXBUF_ADD    0x280   // receive buffer, 128 words = 256 bytes
+
+#define SERVO_ST_BUSY      0x8000
+#define SERVO_ST_OVFL      0x4000
+#define SERVO_ST_FERR      0x2000
+#define SERVO_ST_COUNT     0x01FF
+
+#define SERVO_BUS_EXIO13_BIT (KOGNA_AUX2_EXIO_0+23)  // EX_IO_13's I/O bit number (223)
+
+// STS3215 control table registers (used with the aux write mechanism)
+#define STS_REG_ID         0x05
+#define STS_REG_RETDELAY   0x07
+#define STS_REG_MODE       0x21
+#define STS_REG_TORQUE     0x28
+#define STS_REG_LOCK       0x37
+
+// STS3215 internal position loop tuning.  These live in the servo's EPROM
+// region, so unlock with STS_REG_LOCK=0, write, then restore STS_REG_LOCK=1.
+// Raising STS_REG_POS_P is the main way to reduce the servo's own tracking lag.
+#define STS_REG_POS_P      0x15    // position loop proportional gain, default 32
+#define STS_REG_POS_D      0x16    // position loop derivative gain, default 32
+#define STS_REG_POS_I      0x17    // position loop integral gain, default 0
+#define STS_REG_MIN_FORCE  0x18    // 2 bytes, minimum output to start moving, default 16
+#define STS_REG_CW_DEAD    0x1A    // CW deadband, encoder steps, default 1
+#define STS_REG_CCW_DEAD   0x1B    // CCW deadband, encoder steps, default 1
+
+// Dynamixel Protocol 2.0 control table registers (XL430 etc.), used with the
+// aux mechanism when ServoProtocol = 1.  Addresses below 64 are EEPROM and
+// only writable with torque disabled (DXL_REG_TORQUE = 0); the servo rejects
+// such writes otherwise and reports it in the status error byte.  Field
+// sizes: set ServoAuxTwo to 0/1/2 for 1/2/4 byte registers as noted.
+
+#define DXL_REG_MODEL      0     // 2 bytes, XL430-W250 reads 1060
+#define DXL_REG_FIRMWARE   6     // 1 byte
+#define DXL_REG_ID         7     // 1 byte, factory default 1
+#define DXL_REG_BAUD       8     // 1 byte: 0=9600 1=57600(factory) 2=115200 3=1M
+#define DXL_REG_RETDELAY   9     // 1 byte, 2us units, factory 250 - set 0
+#define DXL_REG_DRIVEMODE  10    // 1 byte, bit0 reverse, bit2 time based profile
+#define DXL_REG_OPMODE     11    // 1 byte: 1=velocity 3=position(1 turn)
+                                 //         4=extended position (+/-256 turns)
+#define DXL_REG_HOMING     20    // 4 bytes signed, added to Present Position
+#define DXL_REG_TEMP_LIM   31    // 1 byte, deg C
+#define DXL_REG_VOLT_MAX   32    // 2 bytes, 0.1V
+#define DXL_REG_VOLT_MIN   34    // 2 bytes, 0.1V
+#define DXL_REG_PWM_LIM    36    // 2 bytes, 0.113% units
+#define DXL_REG_VEL_LIM    44    // 4 bytes, 0.229 rpm units
+#define DXL_REG_POS_MAX    48    // 4 bytes (position mode only)
+#define DXL_REG_POS_MIN    52    // 4 bytes (position mode only)
+#define DXL_REG_SHUTDOWN   63    // 1 byte, fault mask
+#define DXL_REG_TORQUE     64    // 1 byte, 1 = torque on (REQUIRED for motion;
+                                 // goals are rejected with torque off)
+#define DXL_REG_LED        65    // 1 byte
+#define DXL_REG_STATUS_RET 68    // 1 byte, 2 = respond to all (default)
+#define DXL_REG_HW_ERROR   70    // 1 byte, latched hardware error status
+#define DXL_REG_VEL_I      76    // 2 bytes
+#define DXL_REG_VEL_P      78    // 2 bytes 0 ~ 16,383
+#define DXL_REG_POS_D      80    // 2 bytes 0 ~ 16,383
+#define DXL_REG_POS_I      82    // 2 bytes 0 ~ 16,383
+#define DXL_REG_POS_P      84    // 2 bytes, default 640
+#define DXL_REG_FF2        88    // 2 bytes, acceleration feedforward
+#define DXL_REG_FF1        90    // 2 bytes, velocity feedforward
+#define DXL_REG_PROF_ACC   108   // 4 bytes - 0 = no accel profile (low lag)
+#define DXL_REG_PROF_VEL   112   // 4 bytes - 0 = no velocity profile (low lag)
+#define DXL_REG_GOAL_POS   116   // 4 bytes signed
+#define DXL_REG_MOVING     122   // 1 byte
+#define DXL_REG_PRES_LOAD  126   // 2 bytes signed, 0.1% units
+#define DXL_REG_PRES_VEL   128   // 4 bytes signed, 0.229 rpm units
+#define DXL_REG_PRES_POS   132   // 4 bytes signed
+#define DXL_REG_PRES_VOLT  144   // 2 bytes, 0.1V
+#define DXL_REG_PRES_TEMP  146   // 1 byte, deg C
 
 
 // 3 Phase manual control. Angle is specified in cycles.
@@ -891,7 +1075,7 @@ int ReadBit(int bit);                   // read the state of an I/O bit
 #define HRPWM_01_TIME_BASE_CTRL (*(volatile unsigned short int *)0x01f02000)
 
 // HRPWM #0 and #1 have a common Pre-scaler that can divide by 2^n where n's range is 0-7
-#define HRPWM_01_PRESCALE_POWER(n) HRPWM_01_TIME_BASE_CTRL = ((HRPWM_01_TIME_BASE_CTRL & ((~7)<<10)) | (n<<10))
+#define HRPWM_01_PRESCALE_POWER(n) HRPWM_01_TIME_BASE_CTRL = ((HRPWM_01_TIME_BASE_CTRL & ((~7)<<10)) | ((n)<<10))
 
 //Chan 0 and 1 have common Period register 65535 max = 3479Hz min (@228MHz clock)
 #define HRPWMPERIOD01 (*(volatile unsigned short int *)0x01f0200a)
@@ -923,6 +1107,14 @@ void SPI_GPIO_SetBit(int chan);          // Fast SetBit of SPI as GPIO Pin
 void SPI_GPIO_ClearBit(int chan);        // Fast GetBit of SPI as GPIO Pin
 int SPI_GPIO_ReadBit(int chan);          // Fast ReadBit of SPI as GPIO Pin (regardless of Mode)
 
+// Controls 1 DSP Pin for RESETOUT or GPIO
+void RESETOUT_SetMode(int GPIO);        // Set RESETOUT mode as RESETOUT or GPIO, 1=GPIO, 0=RESETOUT
+int RESETOUT_GetMode();                 // Get RESETOUT mode as RESETOUT or GPIO, 1=GPIO, 0=RESETOUT
+void RESETOUT_GPIO_SetDir(int dir);     // Set RESETOUT GPIO direction 1=Output 0=Input
+int RESETOUT_GPIO_GetDir();             // Get RESETOUT GPIO direction 1=Output 0=Input
+void RESETOUT_GPIO_SetBit();            // Fast SetBit of RESETOUT as GPIO Pin
+void RESETOUT_GPIO_ClearBit();          // Fast GetBit of RESETOUT as GPIO Pin
+int RESETOUT_GPIO_ReadBit();            // Fast ReadBit of RESETOUT as GPIO Pin (regardless of Mode)
 
 
 // Non volatile NAND Flash functions
@@ -1009,6 +1201,9 @@ int sprintf(char *s, const char *format, ...); 	// Print formatted string to str
 typedef int FILE;
 FILE *fopen(const char*, const char*);		   // Open a text file for writing on the PC 2nd param = "rt" or "wt" or "at"(append write text mode) 
 int fprintf(FILE *f, const char * format, ...);		   // Print formatted string to the PC's Disk File
+int fputs(const char *str, FILE *f);           // Write one line (ending in \n) to the PC's Disk File with no formatting - the fast path, see FormatInt/FormatFixed
+int FormatInt(char *s, int v);                 // fast int -> decimal text into s (null terminated), returns length.  ~1us vs ~20us for a printf %d
+int FormatFixed(char *s, double v, int decimals); // fast double -> fixed point text with 0-9 decimals, rounded, into s, returns length.  ~1us vs ~20us for a printf %f
 int fclose(FILE *f);                           // Close the disk file on the PC
 
 int Print(char *s);                      		// Print a string to the console window
@@ -1074,6 +1269,13 @@ void DoResolverInput2(CHAN *chx, float x, float y);  // optimized routine to han
 extern double ResolverFactor; // defaults to 1000.0/TWO_PI converts sine/cosine angle to reported Position
 
 
+// E T H E R N E T   F U N C T I O N S
+
+extern void ResetEthernet(void);  // Reset Ethernet Service
+
+
+
+
 // M U L T I - T H R E A D   S U P P O R T
 
 // user threads are numbered 1 .. n
@@ -1083,6 +1285,7 @@ void PauseThread(int thread);  // stops a thread from executing
 int ResumeThread(int thread);  // resumes a tread after a pause 
 void ThreadDone(void);         // call to terminate current thread
 extern int volatile CurrentThread;  // current thread that is/was executing  0 = Pri 1-7 = User Threads
+extern int volatile ThreadActive;  // one bit for each thread
 
 
 
@@ -1199,8 +1402,8 @@ int TestAndSet(int *mutex, int value);
 #define RS232_BAUD_9600 	((16666666/9600/16)-1)	// 8-bit divisor value to set   9600 baud
 #define RS232_BAUD_4800 	((16666666/4800/16)-1)	// 8-bit divisor value to set   4800 baud
 
-void InitRS232(int baud);
-void EnableRS232Cmds(int baud);
+void InitRS232(int baud);  // Configure/Initialize/flush RS232 port and set baud rate
+void EnableRS232Cmds(int baud);  // Initialize RS232 Port, get/put character buffering, and enable receiving commands from it
 
 extern char * volatile pRS232RecIn;  // Buffered Receive Pointer Head
 extern char *pRS232RecOut;           // Buffered Receive Pointer Tail
@@ -1215,9 +1418,8 @@ char RS232_GetChar(void);   // Get Internally Buffered (1000 chars) RS232 receiv
 void RS232_PutChar(char c); // Put Internally Buffered (1000 chars) RS232 transmit Data
 
 //RS422/RS485 Kogna DSP Uart Definitions
-void EnableRS422Cmds(int baud);
-// Rate to 1.5MBaud, nbits 5-8, Enable Parity adds a bit, mode 1=RS485 0-RS422
-void RS422_SetBaudRate(int Rate, int nBits, int EnableParity, int ParityOdd, int RS485_Mode); 
+void EnableRS422Cmds(int baud); // Rate to 1.5MBaud, nbits, Parity, RS485 Mode uneffected, flush get/put character buffering, and enable receiving commands from it
+void RS422_SetBaudRate(int Rate, int nBits, int EnableParity, int ParityOdd, int RS485_Mode); // Rate to 1.5MBaud, nbits 5-8, Enable Parity adds a bit, mode 1=RS485 0-RS422
 extern char * volatile pRS422RecIn;  // Buffered Receive Pointer Head
 extern char *pRS422RecOut;           // Buffered Receive Pointer Tail
 extern char *pRS422TxIn;             // Buffered Transmit Pointer Head

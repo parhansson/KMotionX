@@ -295,6 +295,9 @@ namespace KMotion_dotNet
         static extern string KM_dotnet_Interop_GCodeInterpreter_GetSetupFile(IntPtr handle);
 
         [DllImport("KMotion_dotNet_Interop.dll")]
+        static extern int KM_dotnet_Interop_GCodeInterpreter_SaveVars(IntPtr handle);
+
+        [DllImport("KMotion_dotNet_Interop.dll")]
         static extern void KM_dotnet_Interop_GCodeInterpreter_SetVarsFile(IntPtr handle, string name);
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern string KM_dotnet_Interop_GCodeInterpreter_GetVarsFile(IntPtr handle);

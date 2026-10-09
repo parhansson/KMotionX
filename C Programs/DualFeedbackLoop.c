@@ -5,7 +5,7 @@
 // one for each loop.  Output of the outer loop is applied as a velocity
 // to the inner loop 
 
-main()
+int main()
 {
     for (;;)  // loop forever
     {

@@ -62,7 +62,7 @@ void CScintillaFindReplaceDlg::OnRegularExpression()
 
 void CScintillaFindReplaceDlg::SetFindWhat(LPCTSTR s)
 {
-	GetDlgItem(1152)->SetWindowTextA(s);
+	GetDlgItem(1152)->SetWindowText(s);
 }
 
 void CScintillaFindReplaceDlg::OnFindReplaceHelp() 

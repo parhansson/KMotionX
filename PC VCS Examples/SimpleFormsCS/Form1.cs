@@ -18,15 +18,18 @@ namespace SimpleFormsCS
     public partial class Form1 : Form
     {
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        static extern int SendMessage(IntPtr hwnd, int wMsg, int wParam, ref COPYDATASTRUCT lParam);
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        static extern int SendMessage(IntPtr hwnd, int wMsg, IntPtr wParam, ref COPYDATASTRUCT lParam);
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        static extern int SendMessage(IntPtr hwnd, int wMsg, int wParam, int lParam);
-        [DllImport("User32.dll", SetLastError = true)]
-        public static extern IntPtr FindWindow(String lpClassName, String lpWindowName);
+        static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
-        private const int WM_COPYDATA = 0x4A;
+        // Overload for WM_COPYDATA (lParam is a pointer to the struct)
+        [DllImport("user32.dll")]
+        static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, ref COPYDATASTRUCT lParam);
+
+        // Overload for WM_COMMAND (plain integer params, but still pointer-sized)
+        [DllImport("user32.dll")]
+        static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam); 
+        
+
+        private const uint WM_COPYDATA = 0x4A;
 
         String MainPath;
         KM_Controller KM;
@@ -278,49 +281,34 @@ namespace SimpleFormsCS
 
         private void TestUSB_Click(object sender, EventArgs e)
         {
-            int N = 10000000;  //size of block to test
-            int[] data = new int[N];
-            int[] data2 = new int[N];
-            bool SentData = false;
-            String BOARD = "Kogna";
-
-            if (KM.GetBoardType() == BOARD_TYPE.KFLOP) // KFLOP communication is slower and less memory space
-            {
-                N = 100000;
-                BOARD = "KFLOP";
-            }
-           
+            bool tokenHeld = false;
+            string errorMessage = null;
+            TestUSB.Enabled = false;
             try
             {
-                DateTime T0;
+                int N = 1000000;
+                bool isKflop = KM.GetBoardType() == BOARD_TYPE.KFLOP;
+                if (isKflop) N = Math.Min(N, 100000);
+                string BOARD = isKflop ? "KFLOP" : "Kogna";
+                int L = isKflop ? 8 : 256;
+                int[] data = new int[N];
+                int[] data2 = new int[N];
+
                 string s = "";
-                DateTime T1;
-                double dt;
-#if true
                 int nchars_sent = 0;
-                int L = 256;  // put up to 256 per line (with ';' every 8)
-                if (KM.GetBoardType() == BOARD_TYPE.KFLOP) 
-                    L = 8;  // KFLOP does 8 per line                                       
-                            
-                // fill simple buffer with a ramp
                 for (int i = 0; i < N; i++) data[i] = i;
 
-                // first get the token for the board to allow uninterrupted access
-                if (KM.WaitToken(1000000) != KMOTION_TOKEN.KMOTION_LOCKED) return;
+                if (KM.WaitToken(1000000) != KMOTION_TOKEN.KMOTION_LOCKED)
+                    throw new InvalidOperationException("Unable to acquire the board token for the upload.");
+                tokenHeld = true;
+                long T0 = System.Diagnostics.Stopwatch.GetTimestamp();
 
-                SentData = true;
-                T0 = DateTime.Now;
-
-                // tell the board we will send N (32 bit ) words at offset 0
                 KM.WriteLine(String.Format("SetGatherHex {0} {1}", 0, N));
-
-                // send the data (simple ramp)  (8 hex words per line)
-
                 for (int i = 0; i < N; i++)
                 {
                     s = s + data[i].ToString("X8");
 
-                    if (((i % L) == L - 1) || i == N - 1)  // every 8/256 or on the last send it
+                    if (((i % L) == L - 1) || i == N - 1)
                     {
                         KM.WriteLine(s);
                         nchars_sent += s.Length;
@@ -328,34 +316,31 @@ namespace SimpleFormsCS
                     }
                     else
                     {
-                        s = s + " ";  // otherwise insert a space
+                        s = s + " ";
                     }
                 }
-                // release our access to the board
+                tokenHeld = false;
                 KM.ReleaseToken();
 
-                T1 = DateTime.Now;
-                dt = (T1.Ticks - T0.Ticks) / 1e7;
-                    TestResults1.Text = String.Format("PC->{0} N={1} Int32, Time={2:F3} sec, {3:F0}KBytes/sec", BOARD, N, dt, nchars_sent / dt / 1000.0);
-#endif
-#if true
+                long T1 = System.Diagnostics.Stopwatch.GetTimestamp();
+                double dt = (T1 - T0) / (double)System.Diagnostics.Stopwatch.Frequency;
+                TestResults1.Text = String.Format("PC->{0} N={1} Int32, Time={2:F3} sec, {3:F0}KBytes/sec",
+                    BOARD, N, dt, nchars_sent / dt / 1000.0);
+
                 int nchars_received = 0;
-
-                // first get the token for the board to allow uninterrupted access
-                if (KM.WaitToken(1000000) != KMOTION_TOKEN.KMOTION_LOCKED) return;
-                T0 = DateTime.Now;
-
-                // tell the board we will read N (32 bit ) words at offset 0
+                if (KM.WaitToken(1000000) != KMOTION_TOKEN.KMOTION_LOCKED)
+                    throw new InvalidOperationException("Unable to acquire the board token for the download.");
+                tokenHeld = true;
+                T0 = System.Diagnostics.Stopwatch.GetTimestamp();
                 KM.WriteLine(String.Format("GetGatherHex {0} {1}", 0, N));
-
-                // send the data (simple ramp)  (8 hex words per line)
 
                 s = "";
                 for (int i = 0; i < N; i++)
                 {
                     if (s.Length < 8)
                     {
-                        KM.ReadLineTimeout(ref s, 100000000);
+                        bool gotLine = KM.ReadLineTimeout(ref s, 100000000);
+                        if (!gotLine) throw new InvalidOperationException("Timed out reading benchmark data.");
                         nchars_received += s.Length;
                     }
 
@@ -366,30 +351,41 @@ namespace SimpleFormsCS
                         s = s.Remove(0, 8);
 
                     data2[i] = int.Parse(vs, System.Globalization.NumberStyles.HexNumber);
+                    if (data[i] != data2[i]) throw new InvalidOperationException("BAD DATA at word " + i);
+                }
+                tokenHeld = false;
+                KM.ReleaseToken();
 
-                    if (SentData &&  data[i] != data2[i])
+                T1 = System.Diagnostics.Stopwatch.GetTimestamp();
+                dt = (T1 - T0) / (double)System.Diagnostics.Stopwatch.Frequency;
+                TestResults2.Text = String.Format("{0}->PC N={1} Int32, Time={2:F3} sec, {3:F0}KBytes/sec",
+                    BOARD, N, dt, nchars_received / dt / 1000.0);
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.InnerException == null ? ex.Message : ex.Message + "\r\n" + ex.InnerException.Message;
+            }
+            finally
+            {
+                try
+                {
+                    if (tokenHeld)
                     {
-                        MessageBox.Show("BAD DATA");
+                        tokenHeld = false;
                         KM.ReleaseToken();
-                        return;
                     }
                 }
-
-                // release our access to the board
-                KM.ReleaseToken();
-
-                T1 = DateTime.Now;
-                dt = (T1.Ticks - T0.Ticks) / 1e7;
-                    TestResults2.Text = String.Format("{0}->PC N={1} Int32, Time={2:F3} sec, {3:F0}KBytes/sec",
-                    BOARD, N, dt, nchars_received / dt / 1000.0);
-#endif
+                catch (Exception ex)
+                {
+                    errorMessage += "\r\nUnable to release the board token: " + ex.Message;
+                }
+                finally
+                {
+                    TestUSB.Enabled = true;
+                }
             }
-            catch (DMException ex) // in case disconnect in the middle of reading status
-            {
-                KM.ReleaseToken();
-                MessageBox.Show(ex.InnerException.Message);
-            }
-
+            // Complete cleanup before a modal dialog can pause this UI thread.
+            if (errorMessage != null) MessageBox.Show(errorMessage);
         }
 
         private void MoveTo_Click(object sender, EventArgs e)
@@ -402,40 +398,169 @@ namespace SimpleFormsCS
         private void TestBoard2_click(object sender, EventArgs e)
         {
             KM_Controller KM2;
-            KM2 = new KMotion_dotNet.KM_Controller(530);
+            KM2 = new KMotion_dotNet.KM_Controller((192<<24)+(168<<16)+(68<<8)+118);
             if (KM2.WriteLineReadLine("ReadBit47") == "0")
                 KM2.WriteLine("SetBit47");
             else
                 KM2.WriteLine("ClearBit47");
         }
 
+        [StructLayout(LayoutKind.Sequential)]
         struct COPYDATASTRUCT
         {
-            public int dwData;
-            public int cbData;
-            public int lpData;
+            public IntPtr dwData;   // ULONG_PTR  — pointer-sized
+            public int cbData;   // DWORD      — stays 32-bit
+            public IntPtr lpData;   // PVOID      — pointer-sized
         }
 
         private void TestOpenKMotionCNC_click(object sender, EventArgs e)
         {
             String message = MainPath + "\\GCode Programs\\Dynomotion.ngc";
-            COPYDATASTRUCT cds;
-            cds.dwData = 0;
-            cds.lpData = (int)Marshal.StringToHGlobalUni(message);
-            cds.cbData = message.Length * 2 + 2;
 
             IntPtr KMotionCNCWindow = FindWindow("KMotionCNC", null);
-            SendMessage(KMotionCNCWindow, (int)WM_COPYDATA, this.Handle, ref cds);
-            Marshal.FreeHGlobal((IntPtr)cds.lpData);
+            if (KMotionCNCWindow == IntPtr.Zero)
+            {
+                MessageBox.Show("KMotionCNC not found running");
+                return;
+            }
+
+            COPYDATASTRUCT cds;
+            cds.dwData = IntPtr.Zero;
+            cds.lpData = Marshal.StringToHGlobalUni(message);   // no (int) cast
+            cds.cbData = message.Length * 2 + 2;
+
+            try
+            {
+                SendMessage(KMotionCNCWindow, WM_COPYDATA, this.Handle, ref cds);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(cds.lpData);                // already an IntPtr
+            }
 
             uint WM_COMMAND = 0x0111;
             int ID_OpenGCodeFile = 33018;
-            SendMessage(KMotionCNCWindow, (int)WM_COMMAND, ID_OpenGCodeFile, 0);
+            SendMessage(KMotionCNCWindow, WM_COMMAND, (IntPtr)ID_OpenGCodeFile, IntPtr.Zero);
         }
 
         private void FormClosingEvent(object sender, FormClosingEventArgs e)
         {
             KM.Dispose();
+        }
+
+        private void FlashFirmware_Click(object sender, EventArgs e)
+        {
+            String firmwareFileName = MainPath + "\\DSP_Kogna\\DSPKOGNA.out";
+
+            if (KM.GetBoardType() == BOARD_TYPE.KFLOP) 
+            {
+                firmwareFileName = MainPath + "\\DSP_KFLOP\\DSPKFLOP.out";
+            }
+            else
+            {
+                firmwareFileName = MainPath + "\\DSP_KOGNA\\DSPKOGNA.out";
+            }
+
+            int result = KM.LoadCoff(-1, firmwareFileName, 1);
+
+            if (result != 0)
+            {
+                MessageBox.Show("Firmware Download failed"); 
+            }
+            else
+            {
+                KMotion_dotNet.KMOTION_TOKEN token = KMotion_dotNet.KMOTION_TOKEN.KMOTION_NOT_CONNECTED;
+
+                token = KM.WaitToken(5);
+
+                if (token == KMotion_dotNet.KMOTION_TOKEN.KMOTION_LOCKED)
+                {
+                    KM.WriteLineWithEcho("ProgFlashImage");
+                    KMOTION_CHECK_READY ready;
+                    do
+                    {
+                        Thread.Sleep(100);
+                        ready = KM.CheckIsReady();
+                    }
+                    while (ready != KMOTION_CHECK_READY.READY);
+
+                    KM.ReleaseToken();
+                }
+
+            }
+        }
+
+        // Cubic knot (coordinated segment) download rate test.
+        //
+        // Streams N synthetic LinearHexEx segments exactly the way CoordMotion does:
+        // 21 hex-encoded floats per segment, several segments per line joined with
+        // ';' up to the MAX_LINE limit.  OpenBuf clears the buffer first and
+        // ExecBuf is NEVER sent, so nothing moves; the DSP just parses each segment
+        // and drops it into its 35000 entry ring (which wraps).  WriteLine blocks
+        // when TCP backs up, so the PC-side rate is the end to end rate the
+        // interpreter could sustain.  Run MeasureKnotRate.c on the board at the
+        // same time to see the DSP's own parse/insert rate (and to be the "one
+        // user thread running" load).
+        private static string HexFloat(float f)
+        {
+            return BitConverter.ToInt32(BitConverter.GetBytes(f), 0).ToString("X");
+        }
+
+        private void KnotRate_Click(object sender, EventArgs e)
+        {
+            const int N = 50000;         // segments to send
+            const int MAX_LINE = 2560;   // KMotionDLL line limit
+            bool tokenHeld = false;
+            KnotRate.Enabled = false;
+            try
+            {
+                if (KM.GetBoardType() == BOARD_TYPE.KFLOP)
+                    throw new InvalidOperationException("Kogna only (KFLOP buffer is smaller and slower to fill safely).");
+
+                if (KM.WaitToken(1000000) != KMOTION_TOKEN.KMOTION_LOCKED)
+                    throw new InvalidOperationException("Unable to acquire the board token.");
+                tokenHeld = true;
+
+                KM.WriteLine("OpenBuf");
+
+                // tiny 1ms segments along X: from (i*dx) to ((i+1)*dx), other axes 0,
+                // parametric a b c d = 0 0 1 0 (constant speed), t = 0.001
+                const float dx = 0.001f, tseg = 0.001f;
+                string zero = HexFloat(0.0f), one = HexFloat(1.0f), t = HexFloat(tseg);
+                var line = new System.Text.StringBuilder(MAX_LINE);
+                int lines = 0, chars = 0;
+
+                long T0 = System.Diagnostics.Stopwatch.GetTimestamp();
+                for (int i = 0; i < N; i++)
+                {
+                    string seg = "LinearHexEx " + HexFloat(i * dx) + " " + zero + " " + zero + " " + zero + " " + zero + " " + zero + " " + zero + " " + zero
+                               + " " + HexFloat((i + 1) * dx) + " " + zero + " " + zero + " " + zero + " " + zero + " " + zero + " " + zero + " " + zero
+                               + " " + zero + " " + zero + " " + one + " " + zero + " " + t;
+                    if (line.Length + seg.Length + 1 > MAX_LINE - 10)
+                    {
+                        KM.WriteLine(line.ToString()); ++lines; chars += line.Length;
+                        line.Clear();
+                    }
+                    if (line.Length > 0) line.Append(';');
+                    line.Append(seg);
+                }
+                if (line.Length > 0) { KM.WriteLine(line.ToString()); ++lines; chars += line.Length; }
+                long T1 = System.Diagnostics.Stopwatch.GetTimestamp();
+
+                KM.WriteLine("OpenBuf");   // leave the buffer empty
+                tokenHeld = false;
+                KM.ReleaseToken();
+
+                double dt = (T1 - T0) / (double)System.Diagnostics.Stopwatch.Frequency;
+                KnotResults.Text = String.Format("PC->Kogna {0} segments in {1:F3} s = {2:F0} knots/sec ({3} lines, {4:F0} KB/s)",
+                    N, dt, N / dt, lines, chars / dt / 1000.0);
+            }
+            catch (Exception ex)
+            {
+                if (tokenHeld) { try { KM.ReleaseToken(); } catch { } }
+                KnotResults.Text = "Knot rate test failed: " + ex.Message;
+            }
+            finally { KnotRate.Enabled = true; }
         }
     }
 

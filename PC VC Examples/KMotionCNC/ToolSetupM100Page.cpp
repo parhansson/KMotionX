@@ -218,26 +218,26 @@ void CToolSetupM100Page::DoDataExchange(CDataExchange* pDX)
 
 	if (pDX->m_bSaveAndValidate)
 	{
-		strncpy(McodeActions[0].String,m_PS_M100, 255);
-		strncpy(McodeActions[1].String,m_PS_M101, 255);
-		strncpy(McodeActions[2].String,m_PS_M102, 255);
-		strncpy(McodeActions[3].String,m_PS_M103, 255);
-		strncpy(McodeActions[4].String,m_PS_M104, 255);
-		strncpy(McodeActions[5].String,m_PS_M105, 255);
-		strncpy(McodeActions[6].String,m_PS_M106, 255);
-		strncpy(McodeActions[7].String,m_PS_M107, 255);
-		strncpy(McodeActions[8].String,m_PS_M108, 255);
-		strncpy(McodeActions[9].String,m_PS_M109, 255);
-		strncpy(McodeActions[10].String,m_PS_M110, 255);
-		strncpy(McodeActions[11].String,m_PS_M111, 255);
-		strncpy(McodeActions[12].String,m_PS_M112, 255);
-		strncpy(McodeActions[13].String,m_PS_M113, 255);
-		strncpy(McodeActions[14].String,m_PS_M114, 255);
-		strncpy(McodeActions[15].String,m_PS_M115, 255);
-		strncpy(McodeActions[16].String,m_PS_M116, 255);
-		strncpy(McodeActions[17].String,m_PS_M117, 255);
-		strncpy(McodeActions[18].String,m_PS_M118, 255);
-		strncpy(McodeActions[19].String,m_PS_M119, 255);
+		wcsncpy(McodeActions[0].String,m_PS_M100, 255);
+		wcsncpy(McodeActions[1].String,m_PS_M101, 255);
+		wcsncpy(McodeActions[2].String,m_PS_M102, 255);
+		wcsncpy(McodeActions[3].String,m_PS_M103, 255);
+		wcsncpy(McodeActions[4].String,m_PS_M104, 255);
+		wcsncpy(McodeActions[5].String,m_PS_M105, 255);
+		wcsncpy(McodeActions[6].String,m_PS_M106, 255);
+		wcsncpy(McodeActions[7].String,m_PS_M107, 255);
+		wcsncpy(McodeActions[8].String,m_PS_M108, 255);
+		wcsncpy(McodeActions[9].String,m_PS_M109, 255);
+		wcsncpy(McodeActions[10].String,m_PS_M110, 255);
+		wcsncpy(McodeActions[11].String,m_PS_M111, 255);
+		wcsncpy(McodeActions[12].String,m_PS_M112, 255);
+		wcsncpy(McodeActions[13].String,m_PS_M113, 255);
+		wcsncpy(McodeActions[14].String,m_PS_M114, 255);
+		wcsncpy(McodeActions[15].String,m_PS_M115, 255);
+		wcsncpy(McodeActions[16].String,m_PS_M116, 255);
+		wcsncpy(McodeActions[17].String,m_PS_M117, 255);
+		wcsncpy(McodeActions[18].String,m_PS_M118, 255);
+		wcsncpy(McodeActions[19].String,m_PS_M119, 255);
 	}
 }
 

@@ -77,13 +77,13 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 
 <p>16 Differential Receiver Inputs are provided. 
 Kanalog converts the differential signals to signal ended LVTTL signals and 
-passes them through to existing KFLOP/Kogna I/O pins.  </p>
+passes them through to existing KFLOP/Kogna IO pins.  </p>
 <p>JP1 converts 8 of the signals and connects them to KFLOP/Kogna 
-I/O bits 0-7 (Kflop JP7 Pins 7-14) which are KFLOP's/Kogna's 4 encoder A/B input 
+IO bits 0-7 (Kflop JP7 Pins 7-14) which are KFLOP's/Kogna's 4 encoder A/B input 
 channels.</p>
 
 <p>JP2 converts 8 of the signals and connects them to KFLOP/Kogna 
-I/O bits 36-43 (Kflop JP5 Pins 1-8) which are General Purpose I/O pins.</p>
+IO bits 36-43 (Kflop JP5 Pins 1-8) which are General Purpose IO pins.</p>
 <p>Typically up to 4 encoder's A/B signals are connected to 
 JP1 and any Z index inputs are connected to JP2.</p>
 
@@ -148,12 +148,12 @@ other purpose.</p>
 
 <p><img src="JP9.PNG" width="201" height="228" alt="JP9" /></p>
 
-<h2>P10 - RS232</h2>
+<h2>JP10 - RS232</h2>
 
 <p>The JP10 6-pin phone connector provides 3-wire RS232 connectivity. JP10 
 Pin3 is used for transmitting data from Kanalog. JP10 Pin 4 is used for 
 receiving data going into Kanalog. Received data is converted to LVTTL and 
-routed to a KFLOP/Kogna I/O bit #44. Data from LVTTL KFLOP/Kogna I/O bit #45 is passed 
+routed to a KFLOP/Kogna IO bit #44. Data from LVTTL KFLOP/Kogna IO bit #45 is passed 
 through the RS232 driver and out the Transmit pin. This phone plug 
 connector is designed to be compatible with
 <a href="http://www.automationdirect.com">Automation Direct's </a>PLC line using 
@@ -245,6 +245,7 @@ any voltage from 5-24V. Max drain of 2.4ma when driven with 24V.</p>
 <p><img src="JP15.PNG" width="241" height="284" alt="JP15" /></p>
 
 	</div>
+<script src="../search/searchbox.js" defer></script>
 </body>
 
 </html>

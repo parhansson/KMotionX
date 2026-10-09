@@ -48,7 +48,7 @@ float xRes, yRes, zRes;
 #define PROBE_ACTIVE 1  // triggered state = 0 or 1
 
 
-void main()
+int main()
 {
 	printf("\n\nStarting main\n");
 

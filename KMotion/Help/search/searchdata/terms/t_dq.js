@@ -1,0 +1,1 @@
+__dynoShard("terms/t_dq",{"dqnxakteq":[[1017,0,1,[80]]]});

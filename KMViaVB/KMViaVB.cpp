@@ -19,7 +19,7 @@
 // translate call to __stdcall otherwise stack will be wrong for VB
 VB_CONSOLE_HANDLER *VB_ConsoleHandler=NULL;   
 
-int LocalConsoleHandler(const char *buf)
+int LocalConsoleHandler(const wchar_t *buf)
 {
 	return VB_ConsoleHandler(buf);
 }
@@ -139,7 +139,7 @@ long __stdcall KMViaVB_CheckForReady(HANDLE64 handle)
 long __stdcall KMViaVB_LoadCoff(HANDLE64 handle,long Thread, char *Name, long PackToFlash)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
-	long rslt=KM_dll->LoadCoff(Thread,Name,PackToFlash);
+	long rslt=KM_dll->LoadCoff(Thread,(CStringW)Name,PackToFlash);
 	return rslt;
 }
 
@@ -147,7 +147,7 @@ long __stdcall KMViaVB_LoadCoff(HANDLE64 handle,long Thread, char *Name, long Pa
 long __stdcall KMViaVB_CompileAndLoadCoff(HANDLE64 handle,  long Thread, char *Name, wchar_t **Err, long MaxErrLen)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
-	long rslt=KM_dll->CompileAndLoadCoff(Name,Thread,*Err,MaxErrLen);
+	long rslt=KM_dll->CompileAndLoadCoff((CStringW)Name,Thread,*Err,MaxErrLen);
 	return rslt;
 }
 

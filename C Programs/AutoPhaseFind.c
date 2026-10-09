@@ -20,7 +20,7 @@
 #define AXIS_CHAN 4       	// Axis channel to be used and configured
 #define Ncycles 4			// don't change this
 
-void main() 
+int main() 
 {
     float mid,A=AMPLITUDE;   // set coil current amplitude
 	int k=0,i,dk=1,WhichSnap,WhichClamp,WhichClampEnable,ignore=300,kpos[Ncycles],zmark,m=0;

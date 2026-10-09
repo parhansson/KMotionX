@@ -1,6 +1,6 @@
 #include "KMotionDef.h"
 
-main()
+int main()
 {
 	FILE *f=fopen("C:\\temp\\kflopdata.txt","wt");
 	fprintf(f,"BBB\n");  // write some data

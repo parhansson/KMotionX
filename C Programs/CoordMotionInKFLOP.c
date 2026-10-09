@@ -20,7 +20,7 @@ float x0, y0, z0, a0, b0, c0, u0, v0;
 float x1, y1, z1, a1, b1, c1, u1, v1;
 
 
-main()
+int main()
 {
 	// Do an example xy coordinated Move
 	

@@ -23,7 +23,7 @@ float xc, yc;
 float xradius, yradius;
 float theta0, d_theta;
 
-main()
+int main()
 {
 	// Do an example xy coordinated Move
 	

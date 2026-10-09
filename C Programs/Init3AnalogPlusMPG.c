@@ -3,7 +3,7 @@
 #define QA 26	// define to which IO bits the AB signals are connected 
 #define QB 27	
 
-main()
+int main()
 {
 	int BitA,Change1=0,Change2=0, DiffX2;
 	int PosNoWrap, NewPos, Pos=0, wraps;

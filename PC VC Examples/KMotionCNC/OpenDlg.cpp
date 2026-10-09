@@ -29,7 +29,7 @@ END_MESSAGE_MAP()
 CPersistOpenDlg::CPersistOpenDlg() : CFileDialog(TRUE),m_wndListViewShell(this)
 {
 	m_bFileNameRestored = false;
-	m_ofn.lpstrTitle = /*TRAN*/"Select a file or folder";
+	m_ofn.lpstrTitle = /*TRAN*/L"Select a file or folder";
 }
 
 
@@ -354,7 +354,7 @@ void CPersistOpenDlg::OnFileNameChange()
 
 			// First set filename to empty, then setting it to the original name will do it.
 			pIFileDialog->SetFileName(L"");
-			pIFileDialog->SetFileName(CStringW(strFileName));
+			pIFileDialog->SetFileName(CString(strFileName));
 			m_bFileNameRestored = true;
 		}
 	}

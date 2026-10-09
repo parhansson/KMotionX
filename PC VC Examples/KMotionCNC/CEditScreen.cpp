@@ -32,7 +32,9 @@ CEditScreen::CEditScreen()
 {
 	ToolTipText = "";
 	CachedID = Var = -1;
-	SetFont("MS Sans Serif", 10, false, false);
+	m_TextColor = m_BackColor = CLR_DEFAULT;
+	m_DarkTheme = false;
+	SetFont(L"MS Sans Serif", 10, false, false);
 
 	CEditScreen::EditScreens.AddTail(this);
 }
@@ -41,8 +43,15 @@ void CEditScreen::Reset()
 {
 	ToolTipText = "";
 	CachedID = Var = -1;
-	SetFont("MS Sans Serif", 10, false, false);
+	SetFont(L"MS Sans Serif", 10, false, false);
+	SetColors(CLR_DEFAULT, CLR_DEFAULT);
 	GetPersistText();
+
+	if (m_hWnd != nullptr)
+	{
+		// Add the WS_TABSTOP style to ensure it can be tabbed to
+		ModifyStyle(0, WS_TABSTOP);
+	}
 }
 
 void CEditScreen::GetPersistText(void)
@@ -77,7 +86,7 @@ int CEditScreen::GetID()
 	return CachedID;
 }
 
-BEGIN_MESSAGE_MAP(CEditScreen, CButton)
+BEGIN_MESSAGE_MAP(CEditScreen, CEdit)
 	//{{AFX_MSG_MAP(CColorButton)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
@@ -86,7 +95,7 @@ END_MESSAGE_MAP()
 
 LRESULT CEditScreen::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	CStringW t;
+	CString t;
 
 	switch (message)
 	{
@@ -102,16 +111,70 @@ LRESULT CEditScreen::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			PersistDirty=true;
 		}
 		break;
+
+	case WM_SETFOCUS:
+		TheFrame->GCodeDlg.DisableKeyJog();
+		break;
 	}
 	return CEdit::WindowProc(message, wParam, lParam);
 }
 
 
-void CEditScreen::SetFont(const char *szFaceName, int height, bool Bold, bool Italic)
+void CEditScreen::SetFont(const wchar_t *szFaceName, int height, bool Bold, bool Italic)
 {
-	m_font.DeleteObject();
-	m_font.CreateFont(height, 0, 0, 0, Bold ? FW_BOLD : FW_NORMAL, Italic, FALSE, FALSE, 0, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_ROMAN, szFaceName);
-	if (m_hWnd) CEdit::SetFont(&m_font);
+    // Check if the font is already set with the same parameters
+    LOGFONT lf = {0};
+    if (m_font.GetSafeHandle() && m_font.GetLogFont(&lf)) {
+        // Compare font attributes
+        if (
+            lf.lfHeight == height &&
+            lf.lfWeight == (Bold ? FW_BOLD : FW_NORMAL) &&
+            lf.lfItalic == (BYTE)Italic &&
+            wcscmp(lf.lfFaceName, szFaceName) == 0
+        ) 
+		{
+            // Font is already set, no need to change
+            return;
+        }
+    }
+
+    m_font.DeleteObject();
+    m_font.CreateFont(height, 0, 0, 0, Bold ? FW_BOLD : FW_NORMAL, Italic, FALSE, FALSE, 0, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_ROMAN, szFaceName);
+    if (m_hWnd) CEdit::SetFont(&m_font);
+}
+
+
+// Colors from the Screen Script.  On a dark background the text defaults to light
+// and the border uses Windows' dark theme (Windows 10 1809 and later)
+void CEditScreen::SetColors(COLORREF Text, COLORREF Back)
+{
+	bool Dark = Back != CLR_DEFAULT && CScreen::IsDarkColor(Back);
+	if (Dark && Text == CLR_DEFAULT) Text = DARK_TEXT_COLOR;
+
+	if (Text != m_TextColor || Back != m_BackColor)
+	{
+		m_TextColor = Text;
+		m_BackColor = Back;
+		m_BackBrush.DeleteObject();
+		if (Back != CLR_DEFAULT) m_BackBrush.CreateSolidBrush(Back);
+		if (m_hWnd) Invalidate();
+	}
+
+	if (Dark != m_DarkTheme)
+	{
+		m_DarkTheme = Dark;
+		if (m_hWnd) ::SetWindowTheme(m_hWnd, Dark ? L"DarkMode_CFD" : NULL, NULL);
+	}
+}
+
+// Called by the Dialog for WM_CTLCOLOREDIT and WM_CTLCOLORSTATIC (read only), returns
+// the background brush, or NULL for the standard background
+HBRUSH CEditScreen::CtlColor(CDC *pDC)
+{
+	if (m_TextColor != CLR_DEFAULT) pDC->SetTextColor(m_TextColor);
+	if (m_BackColor == CLR_DEFAULT) return NULL;
+	pDC->SetBkColor(m_BackColor);
+	return m_BackBrush;
 }
 
 
@@ -124,11 +187,11 @@ int CEditScreen::SavePersists(void)
 	// Open the file with the specified encoding
 	FILE *fStream;
 	
-	errno_t e = _tfopen_s(&fStream, file, _T("w,ccs=UNICODE"));
+	_tfopen_s(&fStream, file, _T("w,ccs=UTF-8"));
 		
-	if (e != 0)  // failed..CString sRead;
+	if (!fStream)  // failed
 	{
-		::MessageBoxW(NULL, TheFrame->KMotionDLL->Translate("Unable to open Screen Script file:\r\r") + (CStringW)file, L"KMotionCNC", MB_ICONSTOP | MB_OK);
+		::MessageBox(NULL, TheFrame->KMotionDLL->Translate("Unable to open Screen Script file:\r\r") + file, L"KMotionCNC", MB_ICONSTOP | MB_OK);
 		return 1;
 	}
 
@@ -145,7 +208,7 @@ int CEditScreen::SavePersists(void)
 			}
 
 			int ID;
-			sscanf((const char *)s + j + 1, "%d", &ID);
+			swscanf((const wchar_t *)s + j + 1, L"%d", &ID);
 
 			if (scr->CheckIfOKtoChangeText(ID))
 			{
@@ -153,11 +216,9 @@ int CEditScreen::SavePersists(void)
 				E = scr->FindEditScreen(ID);
 				if (E)  // EditScreen Control?
 				{
-					CStringW w, IDName = s.Mid(0, j);
-					CStringW t;
-					::GetWindowTextW(E->m_hWnd, t.GetBufferSetLength(256), 255);
-					t.ReleaseBuffer();
-					swprintf(w.GetBuffer(2048), 2048, L"%s:%s\n", IDName.GetBuffer(), t.GetBuffer());
+					CString w, IDName = s.Mid(0, j);
+					CString t = E->GetWText();
+					swprintf(w.GetBuffer(2048), 2048, L"%ls:%ls\n", IDName.GetBuffer(), t.GetBuffer());
 					w.ReleaseBuffer();
 					fputws(w, fStream);
 				}
@@ -166,8 +227,8 @@ int CEditScreen::SavePersists(void)
 				C = scr->FindComboBoxScreen(ID);
 				if (C)  // ComboBoxScreen Control?
 				{
-					CStringW w, IDName = s.Mid(0, j);
-					swprintf(w.GetBuffer(2048), 2048, L"%s:%s\n", IDName.GetBuffer(), C->PrevWindowText.GetBuffer());
+					CString w, IDName = s.Mid(0, j);
+					swprintf(w.GetBuffer(2048), 2048, L"%ls:%ls\n", IDName.GetBuffer(), C->PrevWindowText.GetBuffer());
 					w.ReleaseBuffer();
 					fputws(w, fStream);
 				}
@@ -184,16 +245,16 @@ int CEditScreen::SavePersists(void)
 
 
 // Return control text as a wide string
-CStringW CEditScreen::GetWText()
+CString CEditScreen::GetWText()
 {
-	CStringW w;
+	CString w;
 	::CallWindowProcW(*GetSuperWndProcAddr(), m_hWnd, WM_GETTEXT, 2000, (LPARAM)(LPWSTR)w.GetBufferSetLength(200));
 	w.ReleaseBuffer();
 	return w;
 }
 
 // Set control text as a wide string
-void CEditScreen::SetWText(CStringW w)
+void CEditScreen::SetWText(CString w)
 {
 	::CallWindowProcW(*GetSuperWndProcAddr(), m_hWnd, WM_SETTEXT, 0, (LPARAM)(LPCWSTR)w);
 }

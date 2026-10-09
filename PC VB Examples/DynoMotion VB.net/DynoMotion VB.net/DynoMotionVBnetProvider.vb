@@ -610,15 +610,17 @@ Public Class DynoMotionVBnetProvider
     End Sub
 
     Public Sub UpdateVaules()
+        Dim a As Double
+        Dim b As Double
+        Dim c As Double
 
         ' check if the board is available
         If (_Controller.WaitToken(100) = KMotion_dotNet.KMOTION_TOKEN.KMOTION_LOCKED) Then
             _Controller.ReleaseToken()
 
             Try
-                _XPosition = Convert.ToDouble(_Controller.WriteLineReadLine("Dest0") / _Controller.CoordMotion.MotionParams.CountsPerInchX)
-                _YPosition = Convert.ToDouble(_Controller.WriteLineReadLine("Dest1") / _Controller.CoordMotion.MotionParams.CountsPerInchY)
-                _ZPosition = Convert.ToDouble(_Controller.WriteLineReadLine("Dest2") / _Controller.CoordMotion.MotionParams.CountsPerInchZ)
+                ' read XYZ CAD position from actuator positions including Kinematics
+                _Controller.CoordMotion.UpdateCurrentPositionsABS(_XPosition, _YPosition, _ZPosition, a, b, c, False)
 
                 _XEnabled = Convert.ToDouble(_Controller.WriteLineReadLine("Enabled0"))
                 _YEnabled = Convert.ToDouble(_Controller.WriteLineReadLine("Enabled1"))

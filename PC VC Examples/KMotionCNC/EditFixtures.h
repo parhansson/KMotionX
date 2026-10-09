@@ -1,7 +1,7 @@
 #pragma once
 
 #define NFIXTURES 9
-#define NFIXAXES 6
+#define NFIXAXES 8
 
 // CEditFixtures dialog
 

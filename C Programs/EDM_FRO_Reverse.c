@@ -4,7 +4,7 @@
 #define FORWARD_BIT 7
 #define REVERSE_BIT 6
 
-main()
+int main()
 {
 	int Forward,Reverse,M3;
 	for (;;)

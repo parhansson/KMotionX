@@ -2,7 +2,7 @@
 
 #define N 15000
 
-main()
+int main()
 {
 	int i,k;
 	double T0,*p=gather_buffer;

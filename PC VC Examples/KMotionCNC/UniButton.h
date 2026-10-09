@@ -49,9 +49,42 @@ public:
 		mTextDefined = szText[0] != 0;
 		bool Changed = m_szText != szText;
 		wcscpy(m_szText,szText);
+		ReplaceSubstring(m_szText, L"\\n", L"\n"); // Replace \n with actual newline
 		DetermineOwnerDraw();
 		if (Changed) Invalidate();  // make sure is redrawn if changed
 	};
+
+	void ReplaceSubstring(wchar_t* str, const wchar_t* oldSub, const wchar_t* newSub)
+	{
+		wchar_t buffer[1000]; // Temporary buffer (ensure it's large enough)
+		wchar_t* pos = nullptr;
+		wchar_t* current = str; // Pointer to track the current position in the string
+		size_t oldSubLen = wcslen(oldSub);
+		size_t newSubLen = wcslen(newSub);
+
+		buffer[0] = L'\0'; // Initialize the buffer
+
+		while ((pos = wcsstr(current, oldSub)) != nullptr) // Find the next occurrence
+		{
+			size_t prefixLen = pos - current; // Length of text before the substring
+
+			// Copy the part before the substring
+			wcsncat(buffer, current, prefixLen);
+
+			// Append the new substring
+			wcscat(buffer, newSub);
+
+			// Move the current pointer past the old substring
+			current = pos + oldSubLen;
+		}
+
+		// Append the remaining part of the string
+		wcscat(buffer, current);
+
+		// Copy the result back to the original array
+		wcscpy(str, buffer);
+	}
+
 	void SetRTL(int bRTL)
 	{
 		m_bUseRTL=bRTL;
@@ -60,7 +93,7 @@ public:
 	{
 		m_dwDefaultSSAflags=dwFlags;
 	};
-	void SetFont(const char *szFaceName, int height, bool Bold, bool Italic);
+	void SetFont(const wchar_t *szFaceName, int height, bool Bold, bool Italic);
 	void SetDefaultTextColors();
 
 
@@ -94,8 +127,6 @@ protected:
 	SIZE CalcTXTUnicode(HDC hDC, WCHAR *Sstr);
 	void PlotTXTUnicode(
 		HDC      hDC,               // In   Device
-		int		xpos,
-		int		ypos,
 		RECT    *prc,               // In   Clipping rectange
 		WCHAR	*szText,
 		int      iLen);
@@ -112,8 +143,8 @@ public:
 	WCHAR m_szText[200];
 	bool DrawPushed;
 	int HandleButtonDown();
-	 CStringW ToolTipText;
-	 CStringW Script;
+	 CString ToolTipText;
+	 CString Script;
 	 double Value;
 	 int m_HotKey;
 	 bool m_MouseOver;

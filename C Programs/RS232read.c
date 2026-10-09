@@ -7,7 +7,7 @@ void ReceiveChar()
 	return FPGA(RS232_DATA);
 }
 
-main()
+int main()
 {
 	SetBitDirection(45,1);
 	FPGA(RS232_BAUD_REG) = RS232_BAUD_38400;

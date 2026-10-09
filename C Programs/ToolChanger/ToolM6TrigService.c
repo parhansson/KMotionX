@@ -8,7 +8,7 @@
 // define state that the tool changer may be in
 enum {T_IDLE,T_START,T_WAIT_UNCLAMP,T_WAIT_MOVE,T_WAIT_CLAMP};
 
-main()
+int main()
 {
 	int *ChangerState    = &persist.UserData[TOOL_STATE_VAR];
 	int Tool = persist.UserData[TOOL_VAR];  // value stored is an integer 

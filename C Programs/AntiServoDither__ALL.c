@@ -4,7 +4,7 @@
 
 void DoDither(CHAN *ch, float P_original, float P_low, float I_original, double *T0, double T1);
 
-main()
+int main()
 {
 	// save original gains and do anti-dither
 

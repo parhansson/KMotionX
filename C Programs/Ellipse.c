@@ -68,7 +68,7 @@ double MaxA=80.0;  // max allowed acceleration along path in inches/sec
 double MaxV=3200/60.0;  // maximum allowed speed along path (feed rate) in inches/sec
 
 
-main()
+int main()
 {
 	VM=MaxV*RESX; // Max allowed feed rate counts/sec
 	A=MaxA*RESX; // Max acceleration counts/sec2

@@ -1,0 +1,15 @@
+Checks: 
+'-*,
+bugprone-unused-local-non-trivial-*,
+cert-err33-*,
+clang-diagnostic-*,
+clang-diagnostic-return-type,
+-clang-diagnostic-unknown-pragmas'
+CheckOptions:
+  - key:             cert-err33-c.CheckedFunctions
+    value:           'main'
+  - key:             analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling
+    value:           '0'
+  - key:             cert-oop54-cpp.WarnOnlyIfThisHasSuspiciousField
+    value:           'true'
+FormatStyle: 'file'

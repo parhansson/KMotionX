@@ -86,10 +86,10 @@ void CToolSetupFilesPage::OnIhelp()
 
 void CToolSetupFilesPage::OnBrowseToolFile() 
 {
-	CPersistOpenDlg FileDlg (TRUE, ".tbl", 
-		TheFrame->GCodeDlg.InitialFile(m_ToolFile, DATA_SUB_DIR, "Default.tbl"),
+	CPersistOpenDlg FileDlg (TRUE, L".tbl", 
+		TheFrame->GCodeDlg.InitialFile(m_ToolFile, DATA_SUB_DIR, L"Default.tbl"),
 		OFN_FILEMUSTEXIST | OFN_ENABLESIZING, 
-		/*TRAN*/"Tool Files (*.tbl)|*.tbl|All Files (*.*)|*.*||");
+		/*TRAN*/L"Tool Files (*.tbl)|*.tbl|All Files (*.*)|*.*||");
 	
 	if (FileDlg.DoModal() == IDOK)
 	{
@@ -100,10 +100,10 @@ void CToolSetupFilesPage::OnBrowseToolFile()
 
 void CToolSetupFilesPage::OnBrowseSetupFile() 
 {
-	CPersistOpenDlg FileDlg (TRUE, ".set", 
-		TheFrame->GCodeDlg.InitialFile(m_SetupFile, DATA_SUB_DIR, "Default.set"),
+	CPersistOpenDlg FileDlg (TRUE, L".set", 
+		TheFrame->GCodeDlg.InitialFile(m_SetupFile, DATA_SUB_DIR, L"Default.set"),
 		OFN_FILEMUSTEXIST | OFN_ENABLESIZING, 
-		/*TRAN*/"Setup Files (*.set)|*.set|All Files (*.*)|*.*||");
+		/*TRAN*/L"Setup Files (*.set)|*.set|All Files (*.*)|*.*||");
 	
 	if (FileDlg.DoModal() == IDOK)
 	{
@@ -115,10 +115,10 @@ void CToolSetupFilesPage::OnBrowseSetupFile()
 
 void CToolSetupFilesPage::OnBrowseGeoFile() 
 {
-	CPersistOpenDlg FileDlg (TRUE, ".txt", 
-		TheFrame->GCodeDlg.InitialFile(m_GeoFile, DATA_SUB_DIR, "Measurements.txt"),
+	CPersistOpenDlg FileDlg (TRUE, L".txt", 
+		TheFrame->GCodeDlg.InitialFile(m_GeoFile, DATA_SUB_DIR, L"Measurements.txt"),
 		OFN_FILEMUSTEXIST | OFN_ENABLESIZING,
-		/*TRAN*/"Geo Files (*.txt)|*.txt|All Files (*.*)|*.*||");
+		/*TRAN*/L"Geo Files (*.txt)|*.txt|All Files (*.*)|*.*||");
 	
 	if (FileDlg.DoModal() == IDOK)
 	{
@@ -129,10 +129,10 @@ void CToolSetupFilesPage::OnBrowseGeoFile()
 
 void CToolSetupFilesPage::OnBrowseVarsFile() 
 {
-	CPersistOpenDlg FileDlg (TRUE, ".var", 
-		TheFrame->GCodeDlg.InitialFile(m_VarsFile, DATA_SUB_DIR, "emc.var"),
+	CPersistOpenDlg FileDlg (TRUE, L".var", 
+		TheFrame->GCodeDlg.InitialFile(m_VarsFile, DATA_SUB_DIR, L"emc.var"),
 				OFN_FILEMUSTEXIST | OFN_ENABLESIZING, 
-		/*TRAN*/"Variables Files (*.var)|*.var|All Files (*.*)|*.*||");
+		/*TRAN*/L"Variables Files (*.var)|*.var|All Files (*.*)|*.*||");
 	
 	if (FileDlg.DoModal() == IDOK)
 	{
@@ -143,10 +143,10 @@ void CToolSetupFilesPage::OnBrowseVarsFile()
 
 void CToolSetupFilesPage::OnBrowseScreenScriptFile()
 {
-	CPersistOpenDlg FileDlg (TRUE, ".scr", 
-		TheFrame->GCodeDlg.InitialFile(m_ScreenScriptFile, SCREEN_SCRIPTS_DIR, "Default.scr"),
+	CPersistOpenDlg FileDlg (TRUE, L".scr", 
+		TheFrame->GCodeDlg.InitialFile(m_ScreenScriptFile, SCREEN_SCRIPTS_DIR, L"Default.scr"),
 		OFN_FILEMUSTEXIST | OFN_ENABLESIZING, 
-		/*TRAN*/"ScreenScript Files (*.scr)|*.scr|All Files (*.*)|*.*||");
+		/*TRAN*/L"ScreenScript Files (*.scr)|*.scr|All Files (*.*)|*.*||");
 
 	
 	if (FileDlg.DoModal() == IDOK)

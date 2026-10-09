@@ -19,6 +19,7 @@ public:
 	CSetValue(int DialogID, CWnd* pParent = NULL);   // standard constructor
 	CString m_Label;
 	double halfDRO;
+	bool StringMode;
 
 // Dialog Data
 	//{{AFX_DATA(CSetValue)

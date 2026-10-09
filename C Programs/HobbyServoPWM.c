@@ -4,7 +4,7 @@ void ServiceHobbyPWM(void);
 
 int ncycles, v1, v2;
 
-main()
+int main()
 {
 	int LowClocks, scaler=150;
 	float PWMPeriod, BaseFreq=16.6667e6, PulseGap=20e-3, SafetyTime=200e-6;

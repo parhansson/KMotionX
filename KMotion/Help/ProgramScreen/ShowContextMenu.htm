@@ -72,7 +72,7 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 <h1>Show Context Menu</h1>
 
 
-<p><img src="ProgramScreenfiles/ContextMenuwithValidate.jpg" width="500" height="544" alt="Context Menu"></p>
+<p><img src="ProgramScreenfiles/ContextMenuwithValidate.jpg" width="500" height="568" alt="Context Menu"></p>
 
 <h2>Undo/Redo</h2>
 
@@ -92,26 +92,25 @@ and substitution.</p>
 <p>&nbsp;</p>
 <p><img src="ProgramScreenfiles/Replace.jpg" alt="Find and Replace" /></p>
 
-<h2>Code Beautifier</h2>
-<p>To use code formatter right click: <strong>Auto Indent Code</strong>. See our <a href="https://www.youtube.com/watch?v=CsIijoLMq8U">C Code Indent and Code Beautifier video</a>.</p>
-<p>Based on open source code formatter indent.exe: <a href="https://www.gnu.org/software/indent/" moz-do-not-send="true">https://www.gnu.org/software/indent</a></p>
-<p>Documentation and description of options can be found here:<br />
-  <a href="https://www.gnu.org/software/indent/manual/indent.html" moz-do-not-send="true">https://www.gnu.org/software/indent/manual/indent.html</a><br>
-<p>An options profile file can be modified to change the style. Dynomotion includes the&nbsp; recommended style as:<br>
-  \KMotion\Release\.indent.pro&nbsp; </p>
 <h2>Code Validator</h2>
-<p>To use code Validator right click: <strong>Validate Code (using Cppcheck)</strong>. See our <a href="https://www.youtube.com/watch?v=N2KSdYuag1U">Validate C Programs video</a>.</p>
-<p>Information about the <a href="TICompiler.htm">TI Compiler</a>.</p>
-<p>Documentation and description of options can be found here:<br>
-  <a href="http://cppcheck.sourceforge.net">http://cppcheck.sourceforge.net</a></p>
-<p>An options profile file can be modified to change which warnings are reported. Dynomotion includes the recommended options as:<br />
-  \DSP_KFLOP\ValidateOptions.txt</p>
+<p>To use code Validator right-click and select: <strong>Validate Code (using clang-tidy)</strong>. Which is based on open source code validator clang-tidy.exe. Validation can report possible Code issues or  bugs. As well as unused or un-initialized variables. See our <a href="https://www.youtube.com/watch?v=N2KSdYuag1U">Validate C Programs video</a> (note: video demonstrates an earlier but similar code Validator).</p>
+<p>A customization file can be modified for controlling which type of checks are performed. The file is  <strong>\DSP_KFLOP\clang\.clang-tidy</strong>. The configuration file format is described here: <a href="https://clang.llvm.org/extra/clang-tidy">https://clang.llvm.org/extra/clang-tidy</a></p>
 <p>Any detected Errors and Warnings will appear in the lower  panel of the C Programs Screen. Double clicking on an error should take you directly to the line in the code where the error was detected. Note if the code is detected in an #included file, that file will be opened in a subsequent Thread (or if already open in any Thread that Thread will be selected).&nbsp; When correcting any error or warning in an #included file, remember to go back to file that includes it before re-Validating the program.</p>
+<h2>TI Compiler</h2>
+<p>To Compile Code using Texas instrument's Optimizing C Compiler.  See here for information about the <a href="TICompiler.htm">TI Compiler</a>.</p>
+<h2>Auto-Indent/Code Beautifier</h2>
+<p>To use code formatter right-click and select: <strong>Auto Indent Code (using clang-format)</strong>. See our <a href="https://www.youtube.com/watch?v=CsIijoLMq8U">C Code Indent and Code Beautifier video</a>.</p>
+<p>This code formatter  is based  on the open-source code formatter clang-format.exe. Documentation and description of options can be found here:<br />
+  <a data-auth="NotApplicable" href="https://clang.llvm.org/docs/ClangFormat.html" title="https://clang.llvm.org/docs/ClangFormat.html" data-linkindex="1" data-olk-copy-source="MessageBody">https://clang.llvm.org/docs/ClangFormat.html</a>.<br>
+</p>
+<p>An options profile file can be modified to change the style. Dynomotion includes the recommended style as:  <strong>\DSP_KFLOP\clang\clangformat.txt</strong>.</p>
+
 <h2>Opening included files</h2>
 <p>If the code is detected in an #included file, that file will be opened in a subsequent Thread (or if already open in any Thread that Thread will be selected). When correcting any error or warning in an #included file, remember to go back to file  that includes it before re-Compiling the program. </p>
 <p>When right-clicking on an #include line, the drop down list will offer the option to open the included file. If that file is already open in one of the Threads it will automatically switch to that Thread. If not, it will open the file in the next Thread (Thread #7 wraps back to Thread #1).</p>
-<p><img src="ProgramScreenfiles/OpenIncludeFile.png" width="668" height="475" alt=""/></p>
+<p><img src="ProgramScreenfiles/OpenIncludeFile.png" width="664" height="524" alt=""/></p>
 </div>
+<script src="../search/searchbox.js" defer></script>
 </body>
 
 </html>

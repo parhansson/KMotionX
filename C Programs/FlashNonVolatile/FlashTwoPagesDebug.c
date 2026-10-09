@@ -6,7 +6,7 @@ void PrintTwoBlocks(void);
 
 double DestData[10];  // room for data
 
-main()
+int main()
 {
 	DestData[0] = 1.0;
 	DestData[1] = 2.0;

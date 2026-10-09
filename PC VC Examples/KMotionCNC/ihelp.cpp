@@ -164,7 +164,7 @@ HWND CIHelp::FindEdgeHelpWindow()
 	{
 		while (Process32Next(snapshot, &entry) == TRUE)
 		{
-			if (stricmp(entry.szExeFile, "DynoWebHelp.exe") == 0)
+			if (wcsicmp(entry.szExeFile, L"DynoWebHelp.exe") == 0)
 			{
 				HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, entry.th32ProcessID);
 
@@ -189,7 +189,7 @@ int CIHelp::Show(CString s)
 		FirstTime = false;
 		CString Path = TheFrame->MainPath + "\\Help\\" + "UseIEHelp.txt";
 		
-		FILE *f = fopen(Path, "rt");
+		FILE *f = _wfopen(Path, L"rt");
 		if (f)
 		{
 			fclose(f);
@@ -210,7 +210,7 @@ int CIHelp::Show(CString s)
 
 			if (result)
 			{
-				MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Can't Execute DynoWebHelp at:\r\r" + DynoHelp),
+				MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Can't Execute DynoWebHelp at:\r\r" + DynoHelp),
 					L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
 
 				EdgeHelpClient = false;
@@ -229,21 +229,29 @@ int CIHelp::Show(CString s)
 
 				if (!hlc)
 				{
-					MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Can't Find DynoWebHelp at:\r\r" + DynoHelp),
+					MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Can't Find DynoWebHelp at:\r\r" + DynoHelp),
 						L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
 
 					EdgeHelpClient = false;
 				}
 			}
 		}
+		else
+		{
+			// bring to front
+			::SetForegroundWindow(hlc);
+		}
 
 
-		CStringW strDataToSend = Path;
+		CString strDataToSend = Path;
 		COPYDATASTRUCT cpd;
 		cpd.dwData = 0;
 		cpd.cbData = (strDataToSend.GetLength() + 1) * 2;
 		cpd.lpData = (PVOID)strDataToSend.GetBuffer(cpd.cbData);
 		::SendMessage(hlc, WM_COPYDATA, (WPARAM)::GetDesktopWindow(), (LPARAM)&cpd);
+
+
+		::SendMessage(hlc, WM_SETFOCUS, NULL, NULL);  // this causes the icon on taskbar to update
 	}
 
 	if (!EdgeHelpClient)  // should we use the Edge Based Help Client?
@@ -272,7 +280,7 @@ void CIHelp::OnContents()
 }
 
 #define ACCESS  (KEY_WRITE | KEY_QUERY_VALUE | KEY_ENUMERATE_SUB_KEYS)
-#define Name "Software\\Microsoft\\Internet Explorer\\Main\\FeatureControl\\FEATURE_BROWSER_EMULATION"
+#define Name L"Software\\Microsoft\\Internet Explorer\\Main\\FeatureControl\\FEATURE_BROWSER_EMULATION"
 
 int CIHelp::TryToSetIEVersionToUse(int Version, bool Silent)
 {
@@ -287,20 +295,20 @@ int CIHelp::TryToSetIEVersionToUse(int Version, bool Silent)
 
 		if (dwErrorCode == ERROR_ACCESS_DENIED)
 		{
-			if (!Silent) MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Can't Set IE Emulation Version for Help to work properly - Access Denied"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+			if (!Silent) MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Can't Set IE Emulation Version for Help to work properly - Access Denied"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 			return 1;
 		}
 
 		if (dwErrorCode != ERROR_SUCCESS)
 		{
-			if (!Silent) MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Can't Set IE Emulation Version for Help to work properly"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+			if (!Silent) MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Can't Set IE Emulation Version for Help to work properly"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 			return 1;
 		}
 
 		DWORD nValue = Version;
 		DWORD dwBufferSize;
 		DWORD nResult=0;
-		LONG nError = ::RegQueryValueEx(key, "KMotionCNC.exe", 0, NULL, (LPBYTE)&nResult, &dwBufferSize);
+		LONG nError = ::RegQueryValueEx(key, L"KMotionCNC.exe", 0, NULL, (LPBYTE)&nResult, &dwBufferSize);
 
 		if (ERROR_SUCCESS == nError)
 		{
@@ -312,7 +320,7 @@ int CIHelp::TryToSetIEVersionToUse(int Version, bool Silent)
 			// doesn't exist try to add it
 			if (ERROR_SUCCESS != RegCreateKeyEx(HKEY_CURRENT_USER, (CString)Name, 0L, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS | KEY_WOW64_32KEY, NULL, &key, NULL))
 			{
-				if (!Silent) MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Can't Set IE Emulation Version for Help to work properly"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+				if (!Silent) MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Can't Set IE Emulation Version for Help to work properly"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 				return 1;
 			}
 
@@ -324,10 +332,10 @@ int CIHelp::TryToSetIEVersionToUse(int Version, bool Silent)
 
 			// Avoid strange relative paths
 			CString s;
-			_fullpath(s.GetBufferSetLength(MAX_PATH), Executable, MAX_PATH);
+			_wfullpath(s.GetBufferSetLength(MAX_PATH), Executable, MAX_PATH);
 			s.ReleaseBuffer();
 
-			s.Replace("\"", "");  // remove quotes
+			s.Replace(L"\"", L"");  // remove quotes
 			s.TrimRight();
 			s.TrimLeft();
 
@@ -335,7 +343,7 @@ int CIHelp::TryToSetIEVersionToUse(int Version, bool Silent)
 
 			if (LastSlash == -1)
 			{
-				if (!Silent) MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Can't Set IE Emulation Version for Help to work properly"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+				if (!Silent) MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Can't Set IE Emulation Version for Help to work properly"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 				return 1;
 			}
 
@@ -343,7 +351,7 @@ int CIHelp::TryToSetIEVersionToUse(int Version, bool Silent)
 			
 			if (ERROR_SUCCESS != RegSetValueEx(key, s, 0, REG_DWORD, (const BYTE*)&nValue, sizeof(nValue)))
 			{ 
-				if (!Silent) MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Can't Set IE Emulation Version for Help to work properly"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+				if (!Silent) MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Can't Set IE Emulation Version for Help to work properly"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 				return 1;
 			}
 		}

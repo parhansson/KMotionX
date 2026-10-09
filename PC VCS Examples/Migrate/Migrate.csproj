@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{875189F6-1671-47FC-9792-F548CA7923D4}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Migrate</RootNamespace>
+    <AssemblyName>Migrate</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <OutputPath>..\..\KMotion\$(Configuration)\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Debug64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' Or '$(Configuration)' == 'Release64' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release64'">
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="MigrationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InstallationDiscovery.cs" />
+    <Compile Include="MigrationEngine.cs" />
+    <Compile Include="ReferenceScanner.cs" />
+    <Compile Include="FileSafety.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="App.config" />
+    <None Include="README.md" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- Prefer the .NET 4.0 targeting pack. Some legacy build machines have only
+       CLR 4 installed; permit an explicit, visible fallback on those machines. -->
+  <PropertyGroup Condition="'$(MigrateDisableRuntimeReferenceFallback)' != 'true' And '$(TargetFrameworkVersion)' == 'v4.0' And '$(TargetFrameworkRootPath)' == '' And '$(_TargetFrameworkDirectories)' == '' And '$(_FullFrameworkReferenceAssemblyPaths)' == '' And !Exists('$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\mscorlib.dll') And Exists('$(SystemRoot)\Microsoft.NET\Framework\v4.0.30319\mscorlib.dll')">
+    <_MigrateUsingRuntimeReferences>true</_MigrateUsingRuntimeReferences>
+    <_TargetFrameworkDirectories>$(SystemRoot)\Microsoft.NET\Framework\v4.0.30319\</_TargetFrameworkDirectories>
+    <_FullFrameworkReferenceAssemblyPaths>$(_TargetFrameworkDirectories)</_FullFrameworkReferenceAssemblyPaths>
+  </PropertyGroup>
+  <Target Name="MigrateReportRuntimeReferences" BeforeTargets="PrepareForBuild" Condition="'$(_MigrateUsingRuntimeReferences)' == 'true'">
+    <Warning Code="MIGRATE001" Text="The .NET Framework 4.0 targeting pack is missing. Migrate is compiling against installed CLR 4 assemblies in $(_TargetFrameworkDirectories). The application still targets .NET Framework 4.0; install its targeting pack for exact API targeting, or set MigrateDisableRuntimeReferenceFallback=true to require it." />
+  </Target>
+</Project>

@@ -1,7 +1,7 @@
 #include "KMotionDef.h"
 #include "MySpindleDefs.h"
 #include "CSSJogwithSSV.c"
-main()
+int main()
 {
      for (;;)
      {

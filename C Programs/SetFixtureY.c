@@ -5,7 +5,7 @@
 
 #define Yaxis 1
 
-main()
+int main()
 {
 	int FixtureIndex;
 	double NewOriginOffset,OriginOffsetY,AxisOffsetY;

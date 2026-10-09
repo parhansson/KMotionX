@@ -2,7 +2,7 @@
 
 // assume KStep Relay Output #0 is CW and Relay Output #1 is CCW
 
-main()
+int main()
 {
 	SetBit(0);
 	ClearBit(1);

@@ -2,7 +2,7 @@
 
 void DetachStepDirGenerator(int StepDirChan);
 
-main()
+int main()
 {
 	DetachStepDirGenerator(0);  //set pins back as GPIO
 	DetachStepDirGenerator(1);  //set pins back as GPIO

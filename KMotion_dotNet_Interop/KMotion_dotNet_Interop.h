@@ -185,8 +185,10 @@ extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_CoordMotion_
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_DownloadInit(HANDLE64 *handle);
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_CheckMotionHalt(HANDLE64 *handle, bool Coord);
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_ExecutionStop(HANDLE64 *handle);
+extern "C" __declspec(dllexport) 	bool __stdcall KM_dotnet_Interop_CoordMotion_Get_RapidParamsDirty(HANDLE64 *handle);
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_Get_FeedRateOverride(HANDLE64 *handle);
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_Get_FeedRateRapidOverride(HANDLE64 *handle);
+extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_RapidParamsDirty(HANDLE64 *handle, bool value);
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_FeedRateOverride(HANDLE64 *handle, double value);
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_CoordMotion_Set_FeedRateRapidOverride(HANDLE64 *handle, double value);
 extern "C" __declspec(dllexport) 	double __stdcall KM_dotnet_Interop_CoordMotion_Get_SpidleRateOverride(HANDLE64 *handle);
@@ -621,6 +623,8 @@ extern "C" __declspec(dllexport) 	char*   __stdcall KM_dotnet_Interop_GCodeInter
 
 extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_GCodeInterpreter_SetSetupFile(void *handle, char *file);
 extern "C" __declspec(dllexport) 	char*   __stdcall KM_dotnet_Interop_GCodeInterpreter_GetSetupFile(void *handle);
+
+extern "C" __declspec(dllexport) 	int  __stdcall KM_dotnet_Interop_GCodeInterpreter_SaveVars(void* handle);
 
 extern "C" __declspec(dllexport)    void  __stdcall KM_dotnet_Interop_GCodeInterpreter_SetVarsFile(void *handle, char *file);
 extern "C" __declspec(dllexport)    char*   __stdcall KM_dotnet_Interop_GCodeInterpreter_GetVarsFile(void *handle);

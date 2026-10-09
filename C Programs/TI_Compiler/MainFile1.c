@@ -3,7 +3,7 @@
 
 // Calls function in exteral file
 
-main()
+int main()
 {
 	MyFunction();
 }

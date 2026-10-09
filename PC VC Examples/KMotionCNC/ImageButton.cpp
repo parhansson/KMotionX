@@ -17,6 +17,19 @@ static char THIS_FILE[] = __FILE__;
 
 CList <LPCImageButton, LPCImageButton> CImageButton::ImageButtons;
 bool CImageButton::ErrorDisplayed=false;
+bool CImageButton::ThinEdges=false;
+
+// Thin-edge colours are the button's own colour mixed part way toward white
+// (highlight) or black (shadow), so a dark screen gets a soft edge instead of
+// the system's white/grey
+COLORREF CImageButton::EdgeTint(COLORREF c, bool light)
+{
+	const double f = 0.45;
+	int to = light ? 255 : 0;
+	return RGB(GetRValue(c) + (int)((to - GetRValue(c)) * f),
+			   GetGValue(c) + (int)((to - GetGValue(c)) * f),
+			   GetBValue(c) + (int)((to - GetBValue(c)) * f));
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // CImageButton
@@ -26,6 +39,7 @@ CImageButton::CImageButton(UINT up, UINT down, UINT disabled, BOOL fill)
 	m_up = up;
 	m_down = down;
 	m_fill = fill;
+	m_GViewPos = false;
 	m_disabled = disabled;
 	ErrorDisplayed = DrawPushed = ForceDisableFocus = false;
 	Style = Button;
@@ -146,7 +160,7 @@ void CImageButton::DrawItem(LPDRAWITEMSTRUCT dis)
 		if (!ErrorDisplayed)
 		{
 			ErrorDisplayed = true;
-			AfxMessageBox("DrawItem re-entry");
+			AfxMessageBox(L"DrawItem re-entry");
 		}
 		return;
 	}
@@ -173,7 +187,7 @@ void CImageButton::DrawItem(LPDRAWITEMSTRUCT dis)
 
 
 	// any bitmaps?
-	if (m_up_file == "" && m_down_file == "" && m_up == 0 && m_down == 0)
+	if (m_up_file.MakeLower() == "none" || (m_up_file == "" && m_down_file == "" && m_up == 0 && m_down == 0))
 	{
 		CUniButton::DrawItem(dis);  // no draw font
 		Entry--;
@@ -238,6 +252,11 @@ void CImageButton::DrawItem(LPDRAWITEMSTRUCT dis)
 	CString idfile;
 	bool DrawItDown = (dis->itemState & ODS_SELECTED || ((ToggleType || Style==ToggleButton) && Toggled) || DrawPushed);
 
+	// thin edges: the button is filled with its own colour, so transparent
+	// pixels show that colour too (stock: the system face colour)
+	bool thin = ThinEdges && do_border;
+	COLORREF face = thin ? (DrawItDown ? m_clrHilightBkgnd : m_clrBkgnd) : ::GetSysColor(COLOR_3DFACE);
+
 	if (Style==Momentary && DrawItDown && !MomentaryCommandedDown)
 	{
 		HandleButtonDown();
@@ -288,7 +307,7 @@ void CImageButton::DrawItem(LPDRAWITEMSTRUCT dis)
 	{
 		// check if there is no path specified, then add in default
 
-		if (idfile.Find(':') == -1 && idfile.Find("\\\\") == -1)
+		if (idfile.Find(':') == -1 && idfile.Find(L"\\\\") == -1)
 		{
 			idfile = TheFrame->MainPathRoot + SCREEN_BITMAPS_DIR + idfile;
 		}
@@ -298,14 +317,14 @@ void CImageButton::DrawItem(LPDRAWITEMSTRUCT dis)
 			if (img_file_loaded_down != idfile)
 			{
 				if (img_down != NULL) img_down.Detach();
-				HRESULT result = img_down.Load(_T(idfile));
+				HRESULT result = img_down.Load(idfile);
 				if (result == E_FAIL)
 				{
 					Entry--;
 					if (!ErrorDisplayed)
 					{
 						ErrorDisplayed = true;
-						MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Can't open button image:") + (CStringW) idfile, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+						MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Can't open button image:") +  idfile, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 					}
 					return;
 				}
@@ -321,14 +340,14 @@ void CImageButton::DrawItem(LPDRAWITEMSTRUCT dis)
 			if (img_file_loaded_up != idfile)
 			{
 				if (img_up != NULL) img_up.Detach();
-				HRESULT result = img_up.Load(_T(idfile));
+				HRESULT result = img_up.Load(idfile);
 				if (result == E_FAIL)
 				{
 					Entry--;
 					if (!ErrorDisplayed)
 					{
 						ErrorDisplayed = true;
-						MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Can't open button image:") + (CStringW) idfile, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+						MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Can't open button image:") +  idfile, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 					}
 					return;
 				}
@@ -373,7 +392,7 @@ void CImageButton::DrawItem(LPDRAWITEMSTRUCT dis)
 	// replace background color (0xece9d8) with 3D face color
 	if (!do_alpha && (bmpval.bmBitsPixel == 24 || bmpval.bmBitsPixel == 32))
 	{
-		COLORREF gray = ::GetSysColor(COLOR_3DFACE);
+		COLORREF gray = face;
 		for (int r = 0; r < bmpval.bmHeight; r++)
 		{
 			for (int c = 0; c < bmpval.bmWidth; c++)
@@ -460,7 +479,7 @@ void CImageButton::DrawItem(LPDRAWITEMSTRUCT dis)
 			if (Style == Label || Style == DualLabel)
 				gray = TheFrame->GCodeDlg.m_DlgBackgroundColor;
 			else
-				gray = ::GetSysColor(COLOR_3DFACE);
+				gray = face;
 
 			for (int r = 0; r < bmpval.bmHeight; r++)
 			{
@@ -510,7 +529,7 @@ void CImageButton::DrawItem(LPDRAWITEMSTRUCT dis)
 	// This is best done only if the bitmap is small
 	if (grayout)
 	{ /* gray out */
-		COLORREF gray = ::GetSysColor(COLOR_3DFACE);
+		COLORREF gray = face;
 		for (int r = 0; r < bmpval.bmHeight; r++)
 		{
 			for (int c0 = 0; c0 < bmpval.bmWidth - 1; c0 += 2)
@@ -669,8 +688,14 @@ void CImageButton::DrawItem(LPDRAWITEMSTRUCT dis)
 				useOffset = baseOffset;
 			} /* down */
 
+			if (thin)
+			{ /* thin */
+				// thin edge (screen option): fill with the button's own colours;
+				// the 1px edge is drawn over the image below, like a text button
+				dc->FillSolidRect(&dis->rcItem, face);
+			} /* thin */
 			  // Draw the traditional pushbutton edge using DrawEdge
-			if (DrawItDown)
+			else if (DrawItDown)
 			{ /* down */
 				dc->DrawEdge(&dis->rcItem, EDGE_SUNKEN, BF_RECT | BF_MIDDLE | BF_SOFT);
 			} /* down */
@@ -720,6 +745,13 @@ void CImageButton::DrawItem(LPDRAWITEMSTRUCT dis)
 	}
 
 
+		if (thin)
+		{
+			// like a text button: raised = light top/left, dark bottom/right; down = dark all round
+			CRect edge(dis->rcItem);
+			dc->Draw3dRect(&edge, EdgeTint(face, !DrawItDown), EdgeTint(face, false));
+		}
+
 		if (do_focus && (dis->itemState & ODS_FOCUS) && !ForceDisableFocus)
 			::DrawFocusRect(dis->hDC, &focus);
 	}
@@ -760,7 +792,7 @@ void CImageButton::HandleButtonUp()
 {
 	if (Style == Momentary && Var >=0 && Var <= 4096 && MomentaryResult==0 && MomentaryCommandedDown) // Don't try to clear if there was an error Pushing
 	{
-		CString s;
+		CStringA s;
 		s.Format("ClearBit%d", Var);
 		MomentaryResult = TheFrame->KMotionDLL->WriteLine(s);
 		if (MomentaryResult==0)
@@ -797,7 +829,7 @@ BOOL CImageButton::OnBnClicked()
 {
 	DLG_CONTROL Dlg;
 	bool NewControl;
-	CString s;
+	CStringA s;
 
 	if (Style == Label) return FALSE;
 

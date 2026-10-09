@@ -10,6 +10,13 @@
 
 #include "stdafx.h"
 
+#include "Mesh3d.h"
+
+// Initialize static member
+GLuint CMesh3d::shaderProgram[N_GL_CONTEXT] = { 0, 0, 0 };
+HGLRC  CMesh3d::shaderProgram_gl_context[N_GL_CONTEXT] = { 0,0,0 };
+
+
 //////////////////////////////////////////////
 // CONSTRUCTORS
 //////////////////////////////////////////////
@@ -28,7 +35,7 @@ CMesh3d::CMesh3d()
 	m_IndexTexture = -1;
 	m_pTextureCoordinate = NULL;
 	m_pTextureCoordinateIndex = NULL;
-	m_ListOpenGL=-1;
+	VAO = 0; VBO = 0; EBO = 0;
 	m_Show = 1;
 }
 
@@ -52,7 +59,86 @@ void CMesh3d::Free()
 		delete [] m_pTextureCoordinate;
 	if(m_pTextureCoordinateIndex != NULL)
 		delete [] m_pTextureCoordinateIndex;
+	if (VAO != 0 && VBO != 0 && EBO != 0)
+	{
+		glBindVertexArray(0); // unbound any vertex array
+		glDeleteVertexArrays(1, &VAO);
+		glDeleteBuffers(1, &VBO);
+		glDeleteBuffers(1, &EBO);
+	}
+	VAO = 0; VBO = 0; EBO = 0;
 }
+
+// Function to create shader program
+GLuint CMesh3d::createShaderProgram() {
+
+	const char* vertexShaderSource = R"(
+#version 330 core
+
+layout(location = 0) in vec3 aPos;       // Vertex position
+layout(location = 1) in vec3 aNormal;    // Vertex normal
+layout(location = 2) in vec3 aColor;     // Vertex color
+
+out vec3 FragColor;                     // Output color to fragment shader
+flat out vec3 FaceNormal;               // Output face normal to fragment shader
+out vec3 FragPos;                       // Output position to fragment shader
+
+uniform mat4 model;                     // Model matrix
+uniform mat4 view;                      // View matrix
+uniform mat4 projection;                // Projection matrix
+
+void main()
+{
+    FragPos = vec3(model * vec4(aPos, 1.0));
+    FragColor = aColor;
+
+    // Calculate face normal
+    vec3 normal = mat3(transpose(inverse(model))) * aNormal;
+    FaceNormal = normalize(normal);
+
+    gl_Position = projection * view * vec4(FragPos, 1.0);
+})";
+
+	const char* fragmentShaderSource = R"(
+#version 330 core
+
+in vec3 FragColor;          // Input color from vertex shader
+flat in vec3 FaceNormal;    // Input face normal from vertex shader
+in vec3 FragPos;            // Input position from vertex shader
+
+out vec4 color;        // Output color
+
+uniform vec3 lightPos; // Light position
+uniform vec3 viewPos;  // Camera position
+uniform vec3 lightColor; // Light color
+
+void main()
+{
+    // Ambient lighting
+    float ambientStrength = 0.2;
+    vec3 ambient = ambientStrength * lightColor;
+
+    // Diffuse lighting
+    vec3 norm = normalize(FaceNormal);
+    vec3 lightDir = normalize(lightPos - FragPos);
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = diff * lightColor * 0.7;
+
+    // Specular lighting
+    float specularStrength = 0.5;
+    vec3 viewDir = normalize(viewPos - FragPos);
+    vec3 reflectDir = reflect(-lightDir, norm);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 2);
+    vec3 specular = specularStrength * spec * lightColor;
+
+    // Combine results
+    vec3 result = (ambient + diffuse + specular) * FragColor;
+    color = vec4(result, 1.0);
+}
+)";
+	return BuildShader(vertexShaderSource, fragmentShaderSource);
+}
+
 
 
 //////////////////////////////////////////////
@@ -77,127 +163,107 @@ int CMesh3d::glBuildList()
 	if(!m_Modified && m_ListDone)
 		return 0;
 
-	// Erase last list
-	if (m_ListOpenGL!=-1)
-		::glDeleteLists(m_ListOpenGL,1);
-
-	// Search for a new list
-	m_ListOpenGL = ::glGenLists(1);
-	if(m_ListOpenGL == 0)
-	{
-		TRACE("CMesh3d::BuildList : unable to build DrawList\n");
-		return 0;
-	}
-
-	// Start list
 	unsigned int NbVertex = (unsigned int)m_ArrayVertex.GetSize();
 	unsigned int NbFace = (unsigned int)m_ArrayFace.GetSize();
 
-	if(!NbVertex)
+	if (!NbVertex)
 		return 0;
-	if(!NbFace)
+	if (!NbFace)
 		return 0;
 
-	CFace3d *pFace;
-	CVector3d *pVector;
-	CColor *pColorPrevious;
+	// delete any previous array or buffers
+	glBindVertexArray(0); // unbound any vertex array
 
-	::glNewList(m_ListOpenGL,GL_COMPILE);
+	if (VAO != 0)
+		glDeleteVertexArrays(1, &VAO);
 
-	// Material
+	if (VBO != 0)
+		glDeleteBuffers(1, &VBO);
 
-	::glPushMatrix();
+	if (EBO != 0)
+		glDeleteBuffers(1, &EBO);
 
-	// Position / translation / scaling
-	glTranslatef(m_Transform.GetTranslation()->x(),
-			         m_Transform.GetTranslation()->y(),
-							 m_Transform.GetTranslation()->z());
 
-	glScalef(m_Transform.GetScale()->x(),
-			     m_Transform.GetScale()->y(),
-			     m_Transform.GetScale()->z());
+	// Generate and bind VAO
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
 
-	if (m_Transform.GetValueRotation()!=0.0f)
-		glRotatef(m_Transform.GetValueRotation(),
-			      m_Transform.GetRotation()->x(),
-			      m_Transform.GetRotation()->y(),
-			      m_Transform.GetRotation()->z());
-
-	if (m_Transform.GetValueRotationXY()!=0.0f) glRotatef(m_Transform.GetValueRotationXY(),0.0f,0.0f,1.0f);
-	if (m_Transform.GetValueRotationZX()!=0.0f) glRotatef(m_Transform.GetValueRotationZX(),0.0f,1.0f,0.0f);
-	if (m_Transform.GetValueRotationYZ()!=0.0f) glRotatef(m_Transform.GetValueRotationYZ(),1.0f,0.0f,0.0f);
-
-	// Init color
-	pFace = m_ArrayFace[0];
-	pColorPrevious = pFace->GetColor();
-	::glColor3ub(pFace->GetColor()->r(),pFace->GetColor()->g(),pFace->GetColor()->b());
-
-	// Triangles
-	::glBegin(GL_TRIANGLES);
-	for(unsigned int i=0;i<NbFace;i++)
+	if (VAO <= 0 || VBO <= 0 || EBO <= 0)
 	{
-		{
-			pFace = m_ArrayFace[i];
-			ASSERT(pFace != NULL);
+		MessageBox(NULL, /*TRAN*/L"CMesh3d::BuildList : unable to generate VAO, VBO or EBO\n", L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
+		return 0;
+	}
 
-			// Normal (per face)
-			if(m_NormalBinding == NORMAL_PER_FACE)
-			{
-				pVector = pFace->GetNormal();
-				::glNormal3f(pVector->x(),pVector->y(),pVector->z());
-			}
+	CFace3d* pFace;
+	CVector3d* pVector;
 
-/*
+	float *vertices = new float[NbFace * 9 * 3];
+	int *indices = new int[NbFace * 3];
 
-			// Color (per face)
-			if(m_ColorBinding == COLOR_PER_FACE && 
-				 pColorPrevious != pFace->GetColor())
-			{
-				::glColor3ub(pFace->GetColor()->r(),pFace->GetColor()->g(),pFace->GetColor()->b());
-				pColorPrevious = pFace->GetColor();
-			}
-*/
+	float *v = vertices;
+	int *ind = indices;
 
-			for(int j=0;j<3;j++)
-			{
-				// Normal
-				if(m_NormalBinding == NORMAL_PER_VERTEX)
-				{
-					pVector = pFace->v(j)->GetNormal();
-					::glNormal3f(pVector->x(),pVector->y(),pVector->z());
-				}
-/*
-				// Color (per vertex)
-				if(m_ColorBinding == COLOR_PER_VERTEX && 
-					 pColorPrevious != pFace->v(j)->GetColor())
-				{
-					::glColor3ub(pFace->v(j)->GetColor()->r(),pFace->v(j)->GetColor()->g(),pFace->v(j)->GetColor()->b());
-					pColorPrevious = pFace->v(j)->GetColor();
-				}
+	// Collect vertex data and indices
+	for (unsigned int i = 0; i < NbFace; i++) {
+		pFace = m_ArrayFace[i];
+		ASSERT(pFace != NULL);
 
-				// Texture coordinate (if needed)
-				if(m_IndexTexture != -1)
-				{
-					glTexCoord2f(m_pTextureCoordinate[2*m_pTextureCoordinateIndex[3*i+j]],
-						           m_pTextureCoordinate[2*m_pTextureCoordinateIndex[3*i+j]+1]);	
-				}
-*/
-				// Vertex
-				::glColor3ub(pFace->GetColor()->r(),pFace->GetColor()->g(),pFace->GetColor()->b());
+		for (int j = 0; j < 3; j++) {
+			// Vertex position
+			*v++ = pFace->v(j)->x();
+			*v++ = pFace->v(j)->y();
+			*v++ = pFace->v(j)->z();
 
-				::glVertex3f(pFace->v(j)->x(),pFace->v(j)->y(),pFace->v(j)->z());
-			}
+			// Vertex normal
+			pVector = pFace->GetNormal();  // eache vertice uses the face normal
+			*v++ = pVector->x();
+			*v++ = pVector->y();
+			*v++ = pVector->z();
+
+			// Vertex color
+			*v++ = pFace->GetColor()->r() / 255.0f;
+			*v++ = pFace->GetColor()->g() / 255.0f;
+			*v++ = pFace->GetColor()->b() / 255.0f;
+
+			// Index
+			*ind ++ = i * 3 + j;
 		}
 	}
 
-	::glEnd();
-	::glPopMatrix();
 
-	::glEndList();
 
-	// List is done now
-	m_ListDone = 1;
-	m_Modified = 0;
+	glBindVertexArray(VAO);
+
+	// Bind and set VBO
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, NbFace * 9 * 3 * sizeof(float), vertices, GL_STATIC_DRAW);
+
+	// Bind and set EBO
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, NbFace * 3 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+
+	// Vertex positions
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	// Vertex normals
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	// Vertex colors
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+
+	glBindVertexArray(0);
+
+
+	delete vertices;
+	delete indices;
+
+
+	m_ListDone = TRUE;
+	m_Modified = FALSE;
 
 	return 1;
 }
@@ -218,18 +284,134 @@ int CMesh3d::glDraw()
 	if(!m_ListDone || m_Modified)
 		glBuildList();
 
-	::glEnable(GL_LIGHTING);
 
-	// Search for a new list
-	if(::glIsList(m_ListOpenGL)==GL_TRUE)
+	HGLRC Context = wglGetCurrentContext();  // check if we already have a shader in this context
+	if (shaderProgram_gl_context[0] != Context && 
+		shaderProgram_gl_context[1] != Context && 
+		shaderProgram_gl_context[2] != Context)  // no matching context?
 	{
-	  ::glCallList(m_ListOpenGL);
-		return 1;
+		// push second to third
+		shaderProgram_gl_context[2] = shaderProgram_gl_context[1];
+		shaderProgram[2] = shaderProgram[1];
+
+		// push first context to second
+		shaderProgram_gl_context[1] = shaderProgram_gl_context[0];
+		shaderProgram[1] = shaderProgram[0];
+
+		// Create shader program and save its context
+		shaderProgram[0] = createShaderProgram();
+		shaderProgram_gl_context[0] = Context;
 	}
-	else
+
+	GLuint shader = 0;
+	if (Context == shaderProgram_gl_context[0])
 	{
-		return 0;
+		shader = shaderProgram[0];
 	}
+	else if (Context == shaderProgram_gl_context[1])
+	{
+		shader = shaderProgram[1];
+	}
+	else if (Context == shaderProgram_gl_context[2])
+	{
+		shader = shaderProgram[2];
+	}
+
+	glUseProgram(shader);
+
+	// Create and set the transformation matrix
+	float ViewMat[16], ProjMat[16];
+
+	glGetFloatv(GL_MODELVIEW_MATRIX, ViewMat);  // in our case it is the view matrix
+	glGetFloatv(GL_PROJECTION_MATRIX, ProjMat);
+
+
+	float translationMatrix[16];
+	float rotationMatrix[16];
+	float scaleMatrix[16];
+	float tempMatrix1[16];
+
+	// Create individual transformation matrices
+	createTranslationMatrix(translationMatrix, m_Transform.GetTranslation());
+	createScaleMatrix(scaleMatrix, m_Transform.GetScale());
+
+	// Combine scale and translation
+	multiplyMatrices(tempMatrix1, scaleMatrix, translationMatrix);  // scale is applied first, then translation
+
+	if (m_Transform.GetValueRotation() != 0.0f)
+	{
+		// Apply rotation
+		createRotationMatrix(rotationMatrix, m_Transform.GetRotation(), m_Transform.GetValueRotation());
+		multiplyMatrices(tempMatrix1, rotationMatrix, tempMatrix1);  // rotation is applied first
+	}
+
+	if (m_Transform.GetValueRotationXY() != 0.0f)
+	{
+		createRotationMatrixZ(rotationMatrix, m_Transform.GetValueRotationXY());
+		multiplyMatrices(tempMatrix1, rotationMatrix, tempMatrix1);  // rotation is applied first
+	}
+
+	if (m_Transform.GetValueRotationZX() != 0.0f)
+	{
+		createRotationMatrixY(rotationMatrix, m_Transform.GetValueRotationZX());
+		multiplyMatrices(tempMatrix1, rotationMatrix, tempMatrix1);  // rotation is applied first
+	}
+
+	if (m_Transform.GetValueRotationYZ() != 0.0f)
+	{
+		createRotationMatrixX(rotationMatrix, m_Transform.GetValueRotationYZ());
+		multiplyMatrices(tempMatrix1, rotationMatrix, tempMatrix1);  // rotation is applied first
+	}
+
+
+	GLint viewLocation = glGetUniformLocation(shader, "view");
+	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, ViewMat);
+	//	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, tempMatrix1);
+
+	GLint modelLocation = glGetUniformLocation(shader, "model");
+	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, tempMatrix1);
+
+	GLint projectionLocation = glGetUniformLocation(shader, "projection");
+	glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, ProjMat);
+
+	// Original light position in world coordinates
+	// Example light position in world coordinates
+	float lightPosWorld[4] = { 50000.0f, 50000.0f, 100000.0f, 1.0f }; // Homogeneous coordinates
+	float camerPosWorld[4] = { 0.0f, 0.0f, 100000.0f, 1.0f }; // Homogeneous coordinates
+
+
+	// Invert the view matrix
+	float invModelMatrix[16];
+	invertMatrix(ViewMat, invModelMatrix);
+
+	// Inverse Transform the light position by the view matrix
+	float lightPosView[4];
+
+	multiplyMatrixVector(invModelMatrix, lightPosWorld, lightPosView);
+
+	GLint lightPosLocation = glGetUniformLocation(shader, "lightPos");
+	glUniform3f(lightPosLocation, lightPosView[0], lightPosView[1], lightPosView[2]);
+
+	// Inverse Transform the camers position by the view matrix
+	float CameraPosView[4];
+	multiplyMatrixVector(invModelMatrix, camerPosWorld, CameraPosView);
+	GLint viewPosLocation = glGetUniformLocation(shader, "viewPos");
+	glUniform3f(viewPosLocation, CameraPosView[0], CameraPosView[1], CameraPosView[2]);
+
+	GLint lightColorLocation = glGetUniformLocation(shader, "lightColor");
+	glUniform3f(lightColorLocation, 1.0f, 1.0f, 1.0f);
+
+	unsigned int NbFace = (unsigned int)m_ArrayFace.GetSize();
+
+
+	// Bind VAO and draw elements
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, NbFace * 3, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+
+	glUseProgram(0);
+
+	return 1;
 }
 
 
@@ -1831,77 +2013,77 @@ int CMesh3d::WriteFile(CStdioFile &file)
 	TRY
 	{
 		// Comment
-		string.Format("# Mesh : %d vertices, %d faces\n",NbVertex(),NbFace());
+		string.Format(L"# Mesh : %d vertices, %d faces\n",NbVertex(),NbFace());
 		file.WriteString(string);
 
 		// First line
-		file.WriteString("DEF Mesh-ROOT Transform {\n");
+		file.WriteString(L"DEF Mesh-ROOT Transform {\n");
 
 		// Transform
-		string.Format("  translation %g %g %g\n",m_Transform.GetTranslation()->x(),
+		string.Format(L"  translation %g %g %g\n",m_Transform.GetTranslation()->x(),
 		                                         m_Transform.GetTranslation()->y(),
 								m_Transform.GetTranslation()->z());
 		file.WriteString(string);
-		string.Format("  rotation %g %g %g %g\n",m_Transform.GetRotation()->x(),
+		string.Format(L"  rotation %g %g %g %g\n",m_Transform.GetRotation()->x(),
                                              m_Transform.GetRotation()->y(),
 		                                         m_Transform.GetRotation()->z(),
 								m_Transform.GetValueRotation()/360.0f*2*3.14159265359f);
 		file.WriteString(string);
-		string.Format("  scale %g %g %g\n",m_Transform.GetScale()->x(),
+		string.Format(L"  scale %g %g %g\n",m_Transform.GetScale()->x(),
 			                                 m_Transform.GetScale()->y(),
 			                                 m_Transform.GetScale()->z());
 		file.WriteString(string);
 
 		// Material
-		file.WriteString("  children [\n");
-		file.WriteString("    Shape {\n");
-		file.WriteString("      appearance Appearance {\n");
-		file.WriteString("        material Material {\n");
-		file.WriteString("          diffuseColor 0 0 0\n"); // todo
-		file.WriteString("        }\n");
-		file.WriteString("      }\n");
+		file.WriteString(L"  children [\n");
+		file.WriteString(L"    Shape {\n");
+		file.WriteString(L"      appearance Appearance {\n");
+		file.WriteString(L"        material Material {\n");
+		file.WriteString(L"          diffuseColor 0 0 0\n"); // todo
+		file.WriteString(L"        }\n");
+		file.WriteString(L"      }\n");
 
 		// Geometry
-		file.WriteString("      geometry DEF Mesh-FACES IndexedFaceSet {\n");
-		file.WriteString("        ccw TRUE\n");
-		file.WriteString("        solid TRUE\n");
+		file.WriteString(L"      geometry DEF Mesh-FACES IndexedFaceSet {\n");
+		file.WriteString(L"        ccw TRUE\n");
+		file.WriteString(L"        solid TRUE\n");
 
 		// Vertices
-		file.WriteString("        coord DEF Mesh-COORD Coordinate { point [\n");
+		file.WriteString(L"        coord DEF Mesh-COORD Coordinate { point [\n");
 		int i,NbVertex = m_ArrayVertex.GetSize();
 		for(i=0;i<NbVertex;i++)
 		{
-			string.Format("          %g %g %g",m_ArrayVertex[i]->x(),
+			string.Format(L"          %g %g %g",m_ArrayVertex[i]->x(),
 		                                     m_ArrayVertex[i]->y(),
 																	       m_ArrayVertex[i]->z());
 			file.WriteString(string);
 			if(i!=(NbVertex-1))
-				file.WriteString(",\n");
+				file.WriteString(L",\n");
 			else
-				file.WriteString("]\n");
+				file.WriteString(L"]\n");
 		}
-		file.WriteString("        }\n");
+		file.WriteString(L"        }\n");
 
 		// Faces
-		file.WriteString("        coordIndex [\n");
+		file.WriteString(L"        coordIndex [\n");
 		int NbFace = m_ArrayFace.GetSize();
 		for(i=0;i<NbFace;i++)
 		{
-			string.Format("          %d, %d, %d, -1",m_ArrayVertex.IndexFrom(m_ArrayFace[i]->v(0)),
+			string.Format(L"          %d, %d, %d, -1",m_ArrayVertex.IndexFrom(m_ArrayFace[i]->v(0)),
 			                                         m_ArrayVertex.IndexFrom(m_ArrayFace[i]->v(1)),
 																						   m_ArrayVertex.IndexFrom(m_ArrayFace[i]->v(2)));
 			file.WriteString(string);
 			if(i!=(NbFace-1))
-				file.WriteString(",\n");
+				file.WriteString(L",\n");
 			else
-				file.WriteString("]\n");
+				file.WriteString(L"]\n");
 		}
 
 		// End
-		file.WriteString("        }\n");
-		file.WriteString("      }\n");
-		file.WriteString("    ]\n");
-		file.WriteString("  }\n\n");
+		file.WriteString(L"        }\n");
+		file.WriteString(L"      }\n");
+		file.WriteString(L"    ]\n");
+		file.WriteString(L"  }\n\n");
 
 	}
 	CATCH(CFileException, e)
@@ -1909,7 +2091,7 @@ int CMesh3d::WriteFile(CStdioFile &file)
 		#ifdef _DEBUG
 				afxDump << "Error during writing transform" << e->m_cause << "\n";
 		#endif
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error during writing transform"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error during writing transform"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 0;
 	}
 	END_CATCH
@@ -2004,7 +2186,7 @@ int CMesh3d::WriteFileRaw(CFile &file)
 		#ifdef _DEBUG
 				afxDump << "Error during writing " << e->m_cause << "\n";
 		#endif
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error during writing"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error during writing"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 0;
 	}
 	END_CATCH

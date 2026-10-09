@@ -1,6 +1,6 @@
 #include "KMotionDef.h"
 
-main()
+int main()
 {
 	printf("Hello World!\n");  // send message to console
 }

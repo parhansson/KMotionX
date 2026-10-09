@@ -10,7 +10,7 @@ int RestoreDestinations(void);
 
 double DestData[10];  // room for 8 axes, count, signature
 
-main()
+int main()
 {
 	RestoreDestinations();
 }

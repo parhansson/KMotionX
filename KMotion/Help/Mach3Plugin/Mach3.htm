@@ -134,34 +134,23 @@ other motor types including brushless servos. </p>
 
 
 <p>This is an overview of the overall setup process of getting Mach3 and KMotion to play together.</p>
-
-
-
-	<ul>
-
-	<li>Install Mach3</li>
-
-	<li>Install KMotion</li>
-
-	<li>Within KMotion configure/tune your motors</li>
-
-	<li>Within KMotion create a configuration and initialization program</li>
-
-	<li>Within Mach3 - configure plugin (enter name of KMotion Init program )</li>
-
-	<li>Within Mach3 - configure IO Bits.</li>
-
-	<li>Within Mach3 - configure motor tuning (set resolution, speeds, and 
-
-	acceleration)</li>
-
-	</ul>
+<ol>
+  <li>Install Mach3</li>
+  <li>Install KMotion</li>
+  <li>Within KMotion configure/tune your motors</li>
+  <li>Within KMotion create a configuration and initialization program</li>
+  <li>Within Mach3 - configure plugin (enter name of KMotion Init program)</li>
+  <li>Within Mach3 - configure IO Bits</li>
+  <li>Within Mach3 - configure motor tuning (set resolution, speeds, and 
+    
+    acceleration)</li>
+</ol>
 
 	
 
-	<p>Note: when using encoder feedback see also:<a href="Mach3Encoders.htm">Mach3 Encoder Setup</a></p>
+	<p>Note: when using encoder feedback see also: <a href="Mach3Encoders.htm">Mach3 Encoder Setup</a></p>
 
-	<p>Note: for configuring probing see also:<a href="Mach3Probe.htm">Mach3 G31 Probe Setup</a></p>
+	<p>Note: for configuring probing see also:<a href="Mach3Probe.htm"> Mach3 G31 Probe Setup</a></p>
 
 	<p>Note: for information regarding operating steppers in closed loop see also: <a href="../ClosedLoopStep/ClosedLoopStepper.htm">Closed Loop Steppers</a></p>
 
@@ -279,98 +268,53 @@ other motor types including brushless servos. </p>
 
 		<pre>
 
-			<code>
+			<code class="language-c">
 
-	h0-&gt;InputMode=ENCODER_MODE;
-
+	ch0-&gt;InputMode=ENCODER_MODE;
 	ch0-&gt;OutputMode=MICROSTEP_MODE;
-
 	ch0-&gt;Vel=100.000000;
-
 	ch0-&gt;Accel=1000.000000;
-
 	ch0-&gt;Jerk=10000.000000;
-
 	ch0-&gt;P=1.000000;
-
 	ch0-&gt;I=0.000000;
-
 	ch0-&gt;D=0.000000;
-
 	ch0-&gt;FFAccel=0.000000;
-
 	ch0-&gt;FFVel=0.000000;
-
 	ch0-&gt;MaxI=200.000000;
-
 	ch0-&gt;MaxErr=200.000000;
-
 	ch0-&gt;MaxOutput=200.000000;
-
 	ch0-&gt;DeadBandGain=1.000000;
-
 	ch0-&gt;DeadBandRange=0.000000;
-
 	ch0-&gt;InputChan0=0;
-
 	ch0-&gt;InputChan1=1;
-
 	ch0-&gt;OutputChan0=0;
-
 	ch0-&gt;OutputChan1=1;
-
 	ch0-&gt;LimitSwitchOptions=0x0;
-
 	ch0-&gt;InputGain0=1.000000;
-
 	ch0-&gt;InputGain1=1.000000;
-
 	ch0-&gt;InputOffset0=0.000000;
-
 	ch0-&gt;InputOffset1=0.000000;
-
 	ch0-&gt;invDistPerCycle=1.000000;
-
 	ch0-&gt;Lead=0.000000;
-
 	ch0-&gt;MaxFollowingError=1000000000.000000;
-
 	ch0-&gt;StepperAmplitude=250.000000;
-
 		
-
 	ch0-&gt;iir[0].B0=1.000000;
-
 	ch0-&gt;iir[0].B1=0.000000;
-
 	ch0-&gt;iir[0].B2=0.000000;
-
 	ch0-&gt;iir[0].A1=0.000000;
-
 	ch0-&gt;iir[0].A2=0.000000;
 
-		
-
 	ch0-&gt;iir[1].B0=1.000000;
-
 	ch0-&gt;iir[1].B1=0.000000;
-
 	ch0-&gt;iir[1].B2=0.000000;
-
 	ch0-&gt;iir[1].A1=0.000000;
-
-	ch0-&gt;iir[1].A2=0.000000;
-
-		
+	ch0-&gt;iir[1].A2=0.000000;		
 
 	ch0-&gt;iir[2].B0=1.000000;
-
 	ch0-&gt;iir[2].B1=0.000000;
-
 	ch0-&gt;iir[2].B2=0.000000;
-
 	ch0-&gt;iir[2].A1=0.000000;
-
 	ch0-&gt;iir[2].A2=0.000000;
 
 		</code>
@@ -547,7 +491,7 @@ other motor types including brushless servos. </p>
 
 		
 
-		<p>An I/O bit may be defined that is activated when Mach3 goes into the 
+		<p>An IO bit may be defined that is activated when Mach3 goes into the 
 
 		offline state. Neg True Polarity may be checked if it is desirable 
 
@@ -587,25 +531,11 @@ other motor types including brushless servos. </p>
 
         
 
-	    <p>Mach3 was originally designed to directly control Step/Dir drives connected to a PC Parallel Port. When using KFLOP/Kogna this is no longer the case. Select the Menu <strong>Config|Ports &amp; Pins</strong> to bring 
-
-		up the Dialogs shown below. When using the KMotion Plugin, Pin 
-
-		Numbers now correspond to <em>KMotion IO Bit Numbers</em> rather than 
-
-		Parallel port Pins. Some of the terminology on the screen may be 
-
-		misleading as it was designed expecting to use a PC Parallel Port.
-
-		For IO bit numbers less than 128 specify <strong>Port#1 </strong>and use the IO Bit number as the<strong> Pin</strong>. For IO bit numbers 128 or larger, subtract 128 from the bit number and 
-
-		specify <strong>Port #2</strong> instead of Port #1. Extended Virtual IO 
-
-		bits 1024-1151 may also be accessed by specifying <strong>Port #3</strong> and subtracting 1024 from the bit number (note: the first 32 Virtual IO will consume less USB bandwidth because they are uploaded in the KFLOP/Kogna Bulk Status record so use the first 32 if possible).</p>
+	    <p>Mach3        was originally designed to directly control Step/Dir drives        connected to a PC Parallel Port. When using KFLOP/Kogna this is no        longer the case. Select the Menu&nbsp;<strong>Config|Ports          &amp; Pins</strong>&nbsp;to bring up the Dialogs shown        below. When using the KMotion Plugin, Pin Numbers now correspond        to&nbsp;<em>KMotion IO Bit Numbers</em>&nbsp;rather        than Parallel port Pins. Some of the terminology on the screen may        be misleading as it was designed expecting to use a PC Parallel        Port. Mach3 only supports pin numbers up to 127 so for larger Bit        Numbers multiple Ports are used.&nbsp; For IO bit numbers less than 128        specify&nbsp;<strong>Port#1&nbsp;</strong>and use        the IO Bit number as the<strong>&nbsp;Pin</strong>. For IO        bit numbers between 128 and 255, subtract 128 from the bit number        and specify&nbsp;<strong>Port #2</strong>&nbsp;instead        of Port #1. For IO bit numbers between 256 and 383, subtract 256        from the bit number and specify&nbsp;<strong>Port #4</strong>.        Extended Virtual IO bits 1024-1151 may also be accessed by        specifying&nbsp;<strong>Port #3</strong>&nbsp;and        subtracting 1024 from the bit number (note: the first 32 Virtual        IO will consume less USB bandwidth because they are uploaded in        the KFLOP/Kogna Bulk Status record so use the first 32 if        possible).</p>
 
 	    
 
-	    <p>KFLOP/Kogna handles all real-time I/O (Step/Dir, Analog, Limits, etc...) and is configured within KFLOP. So within Mach3 Step/Dir Outputs are not used and should all be configured to non-KFLOP Outputs (ie Port 0 Pin 0). See below. Note that the Enable for each axis in your system must be enabled otherwise Mach3 will not generate motion for the axis.</p>
+	    <p>KFLOP/Kogna handles all real-time IO (Step/Dir, Analog, Limits, etc...) and is configured within KFLOP. So within Mach3 Step/Dir Outputs are not used and should all be configured to non-KFLOP Outputs (ie Port 0 Pin 0). See below. Note that the Enable for each axis in your system must be enabled otherwise Mach3 will not generate motion for the axis.</p>
 
 	    
 		<p><img height="420" src="Motor%20Outputs.png" alt="Motor Outputs" /></p>
@@ -671,7 +601,7 @@ other motor types including brushless servos. </p>
 
 
 
-    	<p>Here is how a GCode file appears on Mach3 Mill.</p>
+    	<p>Here is how a G Code file appears on Mach3 Mill.</p>
 
     	
 
@@ -679,7 +609,7 @@ other motor types including brushless servos. </p>
 
 		
 
-  <p>Here the same example GCode file cut (or more accurately burned) into a piece 
+  <p>Here the same example G Code file cut (or more accurately burned) into a piece 
 
   of wood using a Harbor Freight Mini-mill driven with KMotion and Mach3.</p>
 
@@ -693,6 +623,7 @@ other motor types including brushless servos. </p>
 
 </div>
 
+<script src="../search/searchbox.js" defer></script>
 </body>
 
 

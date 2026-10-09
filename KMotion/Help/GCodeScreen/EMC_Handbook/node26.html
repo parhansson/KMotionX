@@ -255,7 +255,7 @@ at what we have defined for the parallel port here with motion.
 <P>
 Now I want to know if that is the address that my machine's parallel
 port is registered to so I look in the Kmenu under settings / information
-/ I/O port information / in the popup menus for Mandrake 7. Yours
+/ IO port information / in the popup menus for Mandrake 7. Yours
 may be different! [ part2/images/sysinfo.gif]
 
 <P>
@@ -519,9 +519,9 @@ So what parallel port definition are we using with the stock emc.ini.
 <P>
 <TABLE  WIDTH="0%">
 <TR><TD>
-Aha! Auxiliary I/O uses a parallel port at 0x278. Now
+Aha! Auxiliary IO uses a parallel port at 0x278. Now
 you may not know this, but the bridgeportio system uses the auxiliary
-I/O port for some of its functions. Stuff like mist or flood coolant,
+IO port for some of its functions. Stuff like mist or flood coolant,
 spindle speed and direction, and estop state. So let's use ioshow
 again to see what the state of these addresses are for my computer.
 (I don't have a parallel port installed at this address)
@@ -530,8 +530,8 @@ again to see what the state of these addresses are for my computer.
 
 <P>
 Everything at that address is set high. Now rather than
-figuring out the rest of what the I/O section of the ini file is trying
-to tell me, I'll just switch definitions of the I/O system. I can
+figuring out the rest of what the IO section of the ini file is trying
+to tell me, I'll just switch definitions of the IO system. I can
 do this by changing one line. [part2/images/ioshow2.gif]
 <P>
 
@@ -639,5 +639,6 @@ Good luck
 root
 2003-05-26
 </ADDRESS>
+<script src="../../search/searchbox.js" defer></script>
 </BODY>
 </HTML>

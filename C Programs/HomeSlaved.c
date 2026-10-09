@@ -19,7 +19,7 @@
 
 void SquareX(float speed);
 
-void main() 
+int main() 
 {
 	int SaveLimitX0,SaveLimitX1;
 

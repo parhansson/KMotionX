@@ -8,7 +8,7 @@
 #define N 10000
 unsigned char InBuffer[N];
 
-main()
+int main()
 {
 	int i,in,out;
 	unsigned char c;

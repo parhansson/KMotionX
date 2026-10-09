@@ -55,7 +55,7 @@ void AFXAPI AfxTextFloatFormat(CDataExchange* pDX, int nIDC,
 		::GetWindowText(hWndCtrl, szBuffer, _countof(szBuffer));
 		double d;
 		// tktk fix microsoft bug if (_sntscanf_s(szBuffer, _countof(szBuffer), _T("%lf"), &d) != 1)
-		if (_sntscanf_s(szBuffer, (int)strlen(szBuffer), _T("%lf"), &d) != 1)
+		if (_sntscanf_s(szBuffer, (int)wcslen(szBuffer), _T("%lf"), &d) != 1)
 		{
 			AfxMessageBox(AFX_IDP_PARSE_REAL);
 			pDX->Fail();            // throws exception
@@ -82,6 +82,110 @@ void AFXAPI DDX_Text(CDataExchange* pDX, int nIDC, double& value)
 	AfxTextFloatFormat(pDX, nIDC, &value, value, DBL_DIG);
 }
 
+double round_to_digits(double value, int digits)
+{
+	if (value == 0.0) // otherwise it will return 'nan' due to the log10() of zero
+		return 0.0;
+
+	double factor = pow(10.0, digits - ceil(log10(fabs(value))));
+	return round(value * factor) / factor;
+}
+
+// Convert Inverse Distance Units of /inch or /mm
+void AFXAPI DDX_TextMMInv(CDataExchange* pDX, int nIDC, double& value, BOOL ModeMM)
+{
+	// leave original unchanged if User doesn't make any changes to displayed value
+	double returned_value=0, displayed_value;
+
+	if (ModeMM)
+		displayed_value = round_to_digits(value / 25.4, 10);
+	else
+		displayed_value = round_to_digits(value, 10);
+
+	if (pDX->m_bSaveAndValidate)
+	{
+		AfxTextFloatFormat(pDX, nIDC, &returned_value, returned_value, DBL_DIG);
+
+		// any change?
+		if ((displayed_value == 0 && returned_value != 0) ||
+			(fabs(returned_value - displayed_value) / fabs(displayed_value) > 1e-11))
+		{
+			// yes, update internal value
+			if (ModeMM)
+				value = returned_value * 25.4;
+			else
+				value = returned_value;
+		}
+	}
+	else
+	{
+		AfxTextFloatFormat(pDX, nIDC, &displayed_value, displayed_value, DBL_DIG);
+	}
+}
+
+void AFXAPI DDX_TextMMDigits(CDataExchange* pDX, int nIDC, double& value, BOOL ModeMM, int digits);
+
+// Convert Distance Units of inch or mm
+void AFXAPI DDX_TextMM(CDataExchange* pDX, int nIDC, double& value, BOOL ModeMM)
+{
+	DDX_TextMMDigits(pDX, nIDC, value, ModeMM, 10);
+}
+
+// DDX_TextMM displaying 'digits' significant digits
+void AFXAPI DDX_TextMMDigits(CDataExchange* pDX, int nIDC, double& value, BOOL ModeMM, int digits)
+{
+	// leave original unchanged if User doesn't make any changes to displayed value
+	double returned_value=0, displayed_value;
+
+	if (ModeMM)
+		displayed_value = round_to_digits(value * 25.4, digits);
+	else
+		displayed_value = round_to_digits(value, digits);
+
+	if (pDX->m_bSaveAndValidate)
+	{
+		AfxTextFloatFormat(pDX, nIDC, &returned_value, returned_value, DBL_DIG);
+
+		// any change?
+		if ((displayed_value == 0 && returned_value != 0) || 
+			(fabs(returned_value - displayed_value) / fabs(displayed_value) > 1e-11))
+		{
+			// yes, update internal value
+			if (ModeMM)
+				value = returned_value / 25.4;
+			else
+				value = returned_value;
+		}
+	}
+	else
+	{
+		AfxTextFloatFormat(pDX, nIDC, &displayed_value, displayed_value, DBL_DIG);
+	}
+}
+
+// Unitless value displayed with 'digits' significant digits (e.g. hides the
+// 0.200000003 of a value once stored as a float).  Like DDX_TextMM the exact
+// double is kept if the User doesn't change the displayed value.
+void AFXAPI DDX_TextDigits(CDataExchange* pDX, int nIDC, double& value, int digits)
+{
+	double returned_value = 0, displayed_value = round_to_digits(value, digits);
+
+	if (pDX->m_bSaveAndValidate)
+	{
+		AfxTextFloatFormat(pDX, nIDC, &returned_value, returned_value, DBL_DIG);
+
+		// any change?
+		if ((displayed_value == 0 && returned_value != 0) ||
+			(displayed_value != 0 && fabs(returned_value - displayed_value) / fabs(displayed_value) > 1e-11))
+			value = returned_value;
+	}
+	else
+	{
+		AfxTextFloatFormat(pDX, nIDC, &displayed_value, displayed_value, digits);
+	}
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 // Validation procs
 
@@ -91,7 +195,7 @@ AFX_STATIC void AFXAPI _AfxFailMinMaxReal(CDataExchange* pDX,
 {
 	if (!pDX->m_bSaveAndValidate)
 	{
-		TRACE(traceAppMsg, 0, "Warning: initial dialog data is out of range.\n");
+		TRACE(traceAppMsg, 0, L"Warning: initial dialog data is out of range.\n");
 		return;         // don't stop now
 	}
 	

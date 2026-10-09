@@ -21,7 +21,7 @@ int Estop,Manual;
 	
 int Debounce(int n, int *cnt, int *last, int *lastsolid);
 
-main()
+int main()
 {
 	int result;
 

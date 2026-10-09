@@ -2,7 +2,7 @@
 
 // Read PC Disk Text File Example
 
-main()
+int main()
 {
 	FILE *f;
 	char s[256];

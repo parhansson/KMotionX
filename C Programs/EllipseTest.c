@@ -69,7 +69,7 @@ double MaxV=3200/60.0;  // maximum allowed speed along path (feed rate) in inche
 
 FILE *f;
 
-main()
+int main()
 {
 	VM=MaxV*RESX; // Max allowed feed rate counts/sec
 	A=MaxA*RESX; // Max acceleration counts/sec2

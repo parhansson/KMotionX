@@ -1,0 +1,26 @@
+﻿(TestArcYZ_GimbalA.ngc - GimbalAB actuator-limits test)
+(Quarter circle R=50mm in the YZ plane - G19 - while A gimbals 0 to 90deg)
+(in sync with the arc so the tool stays aligned with the arc radius.)
+(A rotates about X in GimbalAB kinematics, so the tilt is in the YZ plane.)
+
+(CAUTION: PivotToChuckLength is 6in = 152.4mm. During this move the Y and Z)
+(ACTUATORS travel to about -102mm while CAD coordinates stay within 0..50mm.)
+(Verify actuator travel and soft limits, or run in Simulate first.)
+
+(Nominal path: 78.54mm at F1200 = 20mm/s -> about 3.9 sec each way.)
+(A must sweep 90deg over that time -> about 22.9 deg/sec demanded.)
+(With Actuator Space Limits ON and actuator A Vel = 10 deg/sec the feed)
+(should drop to about 44% -> about 9 sec each way. OFF -> full speed.)
+
+G21 G90 G94
+G43.4 H1 (TCP on)
+G19            (arcs in the YZ plane)
+G0 X0 Y0 Z0 A0 B0
+G4 P0.5
+
+G3 Y50 Z50 J0 K50 A90 F2000   (90deg arc up-and-over, A follows 0 to 90)
+G4 P0.5
+G2 Y0 Z0 J-50 K0 A0           (retrace back down, A returns to 0)
+
+G17            (restore XY plane)
+M2

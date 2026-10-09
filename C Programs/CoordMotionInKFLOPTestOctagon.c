@@ -11,7 +11,7 @@
 
 #define SMALL 0.001
 
-main()
+int main()
 {
 	int i;
 	double angle;

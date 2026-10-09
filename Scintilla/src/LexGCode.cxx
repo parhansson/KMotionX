@@ -17,6 +17,26 @@ static inline bool IsAWordChar(const int ch) {
 	return (ch < 0x80) && (IsADigit(ch) || ch == '.' || ch == '-' || ch == '+' || ch == 'e' || ch == 'E');
 }
 
+// Characters that can begin the numeric value of a word:  G1  X-1.5  Y+.5
+static inline bool IsAValueStart(const int ch) {
+	return (ch < 0x80) && (IsADigit(ch) || ch == '.' || ch == '-' || ch == '+');
+}
+
+// Look past blanks from the current position for the start of a value, so that
+// "X 10" can be coloured as one word like "X10".  Bounded and stopped at the
+// end of line: SafeGetCharAt() returns ' ' past the end of the document, so an
+// unbounded scan would never terminate on the last line.  A CR or LF is not
+// a blank here, so the scan also stops at the end of the line.
+static bool ValueFollowsBlanks(StyleContext &sc) {
+	const int maxBlanks = 40;
+	for (int n = 1; n <= maxBlanks; n++) {
+		const int ch = sc.GetRelative(n);
+		if (!IsASpaceOrTab(ch))
+			return IsAValueStart(ch);
+	}
+	return false;
+}
+
 static inline bool IsAWordStart(const int ch) {
 	return (ch < 0x80) && 
 		(ch == 'G' || ch == 'g' ||
@@ -32,8 +52,8 @@ static inline bool IsAParamStart(const int ch) {
 		 ch == 'A' || ch == 'a' ||
 		 ch == 'B' || ch == 'b' ||
 		 ch == 'C' || ch == 'c' ||
-		 ch == 'U' || ch == 'U' ||
-		 ch == 'V' || ch == 'V' ||
+		 ch == 'U' || ch == 'u' ||
+		 ch == 'V' || ch == 'v' ||
 		 ch == 'D' || ch == 'd' ||
 		 ch == 'H' || ch == 'h' ||
 		 ch == 'S' || ch == 's' ||
@@ -45,8 +65,9 @@ static inline bool IsAParamStart(const int ch) {
 }
 
 static inline bool IsAsmOperator(char ch) {
-	if (isalnum(ch))
-		return false;
+// tktk might be multibyte and cause exception
+// 	if (isalnum(ch))
+//		return false;
 	// '.' left out as it is used to make up numbers
 	if (ch == '*' || ch == '/' || ch == '-' || ch == '+')
 		return true;
@@ -62,6 +83,10 @@ static void ColouriseGCodeDoc(unsigned int startPos, int length, int initStyle, 
 
 	StyleContext sc(startPos, length, initStyle, styler);
 
+	// Set once the value of the current word has started, so that the blank
+	// bridging below only ever joins a letter to its own value.
+	bool digitSeen = false;
+
 	for (; sc.More(); sc.Forward())
 	{
 
@@ -76,13 +101,18 @@ static void ColouriseGCodeDoc(unsigned int startPos, int length, int initStyle, 
 			if (!IsAWordChar(sc.ch)) {
 				sc.SetState(SCE_GCODE_DEFAULT);
 			}
-		} else if (sc.state == SCE_GCODE_IDENTIFIER) {
-			if (!IsAWordChar(sc.ch) ) {
+		} else if (sc.state == SCE_GCODE_IDENTIFIER || sc.state == SCE_GCODE_PARAM) {
+			// A word letter and its value are one token even when blanks separate
+			// them, so "X 10" is coloured like "X10".  Only the gap ahead of the
+			// value is bridged, so "X10 Y20" still ends the word at the blank.
+			if (IsASpaceOrTab(sc.ch)) {
+				if (digitSeen || !ValueFollowsBlanks(sc)) {
+					sc.SetState(SCE_GCODE_DEFAULT);
+				}
+			} else if (!IsAWordChar(sc.ch) ) {
 				sc.SetState(SCE_GCODE_DEFAULT);
-			}
-		} else if (sc.state == SCE_GCODE_PARAM) {
-			if (!IsAWordChar(sc.ch) ) {
-				sc.SetState(SCE_GCODE_DEFAULT);
+			} else if (IsADigit(sc.ch) || sc.ch == '.') {
+				digitSeen = true;
 			}
 		}
 		else if (sc.state == SCE_GCODE_COMMENT ) {
@@ -120,8 +150,10 @@ static void ColouriseGCodeDoc(unsigned int startPos, int length, int initStyle, 
 				sc.SetState(SCE_GCODE_NUMBER);
 			} else if (IsAWordStart(sc.ch)) {
 				sc.SetState(SCE_GCODE_IDENTIFIER);
+				digitSeen = false;
 			} else if (IsAParamStart(sc.ch)) {
 				sc.SetState(SCE_GCODE_PARAM);
+				digitSeen = false;
 			} else if (sc.ch == '\"') {
 				sc.SetState(SCE_GCODE_STRING);
 			} else if (IsAsmOperator(static_cast<char>(sc.ch))) {

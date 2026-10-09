@@ -4,7 +4,7 @@
 enum { EX_DDA , EX_VMS, EX_COMMAND, EX_SPINON, EX_SPINOFF, EX_SPINSPEED, EX_MOTORTUNED 
        , EX_SETUP, EX_FEEDHOLD, EX_RUN, EX_ESTOP , EX_CONFIG };
 
-main()
+int main()
 {
 	int message = persist.UserData[0];  // Mach3 message ID 
 	int Direction = persist.UserData[1];  // Mach3 Spindle Direction 

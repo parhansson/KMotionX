@@ -20,7 +20,15 @@
 #include "Vector3d.h"
 #include "Material.h"
 #include "Transform.h"
+#include "SceneGraph3D.h"
 
+typedef struct
+{
+	GLuint Array;
+	GLuint VertexBuf;
+	GLuint ColorBuf;
+	int NbVertex;
+} Array2Bufs;
 
 class CPath3d : public CObject3d
 {
@@ -30,13 +38,11 @@ private :
 	// Datas
 	CArray3d<CVertex3dFast> m_ArrayVertex;
 
-	CArray3d<int> m_ListArray;
+	CArray3d<Array2Bufs> m_ListArray;
 
 	CTransform m_Transform;
 	CString m_Name;
 	
-
-
 	// OpenGL-specific
 	unsigned int m_nListsOpenGL;
 	unsigned int m_nPointsPerList;
@@ -44,6 +50,7 @@ private :
 	unsigned int m_ListDone;
 	int m_Modified;
 	int m_Show;
+	int m_RecolorFirst, m_RecolorLast;	// pending recolour range (empty when Last < First)
 
 	float m_LastToolOffsetX,m_LastToolOffsetY,m_LastToolOffsetZ;
 	float m_LastToolPositionX,m_LastToolPositionY,m_LastToolPositionZ;
@@ -60,7 +67,6 @@ public :
 	virtual int GetType();
 	int IsValid();
 	void Copy(CPath3d *pPath);
-
 
 	// Vertices
 	int NbVertex() { return m_ArrayVertex.GetSize(); }
@@ -88,15 +94,74 @@ public :
 	void Scale(int coord,float scale);
 	void Move(float dx,float dy,float dz);
 
+	GLuint createShaderProgram();
+
+	GLfloat ColorToFloat(unsigned char c);
+
+	unsigned char GetColorIndexCached(CColor* c);
+
 	// OpenGL
 	virtual int glBuildList();
 	virtual int glDraw();
 	void Show(int flag) { m_Show = flag; }
+	static GLuint shaderProgram[N_GL_CONTEXT];  // save the shader program for each context
+	static HGLRC  shaderProgram_gl_context[N_GL_CONTEXT];
+
+	// Set the uniform array of colors (index order must match the COLOR_INDEX enum
+	// in SceneGraph3d.h; the path shader declares colors[N_PATH_COLORS]).  A vertex colour that
+	// is not in this table is drawn with WHITE_COLOR_INDEX (GetColorIndexCached).
+	// Entries are written as <byte>/255 so they compare equal to ColorToFloat().
+	const GLfloat colorlookup[N_PATH_COLORS][3] = {
+	   {1.0f, 0.0f, 0.0f}, // Red
+	   {0.0f, 1.0f, 0.0f}, // Green
+	   {0.0f, 0.0f, 1.0f}, // Blue
+	   {0.0f, 0.0f, 0.0f}, // Black
+	   {0.5f, 0.5f, 0.5f}, // Gray
+	   {1.0f, 1.0f, 1.0f}, // White
+	   {150.0f / 255.0f, 150.0f / 255.0f, 150.0f / 255.0f}, // Uncut feed  - medium gray
+	   {200.0f / 255.0f,  80.0f / 255.0f,  80.0f / 255.0f}, // Uncut rapid - muted red
+	   {255.0f / 255.0f, 175.0f / 255.0f, 175.0f / 255.0f}  // Cut rapid   - light red
+	};
+
+	// Recolouring of vertices already uploaded to the GPU.  glBuildList() only
+	// ever (re)builds the last, partially filled list, so a colour change on an
+	// already-listed vertex needs its list's colour buffer re-uploaded.  Callers
+	// change vertex colours, then MarkRecolor(first,last) the index range; the
+	// next glBuildList() (GL context current) re-uploads those lists' colours.
+	// Caller must hold the view's OpenGLMutex around the colour changes + mark.
+	void MarkRecolor(int first, int last)
+	{
+		if (first < m_RecolorFirst) m_RecolorFirst = first;
+		if (last  > m_RecolorLast)  m_RecolorLast  = last;
+	}
+	bool RecolorPending() const { return m_RecolorLast >= m_RecolorFirst; }
+
 
 
 	// Modif
 	void SetModified() { m_Modified=1; }
-	void InvalidateDisplayList() {};
+	
+	void InvalidateDisplayList() 
+	{
+		// delete all display lists
+		int nlists = m_ListArray.GetSize();
+
+		while (nlists)
+		{
+			// Erase last list
+			nlists--;
+			Array2Bufs* p = m_ListArray.GetAt(nlists);
+			glBindVertexArray(0); // unbound any vertex array
+			glDeleteVertexArrays(1, &p->Array);
+			glDeleteBuffers(1, &p->VertexBuf);
+			glDeleteBuffers(1, &p->ColorBuf);
+			m_ListArray.RemoveAt(nlists);
+			delete p;
+		}
+
+		m_nPointsInList = 0;
+	};
+
 	int GetModified() { return m_Modified; }
 
 

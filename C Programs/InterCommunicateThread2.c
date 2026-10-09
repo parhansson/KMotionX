@@ -2,7 +2,7 @@
 
 int *pMyData; // declare a pointer to the data
 
-main()
+int main()
 {
 	int msg;
 	pMyData=persist.UserData[10]; //get address from other Thread

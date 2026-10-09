@@ -1,6 +1,6 @@
 #include "KMotionDef.h"
 
-main()
+int main()
 {
 	SetBitDirection(26,1);  		// Set bit 26 (PWM 0 as an output)
 	FPGA(IO_PWMS_PRESCALE) = 1;  	// set pwm period to 30 KHz

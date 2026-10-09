@@ -1,6 +1,6 @@
 #include "KMotionDef.h"
 
-main()
+int main()
 {
 	ch0->LimitSwitchOptions=0x00000000; // disable limits
 	

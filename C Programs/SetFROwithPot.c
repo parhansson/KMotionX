@@ -8,7 +8,7 @@
 double LastFRO=-1;
 double LastFROTime=0;
 
-main()
+int main()
 {
 	double Pot,FRO,T;
 

@@ -75,7 +75,7 @@ BOOL CLogSlider::SetPos(double pos)
 	int L;
 	int H;
 
-	if (!CalcLinear(pos,linear,L,H)) return FALSE;
+	if (!CalcLinear(pos,linear,L,H) && linear != L) return FALSE;
 
 	// linear is now 1.0/0.16 or 62.5
 	// so the actual value is set to 63

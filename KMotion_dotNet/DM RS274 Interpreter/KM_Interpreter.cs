@@ -1381,13 +1381,13 @@ namespace KMotion_dotNet
         /// Set the current fixture
         /// </summary>
         /// <param name="fixture">Fixture Index</param>
-        public void ChangeFixtureNumber(int fixture)
+        /// <returns>0 if successful else error code</returns>
+
+        public int ChangeFixtureNumber(int fixture)
         {
-            int retval = 0;
             try
             {
-                retval = KM_dotnet_Interop_GCodeInterpreter_ChangeFixtureNumber(_InstanceHandle, fixture);
-                //Process return value
+                return KM_dotnet_Interop_GCodeInterpreter_ChangeFixtureNumber(_InstanceHandle, fixture);
             }
             catch (DllNotFoundException e)
             {
@@ -2464,6 +2464,33 @@ namespace KMotion_dotNet
             {
                 throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
                   this.ToString(), "Get_VarsFile"));
+            }
+        }
+
+        /// <summary>
+        /// Saves Interpreter GCode Variables to disk in filename specified by VarsFile
+        /// </summary>
+        /// <returns>Returns true if successful</returns>
+      	public bool SaveVars()
+        {
+            try
+            {
+                return KM_dotnet_Interop_GCodeInterpreter_SaveVars(_InstanceHandle) == 0; 
+            }
+            catch (DllNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                    this.ToString(), "SaveVars"));
+            }
+            catch (EntryPointNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                   this.ToString(), "SaveVars"));
+            }
+            catch (Exception e)
+            {
+                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                  this.ToString(), "SaveVars"));
             }
         }
 

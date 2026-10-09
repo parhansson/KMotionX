@@ -13,7 +13,7 @@ CString	ErrorMsg;
 int	exitcode;
 bool Finished;
 
-void CompleteCallback(int status, int line_no, int sequence_number, const char *err)
+void CompleteCallback(int status, int line_no, int sequence_number, const wchar_t*err)
 {
 	ErrorLineNo=line_no;
 	ErrorMsg=err;
@@ -21,15 +21,15 @@ void CompleteCallback(int status, int line_no, int sequence_number, const char *
 	Finished=true;
 }
 
-void StatusCallback(int line_no, const char *msg)
+void StatusCallback(int line_no, const wchar_t*msg)
 {
 	CurrentLineNo=line_no;
 	GCodeOutput+=msg;
 }
 
-int UserCallback(const char *msg)
+int UserCallback(const wchar_t *msg)
 {
-	MessageBox(NULL,msg,"SimpleGCode",MB_OK);
+	MessageBoxW(NULL,msg,L"SimpleGCode",MB_OK);
 	return 0;
 }
 
@@ -37,8 +37,8 @@ int UserMCodeCallback(int mcode)
 {
 	double Var1000 = Interpreter->p_setup->parameters[1000];
 	CString s;
-	s.Format("MCode %d Trigger GCode Var 1000 = %f",mcode,Var1000); 
-	MessageBox(NULL,s,"SimpleGCode",MB_OK);
+	s.Format(L"MCode %d Trigger GCode Var 1000 = %f",mcode,Var1000); 
+	MessageBox(NULL,s,L"SimpleGCode",MB_OK);
 	return 0;
 }
 
@@ -80,8 +80,8 @@ int main(int argc, char* argv[])
 	p->DegreesA = p->DegreesB = p->DegreesC = FALSE; 
 	p->ArcsToSegs = true;
 
-	strcpy(Interpreter->ToolFile,"");
-	strcpy(Interpreter->SetupFile,"");
+	wcscpy(Interpreter->ToolFile,L"");
+	wcscpy(Interpreter->SetupFile,L"");
 	Interpreter->CoordMotion->SetTPParams();
 
 	Finished=false;
@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
 
 	// Execute the GCode!
 
-	Interpreter->Interpret(BoardType,InFile,0,-1,true,StatusCallback,CompleteCallback);
+	Interpreter->Interpret(BoardType,(CStringW)InFile,0,-1,true,StatusCallback,CompleteCallback);
 
 	// Display Current Line Number while executing
 
@@ -118,12 +118,12 @@ int main(int argc, char* argv[])
 
 	if (exitcode)
 	{
-		printf("Error in line %d\n",ErrorLineNo);
-		printf("%s\n",ErrorMsg.GetBuffer(0));
+		wprintf(L"Error in line %d\n",ErrorLineNo);
+		wprintf(L"%s\n",ErrorMsg.GetBuffer(0));
 	}
 	else
 	{
-		printf("%s\n",GCodeOutput.GetBuffer(0));
+		wprintf(L"%s\n",GCodeOutput.GetBuffer(0));
 	}
 
 	getchar();

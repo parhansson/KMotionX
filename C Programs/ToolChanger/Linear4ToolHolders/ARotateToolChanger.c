@@ -24,7 +24,7 @@ int UnloadTool(int CurrentTool);
 int LoadNewTool(int CurrentTool, int Tool);
 
 
-main()
+int main()
 {
 	int ToolSlot = persist.UserData[TOOL_VAR];	// Requested tool to load (value stored an integer) 
 

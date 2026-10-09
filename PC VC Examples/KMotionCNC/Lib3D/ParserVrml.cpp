@@ -41,17 +41,17 @@ void CParserVrml::Free(void)
 //********************************************
 // Run
 //********************************************
-int CParserVrml::Run(char *filename,
+int CParserVrml::Run(wchar_t *filename,
 										 CSceneGraph3d *pSceneGraph)
 {
-	TRACE("\n");
-	TRACE("Start vrml parser\n");
-	TRACE("  file : %s\n",filename);
+	TRACE(L"\n");
+	TRACE(L"Start vrml parser\n");
+	TRACE(L"  file : %ls\n",filename);
 
 	// Free
-	TRACE("  free...");
+	TRACE(L"  free...");
 	Free();
-	TRACE("ok\n");
+	TRACE(L"ok\n");
 
 	// ReadFile
 	if(!ReadFile(filename))
@@ -64,11 +64,11 @@ int CParserVrml::Run(char *filename,
 	CountDef();
 	CountMesh();
 
-	while(OffsetToStringBeginLine("DEF"))
+	while(OffsetToStringBeginLine(L"DEF"))
 		ReadMesh(pSceneGraph);
 
-	TRACE("End vrml parser\n");
-	TRACE("\n");
+	TRACE(L"End vrml parser\n");
+	TRACE(L"\n");
 	return 1;
 }
 
@@ -76,60 +76,57 @@ int CParserVrml::Run(char *filename,
 //********************************************
 // ReadFile
 //********************************************
-int CParserVrml::ReadFile(char *filename)
+int CParserVrml::ReadFile(wchar_t *filename)
 {
 	m_FileName = filename;
 
-	CFile file;
+	CString s, data;
+
 	CFileException ex;
 
 	// Opening
-	TRACE("  opening...");
-	if(!file.Open(filename, CFile::modeRead | CFile::typeBinary,&ex))
+	TRACE(L"  opening...");
+
+	FILE* f;
+	_tfopen_s(&f, filename, _T("rt,ccs=UTF-8"));
+
+
+	if(!f)
 	{
 		#ifdef _DEBUG
 		  afxDump << "File could not be opened " << ex.m_cause << "\n";
 		#endif
-		TRACE("unable to open file for reading\n");
+		TRACE(L"unable to open file for reading\n");
+		swprintf(s.GetBufferSetLength(201), L"Unable to open VRML File %ls", filename);
+		MessageBox(NULL, s, L"KMotionCNC", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
 		return 0;
 	}
-	TRACE("ok\n");
+	TRACE(L"ok\n");
 
-	// Size file
-	m_SizeFile = file.GetLength();
-	TRACE("  length : %d bytes\n",m_SizeFile);
+	while (!feof(f))
+	{
+		fgetws(s.GetBufferSetLength(301), 300, f);
+		if (!feof(f))
+		{
+			data += s;
+		}
+	}
+	fclose(f);
+
+	m_SizeFile = data.GetLength();
 
 	// Alloc
-	TRACE("  alloc...");
-	m_pBuffer = new char[m_SizeFile];
+	TRACE(L"  alloc...");
+	m_pBuffer = new wchar_t[m_SizeFile + 1];
 	if(m_pBuffer == NULL)
 	{
-		TRACE("insuffisant memory\n");
+		TRACE(L"Insufficent memory\n");
 		return 0;
 	}
-	TRACE("ok\n");
+	TRACE(L"ok\n");
 
-	// Reading
-	TRACE("  reading...");
-	TRY
-	{
-		file.Read(m_pBuffer,m_SizeFile);
-	}
-	CATCH(CFileException, e)
-	{
-		#ifdef _DEBUG
-				afxDump << "Error during reading " << e->m_cause << "\n";
-		#endif
-		TRACE("error during reading\n");
-		file.Close();
-		return 0;
-	}
-	END_CATCH
-	TRACE("ok\n");
-
-	// Closing
-	file.Close();
-
+	wcscpy(m_pBuffer, data);
+		
 	return 1;
 }
 
@@ -150,7 +147,7 @@ int CParserVrml::ReadLine()
 
 	m_pBufferLine[i-1] = '\0';
 
-	//TRACE("  line : %s\n",m_pBufferLine);
+	//TRACE(L"  line : %ls\n",m_pBufferLine);
 
 	return 1;
 }
@@ -189,7 +186,7 @@ int CParserVrml::ReadWord()
 
 	m_pBufferWord[i-1] = '\0';
 
-	//TRACE("  word : %s\n",m_pBufferWord);
+	//TRACE(L"  word : %ls\n",m_pBufferWord);
 
 	return 1;
 }
@@ -203,13 +200,13 @@ int CParserVrml::ReadWord()
 int CParserVrml::CheckVersion()
 {
 	ReadLine();
-	TRACE("  check version (vrml 2.0)...");
-	if(strstr(m_pBufferLine,"#VRML V2.0") != NULL)
+	TRACE(L"  check version (vrml 2.0)...");
+	if(wcsstr(m_pBufferLine,L"#VRML V2.0") != NULL)
 	{
-		TRACE("ok\n");
+		TRACE(L"ok\n");
 		return 1;
 	}
-	TRACE("invalid\n");
+	TRACE(L"invalid\n");
 	return 0;
 }
 
@@ -225,10 +222,10 @@ void CParserVrml::CountDef(void)
 	while(m_IndexBuffer < m_SizeFile)
 	{
 		ReadLine();
-		if(strncmp(m_pBufferLine,"DEF",3) == 0)
+		if(wcsncmp(m_pBufferLine, L"DEF",3) == 0)
 			nb++;
 	}
-	TRACE("  %d objects\n",nb);
+	TRACE(L"  %d objects\n",nb);
 	m_IndexBuffer = tmp;
 }
 
@@ -242,10 +239,10 @@ int CParserVrml::CountMesh(void)
 	while(m_IndexBuffer < m_SizeFile)
 	{
 		ReadLine();
-		if(strstr(m_pBufferLine,"IndexedFaceSet") != NULL)
+		if(wcsstr(m_pBufferLine, L"IndexedFaceSet") != NULL)
 			nb++;
 	}
-	TRACE("  %d meshes\n",nb);
+	TRACE(L"  %d meshes\n",nb);
 	m_IndexBuffer = tmp;
 	return nb;
 }
@@ -253,16 +250,16 @@ int CParserVrml::CountMesh(void)
 //********************************************
 // OffsetToStringBeginLine
 //********************************************
-int CParserVrml::OffsetToStringBeginLine(char *string)
+int CParserVrml::OffsetToStringBeginLine(wchar_t *string)
 {
 	while(m_IndexBuffer < m_SizeFile)
 	{
 		ReadLine();
-		if(strncmp(m_pBufferLine,string,(int)strlen(string)) == 0)
+		if(wcsncmp(m_pBufferLine,string,(int)wcslen(string)) == 0)
 		{
-			m_IndexBuffer -= (int)strlen(m_pBufferLine)+1;
+			m_IndexBuffer -= (int)wcslen(m_pBufferLine)+1;
 			/*
-			TRACE("  begin line : %c%c%c%c%c...\n",m_pBuffer[m_IndexBuffer],
+			TRACE(L"  begin line : %c%c%c%c%c...\n",m_pBuffer[m_IndexBuffer],
 				                                     m_pBuffer[m_IndexBuffer+1],
 				                                     m_pBuffer[m_IndexBuffer+2],
 				                                     m_pBuffer[m_IndexBuffer+3],
@@ -276,18 +273,18 @@ int CParserVrml::OffsetToStringBeginLine(char *string)
 //********************************************
 // OffsetToString
 //********************************************
-int CParserVrml::OffsetToString(char *string)
+int CParserVrml::OffsetToString(wchar_t *string)
 {
 	while(m_IndexBuffer < m_SizeFile)
 	{
 		ReadLine();
-		char *adr = strstr(m_pBufferLine,string);
-		if(strstr(m_pBufferLine,string) != NULL)
+		wchar_t *adr = wcsstr(m_pBufferLine,string);
+		if(wcsstr(m_pBufferLine,string) != NULL)
 		{
-			m_IndexBuffer = m_IndexBuffer - (int)strlen(m_pBufferLine) - 1 + (adr-m_pBufferLine);
+			m_IndexBuffer = m_IndexBuffer - (int)wcslen(m_pBufferLine) - 1 + (adr-m_pBufferLine);
 			ASSERT(m_IndexBuffer >= 0);
 			/*
-			TRACE("  offset to string : %c%c%c%c%c... IndexBuffer : %d\n",m_pBuffer[m_IndexBuffer],
+			TRACE(L"  offset to string : %c%c%c%c%c... IndexBuffer : %d\n",m_pBuffer[m_IndexBuffer],
  				                                           m_pBuffer[m_IndexBuffer+1], 
 				                                           m_pBuffer[m_IndexBuffer+2],
 				                                           m_pBuffer[m_IndexBuffer+3],
@@ -302,21 +299,21 @@ int CParserVrml::OffsetToString(char *string)
 //********************************************
 // OffsetToString
 //********************************************
-int CParserVrml::OffsetToStringBefore(char *string,
-																			char *before)
+int CParserVrml::OffsetToStringBefore(wchar_t *string,
+																			wchar_t *before)
 {
 	while(m_IndexBuffer < m_SizeFile)
 	{
 		ReadLine();
-		char *adr = strstr(m_pBufferLine,string);
-		if(strstr(m_pBufferLine,before) != NULL)
+		wchar_t *adr = wcsstr(m_pBufferLine,string);
+		if(wcsstr(m_pBufferLine,before) != NULL)
 			return 0;
-		if(strstr(m_pBufferLine,string) != NULL)
+		if(wcsstr(m_pBufferLine,string) != NULL)
 		{
-			m_IndexBuffer = m_IndexBuffer - (int)strlen(m_pBufferLine) - 1 + (adr-m_pBufferLine);
+			m_IndexBuffer = m_IndexBuffer - (int)wcslen(m_pBufferLine) - 1 + (adr-m_pBufferLine);
 			ASSERT(m_IndexBuffer >= 0);
 			/*
-			TRACE("  offset to string : %c%c%c%c%c... IndexBuffer : %d\n",m_pBuffer[m_IndexBuffer],
+			TRACE(L"  offset to string : %c%c%c%c%c... IndexBuffer : %d\n",m_pBuffer[m_IndexBuffer],
  				                                           m_pBuffer[m_IndexBuffer+1], 
 				                                           m_pBuffer[m_IndexBuffer+2],
 				                                           m_pBuffer[m_IndexBuffer+3],
@@ -334,25 +331,25 @@ int CParserVrml::OffsetToStringBefore(char *string,
 int CParserVrml::CheckMesh()
 {
 	// Find a possible mesh
-	TRACE("  check mesh...");
-	OffsetToStringBeginLine("DEF");
+	TRACE(L"  check mesh...");
+	OffsetToStringBeginLine(L"DEF");
 	int tmp = m_IndexBuffer;
 	ReadLine();
-	if(strstr(m_pBufferLine,"DEF") != NULL && 
-	   strstr(m_pBufferLine,"Transform") != NULL)
+	if(wcsstr(m_pBufferLine, L"DEF") != NULL && 
+	   wcsstr(m_pBufferLine, L"Transform") != NULL)
 	{
 		m_IndexBuffer = tmp;
-		if(OffsetToString("Transform") &&
-		   OffsetToString("Material") &&
-		   OffsetToString("IndexedFaceSet"))
+		if(OffsetToString(L"Transform") &&
+		   OffsetToString(L"Material") &&
+		   OffsetToString(L"IndexedFaceSet"))
 		{
 			m_IndexBuffer = tmp;
-			TRACE("ok\n");
+			TRACE(L"ok\n");
 			return 1;
 		}
 	}
 	//m_IndexBuffer = tmp;
-	TRACE("not a mesh\n");
+	TRACE(L"not a mesh\n");
 	return 0;
 }
 
@@ -367,16 +364,16 @@ int CParserVrml::ReadMesh(CSceneGraph3d *pSceneGraph)
 
 	int tmp = m_IndexBuffer;
 	ReadLine();
-	ASSERT(strstr(m_pBufferLine,"DEF") != NULL);
-	ASSERT(strstr(m_pBufferLine,"Transform") != NULL);
+	ASSERT(wcsstr(m_pBufferLine, L"DEF") != NULL);
+	ASSERT(wcsstr(m_pBufferLine, L"Transform") != NULL);
 	// DEF [name] Transform {
-	if(sscanf(m_pBufferLine,"DEF %s Transform",m_pBufferWord) != 1)
+	if(swscanf(m_pBufferLine, L"DEF %ls Transform",m_pBufferWord) != 1)
 	{
-		TRACE("  invalid syntax (BufferLine : %s BufferWord : %s\n",m_pBufferLine,m_pBufferWord);
+		TRACE(L"  invalid syntax (BufferLine : %ls BufferWord : %ls\n",m_pBufferLine,m_pBufferWord);
 		return 0;
 	}
 
-	TRACE("  start reading mesh %s\n",m_pBufferWord);
+	TRACE(L"  start reading mesh %ls\n",m_pBufferWord);
 
 	m_IndexBuffer = tmp;
 
@@ -391,7 +388,7 @@ int CParserVrml::ReadMesh(CSceneGraph3d *pSceneGraph)
   // scale -49.36 -49.36 -49.36
   // scaleOrientation -0.689 0.4766 -0.546 -0.6007
 
-	OffsetToString("Transform");
+	OffsetToString(L"Transform");
 	ReadLine(); // Transform
 	CTransform transform;
 	transform.Clear();
@@ -399,7 +396,7 @@ int CParserVrml::ReadMesh(CSceneGraph3d *pSceneGraph)
 	// Translation
 	tmp = m_IndexBuffer;
 	ReadLine();
-	if(strstr(m_pBufferLine,"translation") != NULL)
+	if(wcsstr(m_pBufferLine, L"translation") != NULL)
 	{
 		// Come back
 		m_IndexBuffer = tmp;
@@ -408,15 +405,15 @@ int CParserVrml::ReadMesh(CSceneGraph3d *pSceneGraph)
 
 		float x,y,z;
 		ReadWord();
-		int success = sscanf(m_pBufferWord,"%f",&x);
+		bool success = swscanf(m_pBufferWord, L"%f",&x) == 1;
 		ReadWord();
-		success &= sscanf(m_pBufferWord,"%f",&y);
+		success = success && swscanf(m_pBufferWord, L"%f",&y) == 1;
 		ReadWord();
-		success &= sscanf(m_pBufferWord,"%f",&z);
+		success = success && swscanf(m_pBufferWord, L"%f",&z) == 1;
 		if(success)
 		{
 			transform.SetTranslation(CVector3d(x,y,z));
-			TRACE("    translation : %g %g %g\n",x,y,z);
+			TRACE(L"    translation : %g %g %g\n",x,y,z);
 		}
 		ReadLine();
 		tmp = m_IndexBuffer;
@@ -424,7 +421,7 @@ int CParserVrml::ReadMesh(CSceneGraph3d *pSceneGraph)
 	}
 
 	// Rotation
-	if(strstr(m_pBufferLine,"rotation") != NULL)
+	if(wcsstr(m_pBufferLine, L"rotation") != NULL)
 	{
 		// Come back
 		m_IndexBuffer = tmp;
@@ -433,18 +430,18 @@ int CParserVrml::ReadMesh(CSceneGraph3d *pSceneGraph)
 
 		float x,y,z,value;
 		ReadWord();
-		int success = sscanf(m_pBufferWord,"%f",&x);
+		bool success = swscanf(m_pBufferWord, L"%f",&x) == 1;
 		ReadWord();
-		success &= sscanf(m_pBufferWord,"%f",&y);
+		success = success && swscanf(m_pBufferWord, L"%f",&y) == 1;
 		ReadWord();
-		success &= sscanf(m_pBufferWord,"%f",&z);
+		success = success && swscanf(m_pBufferWord, L"%f",&z) == 1;
 		ReadWord();
-		success &= sscanf(m_pBufferWord,"%f",&value);
+		success = success && swscanf(m_pBufferWord, L"%f",&value) == 1;
 		if(success)
 		{
 			transform.SetRotation(CVector3d(x,y,z));
 			transform.SetValueRotation(value/3.1415926f*180.0f);
-			TRACE("    rotation : %g %g %g %g\n",x,y,z,value);
+			TRACE(L"    rotation : %g %g %g %g\n",x,y,z,value);
 		}
 		ReadLine();
 		tmp = m_IndexBuffer;
@@ -452,7 +449,7 @@ int CParserVrml::ReadMesh(CSceneGraph3d *pSceneGraph)
 	}
 
 	// Scale
-	if(strstr(m_pBufferLine,"scale") != NULL)
+	if(wcsstr(m_pBufferLine, L"scale") != NULL)
 	{
 		// Come back
 		m_IndexBuffer = tmp;
@@ -461,15 +458,15 @@ int CParserVrml::ReadMesh(CSceneGraph3d *pSceneGraph)
 
 		float x,y,z;
 		ReadWord();
-		int success = sscanf(m_pBufferWord,"%f",&x);
+		bool success = swscanf(m_pBufferWord, L"%f",&x) == 1;
 		ReadWord();
-		success &= sscanf(m_pBufferWord,"%f",&y);
+		success = success && swscanf(m_pBufferWord, L"%f",&y) == 1;
 		ReadWord();
-		success &= sscanf(m_pBufferWord,"%f",&z);
+		success = success && swscanf(m_pBufferWord, L"%f",&z) == 1;
 		if(success)
 		{
 			transform.SetScale(CVector3d(x,y,z));
-			TRACE("    scale : %g %g %g\n",x,y,z);
+			TRACE(L"    scale : %g %g %g\n",x,y,z);
 		}
 		ReadLine();
 		tmp = m_IndexBuffer;
@@ -477,7 +474,7 @@ int CParserVrml::ReadMesh(CSceneGraph3d *pSceneGraph)
 	}
 
 	// ScaleOrientation
-	if(strstr(m_pBufferLine,"scaleOrientation") != NULL)
+	if(wcsstr(m_pBufferLine, L"scaleOrientation") != NULL)
 	{
 		// Come back
 		m_IndexBuffer = tmp;
@@ -486,17 +483,17 @@ int CParserVrml::ReadMesh(CSceneGraph3d *pSceneGraph)
 
 		float x,y,z,value;
 		ReadWord();
-		int success = sscanf(m_pBufferWord,"%f",&x);
+		bool success = swscanf(m_pBufferWord, L"%f",&x) == 1;
 		ReadWord();
-		success &= sscanf(m_pBufferWord,"%f",&y);
+		success = success && swscanf(m_pBufferWord, L"%f",&y) == 1;
 		ReadWord();
-		success &= sscanf(m_pBufferWord,"%f",&z);
+		success = success && swscanf(m_pBufferWord, L"%f",&z) == 1;
 		ReadWord();
-		success &= sscanf(m_pBufferWord,"%f",&value);
+		success = success && swscanf(m_pBufferWord, L"%f",&value) == 1;
 		if(success)
 		{
 			//transform.SetScale(CVector3d(x,y,z));
-			TRACE("    scaleOrientation : %g %g %g %g\n",x,y,z,value);
+			TRACE(L"    scaleOrientation : %g %g %g %g\n",x,y,z,value);
 		}
 		ReadLine();
 	}
@@ -507,7 +504,7 @@ int CParserVrml::ReadMesh(CSceneGraph3d *pSceneGraph)
   // material Material {
   // diffuseColor 0.5686 0.1098 0.6941
 	CMaterial material;
-	if(OffsetToString("Material"))
+	if(OffsetToString(L"Material"))
 	{
 		ReadLine();
 
@@ -515,7 +512,7 @@ int CParserVrml::ReadMesh(CSceneGraph3d *pSceneGraph)
 
 		// Diffuse color
 		ReadLine(); 
-		if(strstr(m_pBufferLine,"diffuseColor") != NULL)
+		if(wcsstr(m_pBufferLine, L"diffuseColor") != NULL)
 		{
 			// Come back
 			m_IndexBuffer = tmp;
@@ -525,15 +522,15 @@ int CParserVrml::ReadMesh(CSceneGraph3d *pSceneGraph)
 
 			float r,g,b;
 			ReadWord();
-			int success = sscanf(m_pBufferWord,"%f",&r);
+			bool success = swscanf(m_pBufferWord, L"%f",&r) == 1;
 			ReadWord();
-			success &= sscanf(m_pBufferWord,"%f",&g);
+			success = success && swscanf(m_pBufferWord, L"%f",&g) == 1;
 			ReadWord();
-			success &= sscanf(m_pBufferWord,"%f",&b);
+			success = success && swscanf(m_pBufferWord, L"%f",&b) == 1;
 			if(success)
 			{
 				material.SetDiffuse(r,g,b,1.0f);
-				TRACE("    diffuseColor : %g %g %g\n",r,g,b);
+				TRACE(L"    diffuseColor : %g %g %g\n",r,g,b);
 			}
 		}
 	}
@@ -541,31 +538,31 @@ int CParserVrml::ReadMesh(CSceneGraph3d *pSceneGraph)
 	// Texture
 	//********************************************
 	int texture = 0;
-	if(OffsetToStringBefore("texture ImageTexture","geometry"))
+	if(OffsetToStringBefore(L"texture ImageTexture", L"geometry"))
 	{
 		texture = 1;
 		ReadLine();
 		tmp = m_IndexBuffer;
 
 		ReadLine(); 
-		if(strstr(m_pBufferLine,"url") != NULL)
+		if(wcsstr(m_pBufferLine, L"url") != NULL)
 		{
 			// Come back
 			m_IndexBuffer = tmp;
 
 			// Jump
 			ReadWord();
-			char string[MAX_PATH];
+			wchar_t string[MAX_PATH];
 			ReadWord();
-			int success = sscanf(m_pBufferWord,"%s",string);
+			bool success = swscanf(m_pBufferWord, L"%ls",string) == 1;
 
 			// Remove ""
 			CString TextureName = string;
 			TextureName = TextureName.Mid(1,TextureName.GetLength()-2);
-			TRACE("    texture : %s\n",TextureName);
+			TRACE(L"    texture : %ls\n",TextureName);
 
 			// Ask SceneGraph to add texture, if needed
-			char *name = TextureName.GetBuffer(MAX_PATH);
+			wchar_t *name = TextureName.GetBuffer(MAX_PATH);
 			if(!pSceneGraph->HasTexture(name,&IndexTexture))
 			{
 				CTexture *pTexture = new CTexture;
@@ -605,7 +602,7 @@ int CParserVrml::ReadMesh(CSceneGraph3d *pSceneGraph)
 	pMesh->SetTransform(transform);
 	pMesh->SetMaterial(&material);
 
-	TRACE("  end reading mesh\n");
+	TRACE(L"  end reading mesh\n");
 
 	return 1;
 }
@@ -618,46 +615,46 @@ int CParserVrml::SizeMesh(int *pNbVertex,
 													int HasTexture,
 													int *pNbTextureCoordinate /* = NULL */)
 {
-	TRACE("    size mesh...");
+	TRACE(L"    size mesh...");
 	int tmp = m_IndexBuffer;
 
 	ASSERT(pNbVertex != NULL);
 	ASSERT(pNbFace != NULL);
 
-	if(!OffsetToString("IndexedFaceSet"))
+	if(!OffsetToString(L"IndexedFaceSet"))
 	{
-		TRACE("invalid mesh\n");
+		TRACE(L"invalid mesh\n");
 		return 0;
 	}
 
 	// Count points
 	//***********************************************
-	if(!OffsetToString("Coordinate { point ["))
+	if(!OffsetToString(L"Coordinate { point ["))
 	{
-		TRACE("invalid mesh\n");
+		TRACE(L"invalid mesh\n");
 		return 0;
 	}
 
-	m_IndexBuffer += (int)strlen("Coordinate { point [") + 1;
+	m_IndexBuffer += (int)wcslen(L"Coordinate { point [") + 1;
 
 	// Cur : x y z,
 	// End : x y z]
 	int NbVertex = 0;
-	int success;
+	bool success;
 	do
 	{
 		float x,y,z;
 		ReadWord();
-		success = sscanf(m_pBufferWord,"%f",&x);
+		success = swscanf(m_pBufferWord, L"%f",&x) == 1;
 		ReadWord();
-		success &= sscanf(m_pBufferWord,"%f",&y);
+		success = success && swscanf(m_pBufferWord, L"%f",&y) == 1;
 		ReadWord();
-		success &= sscanf(m_pBufferWord,"%f",&z);
+		success = success && swscanf(m_pBufferWord, L"%f",&z) == 1;
 		NbVertex += success;
-		//TRACE("\n (%g %g %g) ",x,y,z);
+		//TRACE(L"\n (%g %g %g) ",x,y,z);
 	}
 	while(success);
-	TRACE(" %d points,",NbVertex);
+	TRACE(L" %d points, L",NbVertex);
 
 	if(NbVertex <= 0)
 		return 0;
@@ -668,29 +665,29 @@ int CParserVrml::SizeMesh(int *pNbVertex,
 	int NbTextureCoordinate = 0;
 	if(HasTexture)
 	{
-		if(!OffsetToString("TextureCoordinate { point ["))
+		if(!OffsetToString(L"TextureCoordinate { point ["))
 		{
-			TRACE("invalid texture coordinates\n");
+			TRACE(L"invalid texture coordinates\n");
 			return 0;
 		}
 
-		m_IndexBuffer += (int)strlen("TextureCoordinate { point [") + 1;
+		m_IndexBuffer += (int)wcslen(L"TextureCoordinate { point [") + 1;
 
 		// Cur : x y,
 		// End : x y]
-		int success;
+		bool success;
 		do
 		{
 			float x,y;
 			ReadWord();
-			success = sscanf(m_pBufferWord,"%f",&x);
+			success = swscanf(m_pBufferWord, L"%f",&x) == 1;
 			ReadWord();
-			success &= sscanf(m_pBufferWord,"%f",&y);
+			success = success && swscanf(m_pBufferWord, L"%f",&y) == 1;
 			NbTextureCoordinate += success;
-			//TRACE("\n (%g %g %g) ",x,y,z);
+			//TRACE(L"\n (%g %g %g) ",x,y,z);
 		}
 		while(success);
-		TRACE(" %d texture coordinates,",NbTextureCoordinate);
+		TRACE(L" %d texture coordinates,",NbTextureCoordinate);
 
 		if(NbTextureCoordinate <= 0)
 			return 0;
@@ -700,12 +697,12 @@ int CParserVrml::SizeMesh(int *pNbVertex,
 	// Count faces, accept only triangles
 	//***********************************************
 	m_IndexBuffer = tmp;
-	if(!OffsetToString("coordIndex ["))
+	if(!OffsetToString(L"coordIndex ["))
 	{
-		TRACE("invalid mesh\n");
+		TRACE(L"invalid mesh\n");
 		return 0;
 	}
-	m_IndexBuffer += (int)strlen("coordIndex [") + 1;
+	m_IndexBuffer += (int)wcslen(L"coordIndex [") + 1;
 
 	// Cur : int, int, int, -1,
 	// End : int, int, int, -1]
@@ -714,11 +711,11 @@ int CParserVrml::SizeMesh(int *pNbVertex,
 	{
 		int v1,v2,v3;
 		ReadWord();
-		success  = sscanf(m_pBufferWord,"%d,",&v1);
+		success  = swscanf(m_pBufferWord, L"%d,",&v1) == 1;
 		ReadWord();
-		success &= sscanf(m_pBufferWord,"%d,",&v2);
+		success = success && swscanf(m_pBufferWord, L"%d,",&v2) == 1;
 		ReadWord();
-		success &= sscanf(m_pBufferWord,"%d,",&v3);
+		success = success && swscanf(m_pBufferWord, L"%d,",&v3) == 1;
 		NbFace += success;
 
 		ASSERT(v1 >= 0);
@@ -727,12 +724,12 @@ int CParserVrml::SizeMesh(int *pNbVertex,
 
 		int test;
 		ReadWord();
-		sscanf(m_pBufferWord,"%d",&test);
-		if(strstr(m_pBufferWord,"]") != NULL)
+		swscanf(m_pBufferWord, L"%d",&test);
+		if(wcsstr(m_pBufferWord, L"]") != NULL)
 			success = 0;
 	}
 	while(success);
-	TRACE(" %d faces,",NbFace);
+	TRACE(L" %d faces,",NbFace);
 
 	if(NbFace <= 0)
 		return 0;
@@ -742,12 +739,12 @@ int CParserVrml::SizeMesh(int *pNbVertex,
 	if(HasTexture)
 	{
 		m_IndexBuffer = tmp;
-		if(!OffsetToString("texCoordIndex ["))
+		if(!OffsetToString(L"texCoordIndex ["))
 		{
-			TRACE("invalid texture coordinate index\n");
+			TRACE(L"invalid texture coordinate index\n");
 			return 0;
 		}
-		m_IndexBuffer += (int)strlen("texCoordIndex [") + 1;
+		m_IndexBuffer += (int)wcslen(L"texCoordIndex [") + 1;
 
 		// Cur : int, int, int, -1,
 		// End : int, int, int, -1]
@@ -756,11 +753,11 @@ int CParserVrml::SizeMesh(int *pNbVertex,
 		{
 			int v1,v2,v3;
 			ReadWord();
-			success  = sscanf(m_pBufferWord,"%d,",&v1);
+			success  = swscanf(m_pBufferWord, L"%d,",&v1) == 1;
 			ReadWord();
-			success &= sscanf(m_pBufferWord,"%d,",&v2);
+			success = success && swscanf(m_pBufferWord, L"%d,",&v2) == 1;
 			ReadWord();
-			success &= sscanf(m_pBufferWord,"%d,",&v3);
+			success = success && swscanf(m_pBufferWord, L"%d,",&v3) == 1;
 			NbCoordIndex += success;
 
 			ASSERT(v1 >= 0);
@@ -769,16 +766,16 @@ int CParserVrml::SizeMesh(int *pNbVertex,
 
 			int test;
 			ReadWord();
-			sscanf(m_pBufferWord,"%d",&test);
-			if(strstr(m_pBufferWord,"]") != NULL)
+			swscanf(m_pBufferWord, L"%d",&test);
+			if(wcsstr(m_pBufferWord, L"]") != NULL)
 				success = 0;
 		}
 		while(success);
-		TRACE(" %d coordinate index\n",NbCoordIndex);
+		TRACE(L" %d coordinate index\n",NbCoordIndex);
 
 		if(NbFace != NbCoordIndex)
 		{
-			TRACE(" different values for coord index and faces\n");
+			TRACE(L" different values for coord index and faces\n");
 			return 0;
 		}
 	}
@@ -804,74 +801,74 @@ int CParserVrml::StoreMesh(CArray3d<CVertex3d> *pArrayVertex,
 													 float *pTextureCoordinate,
 													 int *pTextureCoordinateIndex)
 {
-	TRACE("    store mesh...");
+	TRACE(L"    store mesh...");
 	int tmp = m_IndexBuffer;
 
-	if(!OffsetToString("IndexedFaceSet"))
+	if(!OffsetToString(L"IndexedFaceSet"))
 	{
-		TRACE("invalid mesh\n");
+		TRACE(L"invalid mesh\n");
 		return 0;
 	}
 
 	// Store vertices
 	//***********************************************
-	if(!OffsetToString("Coordinate { point ["))
+	if(!OffsetToString(L"Coordinate { point ["))
 	{
-		TRACE("invalid mesh\n");
+		TRACE(L"invalid mesh\n");
 		return 0;
 	}
-	m_IndexBuffer += (int)strlen("Coordinate { point [") + 1;
+	m_IndexBuffer += (int)wcslen(L"Coordinate { point [") + 1;
 	// Cur : x y z,
 	// End : x y z]
-	int success;
+	bool success;
 	int NbVertex = 0;
 	do
 	{
 		float x,y,z;
 		ReadWord();
-		success = sscanf(m_pBufferWord,"%f",&x);
+		success = swscanf(m_pBufferWord, L"%f",&x) == 1;
 		ReadWord();
-		success &= sscanf(m_pBufferWord,"%f",&y);
+		success = success && swscanf(m_pBufferWord, L"%f",&y) == 1;
 		ReadWord();
-		success &= sscanf(m_pBufferWord,"%f",&z);
+		success = success && swscanf(m_pBufferWord, L"%f",&z) == 1;
 		if(success)
 			pArrayVertex->SetAt(NbVertex++,new CVertex3d(x,y,z));
-		//TRACE("\n (%g %g %g) ",x,y,z);
+		//TRACE(L"\n (%g %g %g) ",x,y,z);
 	}
 	while(success);
-	TRACE(" added %d vertices,",NbVertex);
+	TRACE(L" added %d vertices,",NbVertex);
 
 	// Store texture coordinates (if needed)
 	//***********************************************
 	if(HasTexture)
 	{
-		if(!OffsetToString("TextureCoordinate { point ["))
+		if(!OffsetToString(L"TextureCoordinate { point ["))
 		{
-			TRACE("invalid texture coordinate\n");
+			TRACE(L"invalid texture coordinate\n");
 			return 0;
 		}
-		m_IndexBuffer += (int)strlen("TextureCoordinate { point [") + 1;
+		m_IndexBuffer += (int)wcslen(L"TextureCoordinate { point [") + 1;
 		// Cur : x y,
 		// End : x y
-		int success;
+		bool success;
 		int NbTextureCoordinate = 0;
 		do
 		{
 			float x,y;
 			ReadWord();
-			success = sscanf(m_pBufferWord,"%f",&x);
+			success = swscanf(m_pBufferWord, L"%f",&x) == 1;
 			ReadWord();
-			success &= sscanf(m_pBufferWord,"%f",&y);
+			success = success && swscanf(m_pBufferWord, L"%f",&y) == 1;
 			if(success)
 			{
 				pTextureCoordinate[2*NbTextureCoordinate] = x;
 				pTextureCoordinate[2*NbTextureCoordinate+1] = y;
 				NbTextureCoordinate++;
 			}
-			//TRACE("\n (%g %g) ",x,y);
+			//TRACE(L"\n (%g %g) ",x,y);
 		}
 		while(success);
-		TRACE(" added %d texture coordinates,",NbTextureCoordinate);
+		TRACE(L" added %d texture coordinates,",NbTextureCoordinate);
 	}
 
 	
@@ -879,12 +876,12 @@ int CParserVrml::StoreMesh(CArray3d<CVertex3d> *pArrayVertex,
 	// Store faces, accept only triangles
 	//***********************************************
 	m_IndexBuffer = tmp;
-	if(!OffsetToString("coordIndex ["))
+	if(!OffsetToString(L"coordIndex ["))
 	{
-		TRACE("invalid mesh\n");
+		TRACE(L"invalid mesh\n");
 		return 0;
 	}
-	m_IndexBuffer += (int)strlen("coordIndex [") + 1;
+	m_IndexBuffer += (int)wcslen(L"coordIndex [") + 1;
 
 	// Cur : int, int, int, -1,
 	// End : int, int, int, -1]
@@ -893,11 +890,11 @@ int CParserVrml::StoreMesh(CArray3d<CVertex3d> *pArrayVertex,
 	{
 		int v1,v2,v3;
 		ReadWord();
-		success  = sscanf(m_pBufferWord,"%d,",&v1);
+		success  = swscanf(m_pBufferWord, L"%d,",&v1) == 1;
 		ReadWord();
-		success &= sscanf(m_pBufferWord,"%d,",&v2);
+		success = success && swscanf(m_pBufferWord, L"%d,",&v2) == 1;
 		ReadWord();
-		success &= sscanf(m_pBufferWord,"%d,",&v3);
+		success = success && swscanf(m_pBufferWord, L"%d,",&v3) == 1;
 
 		ASSERT(v1 >= 0);
 		ASSERT(v2 >= 0);
@@ -914,25 +911,25 @@ int CParserVrml::StoreMesh(CArray3d<CVertex3d> *pArrayVertex,
 
 		int test;
 		ReadWord();
-		sscanf(m_pBufferWord,"%d",&test);
-		if(strstr(m_pBufferWord,"]") != NULL)
+		swscanf(m_pBufferWord, L"%d",&test);
+		if(wcsstr(m_pBufferWord, L"]") != NULL)
 			success = 0;
 
 	}
 	while(success);
-	TRACE(" added %d faces\n",NbFace);
+	TRACE(L" added %d faces\n",NbFace);
 
 	// Store texture coord index
 	//***********************************************
 	if(HasTexture)
 	{
 		m_IndexBuffer = tmp;
-		if(!OffsetToString("texCoordIndex ["))
+		if(!OffsetToString(L"texCoordIndex ["))
 		{
-			TRACE("invalid mesh\n");
+			TRACE(L"invalid mesh\n");
 			return 0;
 		}
-		m_IndexBuffer += (int)strlen("texCoordIndex [") + 1;
+		m_IndexBuffer += (int)wcslen(L"texCoordIndex [") + 1;
 
 		// Cur : int, int, int, -1,
 		// End : int, int, int, -1]
@@ -941,11 +938,11 @@ int CParserVrml::StoreMesh(CArray3d<CVertex3d> *pArrayVertex,
 		{
 			int v1,v2,v3;
 			ReadWord();
-			success  = sscanf(m_pBufferWord,"%d,",&v1);
+			success  = swscanf(m_pBufferWord, L"%d,",&v1) == 1;
 			ReadWord();
-			success &= sscanf(m_pBufferWord,"%d,",&v2);
+			success = success && swscanf(m_pBufferWord, L"%d,",&v2) == 1;
 			ReadWord();
-			success &= sscanf(m_pBufferWord,"%d,",&v3);
+			success = success && swscanf(m_pBufferWord, L"%d,",&v3) == 1;
 
 			ASSERT(v1 >= 0);
 			ASSERT(v2 >= 0);
@@ -961,13 +958,13 @@ int CParserVrml::StoreMesh(CArray3d<CVertex3d> *pArrayVertex,
 
 			int test;
 			ReadWord();
-			sscanf(m_pBufferWord,"%d",&test);
-			if(strstr(m_pBufferWord,"]") != NULL)
+			swscanf(m_pBufferWord, L"%d",&test);
+			if(wcsstr(m_pBufferWord, L"]") != NULL)
 				success = 0;
 
 		}
 		while(success);
-		TRACE(" added %d texture coordinate index\n",NbTexCoordIndex);
+		TRACE(L" added %d texture coordinate index\n",NbTexCoordIndex);
 	}
 
 	return 1;

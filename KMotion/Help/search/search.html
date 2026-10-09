@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dynomotion Site Search</title>
+<link rel="stylesheet" href="search.css?v=7">
+</head>
+<body>
+<div class="topbar">
+  <a class="tb-mail" href="mailto:info@dynomotion.com">&#9993; info@dynomotion.com</a>
+  <span class="tb-tag">PROFESSIONAL SYSTEM-LEVEL CONTROL FOR CNC MANUFACTURING, ROBOTICS AND AUTOMATION</span>
+</div>
+<header class="sitehead">
+  <a class="sitelogo" href="https://www.store.dynomotion.com/" title="Dynomotion Store">
+    <img src="dyno-logo.svg" alt="Dynomotion - Manufacturing Motion">
+  </a>
+  <nav class="sitenav">
+    <a href="https://www.store.dynomotion.com/">Store</a>
+    <a id="nav-help" href="https://dynomotion.com/Help/">Help Manuals</a>
+    <a href="https://www.dynomotion.com/wiki/index.php/Main_Page">Wiki</a>
+    <a href="https://dynomotion.com/forum/">Forum</a>
+  </nav>
+</header>
+<div class="wrap">
+  <header>
+    <h1>Site Search</h1>
+    <p class="tagline">Search the Help manuals, the Wiki, the Forum and the Store in one place.</p>
+  </header>
+
+  <form id="searchform" autocomplete="off">
+    <div class="searchrow">
+      <input id="q" type="search" placeholder='e.g. spindle control, "closed loop step", kflop OR kogna' autofocus>
+      <button type="submit" id="go">Search</button>
+    </div>
+    <div class="optionsrow">
+      <label><input type="checkbox" id="sec0" checked> Help manuals</label>
+      <label><input type="checkbox" id="sec1" checked> Wiki</label>
+      <label><input type="checkbox" id="sec2" checked> Forum</label>
+      <label><input type="checkbox" id="sec3" checked> Store</label>
+      <label class="sortlbl">Sort:
+        <select id="sortsel">
+          <option value="rel">Relevance</option>
+          <option value="new">Newest first</option>
+          <option value="old">Oldest first</option>
+        </select>
+      </label>
+      <details class="syntax" id="syntax">
+        <summary>Search syntax</summary>
+        <table>
+          <tr><td><code>encoder noise</code></td><td>pages containing <em>both</em> words (implicit AND)</td></tr>
+          <tr><td><code>"closed loop step"</code></td><td>exact phrase</td></tr>
+          <tr><td><code>kflop OR kogna</code></td><td>either word</td></tr>
+          <tr><td><code>spindle -mach3</code></td><td>exclude a word (also <code>NOT mach3</code>)</td></tr>
+          <tr><td><code>servo (kanalog OR snapamp)</code></td><td>grouping with parentheses</td></tr>
+          <tr><td><code>setbit*</code></td><td>prefix wildcard: SetBit, SetBitDirection, …</td></tr>
+        </table>
+        <p>Searching for a product name (e.g. <code>kflop</code>) shows its Store
+           purchase page first, unless Store is un-checked.
+           Words match exactly (no stemming), so <code>axis</code> does not match <code>axes</code> —
+           use <code>ax*</code> or <code>axis OR axes</code>. Matching is case-insensitive.
+           Version numbers, decimals and IP addresses are single terms:
+           <code>5.4.4</code> matches only the literal 5.4.4.
+           Results are ranked by relevance (BM25): rare words count more than common ones,
+           matches in page titles count extra, and shorter pages rank above long ones with
+           the same number of matches.</p>
+      </details>
+    </div>
+  </form>
+
+  <div id="stats"></div>
+  <div id="results"></div>
+  <nav id="pager"></nav>
+
+  <footer>
+    <span id="buildinfo"></span>
+  </footer>
+</div>
+<script>window.DYNO_OFFLINE = { helpBase: "../", scriptData: true, remote: "https://dynomotion.com/site/searchdata" };</script>
+<script src="search.js?v=10"></script>
+</body>
+</html>

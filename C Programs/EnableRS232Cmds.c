@@ -1,6 +1,6 @@
 #include "KMotionDef.h"
 
-main()
+int main()
 {
 	EnableRS232Cmds(RS232_BAUD_38400);
 }

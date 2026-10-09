@@ -4,7 +4,7 @@
 
 #define FACTOR 0.01f  // factor to convert speed to PWM counts
 
-main()
+int main()
 {
 	float Speed;
 	int PWM;

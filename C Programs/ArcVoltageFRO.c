@@ -8,7 +8,7 @@
 
 float LastFROTime=0;
 
-main()
+int main()
 {
 	float VARC_Filtered=0.0f,VARC,FRO=1.0f,T;
 	int NewBit48,LastBit48=0;

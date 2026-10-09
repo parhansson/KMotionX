@@ -41,7 +41,7 @@ int SendDouble(double *v, unsigned char cmd)
 }
 
 
-void main()
+int main()
 {
 	double a=123.456, b=9e6;
 	

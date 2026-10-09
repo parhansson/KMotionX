@@ -4,7 +4,7 @@
 #include "KflopToKMotionCNCFunctions.c"
 
 
-main()
+int main()
 {
 	double d1,d2;
 	char s[80];

@@ -2,7 +2,7 @@
 
 double DestData[2];  // room for some data
 
-main()
+int main()
 {
 	double T0,T1;
 	

@@ -64,7 +64,7 @@ BOOL CToolSetupPage::CheckThreadNo(int ControlID, MCODE_ACTION *Action)
 	{
 		GetDlgItem(ControlID)->SetFocus();
 		((CEdit*)GetDlgItem(ControlID))->SetSel(0,-1);		
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid User Thread Number"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid User Thread Number"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return TRUE;
 	}
 
@@ -96,8 +96,8 @@ void CToolSetupPage::SetAction(MCODE_ACTION *M, int ID_Action,
 		break;
 
 	case M_Action_Setbit:
-		SetDlgItemText(ID_S1,"Set bit");
-		SetDlgItemText(ID_S2,"to");
+		SetDlgItemText(ID_S1,L"Set bit");
+		SetDlgItemText(ID_S2,L"to");
 		GetDlgItem(ID_S1)->ShowWindow(SW_SHOW);
 		GetDlgItem(ID_S2)->ShowWindow(SW_SHOW);
 		GetDlgItem(ID_S3)->ShowWindow(SW_HIDE);
@@ -113,8 +113,8 @@ void CToolSetupPage::SetAction(MCODE_ACTION *M, int ID_Action,
 		break;
 
 	case M_Action_Waitbit:
-		SetDlgItemText(ID_S1,"Wait bit");
-		SetDlgItemText(ID_S2,"till");
+		SetDlgItemText(ID_S1,L"Wait bit");
+		SetDlgItemText(ID_S2,L"till");
 		GetDlgItem(ID_S1)->ShowWindow(SW_SHOW);
 		GetDlgItem(ID_S2)->ShowWindow(SW_SHOW);
 		GetDlgItem(ID_S3)->ShowWindow(SW_HIDE);
@@ -130,10 +130,10 @@ void CToolSetupPage::SetAction(MCODE_ACTION *M, int ID_Action,
 		break;
 
 	case M_Action_SetTwoBits:
-		SetDlgItemText(ID_S1,"Set bit");
-		SetDlgItemText(ID_S2,"to");
-		SetDlgItemText(ID_S3,"&& bit");
-		SetDlgItemText(ID_S4,"to");
+		SetDlgItemText(ID_S1,L"Set bit");
+		SetDlgItemText(ID_S2,L"to");
+		SetDlgItemText(ID_S3,L"&& bit");
+		SetDlgItemText(ID_S4,L"to");
 		GetDlgItem(ID_S1)->ShowWindow(SW_SHOW);
 		GetDlgItem(ID_S2)->ShowWindow(SW_SHOW);
 		GetDlgItem(ID_S3)->ShowWindow(SW_SHOW);
@@ -149,11 +149,11 @@ void CToolSetupPage::SetAction(MCODE_ACTION *M, int ID_Action,
 		break;
 
 	case M_Action_DAC:
-		SetDlgItemText(ID_S1,"Set DAC");
-		SetDlgItemText(ID_S2,"scale");
-		SetDlgItemText(ID_S3,"offset");
-		SetDlgItemText(ID_S4,"min");
-		SetDlgItemText(ID_S5,"max");
+		SetDlgItemText(ID_S1,L"Set DAC");
+		SetDlgItemText(ID_S2,L"scale");
+		SetDlgItemText(ID_S3,L"offset");
+		SetDlgItemText(ID_S4,L"min");
+		SetDlgItemText(ID_S5,L"max");
 		GetDlgItem(ID_S1)->ShowWindow(SW_SHOW);
 		GetDlgItem(ID_S2)->ShowWindow(SW_SHOW);
 		GetDlgItem(ID_S3)->ShowWindow(SW_SHOW);
@@ -173,9 +173,9 @@ void CToolSetupPage::SetAction(MCODE_ACTION *M, int ID_Action,
 	case M_Action_Program:
 	case M_Action_Program_wait:
 	case M_Action_Program_wait_sync:
-		SetDlgItemText(ID_S1,"Thread");
-		SetDlgItemText(ID_S2,"VAR");
-		SetDlgItemTextW(m_hWnd, ID_S3,/*TRAN*/TheFrame->KMotionDLL->Translate("C File"));
+		SetDlgItemText(ID_S1,L"Thread");
+		SetDlgItemText(ID_S2,L"VAR");
+		SetDlgItemText(ID_S3,/*TRAN*/TheFrame->KMotionDLL->Translate("C File"));
 		GetDlgItem(ID_S1)->ShowWindow(SW_SHOW);
 		GetDlgItem(ID_S2)->ShowWindow(SW_SHOW);
 		GetDlgItem(ID_S3)->ShowWindow(SW_SHOW);
@@ -191,9 +191,9 @@ void CToolSetupPage::SetAction(MCODE_ACTION *M, int ID_Action,
 		break;
 	case M_Action_Program_PC:
 	case M_Action_ScreenScript:
-		SetDlgItemText(ID_S1,"Thread");
-		SetDlgItemText(ID_S2,"VAR");
-		SetDlgItemTextW(m_hWnd, ID_S3,/*TRAN*/TheFrame->KMotionDLL->Translate("File"));
+		SetDlgItemText(ID_S1,L"Thread");
+		SetDlgItemText(ID_S2,L"VAR");
+		SetDlgItemText(ID_S3,/*TRAN*/TheFrame->KMotionDLL->Translate("File"));
 		GetDlgItem(ID_S1)->ShowWindow(SW_HIDE);
 		GetDlgItem(ID_S2)->ShowWindow(SW_HIDE);
 		GetDlgItem(ID_S3)->ShowWindow(SW_SHOW);
@@ -250,7 +250,7 @@ void CToolSetupPage::DoDirectoryBrowse(MCODE_ACTION *m)
 
 		FileName = TheFrame->GCodeDlg.StripPathMatch(FileName, DefaultDir);
 
-		strncpy(m->String, FileName, 255);
+		wcsncpy(m->String, FileName, 255);
 		UpdateData(FALSE);
 	}
 }

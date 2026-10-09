@@ -39,16 +39,16 @@ public :
 	virtual ~CTexture();
 
 	// File reading
-	int ReadFile(char *filename,unsigned int width=-1,
+	int ReadFile(wchar_t *filename,unsigned int width=-1,
 		           unsigned int height=-1,unsigned int depth=-1);
-	int ReadFileBMP(char *filename);
-	int ReadFileRAW(char *filename,unsigned int width,
+	int ReadFileBMP(wchar_t *filename);
+	int ReadFileRAW(wchar_t *filename,unsigned int width,
 		              unsigned int height,unsigned int depth);
 	
 	// File saving
-	int SaveFile(char *filename);
-	int SaveFileBMP(char *filename);
-	int SaveFileRAW(char *filename);
+	int SaveFile(wchar_t *filename);
+	int SaveFileBMP(wchar_t *filename);
+	int SaveFileRAW(wchar_t *filename);
 	
 	// Datas (explicit inline functions)
 	unsigned char *GetData(void) { return m_pData; }

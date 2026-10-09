@@ -49,10 +49,13 @@
             this.TestUSB = new System.Windows.Forms.Button();
             this.TestResults2 = new System.Windows.Forms.TextBox();
             this.TestResults1 = new System.Windows.Forms.TextBox();
+            this.KnotRate = new System.Windows.Forms.Button();
+            this.KnotResults = new System.Windows.Forms.TextBox();
             this.MoveTo = new System.Windows.Forms.Button();
             this.MoveToValue = new System.Windows.Forms.TextBox();
             this.TestBoard2 = new System.Windows.Forms.Button();
             this.TestKMotionCNCOPen = new System.Windows.Forms.Button();
+            this.FlashFirmware = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -93,6 +96,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.FlashFirmware);
             this.groupBox1.Controls.Add(this.OpenCFileDir);
             this.groupBox1.Controls.Add(this.CompileLoadExec);
             this.groupBox1.Controls.Add(this.CFileName);
@@ -260,6 +264,28 @@
             this.TestResults1.Text = "Not Tested";
             this.TestResults1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
+            // KnotRate
+            // 
+            this.KnotRate.Location = new System.Drawing.Point(18, 526);
+            this.KnotRate.Name = "KnotRate";
+            this.KnotRate.Size = new System.Drawing.Size(109, 21);
+            this.KnotRate.TabIndex = 8;
+            this.KnotRate.Text = "Test Knot Rate";
+            this.KnotRate.UseVisualStyleBackColor = true;
+            this.KnotRate.Click += new System.EventHandler(this.KnotRate_Click);
+            // 
+            // KnotResults
+            // 
+            this.KnotResults.BackColor = System.Drawing.SystemColors.Control;
+            this.KnotResults.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.KnotResults.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.KnotResults.Location = new System.Drawing.Point(133, 542);
+            this.KnotResults.Name = "KnotResults";
+            this.KnotResults.Size = new System.Drawing.Size(426, 16);
+            this.KnotResults.TabIndex = 9;
+            this.KnotResults.Text = "Not Tested";
+            this.KnotResults.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
             // MoveTo
             // 
             this.MoveTo.Location = new System.Drawing.Point(481, 72);
@@ -299,12 +325,22 @@
             this.TestKMotionCNCOPen.UseVisualStyleBackColor = true;
             this.TestKMotionCNCOPen.Click += new System.EventHandler(this.TestOpenKMotionCNC_click);
             // 
+            // FlashFirmware
+            // 
+            this.FlashFirmware.Location = new System.Drawing.Point(444, 76);
+            this.FlashFirmware.Name = "FlashFirmware";
+            this.FlashFirmware.Size = new System.Drawing.Size(93, 26);
+            this.FlashFirmware.TabIndex = 4;
+            this.FlashFirmware.Text = "Flash Firmware";
+            this.FlashFirmware.UseVisualStyleBackColor = true;
+            this.FlashFirmware.Click += new System.EventHandler(this.FlashFirmware_Click);
+            // 
             // Form1
             // 
             this.AcceptButton = this.SendCommand;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(579, 549);
+            this.ClientSize = new System.Drawing.Size(579, 570);
             this.Controls.Add(this.TestKMotionCNCOPen);
             this.Controls.Add(this.TestBoard2);
             this.Controls.Add(this.groupBox3);
@@ -315,6 +351,8 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.JogXNeg);
             this.Controls.Add(this.TestUSB);
+            this.Controls.Add(this.KnotRate);
+            this.Controls.Add(this.KnotResults);
             this.Controls.Add(this.MoveTo);
             this.Controls.Add(this.JogXPos);
             this.Controls.Add(this.groupBox1);
@@ -353,11 +391,14 @@
         private System.Windows.Forms.TextBox Command;
         private System.Windows.Forms.Button TestUSB;
         private System.Windows.Forms.TextBox TestResults2;
+        private System.Windows.Forms.Button KnotRate;
+        private System.Windows.Forms.TextBox KnotResults;
         private System.Windows.Forms.TextBox TestResults1;
         private System.Windows.Forms.Button MoveTo;
         private System.Windows.Forms.TextBox MoveToValue;
         private System.Windows.Forms.Button TestBoard2;
         private System.Windows.Forms.Button TestKMotionCNCOPen;
+        private System.Windows.Forms.Button FlashFirmware;
     }
 }
 

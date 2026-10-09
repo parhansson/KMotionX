@@ -8,7 +8,7 @@
 // PWM 0 is KFLOP IO bit #26
 // JP6 Aux#1 Pin 5
 
-main()
+int main()
 {
 	int pwm;
 	float speed = *(float *)&persist.UserData[0];  // value stored is actually a float 

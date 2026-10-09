@@ -1,6 +1,6 @@
 #include "KMotionDef.h"
 
-main()
+int main()
 {
 	int New,Last=ReadBit(46);
 	for (;;)

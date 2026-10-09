@@ -67,7 +67,7 @@ void CTransformDlg::DoDataExchange(CDataExchange* pDX)
 
 	if (pDX->m_bSaveAndValidate && m_ScaleIJ && (fabs(m_ScaleX) != fabs(m_ScaleY)))
 	{
-		AfxMessageBox("Scaling I and J with different X Y Scales not allowed");
+		AfxMessageBox(L"Scaling I and J with different X Y Scales not allowed");
 		pDX->Fail();
 	}
 }
@@ -102,7 +102,7 @@ int CTransformDlg::ExtractValues(CString s, CString  &r)
 
 	do
 	{
-		k = s.Find("\r\n", i);
+		k = s.Find(L"\r\n", i);
 
 		if (k == -1)
 		{
@@ -117,31 +117,31 @@ int CTransformDlg::ExtractValues(CString s, CString  &r)
 
 		t = s.Mid(i, k - i);
 
-		if (ProcessVar(t, "X", Values[n * 6 + 0], PrevValues[0], m_ScaleX, m_OffsetX)) { delete[]Values;  return 1; }
-		if (ProcessVar(t, "Y", Values[n * 6 + 1], PrevValues[1], m_ScaleY, m_OffsetY)) { delete[]Values;  return 1; }
-		if (ProcessVar(t, "Z", Values[n * 6 + 2], PrevValues[2], m_ScaleZ, m_OffsetZ)) { delete[]Values;  return 1; }
-		if (ProcessVar(t, "A", Values[n * 6 + 3], PrevValues[3], m_ScaleX, m_OffsetX)) { delete[]Values;  return 1; }
-		if (ProcessVar(t, "B", Values[n * 6 + 4], PrevValues[4], m_ScaleX, m_OffsetX)) { delete[]Values;  return 1; }
-		if (ProcessVar(t, "C", Values[n * 6 + 5], PrevValues[5], m_ScaleX, m_OffsetX)) { delete[]Values;  return 1; }
+		if (ProcessVar(t, L"X", Values[n * 6 + 0], PrevValues[0], m_ScaleX, m_OffsetX)) { delete[]Values;  return 1; }
+		if (ProcessVar(t, L"Y", Values[n * 6 + 1], PrevValues[1], m_ScaleY, m_OffsetY)) { delete[]Values;  return 1; }
+		if (ProcessVar(t, L"Z", Values[n * 6 + 2], PrevValues[2], m_ScaleZ, m_OffsetZ)) { delete[]Values;  return 1; }
+		if (ProcessVar(t, L"A", Values[n * 6 + 3], PrevValues[3], m_ScaleX, m_OffsetX)) { delete[]Values;  return 1; }
+		if (ProcessVar(t, L"B", Values[n * 6 + 4], PrevValues[4], m_ScaleX, m_OffsetX)) { delete[]Values;  return 1; }
+		if (ProcessVar(t, L"C", Values[n * 6 + 5], PrevValues[5], m_ScaleX, m_OffsetX)) { delete[]Values;  return 1; }
 
 		if (m_ScaleIJ)
 		{
 			if (n == 2)
 			{
-				if (ProcessVar(t, "I", IJValues[0], PrevValues[6], m_ScaleX, 0.0)) { delete[]Values;  return 1; }
-				if (ProcessVar(t, "J", IJValues[1], PrevValues[7], m_ScaleY, 0.0)) { delete[]Values;  return 1; }
+				if (ProcessVar(t, L"I", IJValues[0], PrevValues[6], m_ScaleX, 0.0)) { delete[]Values;  return 1; }
+				if (ProcessVar(t, L"J", IJValues[1], PrevValues[7], m_ScaleY, 0.0)) { delete[]Values;  return 1; }
 			}
 			else
 			{
-				if (ProcessVar(t, "I", dummy, PrevValues[6], m_ScaleX, 0.0)) { delete[]Values;  return 1; }
-				if (ProcessVar(t, "J", dummy, PrevValues[7], m_ScaleY, 0.0)) { delete[]Values;  return 1; }
+				if (ProcessVar(t, L"I", dummy, PrevValues[6], m_ScaleX, 0.0)) { delete[]Values;  return 1; }
+				if (ProcessVar(t, L"J", dummy, PrevValues[7], m_ScaleY, 0.0)) { delete[]Values;  return 1; }
 			}
 		}
 
 		if (n >= MAX_VALUES - 10)
 		{
 			delete[]Values;
-			MessageBox("Max number of Transform Points Exceeded");
+			MessageBox(L"Max number of Transform Points Exceeded");
 			return 1;
 		}
 
@@ -167,7 +167,7 @@ int CTransformDlg::RoundCorner(double *Values, int n, double R, CString &r)
 	// Verify there are 3 lines of code
 	if (n < 3)
 	{
-		MessageBox("Round function should have 3 or more lines: Gx then G1 then G1");
+		MessageBox(L"Round function should have 3 or more lines: Gx then G1 then G1");
 		return 1;
 	}
 
@@ -199,7 +199,7 @@ int CTransformDlg::RoundCorner(double *Values, int n, double R, CString &r)
 		if (A > amag)
 		{
 			CString s;
-			s.Format("Segment %d too short X=%f Y=%f", i + 1, Xe, Ye);
+			s.Format(L"Segment %d too short X=%f Y=%f", i + 1, Xe, Ye);
 			MessageBox(s);
 			// combine the two segments together
 			Xe = Xf;
@@ -212,7 +212,7 @@ int CTransformDlg::RoundCorner(double *Values, int n, double R, CString &r)
 		if (A > bmag)
 		{
 			CString s;
-			s.Format("Segment %d too short X=%f Y=%f", i + 2, Xe, Ye);
+			s.Format(L"Segment %d too short X=%f Y=%f", i + 2, Xe, Ye);
 			MessageBox(s);
 			// combine the two segments together
 			Xf = Values[(3 + i) * 6 + 0];
@@ -292,7 +292,7 @@ int CTransformDlg::AntiGouge(double *Values, double *IJValues, int n, CString &r
 	// Verify there are 3 lines of code
 	if (n != 3)
 	{
-		MessageBox("Anti Gouge function should have 3 lines: G0 the G1 then G3");
+		MessageBox(L"Anti Gouge function should have 3 lines: G0 the G1 then G3");
 		return 1;
 	}
 
@@ -333,7 +333,7 @@ int CTransformDlg::AntiGouge(double *Values, double *IJValues, int n, CString &r
 
 	if (descrim <= 0.0)
 	{
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Anti Gouge function No Circle Line Intersection"), L"KMotion", MB_ICONSTOP | MB_OK);
+		MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Anti Gouge function No Circle Line Intersection"), L"KMotion", MB_ICONSTOP | MB_OK);
 		return 1;
 	}
 
@@ -423,7 +423,7 @@ int CTransformDlg::DoSmooth(double *Values, int n, SmoothType Type, CString &r)
 			{
 				delete[] NewValues;
 				delete[] SmoothValues;
-				MessageBox("Too many blocks to smooth.  Reduce number of blocks to smooth or smooth count");
+				MessageBox(L"Too many blocks to smooth.  Reduce number of blocks to smooth or smooth count");
 				return 1;
 			}
 		}
@@ -633,7 +633,7 @@ int CTransformDlg::ProcessVar(CString &t, CString v, double &Value, double &Prev
 	// see if the string contains the var 
 	// and at least one more character
 
-	int comment = t.Find("(");
+	int comment = t.Find(L"(");
 
 	if (comment == -1)
 		length_before_comment = t.GetLength();
@@ -650,17 +650,17 @@ int CTransformDlg::ProcessVar(CString &t, CString v, double &Value, double &Prev
 	{
 		if (length_before_comment < i + 2)
 		{
-			MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid ") + (CStringW) v + " Value Selected", L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+			MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid ") +  v + " Value Selected", L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 			return 1;
 		}
 
 		int k;
 
-		int result = sscanf(c.GetBuffer(0) + i + 1, "%lf%n", &Value, &k);
+		int result = swscanf(c.GetBuffer(0) + i + 1, L"%lf%n", &Value, &k);
 
 		if (result != 1)
 		{
-			MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid ") + (CStringW) v + " Value Selected", L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+			MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid ") +  v + " Value Selected", L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 			return 1;
 		}
 
@@ -686,7 +686,7 @@ int CTransformDlg::PutValue(double Value, CString &news)
 {
 
 	CString form;
-	form.Format("%%.%df", m_Digits);
+	form.Format(L"%%.%df", m_Digits);
 
 	news.Format(form, Value);
 
@@ -698,7 +698,7 @@ int CTransformDlg::PutValue(double Value, CString &news)
 		((news.GetAt(news.GetLength() - 2) >= '0' && news.GetAt(news.GetLength() - 2) <= '9') || news.GetAt(news.GetLength() - 2) <= '.') &&
 		(news.GetAt(news.GetLength() - 1) == '0' || news.GetAt(news.GetLength() - 1) == '.'))
 	{
-		char c = news.GetAt(news.GetLength() - 1);
+		wchar_t c = news.GetAt(news.GetLength() - 1);
 
 		news.Delete(news.GetLength() - 1, 1);
 

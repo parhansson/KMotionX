@@ -3,7 +3,7 @@
 void ServiceKonnectPWM(void);
 
 
-main()
+int main()
 {
 	for(;;)
 	{

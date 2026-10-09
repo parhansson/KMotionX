@@ -13,7 +13,7 @@
 // save in user variable STATEVAR whether it was off, CW, or CCW (0,1,-1)
 // save in user variable SPEEDVAR the last desired speed
 
-main()
+int main()
 {
 	// spin down
 	

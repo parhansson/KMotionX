@@ -68,7 +68,7 @@ int EjectTool(void);
 
 
 
-main()
+int main()
 {
 	int ToolSlot = persist.UserData[TOOL_VAR];  // Requested tool to load (value stored an integer) 
 

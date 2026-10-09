@@ -1,10 +1,10 @@
-#include "KMotionDef.h"
+﻿#include "KMotionDef.h"
 
 //Plugin Notifications and defines..
 enum { EX_DDA , EX_VMS, EX_COMMAND, EX_SPINON, EX_SPINOFF, EX_SPINSPEED, EX_MOTORTUNED 
        , EX_SETUP, EX_FEEDHOLD, EX_RUN, EX_ESTOP , EX_CONFIG };
 
-main()
+int main()
 {
 	int message = persist.UserData[0];  // Mach3 message ID 
 	int Direction = persist.UserData[1];  // Mach3 Spindle Direction 
@@ -17,7 +17,8 @@ main()
 		case EX_SPINSPEED:
 			printf("Spindle Speed Set to %f\n",speed); 
 			
-			DAC(3,(int)(speed*2047.0));
+			//KOGNA_DAC(3,(int)(speed*2047.0));  // when using Kogna's DAC
+			DAC(3,(int)(speed*2047.0)); // when using Kanalog DAC
 			
 			break;
 

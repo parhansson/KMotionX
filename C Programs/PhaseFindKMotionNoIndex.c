@@ -2,7 +2,7 @@
 
 // Phase find and servo Axis 0 as a 3 phase brushless without using Z index
 
-void main() 
+int main() 
 {
     float A=50.0f;   // set coil current amplitude to A PWM units
 

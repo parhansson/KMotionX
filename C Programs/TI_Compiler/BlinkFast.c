@@ -4,7 +4,7 @@
 
 // Benchmark 4 million loops with double precision math
 
-main()
+int main()
 {
 	int i,l;
 	double T0,T1,k=0;

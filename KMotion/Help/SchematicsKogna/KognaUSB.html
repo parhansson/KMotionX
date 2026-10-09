@@ -80,13 +80,15 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 <p>&nbsp;</p>
 <p>The 'I' command can be used to display or manually set the Ethernet IP Address.</p>
 <p>Enter 'I' then Enter to display the requested and assigned IP Address</p>
-<p>A requested IP Address of 0 requests the Network DHCP Server to assign the IP Address. An address of 0 may be entered as '0' or '0.0.0.0'. </p>
+<p>A requested IP Address of 0 requests the Network DHCP Server to assign the IP Address. An address of 0 may be entered as '0' or '0.0.0.0'. If no DHCP Server responds within about 5 seconds Kogna gives up and becomes the DHCP Server itself at 192.168.113.100 (so a PC connected directly by a cable is assigned an address by Kogna). </p>
+<p>A requested IP Address of 255.255.255.255 (may be entered as '255') tells Kogna to be the DHCP Server at 192.168.113.100 immediately without searching for one. Use this for a direct cable connection to a PC to avoid the ~5 second search at every boot. </p>
 <p>To manually specify an IP Address enter 4 decimal byte numbers separated by periods. Note changing the IP Address will Flash the setting to Flash memory to be requested on the next Boot or new network connection.</p>
 <p>See example below. The 'I' command is used to report that DHCP is used and the Assigned address is 192.168.68.126. Then the IP Address is set to 192.168.68.200. The Ethernet cable is disconnected and re-connect to have the new IP Address assigned. A multicast packet is received from the Host PC 192.168.68.118 and responded to so the PC obtains the new IP Address (and Serial Number).</p>
 <p><img src="ChangeIP.png" width="563" height="306" alt=""/></p>
 <p>&nbsp;</p>
 
 </div>
+<script src="../search/searchbox.js" defer></script>
 </body>
 
 </html>

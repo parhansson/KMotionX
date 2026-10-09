@@ -47,12 +47,19 @@ public:
 	bool escape_time();
 	int  ModeCode;
 	void SetupForCCode();
-	void SetupForGCode(int size, CString FontName);
+	void SetupForGCode(int size, CString FontName, COLORREF Text = CLR_DEFAULT, COLORREF Back = CLR_DEFAULT,
+		COLORREF SelText = CLR_DEFAULT, COLORREF SelBack = CLR_DEFAULT);  // CLR_DEFAULT = standard color
 	void SetupForCMD();
-	void SetAStyle(int style, COLORREF fore, COLORREF back=RGB(0xff, 0xff, 0xff), int size=-1, const char *face=0);
+	void UpdateScrollWidthToContent();
+	afx_msg BOOL OnSciModified(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	void SetText(const wchar_t* text, BOOL bDirect = TRUE);
+	void SetText(const char* text, BOOL bDirect = TRUE);
+	void SetAStyle(int style, COLORREF fore, COLORREF back=RGB(0xff, 0xff, 0xff), int size=-1, const wchar_t *face=0);
 	virtual ~CRichEditCtrlEx();
 	LRESULT OnTabletQuerySystemGestureStatus(WPARAM, LPARAM);
 	int ReadWriteVar; // -1=normal 0=Read Only (changeable using context memu), 1=Read Write, 2=forced Read Only
+	bool m_DarkScrollBars;  // Windows dark theme applied to the scroll bars
 
 
 	void AdjustFindDialogPosition();
@@ -79,9 +86,9 @@ public:
 
 	int DoAutoComplete(CString word, CString &List, CString WordList);
 	int CheckMatch(CString word, CString v, CString &List);
-	bool iswhitespace(char s);
-	bool isalpha_numeric(char s);
-	bool arrow_key(char s);
+	bool iswhitespace(wchar_t s);
+	bool isalpha_numeric(wchar_t s);
+	bool arrow_key(wchar_t s);
 
 	CList<CString,CString> GlobalFuncsNames;
 	CList<CString,CString> GlobalFuncsDefs;

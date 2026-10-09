@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "..\GCodeInterpreter\GCodeInterpreter.h"
 #include "EditFixtures.h"
+void AFXAPI DDX_TextMM(CDataExchange* pDX, int nIDC, double& value, BOOL ModeMM);  // dlgfloat.cpp: display rounded to 10 digits, keep the exact double if the text is unchanged
 #include "MainFrm.h"
 
 #define MAX_TOOL_LINE 200
@@ -88,12 +89,34 @@ void CEditFixtures::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_FixtureC7, m_Fixture[5][7]);
 	DDX_Text(pDX, IDC_FixtureC8, m_Fixture[5][8]);
 
-	DDX_Text(pDX, IDC_GlobalX, m_Global[0]);
-	DDX_Text(pDX, IDC_GlobalY, m_Global[1]);
-	DDX_Text(pDX, IDC_GlobalZ, m_Global[2]);
-	DDX_Text(pDX, IDC_GlobalA, m_Global[3]);
-	DDX_Text(pDX, IDC_GlobalB, m_Global[4]);
-	DDX_Text(pDX, IDC_GlobalC, m_Global[5]);
+	DDX_Text(pDX, IDC_FixtureU0, m_Fixture[6][0]);
+	DDX_Text(pDX, IDC_FixtureU1, m_Fixture[6][1]);
+	DDX_Text(pDX, IDC_FixtureU2, m_Fixture[6][2]);
+	DDX_Text(pDX, IDC_FixtureU3, m_Fixture[6][3]);
+	DDX_Text(pDX, IDC_FixtureU4, m_Fixture[6][4]);
+	DDX_Text(pDX, IDC_FixtureU5, m_Fixture[6][5]);
+	DDX_Text(pDX, IDC_FixtureU6, m_Fixture[6][6]);
+	DDX_Text(pDX, IDC_FixtureU7, m_Fixture[6][7]);
+	DDX_Text(pDX, IDC_FixtureU8, m_Fixture[6][8]);
+
+	DDX_Text(pDX, IDC_FixtureV0, m_Fixture[7][0]);
+	DDX_Text(pDX, IDC_FixtureV1, m_Fixture[7][1]);
+	DDX_Text(pDX, IDC_FixtureV2, m_Fixture[7][2]);
+	DDX_Text(pDX, IDC_FixtureV3, m_Fixture[7][3]);
+	DDX_Text(pDX, IDC_FixtureV4, m_Fixture[7][4]);
+	DDX_Text(pDX, IDC_FixtureV5, m_Fixture[7][5]);
+	DDX_Text(pDX, IDC_FixtureV6, m_Fixture[7][6]);
+	DDX_Text(pDX, IDC_FixtureV7, m_Fixture[7][7]);
+	DDX_Text(pDX, IDC_FixtureV8, m_Fixture[7][8]);
+
+	DDX_TextMM(pDX, IDC_GlobalX, m_Global[0], FALSE);   // G92 row: converted at G20/G21, so show 10 digits but keep the exact double when unedited
+	DDX_TextMM(pDX, IDC_GlobalY, m_Global[1], FALSE);   // G92 row: converted at G20/G21, so show 10 digits but keep the exact double when unedited
+	DDX_TextMM(pDX, IDC_GlobalZ, m_Global[2], FALSE);   // G92 row: converted at G20/G21, so show 10 digits but keep the exact double when unedited
+	DDX_TextMM(pDX, IDC_GlobalA, m_Global[3], FALSE);   // G92 row: converted at G20/G21, so show 10 digits but keep the exact double when unedited
+	DDX_TextMM(pDX, IDC_GlobalB, m_Global[4], FALSE);   // G92 row: converted at G20/G21, so show 10 digits but keep the exact double when unedited
+	DDX_TextMM(pDX, IDC_GlobalC, m_Global[5], FALSE);   // G92 row: converted at G20/G21, so show 10 digits but keep the exact double when unedited
+	DDX_TextMM(pDX, IDC_GlobalU, m_Global[6], FALSE);   // G92 row: converted at G20/G21, so show 10 digits but keep the exact double when unedited
+	DDX_TextMM(pDX, IDC_GlobalV, m_Global[7], FALSE);   // G92 row: converted at G20/G21, so show 10 digits but keep the exact double when unedited
 
 	DDX_Check(pDX, IDC_SaveFixtureOnOK, m_SaveFixtureOnOK);
 
@@ -146,10 +169,16 @@ void CEditFixtures::OnBnClickedSave()
 	for (int axis=0; axis<NFIXAXES; axis++)
 		Vars[5211+axis] = m_Global[axis];
 
+	// the G92 row is shown and edited in the interpreter's current units:
+	// stamp the saved tuple with them so a later G20/G21 or a startup in
+	// the other units converts it instead of reinterpreting the raw numbers.
+	// (Fixture rows stay unstamped/raw by design.)
+	m_Interpreter->StampAxisOffsetUnits();
+
 
 	if (m_Interpreter->rs274ngc_save_parameters())
 	{
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Saving Interpreter variables"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Error Saving Interpreter variables"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 	}
 }
 
@@ -302,7 +331,7 @@ BOOL CEditFixtures::OnInitDialog()
 
 	CString s;
 	GetDlgItemText(ID, s);
-	SetDlgItemText(ID,"***"+s);
+	SetDlgItemText(ID,L"***"+s);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

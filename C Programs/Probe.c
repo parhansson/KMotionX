@@ -1,6 +1,6 @@
 #include "KMotionDef.h"
 
-main()
+int main()
 {
 	Jog(0,10);
 	Delay_sec(1);

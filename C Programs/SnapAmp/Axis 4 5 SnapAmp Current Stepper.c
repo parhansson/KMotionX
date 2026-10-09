@@ -2,7 +2,7 @@
 
 // Configure dual Snap Amps for 3 stepper motors
 
-void main() 
+int main() 
 {
 	
 	WriteSnapAmp(SNAP0+SNAP_PEAK_CUR_LIMIT0,9);  // current limit

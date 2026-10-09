@@ -66,7 +66,7 @@ void CForRevButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 void CForRevButton::HandleButtonDown(void)
 {
-	CString s;
+	CStringA s;
 	CCoordMotion *CM= Dlg->Interpreter->CoordMotion;
 
 	// FRO in direction
@@ -81,7 +81,7 @@ void CForRevButton::HandleButtonDown(void)
 
 void CForRevButton::HandleButtonUp(void)
 {
-	CString s;
+	CStringA s;
 
 	if (m_Moving)
 	{

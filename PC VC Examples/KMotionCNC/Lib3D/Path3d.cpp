@@ -15,6 +15,11 @@
 // CONSTRUCTORS
 //////////////////////////////////////////////
 
+GLuint CPath3d::shaderProgram[N_GL_CONTEXT] = { 0, 0, 0 };
+HGLRC  CPath3d::shaderProgram_gl_context[N_GL_CONTEXT] = { 0, 0, 0 };
+
+
+
 //********************************************
 // Constructor
 //********************************************
@@ -27,6 +32,8 @@ CPath3d::CPath3d()
 	m_nPointsPerList=10000;
 	m_nPointsInList=0;
 	m_ToolOffsetValid=false;
+	m_RecolorFirst = INT_MAX;	// no recolour pending
+	m_RecolorLast = -1;
 }
 
 //********************************************
@@ -42,6 +49,8 @@ CPath3d::~CPath3d()
 //********************************************
 void CPath3d::Free()
 {
+	if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Lock();
+
 	//TRACE("Cleanup mesh %x\n",this);
 	m_ArrayVertex.Free();
 
@@ -54,18 +63,94 @@ void CPath3d::Free()
 	{
 		// Erase last list
 		nlists--;
-		int *p=m_ListArray.GetAt(nlists);
-		::glDeleteLists(*p,1);
+		Array2Bufs* p = m_ListArray.GetAt(nlists);
+		glBindVertexArray(0); // unbound any vertex array
+		glDeleteVertexArrays(1, &p->Array);
+		glDeleteBuffers(1, &p->VertexBuf);
+		glDeleteBuffers(1, &p->ColorBuf);
 		m_ListArray.RemoveAt(nlists);
 		delete p;
 	}
+
 	m_nPointsInList = 0;
+	m_RecolorFirst = INT_MAX;	// nothing left to recolour
+	m_RecolorLast = -1;
+	if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Unlock();
 }
 
 
 //////////////////////////////////////////////
 // OPENGL
 //////////////////////////////////////////////
+
+// Function to create shader program
+GLuint CPath3d::createShaderProgram() {
+
+	const char* vertexShaderSource = R"(
+#version 330 core
+layout(location = 0) in vec3 aPos;
+layout(location = 1) in int aColorIndex;
+
+uniform mat4 transform;
+
+flat out int colorIndex;
+
+void main()
+{
+    gl_Position = transform * vec4(aPos, 1.0);
+    colorIndex = aColorIndex;
+}
+)";
+
+	const char* fragmentShaderSource = R"(
+#version 330 core
+flat in int colorIndex;
+out vec4 FragColor;
+
+uniform vec3 colors[9];	// N_PATH_COLORS (SceneGraph3d.h)
+
+void main()
+{
+    FragColor = vec4(colors[colorIndex], 1.0);
+}
+)";
+	return BuildShader(vertexShaderSource, fragmentShaderSource);
+}
+
+
+GLfloat CPath3d::ColorToFloat(unsigned char c)
+{
+	if (c == 0x80) return 0.5f;
+	return (GLfloat)c/255.0f;
+}
+
+unsigned char CPath3d::GetColorIndexCached(CColor *c)
+{
+	static unsigned char r=0, g=0, b=0;
+	static unsigned char ci = WHITE_COLOR_INDEX; // White index
+
+	if (r == c->r() && g == c->g() && b == c->b())
+		return ci;
+
+	GLfloat rf = ColorToFloat(c->r());
+	GLfloat gf = ColorToFloat(c->g());
+	GLfloat bf = ColorToFloat(c->b());
+
+	for (int i=0; i<sizeof(colorlookup)/sizeof(GLfloat)/3; i++)
+	{
+		if (colorlookup[i][0] == rf &&
+			colorlookup[i][1] == gf &&
+			colorlookup[i][2] == bf)
+		{
+			r = c->r();
+			g = c->g();
+			b = c->b();
+			ci = i;
+			return (unsigned char)i;
+		}
+	}
+	return WHITE_COLOR_INDEX; // white index
+}
 
 //********************************************
 // BuildList
@@ -77,113 +162,167 @@ int CPath3d::glBuildList()
 	//TRACE(" Start building list ...\n");
 
 	// Check for valid Path
+	if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Lock(); // to be safe lock for the entire function
+
 	if(m_ArrayVertex.GetSize() == 0)
 	{
+		if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Unlock();
 		return 0;
 	}
 
-	if(!m_Modified && m_ListDone)
+	if (!m_Modified && m_ListDone && !RecolorPending())
+	{
+		if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Unlock();
 		return 0;
+	}
+
+	// Re-upload the colour buffers of already-built lists that contain
+	// recoloured vertices (see MarkRecolor) -- including the last, partial list:
+	// it is only rebuilt when vertices are added, which no longer happens once
+	// the interpreter has read the whole file (or ever, in a Simulate playback).
+	if (RecolorPending())
+	{
+		int nBuilt = (int)m_ListArray.GetSize();
+		int k0 = m_RecolorFirst / (int)m_nPointsPerList;
+		int k1 = m_RecolorLast / (int)m_nPointsPerList;
+		if (k1 > nBuilt - 1) k1 = nBuilt - 1;
+		if (k0 < 0) k0 = 0;
+		if (k0 <= k1)
+		{
+			unsigned char *ci = new unsigned char[m_nPointsPerList];
+			int nVert = (int)m_ArrayVertex.GetSize();
+			for (int k = k0; k <= k1; k++)
+			{
+				Array2Bufs *p = m_ListArray.GetAt(k);
+				int first = k * (int)m_nPointsPerList;
+				// never read past the vertices that still exist: the path can shrink
+				// under a built list (e.g. RemovePathEnd after a Halt)
+				int cnt = p->NbVertex;
+				if (cnt > nVert - first) cnt = nVert - first;
+				if (cnt <= 0) continue;
+				for (int j = 0; j < cnt; j++)
+					ci[j] = GetColorIndexCached(m_ArrayVertex[first + j]->GetColor());
+				glBindBuffer(GL_ARRAY_BUFFER, p->ColorBuf);
+				glBufferSubData(GL_ARRAY_BUFFER, 0, cnt, ci);
+				glBindBuffer(GL_ARRAY_BUFFER, 0);
+			}
+			delete[] ci;
+		}
+		m_RecolorFirst = INT_MAX;
+		m_RecolorLast = -1;
+
+		if (!m_Modified && m_ListDone)
+		{
+			if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Unlock();
+			return 1;
+		}
+	}
 
 	unsigned int NbVertex = (unsigned int)m_ArrayVertex.GetSize();
 
-	if(!NbVertex)
+	if (!NbVertex)
+	{
+		if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Unlock();
 		return 0;
+	}
 
 	// if latest list is not completely full delete it
 	int nlists = m_nPointsInList/m_nPointsPerList;
 
+
+//	CString Ver = glGetString(GL_VERSION);  
+
+
 	if ((m_nPointsInList % m_nPointsPerList) != 0)
 	{
 		// Erase last list
-		int *p=m_ListArray.GetAt(nlists);
-		::glDeleteLists(*p,1);
+		Array2Bufs *p=m_ListArray.GetAt(nlists);
+		glBindVertexArray(0); // unbound any vertex array
+		glDeleteVertexArrays(1, &p->Array);
+		glDeleteBuffers(1, &p->VertexBuf);
+		glDeleteBuffers(1, &p->ColorBuf);
 		m_ListArray.RemoveAt(nlists);
 		delete p;
 		m_nPointsInList = nlists * m_nPointsPerList;
 	}
 
+	// Vertex data for the line strip in 3D
+	GLfloat * vertices = new GLfloat[3 * m_nPointsPerList];
+	unsigned char* colori = new unsigned char[m_nPointsPerList];
 
+	int VertexInThisList = 0;
 	// loop untill all the points are in the lists
 	while (m_nPointsInList<NbVertex)  
 	{
-		// Search for a new list
-		int ListOpenGL = ::glGenLists(1);
-		if(ListOpenGL == 0)
+		// path
+		
+		GLfloat *vp = vertices;
+		unsigned char *cp = colori;
+		CVertex3dFast *pNew;
+
+		// put into vertices and colors arrays
+		int n = 0;
+		for (i = m_nPointsInList; (i < NbVertex && i < m_nPointsInList + m_nPointsPerList); i++)
 		{
-			TRACE("CPath3d::BuildList : unable to build DrawList\n");
+			pNew = m_ArrayVertex[i];
+
+			*vp++ = pNew->x();
+			*vp++ = pNew->y();
+			*vp++ = pNew->z();
+
+			*cp++ = GetColorIndexCached(pNew->GetColor());
+			n++;
+		}
+
+		Array2Bufs* p = new Array2Bufs;
+
+		glGenVertexArrays(1, &p->Array);
+
+		glGenBuffers(1, &p->VertexBuf);
+		glGenBuffers(1, &p->ColorBuf);
+
+		if (p->Array == 0 || p->VertexBuf == 0 || p->ColorBuf == 0)
+		{
+			MessageBox(NULL, _T("CPath3d::BuildList : unable to build DrawList"), _T("Error"), MB_OK);
+			if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Unlock();
 			return 0;
 		}
 
-		// Start list
+		// Bind the Vertex Array Object first, then bind and set vertex buffer(s) and attribute pointer(s).
+		glBindVertexArray(p->Array);
 
-		int *p=new int;
-		*p=ListOpenGL;
+		// Vertex buffer
+		glBindBuffer(GL_ARRAY_BUFFER, p->VertexBuf);
+		glBufferData(GL_ARRAY_BUFFER, n*4*3, vertices, GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+		// Color index buffer (Must use IPointer version for integer data)
+		glBindBuffer(GL_ARRAY_BUFFER, p->ColorBuf);
+		glBufferData(GL_ARRAY_BUFFER, n*1, colori, GL_STATIC_DRAW);
+		glVertexAttribIPointer(1, 1, GL_UNSIGNED_BYTE, 0, (void*)0);
+		glEnableVertexAttribArray(1);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		p->NbVertex = n;
+
 		m_ListArray.Add(p);
-
-		CVertex3dFast *pPrev,*pNew;
-
-		::glNewList(ListOpenGL,GL_COMPILE);
-
-		// Material
-
-		::glPushMatrix();
-
-		// Position / translation / scaling
-		glTranslatef(m_Transform.GetTranslation()->x(),
-					 m_Transform.GetTranslation()->y(),
-					 m_Transform.GetTranslation()->z());
-
-		glScalef(m_Transform.GetScale()->x(),
-					 m_Transform.GetScale()->y(),
-					 m_Transform.GetScale()->z());
-
-		if (m_Transform.GetValueRotation()!=0.0f)
-			glRotatef(m_Transform.GetValueRotation(),
-					  m_Transform.GetRotation()->x(),
-					  m_Transform.GetRotation()->y(),
-					  m_Transform.GetRotation()->z());
-
-		if (m_Transform.GetValueRotationXY() != 0.0f) glRotatef(m_Transform.GetValueRotationXY(), 0.0f, 0.0f, 1.0f);
-		if (m_Transform.GetValueRotationZX() != 0.0f) glRotatef(m_Transform.GetValueRotationZX(), 0.0f, 1.0f, 0.0f);
-		if (m_Transform.GetValueRotationYZ() != 0.0f) glRotatef(m_Transform.GetValueRotationYZ(), 1.0f, 0.0f, 0.0f);
-
-		// path
-		pPrev = m_ArrayVertex[m_nPointsInList];
-		::glBegin(GL_LINE_STRIP);
-		::glColor3ub(pPrev->GetColor()->r(),pPrev->GetColor()->g(),pPrev->GetColor()->b());
-		::glVertex3f(pPrev->x(),pPrev->y(),pPrev->z());
-		
-		for(i=m_nPointsInList+1;(i<NbVertex && i<m_nPointsInList+m_nPointsPerList);i++)
-		{
-			pNew = m_ArrayVertex[i];
-		
-			if (!(*pPrev->GetColor() == *pNew->GetColor()))
-			{
-				::glEnd();
-				::glBegin(GL_LINE_STRIP);
-				::glColor3ub(pNew->GetColor()->r(),pNew->GetColor()->g(),pNew->GetColor()->b());
-				::glVertex3f(pPrev->x(),pPrev->y(),pPrev->z());
-			}	
-				
-			::glVertex3f(pNew->x(),pNew->y(),pNew->z());
-
-			pPrev=pNew;
-		}
 
 		m_nPointsInList=i;
 
-		::glEnd();
-		::glPopMatrix();
-
-		::glEndList();
+		glBindVertexArray(0); // unbound any vertex array
 	}
+
+
+	delete vertices;
+	delete colori;
 
 	// Lists are done now
 	m_ListDone = 1;
 	
 	// only set as un modified if nothing changed in the mean time
-	if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Lock();
 	if(m_ArrayVertex.GetSize() == NbVertex)
 	{
 		m_Modified = 0;
@@ -204,32 +343,74 @@ int CPath3d::glDraw()
 	if(m_ArrayVertex.GetSize() == 0)
 		return 0;
 
-	glColorMaterial(GL_FRONT, GL_DIFFUSE);
-	glEnable(GL_COLOR_MATERIAL);
-
-	// Build list at first
-	if(!m_ListDone || m_Modified)
+	// Build list at first (or re-upload recoloured lists)
+	if(!m_ListDone || m_Modified || RecolorPending())
 		glBuildList();
 
 
-	int nlists = m_nPointsInList/m_nPointsPerList;
-	if ((m_nPointsInList % m_nPointsPerList) != 0)nlists++;
+	HGLRC Context = wglGetCurrentContext();  // check if we already have a shader in this context
+	if (shaderProgram_gl_context[0] != Context &&
+		shaderProgram_gl_context[1] != Context &&
+		shaderProgram_gl_context[2] != Context)  // no matching context?
+	{
+		// push second to third
+		shaderProgram_gl_context[2] = shaderProgram_gl_context[1];
+		shaderProgram[2] = shaderProgram[1];
 
+		// push first context to second
+		shaderProgram_gl_context[1] = shaderProgram_gl_context[0];
+		shaderProgram[1] = shaderProgram[0];
+
+		// Create shader program and save its context
+		shaderProgram[0] = createShaderProgram();
+		shaderProgram_gl_context[0] = Context;
+	}
+
+	GLuint shader = 0;
+	if (Context == shaderProgram_gl_context[0])
+	{
+		shader = shaderProgram[0];
+	}
+	else if (Context == shaderProgram_gl_context[1])
+	{
+		shader = shaderProgram[1];
+	}
+	else if (Context == shaderProgram_gl_context[2])
+	{
+		shader = shaderProgram[2];
+	}
+
+	glUseProgram(shader);
+
+
+	GLint colorsLocation = glGetUniformLocation(shader, "colors");
+
+	// all palette entries (stock uploaded only 5 of 6, leaving WHITE undefined)
+	glUniform3fv(colorsLocation, (GLsizei)(sizeof(colorlookup) / sizeof(colorlookup[0])), &colorlookup[0][0]);
+
+	// Create and set the transformation matrix
+	float ModelMat[16], ProjMat[16], ProductMat[16];
+	// Get the current model-view matrix
+	glGetFloatv(GL_MODELVIEW_MATRIX, ModelMat);
+	glGetFloatv(GL_PROJECTION_MATRIX, ProjMat);
+	multiplyMatrices(ProductMat, ModelMat, ProjMat);
+	GLint transformLocation = glGetUniformLocation(shader, "transform");
+	glUniformMatrix4fv(transformLocation, 1, GL_FALSE, ProductMat);
+
+
+	int nlists = m_ListArray.GetSize();
 	for (int i=0; i<nlists; i++)
 	{
-		int List = *m_ListArray.GetAt(i);
+		Array2Bufs* p = m_ListArray.GetAt(i);
 
-		// Search for a new list
-		if(::glIsList(List)==GL_TRUE)
-		{
-			::glDisable(GL_LIGHTING);  // paths have lighting disabled
-			::glCallList(List);
-		}
-		else
-		{
-			return 0;
-		}
+		glBindVertexArray(p->Array);
+		glDrawArrays(GL_LINE_STRIP, 0, p->NbVertex);
 	}
+
+	glBindVertexArray(0);  // don't use any vertex array
+
+	glUseProgram(0);  // don't use any shader program
+
 	return 1;
 }
 
@@ -339,6 +520,8 @@ int CPath3d::GetType()
 //********************************************
 int CPath3d::DeleteVertex(CVertex3dFast *pVertex)
 {
+	if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Lock();
+
 	int size = m_ArrayVertex.GetSize();
 	for(int i=0;i<size;i++)
 	{
@@ -347,9 +530,11 @@ int CPath3d::DeleteVertex(CVertex3dFast *pVertex)
 		{
 			m_ArrayVertex.RemoveAt(i);
 			delete pVertex;
-		  return 1;
+			if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Unlock();
+			return 1;
 		}
 	}
+	if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Unlock();
 	return 0;
 }
 
@@ -358,13 +543,17 @@ int CPath3d::DeleteVertex(CVertex3dFast *pVertex)
 //********************************************
 int CPath3d::DeleteVertex(int index)
 {
+	if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Lock();
+
 	if(index < m_ArrayVertex.GetSize())
 	{
 		CVertex3dFast *pVertex = (CVertex3dFast *)m_ArrayVertex[index];
 		m_ArrayVertex.RemoveAt(index);
 		delete pVertex;
+		if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Unlock();
 		return 1;
 	}
+	if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Unlock();
 	return 0;
 }
 
@@ -554,6 +743,8 @@ void CPath3d::AddVertexTool(CVertex3dFast *pVertex)
 	CGCodeInterpreter *GC = TheFrame->GCodeDlg.Interpreter;
 	setup_pointer p=GC->p_setup;
 
+	if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Lock();
+
 	float xtool = GC->UserUnitsToInchesX(p->tool_table[p->selected_tool_slot].xoffset);
 	float ytool = GC->UserUnitsToInches(p->tool_table[p->selected_tool_slot].yoffset);
 	float ztool = GC->UserUnitsToInches(p->tool_table[p->selected_tool_slot].length);
@@ -589,6 +780,7 @@ void CPath3d::AddVertexTool(CVertex3dFast *pVertex)
 	m_LastToolPositionZ=z;
 	m_ToolOffsetValid=true;
 	m_Modified=1; 
+	if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Unlock();
 }
 
 

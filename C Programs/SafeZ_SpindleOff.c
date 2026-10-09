@@ -4,7 +4,7 @@
 #define ZAXIS 2
 #define SAFE_Z_HEIGHT 10000.0
 
-main()
+int main()
 {
 	if (ReadBit(SPINDLE_BIT)) // only move up if Spindle was on
 	{

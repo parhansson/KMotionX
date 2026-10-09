@@ -5,7 +5,7 @@
 // then they are re-enabled
 
 
-main()
+int main()
 {
 	int SaveXLimits,SaveYLimits,SaveZLimits;  //place to save limit switch settings
 	

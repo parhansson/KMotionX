@@ -9,7 +9,7 @@
 #define FULL_BAR_SCALE 50.0
 
 
-main()
+int main()
 {
 	double Rate,d,x0,dx,y0,dy,z0,dz,t0,t1;
 	char s[80];

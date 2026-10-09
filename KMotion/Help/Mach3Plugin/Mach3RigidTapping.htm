@@ -71,7 +71,7 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 
 <h1>Mach3 Plugin - Rigid Tapping</h1>
 
-<p>To perform Rigid Tapping from Mach3 the tapping parameters are set into GCode Variables, 
+<p>To perform Rigid Tapping from Mach3 the tapping parameters are set into G Code Variables, 
 then a Macro (M84) is called which downloads the parameters to KFLOP/Kogna, notifies 
 KFLOP/Kogna to perform the Tap Cycle, then waits until KFLOP/Kogna sets a variable 
 indicating the operation has completed.</p>
@@ -80,14 +80,14 @@ indicating the operation has completed.</p>
 in a fairly controlled manner. The Z axis motion is &quot;geared&quot; to the 
 measured Spindle Encoder Position throughout the cycle. </p>
 
-<p>There are three parts to the process: The GCode, the M84 Macro, and the KFlop User Program. 
+<p>There are three parts to the process: The G Code, the M84 Macro, and the KFlop User Program. 
 Examples can be found <a href="http://www.dynomotion.com/Software/RigidTap/">
 here</a>.</p>
 
-<h2>Example Rigid Tap Call From GCode</h2>
+<h2>Example Rigid Tap Call From G Code</h2>
 
 <p>We use a Macro M84 as Mach3 uses the normal G84 Tap cycle for a floating tapholder technique and 
-doesn't currently support a rigid tap GCode.</p>
+doesn't currently support a rigid tap G Code.</p>
 
 <p>Note that the forward cutting rate (RPM) and the retraction rate (RPM) can be defined 
 separately. A cyclic forward/retract motion can be specified to cut the 
@@ -122,7 +122,7 @@ depth forward motion to the Z depth Total. </p>
 
 <h2>Mach3 M84 Macro </h2>
 
-<p>This macro moves the GCode Tapping Variables to Mach3 User DROs, downloads then to KFLOP/Kogna UserData variables, 
+<p>This macro moves the G Code Tapping Variables to Mach3 User DROs, downloads then to KFLOP/Kogna UserData variables, 
 Triggers KFLOP/Kogna to perform the Tap Cycle, then waits until KFLOP/Kogna sets a User Data 
 Variable indicating the cycle is complete.</p>
 
@@ -141,7 +141,7 @@ Variable indicating the cycle is complete.</p>
 	' #15 	1015 	28 	29 	Z depth Retract per Motion
 	' 	1016 	30 	31 	Set by KFLOP when complete
 
-	'Move the GCode Vars into DROS and send them to KFLOP User Vars</span>
+	'Move the G Code Vars into DROS and send them to KFLOP User Vars</span>
 	For i=0 To 5 
 	Call SetUserDRO(1010+i, GetVar(10+i)) 
 	NotifyPlugins(19010+i)
@@ -287,6 +287,7 @@ filter with a time constant of 1ms. </p>
 <p>&nbsp;</p>
 
 	</div>
+<script src="../search/searchbox.js" defer></script>
 </body>
 
 </html>

@@ -122,7 +122,7 @@ int CMotionButton::HandleButtonDown(void)
 		if (p!=this && p->m_axis==m_axis && (p->m_Moving || p->m_SimulateMotion))
 		{
 			// stop it
-			p->PostMessageA(WM_LBUTTONUP,0,0); 
+			p->PostMessage(WM_LBUTTONUP,0,0); 
 		}
 	}
 
@@ -131,22 +131,28 @@ int CMotionButton::HandleButtonDown(void)
 	switch (m_axis)
 	{
 	case 0:
-		m_pSimulatePos =&CM->current_x;
+		m_pSimulatePos = &CM->current_x;
 		break;
 	case 1:
-		m_pSimulatePos =&CM->current_y;
+		m_pSimulatePos = &CM->current_y;
 		break;
 	case 2:
-		m_pSimulatePos =&CM->current_z;
+		m_pSimulatePos = &CM->current_z;
 		break;
 	case 3:
-		m_pSimulatePos =&CM->current_a;
+		m_pSimulatePos = &CM->current_a;
 		break;
 	case 4:
-		m_pSimulatePos =&CM->current_b;
+		m_pSimulatePos = &CM->current_b;
 		break;
 	case 5:
-		m_pSimulatePos =&CM->current_c;
+		m_pSimulatePos = &CM->current_c;
+		break;
+	case 6:
+		m_pSimulatePos = &CM->current_u;
+		break;
+	case 7:
+		m_pSimulatePos = &CM->current_v;
 		break;
 	}
 
@@ -183,7 +189,7 @@ int CMotionButton::HandleButtonDown(void)
 		{
 			// check if we came to a stop yet (either from Jog to stop, or from offset)
 
-			CString response;
+			CStringA response;
 			if (TheFrame->KMotionDLL->WriteLineReadLine("CheckDoneXYZABC", response.GetBufferSetLength(MAX_LINE))) return 1;
 			response.ReleaseBuffer();
 			if (response == "0") return 0;  // exit if still stopping 
@@ -224,6 +230,12 @@ int CMotionButton::HandleButtonDown(void)
 					break;
 				case 5:
 					stepc += delta;
+					break;
+				case 6:
+					stepu += delta;
+					break;
+				case 7:
+					stepv += delta;
 					break;
 				}
 
@@ -295,7 +307,7 @@ int CMotionButton::DoExecute()
 	CM->ClearAbort();
 	CM->ClearHalt();
 	CM->SetTPParams();
-	if (CM->StraightTraverse(stepx, stepy, stepz, stepa, stepb, stepc, true)) return 1;
+	if (CM->StraightTraverse(stepx, stepy, stepz, stepa, stepb, stepc, stepu, stepv, true)) return 1;
 	if (CM->FlushSegments())  return 1;
 	if (CM->WaitForSegmentsFinished()) return 1;
 	return 0;
@@ -318,7 +330,7 @@ void CMotionButton::HandleButtonUp(void)
 
 void CMotionButton::PutRawV(double *v)
 {
-	if (m_axis < 6)
+	if (m_axis < MAX_ACTUATORS)
 		if (v[m_axis] == 0.0) v[m_axis] = m_RawVel;
 }
 

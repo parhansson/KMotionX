@@ -2,7 +2,7 @@
 
 //Turn off KFLOP 90us Sample Callback to User Code
 
-main()
+int main()
 {
 	UserCallBack = NULL;  // stop the callback
 }

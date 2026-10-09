@@ -12,7 +12,7 @@
 #define RATIO0 (978.0f/768.0f)  // size j/size k
 #define RATIO1 (950.0f/709.0f)  // size n/size m
 
-main()
+int main()
 {
 	int i=0;
 	int k0,j0,k1,j1;

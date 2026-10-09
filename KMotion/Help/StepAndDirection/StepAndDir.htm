@@ -69,7 +69,7 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 </div>		
 <div id="main">
 
-<h1>Configuring Step and Direction Outputs</h1>
+<h1>Configuring Step and Direction Outputs for KFLOP</h1>
 <p>KFLOP supports connection to motor amplifiers that utilize step and 
   direction (or <a href="#Quadrature">quadrature</a> or <a href="#CW/CCW">CW/CCW Pulses</a>) 
   inputs to control the motion. Step and direction motor 
@@ -89,10 +89,10 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 15 on JP7 and IO bits 36 through 43 on JP5. However the first 4 Step/Dir 
 outputs can be multiplexed to connectors JP4 and JP6 if desired. This may 
 be required if JP7 is used for some other purpose such as interfacing to the 
-Kanalog I/O Expander. A global <a href="#Global_Register">multiplexing bit</a> is used to switch the 
+Kanalog IO Expander. A global <a href="#Global_Register">multiplexing bit</a> is used to switch the 
 outputs to the alternate connectors. </p>
 
-<p>Note that the first 8 of 10 I/O pins of Aux #0 and Aux #1 have internal 150 
+<p>Note that the first 8 of 10 IO pins of Aux #0 and Aux #1 have internal 150 
 Ohm pull down resistors. Therefore Pins JP4-13, JP4-14, JP6-13 and JP6-14 
 may not be used in Open Collector mode. </p>
 <p>If an axis channel is selected as a Step and Direction axis, the 
@@ -646,6 +646,7 @@ full steps per second (1.6 MHz @ 128 microsteps/full step). </p>
 	<p>&nbsp;</p>
 
 	</div>
+<script src="../search/searchbox.js" defer></script>
 </body>
 
 </html>

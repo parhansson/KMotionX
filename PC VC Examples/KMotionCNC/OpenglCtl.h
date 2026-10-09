@@ -61,6 +61,29 @@ public:
 
 	// Position, rotation ,scaling
 	void InitGeometry(void);
+	void OrthoZoomAboutCenter(float dz);
+	void PerspZoomAtCursor(float zDelta, CPoint point);
+	double PerspEyeDepthAt(CPoint point, double *zn_out = NULL, double *zf_out = NULL);
+	float DepthRectMin(int x0, int y0, int w, int h);
+	void SwitchProjection(bool ortho);
+	double m_PanD;   // eye depth captured at left-button-down (perspective
+	                 // 1:1 grab pan; see PerspEyeDepthAt)
+
+	// Measure mode (any axis-aligned Ortho view: XY, XZ, YZ, mill or
+	// lathe): double-click remembers a reference position (marked with
+	// a red X); the title then shows the cursor position, the
+	// reference, the delta to the cursor, and the diagonal length.
+	// Double-clicking on (or near) the marker clears it.
+	bool  m_MeasureValid;
+	float m_MeasureP[3];                 // world coords (inches)
+
+	// True when the current Ortho view maps both screen axes onto
+	// (signed) world axes - all the XY/XZ/YZ view buttons do, mill and
+	// lathe alike.  ax[0]/sgn[0] = world axis index (0=X 1=Y 2=Z) and
+	// sign on screen horizontal; ax[1]/sgn[1] same for screen vertical.
+	bool  OrthoAxisView(int ax[2], float sgn[2]);
+	float ScreenToWorldX(CPoint point);
+	float ScreenToWorldY(CPoint point);
 
 	float m_xRotation;
 	float m_yRotation;
@@ -109,6 +132,7 @@ public:
 
 	void *Parent;
 	RENDERCALLBACK *RenderCallback;
+	void OpenGLInit();
 	void SetupOpenGL();
 
 
@@ -131,6 +155,7 @@ protected:
 public:
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 	afx_msg void OnMove(int x, int y);
+	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 };
 
 /////////////////////////////////////////////////////////////////////////////

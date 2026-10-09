@@ -426,7 +426,7 @@ void ModbusMaster_Loop()
 
 
 
-main()
+int main()
 {
 	ModbusMaster_Init();
 	int reportsecs=10;

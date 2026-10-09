@@ -3,7 +3,7 @@
 
 #define RefVoltage 13.02f
 
-main()
+int main()
 {
 	float V=7.0f;
 	

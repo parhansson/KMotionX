@@ -13,31 +13,31 @@
 #define FLOAT(x)					\
 	if (save)						\
 	{								\
-		fprintf(f,#x "=%23.15e\n",x);  \
+		fwprintf(f,L#x "=%23.15e\n",x);  \
 	}								\
 	else							\
 	{								\
-		LookForFloat(s,#x"=",&x);	\
+		LookForFloat(s,L#x"=",&x);	\
 	}							
 
 #define DOUBLE(x)					\
 	if (save)						\
 	{								\
-		fprintf(f,#x "=%23.15e\n",x);  \
+		fwprintf(f,L#x "=%23.15e\n",x);  \
 	}								\
 	else							\
 	{								\
-		LookForDouble(s,#x"=",&x);	\
+		LookForDouble(s,L#x"=",&x);	\
 	}							
 
 #define INT(x)					\
 	if (save)						\
 	{								\
-		fprintf(f,#x "=%d\n",x);  \
+		fwprintf(f,L#x "=%d\n",x);  \
 	}								\
 	else							\
 	{								\
-		LookForInt(s,#x"=",&x);	\
+		LookForInt(s,L#x"=",&x);	\
 	}							
 
 
@@ -75,11 +75,11 @@
 #define CSTRING(x)					\
 	if (save)						\
 	{								\
-		fprintf(f,#x "=%s\n",x.GetBuffer(0));  \
+		fwprintf(f,L#x "=%s\n",x.GetBuffer(0));  \
 	}								\
 	else							\
 	{								\
-		LookForCString(s,#x"=",&x);	\
+		LookForCString(s,L#x"=",&x);	\
 	}							
 
 // Write a filename string to a file
@@ -91,13 +91,13 @@
 #define CSTRING_PATH(x,p)					\
 	if (save)						\
 	{								\
-		fprintf(f,#x "=%s\n",StripPathMatch(x,p).GetBuffer());  \
+		fwprintf(f,L#x "=%s\n",StripPathMatch(x,p).GetBuffer());  \
 	}								\
 	else							\
 	{								\
-		if (LookForCString(s,#x"=",&x) ==0)	\
+		if (LookForCString(s,L#x"=",&x) ==0)	\
 		{                                           \
-			if (!x.IsEmpty() && x.Find(':') == -1 && x.Find("\\\\") == -1)                 \
+			if (!x.IsEmpty() && x.Find(':') == -1 && x.Find(L"\\\\") == -1)                 \
 				x = TheFrame->MainPathRoot + p + x;                          \
 		}											\
 	}							
@@ -105,11 +105,11 @@
 #define CHARS(x)					\
 	if (save)						\
 	{								\
-		fprintf(f,#x "=%s\n",x);    \
+		fwprintf(f,L#x "=%s\n",x);    \
 	}								\
 	else							\
 	{								\
-		LookForChars(s,#x"=",x);	\
+		LookForChars(s,L#x"=",x);	\
 	}							
 
 
@@ -144,13 +144,13 @@ public:
 	BOOL InitDialogComplete;
 	CDlgX(CWnd* pParent = NULL);   // standard constructor
 	CString ToolTipText;
-	void LookForFloat(const char * s, const char * c, float * b);
-	void LookForDouble(const char * s, const char * c, double * b);
-	void LookForInt(const char * s, const char * c, int * b);
-	void LookForHex(const char * s, const char * c, int * b);
-	int LookForCString(const char * s, const char * c, CString * b);
-	void LookForChars(const char * s, const char * c, char *b);
-	void LookForIIR(const char * s, const char * c, float *f0, float *f1, float *f2, float *f3, float *f4);
+	void LookForFloat(const wchar_t * s, const wchar_t * c, float * b);
+	void LookForDouble(const wchar_t * s, const wchar_t * c, double * b);
+	void LookForInt(const wchar_t * s, const wchar_t * c, int * b);
+	void LookForHex(const wchar_t * s, const wchar_t * c, int * b);
+	int LookForCString(const wchar_t * s, const wchar_t * c, CString * b);
+	void LookForChars(const wchar_t * s, const wchar_t * c, wchar_t *b);
+	void LookForIIR(const wchar_t * s, const wchar_t * c, float *f0, float *f1, float *f2, float *f3, float *f4);
 	CString ExtractDirectory(CString s);
 
 // Dialog Data

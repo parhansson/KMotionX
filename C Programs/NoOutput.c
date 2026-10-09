@@ -1,7 +1,7 @@
 #include "KMotionDef.h"
 
 #define ZAXIS 3
-main()
+int main()
 {
 	if (ReadBit(46))  // Use an LED as a toggle bit
 	{

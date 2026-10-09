@@ -12,7 +12,7 @@ History: PJN / 19-03-2004 1. Initial implementation synchronized to the v1.59 re
                           2. Sample app now includes a common control 6 manifest
                           3. Sample app now includes an example of scintilla autocompletion. When you type 
                           "scintilla is " case insensitively a autocompletion list is displayed which allows 
-                          "very cool", "easy" or "way cool!!" to be entered. 
+                          "very cool", L"easy" or "way cool!!" to be entered. 
                           4. Sample app now includes an example of scintilla calltips. Whenever you hover
                           over text which is "author " case insensitively, a call tip with the text 
                           "PJ Naughter" is displayed.
@@ -76,7 +76,7 @@ History: PJN / 19-03-2004 1. Initial implementation synchronized to the v1.59 re
          PJN / 01-11-2008 1. Updated class to work with Scintilla v1.77. New messages wrapped include: 
                           SCI_GETCHARACTERPOINTER, SCI_SETKEYSUNICODE & SCI_GETKEYSUNICODE
                           2. Reworked all the key Unicode functions which expose string length management and 
-                          reimplemented them to use CStringW output parameters. Equivalent ASCII versions have also been 
+                          reimplemented them to use CString output parameters. Equivalent ASCII versions have also been 
                           provided. This new approach helps to raise the level of abstraction provided by the wrapper 
                           class. In the process the need for the GetLineEx function has been removed. Thanks to Alexei 
                           Letov for prompting this update.
@@ -198,7 +198,7 @@ CStringA CScintillaCtrl::W2UTF8(const wchar_t* pszText, int nLength)
   return sUTF;
 }
 
-CStringW CScintillaCtrl::UTF82W(const char* pszText, int nLength)
+CString CScintillaCtrl::UTF82W(const char* pszText, int nLength)
 {
   //First call the function to determine how much space we need to allocate
 	int nWideLength = MultiByteToWideChar(CP_UTF8, 0, pszText, nLength, NULL, 0);
@@ -208,7 +208,7 @@ CStringW CScintillaCtrl::UTF82W(const char* pszText, int nLength)
     nWideLength = 1;
 
   //Now recall with the buffer to get the converted text
-  CStringW sWideString;
+  CString sWideString;
   wchar_t* pszWText = sWideString.GetBuffer(nWideLength + 1); //include an extra byte because we may be null terminating the string ourselves
 	int nCharsWritten = MultiByteToWideChar(CP_UTF8, 0, pszText, nLength, pszWText, nWideLength);
 	
@@ -242,7 +242,7 @@ void CScintillaCtrl::InsertText(long pos, const wchar_t* text, BOOL bDirect)
   InsertText(pos, sUTF8, bDirect);
 }
 
-CStringW CScintillaCtrl::GetSelText(BOOL bDirect)
+CString CScintillaCtrl::GetSelText(BOOL bDirect)
 {
   //Work out the length of string to allocate
   int nUTF8Length = GetSelectionEnd() - GetSelectionStart();
@@ -256,7 +256,7 @@ CStringW CScintillaCtrl::GetSelText(BOOL bDirect)
   return UTF82W(sUTF8, -1);
 }
 
-CStringW CScintillaCtrl::GetCurLine(BOOL bDirect)
+CString CScintillaCtrl::GetCurLine(BOOL bDirect)
 {
   //Work out the length of string to allocate
   int nUTF8Length = GetCurLine(0, NULL, bDirect);
@@ -330,7 +330,7 @@ void CScintillaCtrl::UserListShow(int listType, const wchar_t* itemList, BOOL bD
   UserListShow(listType, sUTF8, bDirect);
 }
 
-CStringW CScintillaCtrl::GetLine(int line, BOOL bDirect)
+CString CScintillaCtrl::GetLine(int line, BOOL bDirect)
 {
   //Work out the length of string to allocate
   int nUTF8Length = LineLength(line, bDirect);
@@ -361,7 +361,7 @@ void CScintillaCtrl::SetText(const wchar_t* text, BOOL bDirect)
   SetText(sUTF8, bDirect);
 }
 
-CStringW CScintillaCtrl::GetText(int length, BOOL bDirect)
+CString CScintillaCtrl::GetText(int length, BOOL bDirect)
 {
   //Work out the length of string to allocate
   int nUTF8Length = length*4; //A Unicode character can take up to 4 octets when expressed as UTF8
@@ -372,7 +372,7 @@ CStringW CScintillaCtrl::GetText(int length, BOOL bDirect)
   sUTF8.ReleaseBuffer();
 
   //Now convert the UTF8 text back to Unicode
-  CStringW sWideText(UTF82W(sUTF8, -1));
+  CString sWideText(UTF82W(sUTF8, -1));
 
   return sWideText.Left(length-1);
 }
@@ -504,7 +504,7 @@ void CScintillaCtrl::LoadLexerLibrary(const wchar_t* path, BOOL bDirect)
   LoadLexerLibrary(sUTF8, bDirect);
 }
 
-CStringW CScintillaCtrl::GetProperty(const wchar_t* key, BOOL bDirect)
+CString CScintillaCtrl::GetProperty(const wchar_t* key, BOOL bDirect)
 {
   //Validate our parameters
   ASSERT(key);
@@ -523,7 +523,7 @@ CStringW CScintillaCtrl::GetProperty(const wchar_t* key, BOOL bDirect)
   return UTF82W(sUTF8Value, -1);
 }
 
-CStringW CScintillaCtrl::GetPropertyExpanded(const wchar_t* key, BOOL bDirect)
+CString CScintillaCtrl::GetPropertyExpanded(const wchar_t* key, BOOL bDirect)
 {
   //Validate our parameters
   ASSERT(key);
@@ -551,7 +551,7 @@ int CScintillaCtrl::GetPropertyInt(const wchar_t* key, BOOL bDirect)
   return GetPropertyInt(sUTF8, bDirect);
 }
 
-CStringW CScintillaCtrl::StyleGetFont(int style, BOOL bDirect)
+CString CScintillaCtrl::StyleGetFont(int style, BOOL bDirect)
 {
   //Allocate a UTF8 buffer to contain the font name. See the notes for
   //SCI_STYLEGETFONT / SCI_STYLESETFONT on the reasons why we can use

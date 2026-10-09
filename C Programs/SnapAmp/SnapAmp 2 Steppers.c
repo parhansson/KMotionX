@@ -2,7 +2,7 @@
 
 // Configure Snap Amp for 2 stepper motors
 
-void main() 
+int main() 
 {
 	// peak current limits
 	

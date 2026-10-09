@@ -40,7 +40,7 @@ void CDisplay::Reset()
 	m_Italic = lfont.lfItalic = false;
 	lfont.lfOutPrecision = OUT_TT_PRECIS;
 	lfont.lfQuality = ANTIALIASED_QUALITY;
-	strcpy(lfont.lfFaceName, m_FaceName);
+	wcscpy(lfont.lfFaceName, m_FaceName);
 
 	//remove old font
 	m_font.DeleteObject();
@@ -51,8 +51,24 @@ CDisplay::~CDisplay()
 {
 }
 
-void CDisplay::SetFont(const char *szFaceName, int height, bool Bold, bool Italic)
+void CDisplay::SetFont(const wchar_t *szFaceName, int height, bool Bold, bool Italic)
 {
+	// Check if the font is already set with the same parameters
+	LOGFONT lf = { 0 };
+	if (m_font.GetSafeHandle() && m_font.GetLogFont(&lf)) {
+		// Compare font attributes
+		if (
+			lf.lfHeight == height &&
+			lf.lfWeight == (Bold ? 700 : 400) &&
+			lf.lfItalic == (BYTE)Italic &&
+			wcscmp(lf.lfFaceName, szFaceName) == 0
+			)
+		{
+			// Font is already set, no need to change
+			return;
+		}
+	}
+
 	//remove old font
 	m_font.DeleteObject();
 
@@ -69,7 +85,7 @@ void CDisplay::SetFont(const char *szFaceName, int height, bool Bold, bool Itali
 	lfont.lfItalic = Italic;
 	lfont.lfOutPrecision = OUT_TT_PRECIS;
 	lfont.lfQuality = ANTIALIASED_QUALITY;
-	strcpy(lfont.lfFaceName, szFaceName);
+	wcscpy(lfont.lfFaceName, szFaceName);
 	m_font.CreateFontIndirect(&lfont);
 }
 
@@ -144,7 +160,7 @@ void CDisplay::DrawText()
 
 
 //	fontDisplay.CreateFont(36, 0, 0, 0, FW_BOLD, 0, 0, 0, 0, 0, 0, 0,
-//		FIXED_PITCH, "Courier New");
+//		FIXED_PITCH, L"Courier New");
 
 	CDC *screen = GetDC();
 	int dpiX = screen->GetDeviceCaps(LOGPIXELSX);
@@ -154,7 +170,7 @@ void CDisplay::DrawText()
 
 
 //	fontDisplay.CreateFont((int)(m_rect.bottom+3* m_scale+0.5), 0, 0, 0, FW_BOLD, 0, 0, 0, 0, 0, 0, 0,
-//		FIXED_PITCH, "Courier New");
+//		FIXED_PITCH, L"Courier New");
 
 
 	
@@ -183,6 +199,16 @@ void CDisplay::SetText(CString OutText)
 	RefreshPlot();
 }
 
+void CDisplay::SetFormat(CString Format)
+{
+	m_Format = Format;
+	RefreshPlot();
+}
+
+CString CDisplay::GetFormat()
+{
+	return m_Format;
+}
 
 void CDisplay::SetTextColor(int color)
 {

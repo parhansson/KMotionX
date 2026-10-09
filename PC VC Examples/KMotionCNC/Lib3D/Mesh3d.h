@@ -22,6 +22,8 @@
 #include "Material.h"
 #include "Transform.h"
 
+#define N_GL_CONTEXT 3
+
 class CColorRamp;
 class CTexture;
 
@@ -38,7 +40,7 @@ private :
 	CTransform m_Transform;
 	CTransform m_TransformOriginal;
 	CString m_Name;
-	
+
 	// Apparence & texture
 	CMaterial m_Material; // material
 	int m_NormalBinding;  // normals defined at vertices or faces ? (Gouraud)
@@ -50,7 +52,7 @@ private :
 	int *m_pTextureCoordinateIndex;
 
 	// OpenGL-specific
-	unsigned int m_ListOpenGL;
+	GLuint VAO=0, VBO=0, EBO=0;
 	unsigned int m_ListDone;
 	int m_Modified;
 	int m_Show;
@@ -63,6 +65,7 @@ public :
 
 	// Datas
 	void Free();
+	GLuint createShaderProgram();
 	virtual int GetType();
 	int IsValid();
 	void Copy(CMesh3d *pMesh);
@@ -130,6 +133,8 @@ public :
 	virtual int glBuildList();
 	virtual int glDraw();
 	void Show(int flag) { m_Show = flag; }
+	static GLuint shaderProgram[N_GL_CONTEXT];
+	static HGLRC  shaderProgram_gl_context[N_GL_CONTEXT];
 
 	// Debug
 	void Trace();
@@ -143,7 +148,19 @@ public :
 
 	// Modif
 	void SetModified() { m_Modified=1; }
-	void InvalidateDisplayList() {m_ListOpenGL=-1; };
+	void InvalidateDisplayList() 
+	{
+		if (VAO != 0)
+			glDeleteVertexArrays(1, &VAO);
+
+		if (VBO != 0)
+			glDeleteBuffers(1, &VBO);
+
+		if (EBO != 0)
+			glDeleteBuffers(1, &EBO);
+
+		VAO = 0; VBO = 0; EBO = 0;
+	};
 	int GetModified() { return m_Modified; }
 
 

@@ -81,11 +81,11 @@ describes the motion along the path as a function of time. Often the same
 path may be defined in the several segments in order to utilize different 
 parametric equations for different sections of the path. As shown above, one 
 section of a path might undergo acceleration while another section of a path 
-might maintain constant velocity. Buffered I/O Bit Commands (<a href="Cmd.htm#SetBitBuf">SetBitBuf</a>,
+might maintain constant velocity. Buffered IO Bit Commands (<a href="Cmd.htm#SetBitBuf">SetBitBuf</a>,
 <a href="Cmd.htm#ClearBitBuf">ClearBitBuf</a>, or <a href="Cmd.htm#SetStateBit">
 SetStateBitBuf</a>) may also be downloaded into the buffer before, after, or 
-between segments. This allows I/O to occur (i.e. switching on or off 
-a LASER) at exact times while the motion is being performed. Virtual I/O 
+between segments. This allows IO to occur (i.e. switching on or off 
+a LASER) at exact times while the motion is being performed. Virtual IO 
 bits may also be set or cleared to trigger other programs to perform customized 
 functions.</p>
 <p>Script commands are supported to:</p>
@@ -115,16 +115,17 @@ channel number of -1 to indicate that the axis is unassigned.</p>
 <a href="Cmd.htm#CheckDoneXYZABC">CheckDoneXYZABC</a> commands also move and check 
 the assigned channel axis that have been defined in the Coordinate System.</p>
 
-<h2>GCode, Coordinated Motion Library, Trajectory Planner</h2>
+<h2>G Code, Coordinated Motion Library, Trajectory Planner</h2>
 
 <p>In most cases a <em><strong>KMotion</strong></em> user will not compute and download <em>
-Coordinated Motion</em> segments directly. Instead the GCode library or 
+Coordinated Motion</em> segments directly. Instead the G Code library or 
 Coordinated Motion Library functions may be used to simply define a path with a 
 defined maximum velocity and acceleration, and the Trajectory Planner will 
 automatically compute the necessary coordinated motion segments for the path.</p>
 
 	</div>
 <div id="footer"></div>
+<script src="search/searchbox.js" defer></script>
 </body>
 
 </html>

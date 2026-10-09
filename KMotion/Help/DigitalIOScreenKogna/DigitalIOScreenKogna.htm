@@ -95,7 +95,7 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 
 
 
-<h1>Digital I/O Screen</h1>
+<h1>Digital IO Screen</h1>
 
 
 <p><img src="DigitalIOScreenKogna.png" width="675" height="532" alt=""/></p>
@@ -112,9 +112,9 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 
 
 
-<p>The <em><strong>Digital I/O Screen</strong></em> displays and allows changes to the 
+<p>The <em><strong>Digital IO Screen</strong></em> displays and allows changes to the 
 
-current state of <strong><em>Kogna</em></strong> digital I/O bits. Digital IO 
+current state of <strong><em>Kogna</em></strong> digital IO bits. Digital IO 
 
 bits are present on the <em><strong>Kogna</strong></em> as well as any additional option cards (such as 
 
@@ -122,7 +122,7 @@ with two SnapAmps or Kanalog as shown above) as well as Virtual Bits (simulated 
 
 
 
-<p><strong><em>Kogna</em></strong> has a number of digital I/O bits that may be used as <em>
+<p><strong><em>Kogna</em></strong> has a number of digital IO bits that may be used as <em>
 
 GPIO</em> (General Purpose Inputs or Outputs) or as specific dedicated functions 
 
@@ -130,7 +130,7 @@ GPIO</em> (General Purpose Inputs or Outputs) or as specific dedicated functions
 
 45). Some bits may be independently defined as either an input or an 
 
-output. On Power UP <em><strong>Kogna</strong></em> defines all I/O as inputs by 
+output. On Power UP <em><strong>Kogna</strong></em> defines all IO as inputs by 
 
 default. A bit may be configured as an output by checking the 
 
@@ -178,7 +178,7 @@ these bits.</span></p>
 
 
 
-<p>The <em>State</em> of each I/O bit may be observed in the corresponding 
+<p>The <em>State</em> of each IO bit may be observed in the corresponding 
 
 checkbox under the &quot;State&quot; columns. If the bit is defined as an output, 
 
@@ -208,13 +208,13 @@ sent to Kogna<em><strong></strong></em>. </p>
 
 
 
-<p>Additionally, <em>buffered</em> commands may change the state of Digital I/O 
+<p>Additionally, <em>buffered</em> commands may change the state of Digital IO 
 
-bits. <em>Buffered</em> I/O commands are I/O commands that are inserted into 
+bits. <em>Buffered</em> IO commands are IO commands that are inserted into 
 
-the coordinated motion buffer. When it is required that I/O bits be 
+the coordinated motion buffer. When it is required that IO bits be 
 
-changed at exact times within a motion sequence, <em>buffered</em> I/O commands 
+changed at exact times within a motion sequence, <em>buffered</em> IO commands 
 
 may be inserted into the motion buffer (see
 
@@ -224,15 +224,15 @@ may be inserted into the motion buffer (see
 
 and <a href="../Cmd.htm#SetStateBitBuf">
 
-SetStateBitBuf</a>). In this case the I/O commands occur when they are 
+SetStateBitBuf</a>). In this case the IO commands occur when they are 
 
-encountered within the motion sequence. The <em><strong>KMotion</strong></em> GCode 
+encountered within the motion sequence. The <em><strong>KMotion</strong></em> G Code 
 
-interpreter allows buffered I/O commands to be inserted within motion sequences 
+interpreter allows buffered IO commands to be inserted within motion sequences 
 
-by using a special form of GCode comment (See
+by using a special form of G Code comment (See
 
-<a href="../KMotionCNC/SynchronousIOCommands.htm">buffered GCode Commands</a>).</p>
+<a href="../KMotionCNC/SynchronousIOCommands.htm">buffered G Code Commands</a>).</p>
 
 <p>See the <a href="../SchematicsKogna/ConnectorsKogna.html"><em><strong>Kogna</strong></em> 
 
@@ -254,13 +254,13 @@ those optional boards.</p>
 
 <p class="warning">Caution: Shorting High Voltage (greater than 3.3V 
 
-or 5V depending on pin tolerance) to any Digital I/O 
+or 5V depending on pin tolerance) to any Digital IO 
 
 bit will be likely to cause permanent board damage.</p>
 
 
 
-<p>Digital I/O bits 46 and 47 are dedicated to the control of the two LED's on
+<p>Digital IO bits 46 and 47 are dedicated to the control of the two LED's on
 
 <strong><em>Kogna. </em></strong>These two outputs are configured as outputs and tuned 
 
@@ -271,6 +271,7 @@ status if desired.</p>
 
 
 
+<script src="../search/searchbox.js" defer></script>
 </body>
 
 

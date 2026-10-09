@@ -1,0 +1,15 @@
+(simple 20mm box)
+G21
+M3 S1000
+G0 X0 Y0 Z0
+F200
+M49 (Disable FRO & SSO)
+G1 X20
+M49 P1 (Disable FRO)
+G1 Y20
+M49 P2 (Disable SSO)
+G1 X0
+M48  (ENABLE FRO Enable SSO)
+G1 Y0
+M2
+

@@ -14,7 +14,7 @@
 #define MPG_LOW_PASS_K 0.001f  // smaller gives more smoothing
 #define MPG_ACCEL 0.01f        // bigger gives more effect
 
-main()
+int main()
 {
 	int BitA,Change1=0,Change2=0, DiffX2;
 	int PosNoWrap, NewPos, Pos=0, wraps;

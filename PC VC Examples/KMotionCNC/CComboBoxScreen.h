@@ -21,29 +21,37 @@ public:
 
 	CComboBoxScreen();
 	virtual ~CComboBoxScreen();
-	void SetFont(const char *szFaceName, int height, bool Bold, bool Italic);
-	void InsertItemW(CStringW p);
-	CStringW ToolTipText;
-	CStringW PrevWindowText;
+	void SetFont(const wchar_t *szFaceName, int height, bool Bold, bool Italic);
+	void InsertItem(CString p);
+	CString ToolTipText;
+	CString PrevWindowText;
 	int Var;
 	void Reset();
 	void GetPersistText(void);
-	CStringW Part(int n, CStringW p, bool & Done);
-	void SetTextAndDropDown(CStringW s);
+	CString Part(int n, CString p, bool & Done);
+	void SetTextAndDropDown(CString s);
 	void ResetAll();
-	CStringW GetWText();
-	void SetWText(CStringW w);
+	CString GetWText();
+	void SetWText(CString w);
 	int GetID();
 	CString GetIDName();
 	static CList <LPCComboBoxScreen, LPCComboBoxScreen> ComboBoxScreens;
 
-	void FixMyComboboxExTip(CStringW Text);
+	void FixMyComboboxExTip(CString Text);
+	void SetColors(COLORREF Text, COLORREF Back, COLORREF SelText, COLORREF SelBack);  // CLR_DEFAULT = standard color
 
 
 protected:
 	CFont m_font;
 	int CachedID;
 	CString CachedIDName;
+	bool m_CustomColors;
+	COLORREF m_TextColor, m_BackColor, m_SelTextColor, m_SelBackColor;
+	CBrush m_BackBrush;
+	bool m_DarkTheme;  // Windows dark theme applied to the arrow button, border and scroll bar
+	LRESULT CtlColor(HDC hDC);
+	void DrawColoredItem(LPDRAWITEMSTRUCT d);
+	static LRESULT CALLBACK InnerComboProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
 	// Overrides
 	 // ClassWizard generated virtual function overrides
 	 //{{AFX_VIRTUAL(CComboBoxScreen)

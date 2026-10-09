@@ -1,0 +1,46 @@
+﻿(Test G64 P programmed tolerance / G61 exact path / G61.1 exact stop)
+(1in square repeated under different path-control modes.)
+(Expected in c:\Temp\TP3_Timeline.log with 3rd Order Planner and Log on:)
+(  PATHMODE events at each mode change;)
+(  P0.05 square: corners blend fast; P0.002: corners much slower;)
+(  G64 no P: Tool Setup CornerTol behavior;)
+(  G61: CORNER_STOP at every corner - stop-and-go, exact vertices;)
+(  G61.1: BLOCK_STOP at EVERY block end, even the collinear X0.5 split.)
+G20
+G90
+G0 X0 Y0
+F400
+G64 P0.05 (coarse blend)
+G1 X1 Y0
+G1 X1 Y1
+G1 X0 Y1
+G1 X0 Y0
+G64 P0.02 (medium blend)
+G1 X1 Y0
+G1 X1 Y1
+G1 X0 Y1
+G1 X0 Y0
+G64 P0.002 (tight blend)
+G1 X1 Y0
+G1 X1 Y1
+G1 X0 Y1
+G1 X0 Y0
+
+G64 (machine default from Tool Setup)
+G1 X1 Y0
+G1 X1 Y1
+G1 X0 Y1
+G1 X0 Y0
+G61 (exact path)
+G1 X1 Y0
+G1 X1 Y1
+G1 X0 Y1
+G1 X0 Y0
+G61.1 (exact stop - note collinear split still stops)
+G1 X0.5 Y0
+G1 X1 Y0
+G1 X1 Y1
+G1 X0 Y1
+G1 X0 Y0
+G64 (restore default before ending)
+M2

@@ -1,6 +1,6 @@
 #include "KMotionDef.h"
 
-void main()
+int main()
 {
 	int FreezeIndex,LastIndex = -1;
 	for (;;)

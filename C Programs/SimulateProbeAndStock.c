@@ -9,7 +9,7 @@
 #define Length 4.0
 #define PROBETIPDIAMETER 0.125f 		// #121		Diameter of probe tip
 
-void main()
+int main()
 {
 	double x,y,z,xRes,yRes,zRes;
 	printf("Getting Axis Resolution\n");

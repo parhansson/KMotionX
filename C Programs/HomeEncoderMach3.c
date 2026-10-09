@@ -9,7 +9,7 @@
 #define Y 1
 #define Z 2
 
-main()
+int main()
 {
 	int flags = persist.UserData[5];  // Mach3 flags bit0=X, bit1=Y, Bit2=Z, etc...
 

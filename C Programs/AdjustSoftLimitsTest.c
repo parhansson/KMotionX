@@ -4,7 +4,7 @@
 // tests functionality of adjusting softlimits feedhold based on 
 // Velocity and Acceleration using the CheckDistToStop Calculations
 
-main()
+int main()
 {
 	for (;;)
 	{

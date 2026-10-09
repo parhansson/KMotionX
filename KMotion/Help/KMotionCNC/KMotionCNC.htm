@@ -129,6 +129,12 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
       
       	<p>&nbsp;</p>
 
+      <p><strong>G61</strong> <a href="ToolSetupScreenTP3.htm#Corners">Exact Path (stop at corners)</a></p>
+      <p><strong>G61.1</strong> <a href="ToolSetupScreenTP3.htm#Corners">Exact Stop (stop every block)</a></p>
+      <p><strong>G64 [Px]</strong> <a href="ToolSetupScreenTP3.htm#Corners">Path Blending (Corner Tolerance x)</a></p>
+      
+      	<p>&nbsp;</p>
+
       <p><strong>G83</strong> Canned Peck Drill</p>
       <p>&nbsp;Z final z R Retract z Q peck dist</p> 
       <p>&nbsp;F feedrate P dwell sec K rapid delta</p>
@@ -173,7 +179,13 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
       <p><strong>M7</strong> Mist On</p>
       <p><strong>M8</strong> Flood On</p>
       <p><strong>M9</strong> Mist/Flood Off</p>
-      <p><strong>M98</strong> <strong>P</strong>xxx Call Subroutine</p>
+      <p><strong>M30</strong> (Program End) </p>
+      <p><strong> M47</strong> Loop to Beginning</p>
+      <p><strong>M48</strong> Enables both FRO and SSO</p>
+      <p><strong></strong><strong>M49</strong> Disables both FRO and SSO</p>
+      <p><strong></strong><strong>M49 P1</strong> Disables FRO and Enables SSO</p>
+      <p><strong></strong><strong>M49 P2</strong> Enables FRO and Disables SSO</p>
+      <p><strong></strong><strong>M98</strong> <strong>P</strong>xxx Call Subroutine</p>
 	  <p><strong>M99</strong> Return from Subroutine</p>
     
       <h3>Other Codes:</h3>
@@ -190,7 +202,7 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
       <p>(CMD, EnableAxis0)</p>
 	  <p><a name="BUF"></a>(BUF, SetBitBuf29)</p>
 
-	  <h3><a href="#Other_GCode_Commands">More GCodes</a></h3>
+	  <h3><a href="#Other_G Code_Commands">More G Codes</a></h3>
        
       <h3>Keyboard Hot Keys</h3>
       
@@ -222,7 +234,8 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 		
 		<a href="GCodeViewerScreen.htm">G Code Viewer Screen</a><br />
 		<a href="GViewerSetup.htm">G Code Viewer Setup Screen</a><br />
-		<a href="ToolSetupScreenM3.htm">Tool Setup Screen</a>
+		<a href="ToolSetupScreenM3.htm">Tool Setup Screen</a><br />
+		<a href="ToolSetupScreenTP3.htm">Tool Setup - 3rd Order Trajectory Planner</a>
 		
 		<div style="clear: both;"></div>
 		
@@ -247,7 +260,7 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 		<area href="#File Selector" shape="rect" coords="767,123,808,285">
 		<area href="#Keyboard_Jog" shape="rect" coords="6,234,89,280">
 		<area href="#Feed_Hold" shape="rect" coords="129,534,215,608">
-		<area href="#Zero/Set_Origin" shape="rect" coords="199,22,276,184">
+		<area href="#Zero_Set_Origin" shape="rect" coords="199,22,276,184">
 		<area href="#Jog_Buttons" shape="polygon" coords="94,190,197,189,194,404,220,404,219,526,10,527,10,410,89,411,88,331,9,331,9,285,94,285">
 		<area href="#Block_Delete" shape="rect" coords="765,418,813,477">
 		<area href="#Feed_Rate_Override" shape="rect" coords="226, 309, 367, 539">
@@ -263,7 +276,7 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 		<p>&nbsp;</p>
      
       	<p><strong><em>KMotionCNC</em></strong> allows the user to edit, execute, 
-      	and view G Code Programs.&nbsp; GCode is a historical language for defining 
+      	and view G Code Programs.&nbsp; G Code is a historical language for defining 
       	Linear/Circular/Helical Interpolated Motions often used to program numerically 
       	controlled machines (CNC Machines).</p>
 		
@@ -304,7 +317,7 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 		
 		<p><strong><span style="background-color: #00FF00">Green</span></strong> - 
 		indicates normal status, hardware is connected, axis is enabled, and the 
-		displayed position is the current commanded tool position in GCode coordinates.</p>
+		displayed position is the current commanded tool position in G Code coordinates.</p>
 		 
 		<p><strong><span style="background-color: #FF8000">Orange</span></strong> - 
 		indicates normal status, hardware is connected, axis is enabled, and the 
@@ -320,14 +333,14 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 		
 		<p><strong><span style="background-color: #0099FF">Cyan</span></strong> - 
 		indicates normal status, hardware is connected, axis is enabled, and the 
-		displayed position is the current measured tool position in GCode 
+		displayed position is the current measured tool position in G Code 
 		coordinates.  Available when Encoders or other feedback device is 
 		used and the Encoder mode is selected on the Tool Setup | Trajectory 
 		Planner Screen.<p>
 		
 		<div style="clear: both;"></div>
 		
-		<h3>Zero/Set Origin</h3>
+		<h3><a name="Zero_Set_Origin"></a>Zero/Set Origin</h3>
 		
 		<p><img src="KMotionCNCfiles/ZeroSet.PNG" />
 		Allows zeroing or setting the respective axis. This is 
@@ -347,7 +360,7 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 		tool position in Raw Machine Coordinates (G53 without any Global offset 
 		(G92) or Fixture Offset (G54+). Machine coodinates are relative to 
 		the fixed machine home position.</p>
-		<p>Unchecked displays the normal GCode Coordinate 
+		<p>Unchecked displays the normal G Code Coordinate 
 		relative to the &quot;floating&quot; origin which may be moved by changing either 
 		the global offset (G92) and/or a Fixture Offset.</p>
 		
@@ -401,7 +414,7 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 	
 		<p>Displays and allows changing of the currently 
 		selected Tool. <em>KMotionCNC</em> supports up to 99 tool definitions.
-		GCode selects tools using several different commands for different 
+		G Code selects tools using several different commands for different 
 		purposes. The value displayed here is the value selected by the <strong>
 		T</strong> command, which is the tool to be loaded into the spindle by a 
 		automatic tool changer. The T command is normally followed by a <strong>M6</strong> command that receives the tool number and physically loads the tool. 
@@ -461,11 +474,9 @@ SLOT 	ID   LENGTH 	DIAMETER XOFFSET  YOFFSET  COMMENT			IMAGE
 		<p>The Tool Table may also be edited in a window using the <strong>Edit Tool File</strong> 
 		button.<p><img src="KMotionCNCfiles/ToolTable600.png" width="800" height="451" alt="Edit Tool File screen "/>        
 		
-		<p>The Tool Edit Screen displays 20 tools per page over 
-		5 pages for a total of 99 possible tools.</p>
-		
-		<p>The normal idea is that all information regarding a tool is 
-		linked to a Tool ID. For a particular GCode Job specific Tools can be loaded into specific 
+		<p>The  Tool table can hold 100 tools. &nbsp;Tool IDs can be any 4 digit number.  &nbsp;By reference a two digit number 0-99 refers to the slot location. &nbsp;  A 3 or 4 digit number refers to the ID.&nbsp;</p>
+<p>The normal idea is that all information regarding a tool is 
+		linked to a Tool ID. For a particular G Code Job specific Tools can be loaded into specific 
 		Tool Changer Slots and the corresponding slot numbers can 
 			be edited to reflect which tools are currently loaded. </p>
 		<p><strong>Note:</strong> When editing the tool table values there is an option to have current Tool Length/Offset applied immediately  (<a href="ToolSetupScreenTP.htm#Tool_Length/Offset_Immediately">see here</a>) and the tool reloaded when the tool screen is closed.</p>
@@ -474,7 +485,7 @@ SLOT 	ID   LENGTH 	DIAMETER XOFFSET  YOFFSET  COMMENT			IMAGE
 		Table order first by Tool ID and then by Slot number.</p>
 		
 		<p><a name="FeedTimesFeedDistances" id="FeedTimesFeedDistances"><strong><em>Feed Times / Feed Distances</em></strong></a></p>
-        <p>This new feature (introduced in KMotion 5.2.0) is used to keep track of how long a tool was actually used cutting (Feed).  In GCode there are two types of moves.  G0 rapids where the tool basically jumps from one place to another between cuts.  And G1 G2 G3 feeds where the tool is moved at a constant feed rate usually cutting through material.  Feed Times/Feed Distances allows the user to keep track of how long and how far a tool has been used.  At some point an Operator might decide it needs to be replaced.  At that time the values will be reset.</p>
+        <p>This new feature (introduced in KMotion 5.2.0) is used to keep track of how long a tool was actually used cutting (Feed).  In G Code there are two types of moves.  G0 rapids where the tool basically jumps from one place to another between cuts.  And G1 G2 G3 feeds where the tool is moved at a constant feed rate usually cutting through material.  Feed Times/Feed Distances allows the user to keep track of how long and how far a tool has been used.  At some point an Operator might decide it needs to be replaced.  At that time the values will be reset.</p>
         <p>The <a name="Tool_Image_file">Tool Image file</a> 
 		refers to a VRML 3D model of the Tool that will be used to display the 
 		tool when shown in the GViewer Screen. All image files are 
@@ -525,10 +536,10 @@ SLOT 	ID   LENGTH 	DIAMETER XOFFSET  YOFFSET  COMMENT			IMAGE
 		Set Next Statement. The Keyboard F5 Key can be used to toggle 
 		Cycle Start/Halt.</p>
 		<p><em><strong><span style="color: #990000">Halt</span></strong></em> (available 
-		when GCode is running) will cause a feedhold to be 
+		when G Code is running) will cause a feedhold to be 
 		initiated so that any coordinated tool motion will decelerate along the 
-		intended path.&nbsp; Once motion comes to a complete stop, the GCode 
-		Interpreter will abort and remain on the line of GCode 
+		intended path.&nbsp; Once motion comes to a complete stop, the G Code 
+		Interpreter will abort and remain on the line of G Code 
 		that created the current Tool motion.</p>
 		
 		<h3><a name="Show_Tool_Setup_/_G_Code_Viewer_">Show Tool Setup / G Code Viewer 
@@ -550,8 +561,8 @@ SLOT 	ID   LENGTH 	DIAMETER XOFFSET  YOFFSET  COMMENT			IMAGE
 		<img src="KMotionCNCfiles/Editor.PNG" align="left" />
 		<div style="clear: both;"></div>
 		
-		<p>The Edit Window displays the loaded G-Code and allows editing. 
-		G-Code color syntax highlighting makes the code more readable.  A 
+		<p>The Edit Window displays the loaded G Code and allows editing. 
+		G Code color syntax highlighting makes the code more readable.  A 
 		right mouse click will bring up the context menu shown. </p> 
 		<p>Unlimited <strong>Undo/Redo</strong> is supported by right mouse clicking or 
 		Ctrl-Z/Ctrl-Y hot keys.</p>
@@ -563,19 +574,19 @@ SLOT 	ID   LENGTH 	DIAMETER XOFFSET  YOFFSET  COMMENT			IMAGE
 		determine an appropriate starting position and conditions for the 
 		specified line. A Safe/Resume process and movement may be 
 		performed when execution is continued. Starting in the middle of a 
-		GCode sequence can be complex. It is up to the Operator to make 
+		G Code sequence can be complex. It is up to the Operator to make 
 		certain that the state and current conditions are appropriate. </p>
 		<p>Note that<strong> Transform Sel </strong>will bring up a utility dialog (shown below) that allows 
-		the selected G-Code to be scaled or offset.	The <em>6 axes  Smooth</em> option will measure an 
+		the selected G Code to be scaled or offset.	The <em>6 axes  Smooth</em> option will measure an 
 		average between plotting points and allow for  a smoother path. This feature is recursive, i.e. 
 		it can be repeated as many  times as needed.</p>
 		
 		<p><img src="KMotionCNCfiles/Transform.PNG" /></p>
 
 		<p><strong>Toggle Block Delete  &ldquo;\&rdquo;</strong>:  When highlighting several lines of 
-		Gcode and then right-mouse-clicking, users  can toggle between lines that will be executed 
+		G Code and then right-mouse-clicking, users  can toggle between lines that will be executed 
 		and those that will not.<p><strong>Show/Hide Line numbers</strong> can be selected to display 
-		GCode Line numbers in the Left Margin. </p>       
+		G Code Line numbers in the Left Margin. </p>       
 		<p>Users can set <strong>Make  Read Only</strong> to avoid making any further changes. 
 		Select <strong>Allow Read/Write</strong> to revert to writeable (Note: will be undone 
 		automatically when program restarts).	</p>                         
@@ -615,10 +626,10 @@ SLOT 	ID   LENGTH 	DIAMETER XOFFSET  YOFFSET  COMMENT			IMAGE
 		extents verification the Run button may be used. Note that certain 
 		Jobs with manual operations, probing, etc. may not be possible to 
 		simulate.</p>
-		<p>Additionaly, there is a &nbsp;&quot;Do Times&quot; Simulation option. When checked, running Simulation will fully Trajectory-plan all Paths the same as a real run (without commanding any motion) and display estimated Job Time. Displayed times have been changed from seconds to hours:minutes:seconds. GViewer Plot will then show Trajectory Planned paths rather than what raw GCode specifies.<br>
+		<p>Additionaly, there is a &nbsp;&quot;Do Times&quot; Simulation option. When checked, running Simulation will fully Trajectory-plan all Paths the same as a real run (without commanding any motion) and display estimated Job Time. Displayed times have been changed from seconds to hours:minutes:seconds. GViewer Plot will then show Trajectory Planned paths rather than what raw G Code specifies.<br>
 		  <br>
 		  Simulation with &quot;Do Times&quot; on is a few times slower than with it off, but still very fast.</p>
-		<p>Here is the GViewer zoomed in on some GCode with faceted curves (from Dynomotion.ngc top of 'Y') plotted with 'Do Times' off. Note the facets are visible when the raw GCode is plotted.</p>
+		<p>Here is the GViewer zoomed in on some G Code with faceted curves (from Dynomotion.ngc top of 'Y') plotted with 'Do Times' off. Note the facets are visible when the raw G Code is plotted.</p>
 		<p><img src="KMotionCNCfiles/Facets.png" width="562" height="452" alt=""/></p>
 		<p>Here is the plot with 'Do Times' on. Note corner rounding has been applied for smoothing. Corner Tolerance 0.001 inches. Facet Angle 1 degree.</p>
 		<p><img src="KMotionCNCfiles/Smooth.png" width="562" height="452" alt=""/><br>
@@ -653,7 +664,7 @@ SLOT 	ID   LENGTH 	DIAMETER XOFFSET  YOFFSET  COMMENT			IMAGE
 		path. To resume motion toggle the Feed Hold button off.
 		<a href="#Execute_Controls">Halt</a> may also be selected to exit the 
 		Feed Hold state. Halt will cause the Interpreter to abort and 
-		remain on the GCode line that generated the current tool position.
+		remain on the G Code line that generated the current tool position.
 		The F3 function Key can be used to Toggle Feed Hold.</p>
 		
 		<div style="clear: both;"></div>
@@ -796,7 +807,7 @@ SLOT 	ID   LENGTH 	DIAMETER XOFFSET  YOFFSET  COMMENT			IMAGE
 		normal operations.</p>
 		
 		<p>Similar controls and displays exist for Spindle 
-		Control and correspond to the last specified S value in the GCode.<p>
+		Control and correspond to the last specified S value in the G Code.<p>
 		Constant Surface Speed (CSS) is also supported which 
 		automatically varies the Spindle Speed as a function of cutting Radius 
 		in order to maintain a constant surface speed of the cutting tool across 
@@ -833,14 +844,14 @@ SLOT 	ID   LENGTH 	DIAMETER XOFFSET  YOFFSET  COMMENT			IMAGE
 
 		<div style="clear: both;"></div>
 				
-		<h3><a name="Other_GCode_Commands">Other GCode Commands</a></h3>
+		<h3><a name="Other_G Code_Commands">Other G Code Commands</a></h3>
 		
 		<p><em><strong>KMotion's</strong></em> G Code interpreter 
       was derived from the Open Source EMC G Code Interpreter. Click here 
       for the <a href="../GCodeScreen/EMC_Handbook/node45.html">EMC User 
       Manual</a> (Only the G Code portions of the manual, Chapters 10-14 pertain to <em><strong>KMotion</strong></em> G Code).</p>
       
-      <p>Specially coded comments embedded within a GCode program may be used to issue <em><strong>KMotion</strong></em> Console Script commands directly to <em>
+      <p>Specially coded comments embedded within a G Code program may be used to issue <em><strong>KMotion</strong></em> Console Script commands directly to <em>
       <strong>KMotion</strong></em>.</p>
        
       <p>A comment in the form: (CMD,xxxxxx) will issue the command xxxxxx 
@@ -860,12 +871,13 @@ SLOT 	ID   LENGTH 	DIAMETER XOFFSET  YOFFSET  COMMENT			IMAGE
        
       <p>SetBitBuf, ClearBitBuf, SetStateBitBuf WaitBitBuf, WaitNotBitBuf.</p>
       
-      <p>Additionally, a comment in the form: (MSG,xxxxxx) will pause GCode Execution 
+      <p>Additionally, a comment in the form: (MSG,xxxxxx) will pause G Code Execution 
       and display a pop-up message window displaying the message xxxxxxx.</p>
 
 </div>
 
 	</div>
+<script src="../search/searchbox.js" defer></script>
 </body>
 
 </html>

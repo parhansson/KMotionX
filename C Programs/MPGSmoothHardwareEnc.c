@@ -18,7 +18,7 @@
 #define FACTOR10 20
 #define FACTOR100 21
 
-main()
+int main()
 {
 	int Change1, NewPos, Pos;
 	int InMotion=FALSE,Axis,LastAxis=-1;

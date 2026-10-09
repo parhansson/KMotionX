@@ -33,6 +33,8 @@ CFrame::CFrame(CWnd* pParent /*=NULL*/)
 	KMotionDLL = new CKMotionDLL(0);
 	CCoordMotion *CM = new CCoordMotion(KMotionDLL);
     GCodeDlg.Interpreter = new CGCodeInterpreter(CM);
+
+	GCodeDlg.Interpreter->m_BypassGCodeStatusString = true;
 }
 
 CFrame::~CFrame()
@@ -117,11 +119,11 @@ BOOL CFrame::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	
-	m_hIcon = AfxGetApp()->LoadIcon(IDI_KMotionCNC16);
-	SetIcon(m_hIcon,FALSE);
-	m_hIcon = AfxGetApp()->LoadIcon(IDI_KMotionCNC32);
-	SetIcon(m_hIcon,TRUE);
-	
+	m_hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDR_MAINFRAME));
+	SendMessage(WM_SETICON, ICON_SMALL, (LPARAM)m_hIcon);
+	m_hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDR_MAINFRAME));
+	SendMessage(WM_SETICON, ICON_BIG, (LPARAM)m_hIcon);
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }

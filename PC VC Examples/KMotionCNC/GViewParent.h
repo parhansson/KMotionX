@@ -37,7 +37,8 @@ public:
 	
 
 	~CGViewParent(); 
-	void SetViewDistance(ViewDir View);
+	void SetViewDistance(ViewDir View, bool PathOnly = false);
+	void FitPath();
 
 	CColor m_ColorBox;
 

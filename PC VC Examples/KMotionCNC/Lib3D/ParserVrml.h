@@ -19,11 +19,11 @@ class CParserVrml
 private :
 
 	int m_SizeFile;
-	char *m_pBuffer;
+	wchar_t *m_pBuffer;
 	int m_IndexBuffer;
 	CString m_FileName;
-	char m_pBufferLine[MAX_LINE_VRML];
-	char m_pBufferWord[MAX_WORD_VRML];
+	wchar_t m_pBufferLine[MAX_LINE_VRML];
+	wchar_t m_pBufferWord[MAX_WORD_VRML];
 
 public :
 
@@ -33,15 +33,15 @@ public :
 
 	// Running
 	void Free(void);
-	int Run(char *filename,CSceneGraph3d *pSceneGraph);
+	int Run(wchar_t *filename,CSceneGraph3d *pSceneGraph);
 
 	// Word processing
-	int ReadFile(char *filename);
+	int ReadFile(wchar_t *filename);
 	int ReadLine();
 	int ReadWord();
-	int OffsetToString(char *string);
-	int OffsetToStringBefore(char *string,char *before);
-	int OffsetToStringBeginLine(char *string);
+	int OffsetToString(wchar_t *string);
+	int OffsetToStringBefore(wchar_t *string,wchar_t *before);
+	int OffsetToStringBeginLine(wchar_t *string);
 
 
 	int CheckVersion();

@@ -233,7 +233,7 @@ namespace KMotion_dotNet
             }
             else
             {
-                _Controller.WriteLine(String.Format("DAC{0}=", _ID, value));
+                _Controller.WriteLine(String.Format("DAC{0}={1}", _ID, value));
             }
         }
 
@@ -243,7 +243,7 @@ namespace KMotion_dotNet
         /// </summary>
         protected void UpdateIOType()
         {
-            if (_ID < 1024)
+            if (_ID < 1024 && !(_ID >= 128 && _ID <= 183))
             {
                 switch (_IOType)
                 {

@@ -29,7 +29,7 @@ class CAllToolSetupSheet : public CMySheet
 // Construction
 public:
 	CAllToolSetupSheet(UINT nIDCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0);
-	CAllToolSetupSheet(LPCTSTR pszCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0);
+	CAllToolSetupSheet(LPCTSTR  pszCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0);
 	int LastMoveX;
 	int LastMoveY;
 	int LastSizeX;
@@ -44,11 +44,11 @@ protected:
 // Attributes
 public:
 
-	CToolSetupM1Page       m_ToolSetupM1Page;
-	CToolSetupM100Page     m_ToolSetupM100Page;
-	CToolSetupButtonsPage  m_ToolSetupButtonsPage;
-	CToolSetupFilesPage    m_ToolSetupFilesPage;
-	CToolSetupTPPage       m_ToolSetupTPPage;
+	CToolSetupM1Page         m_ToolSetupM1Page;
+	CToolSetupM100Page       m_ToolSetupM100Page;
+	CToolSetupButtonsPage    m_ToolSetupButtonsPage;
+	CToolSetupFilesPage      m_ToolSetupFilesPage;
+	CToolSetupTPPage         m_ToolSetupTPPage;
 
 
 // Dialog Data

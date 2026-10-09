@@ -1,6 +1,6 @@
 #include "KMotionDef.h"
 
-main()
+int main()
 {
 	float Robot0, Robot1, Robot2, Robot3, Robot4;
 

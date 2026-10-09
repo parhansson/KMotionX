@@ -5,7 +5,7 @@
 
 #define Xaxis 0
 
-main()
+int main()
 {
 	int FixtureIndex;
 	double NewOriginOffset,OriginOffsetX,AxisOffsetX;

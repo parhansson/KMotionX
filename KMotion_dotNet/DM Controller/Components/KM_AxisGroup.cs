@@ -27,17 +27,9 @@ namespace KMotion_dotNet
         /// </summary>
         protected string _Name = "";
         /// <summary>
-        /// Velocity to use during positioning
+        /// Desired FeedRate in inches/sec for coordinated motion Feeds (G1,G2,G3) 
         /// </summary>
-        protected double _Velocity = 0.0;
-        /// <summary>
-        /// Maximum velocity to use during positioning and coordinated motion
-        /// </summary>
-        protected double _MaxVelocity = 0.0;
-        /// <summary>
-        /// Acceleration to use during positioning 
-        /// </summary>
-        protected double _Acceleration = 0.0;
+        protected double _FeedRate = 0.0;
         /// <summary>
         /// Axis objects that the group is comprised of
         /// </summary>
@@ -117,53 +109,21 @@ namespace KMotion_dotNet
             {
                 _Name = value;
             }
-        } 
-        /// <summary>
-        /// Commanded velocity to use during positioning 
-        /// </summary>
-        public double Velocity
-        {
-            get
-            {
-                return _Velocity;
-            }
-            set
-            {
-                _Velocity = value;
-                _Controller.WriteLine(String.Format("Vel{0}={1}", _ID, value));
-            }
-        } 
-        /// <summary>
-        /// Maximum velocity to use during positioning and coordinated motion
-        /// </summary>
-        public double MaxVelocity
-        {
-            get
-            {
-                return _Velocity;
-            }
-            set
-            {
-                _Velocity = value;
-                _Controller.WriteLine(String.Format("Vel{0}={1}", _ID, value));
-            }
-        } 
-        /// <summary>
-        /// Velocity to use during positioning
-        /// Jogging uses its own velocity passed in
-        /// </summary>
-        public double Acceleration
-        {
-            get
-            {
-                return _Acceleration;
-            }
-            set
-            {
-                _Acceleration = value;
-                _Controller.WriteLine(String.Format("Accel{0}={1}", _ID, value));
-            }
         }
+        /// <summary>
+        /// Desired FeedRate in inches/sec for coordinated motion Feeds (G1,G2,G3)  
+        /// </summary>
+        public double FeedRate
+        {
+            get
+            {
+                return _FeedRate;
+            }
+            set
+            {
+                _FeedRate = value;
+            }
+        } 
         /// <summary>
         /// Axis objects that the group is comprised of
         /// </summary>
@@ -313,8 +273,22 @@ namespace KMotion_dotNet
             }
         }
 
-        
-        
+
+
+        /// <summary>
+        /// Gets/Sets the RapidParamsDirty, if set Rapid parameters will be refressed from KFLOP/Kogna
+        /// </summary>
+        public bool RapidParamsDirty
+        {
+            get
+            {
+                return _Controller.CoordMotion.RapidParamsDirty;
+            }
+            set
+            {
+                _Controller.CoordMotion.RapidParamsDirty = value;
+            }
+        }
         /// <summary>
         /// Coordinated Motion Feed Rate Setting Multiplier
         /// </summary>
@@ -359,6 +333,7 @@ namespace KMotion_dotNet
         /// </summary>
         public void EnableGroup()
         {
+            String[] Names = { "X", "Y", "Z", "A", "B", "C", "U", "V" };
             _Controller.CoordMotion.ClearAbort();
             if (AxisList.Count < 2)
             {
@@ -369,44 +344,59 @@ namespace KMotion_dotNet
             else
             {
                 var axismap = new List<int> { -1, -1, -1, -1, -1, -1, -1, -1 };
+                for (int i = 0; i < _AxisList.Count; i++)
+                {
+                    for (int k = 0; k < Names.Length; k++)
+                    {
+                        if (_AxisList[i].Name.ToUpper() == Names[k])
+                        {
+                            axismap[i] = k;
+                            break;
+                        }
+                    }
+                }
+
                 _Controller.WriteLine(String.Format("DefineCS = {0} {1} {2} {3} {4} {5}",
                 axismap[0], axismap[1], axismap[2], axismap[3], axismap[4], axismap[5]));
 
-                for (int i = 0; i < _AxisList.Count; i++)
+                for (int i = 0; i < Names.Length; i++)
                 {
-                    if (_AxisList[i].ID > -1)
+                    if (axismap[i] > -1)
                     {
-                        switch (i)
+                        double ToInch = 1.0;
+                        if (_AxisList[i].CPU_is_mm) ToInch = 1.0 / 25.4;
+
+                        switch (axismap[i])
                         {
                             case 0:
-                                _Controller.CoordMotion.MotionParams.MaxAccelX = _AxisList[i].Acceleration;
-                                _Controller.CoordMotion.MotionParams.MaxVelX = _AxisList[i].Velocity;
-                                _Controller.CoordMotion.MotionParams.CountsPerInchX = _AxisList[i].CPU;
+                                _Controller.CoordMotion.MotionParams.MaxAccelX = _AxisList[i].CoordAccel * ToInch;
+                                _Controller.CoordMotion.MotionParams.MaxVelX = _AxisList[i].CoordVelocity * ToInch;
+                                _Controller.CoordMotion.MotionParams.CountsPerInchX = _AxisList[i].CPU / ToInch;
                                 break;
                             case 1:
-                                _Controller.CoordMotion.MotionParams.MaxAccelY = _AxisList[i].Acceleration;
-                                _Controller.CoordMotion.MotionParams.MaxVelY = _AxisList[i].Velocity;
-                                _Controller.CoordMotion.MotionParams.CountsPerInchY = _AxisList[i].CPU;
+                                _Controller.CoordMotion.MotionParams.MaxAccelY = _AxisList[i].CoordAccel * ToInch;
+                                _Controller.CoordMotion.MotionParams.MaxVelY = _AxisList[i].CoordVelocity * ToInch;
+                                _Controller.CoordMotion.MotionParams.CountsPerInchY = _AxisList[i].CPU / ToInch;
                                 break;
                             case 2:
-                                _Controller.CoordMotion.MotionParams.MaxAccelZ = _AxisList[i].Acceleration;
-                                _Controller.CoordMotion.MotionParams.MaxVelZ = _AxisList[i].Velocity;
-                                _Controller.CoordMotion.MotionParams.CountsPerInchZ = _AxisList[i].CPU;
+                                _Controller.CoordMotion.MotionParams.MaxAccelZ = _AxisList[i].CoordAccel * ToInch;
+                                _Controller.CoordMotion.MotionParams.MaxVelZ = _AxisList[i].CoordVelocity * ToInch;
+                                _Controller.CoordMotion.MotionParams.CountsPerInchZ = _AxisList[i].CPU / ToInch;
                                 break;
                             case 3:
-                                _Controller.CoordMotion.MotionParams.MaxAccelA = _AxisList[i].Acceleration;
-                                _Controller.CoordMotion.MotionParams.MaxVelA = _AxisList[i].Velocity;
-                                _Controller.CoordMotion.MotionParams.CountsPerInchA = _AxisList[i].CPU;
+                                _Controller.CoordMotion.MotionParams.MaxAccelA = _AxisList[i].CoordAccel * ToInch;
+                                _Controller.CoordMotion.MotionParams.MaxVelA = _AxisList[i].CoordVelocity * ToInch;
+                                _Controller.CoordMotion.MotionParams.CountsPerInchA = _AxisList[i].CPU / ToInch;
                                 break;
                             case 4:
-                                _Controller.CoordMotion.MotionParams.MaxAccelB = _AxisList[i].Acceleration;
-                                _Controller.CoordMotion.MotionParams.MaxVelB = _AxisList[i].Velocity;
-                                _Controller.CoordMotion.MotionParams.CountsPerInchB = _AxisList[i].CPU;
+                                _Controller.CoordMotion.MotionParams.MaxAccelB = _AxisList[i].CoordAccel * ToInch;
+                                _Controller.CoordMotion.MotionParams.MaxVelB = _AxisList[i].CoordVelocity * ToInch;
+                                _Controller.CoordMotion.MotionParams.CountsPerInchB = _AxisList[i].CPU / ToInch;
                                 break;
                             case 5:
-                                _Controller.CoordMotion.MotionParams.MaxAccelC = _AxisList[i].Acceleration;
-                                _Controller.CoordMotion.MotionParams.MaxVelC = _AxisList[i].Velocity;
-                                _Controller.CoordMotion.MotionParams.CountsPerInchC = _AxisList[i].CPU;
+                                _Controller.CoordMotion.MotionParams.MaxAccelC = _AxisList[i].CoordAccel * ToInch;
+                                _Controller.CoordMotion.MotionParams.MaxVelC = _AxisList[i].CoordVelocity * ToInch;
+                                _Controller.CoordMotion.MotionParams.CountsPerInchC = _AxisList[i].CPU / ToInch;
                                 break;
                             default:
                                 break;
@@ -495,7 +485,7 @@ namespace KMotion_dotNet
                     pos[i] = nextpoint[i];
                 }
             }
-            _Controller.CoordMotion.StraightFeed(_Velocity, 
+            _Controller.CoordMotion.StraightFeed(_FeedRate, 
                 pos[0], pos[1], pos[2], pos[3], pos[4], pos[5], 0, 0);
         }
 
@@ -512,7 +502,7 @@ namespace KMotion_dotNet
             bool clockwise, double finalz)
         {
             var direction = clockwise ? KMotion_dotNet.CANON_DIRECTION.CANON_CLOCKWISE : CANON_DIRECTION.CANON_COUNTERCLOCKWISE;
-            _Controller.CoordMotion.ArcFeed(_Velocity,
+            _Controller.CoordMotion.ArcFeed(_FeedRate,
                 (int)KMotion_dotNet.CANON_PLANE.CANON_PLANE_XY, endx, endy, centerx, centery,
                 (int)direction, finalz, 0, 0, 0, 0, 0);
         }
@@ -530,7 +520,7 @@ namespace KMotion_dotNet
            CANON_PLANE plane, bool clockwise, double finalz)
         {
             var direction = clockwise ? KMotion_dotNet.CANON_DIRECTION.CANON_CLOCKWISE : CANON_DIRECTION.CANON_COUNTERCLOCKWISE;
-            _Controller.CoordMotion.ArcFeed(_Velocity,
+            _Controller.CoordMotion.ArcFeed(_FeedRate,
                 (int)plane, endx, endy, centerx, centery,
                 (int)direction, finalz, 0, 0, 0, 0, 0);
         }
@@ -552,7 +542,7 @@ namespace KMotion_dotNet
             CANON_PLANE plane, bool clockwise, double finalz, double a, double b, double c)
         {
             var direction = clockwise ? KMotion_dotNet.CANON_DIRECTION.CANON_CLOCKWISE : CANON_DIRECTION.CANON_COUNTERCLOCKWISE;
-            _Controller.CoordMotion.ArcFeed(_Velocity,
+            _Controller.CoordMotion.ArcFeed(_FeedRate,
                 (int)plane, endx, endy, centerx, centery,
                 (int)direction, finalz, a, b, c, 0, 0);
         }

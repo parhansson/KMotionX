@@ -3,7 +3,7 @@
 int MyData[300]; // declare some data to share
 int *pMyData=MyData; // declare a pointer to the data
 
-main()
+int main()
 {
 	int result=0;
 	//give other Threads the address by passing in persist variable 10

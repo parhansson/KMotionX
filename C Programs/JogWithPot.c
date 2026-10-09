@@ -18,7 +18,7 @@ void DoSpeedAxis(int ch, int Select, double *LastSpeed, double Speed);
 
 double T0=0.0,T1;
 
-main()
+int main()
 {
 	double Pot,LastSpeed_X=0.0,LastSpeed_Y=0.0,LastSpeed_Z=0.0;
 	

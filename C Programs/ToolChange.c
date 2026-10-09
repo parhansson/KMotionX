@@ -1,6 +1,6 @@
 #include "KMotionDef.h"
 
-main()
+int main()
 {
 	int slot = persist.UserData[9];  // value stored is an int 
 	int id = persist.UserData[9+1];  // value stored is an int 

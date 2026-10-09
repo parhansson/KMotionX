@@ -76,6 +76,8 @@ int CVertex3dFast::Equal(CVertex3dFast *pVertex)
 //********************************************
 int CVertex3dFast::glDraw()
 {
+#if 0 // Vertex are never displayed and this used depreciated functions
+
 	GLUquadricObj* pQuadric = gluNewQuadric();
 
 	// Main vertex
@@ -84,6 +86,7 @@ int CVertex3dFast::glDraw()
 	glTranslated(m_Coord[0],m_Coord[1],m_Coord[2]);
 	gluSphere(pQuadric,0.01,8,8); 
 	glPopMatrix();
+#endif
 	return 1;
 }
 

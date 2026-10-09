@@ -27,7 +27,7 @@ CDlgX::CDlgX(CWnd* pParent /*=NULL*/)
 	//}}AFX_DATA_INIT
 }
 
-UINT NEAR CDlgX::UpdateDataMessage = RegisterWindowMessage("DLGX_UPDATE_DATA");
+UINT NEAR CDlgX::UpdateDataMessage = RegisterWindowMessage(L"DLGX_UPDATE_DATA");
 
 
 
@@ -58,9 +58,9 @@ BOOL CDlgX::OnInitDialog()
 
 	EnableToolTips(TRUE);
 
-	m_hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_App16));
+	m_hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDR_MAINFRAME));
     SendMessage(WM_SETICON, ICON_SMALL, (LPARAM)m_hIcon);
-	m_hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_App32));
+	m_hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDR_MAINFRAME));
     SendMessage(WM_SETICON, ICON_BIG, (LPARAM)m_hIcon);
 
 	UpdateParameters();
@@ -107,12 +107,26 @@ int CDlgX::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CDialog::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
-	int nScreenWidth = GetSystemMetrics(SM_CXSCREEN);
-    int nScreenHeight = GetSystemMetrics(SM_CYSCREEN);
-	
-	if (LastMoveX > nScreenWidth  - 30) LastMoveX = nScreenWidth - 30;
-	if (LastMoveY > nScreenHeight - 30) LastMoveY = nScreenHeight - 30;
 
+
+	// rect representing the grabbable part of the title bar
+	int captionH = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYSIZEFRAME);
+
+	RECT cap;
+	cap.left = LastMoveX + 60;              // require at least ~60px of caption
+	cap.right = LastMoveX + LastSizeX - 150;  // reachable horizontally
+	cap.top = LastMoveY;
+	cap.bottom = LastMoveY + captionH;
+
+	if (cap.right <= cap.left) { cap.left = LastMoveX; cap.right = LastMoveX + LastSizeX; } // narrow window
+
+	if (MonitorFromRect(&cap, MONITOR_DEFAULTTONULL) == NULL)
+	{
+		RECT wa;
+		SystemParametersInfo(SPI_GETWORKAREA, 0, &wa, 0);
+		LastMoveX = wa.left;
+		LastMoveY = wa.top;
+	}
 
 	// For EasySize save original raw dialog size 
 	GetWindowRect(OrigWindowRect);
@@ -215,12 +229,12 @@ void CDlgX::OnPaint()
 
 void CDlgX::SaveOnExit(FILE * f)
 {
-	fprintf(f,"%d %d %d %d\n",LastMoveX,LastMoveY,LastSizeX,LastSizeY);
+	fwprintf(f,L"%d %d %d %d\n",LastMoveX,LastMoveY,LastSizeX,LastSizeY);
 }
 
 void CDlgX::RestoreOnStart(FILE * f)
 {
-	fscanf(f,"%d %d %d %d",&LastMoveX,&LastMoveY,
+	fwscanf(f,L"%d %d %d %d",&LastMoveX,&LastMoveY,
 						   &LastSizeX,&LastSizeY);
 }
 
@@ -248,11 +262,11 @@ BOOL CDlgX::OnToolTipNotify( UINT id, NMHDR * pNMHDR, LRESULT * pResult )
 	return(FALSE);
 }
 
-int CDlgX::LookForCString(const char * s, const char * c, CString * b)
+int CDlgX::LookForCString(const wchar_t * s, const wchar_t * c, CString * b)
 {
 	unsigned int i;
 
-	for (i=0; i<(int)strlen(c); i++)
+	for (i=0; i<(int)wcslen(c); i++)
 		if (s[i] != c[i]) return 1;
 	
 	*b = s+i;
@@ -263,12 +277,12 @@ int CDlgX::LookForCString(const char * s, const char * c, CString * b)
 }
 
 
-void CDlgX::LookForChars(const char * s, const char * c, char * b)
+void CDlgX::LookForChars(const wchar_t * s, const wchar_t * c, wchar_t * b)
 {
 	CString ss;
 	unsigned int i;
 
-	for (i=0; i<(int)strlen(c); i++)
+	for (i=0; i<(int)wcslen(c); i++)
 		if (s[i] != c[i]) return;
 	
 	ss = s+i;
@@ -276,56 +290,56 @@ void CDlgX::LookForChars(const char * s, const char * c, char * b)
 	ss.Remove('\r');
 	ss.Remove('\n');
 
-	strcpy(b,ss);
+	wcscpy(b,ss);
 }
 
 
 
-void CDlgX::LookForFloat(const char * s, const char * c, float * b)
+void CDlgX::LookForFloat(const wchar_t * s, const wchar_t * c, float * b)
 {
 	unsigned int i;
 
-	for (i=0; i<(int)strlen(c); i++)
+	for (i=0; i<(int)wcslen(c); i++)
 		if (s[i] != c[i]) return;
-	sscanf(s+i,"%f",b);
+	swscanf(s+i,L"%f",b);
 	*b = round(*b * 1000000.0f) / 1000000.0f;
 }
 
-void CDlgX::LookForIIR(const char * s, const char * c, float *f0, float *f1, float *f2, float *f3, float *f4)
+void CDlgX::LookForIIR(const wchar_t * s, const wchar_t * c, float *f0, float *f1, float *f2, float *f3, float *f4)
 {
 	unsigned int i;
 
-	for (i=0; i<(int)strlen(c); i++)
+	for (i=0; i<(int)wcslen(c); i++)
 		if (s[i] != c[i]) return;
 	
-	sscanf(s+i,"%f%f%f%f%f",f0,f1,f2,f3,f4);
+	swscanf(s+i,L"%f%f%f%f%f",f0,f1,f2,f3,f4);
 }
 
-void CDlgX::LookForDouble(const char * s, const char * c, double * b)
+void CDlgX::LookForDouble(const wchar_t * s, const wchar_t * c, double * b)
 {
 	unsigned int i;
 
-	for (i=0; i<(int)strlen(c); i++)
+	for (i=0; i<(int)wcslen(c); i++)
 		if (s[i] != c[i]) return;
-	sscanf(s+i,"%lf",b);
+	swscanf(s+i,L"%lf",b);
 }
 
-void CDlgX::LookForInt(const char * s, const char * c, int * b)
+void CDlgX::LookForInt(const wchar_t * s, const wchar_t * c, int * b)
 {
 	unsigned int i;
 
-	for (i=0; i<(int)strlen(c); i++)
+	for (i=0; i<(int)wcslen(c); i++)
 		if (s[i] != c[i]) return;
-	sscanf(s+i,"%d",b);
+	swscanf(s+i,L"%d",b);
 }
 
-void CDlgX::LookForHex(const char * s, const char * c, int * b)
+void CDlgX::LookForHex(const wchar_t * s, const wchar_t * c, int * b)
 {
 	unsigned int i;
 
-	for (i=0; i<(int)strlen(c); i++)
+	for (i=0; i<(int)wcslen(c); i++)
 		if (s[i] != c[i]) return;
-	sscanf(s+i,"%x",b);
+	swscanf(s+i,L"%x",b);
 }
 
 
@@ -363,7 +377,7 @@ CString CDlgX::InitialFile(CString FileName, CString DefaultPath, CString Defaul
 	}
 	else
 	{
-		if (FileName.Find(':') == -1 && FileName.Find("\\\\") == -1)  // no Path in it?
+		if (FileName.Find(':') == -1 && FileName.Find(L"\\\\") == -1)  // no Path in it?
 			FileName = DefaultDir + FileName; // yes, add in the default path
 	}
 	return FileName;
@@ -515,7 +529,7 @@ CString CDlgX::ExtractDirectory(CString s)
 {
 	CString sDrive,sDir,sFileName,sExt;
 
-	_splitpath_s(s,sDrive.GetBufferSetLength(_MAX_DRIVE), _MAX_DRIVE, 
+	_wsplitpath_s(s,sDrive.GetBufferSetLength(_MAX_DRIVE), _MAX_DRIVE,
 		sDir.GetBufferSetLength(_MAX_DIR), _MAX_DIR,
 		sFileName.GetBufferSetLength(_MAX_FNAME), _MAX_FNAME, 
 		sExt.GetBufferSetLength(_MAX_EXT), _MAX_EXT);

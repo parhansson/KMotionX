@@ -8,7 +8,7 @@ int   *css_mode = &persist.UserData[PC_COMM_CSS_MODE];			// Mode 1=Normal RPM mo
 // save in user variable STATEVAR whether it was off, CW, or CCW (0,1,-1)
 // save in user variable SPEEDVAR the last desired speed
 
-main()
+int main()
 {
 	float speed = *(float *)&persist.UserData[KMVAR];  // value stored is actually a float 
 	int  LastState = persist.UserData[STATEVAR];  // get last state 

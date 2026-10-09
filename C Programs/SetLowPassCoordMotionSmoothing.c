@@ -2,7 +2,7 @@
 
 // Example of how to set/disable coordinated motion low pass filtering
 
-main()
+int main()
 {
 	double Tau = 0.001;  // seconds for Low Pass Filter Time Constant
 

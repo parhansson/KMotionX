@@ -3,7 +3,7 @@
 /*         Copyright (c) 2003-2006  DynoMotion Incorporated          */
 /*********************************************************************/
 
-typedef long __stdcall VB_CONSOLE_HANDLER(const char *buf);
+typedef long __stdcall VB_CONSOLE_HANDLER(const wchar_t *buf);
 
 long __stdcall KMViaVB_New(HANDLE64 handle, long board);
 long __stdcall KMViaVB_Free(HANDLE64 handle);

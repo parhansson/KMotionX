@@ -34,7 +34,7 @@ int ReceiveDouble(double *v)
 	return 0;
 }
 
-void main()
+int main()
 {
 	double a,b;
 	unsigned char c;

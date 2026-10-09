@@ -23,7 +23,7 @@
 //
 // 
 
-main()
+int main()
 {
 	Jog(0,*(float *)&persist.UserData[50]);	// move in the velocites specified
 	Jog(1,*(float *)&persist.UserData[51]);

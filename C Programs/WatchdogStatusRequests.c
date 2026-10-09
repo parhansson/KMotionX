@@ -7,7 +7,7 @@ void WatchdogOK(void);
 #define WATCHDOG_DELAY 5.0 // seconds after host stops to Trigger
 
 // for testing
-main()
+int main()
 {
 	for (;;)
 	{

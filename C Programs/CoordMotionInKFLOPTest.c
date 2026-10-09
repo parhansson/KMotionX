@@ -5,7 +5,7 @@
 #include "KMotionDef.h"
 #include "CoordMotionInKFLOPFunctions.c"
 
-main()
+int main()
 {
 	// Do an example xy coordinated Move
 	

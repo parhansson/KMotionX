@@ -36,7 +36,7 @@ double SlaveGain,ToCut,Z0,S0,OS,SpindleStopTime;
 void Slave(void);
 
 
-main()
+int main()
 {
 
 // Set variables

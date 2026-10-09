@@ -2,7 +2,7 @@
 
 // Sets KStep's relay drivers on
 
-main()
+int main()
 {
     SetBitDirection(0,1);  //set as output
     SetBitDirection(1,1);  //set as output

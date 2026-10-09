@@ -21,6 +21,7 @@
 #define _WIN32_IE _WIN32_WINNT_WINXP 
 #define NTDDI_VERSION NTDDI_WINXP
 
+
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
 #include <afxole.h>         // MFC OLE classes
@@ -33,9 +34,10 @@
 #endif // _AFX_NO_AFXCMN_SUPPORT
 #include <afxmt.h>
 #include <afxtempl.h>
+
+#include <GL\glew.h>
 #include <gl\gl.h>
 #include <gl\glu.h>
-
 
 //Pull in support for Scintilla
 #include <platform.h>

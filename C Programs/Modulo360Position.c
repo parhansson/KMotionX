@@ -11,7 +11,7 @@ double floor(double x)            // truncate down toward -infinity
    return (modf(x, &y) < 0 ? y - 1 : y);
 }
 
-main()
+int main()
 {
 	double dest = chan[AXISA].Dest;
 	double cnts = CNTS_PER_DEG * 360.0;

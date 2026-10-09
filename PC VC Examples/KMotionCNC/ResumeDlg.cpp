@@ -75,9 +75,9 @@ void CResumeDlg::DoMetric(int ID)
 
 	if (m_Metric)
 	{
-		GetDlgItemTextA(ID,s);
-		s.Replace("inches","mm");
-		s.Replace("in/min","mm/min");
+		GetDlgItemText(ID,s);
+		s.Replace(L"inches",L"mm");
+		s.Replace(L"in/min",L"mm/min");
 		SetDlgItemText(ID,s);
 	}
 }

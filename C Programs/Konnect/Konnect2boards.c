@@ -1,6 +1,6 @@
 #include "KMotionDef.h"
 
-main()
+int main()
 {
 	double T0=Time_sec();
 	double TT=0.005;

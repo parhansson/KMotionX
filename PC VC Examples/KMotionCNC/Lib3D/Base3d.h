@@ -14,6 +14,10 @@
 #define PI      3.1415926535897932
 #endif
 
+#ifndef PI_F
+#define PI_F      3.1415926535897932f
+#endif
+
 
 // 3d library
 #include "Object3d.h"

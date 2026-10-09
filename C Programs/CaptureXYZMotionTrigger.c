@@ -4,7 +4,7 @@
 
 extern double CS0_TimeExecuted;
 
-main()
+int main()
 {
 	int i=0,k,Trig=0;
 	double X0,Y0,Z0,T0,*p=gather_buffer;

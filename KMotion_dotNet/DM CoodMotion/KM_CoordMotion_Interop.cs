@@ -149,10 +149,16 @@ namespace KMotion_dotNet
         static extern int KM_dotnet_Interop_CoordMotion_ExecutionStop(IntPtr handle);
 
         [DllImport("KMotion_dotNet_Interop.dll")]
+        static extern bool KM_dotnet_Interop_CoordMotion_Get_RapidParamsDirty(IntPtr handle);
+
+        [DllImport("KMotion_dotNet_Interop.dll")]
         static extern double KM_dotnet_Interop_CoordMotion_Get_FeedRateOverride(IntPtr handle);
 
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern double KM_dotnet_Interop_CoordMotion_Get_FeedRateRapidOverride(IntPtr handle);
+
+        [DllImport("KMotion_dotNet_Interop.dll")]
+        static extern void KM_dotnet_Interop_CoordMotion_Set_RapidParamsDirty(IntPtr handle, bool value);
 
         [DllImport("KMotion_dotNet_Interop.dll")]
         static extern void KM_dotnet_Interop_CoordMotion_Set_FeedRateOverride(IntPtr handle, double value);

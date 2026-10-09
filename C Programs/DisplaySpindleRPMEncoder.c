@@ -3,7 +3,7 @@
 #define SPINDLE_AXIS 4
 #define CNTS_PER_REV 1200
 
-main()
+int main()
 {
     double T0,T1;
     double P0,P1;

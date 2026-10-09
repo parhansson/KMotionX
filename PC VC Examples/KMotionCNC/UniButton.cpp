@@ -53,7 +53,7 @@ void CUniButton::Reset(bool KeepText)
 	lfont.lfItalic = false;
 	lfont.lfOutPrecision = OUT_TT_PRECIS;
 	lfont.lfQuality = ANTIALIASED_QUALITY;
-	strcpy(lfont.lfFaceName, "MS Sans Serif");
+	wcscpy(lfont.lfFaceName, L"MS Sans Serif");
 
 
 	m_font.CreateFontIndirect(&lfont);
@@ -92,7 +92,7 @@ int CUniButton::HandleButtonDown()
 	{
 		if (Var >= 0 && Var <= 4096)
 	{
-		CString s;
+		CStringA s;
 		s.Format("SetBit%d", Var);
 		MomentaryResult = TheFrame->KMotionDLL->WriteLine(s);
 		if (MomentaryResult) return 1; // don't push button down if it failed
@@ -172,9 +172,26 @@ void CUniButton::OnMouseMove(UINT flags, CPoint point)
 	}
 }
 
-void CUniButton::SetFont(const char *szFaceName, int height, bool Bold, bool Italic)
+void CUniButton::SetFont(const wchar_t *szFaceName, int height, bool Bold, bool Italic)
 {
 	mFontDefined = szFaceName[0] != 0;
+
+	// Check if the font is already set with the same parameters
+	LOGFONT lf = { 0 };
+	if (m_font.GetSafeHandle() && m_font.GetLogFont(&lf)) {
+		// Compare font attributes
+		if (
+			lf.lfHeight == height &&
+			lf.lfWeight == (Bold ? 700 : 400) &&
+			lf.lfItalic == (BYTE)Italic &&
+			wcscmp(lf.lfFaceName, szFaceName) == 0
+			)
+		{
+			// Font is already set, no need to change
+			return;
+		}
+	}
+
 	//remove old font
 	m_font.DeleteObject();
 
@@ -186,7 +203,7 @@ void CUniButton::SetFont(const char *szFaceName, int height, bool Bold, bool Ita
 	lfont.lfItalic = Italic;
 	lfont.lfOutPrecision = OUT_TT_PRECIS;
 	lfont.lfQuality = ANTIALIASED_QUALITY;
-	strcpy(lfont.lfFaceName, szFaceName);
+	wcscpy(lfont.lfFaceName, szFaceName);
 	m_font.CreateFontIndirect(&lfont);
 	if (!DetermineOwnerDraw())
 		CButton::SetFont(&m_font);
@@ -226,75 +243,7 @@ int CUniButton::OnCreate(LPCREATESTRUCT lpCreateStruct)
 }
 // CUniButton message handlers
 
-void CUniButton::PlotTXTUnicode(
-	HDC      hDC,               // In   Device
-	int		xpos,
-	int		ypos,
-	RECT    *prc,               // In   Clipping rectange
-	WCHAR	*szText,
-	int      iLen)				//len of string
-{
-	HRESULT  hr;
-	int      iClipWidth;
-	int      iFrom;
-	int      iTo;
-	DWORD    dwFlags;
 
-	SCRIPT_STRING_ANALYSIS ssa;
-
-
-	if (iLen < 1)
-		return;
-
-	// There's at least one character to display
-
-	dwFlags = m_dwDefaultSSAflags | SSA_GLYPHS;    // Require glyph generation for ScriptStringOut
-
-	if (m_bUseRTL)
-		dwFlags |= SSA_RTL;
-
-	// Draw a line to indicate clipping position
-
-	iClipWidth = prc->right - prc->left - 50;
-
-
-	// Analyse the string.
-	//
-	// ScriptStringAnalyse calls the ScriptItemize, ScriptShape,
-	// ScriptPlace and ScriptBreak APIs and returns a pointer to a block
-	// of memory containing all these results.
-
-	hr = ScriptStringAnalyse(
-		hDC,
-		szText,
-		iLen, 0, -1,
-		dwFlags,
-		iClipWidth,
-		NULL,
-		NULL,
-		NULL,
-		NULL, NULL, &ssa);
-
-	if (SUCCEEDED(hr)) 
-	{
-		// Display this line
-		// Support selection range specified in either direction ifrom,ito
-		iFrom = 1;	//no selection
-		iTo = 0;
-		hr = ScriptStringOut(
-			ssa,
-			xpos,
-			ypos,
-			ETO_CLIPPED,
-			prc,
-			iFrom,   // ScriptStringOut will ignore From/To that are outside this line
-			iTo,
-			FALSE);
-
-
-		ScriptStringFree(&ssa);
-	}
-}
 
 SIZE CUniButton::CalcTXTUnicode(HDC hDC, WCHAR *Sstr)
 {
@@ -358,11 +307,24 @@ void CUniButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	focusrect = rect;
 	focusrect.DeflateRect(2, 2, 2, 2);
 
+	// Add the BS_MULTILINE style
+	ModifyStyle(0, BS_MULTILINE);
+
+
+
 	COLORREF tColor = RGB(200, 200, 200);	//disabled
 
 	if (Style == Label || Style == DROLabel)
 	{
 		tColor= m_clrNormalText;
+	}
+	else if (CImageButton::ThinEdges && (rect.Width() <= 2 || rect.Height() <= 2))
+	{
+		// Thin Edges screen option: a button only 1-2 pixels thick is a drawn line
+		// (e.g. a frame around a DRO) - solid in its own colour, as an edge would
+		// cover it entirely
+		pDC->FillSolidRect(rect, m_clrBkgnd);
+		tColor = m_clrNormalText;
 	}
 	else if (lpDrawItemStruct->itemState & ODS_DISABLED)
 	{
@@ -378,17 +340,20 @@ void CUniButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 		pDC->FillSolidRect(rect, m_clrHilightBkgnd);
 		tColor = m_clrHilightText;
-		pDC->Draw3dRect(rect,
-			GetSysColor(COLOR_BTNSHADOW), GetSysColor(COLOR_BTNSHADOW));
+		if (CImageButton::ThinEdges)	// screen option: edge tinted from the button colour
+			pDC->Draw3dRect(rect, CImageButton::EdgeTint(m_clrHilightBkgnd, false), CImageButton::EdgeTint(m_clrHilightBkgnd, false));
+		else
+			pDC->Draw3dRect(rect,
+				GetSysColor(COLOR_BTNSHADOW), GetSysColor(COLOR_BTNSHADOW));
 	}
 	else
 	{
 		if (m_MouseOver)
 		{
 			COLORREF HoverColor;
-			if (fabs(GetRValue(m_clrBkgnd) - GetRValue(m_clrHilightBkgnd) > 63) || 
-				fabs(GetGValue(m_clrBkgnd) - GetGValue(m_clrHilightBkgnd) > 63) || 
-				fabs(GetBValue(m_clrBkgnd) - GetBValue(m_clrHilightBkgnd) > 63))
+			if (abs(GetRValue(m_clrBkgnd) - GetRValue(m_clrHilightBkgnd)) > 63 ||
+				abs(GetGValue(m_clrBkgnd) - GetGValue(m_clrHilightBkgnd)) > 63 ||
+				abs(GetBValue(m_clrBkgnd) - GetBValue(m_clrHilightBkgnd)) > 63)
 			{
 				// if "pushed" color is different go half way there
 				HoverColor = RGB((GetRValue(m_clrBkgnd) + GetRValue(m_clrHilightBkgnd)) / 2,
@@ -413,8 +378,11 @@ void CUniButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 			pDC->FillSolidRect(rect, m_clrBkgnd);
 
 		tColor = m_clrNormalText;
-		pDC->Draw3dRect(rect,
-			GetSysColor(COLOR_BTNHIGHLIGHT), GetSysColor(COLOR_BTNSHADOW));
+		if (CImageButton::ThinEdges)
+			pDC->Draw3dRect(rect, CImageButton::EdgeTint(m_clrBkgnd, true), CImageButton::EdgeTint(m_clrBkgnd, false));
+		else
+			pDC->Draw3dRect(rect,
+				GetSysColor(COLOR_BTNHIGHLIGHT), GetSysColor(COLOR_BTNSHADOW));
 	}
 
 	if ((Style != Label && Style != DROLabel) && lpDrawItemStruct->itemState & ODS_FOCUS)
@@ -427,41 +395,98 @@ void CUniButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 	CFont *oldfont = pDC->SelectObject(&m_font);
 
-
-	SIZE txtext;
-	txtext = CalcTXTUnicode(pDC->m_hDC, m_szText);
-	//	rect.right=txtext.cx;
-	//	rect.bottom=txtext.cy;
-
-	int xoffset, yoffset;
-	switch (m_HorzAlign)
-	{
-	case H_LEFT:
-		xoffset = rect.right - txtext.cx - 2;
-		break;
-	case H_CENTER:
-		xoffset = (rect.right - txtext.cx) / 2;
-		break;
-	case H_RIGHT:
-		xoffset = 2;
-		break;
-	}
-
-	switch (m_VertAlign)
-	{
-	case V_TOP:
-		yoffset = 2;
-		break;
-	case V_CENTER:
-		yoffset = (rect.bottom - txtext.cy) / 2;
-		break;
-	case V_BOTTOM:
-		yoffset = rect.bottom - txtext.cy - 2;
-		break;
-	}
-
-	PlotTXTUnicode(pDC->m_hDC, xoffset, yoffset, &rect, m_szText, (int)wcslen(m_szText));
+	PlotTXTUnicode(pDC->m_hDC, &rect, m_szText, (int)wcslen(m_szText));
 
 	pDC->SelectObject(oldfont);
 	pDC->SetBkMode(oldbkmode);
 }
+
+void CUniButton::PlotTXTUnicode(
+	HDC hDC,
+	RECT* prc,
+	WCHAR* szText,
+	int iLen)
+{
+	wchar_t szTextSplit[1024];
+
+	if (iLen < 1)
+		return;
+
+	// Split the text into lines based on '\n'
+	WCHAR* lines[100]; // Array to store pointers to each line
+	int lineCount = 0;
+
+	wcsncpy(szTextSplit, szText, sizeof(szTextSplit) / sizeof(szTextSplit[0]));
+
+	WCHAR* line = wcstok(szTextSplit, L"\n");
+	while (line != nullptr && lineCount < 100)
+	{
+		lines[lineCount++] = line;
+		line = wcstok(nullptr, L"\n");
+	}
+
+	// Calculate total height and maximum line width
+	int totalHeight = 0;
+	int maxWidth = 0;
+	SIZE lineSize;
+
+	for (int i = 0; i < lineCount; ++i)
+	{
+		lineSize = CalcTXTUnicode(hDC, lines[i]);
+		totalHeight += lineSize.cy;
+		if (lineSize.cx > maxWidth)
+			maxWidth = lineSize.cx;
+	}
+
+	// Calculate starting positions for centering
+	int startY = prc->top + (prc->bottom - prc->top - totalHeight) / 2;
+	int startX;
+
+	// Render each line
+	for (int i = 0; i < lineCount; ++i)
+	{
+		SCRIPT_STRING_ANALYSIS ssa = nullptr;
+
+		// Calculate the size of the current line
+		lineSize = CalcTXTUnicode(hDC, lines[i]);
+
+		// Center horizontally for each line
+		startX = prc->left + (prc->right - prc->left - lineSize.cx) / 2;
+
+		// Analyze and render the current line
+		HRESULT hr = ScriptStringAnalyse(
+			hDC,
+			lines[i],
+			(int)wcslen(lines[i]),
+			0,
+			-1,
+			m_dwDefaultSSAflags | SSA_GLYPHS,
+			prc->right - prc->left - 50,
+			nullptr,
+			nullptr,
+			nullptr,
+			nullptr,
+			nullptr,
+			&ssa);
+
+		if (SUCCEEDED(hr))
+		{
+			ScriptStringOut(
+				ssa,
+				startX,
+				startY,
+				ETO_CLIPPED,
+				prc,
+				1,
+				0,
+				FALSE);
+
+			// Free the SCRIPT_STRING_ANALYSIS object
+			ScriptStringFree(&ssa);
+		}
+
+		// Move to the next line
+		startY += lineSize.cy; // Adjust vertical position for the next line
+	}
+}
+
