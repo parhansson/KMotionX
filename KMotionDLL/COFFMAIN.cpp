@@ -30,7 +30,7 @@
 /*               -p        pause before running                         */
 /*                                                                      */
 /************************************************************************/
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #define KMotionBd 1
 

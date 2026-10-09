@@ -13,7 +13,7 @@
 
 /*********************************************************************/
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "rs274ngc_return.h"
 #include "HiResTimer.h"
 

@@ -3,7 +3,8 @@
 /*         Copyright (c) 2003-2006  DynoMotion Incorporated          */
 /*********************************************************************/
 
-#include "StdAfx.h"
+
+#include "stdafx.h"
 #include <vector>
 
 #define KMotionBd 1

@@ -22,7 +22,7 @@ stdout to a file.
 #define _CRT_SECURE_NO_DEPRECATE 1
 #define NO_WARN_MBCS_MFC_DEPRECATION
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "rs274ngc_return.h"
 
 #define AND              &&

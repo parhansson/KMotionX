@@ -29,7 +29,7 @@ either expressed or implied, of the FreeBSD Project.
 // KMotionIO.cpp: implementation of the CKMotionIO class.
 
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include <stdlib.h>
 #include <ftdi.h>
 #include "Ping.h"

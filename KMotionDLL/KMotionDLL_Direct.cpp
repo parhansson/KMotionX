@@ -7,7 +7,7 @@
 
 
 
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #define KMotionBd 1  // used within coff loader
 

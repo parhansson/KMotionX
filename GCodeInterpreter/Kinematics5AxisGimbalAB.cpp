@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Kinematics5AxisGimbalAB.h"
 
 #define sqr(x) ((x)*(x))

@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "KinematicsGeppetto.h"
 
 #define sqr(x) ((x)*(x))

@@ -1,7 +1,7 @@
 // GCodeInterpreter.cpp : Defines the entry point for the DLL application.
 //
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "rs274ngc_return.h"
 #include "rs274ngc.h"
 #include "GCodeInterpreter.h"

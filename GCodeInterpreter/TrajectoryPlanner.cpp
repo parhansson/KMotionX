@@ -1,6 +1,6 @@
 // TrajectoryPlanner.c  Tom Kerekes 09/11/02
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "HiResTimer.h"
 
 #ifdef DEBUG_DOWNLOAD

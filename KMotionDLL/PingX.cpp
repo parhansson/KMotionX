@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include <stdio.h>
 #include "Ping.h"
 #include <libusb.h>
