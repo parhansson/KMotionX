@@ -38,13 +38,17 @@ bool volatile FirstKognasScanComplete = false;
 
 uint8_t nKFLOPs = 0;
 KFLOP_INFO KFLOPs[MAX_KFLOPS]; // KFLOP Online list
-int FindKognas()
+void CreateKognaListMutex()
 {
     // Create a mutex with no initial owner
     KognaListMutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
     memset(KognaListMutex, 0, sizeof(pthread_mutex_t));
     // Initialize the mutex
     pthread_mutex_init(KognaListMutex, NULL);
+}
+int FindKognas()
+{
+    CreateKognaListMutex();
     return 0;
 }
 int FindKFLOPs()

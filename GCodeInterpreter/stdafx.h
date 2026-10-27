@@ -69,6 +69,7 @@
 #include "Kinematics5AxisTableBC.h"
 #include "KinematicsScara.h"
 #include "Kinematics2AxisRobot.h"
+#include "Kinematics3Link.h"
 #include "GCodeInterpreter.h"
 #endif
 

@@ -110,7 +110,7 @@ CKMotionDLL *KMotionDLL;
 /* MAIN()                                                                   */
 /*                                                                          */
 /****************************************************************************/
-int LoadCoff(CKMotionDLL *KMotionDLLtoUse, const char *Name, unsigned int *EntryPoint, int PackToFlash)
+int LoadCoff(CKMotionDLL *KMotionDLLtoUse, const wchar_t *Name, unsigned int *EntryPoint, int PackToFlash)
 {
 	int  files   = 0;
 	int  nostart = 0;
@@ -137,12 +137,12 @@ int LoadCoff(CKMotionDLL *KMotionDLLtoUse, const char *Name, unsigned int *Entry
     firstdata= 1;              /* flag so we can clear flash image*/
 
 	
-	fin = fopen(Name, "rb");
+	fin = _wfopen(Name, L"rb");
 
 	if (!fin)
 	{ 
-		std::wstring s2 = /*TRAN*/Trans.Translate("can't open file : ");
-		MessageBoxW(NULL,s2 + kmx::strtowstr(Name),L"KMotion",MB_OK | MB_SYSTEMMODAL);
+		CString s2 = /*TRAN*/Trans.Translate("can't open file : ");
+		MessageBoxW(NULL,s2 + Name,L"KMotion",MB_OK | MB_SYSTEMMODAL);
 		return 1;
 	}
 	
@@ -279,7 +279,7 @@ char *myalloc(int size)
    char *p = (char *)malloc(size);
    if (p) return p;
 
-   AfxMessageBox("out of memory",MB_OK|MB_SYSTEMMODAL);
+   AfxMessageBox(L"out of memory",MB_OK|MB_SYSTEMMODAL);
    exit(1);
 }
 
@@ -288,7 +288,7 @@ char *mralloc(char *p, int size)
    p = (char *)realloc(p, size);
    if (p) return p;
 
-   AfxMessageBox("out of memory",MB_OK|MB_SYSTEMMODAL);
+   AfxMessageBox(L"out of memory",MB_OK|MB_SYSTEMMODAL);
    exit(1);
 }
 

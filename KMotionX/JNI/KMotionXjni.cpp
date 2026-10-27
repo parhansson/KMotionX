@@ -31,7 +31,7 @@ either expressed or implied, of the FreeBSD Project.
 #include <iostream>
 #include "stdlib.h"
 //#include "../../KMotionDLL/KMotionDLL.h"  // KMOtion DLL Header
-#include "../../GCodeInterpreter/StdAfx.h"
+#include "../../GCodeInterpreter/stdafx.h"
 
 //This needs to be included after CString from StdAfx due to an UNUSED macro
 //in OpenJDK 7
@@ -44,6 +44,16 @@ CCoordMotion *CM = new CCoordMotion(KM);
 //CM->m_Simulate =true;
 
 CGCodeInterpreter *Interpreter = new CGCodeInterpreter(CM);
+
+// The Java side uses UTF-8 (String and byte[]), the library uses wide strings.
+// Copies a wide string to a Java byte array as a NUL terminated UTF-8 string
+static void CopyToJavaBytes(const wchar_t *w, jbyte *dest, int maxLength) {
+	if (maxLength <= 0) return;
+	std::string s = kmx::wstrtostr(w);
+	size_t n = s.size() < (size_t)(maxLength - 1) ? s.size() : (size_t)(maxLength - 1);
+	memcpy(dest, s.data(), n);
+	dest[n] = 0;
+}
 //static jmethodID errorHandlerCallback;
 // cached refs for later callbacks
 JavaVM * g_vm;
@@ -67,13 +77,13 @@ JCALLBACK * completeCH = 0;
 JCALLBACK * statusCH = 0;
 
 //KMotion Callbacks
-int ConsoleCallback(const char*);
-void ErrMsgCallback(const char*);
-void MessageCallback(const char *buf, JCALLBACK * ch);
+int ConsoleCallback(const wchar_t*);
+void ErrMsgCallback(const wchar_t*);
+void MessageCallback(const wchar_t *buf, JCALLBACK * ch);
 //Interpreter callbacks
-void CompleteCallback(int status, int line_no, int sequence_number, const char *err);
-void StatusCallback(int line_no, const char *msg);
-int UserCallback(const char *msg);
+void CompleteCallback(int status, int line_no, int sequence_number, const wchar_t *err);
+void StatusCallback(int line_no, const wchar_t *msg);
+int UserCallback(const wchar_t *msg);
 int UserMCodeCallback(int mcode);
 
 int CreateCallBackReference(JNIEnv *, JCALLBACK * , jobject , const char* , const char* );
@@ -99,7 +109,7 @@ int checkJavaEnv(void** env, int getEnvStat){
 	return result;
 }
 
-void CompleteCallback(int status, int line_no, int sequence_number, const char *err)
+void CompleteCallback(int status, int line_no, int sequence_number, const wchar_t *err)
 {
 	JNIEnv * env;
 	int getEnvStat = g_vm->GetEnv((void **)&env, JNI_VERSION_1_6);
@@ -107,7 +117,7 @@ void CompleteCallback(int status, int line_no, int sequence_number, const char *
 		return;
 	}
 
-	jstring message = env->NewStringUTF(err);
+	jstring message = env->NewStringUTF(kmx::wstrtostr(err).c_str());
 	env->CallVoidMethod(completeCH->handler, completeCH->method, status, line_no, sequence_number, message);
 
 	if (env->ExceptionCheck()) {
@@ -119,7 +129,7 @@ void CompleteCallback(int status, int line_no, int sequence_number, const char *
 	}
 }
 
-void StatusCallback(int line_no, const char *msg)
+void StatusCallback(int line_no, const wchar_t *msg)
 {
 	//printf("LineNo %d\n", line_no);
 	JNIEnv * env;
@@ -128,7 +138,7 @@ void StatusCallback(int line_no, const char *msg)
 		return;
 	}
 
-	jstring message = env->NewStringUTF(msg);
+	jstring message = env->NewStringUTF(kmx::wstrtostr(msg).c_str());
 
 	env->CallVoidMethod(statusCH->handler, statusCH->method, line_no, message);
 
@@ -140,7 +150,7 @@ void StatusCallback(int line_no, const char *msg)
 	}
 }
 
-int UserCallback(const char *msg)
+int UserCallback(const wchar_t *msg)
 {
 	JNIEnv * env;
 	int getEnvStat = g_vm->GetEnv((void **)&env, JNI_VERSION_1_6);
@@ -148,7 +158,7 @@ int UserCallback(const char *msg)
 		return 1;
 	}
 
-	jstring message = env->NewStringUTF(msg);
+	jstring message = env->NewStringUTF(kmx::wstrtostr(msg).c_str());
 	jint result;
 	result = env->CallIntMethod(userCH->handler, userCH->method, message);
 
@@ -184,15 +194,15 @@ int UserMCodeCallback(int mcode)
 	return result;
 }
 
-int ConsoleCallback(const char *buf){
+int ConsoleCallback(const wchar_t *buf){
 	MessageCallback(buf, consoleCH);
 	return 0;
 }
-void ErrMsgCallback(const char *buf) {
+void ErrMsgCallback(const wchar_t *buf) {
 	MessageCallback(buf, errorCH);
 }
 
-void MessageCallback(const char *buf, JCALLBACK * ch){
+void MessageCallback(const wchar_t *buf, JCALLBACK * ch){
 
 	JNIEnv * env;
 	int getEnvStat = g_vm->GetEnv((void **)&env, JNI_VERSION_1_6);
@@ -200,7 +210,7 @@ void MessageCallback(const char *buf, JCALLBACK * ch){
 		return ;
 	}
 
-	jstring message = env->NewStringUTF(buf);
+	jstring message = env->NewStringUTF(kmx::wstrtostr(buf).c_str());
 	env->CallVoidMethod(ch->handler, ch->method, message);
 
 	if (env->ExceptionCheck()) {
@@ -256,8 +266,8 @@ JNIEXPORT void JNICALL Java_com_dynomotion_kmotionx_KMotion_init
 	// configure the Action for MCode 105 to do a Callback
 	Interpreter->McodeActions[MCODE_ACTIONS_M100_OFFSET+5].Action = M_Action_Callback;
 
-	strcpy(Interpreter->ToolFile,"");
-	strcpy(Interpreter->SetupFile,"");
+	Interpreter->ToolFile[0] = 0;
+	Interpreter->SetupFile[0] = 0;
 	CM->m_Simulate = simulate;
 }
 
@@ -439,7 +449,7 @@ JNIEXPORT jint JNICALL Java_com_dynomotion_kmotionx_KMotion_CompileAndLoadCoff__
 	if (NULL == Name) return 0;
 
 	int result;
-	result = KM->CompileAndLoadCoff(Name, threadId);
+	result = KM->CompileAndLoadCoff(kmx::strtowstr(Name).c_str(), threadId);
 	env->ReleaseStringUTFChars(name, Name);  // release resources
 	return result;
 }
@@ -457,15 +467,11 @@ JNIEXPORT jint JNICALL Java_com_dynomotion_kmotionx_KMotion_CompileAndLoadCoff__
 
 	int result;
 	jbyte* jErr = env->GetByteArrayElements(err, NULL);
-	char* Err;
 
-	//To do this in a nice C++ way with arrays:
-	//jbyte memory_buffer[nr_pixels];
-	//unsigned char* pixels = reinterpret_cast<unsigned char*>(memory_buffer);
-	//or the C way:
-	Err = (char*)jErr;
-
-	result = KM->CompileAndLoadCoff(Name, threadId, Err, maxErrLength);
+	// The library writes wide characters, the Java byte array gets them as UTF-8
+	std::wstring wErr(maxErrLength > 0 ? maxErrLength : 1, L'\0');
+	result = KM->CompileAndLoadCoff(kmx::strtowstr(Name).c_str(), threadId, &wErr[0], maxErrLength);
+	CopyToJavaBytes(wErr.c_str(), jErr, maxErrLength);
 	env->ReleaseByteArrayElements(err, jErr, 0);
 	env->ReleaseStringUTFChars(name, Name);  // release resources
 	return result;
@@ -488,15 +494,11 @@ JNIEXPORT jint JNICALL Java_com_dynomotion_kmotionx_KMotion_Compile
 
 	int result;
 	jbyte* jErr = env->GetByteArrayElements(err, NULL);
-	char* Err;
 
-	//To do this in a nice C++ way with arrays:
-	//jbyte memory_buffer[nr_pixels];
-	//unsigned char* pixels = reinterpret_cast<unsigned char*>(memory_buffer);
-	//or the C way:
-	Err = (char*)jErr;
-
-	result = KM->Compile(Name, OutFile, boardType, threadId, Err, maxErrLength);
+	// The library writes wide characters, the Java byte array gets them as UTF-8
+	std::wstring wErr(maxErrLength > 0 ? maxErrLength : 1, L'\0');
+	result = KM->Compile(kmx::strtowstr(Name).c_str(), kmx::strtowstr(OutFile).c_str(), boardType, threadId, &wErr[0], maxErrLength);
+	CopyToJavaBytes(wErr.c_str(), jErr, maxErrLength);
 	env->ReleaseByteArrayElements(err, jErr, 0);
 	env->ReleaseStringUTFChars(name, Name);  // release resources
 	env->ReleaseStringUTFChars(outFile, OutFile);  // release resources
@@ -526,15 +528,11 @@ JNIEXPORT void JNICALL Java_com_dynomotion_kmotionx_KMotion_ConvertToOut
 	if (NULL == InFile) return;
 
 	jbyte* jOutFile = env->GetByteArrayElements(outFile, NULL);
-	char* OutFile;
 
-	//To do this in a nice C++ way with arrays:
-	//jbyte memory_buffer[nr_pixels];
-	//unsigned char* pixels = reinterpret_cast<unsigned char*>(memory_buffer);
-	//or the C way:
-	OutFile = (char*)jOutFile;
-
-	KM->ConvertToOut(threadId, InFile, OutFile, maxLength);
+	// The library writes wide characters, the Java byte array gets them as UTF-8
+	std::wstring wOutFile(maxLength > 0 ? maxLength : 1, L'\0');
+	KM->ConvertToOut(threadId, kmx::strtowstr(InFile).c_str(), &wOutFile[0], maxLength);
+	CopyToJavaBytes(wOutFile.c_str(), jOutFile, maxLength);
 	env->ReleaseByteArrayElements(outFile, jOutFile, 0);
 	env->ReleaseStringUTFChars(inFile, InFile);  // release resources
 }
@@ -619,7 +617,7 @@ JNIEXPORT jint JNICALL Java_com_dynomotion_kmotionx_KMotion_ExtractCoffVersionSt
 	//unsigned char* pixels = reinterpret_cast<unsigned char*>(memory_buffer);
 	//or the C way:
 	Version = (char*)jVersion;
-	result = KM->ExtractCoffVersionString(InFile, Version);
+	result = KM->ExtractCoffVersionString(kmx::strtowstr(InFile).c_str(), Version);
 	env->ReleaseStringUTFChars(inFile, InFile);  // release resources
 	env->ReleaseByteArrayElements(version, jVersion, 0);
 	return result;
@@ -876,7 +874,7 @@ JNIEXPORT jint JNICALL Java_com_dynomotion_kmotionx_KMotion_Interpret
 	const char *FileName = env->GetStringUTFChars(fileName, NULL);
 	if (NULL == FileName) return 0;
 
-	result = Interpreter->Interpret(boardType,FileName,start,end,restart,StatusCallback,CompleteCallback);
+	result = Interpreter->Interpret(boardType,kmx::strtowstr(FileName).c_str(),start,end,restart,StatusCallback,CompleteCallback);
 	env->ReleaseStringUTFChars(fileName,FileName);
 	return result;
 }

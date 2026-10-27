@@ -36,108 +36,90 @@ stdout to a file.
 int HandleThreading(double *FeedRate);
 int CheckIfThreadingInProgress(void);
 
-std::string Output;
-std::string ErrorOutput;
+CString Output;
+CString ErrorOutput;
 CGCodeInterpreter *GC;
 CCoordMotion *CM;;
 
+// Path control state (G61/G61.1/G64).  Default CONTINUOUS: before these
+// modes had any effect the planners always blended per the Tool Setup
+// tolerance, so CONTINUOUS + machine-default preserves that behavior.
+CANON_MOTION_MODE MotionMode = CANON_CONTINUOUS;
+double MotionTolerance = -1.0;   // G64 P in inches; < 0 = machine default
 
-void print_nc_line_number()
-{
-	wchar_t s[256];
 
-//  int line_number SET_TO _interpreter_block.line_number;
-  int line_number SET_TO 0;
 
-	
-if (line_number IS -1)
-    swprintf(s, 255, L" N ... ");
-  else if (line_number < 10)
-    swprintf(s, 255, L"    N%d ", line_number);
-  else if (line_number < 100)
-    swprintf(s, 255, L"   N%d ", line_number);
-  else if (line_number < 1000)
-    swprintf(s, 255, L"  N%d ", line_number);
-  else if (line_number < 10000)
-    swprintf(s, 255, L" N%d ", line_number);
-  else
-    swprintf(s, 255, L"N%d ", line_number);
-
-//  Output += s;
-  Output += "-"; // this looks a little nicer in the KMotion app
-}
-
-#define PRINT0(control) if (1)               \
+#define PRINT0(control) if (!GC->m_BypassGCodeStatusString)               \
           {										\
 		   wchar_t _s[256];						 \
 		   swprintf(_s, 255, L"%5d ", line_number++);    \
-		   Output += kmx::wstrtostr(_s);                      \
-           print_nc_line_number();           \
-           swprintf(_s, 255, control);                  \
+		   Output += _s;                      \
+		   Output += "-"; /* this looks a little nicer in the KMotion app */ \
+		   swprintf(_s, 255, control);                  \
 		   if ('\n'==_s[wcslen(_s)-1]) _s[wcslen(_s)-1]=0; \
-		   Output += kmx::wstrtostr(_s);                      \
+		   Output += _s;                      \
 		   swprintf(_s, 255, L"@%.3f\r\n",((double)GetTickCount())/1000.0); \
-		   Output += kmx::wstrtostr(_s);                      \
+		   Output += _s;                      \
           } else
-#define PRINT1(control, arg1) if (1)         \
+#define PRINT1(control, arg1) if (!GC->m_BypassGCodeStatusString)         \
           {										\
 		   wchar_t _s[256];						 \
 		   swprintf(_s, 255, L"%5d ", line_number++);    \
-		   Output += kmx::wstrtostr(_s);                      \
-           print_nc_line_number();           \
+		   Output += _s;                      \
+		   Output += "-"; /* this looks a little nicer in the KMotion app */ \
            swprintf(_s, 255, (control), (arg1));            \
 		   if ('\n'==_s[wcslen(_s)-1]) _s[wcslen(_s)-1]=0; \
-		   Output += kmx::wstrtostr(_s);                      \
+		   Output += _s;                      \
 		   swprintf(_s, 255, L"@%.3f\r\n",((double)GetTickCount())/1000.0); \
-		   Output += kmx::wstrtostr(_s);                      \
+		   Output += _s;                      \
           } else
-#define PRINT2(control, arg1, arg2) if (1)   \
+#define PRINT2(control, arg1, arg2) if (!GC->m_BypassGCodeStatusString)   \
           {										\
 		   wchar_t _s[256];						 \
 		   swprintf(_s, 255, L"%5d ", line_number++);    \
-		   Output += kmx::wstrtostr(_s);                      \
-           print_nc_line_number();           \
+		   Output += _s;                      \
+		   Output += "-"; /* this looks a little nicer in the KMotion app */ \
            swprintf(_s, 255, control, arg1, arg2);      \
 		   if ('\n'==_s[wcslen(_s)-1]) _s[wcslen(_s)-1]=0; \
-		   Output += kmx::wstrtostr(_s);                      \
+		   Output += _s;                      \
 		   swprintf(_s, 255, L"@%.3f\r\n",((double)GetTickCount())/1000.0); \
-		   Output += kmx::wstrtostr(_s);                      \
+		   Output += _s;                      \
           } else
-#define PRINT3(control, arg1, arg2, arg3) if (1)         \
+#define PRINT3(control, arg1, arg2, arg3) if (!GC->m_BypassGCodeStatusString)         \
           {										\
 		   wchar_t _s[256];						 \
 		   swprintf(_s, 255, L"%5d ", line_number++);    \
-		   Output += kmx::wstrtostr(_s);                      \
-           print_nc_line_number();                       \
+		   Output += _s;                      \
+		   Output += "-"; /* this looks a little nicer in the KMotion app */ \
            swprintf(_s, 255, control, arg1, arg2, arg3);            \
 		   if ('\n'==_s[wcslen(_s)-1]) _s[wcslen(_s)-1]=0; \
-		   Output += kmx::wstrtostr(_s);                      \
+		   Output += _s;                      \
 		   swprintf(_s, 255, L"@%.3f\r\n",((double)GetTickCount())/1000.0); \
-		   Output += kmx::wstrtostr(_s);                      \
+		   Output += _s;                      \
           } else
-#define PRINT4(control, arg1, arg2, arg3, arg4) if (1)   \
+#define PRINT4(control, arg1, arg2, arg3, arg4) if (!GC->m_BypassGCodeStatusString)   \
           {										\
 		   wchar_t _s[256];						 \
 		   swprintf(_s, 255, L"%5d ", line_number++);    \
-		   Output += kmx::wstrtostr(_s);                      \
-           print_nc_line_number();                       \
+		   Output += _s;                      \
+		   Output += "-"; /* this looks a little nicer in the KMotion app */ \
            swprintf(_s, 255, control, arg1, arg2, arg3, arg4);      \
 		   if ('\n'==_s[wcslen(_s)-1]) _s[wcslen(_s)-1]=0; \
-		   Output += kmx::wstrtostr(_s);                      \
+		   Output += _s;                      \
 		   swprintf(_s, 255, L"@%.3f\r\n",((double)GetTickCount())/1000.0); \
-		   Output += kmx::wstrtostr(_s);                      \
+		   Output += _s;                      \
           } else
-#define PRINT6(control, arg1, arg2, arg3, arg4, arg5, arg6) if (1) \
+#define PRINT6(control, arg1, arg2, arg3, arg4, arg5, arg6) if (!GC->m_BypassGCodeStatusString) \
           {										\
 		   wchar_t _s[256];						 \
 		   swprintf(_s, 255, L"%5d ", line_number++);    \
-		   Output += kmx::wstrtostr(_s);                      \
-           print_nc_line_number();                                 \
+		   Output += _s;                      \
+		   Output += "-"; /* this looks a little nicer in the KMotion app */ \
            swprintf(_s, 255, control, arg1, arg2, arg3, arg4, arg5, arg6);    \
 		   if ('\n'==_s[wcslen(_s)-1]) _s[wcslen(_s)-1]=0; \
-		   Output += kmx::wstrtostr(_s);                      \
+		   Output += _s;                      \
 		   swprintf(_s, 255, L"@%.3f\r\n",((double)GetTickCount())/1000.0); \
-		   Output += kmx::wstrtostr(_s);                      \
+		   Output += _s;                      \
           } else
 
 		  
@@ -157,7 +139,7 @@ void SET_ORIGIN_OFFSETS(double x, double y, double z,
 }
 
 void USE_LENGTH_UNITS(CANON_UNITS in_unit)
-{PRINT1(L"USE_LENGTH_UNITS(%s)\n",
+{PRINT1(L"USE_LENGTH_UNITS(%ls)\n",
         (in_unit IS CANON_UNITS_INCHES) ? L"CANON_UNITS_INCHES" :
         (in_unit IS CANON_UNITS_MM)     ? L"CANON_UNITS_MM" : L"UNKNOWN");
 }
@@ -193,16 +175,24 @@ void SET_FEED_RATE(double rate)
 }
 
 void SET_FEED_REFERENCE(CANON_FEED_REFERENCE reference)
-{PRINT1(L"SET_FEED_REFERENCE(%s)\n",
+{PRINT1(L"SET_FEED_REFERENCE(%ls)\n",
         (reference IS CANON_WORKPIECE) ? L"CANON_WORKPIECE" : L"CANON_XYZ");}
 
-void SET_MOTION_CONTROL_MODE(CANON_MOTION_MODE mode)
-{PRINT1(L"SET_MOTION_CONTROL_MODE(%s)\n",
+void SET_MOTION_CONTROL_MODE(CANON_MOTION_MODE mode, double tolerance)
+{
+	PRINT1(L"SET_MOTION_CONTROL_MODE(%ls)\n",
         (mode IS CANON_EXACT_PATH) ? L"CANON_EXACT_PATH" :
-        (mode IS CANON_EXACT_STOP) ? L"CANON_EXACT_STOP" : L"CANON_CONTINUOUS");}
+        (mode IS CANON_EXACT_STOP) ? L"CANON_EXACT_STOP" : L"CANON_CONTINUOUS");
+
+	// tolerance -2 (omitted) = leave the current G64 P value unchanged
+	// (canned cycles force EXACT_PATH temporarily and restore the mode)
+	if (tolerance > -1.5) MotionTolerance = tolerance;
+	MotionMode = mode;
+	CM->SetPathMode(MotionMode, MotionTolerance);
+}
 
 void SET_SPINDLE_MODE(CANON_SPINDLE_MODE mode)
-{PRINT1(L"SET_MOTION_CONTROL_MODE(%s)\n",
+{PRINT1(L"SET_MOTION_CONTROL_MODE(%ls)\n",
         (mode IS CANON_SPINDLE_NORMAL) ? L"CANON_SPINDLE_NORMAL" :
 		(mode IS CANON_SPINDLE_CSS) ? L"CANON_SPINDLE_CSS" : L"CANON_SPINDLE_INVALID");
 
@@ -210,7 +200,7 @@ void SET_SPINDLE_MODE(CANON_SPINDLE_MODE mode)
 }
 
 void SELECT_PLANE(CANON_PLANE in_plane)
-{PRINT1(L"SELECT_PLANE(%s)\n",
+{PRINT1(L"SELECT_PLANE(%ls)\n",
         (in_plane IS CANON_PLANE_XY) ? L"CANON_PLANE_XY" :
         (in_plane IS CANON_PLANE_YZ) ? L"CANON_PLANE_YZ" :
         (in_plane IS CANON_PLANE_XZ) ? L"CANON_PLANE_XZ" : L"UNKNOWN");
@@ -220,7 +210,7 @@ void SET_CUTTER_RADIUS_COMPENSATION(double radius)
 {PRINT1(L"SET_CUTTER_RADIUS_COMPENSATION(%.4f)\n", radius);}
 
 void START_CUTTER_RADIUS_COMPENSATION(int side)
-{PRINT1(L"START_CUTTER_RADIUS_COMPENSATION(%s)\n",
+{PRINT1(L"START_CUTTER_RADIUS_COMPENSATION(%ls)\n",
         (side IS LEFT)  ? L"LEFT"  :
         (side IS RIGHT) ? L"RIGHT" : L"UNKNOWN");
 }
@@ -235,14 +225,14 @@ void STOP_SPEED_FEED_SYNCH()
 {PRINT0(L"STOP_SPEED_FEED_SYNCH()\n");}
 
 void SELECT_MOTION_MODE(CANON_MOTION_MODE mode)
-{PRINT1(L"SELECT_MOTION_MODE(%s)\n",
+{PRINT1(L"SELECT_MOTION_MODE(%ls)\n",
         (mode IS CANON_EXACT_STOP) ? L"CANON_EXACT_STOP" :
         (mode IS CANON_EXACT_PATH) ? L"CANON_EXACT_PATH" :
         (mode IS CANON_CONTINUOUS) ? L"CANON_CONTINUOUS" :
                                           L"UNKNOWN");
 }
 void SELECT_SPINDLE_MODE(CANON_SPINDLE_MODE mode)
-{PRINT1(L"SELECT_SPINDLE_MODE(%s)\n",
+{PRINT1(L"SELECT_SPINDLE_MODE(%ls)\n",
         (mode IS CANON_SPINDLE_NORMAL) ? L"CANON_SPINDLE_NORMAL" :
         (mode IS CANON_SPINDLE_CSS) ? L"CANON_SPINDLE_CSS" :
                                           L"UNKNOWN");
@@ -485,7 +475,7 @@ void SPINDLE_RETRACT()
 {PRINT0(L"SPINDLE_RETRACT()\n");}
 
 void ORIENT_SPINDLE(double orientation, CANON_DIRECTION direction)
-{PRINT2(L"ORIENT_SPINDLE(%.4f, %s)\n", orientation,
+{PRINT2(L"ORIENT_SPINDLE(%.4f, %ls)\n", orientation,
         (direction IS CANON_CLOCKWISE) ? L"CANON_CLOCKWISE" :
                                          L"CANON_COUNTERCLOCKWISE");
 }
@@ -556,7 +546,7 @@ void SELECT_TOOL(int slot)
 /* Misc Functions */
 
 void CLAMP_AXIS(CANON_AXIS axis)
-{PRINT1(L"CLAMP_AXIS(%s)\n",
+{PRINT1(L"CLAMP_AXIS(%ls)\n",
         (axis IS CANON_AXIS_X) ? L"CANON_AXIS_X" :
         (axis IS CANON_AXIS_Y) ? L"CANON_AXIS_Y" :
         (axis IS CANON_AXIS_Z) ? L"CANON_AXIS_Z" : L"UNKNOWN");}
@@ -581,7 +571,7 @@ int CheckForPassThroughCommand(const wchar_t *comment)
     if (item != ',') return 0;
 	for (m++; ((item = comment[m]) == ' ') || (item == '\t'); m++);
 
-	PRINT1(L"COMMAND(\"%s\")\n", comment + m);
+	PRINT1(L"COMMAND(\"%ls\")\n", comment + m);
 	wcstombs(acomment, comment, 256);
 	CM->DoKMotionCmd(acomment + m, TRUE);
     return 1; 
@@ -604,7 +594,7 @@ int CheckForBufferedCommand(const wchar_t *comment)
     if (item != ',') return 0;
 	for (m++; ((item = comment[m]) == ' ') || (item == '\t'); m++);
 
-	PRINT1(L"BUFFER(\"%s\")\n", comment + m);
+	PRINT1(L"BUFFER(\"%ls\")\n", comment + m);
 	wcstombs(acomment, comment, 256);
 	CM->DoKMotionBufCmd(acomment + m,GC->p_setup->sequence_number);
     return 1; 
@@ -614,7 +604,6 @@ int CheckForUserCallback(const wchar_t *comment)
 {				/* string with comment */
     int m;
     int item;
-	char acomment[256];
 
     for (m = 0; ((item = comment[m]) == ' ') || (item == '\t'); m++);
     if ((item != 'U') && (item != 'u')) return 0;
@@ -631,8 +620,7 @@ int CheckForUserCallback(const wchar_t *comment)
 	{
 		if (CM->FlushSegments()) {CM->SetAbort(); return 1;}  
 		if (CM->WaitForSegmentsFinished(TRUE)) {CM->SetAbort(); return 1;}
-		wcstombs(acomment, comment, 256);
-		if (GC->m_UserFn(acomment + m)){CM->SetAbort(); return 1;}
+		if (GC->m_UserFn(comment + m)){CM->SetAbort(); return 1;}
 
 		// don't sample positions until everything is stopped 
 		if (CM->WaitForSegmentsFinished()) return 1;
@@ -656,16 +644,34 @@ void COMMENT(const wchar_t *s)
 
 
 void DISABLE_FEED_OVERRIDE()
-{PRINT0(L"DISABLE_FEED_OVERRIDE()\n");}
+{
+	PRINT0(L"DISABLE_FEED_OVERRIDE()\n");
+	CM->feed_override = false;
+}
 
 void DISABLE_SPEED_OVERRIDE()
-{PRINT0(L"DISABLE_SPEED_OVERRIDE()\n");}
+{
+	PRINT0(L"DISABLE_SPEED_OVERRIDE()\n");
+	bool orig_override = CM->speed_override;
+	CM->speed_override = false;
+	if (orig_override != CM->speed_override)
+		GC->InvokeAction(10);  // do the defined action for S Speed
+}
 
 void ENABLE_FEED_OVERRIDE()
-{PRINT0(L"ENABLE_FEED_OVERRIDE()\n");}
+{
+	PRINT0(L"ENABLE_FEED_OVERRIDE()\n");
+	CM->feed_override = true;
+}
 
 void ENABLE_SPEED_OVERRIDE()
-{PRINT0(L"ENABLE_SPEED_OVERRIDE()\n");}
+{
+	PRINT0(L"ENABLE_SPEED_OVERRIDE()\n");
+	bool orig_override = CM->speed_override;
+	CM->speed_override = true;
+	if (orig_override != CM->speed_override)
+		GC->InvokeAction(10);  // do the defined action for S Speed
+}
 
 void FLOOD_OFF()
 {
@@ -678,12 +684,12 @@ void FLOOD_ON()
 	GC->InvokeAction(8);  // do the defined action for M Code
 }
 
-void MESSAGE(char *s)
+void MESSAGE(wchar_t *s)
 {
 	if (CM->FlushSegments()) {CM->SetAbort(); return;}  
 	if (CM->WaitForSegmentsFinished(TRUE)) {CM->SetAbort(); return;}
 
-	PRINT1(L"MESSAGE(\"%s\")\n", s);
+	PRINT1(L"MESSAGE(\"%ls\")\n", s);
 	if (AfxMessageBox(s,MB_OKCANCEL|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL)==IDCANCEL)
 	{
 		GC->Abort();
@@ -712,7 +718,7 @@ void TURN_PROBE_ON()
 {PRINT0(L"TURN_PROBE_ON()\n");}
 
 void UNCLAMP_AXIS(CANON_AXIS axis)
-{PRINT1(L"UNCLAMP_AXIS(%s)\n",
+{PRINT1(L"UNCLAMP_AXIS(%ls)\n",
         (axis IS CANON_AXIS_X) ? L"CANON_AXIS_X" :
         (axis IS CANON_AXIS_Y) ? L"CANON_AXIS_Y" :
         (axis IS CANON_AXIS_Z) ? L"CANON_AXIS_Z" : L"UNKNOWN");}
@@ -768,7 +774,7 @@ CANON_PLANE GET_PLANE()
 
 The purpose of these GET_XXX (and other) functions is to provide for
 local emulation of the world modeling done by the EMC system.
-*/
+
 /*********************************************************************/
 
 /* GET_EXTERNAL_FEED_RATE
@@ -973,11 +979,16 @@ void CANON_UPDATE_POSITION()
 }
 
 /*********************************************************************/
-CANON_MOTION_MODE MotionMode = CANON_EXACT_STOP;
-// Returns the current motion control mode
+// MotionMode / MotionTolerance are defined at the top of this file
+// (SET_MOTION_CONTROL_MODE updates them)
 CANON_MOTION_MODE GET_EXTERNAL_MOTION_CONTROL_MODE()
 {
 	return MotionMode;
+}
+
+double GET_EXTERNAL_MOTION_CONTROL_TOLERANCE()
+{
+	return MotionTolerance;
 }
 
 
@@ -994,18 +1005,20 @@ CANON_SPINDLE_MODE GET_EXTERNAL_SPINDLE_MODE()
 // returns nothing but copies the name of the parameter file into
 // the filename array, stopping at max_size if the name is longer
 // An empty string may be placed in filename.
-void GET_EXTERNAL_PARAMETER_FILE_NAME(char *filename, int max_size)
+void GET_EXTERNAL_PARAMETER_FILE_NAME(wchar_t *filename, int max_size)
 {
+	CString Name;
+
 	if (GC->VarsFile[0] == 0)
-		snprintf(filename, max_size, "%s%c%s%cemc.var", GC->CoordMotion->MainPathRoot, PATH_SEPARATOR,
 #ifdef _KMOTIONX
-			"data",
+		Name=(CString)(CM->MainPathRoot) + "/data/emc.var";
 #else
-			"Data",
+		Name=(CString)(CM->MainPathRoot) + "\\KMotion\\Data\\emc.var";
 #endif
-			PATH_SEPARATOR);
 	else
-		strcpy(filename, GC->VarsFile);
+		Name=GC->VarsFile;
+
+	wcscpy(filename,Name.GetBuffer(0));
 }
 
 // returns the currently active plane

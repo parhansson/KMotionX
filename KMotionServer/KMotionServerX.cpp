@@ -98,6 +98,20 @@ int ConsoleHandler(int board, const char *buf);
 
 int nClients = 0;
 
+// Messages sent to a client (console and error) must fit the client's receive limit
+// (msglen <= MAX_LINE+1 including the DEST byte and the terminating null).
+#define MAX_MSG_CHARS (MAX_LINE-1)
+
+// Length of s limited to max bytes without cutting a UTF-8 sequence in half.
+// Error messages are converted from wide strings so they can be longer than MAX_LINE.
+static size_t Utf8Prefix(const char *s, size_t max)
+{
+	size_t len = strlen(s);
+	if (len <= max) return len;
+	while (max > 0 && ((unsigned char)s[max] & 0xC0) == 0x80) max--;  // s[max] is a continuation byte
+	return max;
+}
+
 /* struct to hold data to be passed to a thread
    this shows how multiple data items can be passed to a thread */
 typedef struct str_thdata
@@ -109,6 +123,10 @@ typedef struct str_thdata
 int ConsolePipeHandle[MAX_BOARDS];
 
 std::list<char*> ConsoleList[MAX_BOARDS];
+// ConsoleHandler runs in whichever thread services the board, the list is drained
+// from the thread of the client that registered the console. Protects ConsoleList
+// and ConsolePipeHandle.
+pthread_mutex_t ConsoleMutex = PTHREAD_MUTEX_INITIALIZER;
 
 void MyErrExitThread(const char *s, int thread_socket){
 	syslog(LOG_ERR, "%s", s);
@@ -249,21 +267,25 @@ static void daemonize(){
 
 int main(int argc, char **argv) 
 {
-	if(argc == 2){
-		if(strcmp("-reset", argv[1])==0){
+	bool NoEthernet = false;  // -no_ethernet disables the scan for Kognas
+	for(int i = 1; i < argc; i++){
+		if(strcmp("-reset", argv[i])==0){
     	printf("Shared memory references %d\n", *KMotionLocal.sharePtr);
 			*KMotionLocal.sharePtr = 1;
 			share = 1;
 			return 0;
 		}
-		if(strcmp("-redirect_streams", argv[1])==0){
+		if(strcmp("-redirect_streams", argv[i])==0){
 			file_err = freopen("kmx_server_stderr", "a", stderr);	
 			setvbuf(file_err, NULL, _IOLBF, 0);
 			file_out = freopen("kmx_server_stdout", "a", stdout);
 			setvbuf(file_out, NULL, _IOLBF, 0);	
 		}
+		if(strcmp("-no_ethernet", argv[i])==0 || strcmp("/no_ethernet", argv[i])==0){
+			NoEthernet = true;
+		}
 	}
-	KMotionDLL.FindKognas();  // setup background Thread to find/keep track of on-line Kognas
+	KMotionDLL.FindKognas(NoEthernet);  // setup background Thread to find/keep track of on-line Kognas
     
 	/* SJH - modified to listen to a TCP socket in addition to the unix domain (local) socket.
        Listens at port KMOTION_PORT (defined in KMotionDLL.h).
@@ -411,10 +433,12 @@ int main(int argc, char **argv)
          // initialize data to pass to thread
 		 //TODO maybe we need to new and delete thdata data
 		 //
-         thdata data;
-         data.file_desc = client_socket;
+         // The thread owns this and deletes it. It must not live on this stack,
+         // the next accepted connection would overwrite it before the thread read it.
+         thdata *data = new thdata;
+         data->file_desc = client_socket;
 
-         if(pthread_create(&thr, &attr, &InstanceThread, (void *) &data))
+         if(pthread_create(&thr, &attr, &InstanceThread, (void *) data))
          {
             MyErrExit("Main Thread. pthread_create");
          }
@@ -429,6 +453,7 @@ int main(int argc, char **argv)
 void * InstanceThread(void *ptr){
 	thdata *data = (thdata*) ptr;
 	int thread_socket = data->file_desc;
+	delete data;
 	//pthread_t ct = pthread_self();
 	//printf("Thread %.8x %.8x: Current thread\n", ct);
 	syslog(LOG_ERR,"The ID of this of this thread is: %ld\n", kmx::getThreadId("KMotionServer InstanceThread"));
@@ -523,6 +548,24 @@ void * InstanceThread(void *ptr){
 	if(shutdown(thread_socket,SHUT_RDWR)< 0){
 		logError("thread socket shutdown");
 	}
+
+	// If this client was the console handler of a board, forget it. Otherwise another
+	// client that is given the same descriptor would be sent console messages and
+	// messages would pile up in the queue with nobody to read them.
+	pthread_mutex_lock(&ConsoleMutex);
+	for (int b=0; b<MAX_BOARDS; b++)
+	{
+		if (ConsolePipeHandle[b] == thread_socket)
+		{
+			ConsolePipeHandle[b] = 0;
+			while (!ConsoleList[b].empty())
+			{
+				delete [] ConsoleList[b].front();
+				ConsoleList[b].pop_front();
+			}
+		}
+	}
+	pthread_mutex_unlock(&ConsoleMutex);
 
 	close(thread_socket);
 	syslog(LOG_ERR,"Worker Thread. Nr of clients left %d", --nClients);
@@ -654,7 +697,9 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 		break;
 	case ENUM_SetConsole:
 		// remember which pipe is associated with the console handler for the board
+		pthread_mutex_lock(&ConsoleMutex);
 		ConsolePipeHandle[board] = hPipe;
+		pthread_mutex_unlock(&ConsoleMutex);
 		result = KMotionDLL.SetConsoleCallback(board,ConsoleHandler);
 		SYSLOGD("GetAnswerToRequest %s \n\tresult=%d \n\tboard=%d \n\thandle=%d \n",ENUM_NAMES[code],result,board,hPipe);
 		memcpy(chReply+1, &result,4);
@@ -668,25 +713,35 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 	// is the message handler for the board and there are
 	// messages in the queue 
 
-	if (code!=ENUM_ListLocations && hPipe == ConsolePipeHandle[board])
+	pthread_mutex_lock(&ConsoleMutex);
+	bool isConsolePipe = code!=ENUM_ListLocations && hPipe == ConsolePipeHandle[board];
+	pthread_mutex_unlock(&ConsoleMutex);
+
+	if (isConsolePipe)
 	{
 		int nSent=0;
 
-		//while (!ConsoleList[board].IsEmpty() && nSent++<10)
-		while (!ConsoleList[board].empty() && nSent++<10)
+		for (;;)
 		{
 			int cbReplyBytes, cbBytesRead, cbWritten;
 			unsigned char Reply;
-			//CString s = ConsoleList[board].RemoveHead();
+
+			// take one message from the queue, do not hold the lock while talking to the client
+			pthread_mutex_lock(&ConsoleMutex);
+			if (ConsoleList[board].empty() || nSent++>=10)
+			{
+				pthread_mutex_unlock(&ConsoleMutex);
+				break;
+			}
 			char *str = ConsoleList[board].front();
 			ConsoleList[board].pop_front();
+			pthread_mutex_unlock(&ConsoleMutex);
 
-			char * s = new char [strlen(str)+2];
-			s[0] = DEST_CONSOLE;
-			strcpy(s+1, str);
+			std::string s(1, (char)DEST_CONSOLE);
+			s.append(str, Utf8Prefix(str, MAX_MSG_CHARS));
 			delete []str;
 
-			cbReplyBytes = strlen(s)+1;  // + Term Null, DEST code already accounted for in s
+			cbReplyBytes = s.size()+1;  // + Term Null, DEST code already accounted for in s
 
 			// Write the message to the pipe. 
 			msglen = cbReplyBytes;
@@ -701,7 +756,7 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 				break;
 			}
 			//syslog(LOG_ERR,"DEBUG Write console message to pipe id: %d board %d BoardID %d message %s\n",hPipe,board,BoardID,s);
-			cbWritten = send(hPipe, s, cbReplyBytes, 0);
+			cbWritten = send(hPipe, s.c_str(), cbReplyBytes, 0);
 
 			if (cbWritten < 0 || cbReplyBytes != cbWritten) {
 				if (cbWritten < 0){
@@ -715,12 +770,12 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 		   // Read back 1 byte ack 0xAA from Console Handler
 			cbBytesRead = recv(hPipe, &Reply, 1, 0);
 			if (cbBytesRead < 0 || cbBytesRead != 1 || Reply != 0xAA) {
-				if (cbWritten < 0){
-					logError("send");
-				} else if(Reply != 0xAA){
-					syslog(LOG_ERR,"GetAnswerToRequest received ACK not 0xAA as expected: %d",Reply);
-				} else {
+				if (cbBytesRead < 0){
+					logError("recv");
+				} else if(cbBytesRead != 1){
 					syslog(LOG_ERR,"GetAnswerToRequest received ACK length != 1: %d",cbBytesRead);
+				} else {
+					syslog(LOG_ERR,"GetAnswerToRequest received ACK not 0xAA as expected: %d",Reply);
 				}
 
 				break;
@@ -735,11 +790,15 @@ void GetAnswerToRequest(char *chRequest, unsigned int nInBytes, char *chReply, u
 		int cbReplyBytes, cbBytesRead, cbWritten;
 		unsigned char Reply;
 		unsigned short msglen;
-		char s[MAX_LINE+1];
+		// ErrMsg is a wide string, as UTF-8 it can be longer than the client accepts
+		std::string err = kmx::wstrtostr(KMotionDLL.GetErrMsg(board));
+		char s[MAX_MSG_CHARS+2];
 		s[0] = DEST_ERRMSG;
-		strcpy(s+1,kmx::wstrtostr(KMotionDLL.GetErrMsg(board)).c_str());
+		size_t errLen = Utf8Prefix(err.c_str(), MAX_MSG_CHARS);
+		memcpy(s+1, err.c_str(), errLen);
+		s[1+errLen] = 0;
 
-		cbReplyBytes = strlen(s)+1;// + Term Null, DEST code already accounted for in s
+		cbReplyBytes = 1+errLen+1;// DEST code + string + Term Null
 		// Write the message to the pipe. 
 		msglen = cbReplyBytes;
 		cbWritten = send(hPipe, &msglen, sizeof(msglen), 0);
@@ -781,11 +840,15 @@ int ConsoleHandler(int board, const char *buf)
 	char *buf2 = new char [strlen(buf) + 1];
 	strcpy(buf2,buf);
 
+	pthread_mutex_lock(&ConsoleMutex);
 	if (ConsolePipeHandle[board])
 	{
 		// there is, add the message to the list
 		SYSLOGD("Console message: %s",buf2);
 		ConsoleList[board].push_back(buf2);
+		buf2 = NULL;
 	}
+	pthread_mutex_unlock(&ConsoleMutex);
+	delete [] buf2;  // nobody to send it to (NULL if queued)
 	return 0;
 }

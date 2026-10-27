@@ -816,7 +816,7 @@ void WebController::setInterpreterActionParams(struct json_token *jsontoken, int
       } else {
         char absoluteFile[256];
         absolutePath(file, absoluteFile);
-        strcpy(Interpreter->McodeActions[actionIndex].String, absoluteFile);
+        wcscpy_s(Interpreter->McodeActions[actionIndex].String, 256, kmx::strtowstr(absoluteFile));
       }
 
     } else {

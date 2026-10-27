@@ -8,8 +8,8 @@
 CKMotionDLL *KM; // one instance of the interface class
 
 int WaitForReady(int waittime);
-int consoleCallback(const char *msg);
-void errorCallback(const char *msg);
+int consoleCallback(const wchar_t *msg);
+void errorCallback(const wchar_t *msg);
 void ctrlc_handler(int signal);
 void cleanup();
 void cleanupAndExit(int exitcode);
@@ -148,14 +148,14 @@ int WaitForReady(int waittime)
   return timeout;
 }
 
-int consoleCallback(const char *msg)
+int consoleCallback(const wchar_t *msg)
 {
-  printf("CONSOLE> %s", msg);
+  printf("CONSOLE> %s", kmx::wstrtostr(msg).c_str());
   return 0;
 }
-void errorCallback(const char *msg)
+void errorCallback(const wchar_t *msg)
 {
-  printf("ERROR> %s\n", msg);
+  printf("ERROR> %s\n", kmx::wstrtostr(msg).c_str());
 }
 
 // Function to handle Ctrl+C signal

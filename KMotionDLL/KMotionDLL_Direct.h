@@ -4,10 +4,9 @@
 /*         Copyright (c) 2003-2006  DynoMotion Incorporated          */
 /*********************************************************************/
 
-#ifndef KMOTIONDLL_DIRECT_H
-#define KMOTIONDLL_DIRECT_H
+#pragma once
 
-
+#include "KMotionDLL.h"
 
 enum 
 { 
@@ -43,7 +42,7 @@ public:
 
 	~CKMotionDLL_Direct();
 
-	void FindKognas();
+	void FindKognas(bool NoInternet);
 
 	int MapBoardToIndex(int board);
 	int SetRequested_ID(int board, unsigned int Board_ID);
@@ -69,5 +68,5 @@ public:
 
 	int nInstances();
 
+	bool operator==(const CKMotionDLL_Direct& other) const;
 };
-#endif

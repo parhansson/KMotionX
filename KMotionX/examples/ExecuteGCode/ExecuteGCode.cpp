@@ -38,32 +38,32 @@ printf("text=%s\n", msg->text);
 
 CGCodeInterpreter *Interpreter;
 int ErrorLineNo, CurrentLineNo;
-char ErrorMsg[512];
+wchar_t ErrorMsg[512];
 int exitcode;
 bool Finished;
-void CompleteCallback(int status, int line_no, int sequence_number, const char *err);
-void StatusCallback(int line_no, const char *msg);
-int UserCallback(const char *msg);
+void CompleteCallback(int status, int line_no, int sequence_number, const wchar_t *err);
+void StatusCallback(int line_no, const wchar_t *msg);
+int UserCallback(const wchar_t *msg);
 int UserMCodeCallback(int mcode);
 
-void CompleteCallback(int status, int line_no, int sequence_number, const char *err)
+void CompleteCallback(int status, int line_no, int sequence_number, const wchar_t *err)
 {
-	printf("Complete -- status: %d line: %d  error: %s\n", status, line_no, err);
+	printf("Complete -- status: %d line: %d  error: %s\n", status, line_no, kmx::wstrtostr(err).c_str());
 	ErrorLineNo = line_no;
-	strcpy(ErrorMsg, err);
+	wcscpy_s(ErrorMsg, 512, err);
 	exitcode = status;
 	Finished = true;
 }
 
-void StatusCallback(int line_no, const char *msg)
+void StatusCallback(int line_no, const wchar_t *msg)
 {
-	printf("Status -- line: %d message:\n%s\n", line_no, msg);
+	printf("Status -- line: %d message:\n%s\n", line_no, kmx::wstrtostr(msg).c_str());
 	CurrentLineNo = line_no;
 }
 
-int UserCallback(const char *msg)
+int UserCallback(const wchar_t *msg)
 {
-	MessageBox(0, msg, "User callback", MB_OK);
+	MessageBoxW(0, msg, L"User callback", MB_OK);
 	return 0;
 }
 
@@ -112,12 +112,13 @@ int main(int argc, char *argv[])
 	if (!simulate)
 	{
 
-		char errMsg[MAX_LINE];
+		wchar_t errMsg[MAX_LINE];
+		errMsg[0] = 0;
 
 		printf("Loading file %s to thread %d\n", setup_cfile, setup_thread);
-		if (KM->CompileAndLoadCoff(setup_cfile, setup_thread, errMsg, MAX_LINE))
+		if (KM->CompileAndLoadCoff(kmx::strtowstr(setup_cfile).c_str(), setup_thread, errMsg, MAX_LINE))
 		{
-			printf("Loading file %s to thread %d failed.\n%s\nExiting.\n", setup_cfile, setup_thread, errMsg);
+			printf("Loading file %s to thread %d failed.\n%s\nExiting.\n", setup_cfile, setup_thread, kmx::wstrtostr(errMsg).c_str());
 			exit(1);
 		}
 		else
@@ -155,8 +156,10 @@ int main(int argc, char *argv[])
 	p->CountsPerInchA = 100;
 	p->CountsPerInchB = 100;
 	p->CountsPerInchC = 100;
-	Interpreter->SetToolFile(tool_file);
-	strcpy(Interpreter->SetupFile, "");
+	wchar_t wtool_file[MAX_PATH];
+	wcscpy_s(wtool_file, MAX_PATH, kmx::strtowstr(tool_file));
+	Interpreter->SetToolFile(wtool_file);
+	Interpreter->SetupFile[0] = 0;
 
 	Finished = false;
 
@@ -172,12 +175,12 @@ int main(int argc, char *argv[])
 	// configure the Action for MCode 4to execute a program in thread 3
 	Interpreter->McodeActions[4].Action = M_Action_Program_wait_sync;
 	Interpreter->McodeActions[4].dParams[0] = m4_thread;
-	strcpy(Interpreter->McodeActions[4].String, m4_cfile);
+	wcscpy_s(Interpreter->McodeActions[4].String, 256, kmx::strtowstr(m4_cfile));
 
 	// CM->m_Simulate = true;
 	//  Execute the GCode!
 	printf("Interpreting file %s\n", InFile);
-	Interpreter->Interpret(BoardType, InFile, 0, -1, true, StatusCallback, CompleteCallback);
+	Interpreter->Interpret(BoardType, kmx::strtowstr(InFile).c_str(), 0, -1, true, StatusCallback, CompleteCallback);
 
 	// Display Current Line Number while executing
 
@@ -197,7 +200,7 @@ int main(int argc, char *argv[])
 	if (exitcode)
 	{
 		printf("Error in line %d\n", ErrorLineNo);
-		printf("%s\n", ErrorMsg);
+		printf("%s\n", kmx::wstrtostr(ErrorMsg).c_str());
 	}
 	else
 	{

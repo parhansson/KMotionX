@@ -4,11 +4,11 @@
 #include "HiResTimer.h"
 
 #ifdef DEBUG_DOWNLOAD
-extern char ds[MAX_LINE];
+extern CString ds;
 extern FILE *f;
 extern CHiResTimer DTimer;
 
-void PutString(const char *s);
+void PutString(CString s);
 void CloseDiag();
 
 
@@ -75,6 +75,28 @@ MOTION_PARAMS MP;
 double FacetAngleRadians;
 double BreakAngleRadians;
 
+// G61/G61.1/G64 path-control state (set by CCoordMotion::SetPathMode).
+// This is interpreter MODAL state, deliberately separate from the Tool
+// Setup value copied into MP: SetTrajectoryPlannerParams must not reset
+// a programmed G64 P mid-program.
+double TP_CornerTolOverride = -1.0;   // inches; < 0 = use MP.CornerTol
+BOOL   TP_ExactStop = FALSE;          // G61.1: stop between G-code blocks
+
+void tp_set_corner_tol_override(double tol)
+{
+	TP_CornerTolOverride = tol;
+}
+
+void tp_set_exact_stop(BOOL ExactStop)
+{
+	TP_ExactStop = ExactStop;
+}
+
+static double EffCornerTol()
+{
+	return (TP_CornerTolOverride >= 0.0) ? TP_CornerTolOverride : MP.CornerTol;
+}
+
 
 double Pos(TP_COEFF *p);
 double Vel(TP_COEFF *p);
@@ -99,6 +121,35 @@ void SetTrajectoryPlannerParams(MOTION_PARAMS *m)
 
 	if (MP.BreakAngle > 179.0) MP.BreakAngle = 179.0; // don't allow full reversals without stopping
 	BreakAngleRadians=MP.BreakAngle*PI/180.0;
+}
+
+// Resolve the effective constraints for actuator i.
+// Legacy mode maps the corresponding CAD axis 1:1 (exact for standard
+// linear machines); actuator mode reads the table directly.
+void GetEffectiveActuatorLimits(MOTION_PARAMS *m, int i,
+                                double *Scale, double *Vel,
+                                double *Accel, double *Jerk)
+{
+	if (m->ActuatorLimits)
+	{
+		*Scale = m->ActScale[i];
+		*Vel   = m->MaxActVel[i];
+		*Accel = m->MaxActAccel[i];
+		*Jerk  = m->MaxActJerk[i];
+		return;
+	}
+
+	switch (i)   // legacy 1:1 CAD axis -> actuator mapping
+	{
+	case 0: *Scale=m->CountsPerInchX; *Vel=m->MaxVelX; *Accel=m->MaxAccelX; *Jerk=m->MaxJerkX; break;
+	case 1: *Scale=m->CountsPerInchY; *Vel=m->MaxVelY; *Accel=m->MaxAccelY; *Jerk=m->MaxJerkY; break;
+	case 2: *Scale=m->CountsPerInchZ; *Vel=m->MaxVelZ; *Accel=m->MaxAccelZ; *Jerk=m->MaxJerkZ; break;
+	case 3: *Scale=m->CountsPerInchA; *Vel=m->MaxVelA; *Accel=m->MaxAccelA; *Jerk=m->MaxJerkA; break;
+	case 4: *Scale=m->CountsPerInchB; *Vel=m->MaxVelB; *Accel=m->MaxAccelB; *Jerk=m->MaxJerkB; break;
+	case 5: *Scale=m->CountsPerInchC; *Vel=m->MaxVelC; *Accel=m->MaxAccelC; *Jerk=m->MaxJerkC; break;
+	case 6: *Scale=m->CountsPerInchU; *Vel=m->MaxVelU; *Accel=m->MaxAccelU; *Jerk=m->MaxJerkU; break;
+	default:*Scale=m->CountsPerInchV; *Vel=m->MaxVelV; *Accel=m->MaxAccelV; *Jerk=m->MaxJerkV; break;
+	}
 }
 
 
@@ -134,10 +185,15 @@ void tp_init()
 // insert new segment at the end.  Re-evaluate backwards
 // through list to see if velocities could be increased
 
-int tp_insert_linear_seg(double x0, double y0, double z0, double a0, double b0, double c0, double u0, double v0, 
-						 double x1, double y1, double z1, double a1, double b1, double c1, double u1, double v1, 
+int tp_insert_linear_seg(double x0, double y0, double z0, double a0, double b0, double c0, double u0, double v0,
+						 double x1, double y1, double z1, double a1, double b1, double c1, double u1, double v1,
 						 double MaxVel, double MaxAccel, double MaxCombineLength, int sequence_number,int ID, int NumLinearNotDrawn)
 {
+	// G61.1 exact stop: a new G-code block must not blend with the
+	// previous one - force a stop between different sequence numbers
+	if (TP_ExactStop && nsegs > 0 && GetSegPtr(nsegs-1)->sequence_number != sequence_number)
+		GetSegPtr(nsegs-1)->StopRequiredNextSeg = TRUE;
+
 	double dx=x1-x0;
 	double dy=y1-y0;
 	double dz=z1-z0;
@@ -183,6 +239,9 @@ int tp_insert_linear_seg(double x0, double y0, double z0, double a0, double b0, 
 	p->StopRequiredNextSeg=FALSE;
 	p->special_cmds_first=p->special_cmds_last=-1; // init with no special commands
 	p->Done=FALSE;
+	p->PrecomputedTrips=FALSE;
+	p->ActSpace=FALSE;
+	p->Cubic8=FALSE;
 
 	if (CombineSegments(MaxCombineLength))
 	{
@@ -216,7 +275,7 @@ int tp_insert_linear_seg(double x0, double y0, double z0, double a0, double b0, 
 			// also there must be no significant pure angle change
 			// that would not be included in dx
 
-			if (nonZeroPureA && nonZeroPureB && nonZeroPureC &&
+			if (!nonZeroPureA && !nonZeroPureB && !nonZeroPureC &&
 				pm1->dx < MP.CollinearTol*0.5 &&
 				pm1->dx < MaxCombineLength*0.25 &&
 				pm1->type==SEG_LINEAR &&
@@ -318,10 +377,14 @@ int tp_insert_linear_seg(double x0, double y0, double z0, double a0, double b0, 
 
 // insert new Rapid 3rd order segment at the end. 
 
-int tp_insert_linear_seg_3rdOrder(double x0, double y0, double z0, double a0, double b0, double c0, double u0, double v0, 
-								  double x1, double y1, double z1, double a1, double b1, double c1, double u1, double v1, 
+int tp_insert_linear_seg_3rdOrder(double x0, double y0, double z0, double a0, double b0, double c0, double u0, double v0,
+								  double x1, double y1, double z1, double a1, double b1, double c1, double u1, double v1,
 						          int sequence_number,int ID)
 {
+	// G61.1 exact stop: see tp_insert_linear_seg
+	if (TP_ExactStop && nsegs > 0 && GetSegPtr(nsegs-1)->sequence_number != sequence_number)
+		GetSegPtr(nsegs-1)->StopRequiredNextSeg = TRUE;
+
 	double dx=x1-x0;
 	double dy=y1-y0;
 	double dz=z1-z0;
@@ -364,6 +427,9 @@ int tp_insert_linear_seg_3rdOrder(double x0, double y0, double z0, double a0, do
 	p->StopRequiredNextSeg=FALSE;
 	p->special_cmds_first=p->special_cmds_last=-1; // init with no special commands
 	p->Done=FALSE;
+	p->PrecomputedTrips=FALSE;
+	p->ActSpace=FALSE;
+	p->Cubic8=FALSE;
 
 	// add it in
 	nsegs++;
@@ -409,11 +475,121 @@ int tp_insert_dwell(double t, double x0, double y0, double z0, double a0, double
 	p->StopRequiredNextSeg=FALSE;
 	p->special_cmds_first=p->special_cmds_last=-1; // init with no special commands
 	p->Done=FALSE;
+	p->PrecomputedTrips=FALSE;
+	p->ActSpace=FALSE;
+	p->Cubic8=FALSE;
 
 	// add it in
 	nsegs++;
 
 	return 0;  // segment was added
+}
+
+
+// Insert a finalized "cubic knot" segment produced by the 3rd Order
+// Trajectory Planner: a straight chord in ACTUATOR units p0[8] -> p1[8] of
+// metric length d traversed in time T with a single cubic trip state
+// matching the boundary path speeds v0,v1 (C1 continuity between knots;
+// the underlying profile is C2 because it was sampled from the
+// jerk-limited planner output).  The segment is inserted Done - the
+// 2nd order planning passes must never modify it.
+int tp_insert_precomputed_cubic(const double *p0, const double *p1, double d, double T,
+	double v0, double v1, int sequence_number, int ID)
+{
+	if (T <= 0.0) return 0;
+
+	SEGMENT *p=GetSegPtr(nsegs);
+
+	p->type = SEG_LINEAR;
+	p->sequence_number = sequence_number;
+	p->ID = ID;
+
+	p->x0=p0[0]; p->y0=p0[1]; p->z0=p0[2]; p->a0=p0[3];
+	p->b0=p0[4]; p->c0=p0[5]; p->u0=p0[6]; p->v0=p0[7];
+	p->x1=p1[0]; p->y1=p1[1]; p->z1=p1[2]; p->a1=p1[3];
+	p->b1=p1[4]; p->c1=p1[5]; p->u1=p1[6]; p->v1=p1[7];
+
+	p->dx = d;
+	p->OrigVel = p->MaxVel = (v0 > v1) ? v0 : v1;
+	p->OrigAccel = p->MaxAccel = p->MaxDecel = 1e99;
+	p->MaxJerk = 0.0;
+	p->vel = v0;
+	p->ChangeInDirection = 0.0;
+	p->StopRequired = FALSE;
+	p->StopRequiredNextSeg = FALSE;
+	p->special_cmds_first = p->special_cmds_last = -1;
+	p->Done = TRUE;
+	p->PrecomputedTrips = TRUE;
+	p->ActSpace = TRUE;
+	p->Cubic8 = FALSE;
+
+	// single cubic trip: s(t) = a t^3 + b t^2 + c t,  s(T)=d, s'(0)=v0, s'(T)=v1
+	p->nTrips = 1;
+	p->C[0].t = T;
+	p->C[0].d = 0.0;
+	p->C[0].c = v0;
+	p->C[0].b = (3.0*d - (2.0*v0 + v1)*T)/(T*T);
+	p->C[0].a = ((v0 + v1)*T - 2.0*d)/(T*T*T);
+
+	nsegs++;
+	return 0;
+}
+
+// Insert a finalized per-axis cubic knot (TRAJECTORY_CUBIC8): each axis
+// has its own cubic position polynomial of time so knot junctions are
+// velocity continuous in every axis - no chord polygonization at all.
+// K[32] = 8 axes x a,b,c,d in letter order (ACTUATOR units).  The 32
+// coefficients are stored in the trip-state array as raw doubles
+// beginning at C[0].a (see SEG_CUBIC8_COEFFS); C[0].t keeps the knot
+// duration so all trip-time accounting works unchanged with nTrips=1.
+int tp_insert_cubic8(const double *K, double T, double d, double vmax,
+	int sequence_number, int ID)
+{
+	int i;
+
+	if (T <= 0.0) return 0;
+
+	SEGMENT *p=GetSegPtr(nsegs);
+
+	p->type = SEG_LINEAR;
+	p->sequence_number = sequence_number;
+	p->ID = ID;
+
+	// endpoints from the polynomials (start = d coeff, end = eval at T)
+	double P0[8], P1[8];
+	for (i = 0; i < 8; i++)
+	{
+		const double *k = K + 4*i;
+		P0[i] = k[3];
+		P1[i] = ((k[0]*T + k[1])*T + k[2])*T + k[3];
+	}
+	p->x0=P0[0]; p->y0=P0[1]; p->z0=P0[2]; p->a0=P0[3];
+	p->b0=P0[4]; p->c0=P0[5]; p->u0=P0[6]; p->v0=P0[7];
+	p->x1=P1[0]; p->y1=P1[1]; p->z1=P1[2]; p->a1=P1[3];
+	p->b1=P1[4]; p->c1=P1[5]; p->u1=P1[6]; p->v1=P1[7];
+
+	p->dx = d;
+	p->OrigVel = p->MaxVel = vmax;
+	p->OrigAccel = p->MaxAccel = p->MaxDecel = 1e99;
+	p->MaxJerk = 0.0;
+	p->vel = vmax;
+	p->ChangeInDirection = 0.0;
+	p->StopRequired = FALSE;
+	p->StopRequiredNextSeg = FALSE;
+	p->special_cmds_first = p->special_cmds_last = -1;
+	p->Done = TRUE;
+	p->PrecomputedTrips = TRUE;
+	p->ActSpace = TRUE;
+	p->Cubic8 = TRUE;
+
+	p->nTrips = 1;
+	p->C[0].t = T;
+
+	double *S = SEG_CUBIC8_COEFFS(p);
+	for (i = 0; i < 32; i++) S[i] = K[i];
+
+	nsegs++;
+	return 0;
 }
 
 
@@ -711,6 +887,9 @@ void CreateSegFromTo(int i, SEGMENT *sa, SEGMENT *sb ,P8 &prev, P8 &px, double s
 	p->StopRequiredNextSeg=FALSE;
 	p->special_cmds_first=p->special_cmds_last=-1; // init with no special commands
 	p->Done=FALSE;
+	p->PrecomputedTrips=FALSE;
+	p->ActSpace=FALSE;
+	p->Cubic8=FALSE;
 }
 
 
@@ -745,7 +924,9 @@ void RoundCorner(int is)
 		return;
 	}
 
-	if (Theta == 0.0 || fabs(MP.CornerTol) < SIGMA
+	double CornerTol = EffCornerTol();   // honors G64 P / G61 (0 = no rounding)
+
+	if (Theta == 0.0 || fabs(CornerTol) < SIGMA
 		|| seg->type != SEG_LINEAR|| segm->type != SEG_LINEAR) return;
 
 
@@ -779,8 +960,8 @@ void RoundCorner(int is)
 	double Theta2 = (n-1)*dtheta/2.0;
 
 	double v = Theta / 2.0 - Theta2;
-	double R = MP.CornerTol * cos(Theta / 2.0) / (cos(v) - cos(Theta / 2.0));  // optimize
-	double L = (R + MP.CornerTol) * sin(Theta / 2.0) - R * sin(v);
+	double R = CornerTol * cos(Theta / 2.0) / (cos(v) - cos(Theta / 2.0));  // optimize
+	double L = (R + CornerTol) * sin(Theta / 2.0) - R * sin(v);
 
 	double d0 = segm->dx;
 	double d1 = seg->dx;
@@ -809,7 +990,7 @@ void RoundCorner(int is)
 	// whichever is smaller.  Note: because L will never be even half of
 	// d1 so P2 will never be totally eliminated.
 
-	double sigma = MP.CornerTol * 0.001;
+	double sigma = CornerTol * 0.001;
 	if (sigma > d0 * 0.001) sigma = d0 * 0.001;
 
 	bool EliminateP0 = fabs(L - d0) < sigma;
@@ -1247,14 +1428,25 @@ int CombineSegments(double MaxLength)
 	pm1->ChangeInDirection = CalcChangeInDirection(nsegs-1);
 	pm1->Done=FALSE;
 
-	// keep the last line number to avoid a chance of
-	// backing up if we halt part way through
-	pm1->sequence_number = pn->sequence_number;
+	// if combining a linear vector with a following radius compensated arc 
+	// then keep the segment number and ID of the previous vector so the
+	// deferred linear vector will be re-issued as well as the arc
 
-	// if two different IDs are combined into a single
-	// segment, then treat as if we are in the 2nd ID
-	// (phase)
-	pm1->ID = pn->ID;
+	if (pm1->ID == 0 && pn->ID == 1)
+	{
+		//pm1 (combined) remains unchanged
+	}
+	else
+	{
+		// keep the last line number to avoid a chance of
+		// backing up if we halt part way through
+		pm1->sequence_number = pn->sequence_number;
+
+		// if two different IDs are combined into a single
+		// segment, then treat as if we are in the 2nd ID
+		// (phase)
+		pm1->ID = pn->ID;
+	}
 
 	return 0;
 }
@@ -1779,6 +1971,10 @@ int tp_insert_arc_seg(CANON_PLANE plane,
 					  double MaxVel, double MaxAccel, double MaxDecel, double MaxLength,
 					  int sequence_number, int ID)
 {
+	// G61.1 exact stop: see tp_insert_linear_seg
+	if (TP_ExactStop && nsegs > 0 && GetSegPtr(nsegs-1)->sequence_number != sequence_number)
+		GetSegPtr(nsegs-1)->StopRequiredNextSeg = TRUE;
+
 	double dx, radius, theta0, dtheta;
 	
 	dx = CalcLengthAlongHelix(x0, y0, z0, x1, y1, z1, xc, yc, DirIsCCW, &radius, &theta0, &dtheta, a1 - a0, b1 - b0, c1 - c0, u1 - u0, v1 - v0, &MP, NULL);  // total length
@@ -1827,6 +2023,9 @@ int tp_insert_arc_seg(CANON_PLANE plane,
 	p->special_cmds_first=p->special_cmds_last=-1; // init with no special commands
 	
 	p->Done=FALSE;
+	p->PrecomputedTrips=FALSE;
+	p->ActSpace=FALSE;
+	p->Cubic8=FALSE;
 	nsegs++;
 
 	return 0;
@@ -1925,7 +2124,7 @@ void MaximizeSegments()
 	double MaxEndVel0,MaxBegVel1;
 
 #ifdef DEBUG_DOWNLOAD
-	snprintf(ds, MAX_LINE, "MaximizeSegments %f 0 0 %d\n",DTimer.Elapsed_Seconds(),nsegs);
+	ds.Format("MaximizeSegments %f 0 0 %d\n",DTimer.Elapsed_Seconds(),nsegs);
 	PutString(ds);
 #endif
 
@@ -2241,8 +2440,8 @@ int tp_calc_seg_trip_states(int i)
 
 	if (VM==0 || A==0 || D==0)
 	{
-		wchar_t s[64];
-		swprintf(s, 64, L"Vel = %f Accel = %f Decel = %f",VM,A,D);
+		CString s;
+		s.Format(L"Vel = %f Accel = %f Decel = %f",VM,A,D);
 		MessageBoxW(NULL, Translate("Trajectory Planner has Invalid Velocity or Acceleration ") + s, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 1;
 	}

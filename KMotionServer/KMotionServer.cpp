@@ -19,6 +19,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+extern CMainFrame* TheFrame;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -46,7 +47,7 @@ CKMotionServerApp::CKMotionServerApp()
 	// Place all significant initialization in InitInstance
 
 	// only allow one instance of KMotionServer.exe
-	CMutex *KSMutex = new CMutex(FALSE, "KMotionServer", NULL);
+	CMutex *KSMutex = new CMutex(FALSE, L"KMotionServer", NULL);
 
 	bool Locked = KSMutex->Lock(100);
 	if (!Locked)
@@ -102,8 +103,7 @@ BOOL CKMotionServerApp::InitInstance()
 		RUNTIME_CLASS(CMainFrame),       // main SDI frame window
 		RUNTIME_CLASS(CKMotionServerView));
 	AddDocTemplate(pDocTemplate);
-
-
+	
 
 	// Parse command line for standard shell commands, DDE, file open
 	CCommandLineInfo cmdInfo;

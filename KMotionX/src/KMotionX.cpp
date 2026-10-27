@@ -19,12 +19,14 @@
 #include <codecvt>
 #include <string>
 #include <stdexcept>
+#include <cwchar>
 #include "KMotionX.h"
 #include <cstdio>	 // For vsnprintf
 #include <cstdlib>	 // For malloc, free
 #include <stdexcept> // For runtime_error
 #include <cstdarg>	 // For va_list
 #include <vector>
+
 #include <sstream>
 #include <cerrno>
 #include "../../config.h"
@@ -109,27 +111,80 @@ namespace kmx
 		return quoted + "'";
 	}
 
-	// variadic function for formatting strings with multiple arguments
-
-	std::wstring format(const wchar_t *wformat, ...)
+	std::string format(const char* fmt, ...)
 	{
-		std::string format = wstrtostr(wformat);
+		char buffer[256];
+
 		va_list args;
-		va_start(args, wformat);
-		// Calculate the size of the formatted string
-		int size = std::vsnprintf(nullptr, 0, format.c_str(), args);
+		va_start(args, fmt);
+
+		const int length = std::vsnprintf(buffer, sizeof(buffer), fmt, args);
+
 		va_end(args);
 
-		if (size < 0)
+		if (length < 0)
 			throw std::runtime_error("Formatting error");
 
-		std::vector<char> buf(size + 1);
-		va_start(args, wformat);
-		// Format the string with the provided arguments
-		std::vsnprintf(buf.data(), buf.size(), format.c_str(), args);
+		if (static_cast<std::size_t>(length) < sizeof(buffer))
+			return std::string(buffer, static_cast<std::size_t>(length));
+
+		std::vector<char> result(static_cast<std::size_t>(length) + 1);
+
+		va_start(args, fmt);
+		const int written =
+			std::vsnprintf(result.data(), result.size(), fmt, args);
 		va_end(args);
 
-		return strtowstr(buf.data());
+		if (written < 0 ||
+			static_cast<std::size_t>(written) >= result.size())
+			throw std::runtime_error("Formatting error");
+
+		return std::string(result.data(), static_cast<std::size_t>(written));
+	}
+
+	// variadic function for formatting strings with multiple arguments
+	std::wstring format(const wchar_t* wformat, ...)
+	{
+		std::vector<wchar_t> buffer(256);
+
+		va_list args;
+		va_start(args, wformat);
+
+		try
+		{
+			for (;;)
+			{
+				va_list copy;
+				va_copy(copy, args);
+
+				const int length = std::vswprintf(
+					buffer.data(), buffer.size(), wformat, copy);
+
+				va_end(copy);
+
+				if (length >= 0 &&
+					static_cast<std::size_t>(length) < buffer.size())
+				{
+					std::wstring result(
+						buffer.data(), static_cast<std::size_t>(length));
+
+					va_end(args);
+					return result;
+				}
+
+				// Negativt resultat kan betyda för liten buffert
+				// eller ett formateringsfel. Begränsa därför tillväxten.
+				if (buffer.size() >= 1024 * 1024)
+					throw std::runtime_error("Formatting error or output too long");
+
+				buffer.resize(buffer.size() * 2);
+			}
+		}
+		catch (...)
+		{
+			va_end(args);
+			throw;
+		}
 	}
 
 	// Convert std::wstring to UTF-8 encoded std::string
@@ -178,6 +233,15 @@ namespace kmx
 			wchar_t wc = 0;
 			unsigned char c = narrowString[i];
 
+			// Number of continuation bytes that must follow. Guards against reading past the end
+			// of a truncated sequence.
+			size_t need = (c <= 0x7F) ? 0 : ((c & 0xE0) == 0xC0) ? 1 : ((c & 0xF0) == 0xE0) ? 2 : ((c & 0xF8) == 0xF0) ? 3 : 0;
+			if (i + need >= length)
+			{
+				result.push_back(0xFFFD); // replacement character
+				break;
+			}
+
 			if (c <= 0x7F)
 			{ // 1-byte sequence
 				wc = c;
@@ -202,6 +266,11 @@ namespace kmx
 				wc |= (narrowString[++i] & 0x3F) << 12;
 				wc |= (narrowString[++i] & 0x3F) << 6;
 				wc |= (narrowString[++i] & 0x3F);
+				i += 1;
+			}
+			else
+			{ // invalid lead byte. Without this the loop would never advance
+				wc = 0xFFFD;
 				i += 1;
 			}
 
@@ -373,10 +442,12 @@ namespace kmx
 		return getLibexecPath();
 	}
 
-	int LaunchServer()
+	int LaunchServer(bool noEthernet)
 	{
 		std::string server = std::string(getLibexecPath()) + "/KMotionServer";
 		std::string command = shellQuote(server);
+		if (noEthernet)
+			command += " -no_ethernet";
 #ifdef _DEAMON
 #else
 		command += " -redirect_streams &";
@@ -454,8 +525,13 @@ namespace kmx
 			tcc_vers = tcc_minor_version;
 	}
 
-	int getCompileCommand(const char *Name, const char *OutFile, uint32_t LoadAddress, const int BoardType, char *command, int cmd_len)
+	int getCompileCommand(const wchar_t *Namew, const wchar_t *OutFilew, uint32_t LoadAddress, const int BoardType, char *command, int cmd_len)
 	{
+		// Keep the converted strings alive. Taking c_str() of a temporary leaves a dangling pointer.
+		const std::string NameStr = kmx::wstrtostr(Namew);
+		const std::string OutFileStr = kmx::wstrtostr(OutFilew);
+		const char *Name = NameStr.c_str();
+		const char *OutFile = OutFileStr.c_str();
 		char Compiler[MAX_PATH + 1];
 		if (getCompiler(Compiler, sizeof(Compiler)))
 		{

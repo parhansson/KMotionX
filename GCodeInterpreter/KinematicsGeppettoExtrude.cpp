@@ -14,6 +14,7 @@
 
 CKinematicsGeppettoExtrude::CKinematicsGeppettoExtrude()
 {
+	m_InvGuess[2] = 5.0;   // cold guess for the base iterative inverse
 #define SpindleHeight 0.75
 	Act0Center.x = -26.8;
 	Act0Center.y = 13.375;
@@ -179,137 +180,6 @@ int CKinematicsGeppettoExtrude::TransformCADtoActuators(double x, double y, doub
 	return 0;
 }
 
-int CKinematicsGeppettoExtrude::InvertTransformCADtoActuators(double *Acts, double *xr, double *yr, double *zr, double *ar, double *br, double *cr, bool NoGeo)
-{
-	double Tol=1e-6;
-	double d=0.1;					// should be linear over this range
-	double x=0,y=0,z=5,a=0,b=0,c=0; // initial guess at answer
-	double Acts0[MAX_ACTUATORS],ActsX[MAX_ACTUATORS],ActsY[MAX_ACTUATORS];
-	double ActsZ[MAX_ACTUATORS],ActsA[MAX_ACTUATORS],ActsB[MAX_ACTUATORS],ActsC[MAX_ACTUATORS];
-	double A[6*7];
-
-	double ex,ey,ez,ea,eb,ec;
-
-	for (int i=0; i<100; i++)
-	{
-		// measure sensitivity
-		// 
-		// assume majority is simply x -> Act0, y -> Act1, etc..
-
-		TransformCADtoActuators(x,  y,  z,  a,  b,  c,  Acts0, NoGeo);
-		TransformCADtoActuators(x+d,y,  z,  a,  b,  c,  ActsX, NoGeo);
-		TransformCADtoActuators(x,  y+d,z,  a,  b,  c,  ActsY, NoGeo);
-		TransformCADtoActuators(x,  y,  z+d,a,  b,  c,  ActsZ, NoGeo);
-		TransformCADtoActuators(x,  y,  z  ,a+d,b,  c,  ActsA, NoGeo);
-		TransformCADtoActuators(x,  y,  z  ,a,  b+d,c,  ActsB, NoGeo);
-		TransformCADtoActuators(x,  y,  z  ,a,  b,  c+d,ActsC, NoGeo);
-
-
-		//   | x | | RX0  RY0  RZ0 |    | R0 |
-		//   | y | | RX1  RY1  RZ1 | =  | R1 |
-		//   | z | | RX2  RY2  RZ2 |    | R2 |
-
-
-		A[0*7+0] = (ActsX[0]-Acts0[0])/d;  // changes due to x
-		A[1*7+0] = (ActsX[1]-Acts0[1])/d;
-		A[2*7+0] = (ActsX[2]-Acts0[2])/d;
-		A[3*7+0] = (ActsX[3]-Acts0[3])/d;
-		A[4*7+0] = (ActsX[4]-Acts0[4])/d;
-		A[5*7+0] = (ActsX[5]-Acts0[5])/d;
-
-		A[0*7+1] = (ActsY[0]-Acts0[0])/d;  // changes due to y
-		A[1*7+1] = (ActsY[1]-Acts0[1])/d;
-		A[2*7+1] = (ActsY[2]-Acts0[2])/d;
-		A[3*7+1] = (ActsY[3]-Acts0[3])/d;
-		A[4*7+1] = (ActsY[4]-Acts0[4])/d;
-		A[5*7+1] = (ActsY[5]-Acts0[5])/d;
-
-		A[0*7+2] = (ActsZ[0]-Acts0[0])/d;  // changes due to Z
-		A[1*7+2] = (ActsZ[1]-Acts0[1])/d;
-		A[2*7+2] = (ActsZ[2]-Acts0[2])/d;
-		A[3*7+2] = (ActsZ[3]-Acts0[3])/d;
-		A[4*7+2] = (ActsZ[4]-Acts0[4])/d;
-		A[5*7+2] = (ActsZ[5]-Acts0[5])/d;
-
-		A[0*7+3] = (ActsA[0]-Acts0[0])/d;  // changes due to A
-		A[1*7+3] = (ActsA[1]-Acts0[1])/d;
-		A[2*7+3] = (ActsA[2]-Acts0[2])/d;
-		A[3*7+3] = (ActsA[3]-Acts0[3])/d;
-		A[4*7+3] = (ActsA[4]-Acts0[4])/d;
-		A[5*7+3] = (ActsA[5]-Acts0[5])/d;
-
-		A[0*7+4] = (ActsB[0]-Acts0[0])/d;  // changes due to B
-		A[1*7+4] = (ActsB[1]-Acts0[1])/d;
-		A[2*7+4] = (ActsB[2]-Acts0[2])/d;
-		A[3*7+4] = (ActsB[3]-Acts0[3])/d;
-		A[4*7+4] = (ActsB[4]-Acts0[4])/d;
-		A[5*7+4] = (ActsB[5]-Acts0[5])/d;
-
-		A[0*7+5] = (ActsC[0]-Acts0[0])/d;  // changes due to C
-		A[1*7+5] = (ActsC[1]-Acts0[1])/d;
-		A[2*7+5] = (ActsC[2]-Acts0[2])/d;
-		A[3*7+5] = (ActsC[3]-Acts0[3])/d;
-		A[4*7+5] = (ActsC[4]-Acts0[4])/d;
-		A[5*7+5] = (ActsC[5]-Acts0[5])/d;
-
-		A[0*7+6] = Acts[0]-Acts0[0];   // desired changes
-		A[1*7+6] = Acts[1]-Acts0[1];
-		A[2*7+6] = Acts[2]-Acts0[2];
-		A[3*7+6] = Acts[3]-Acts0[3];
-		A[4*7+6] = Acts[4]-Acts0[4];
-		A[5*7+6] = Acts[5]-Acts0[5];
-
-		Solve(A,6);  // solve simultaneous eqs
-
-		// corrections in CAD space
-
-		ex = A[0*7+6];
-		ey = A[1*7+6];
-		ez = A[2*7+6];
-		ea = A[3*7+6];
-		eb = A[4*7+6];
-		ec = A[5*7+6];
-
-		// Done if all within Tolerance
-
-		if (fabs(ex) < Tol &&
-			fabs(ey) < Tol &&
-			fabs(ez) < Tol &&
-			fabs(ea) < Tol &&
-			fabs(eb) < Tol &&
-			fabs(ec) < Tol)
-		{
-			*xr = x;
-			*yr = y;
-			*zr = z;
-			*ar = a;
-			*br = b;
-			*cr = c;
-
-			return 0;
-		}
-
-		// make a correction
-
-		x += ex;
-		y += ey;
-		z += ez;
-		a += ea;
-		b += eb;
-		c += ec;
-	}
-
-	// it never converges, return whatever we have
-
-	*xr = x;
-	*yr = y;
-	*zr = z;
-	*ar = a;
-	*br = b;
-	*cr = c;
-
-	return 1;
-}
 
 
 
@@ -345,7 +215,7 @@ int CKinematicsGeppettoExtrude::TransformActuatorstoCAD(double *Acts, double *xr
 // .
 // .
 
-int CKinematicsGeppettoExtrude::ReadGeoTable(const char *name)
+int CKinematicsGeppettoExtrude::ReadGeoTable(const wchar_t *name)
 {
 	double X, Y, Z, c;
 	int row, col;
@@ -354,38 +224,39 @@ int CKinematicsGeppettoExtrude::ReadGeoTable(const char *name)
 
 	if (name[0] == 0) return 0; // passing in no file turns off geocorrection
 
-	FILE *f = fopen(name, "rt");
+	FILE* f;
+	_tfopen_s(&f, name, _T("rt,ccs=UTF-8"));
 
 	if (!f)
 	{
-		MessageBoxW(NULL, Translate("Unable to open Geometric Correction File : ") + kmx::strtowstr(name), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBoxW(NULL, Translate("Unable to open Geometric Correction File : ") +  name, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 1;
 	}
 
-	int result = fscanf(f, "%d,%d", &NRows, &NCols);
+	int result = fwscanf(f, L"%d,%d", &NRows, &NCols);
 
 	if (result != 2 || NRows < 2 || NRows > 4000 || NCols < 2 || NCols > 4000)
 	{
 		fclose(f);
-		MessageBoxW(NULL, Translate("Invalid Geometric Correction File (NRows and NCols) : ") + kmx::strtowstr(name), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBoxW(NULL, Translate("Invalid Geometric Correction File (NRows and NCols) : ") +  name, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 1;
 	}
 
-	result = fscanf(f, "%lf,%lf", &GeoSpacingX, &GeoSpacingY);
+	result = fwscanf(f, L"%lf,%lf", &GeoSpacingX, &GeoSpacingY);
 
 	if (result != 2)
 	{
 		fclose(f);
-		MessageBoxW(NULL, Translate("Invalid Geometric Correction File (GeoSpacingX and GeoSpacingY) : ") + kmx::strtowstr(name), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBoxW(NULL, Translate("Invalid Geometric Correction File (GeoSpacingX and GeoSpacingY) : ") +  name, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 1;
 	}
 
-	result = fscanf(f, "%lf,%lf", &GeoOffsetX, &GeoOffsetY);
+	result = fwscanf(f, L"%lf,%lf", &GeoOffsetX, &GeoOffsetY);
 
 	if (result != 2)
 	{
 		fclose(f);
-		MessageBoxW(NULL, Translate("Invalid Geometric Correction File (GeoOffsetX and GeoOffsetY) : ") + kmx::strtowstr(name), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBoxW(NULL, Translate("Invalid Geometric Correction File (GeoOffsetX and GeoOffsetY) : ") +  name, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 1;
 	}
 
@@ -394,12 +265,12 @@ int CKinematicsGeppettoExtrude::ReadGeoTable(const char *name)
 
 	for (int i = 0; i<NRows*NCols; i++)
 	{
-		result = fscanf(f, "%d,%d,%lf,%lf,%lf,%lf", &row, &col, &X, &Y, &Z, &c);
+		result = fwscanf(f, L"%d,%d,%lf,%lf,%lf,%lf", &row, &col, &X, &Y, &Z, &c);
 
 		if (result != 6 || row < 0 || row >= NRows || col < 0 || col >= NCols)
 		{
 			fclose(f);
-			MessageBoxW(NULL, Translate("Invalid Geometric Correction File (invalid data value) : ") + kmx::strtowstr(name), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+			MessageBoxW(NULL, Translate("Invalid Geometric Correction File (invalid data value) : ") +  name, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 			return 1;
 		}
 

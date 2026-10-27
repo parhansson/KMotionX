@@ -13,8 +13,7 @@ class CTranslate {
 public:
     CTranslate();
 
-    std::wstring Translate(std::string s);
-    std::wstring Translate(const char* s);
+    CString Translate(CString s);
 
 private:
     bool CheckedForList;
@@ -22,13 +21,12 @@ private:
 
     std::vector<std::wstring> EnglishList;
     std::vector<std::wstring> TranslateList;
-	std::wstring Translate(std::string* s);
 
     void LoadTranslationList();
 };
 extern CTranslate Trans;  // global instance
 
-std::wstring Translate(std::string s);
+CString Translate(CString s);
 #else
 #pragma once
 
@@ -38,19 +36,18 @@ std::wstring Translate(std::string s);
 class  CTranslate {
 public:
 	CTranslate();
-	CStringW Translate(CString s);
-	CStringW Translate(char*);
+	CString Translate(CString s);
 
 	bool CheckedForList;
 	bool ListLoaded;
 
-	CList<CStringW, CStringW> EnglishList;
-	CList<CStringW, CStringW> TanslateList;
+	CList<CString, CString> EnglishList;
+	CList<CString, CString> TanslateList;
 
 };
 
 extern CTranslate Trans;  // global instance
 
-CStringW Translate(CString s);
+CString Translate(CString s);
 #endif
 #endif //TRANSLATE_H_

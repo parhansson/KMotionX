@@ -107,9 +107,10 @@ axes not compiled in.
 
 #define DEBUG_EMC
 
-char _interpreter_linetext[INTERP_TEXT_SIZE];    /* raw text */
-char _interpreter_blocktext[INTERP_TEXT_SIZE]; /*parsed text */
+wchar_t _interpreter_linetext[INTERP_TEXT_SIZE];    /* raw text */
+wchar_t _interpreter_blocktext[INTERP_TEXT_SIZE]; /*parsed text */
 
+extern bool StateSaved;  // Flag controlling whether the Interpreter State has been saved for rewinding interpreter.  
 
 /*
 
@@ -130,20 +131,20 @@ macros totally crash-proof. If the function call stack is deeper than
 
 #define ERM(error_code) if (1) {                    \
   _setup.stack_index = 0;                      \
-  strcpy(_setup.stack[_setup.stack_index++], name); \
+  wcscpy(_setup.stack[_setup.stack_index++], name); \
   _setup.stack[_setup.stack_index][0] = 0;     \
   return error_code;                                \
   } else
 
 #define ERP(error_code) if (_setup.stack_index < 49) { \
-  strcpy(_setup.stack[_setup.stack_index++], name);    \
+  wcscpy(_setup.stack[_setup.stack_index++], name);    \
   _setup.stack[_setup.stack_index][0] = 0;        \
   return error_code;                                   \
   } else return error_code
 
 #define CHK(bad, error_code) if (bad) {             \
   _setup.stack_index = 0;                      \
-  strcpy(_setup.stack[_setup.stack_index++], name); \
+  wcscpy(_setup.stack[_setup.stack_index++], name); \
   _setup.stack[_setup.stack_index][0] = 0;     \
   return error_code;                                \
   } else
@@ -151,7 +152,7 @@ macros totally crash-proof. If the function call stack is deeper than
 #define CHP(try_this)                                      \
   if ((status = (try_this)) != RS274NGC_OK) {       \
      if (_setup.stack_index < 49)                          \
-        {strcpy(_setup.stack[_setup.stack_index++], name); \
+        {wcscpy(_setup.stack[_setup.stack_index++], name); \
          _setup.stack[_setup.stack_index][0] = 0;     \
          return status;}                                   \
      else {return status;}                                 \
@@ -184,7 +185,7 @@ static int check_g_codes(block_pointer block, setup_pointer settings);
 static int check_items(block_pointer block, setup_pointer settings);
 static int check_m_codes(block_pointer block);
 static int check_other_codes(block_pointer block);
-static int close_and_downcase(char *line);
+static int close_and_downcase(wchar_t *line);
 static int convert_arc(int move, block_pointer block, setup_pointer settings);
 static int convert_arc2(int move, block_pointer block,
     setup_pointer settings, double *current1,
@@ -199,8 +200,8 @@ static int convert_arc_comp2(int move, block_pointer block,
     double end_y, double end_z, double AA_end, double BB_end, double CC_end, double UU_end, double VV_end);
 static int convert_axis_offsets(int g_code, block_pointer block,
     setup_pointer settings);
-static int convert_comment(char *comment);
-static int convert_control_mode(int g_code, setup_pointer settings);
+static int convert_comment(wchar_t *comment);
+static int convert_control_mode(int g_code, block_pointer block, setup_pointer settings);
 static int convert_spindle_mode(int g_code, setup_pointer settings);
 static int convert_coordinate_system(int g_code, setup_pointer settings);
 static int convert_cutter_compensation(int g_code, block_pointer block,
@@ -267,7 +268,7 @@ static int convert_straight_comp2(int move, block_pointer block,
     setup_pointer settings, double px,
     double py, double end_z, double AA_end, double BB_end, double CC_end, double UU_end, double VV_end);
 static int convert_tool_change(setup_pointer settings);
-static int convert_tool_length_offset(int g_code, block_pointer block,
+int convert_tool_length_offset(int g_code, block_pointer block,
     setup_pointer settings);
 static int convert_tool_select(block_pointer block, setup_pointer settings);
 static int cycle_feed(CANON_PLANE plane, double end1,
@@ -312,78 +313,78 @@ static int inverse_time_rate_straight(double end_x, double end_y,
 	double BB_end, double CC_end, 
 	double UU_end, double VV_end,
     block_pointer block, setup_pointer settings);
-static int parse_line(char *line, block_pointer block,
+static int parse_line(wchar_t *line, block_pointer block,
     setup_pointer settings);
 static int precedence(int an_operator);
-static int read_a(char *line, int *counter, block_pointer block,
+static int read_a(wchar_t *line, int *counter, block_pointer block,
     double *parameters);
-static int read_atan(char *line, int *counter, double *double_ptr,
+static int read_atan(wchar_t *line, int *counter, double *double_ptr,
     double *parameters);
-static int read_b(char *line, int *counter, block_pointer block,
+static int read_b(wchar_t *line, int *counter, block_pointer block,
 	double *parameters);
-static int read_c(char *line, int *counter, block_pointer block,
+static int read_c(wchar_t *line, int *counter, block_pointer block,
 	double *parameters);
-static int read_u(char *line, int *counter, block_pointer block,
+static int read_u(wchar_t *line, int *counter, block_pointer block,
 	double *parameters);
-static int read_v(char *line, int *counter, block_pointer block,
+static int read_v(wchar_t *line, int *counter, block_pointer block,
 	double *parameters);
-static int read_comment(char *line, int *counter, block_pointer block,
+static int read_comment(wchar_t *line, int *counter, block_pointer block,
     double *parameters);
-static int read_d(char *line, int *counter, block_pointer block,
+static int read_d(wchar_t *line, int *counter, block_pointer block,
     double *parameters);
-static int read_f(char *line, int *counter, block_pointer block,
+static int read_f(wchar_t *line, int *counter, block_pointer block,
     double *parameters);
-static int read_g(char *line, int *counter, block_pointer block,
+static int read_g(wchar_t *line, int *counter, block_pointer block,
     double *parameters);
-static int read_h(char *line, int *counter, block_pointer block,
+static int read_h(wchar_t *line, int *counter, block_pointer block,
     double *parameters);
-static int read_i(char *line, int *counter, block_pointer block,
+static int read_i(wchar_t *line, int *counter, block_pointer block,
     double *parameters);
-static int read_integer_unsigned(char *line, int *counter, int *integer_ptr);
-static int read_integer_value(char *line, int *counter, int *integer_ptr,
+static int read_integer_unsigned(wchar_t *line, int *counter, int *integer_ptr);
+static int read_integer_value(wchar_t *line, int *counter, int *integer_ptr,
     double *parameters);
-static int read_items(block_pointer block, char *line, double *parameters);
-static int read_j(char *line, int *counter, block_pointer block,
+static int read_items(block_pointer block, wchar_t *line, double *parameters);
+static int read_j(wchar_t *line, int *counter, block_pointer block,
     double *parameters);
-static int read_k(char *line, int *counter, block_pointer block,
+static int read_k(wchar_t *line, int *counter, block_pointer block,
     double *parameters);
-static int read_l(char *line, int *counter, block_pointer block,
+static int read_l(wchar_t *line, int *counter, block_pointer block,
     double *parameters);
-static int read_line_number(char *line, int *counter, block_pointer block);
-static int read_m(char *line, int *counter, block_pointer block,
+static int read_line_number(wchar_t *line, int *counter, block_pointer block);
+static int read_m(wchar_t *line, int *counter, block_pointer block,
     double *parameters);
-static int read_one_item(char *line, int *counter, block_pointer block,
+static int read_one_item(wchar_t *line, int *counter, block_pointer block,
     double *parameters);
-static int read_operation(char *line, int *counter, int *operation);
-static int read_operation_unary(char *line, int *counter, int *operation);
-static int read_p(char *line, int *counter, block_pointer block,
+static int read_operation(wchar_t *line, int *counter, int *operation);
+static int read_operation_unary(wchar_t *line, int *counter, int *operation);
+static int read_p(wchar_t *line, int *counter, block_pointer block,
     double *parameters);
-static int read_parameter(char *line, int *counter, double *double_ptr,
+static int read_parameter(wchar_t *line, int *counter, double *double_ptr,
     double *parameters);
-static int read_parameter_setting(char *line, int *counter,
+static int read_parameter_setting(wchar_t *line, int *counter,
     block_pointer block, double *parameters);
-static int read_q(char *line, int *counter, block_pointer block,
+static int read_q(wchar_t *line, int *counter, block_pointer block,
     double *parameters);
-static int read_r(char *line, int *counter, block_pointer block,
+static int read_r(wchar_t *line, int *counter, block_pointer block,
     double *parameters);
-static int read_real_expression(char *line, int *counter,
+static int read_real_expression(wchar_t *line, int *counter,
     double *hold2, double *parameters);
-static int read_real_number(char *line, int *counter, double *double_ptr);
-static int read_real_value(char *line, int *counter, double *double_ptr,
+static int read_real_number(wchar_t *line, int *counter, double *double_ptr);
+static int read_real_value(wchar_t *line, int *counter, double *double_ptr,
     double *parameters);
-static int read_s(char *line, int *counter, block_pointer block,
+static int read_s(wchar_t *line, int *counter, block_pointer block,
     double *parameters);
-static int read_t(char *line, int *counter, block_pointer block,
+static int read_t(wchar_t *line, int *counter, block_pointer block,
     double *parameters);
-static int read_text(const char *command, FILE * inport, char *raw_line,
-    char *line, int *length);
-static int read_unary(char *line, int *counter, double *double_ptr,
+static int read_text(const wchar_t *command, FILE * inport, wchar_t *raw_line,
+    wchar_t *line, int *length);
+static int read_unary(wchar_t *line, int *counter, double *double_ptr,
     double *parameters);
-static int read_x(char *line, int *counter, block_pointer block,
+static int read_x(wchar_t *line, int *counter, block_pointer block,
     double *parameters);
-static int read_y(char *line, int *counter, block_pointer block,
+static int read_y(wchar_t *line, int *counter, block_pointer block,
     double *parameters);
-static int read_z(char *line, int *counter, block_pointer block,
+static int read_z(wchar_t *line, int *counter, block_pointer block,
     double *parameters);
 static int set_probe_data(setup_pointer settings);
 static int write_g_codes(block_pointer block, setup_pointer settings);
@@ -393,8 +394,7 @@ static int call_sub(int label, int loop_count);
 static int return_sub();
 static int search_label(int label, BOOL *pfound, int *lineno);
 static int skip_percent(void);
-
-
+static int open_file_skip_percent(const wchar_t* filename);
 static int PChanged(int index);
 
 // convert GCode Tool number to tool table index based on 
@@ -408,6 +408,50 @@ int PutFloatVarToKFLOP(double v, int &ipersist);
 // Put one value as an Integer into KFLOP Persist Variable
 // increment the caller's persist var number
 int PutIntVarToKFLOP(int v, int &ipersist);
+
+
+// 2D scalar cross product
+static double cross2(double ax, double ay, double bx, double by);
+
+// Returns 0 on success
+// 1 = Segment 1 too short (P1 -> P2)
+// 2 = Segment 2 too short (P2 -> P3)
+// 3 = Segments nearly parallel -> no fillet
+// 4 = Tangent point on seg 2 falls outside segment
+// 5 = Tangent point on seg 1 falls outside segment
+int ComputePCandP0(
+	const Point2D& P1,
+	const Point2D& P2,
+	const Point2D& P3,
+	double R,
+	int side,
+	Point2D& P0_out,
+	Point2D& PC_out);
+
+
+// Returns:
+//  1 = convex corner at P1
+// -1 = concave corner at P1
+//  0 = collinear / degenerate
+int CornerTypeP0P1P2(const Point2D& P0,
+	const Point2D& P1,
+	const Point2D& P2,
+	int side);
+
+//	Finds distance from point s1 to line segment s0-s2.
+//
+// Returns:
+// - perpendicular distance if projection of s1 falls within segment s0-s2
+// - distance to closest endpoint if projection falls outside segment
+
+double FindDistPointToSegment2D(const Point2D* s0,
+	const Point2D* s1,
+	const Point2D* s2);
+
+
+
+// Execute any deferred g41/g42 concave corner compensation
+int FlushConcaveDeferred(setup_pointer settings);
 
 /* Interpreter global arrays for g_codes and m_codes. The nth entry
 in each array is the modal group number corresponding to the nth
@@ -551,30 +595,32 @@ rs274ngc_save_parameters function.
 
 static const int _required_parameters[] = {
  5161, 5162, 5163,   /* G28 home */
- 5164, 5165, 5166,
+ 5164, 5165, 5166, 5167, 5168,
  5181, 5182, 5183,   /* G30 home */
- 5184, 5185, 5186,
+ 5184, 5185, 5186, 5187, 5188,
  5211, 5212, 5213,   /* G92 offsets */
- 5214, 5215, 5216,
+ 5214, 5215, 5216, 5217, 5218,
+ 5219,               /* units of the saved G92 offsets (CANON_UNITS_INCHES/
+                        _MM; 0 = unknown, pre-5.5.0 Vars file) */
  5220,               /* selected coordinate */
  5221, 5222, 5223,   /* coordinate system 1 */
- 5224, 5225, 5226,
+ 5224, 5225, 5226, 5227, 5228,
  5241, 5242, 5243,   /* coordinate system 2 */
- 5244, 5245, 5246,
+ 5244, 5245, 5246, 5247, 5248,
  5261, 5262, 5263,   /* coordinate system 3 */
- 5264, 5265, 5266,
+ 5264, 5265, 5266, 5267, 5268,
  5281, 5282, 5283,   /* coordinate system 4 */
- 5284, 5285, 5286,
+ 5284, 5285, 5286, 5287, 5288,
  5301, 5302, 5303,   /* coordinate system 5 */
- 5304, 5305, 5306,
+ 5304, 5305, 5306, 5307, 5308,
  5321, 5322, 5323,   /* coordinate system 6 */
- 5324, 5325, 5326,
+ 5324, 5325, 5326, 5327, 5328,
  5341, 5342, 5343,   /* coordinate system 7 */
- 5344, 5345, 5346,
+ 5344, 5345, 5346, 5347, 5348,
  5361, 5362, 5363,   /* coordinate system 8 */
- 5364, 5365, 5366,
+ 5364, 5365, 5366, 5367, 5368,
  5381, 5382, 5383,   /* coordinate system 9 */
- 5384, 5385, 5386,
+ 5384, 5385, 5386, 5387, 5388,
  RS274NGC_MAX_PARAMETERS
 };
 
@@ -666,7 +712,7 @@ static int arc_data_comp_ijk(	/* ARGUMENTS */
 				   circles CCW */
     double tolerance)
 {				/* tolerance of differing radii */
-    static char name[] = "arc_data_comp_ijk";
+    static wchar_t name[] = L"arc_data_comp_ijk";
     double arc_radius;
     double radius2;
 
@@ -763,7 +809,7 @@ static int arc_data_comp_r(	/* ARGUMENTS */
     int *turn)
 {				/* pointer to number of full or partial
 				   circles CCW */
-    static char name[] = "arc_data_comp_r";
+    static wchar_t name[] = L"arc_data_comp_r";
     double abs_radius;		/* absolute value of big_radius */
     double alpha;		/* direction of line from current to end */
     double distance;		/* length of line L from current to end */
@@ -859,7 +905,7 @@ static int arc_data_ijk(	/* ARGUMENTS */
 				   CCW */
     double tolerance)
 {				/* tolerance of differing radii */
-    static char name[] = "arc_data_ijk";
+    static wchar_t name[] = L"arc_data_ijk";
     double radius;		/* radius to current point */
     double radius2;		/* radius to end point */
     *center_x = (current_x + i_number);
@@ -1000,7 +1046,7 @@ static int arc_data_r(		/* ARGUMENTS */
     int *turn)
 {				/* pointer to no. of full or partial circles
 				   CCW */
-    static char name[] = "arc_data_r";
+    static wchar_t name[] = L"arc_data_r";
     double abs_radius;		/* absolute value of given radius */
     double half_length;		/* distance from M to end point */
     double mid_x;		/* first coordinate of M */
@@ -1119,7 +1165,7 @@ static int check_g_codes(	/* ARGUMENTS */
     block_pointer block,	/* pointer to a block to be checked */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "check_g_codes";
+    static wchar_t name[] = L"check_g_codes";
     int mode0;
     int p_int;
 
@@ -1185,7 +1231,7 @@ static int check_items(		/* ARGUMENTS */
     block_pointer block,	/* pointer to a block to be checked */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "check_items";
+    static wchar_t name[] = L"check_items";
     int status;
 
     CHP(check_g_codes(block, settings));
@@ -1219,7 +1265,7 @@ static int check_m_codes(	/* ARGUMENTS */
 {				/* pointer to a block to be checked */
     int p_int,q_int,l_int;
 
-    static char name[] = "check_m_codes";
+    static wchar_t name[] = L"check_m_codes";
 
     CHK((block->m_count > MAX_EMS), NCE_TOO_MANY_M_CODES_ON_LINE);
 
@@ -1295,7 +1341,7 @@ static int check_other_codes(	/* ARGUMENTS */
     block_pointer block)
 {				/* pointer to a block of RS274/NGC
 				   instructions */
-    static char name[] = "check_other_codes";
+    static wchar_t name[] = L"check_other_codes";
     int motion;
 
     motion = block->motion_to_be;
@@ -1351,11 +1397,13 @@ static int check_other_codes(	/* ARGUMENTS */
     if (block->p_flag == ON) {
 	CHK(((block->g_modes[0] != G_10) &&
 		(block->g_modes[0] != G_4) &&
+		(block->g_modes[13] != G_64) &&
 		(motion != G_82) && (motion != G_83) && (motion != G_86) &&
 		(motion != G_88) && (motion != G_89) &&
 		(block->m_modes[4] != 98) &&
+		(block->m_modes[9] != 49) &&
 		(block->m_modes[10] == -1)),
-	    NCE_P_WORD_WITH_NO_G4_G10_G82_G86_G88_G89_M98);
+	    NCE_P_WORD_WITH_NO_G4_G10_G82_G86_G88_G89_M49_M98);
     }
 
     if (block->q_flag == ON) {
@@ -1415,15 +1463,15 @@ The KT and NGC manuals say nothing about case or spaces and tabs.
 */
 
 static int close_and_downcase(	/* ARGUMENTS */
-    char *line)
+    wchar_t *line)
 {				/* string: one line of NC code */
-    static char name[] = "close_and_downcase";
+    static wchar_t name[] = L"close_and_downcase";
     int m;
     int n;
     int comment;
-    char item;
+    wchar_t item;
     comment = 0;
-    for (n = 0, m = 0; (item = line[m]) != (char) NULL; m++) {
+    for (n = 0, m = 0; (item = line[m]) != (wchar_t) NULL; m++) {
 	if (comment) {
 	    line[n++] = item;
 	    if (item == ')') {
@@ -1509,7 +1557,7 @@ static int convert_arc(		/* ARGUMENTS */
     block_pointer block,	/* pointer to a block of RS274 instructions */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_arc";
+    static wchar_t name[] = L"convert_arc";
     int status;
     int first;			/* flag set ON if this is first move after
 				   comp ON */
@@ -1523,6 +1571,7 @@ static int convert_arc(		/* ARGUMENTS */
 	double CC_end;
 	double UU_end;
 	double VV_end;
+
 	ijk_flag = ((block->i_flag || block->j_flag)
 	|| block->k_flag) ? ON : OFF;
     first = (settings->program_x == UNKNOWN);
@@ -1656,7 +1705,7 @@ static int convert_arc2(	/* ARGUMENTS */
     double offset1,		/* offset of center from current1 */
     double offset2)
 {				/* offset of center from current2 */
-    static char name[] = "convert_arc2";
+    static wchar_t name[] = L"convert_arc2";
     double center1;
     double center2;
     int status;			/* status returned from CHP function call */
@@ -1736,7 +1785,7 @@ static int convert_arc_comp1(	/* ARGUMENTS */
 	double VV_end  /* v-value at end of arc */ /*VV*/
 	)
 {
-    static char name[] = "convert_arc_comp1";
+    static wchar_t name[] = L"convert_arc_comp1";
     double center_x;
     double center_y;
     double gamma;		/* direction of perpendicular to arc at end */
@@ -1851,7 +1900,7 @@ static int convert_arc_comp2(	/* ARGUMENTS */
 	double VV_end  /* v-value at end of arc */ /*VV*/
 	)
 {
-    static char name[] = "convert_arc_comp2";
+    static wchar_t name[] = L"convert_arc_comp2";
     double alpha;		/* direction of tangent to start of arc */
     double arc_radius;
     double beta;		/* angle between two tangents above */
@@ -1866,6 +1915,8 @@ static int convert_arc_comp2(	/* ARGUMENTS */
     double small_angle = TOLERANCE_CONCAVE_CORNER;	/* angle for testing corners */
     double start_x;
     double start_y;
+    double end_x_actual;
+    double end_y_actual;
 	double first_x, first_y;
     int status;			/* status returned from CHP function call */
     double theta;		/* direction of tangent to last cut */
@@ -1927,31 +1978,27 @@ static int convert_arc_comp2(	/* ARGUMENTS */
 	delta = (delta + PI);
     }
 
-    settings->program_x = end_x;
-    settings->program_y = end_y;
-    end_x = (end_x + (tool_radius * cos(gamma)));	/* end_x reset actual 
-							 */
-    end_y = (end_y + (tool_radius * sin(gamma)));	/* end_y reset actual 
-							 */
+    end_x_actual = (end_x + (tool_radius * cos(gamma)));	/* end_x_actual reset actual */
+    end_y_actual = (end_y + (tool_radius * sin(gamma)));	/* end_y_actual reset actual */
 
 /* check if extra arc needed and insert if so */
 
     CHK(((beta < -small_angle) || (beta > (PI + small_angle))),
-	NCE_CONCAVE_CORNER_WITH_CUTTER_RADIUS_COMP);
+		NCE_CONCAVE_CORNER_ARC_WITH_CUTTER_RADIUS_COMP);
     if (beta > small_angle) {		/* two arcs needed */
 	mid_x = (start_x + (tool_radius * cos(delta)));
 	mid_y = (start_y + (tool_radius * sin(delta)));
 	if (settings->feed_mode == INVERSE_TIME)
 	    inverse_time_rate_arc2(start_x, start_y, (side == LEFT) ? -1 : 1,
 		mid_x, mid_y, center_x, center_y, turn,
-		end_x, end_y, end_z, block, settings);
+		end_x_actual, end_y_actual, end_z, block, settings);
 
 	if(CHECK_PREVIOUS_STOP(mid_x, mid_y, 1))
 	{
 		ARC_FEED(mid_x, mid_y, start_x, start_y, ((side == LEFT) ? -1 : 1),
 		    settings->current_z, AA_end, BB_end, CC_end, UU_end, VV_end,1);
 	}
-	ARC_FEED(end_x, end_y, center_x, center_y, turn, end_z, AA_end,
+	ARC_FEED(end_x_actual, end_y_actual, center_x, center_y, turn, end_z, AA_end,
 	    BB_end, CC_end, UU_end, VV_end,2);
     } else {			/* one arc needed */
 		// first do any pending entry move
@@ -1972,13 +2019,16 @@ static int convert_arc_comp2(	/* ARGUMENTS */
 		if (settings->feed_mode == INVERSE_TIME)
 			inverse_time_rate_arc(settings->current_x, settings->current_y,
 			settings->current_z, center_x, center_y, turn,
-			end_x, end_y, end_z, block, settings);
-		ARC_FEED(end_x, end_y, center_x, center_y, turn, end_z, AA_end,
+			end_x_actual, end_y_actual, end_z, block, settings);
+		ARC_FEED(end_x_actual, end_y_actual, center_x, center_y, turn, end_z, AA_end,
 			BB_end, CC_end, UU_end, VV_end);
     }
-
-    settings->current_x = end_x;
-    settings->current_y = end_y;
+	// note: don't change these earlier before the state is saved, otherwise resume will be incorrect
+	settings->program_x = end_x;
+	settings->program_y = end_y;
+	
+	settings->current_x = end_x_actual;
+    settings->current_y = end_y_actual;
     settings->current_z = end_z;
     settings->AA_current = AA_end;
     settings->BB_current = BB_end;
@@ -2056,7 +2106,7 @@ static int convert_axis_offsets(	/* ARGUMENTS */
 				   instructions */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_axis_offsets";
+    static wchar_t name[] = L"convert_axis_offsets";
     double *pars;		/* short name for settings->parameters */
 
     CHK((settings->cutter_comp_side != OFF),	/* not "== ON" */
@@ -2133,6 +2183,8 @@ static int convert_axis_offsets(	/* ARGUMENTS */
 	pars[PChanged(5216)] = settings->CC_axis_offset;
 	pars[PChanged(5217)] = settings->UU_axis_offset;
 	pars[PChanged(5218)] = settings->VV_axis_offset;
+	pars[PChanged(5219)] = (double)settings->length_units;  // units stamp
+	settings->length_units_of_axis_offset = settings->length_units;
 	} else if (g_code == G_52) {
 	if (block->x_flag == ON) {
 		settings->current_x += settings->axis_offset_x - block->x_number;
@@ -2193,6 +2245,8 @@ static int convert_axis_offsets(	/* ARGUMENTS */
 	pars[PChanged(5216)] = settings->CC_axis_offset;
 	pars[PChanged(5217)] = settings->UU_axis_offset;
 	pars[PChanged(5218)] = settings->VV_axis_offset;
+	pars[PChanged(5219)] = (double)settings->length_units;  // units stamp
+	settings->length_units_of_axis_offset = settings->length_units;
 	} else if ((g_code == G_92_1) || (g_code == G_92_2)) {
 	settings->current_x = settings->current_x + settings->axis_offset_x;
 	settings->current_y = settings->current_y + settings->axis_offset_y;
@@ -2223,6 +2277,7 @@ static int convert_axis_offsets(	/* ARGUMENTS */
 	settings->CC_axis_offset = 0.0;
 	settings->UU_axis_offset = 0.0;
 	settings->VV_axis_offset = 0.0;
+	settings->length_units_of_axis_offset = settings->length_units; // zeros: known
 	if (g_code == G_92_1) {
 	    pars[PChanged(5211)] = 0.0;
 	    pars[PChanged(5212)] = 0.0;
@@ -2232,32 +2287,47 @@ static int convert_axis_offsets(	/* ARGUMENTS */
 		pars[PChanged(5216)] = 0.0;
 		pars[PChanged(5217)] = 0.0;
 		pars[PChanged(5218)] = 0.0;
+		pars[PChanged(5219)] = (double)settings->length_units;  // units stamp
 	}
+	// G92.2 keeps the parameters for a later G92.3, so their existing
+	// units stamp (5219) is left alone
     } else if (g_code == G_92_3) {
+	// The saved parameters carry a units stamp (5219, written by any
+	// G92/G52 or the offsets screen).  If they were recorded in different
+	// units than are now active, convert as they are re-applied; an
+	// unstamped (pre-5.5.0) set is adopted raw, as before.
+	double uf = 1.0;
+	{
+	    int su = (int)(pars[5219] + 0.0001);
+	    if ((su == CANON_UNITS_INCHES || su == CANON_UNITS_MM)
+			&& su != settings->length_units)
+		uf = (su == CANON_UNITS_INCHES) ? MM_PER_INCH : INCH_PER_MM;
+	}
 	settings->current_x =
-	    settings->current_x + settings->axis_offset_x - pars[5211];
+	    settings->current_x + settings->axis_offset_x - pars[5211]*uf;
 	settings->current_y =
-	    settings->current_y + settings->axis_offset_y - pars[5212];
+	    settings->current_y + settings->axis_offset_y - pars[5212]*uf;
 	settings->current_z =
-	    settings->current_z + settings->axis_offset_z - pars[5213];
+	    settings->current_z + settings->axis_offset_z - pars[5213]*uf;
 	settings->AA_current = /*AA*/
-	    settings->AA_current + settings->AA_axis_offset - pars[5214];
+	    settings->AA_current + settings->AA_axis_offset - pars[5214]*uf;
 	settings->BB_current = /*BB*/
-		settings->BB_current + settings->BB_axis_offset - pars[5215];
+		settings->BB_current + settings->BB_axis_offset - pars[5215]*uf;
 	settings->CC_current = /*CC*/
-		settings->CC_current + settings->CC_axis_offset - pars[5216];
+		settings->CC_current + settings->CC_axis_offset - pars[5216]*uf;
 	settings->UU_current = /*UU*/
-		settings->UU_current + settings->UU_axis_offset - pars[5217];
+		settings->UU_current + settings->UU_axis_offset - pars[5217]*uf;
 	settings->VV_current = /*VV*/
-		settings->VV_current + settings->VV_axis_offset - pars[5218];
-	settings->axis_offset_x = pars[5211];
-	settings->axis_offset_y = pars[5212];
-	settings->axis_offset_z = pars[5213];
-	settings->AA_axis_offset = pars[5214];
-	settings->BB_axis_offset = pars[5215];
-	settings->CC_axis_offset = pars[5216];
-	settings->UU_axis_offset = pars[5217];
-	settings->VV_axis_offset = pars[5218];
+		settings->VV_current + settings->VV_axis_offset - pars[5218]*uf;
+	settings->axis_offset_x = pars[5211]*uf;
+	settings->axis_offset_y = pars[5212]*uf;
+	settings->axis_offset_z = pars[5213]*uf;
+	settings->AA_axis_offset = pars[5214]*uf;
+	settings->BB_axis_offset = pars[5215]*uf;
+	settings->CC_axis_offset = pars[5216]*uf;
+	settings->UU_axis_offset = pars[5217]*uf;
+	settings->VV_axis_offset = pars[5218]*uf;
+	settings->length_units_of_axis_offset = settings->length_units;
 	SET_ORIGIN_OFFSETS(settings->origin_offset_x +  settings->axis_offset_x,
 	    settings->origin_offset_y + settings->axis_offset_y,
 	    settings->origin_offset_z + settings->axis_offset_z,
@@ -2299,29 +2369,29 @@ subtype of comment. This is an extension to the rs274NGC language.
 
 
 static int convert_comment2(	/* ARGUMENTS */
-    char *comment)
+    wchar_t *comment)
 {				/* string with comment */
     int m;
     int item;
 
     for (m = 0; ((item = comment[m]) == ' ') || (item == '\t'); m++);
     if ((item != 'M') && (item != 'm')) {
-	COMMENT(kmx::strtowstr(comment).c_str());
+	COMMENT(comment);
 	return RS274NGC_OK;
     }
     for (m++; ((item = comment[m]) == ' ') || (item == '\t'); m++);
     if ((item != 'S') && (item != 's')) {
-	COMMENT(kmx::strtowstr(comment).c_str());
+	COMMENT(comment);
 	return RS274NGC_OK;
     }
     for (m++; ((item = comment[m]) == ' ') || (item == '\t'); m++);
     if ((item != 'G') && (item != 'g')) {
-	COMMENT(kmx::strtowstr(comment).c_str());
+	COMMENT(comment);
 	return RS274NGC_OK;
     }
     for (m++; ((item = comment[m]) == ' ') || (item == '\t'); m++);
     if (item != ',') {
-	COMMENT(kmx::strtowstr(comment).c_str());
+	COMMENT(comment);
 	return RS274NGC_OK;
     }
     MESSAGE(comment + m + 1);
@@ -2331,25 +2401,22 @@ static int convert_comment2(	/* ARGUMENTS */
 
 // extract multiple concatenated comments and process each
 
-static int convert_comment(char *comment)
+static int convert_comment(wchar_t *comment)
 {
-	int r;
-	char *i;
-	char *n;
-	char s[128];
+	int i,n,r;
+	CString s=comment;
+
+	i=s.Find('(');
+	n=s.Find(')');
 	
-	i = strchr(comment,'(');
-	n = strchr(comment,')');
 	while (n>i)
 	{
-		memset(s,'\0',128);
-		strncpy(s,i+1,n-i-1);
-		r=convert_comment2(s);
+		r=convert_comment2(s.Mid(i+1,n-i-1).GetBuffer(0));
 
 		if (r != RS274NGC_OK) return r;
 
-		i = strchr(n+1,'(');
-		n = strchr(n+1,')');
+		i=s.Find('(',n+1);
+		n=s.Find(')',n+1);
 	}
 	return r;
 }
@@ -2392,18 +2459,30 @@ already in force.
 static int convert_control_mode(	/* ARGUMENTS */
     int g_code,			/* g_code being executed (G_61, G61_1, ||
 				   G_64) */
+    block_pointer block,	/* block being executed (for G64 P) */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_control_mode";
+    static wchar_t name[] = L"convert_control_mode";
     if (g_code == G_61) {
-	SET_MOTION_CONTROL_MODE(CANON_EXACT_PATH);
 	settings->control_mode = CANON_EXACT_PATH;
+	settings->path_tolerance = 0.0;
+	SET_MOTION_CONTROL_MODE(CANON_EXACT_PATH, 0.0);
     } else if (g_code == G_61_1) {
-	SET_MOTION_CONTROL_MODE(CANON_EXACT_STOP);
 	settings->control_mode = CANON_EXACT_STOP;
+	settings->path_tolerance = 0.0;
+	SET_MOTION_CONTROL_MODE(CANON_EXACT_STOP, 0.0);
     } else if (g_code == G_64) {
-	SET_MOTION_CONTROL_MODE(CANON_CONTINUOUS);
+	// G64 Pt: blend with tolerance t (current length units).  G64
+	// without P reverts to the machine (Tool Setup) tolerance.
+	double tol = -1.0;	/* inches; < 0 = machine default */
+	if (block->p_flag == ON) {
+	    CHK((block->p_number < 0), NCE_NEGATIVE_P_WORD_USED);
+	    tol = (settings->length_units == CANON_UNITS_INCHES) ?
+		block->p_number : block->p_number / 25.4;
+	}
 	settings->control_mode = CANON_CONTINUOUS;
+	settings->path_tolerance = tol;
+	SET_MOTION_CONTROL_MODE(CANON_CONTINUOUS, tol);
     } else
 	ERM(NCE_BUG_CODE_NOT_G61_G61_1_OR_G64);
     return RS274NGC_OK;
@@ -2437,7 +2516,7 @@ static int convert_spindle_mode(	/* ARGUMENTS */
     int g_code,			/* g_code being executed (G_96 || G_97) */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_spindle_mode";
+    static wchar_t name[] = L"convert_spindle_mode";
     if (g_code == G_96) {
 	SET_SPINDLE_MODE(CANON_SPINDLE_CSS);
 	settings->spindle_mode = CANON_SPINDLE_CSS;
@@ -2524,7 +2603,7 @@ static int convert_coordinate_system(	/* ARGUMENTS */
     int g_code,			/* g_code called (must be one listed above) */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_coordinate_system";
+    static wchar_t name[] = L"convert_coordinate_system";
     int origin;
     double x;
     double y;
@@ -2572,7 +2651,7 @@ static int convert_coordinate_system(	/* ARGUMENTS */
 	/* already using this origin in the same units? */
     if (origin == settings->origin_index && settings->length_units_of_origin == settings->length_units) {
 #ifdef DEBUG_EMC
-	COMMENT(Translate("interpreter: continuing to use same coordinate system").c_str());
+	COMMENT(Translate("interpreter: continuing to use same coordinate system").GetBuffer());
 #endif
 	return RS274NGC_OK;
     }
@@ -2662,7 +2741,7 @@ static int convert_cutter_compensation(	/* ARGUMENTS */
     block_pointer block,	/* pointer to a block of RS274 instructions */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_cutter_compensation";
+    static wchar_t name[] = L"convert_cutter_compensation";
     int status;
 
     if (g_code == G_40) {
@@ -2698,8 +2777,12 @@ static int convert_cutter_compensation_off(	/* ARGUMENTS */
     setup_pointer settings)
 {				/* pointer to machine settings */
 #ifdef DEBUG_EMC
-    COMMENT(Translate("interpreter: cutter radius compensation off").c_str());
+    COMMENT(Translate("interpreter: cutter radius compensation off"));
 #endif
+
+	int result = FlushConcaveDeferred(settings);
+	if (result) return result;
+
     settings->cutter_comp_side = OFF;
 
 	if (settings->program_x != UNKNOWN)
@@ -2772,7 +2855,7 @@ static int convert_cutter_compensation_on(	/* ARGUMENTS */
     block_pointer block,	/* pointer to a block of RS274 instructions */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_cutter_compensation_on";
+    static wchar_t name[] = L"convert_cutter_compensation_on";
     double radius;
     int index,result;
 
@@ -2802,9 +2885,9 @@ static int convert_cutter_compensation_on(	/* ARGUMENTS */
     }
 #ifdef DEBUG_EMC
     if (side == RIGHT)
-	COMMENT(Translate("interpreter: cutter radius compensation on right").c_str());
+	COMMENT(Translate("interpreter: cutter radius compensation on right"));
     else
-	COMMENT(Translate("interpreter: cutter radius compensation on left").c_str());
+	COMMENT(Translate("interpreter: cutter radius compensation on left"));
 #endif
 
     settings->cutter_comp_radius = radius;
@@ -2818,7 +2901,7 @@ static int convert_cutter_compensation_on(	/* ARGUMENTS */
 
 int ConvertToolToIndex(setup_pointer settings,int number,int *index)
 {
-    static char name[] = "ConvertToolToIndex";
+    static wchar_t name[] = L"ConvertToolToIndex";
 	int i;
 	if (number > 99)
 	{
@@ -2878,7 +2961,7 @@ static int convert_cycle(	/* ARGUMENTS */
     block_pointer block,	/* pointer to a block of RS274 instructions */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_cycle";
+    static wchar_t name[] = L"convert_cycle";
     CANON_PLANE plane;
     int status;
 
@@ -2942,7 +3025,7 @@ static int convert_cycle_g81(	/* ARGUMENTS */
     double clear_z,		/* z-value of clearance plane */
     double bottom_z)
 {				/* value of z at bottom of cycle */
-    static char name[] = "convert_cycle_g81";
+    static wchar_t name[] = L"convert_cycle_g81";
 
     cycle_feed(plane, x, y, bottom_z);
     cycle_traverse(plane, x, y, clear_z);
@@ -2983,7 +3066,7 @@ static int convert_cycle_g82(	/* ARGUMENTS */
     double bottom_z,		/* value of z at bottom of cycle */
     double dwell)
 {				/* dwell time */
-    static char name[] = "convert_cycle_g82";
+    static wchar_t name[] = L"convert_cycle_g82";
 
     cycle_feed(plane, x, y, bottom_z);
     DWELL(dwell);
@@ -3036,7 +3119,7 @@ static int convert_cycle_g83(	/* ARGUMENTS */
     double bottom_z,		/* value of z at bottom of cycle */
     double delta)
 {				/* size of z-axis feed increment */
-    static char name[] = "convert_cycle_g83";
+    static wchar_t name[] = L"convert_cycle_g83";
     double current_depth;
     double rapid_delta;
 	double dwell;		/* dwell time */
@@ -3128,7 +3211,7 @@ static int convert_cycle_g84(	/* ARGUMENTS */
     CANON_DIRECTION direction,	/* direction spindle turning at outset */
     CANON_SPEED_FEED_MODE mode)
 {				/* the speed-feed mode at outset */
-    static char name[] = "convert_cycle_g84";
+    static wchar_t name[] = L"convert_cycle_g84";
 
 	setup *ps = GC->p_setup;
 
@@ -3262,8 +3345,8 @@ static int convert_cycle_g84(	/* ARGUMENTS */
 // increment the caller's persist var number
 int PutIntVarToKFLOP(int v, int &ipersist)
 {
-	char s[64];
-	snprintf(s, 64, "SetPersistHex %d %x", ipersist, v);
+	CStringA s;
+	s.Format("SetPersistHex %d %x", ipersist, v);
 	if (CM->KMotionDLL->WriteLine(s)) { CM->SetAbort(); return 1; }
 	ipersist++;
 	return 0;
@@ -3273,9 +3356,9 @@ int PutIntVarToKFLOP(int v, int &ipersist)
 // increment the caller's persist var number
 int PutFloatVarToKFLOP(double v, int &ipersist)
 {
-	char s[64];
+	CStringA s;
 	float f = (float)v;
-	snprintf(s, 64, "SetPersistHex %d %x", ipersist, *(int *)&f);
+	s.Format("SetPersistHex %d %x", ipersist, *(int *)&f);
 	if (CM->KMotionDLL->WriteLine(s)) { CM->SetAbort(); return 1; }
 	ipersist++;
 	return 0;
@@ -3314,7 +3397,7 @@ static int convert_cycle_g85(	/* ARGUMENTS */
 	double clear_z,		/* z-value of clearance plane */
 	double bottom_z)
 {				/* value of z at bottom of cycle */
-    static char name[] = "convert_cycle_g85";
+    static wchar_t name[] = L"convert_cycle_g85";
 
     cycle_feed(plane, x, y, bottom_z);
     cycle_feed(plane, x, y, r);
@@ -3363,7 +3446,7 @@ static int convert_cycle_g86(	/* ARGUMENTS */
     double dwell,		/* dwell time */
     CANON_DIRECTION direction)
 {				/* direction spindle turning at outset */
-    static char name[] = "convert_cycle_g86";
+    static wchar_t name[] = L"convert_cycle_g86";
 
     CHK(((direction != CANON_CLOCKWISE) &&
 	    (direction != CANON_COUNTERCLOCKWISE)),
@@ -3452,7 +3535,7 @@ static int convert_cycle_g87(	/* ARGUMENTS */
     double bottom_z,		/* value of z at bottom of cycle */
     CANON_DIRECTION direction)
 {				/* direction spindle turning at outset */
-    static char name[] = "convert_cycle_g87";
+    static wchar_t name[] = L"convert_cycle_g87";
 
     CHK(((direction != CANON_CLOCKWISE) &&
 	    (direction != CANON_COUNTERCLOCKWISE)),
@@ -3520,7 +3603,7 @@ static int convert_cycle_g88(	/* ARGUMENTS */
     double dwell,		/* dwell time */
     CANON_DIRECTION direction)
 {				/* direction spindle turning at outset */
-    static char name[] = "convert_cycle_g88";
+    static wchar_t name[] = L"convert_cycle_g88";
 
     CHK(((direction != CANON_CLOCKWISE) &&
 	    (direction != CANON_COUNTERCLOCKWISE)),
@@ -3570,7 +3653,7 @@ static int convert_cycle_g89(	/* ARGUMENTS */
     double bottom_z,		/* value of z at bottom of cycle */
     double dwell)
 {				/* dwell time */
-    static char name[] = "convert_cycle_g89";
+    static wchar_t name[] = L"convert_cycle_g89";
 
     cycle_feed(plane, x, y, bottom_z);
     DWELL(dwell);
@@ -3702,7 +3785,7 @@ static int convert_cycle_xy(	/* ARGUMENTS */
     block_pointer block,	/* pointer to a block of RS274 instructions */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_cycle_xy";
+    static wchar_t name[] = L"convert_cycle_xy";
     double aa;
     double aa_increment;
     double bb;
@@ -3902,7 +3985,7 @@ static int convert_cycle_yz(	/* ARGUMENTS */
 				   instructions */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_cycle_yz";
+    static wchar_t name[] = L"convert_cycle_yz";
     double aa;
     double aa_increment;
     double bb;
@@ -4109,7 +4192,7 @@ static int convert_cycle_zx(	/* ARGUMENTS */
     block_pointer block,	/* pointer to a block of RS274 instructions */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_cycle_zx";
+    static wchar_t name[] = L"convert_cycle_zx";
     double aa;
     double aa_increment;
     double bb;
@@ -4280,18 +4363,18 @@ static int convert_distance_mode(	/* ARGUMENTS */
 				   G_91) */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_distance_mode";
+    static wchar_t name[] = L"convert_distance_mode";
     if (g_code == G_90) {
 	if (settings->distance_mode != MODE_ABSOLUTE) {
 #ifdef DEBUG_EMC
-	    COMMENT(Translate("interpreter: distance mode changed to absolute").c_str());
+	    COMMENT(Translate("interpreter: distance mode changed to absolute"));
 #endif
 	    settings->distance_mode = MODE_ABSOLUTE;
 	}
     } else if (g_code == G_91) {
 	if (settings->distance_mode != MODE_INCREMENTAL) {
 #ifdef DEBUG_EMC
-	    COMMENT(Translate("interpreter: distance mode changed to incremental").c_str());
+	    COMMENT(Translate("interpreter: distance mode changed to incremental"));
 #endif
 	    settings->distance_mode = MODE_INCREMENTAL;
 	}
@@ -4346,22 +4429,22 @@ static int convert_feed_mode(	/* ARGUMENTS */
     int g_code,			/* g_code being executed (must be G_93 or G_94 or G_95) */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_feed_mode";
+    static wchar_t name[] = L"convert_feed_mode";
     if (g_code == G_93) {
 #ifdef DEBUG_EMC
-	COMMENT(Translate("interpreter: feed mode set to inverse time").c_str());
+	COMMENT(Translate("interpreter: feed mode set to inverse time"));
 #endif
 	settings->feed_mode = INVERSE_TIME;
 	}
 	else if (g_code == G_94) {
 #ifdef DEBUG_EMC
-	COMMENT(Translate("interpreter: feed mode set to units per minute").c_str());
+	COMMENT(Translate("interpreter: feed mode set to units per minute"));
 #endif
 		settings->feed_mode = UNITS_PER_MINUTE;
 	}
 	else if (g_code == G_95) {
 #ifdef DEBUG_EMC
-	 COMMENT(Translate("interpreter: feed mode set to units per rev").c_str());
+	 COMMENT(Translate("interpreter: feed mode set to units per rev"));
 #endif
 	 settings->feed_mode = UNITS_PER_REV;
 	}
@@ -4458,8 +4541,28 @@ static int convert_g(		/* ARGUMENTS */
 				   instructions */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_g";
+    static wchar_t name[] = L"convert_g";
     int status;
+
+
+	// if not a straight move flush any pending concave moves first
+
+	if (block->g_modes[0] == G_4 || // dwell?
+		block->g_modes[2]  != -1 || // Plane?
+		block->g_modes[6]  != -1 || // Units?
+		block->g_modes[7]  != -1 || // Compensation?
+		block->g_modes[8]  != -1 || // tool length offset?
+		block->g_modes[12] != -1 || // (G54, G55, G56...) fixture/coordinate system?
+		block->g_modes[13] != -1 || // (G61, G61.1, G64) Control mode
+		block->g_modes[3]  != -1 || // (G90, G91) - distance mode
+		block->g_modes[10] != -1 || // (G98, G99) - retract mode
+		block->g_modes[0]  != -1 || // (G10, G28, G30, G92, G92.1, G92.2, G92.3)
+		(block->motion_to_be != -1 && block->motion_to_be != G_0 && block->motion_to_be != G_1))
+	{
+		int result = FlushConcaveDeferred(settings);
+		if (result) return result;
+	}
+
 
     if (block->g_modes[0] == G_4) {
 	CHP(convert_dwell(block->p_number));
@@ -4480,7 +4583,7 @@ static int convert_g(		/* ARGUMENTS */
 	CHP(convert_coordinate_system(block->g_modes[12], settings));
     }
     if (block->g_modes[13] != -1) {
-	CHP(convert_control_mode(block->g_modes[13], settings));
+	CHP(convert_control_mode(block->g_modes[13], block, settings));
     }
     if (block->g_modes[3] != -1) {
 	CHP(convert_distance_mode(block->g_modes[3], settings));
@@ -4532,7 +4635,7 @@ static int convert_home(	/* ARGUMENTS */
     block_pointer block,	/* pointer to a block of RS274 instructions */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_home";
+    static wchar_t name[] = L"convert_home";
     double end_x;
     double end_y;
     double end_z;
@@ -4632,7 +4735,7 @@ static int convert_length_units(	/* ARGUMENTS */
 				   G_21) */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_length_units";
+    static wchar_t name[] = L"convert_length_units";
     CHK((settings->cutter_comp_side != OFF),
 	NCE_CANNOT_CHANGE_UNITS_WITH_CUTTER_RADIUS_COMP);
     if (g_code == G_20) {
@@ -4647,14 +4750,49 @@ static int convert_length_units(	/* ARGUMENTS */
 	    settings->CC_current = (settings->CC_current * INCH_PER_MM);
 	    settings->UU_current = (settings->UU_current * INCH_PER_MM);
 	    settings->VV_current = (settings->VV_current * INCH_PER_MM);
-	    settings->axis_offset_x = (settings->axis_offset_x * INCH_PER_MM);
-	    settings->axis_offset_y = (settings->axis_offset_y * INCH_PER_MM);
-	    settings->axis_offset_z = (settings->axis_offset_z * INCH_PER_MM);
+	    if (settings->length_units_of_axis_offset == CANON_UNITS_UNDEFINED)
+	    {
+		// G92 offsets restored from a Vars file with no units stamp:
+		// the numbers are unitless - ADOPT them as inch values (the
+		// fixture-table convention) instead of scaling, and re-anchor
+		// the already-scaled current position to them
+		settings->current_x += settings->axis_offset_x * (INCH_PER_MM - 1.0);
+		settings->current_y += settings->axis_offset_y * (INCH_PER_MM - 1.0);
+		settings->current_z += settings->axis_offset_z * (INCH_PER_MM - 1.0);
+		settings->AA_current += settings->AA_axis_offset * (INCH_PER_MM - 1.0);
+		settings->BB_current += settings->BB_axis_offset * (INCH_PER_MM - 1.0);
+		settings->CC_current += settings->CC_axis_offset * (INCH_PER_MM - 1.0);
+		settings->UU_current += settings->UU_axis_offset * (INCH_PER_MM - 1.0);
+		settings->VV_current += settings->VV_axis_offset * (INCH_PER_MM - 1.0);
+		settings->parameters[PChanged(5219)] = (double)CANON_UNITS_INCHES;
+	    }
+	    else
+	    {
+		settings->axis_offset_x = (settings->axis_offset_x * INCH_PER_MM);
+		settings->axis_offset_y = (settings->axis_offset_y * INCH_PER_MM);
+		settings->axis_offset_z = (settings->axis_offset_z * INCH_PER_MM);
 		settings->AA_axis_offset = (settings->AA_axis_offset * INCH_PER_MM);
 		settings->BB_axis_offset = (settings->BB_axis_offset * INCH_PER_MM);
 		settings->CC_axis_offset = (settings->CC_axis_offset * INCH_PER_MM);
 		settings->UU_axis_offset = (settings->UU_axis_offset * INCH_PER_MM);
 		settings->VV_axis_offset = (settings->VV_axis_offset * INCH_PER_MM);
+		// keep the persisted G92 tuple (5211-5218 + stamp 5219) in
+		// the CURRENT units too, so whatever units are active when
+		// the Vars file is saved, the file is self-consistent.
+		// ONLY when the stamp says the stored values really are in
+		// the units being switched FROM - an unstamped tuple (0,
+		// e.g. just hand-edited on the offsets screen) must never
+		// be scaled on assumption: it stays raw until adopted.
+		if ((int)(settings->parameters[5219] + 0.0001) == CANON_UNITS_MM)
+		{
+		    int pk;
+		    for (pk = 5211; pk <= 5218; pk++)
+			settings->parameters[PChanged(pk)] =
+			    settings->parameters[pk] * INCH_PER_MM;
+		    settings->parameters[PChanged(5219)] = (double)CANON_UNITS_INCHES;
+		}
+	    }
+	    settings->length_units_of_axis_offset = CANON_UNITS_INCHES;
 		settings->origin_offset_x =	(settings->origin_offset_x * INCH_PER_MM);
 	    settings->origin_offset_y =	(settings->origin_offset_y * INCH_PER_MM);
 	    settings->origin_offset_z =	(settings->origin_offset_z * INCH_PER_MM);
@@ -4663,6 +4801,14 @@ static int convert_length_units(	/* ARGUMENTS */
 		settings->CC_origin_offset = (settings->CC_origin_offset * INCH_PER_MM);
 		settings->UU_origin_offset = (settings->UU_origin_offset * INCH_PER_MM);
 		settings->VV_origin_offset = (settings->VV_origin_offset * INCH_PER_MM);
+		SET_ORIGIN_OFFSETS(settings->origin_offset_x + settings->axis_offset_x,
+		    settings->origin_offset_y + settings->axis_offset_y,
+		    settings->origin_offset_z + settings->axis_offset_z,
+		    settings->AA_origin_offset + settings->AA_axis_offset,
+		    settings->BB_origin_offset + settings->BB_axis_offset,
+		    settings->CC_origin_offset + settings->CC_axis_offset,
+		    settings->UU_origin_offset + settings->UU_axis_offset,
+		    settings->VV_origin_offset + settings->VV_axis_offset);
 	}
     } else if (g_code == G_21) {
 	USE_LENGTH_UNITS(CANON_UNITS_MM);
@@ -4676,14 +4822,49 @@ static int convert_length_units(	/* ARGUMENTS */
 		settings->CC_current = (settings->CC_current * MM_PER_INCH);
 		settings->UU_current = (settings->UU_current * MM_PER_INCH);
 		settings->VV_current = (settings->VV_current * MM_PER_INCH);
+	    if (settings->length_units_of_axis_offset == CANON_UNITS_UNDEFINED)
+	    {
+		// G92 offsets restored from a Vars file with no units stamp:
+		// the numbers are unitless - ADOPT them as mm values (the
+		// fixture-table convention) instead of scaling, and re-anchor
+		// the already-scaled current position to them
+		settings->current_x += settings->axis_offset_x * (MM_PER_INCH - 1.0);
+		settings->current_y += settings->axis_offset_y * (MM_PER_INCH - 1.0);
+		settings->current_z += settings->axis_offset_z * (MM_PER_INCH - 1.0);
+		settings->AA_current += settings->AA_axis_offset * (MM_PER_INCH - 1.0);
+		settings->BB_current += settings->BB_axis_offset * (MM_PER_INCH - 1.0);
+		settings->CC_current += settings->CC_axis_offset * (MM_PER_INCH - 1.0);
+		settings->UU_current += settings->UU_axis_offset * (MM_PER_INCH - 1.0);
+		settings->VV_current += settings->VV_axis_offset * (MM_PER_INCH - 1.0);
+		settings->parameters[PChanged(5219)] = (double)CANON_UNITS_MM;
+	    }
+	    else
+	    {
 		settings->axis_offset_x = (settings->axis_offset_x * MM_PER_INCH);
-	    settings->axis_offset_y = (settings->axis_offset_y * MM_PER_INCH);
-	    settings->axis_offset_z = (settings->axis_offset_z * MM_PER_INCH);
+		settings->axis_offset_y = (settings->axis_offset_y * MM_PER_INCH);
+		settings->axis_offset_z = (settings->axis_offset_z * MM_PER_INCH);
 		settings->AA_axis_offset = (settings->AA_axis_offset * MM_PER_INCH);
 		settings->BB_axis_offset = (settings->BB_axis_offset * MM_PER_INCH);
 		settings->CC_axis_offset = (settings->CC_axis_offset * MM_PER_INCH);
 		settings->UU_axis_offset = (settings->UU_axis_offset * MM_PER_INCH);
 		settings->VV_axis_offset = (settings->VV_axis_offset * MM_PER_INCH);
+		// keep the persisted G92 tuple (5211-5218 + stamp 5219) in
+		// the CURRENT units too, so whatever units are active when
+		// the Vars file is saved, the file is self-consistent.
+		// ONLY when the stamp says the stored values really are in
+		// the units being switched FROM - an unstamped tuple (0,
+		// e.g. just hand-edited on the offsets screen) must never
+		// be scaled on assumption: it stays raw until adopted.
+		if ((int)(settings->parameters[5219] + 0.0001) == CANON_UNITS_INCHES)
+		{
+		    int pk;
+		    for (pk = 5211; pk <= 5218; pk++)
+			settings->parameters[PChanged(pk)] =
+			    settings->parameters[pk] * MM_PER_INCH;
+		    settings->parameters[PChanged(5219)] = (double)CANON_UNITS_MM;
+		}
+	    }
+	    settings->length_units_of_axis_offset = CANON_UNITS_MM;
 		settings->origin_offset_x =	(settings->origin_offset_x * MM_PER_INCH);
 	    settings->origin_offset_y =	(settings->origin_offset_y * MM_PER_INCH);
 	    settings->origin_offset_z =	(settings->origin_offset_z * MM_PER_INCH);
@@ -4692,6 +4873,14 @@ static int convert_length_units(	/* ARGUMENTS */
 		settings->CC_origin_offset = (settings->CC_origin_offset * MM_PER_INCH);
 		settings->UU_origin_offset = (settings->UU_origin_offset * MM_PER_INCH);
 		settings->VV_origin_offset = (settings->VV_origin_offset * MM_PER_INCH);
+		SET_ORIGIN_OFFSETS(settings->origin_offset_x + settings->axis_offset_x,
+		    settings->origin_offset_y + settings->axis_offset_y,
+		    settings->origin_offset_z + settings->axis_offset_z,
+		    settings->AA_origin_offset + settings->AA_axis_offset,
+		    settings->BB_origin_offset + settings->BB_axis_offset,
+		    settings->CC_origin_offset + settings->CC_axis_offset,
+		    settings->UU_origin_offset + settings->UU_axis_offset,
+		    settings->VV_origin_offset + settings->VV_axis_offset);
 	}
     } else
 	ERM(NCE_BUG_CODE_NOT_G20_OR_G21);
@@ -4731,7 +4920,7 @@ static int convert_m(		/* ARGUMENTS */
 											instructions */
 											setup_pointer settings)
 {				/* pointer to machine settings */
-	static char name[] = "convert_m";
+	static wchar_t name[] = L"convert_m";
 	int status;
 
 	if (block->m_modes[6] != -1) {
@@ -4766,14 +4955,14 @@ static int convert_m(		/* ARGUMENTS */
   if (block->m_modes[2] == 26)
     {
 #ifdef DEBUG_EMC
-      COMMENT(Translate("interpreter: automatic A-axis clamping turned on").c_str());
+      COMMENT(Translate("interpreter: automatic A-axis clamping turned on"));
 #endif
       settings->a_axis_clamping = ON;
     }
   else if (block->m_modes[2] == 27)
     {
 #ifdef DEBUG_EMC
-      COMMENT(Translate("interpreter: automatic A-axis clamping turned off").c_str());
+      COMMENT(Translate("interpreter: automatic A-axis clamping turned off"));
 #endif
       settings->a_axis_clamping = OFF;
     }
@@ -4785,10 +4974,31 @@ static int convert_m(		/* ARGUMENTS */
 	settings->feed_override = ON;
 	settings->speed_override = ON;
     } else if (block->m_modes[9] == 49) {
-	DISABLE_FEED_OVERRIDE();
-	DISABLE_SPEED_OVERRIDE();
-	settings->feed_override = OFF;
-	settings->speed_override = OFF;
+		if (block->p_flag && block->p_number == 1) {  // disable feed, enable speed
+
+			settings->feed_override = OFF;
+			settings->speed_override = ON;
+			DISABLE_FEED_OVERRIDE();
+			ENABLE_SPEED_OVERRIDE();
+		}
+		else if (block->p_flag && block->p_number == 2)  // disable speed, enable feed
+		{
+			settings->feed_override = ON;
+			settings->speed_override = OFF;
+			DISABLE_SPEED_OVERRIDE();
+			ENABLE_FEED_OVERRIDE();
+		}
+		else if (block->p_flag)  // invalid P ??
+		{
+			ERM(NCE_INVALID_PWORD_M49);
+		}
+		else
+		{
+			settings->feed_override = OFF;
+			settings->speed_override = OFF;
+			DISABLE_FEED_OVERRIDE();
+			DISABLE_SPEED_OVERRIDE();
+		}
     }
 
 	if (block->m_modes[10] != -1) {
@@ -4830,7 +5040,7 @@ static int convert_modal_0(	/* ARGUMENTS */
 				   instructions */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_modal_0";
+    static wchar_t name[] = L"convert_modal_0";
     int status;
 
     if (code == G_10) {
@@ -4874,7 +5084,7 @@ static int convert_motion(	/* ARGUMENTS */
     block_pointer block,	/* pointer to a block of RS274 instructions */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_motion";
+    static wchar_t name[] = L"convert_motion";
     int status;
 
     if ((motion == G_0) || (motion == G_1)) {
@@ -4885,7 +5095,7 @@ static int convert_motion(	/* ARGUMENTS */
 	CHP(convert_probe(block, settings));
     } else if (motion == G_80) {
 #ifdef DEBUG_EMC
-	COMMENT(Translate("interpreter: motion mode set to none").c_str());
+	COMMENT(Translate("interpreter: motion mode set to none"));
 #endif
 	settings->motion_mode = G_80;
     } else if ((motion > G_80) && (motion < G_90)) {
@@ -4944,7 +5154,7 @@ static int convert_probe(	/* ARGUMENTS */
     block_pointer block,	/* pointer to a block of RS274 instructions */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_probe";
+    static wchar_t name[] = L"convert_probe";
     double distance;
     double end_x;
     double end_y;
@@ -5008,15 +5218,15 @@ static int convert_retract_mode(	/* ARGUMENTS */
 				   G_99) */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_retract_mode";
+    static wchar_t name[] = L"convert_retract_mode";
     if (g_code == G_98) {
 #ifdef DEBUG_EMC
-	COMMENT(Translate("interpreter: retract mode set to old_z").c_str());
+	COMMENT(Translate("interpreter: retract mode set to old_z"));
 #endif
 	settings->retract_mode = OLD_Z;
     } else if (g_code == G_99) {
 #ifdef DEBUG_EMC
-	COMMENT(Translate("interpreter: retract mode set to r_plane").c_str());
+	COMMENT(Translate("interpreter: retract mode set to r_plane"));
 #endif
 	settings->retract_mode = R_PLANE;
     } else
@@ -5057,7 +5267,7 @@ static int convert_setup(	/* ARGUMENTS */
 				   instructions */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_setup";
+    static wchar_t name[] = L"convert_setup";
     double x;
     double y;
     double z;
@@ -5170,7 +5380,7 @@ static int convert_setup(	/* ARGUMENTS */
 	}
 #ifdef DEBUG_EMC
     else
-	COMMENT(Translate("interpreter: setting coordinate system origin").c_str());
+	COMMENT(Translate("interpreter: setting coordinate system origin"));
 #endif
     return RS274NGC_OK;
 }
@@ -5199,7 +5409,7 @@ static int convert_set_plane(	/* ARGUMENTS */
     int g_code,			/* must be G_17, G_18, or G_19 */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_set_plane";
+    static wchar_t name[] = L"convert_set_plane";
     if (g_code == G_17) {
 	SELECT_PLANE(CANON_PLANE_XY);
 	settings->plane = CANON_PLANE_XY;
@@ -5310,9 +5520,9 @@ static int convert_stop(	/* ARGUMENTS */
 							instructions */
 							setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_stop";
+    static wchar_t name[] = L"convert_stop";
     int index;
-    char *line;
+	wchar_t*line;
     int length;
 	
     if (block->m_modes[4] == 0) {
@@ -5486,13 +5696,13 @@ static int convert_stop(	/* ARGUMENTS */
 			line = _setup.linetext;
 			for (;;) {		/* check for ending percent sign and comment
 				if missing */
-				if (fgets(line, RS274NGC_TEXT_SIZE, _setup.file_pointer) ==
+				if (fgetws(line, RS274NGC_TEXT_SIZE, _setup.file_pointer) ==
 					NULL) {
 					COMMENT
-						(Translate("interpreter: percent sign missing from end of file").c_str());
+						(Translate("interpreter: percent sign missing from end of file"));
 					break;
 				}
-				length = (int)strlen(line);
+				length = (int)wcslen(line);
 				if (length == (RS274NGC_TEXT_SIZE - 1)) {	// line is
 					// too long.
 					// need to
@@ -5581,7 +5791,7 @@ static int convert_straight(	/* ARGUMENTS */
     block_pointer block,	/* pointer to a block of RS274 instructions */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_straight";
+    static wchar_t name[] = L"convert_straight";
     double end_x;
     double end_y;
     double end_z;
@@ -5692,7 +5902,7 @@ static int convert_straight_comp1(	/* ARGUMENTS */
 	double VV_end  /* V coordinate of end point */ /*VV*/
 	)
 {
-    static char name[] = "convert_straight_comp1";
+    static wchar_t name[] = L"convert_straight_comp1";
     double alpha;
     double cx;			/* first current point x then end point x */
     double cy;			/* first current point y then end point y */
@@ -5826,7 +6036,7 @@ move is the same as the end point for a G1 move, however.
 
 static int convert_straight_comp2(	/* ARGUMENTS */
 	int move,			/* either G_0 or G_1 */
-	block_pointer block,	/* pointer to a block of RS274 instructions */
+	block_pointer pblock,	/* pointer to a block of RS274 instructions */
 	setup_pointer settings,	/* pointer to machine settings */
 	double px,			/* X coordinate of programmed end point */
 	double py,			/* Y coordinate of programmed end point */
@@ -5838,7 +6048,7 @@ static int convert_straight_comp2(	/* ARGUMENTS */
 	double VV_end  /* V coordinate of end point */ /*VV*/
 )
 {
-	static char name[] = "convert_straight_comp2";
+	static wchar_t name[] = L"convert_straight_comp2";
 	double alpha;
 	double beta;
 	double end_x;		/* x-coordinate of actual end point */
@@ -5853,6 +6063,86 @@ static int convert_straight_comp2(	/* ARGUMENTS */
 	double small_angle = TOLERANCE_CONCAVE_CORNER;	/* radians, testing corners */
 	double start_x, start_y;	/* programmed beginning point */
 	double theta;
+	BOOL ArcNeeded;
+
+	radius = settings->cutter_comp_radius;	/* will always be positive */
+
+	// is there a deferred move needing test for gouge to do first?
+	if (settings->ConcaveDefered)
+	{
+		Point2D ConcaveDeferP3 = { px,py };
+		Point2D PC, P0;
+
+		int side = settings->cutter_comp_side == LEFT ? -1 : 1;
+		block temp_block;  // we only need this for f_number
+		temp_block.f_number = settings->ConcaveFeedRate;
+
+
+		if (settings->ConcaveArcNeeded) /* if ARC NEEDED do it first */
+		{
+			{	/* ARC NEEDED */
+				if (settings->feed_mode == INVERSE_TIME)
+					inverse_time_rate_as(settings->Concave_start_x, settings->Concave_start_y, side, 
+						settings->Concave_mid_x, settings->Concave_mid_y,
+						settings->ConcaveDeferX, settings->ConcaveDeferY, settings->ConcaveDeferZ,
+						settings->ConcaveDeferAA, settings->ConcaveDeferBB, settings->ConcaveDeferCC,
+						settings->ConcaveDeferUU, settings->ConcaveDeferVV, &temp_block, settings);
+
+				// if we previously stopped after the arc, then skip it
+
+				if (CHECK_PREVIOUS_STOP(settings->Concave_mid_x, settings->Concave_mid_y, 1))
+					ARC_FEED(settings->Concave_mid_x, settings->Concave_mid_y, settings->Concave_start_x, settings->Concave_start_y,
+						side, settings->current_z,
+						settings->ConcaveDeferAA, settings->ConcaveDeferBB, settings->ConcaveDeferCC,
+						settings->ConcaveDeferUU, settings->ConcaveDeferVV, 1);
+			}
+		}
+
+		if (CM->GetAbort())
+			return RS274NGC_EXIT;  // exit without doing it.
+
+
+
+		int result = ComputePCandP0(settings->ConcaveDeferP1, settings->ConcaveDeferP2, ConcaveDeferP3, radius,-1 * side, P0, PC);
+
+		if (result == 0 || result == 6)
+		{
+			if (move == G_0)
+				STRAIGHT_TRAVERSE(PC.x, PC.y, settings->ConcaveDeferZ,
+					settings->ConcaveDeferAA, settings->ConcaveDeferBB, settings->ConcaveDeferCC,
+					settings->ConcaveDeferUU, settings->ConcaveDeferVV);
+			else if (move == G_1)
+			{
+				block temp_block;  // we only need this for f_number
+				temp_block.f_number = settings->ConcaveFeedRate;
+
+				if (settings->feed_mode == INVERSE_TIME)
+						inverse_time_rate_straight(PC.x, PC.y, settings->ConcaveDeferZ,
+							settings->ConcaveDeferAA, settings->ConcaveDeferBB, settings->ConcaveDeferCC,
+							settings->ConcaveDeferUU, settings->ConcaveDeferVV, &temp_block, settings);
+					STRAIGHT_FEED(PC.x, PC.y, settings->ConcaveDeferZ,
+						settings->ConcaveDeferAA, settings->ConcaveDeferBB, settings->ConcaveDeferCC,
+						settings->ConcaveDeferUU, settings->ConcaveDeferVV);
+			}
+			else
+				ERM(NCE_BUG_CODE_NOT_G0_OR_G1);
+
+			if (CM->GetAbort())
+				return RS274NGC_EXIT;  // exit without doing it.
+
+			settings->current_x = PC.x;
+			settings->current_y = PC.y;
+
+			settings->ConcaveDefered = FALSE;
+			CM->m_PreviouslyStopped = STOPPED_NONE;  // this has been handled
+		}
+		else
+		{
+			ERM(result);
+		}
+	}
+
+
 
 	if (settings->pending_comp_x != UNKNOWN)  //delayed movement mode
 	{
@@ -5876,7 +6166,7 @@ static int convert_straight_comp2(	/* ARGUMENTS */
 		else if (move == G_1)
 		{
 			if (settings->feed_mode == INVERSE_TIME)
-				inverse_time_rate_straight(end_x, end_y, end_z, AA_end, BB_end, CC_end, UU_end, VV_end, block, settings);
+				inverse_time_rate_straight(end_x, end_y, end_z, AA_end, BB_end, CC_end, UU_end, VV_end, pblock, settings);
 			STRAIGHT_FEED(end_x, end_y, end_z, AA_end, BB_end, CC_end, UU_end, VV_end);
 		}
 		else
@@ -5885,7 +6175,6 @@ static int convert_straight_comp2(	/* ARGUMENTS */
 	else
 	{
 		side = settings->cutter_comp_side;
-		radius = settings->cutter_comp_radius;	/* will always be positive */
 		alpha = atan2(py - start_y, px - start_x);
 
 		if (side == LEFT)
@@ -5926,7 +6215,14 @@ static int convert_straight_comp2(	/* ARGUMENTS */
 		mid_x = (start_x + (radius * cos(alpha + gamma)));
 		mid_y = (start_y + (radius * sin(alpha + gamma)));
 
-		CHK(((beta < -small_angle) || (beta > (PI + small_angle))),	NCE_CONCAVE_CORNER_WITH_CUTTER_RADIUS_COMP);
+		if ((beta < -small_angle) || (beta > (PI + small_angle)))  // check if we have a concave corner and would gouge
+		{
+			if (!settings->AllowConcaveCorners) // AllowConcaveCorners?
+			{
+				ERM(NCE_CONCAVE_CORNER_WITH_CUTTER_RADIUS_COMP);
+			}
+		}
+
 
 		// do any delayed entry move
 		if (settings->pending_comp_x != UNKNOWN)
@@ -5935,7 +6231,7 @@ static int convert_straight_comp2(	/* ARGUMENTS */
 				STRAIGHT_TRAVERSE(mid_x, mid_y, settings->pending_comp_z, settings->pending_comp_AA, settings->pending_comp_BB, settings->pending_comp_CC, settings->pending_comp_UU, settings->pending_comp_VV);
 			else if (settings->pending_comp_move_type == G_1) {
 				if (settings->feed_mode == INVERSE_TIME)
-					inverse_time_rate_straight(mid_x, mid_y, settings->pending_comp_z, settings->pending_comp_AA, settings->pending_comp_BB, settings->pending_comp_CC, settings->pending_comp_UU, settings->pending_comp_VV, block, settings);
+					inverse_time_rate_straight(mid_x, mid_y, settings->pending_comp_z, settings->pending_comp_AA, settings->pending_comp_BB, settings->pending_comp_CC, settings->pending_comp_UU, settings->pending_comp_VV, pblock, settings);
 				STRAIGHT_FEED(mid_x, mid_y, settings->pending_comp_z, settings->pending_comp_AA, settings->pending_comp_BB, settings->pending_comp_CC, settings->pending_comp_UU, settings->pending_comp_VV);
 			}
 			else
@@ -5943,32 +6239,70 @@ static int convert_straight_comp2(	/* ARGUMENTS */
 			settings->pending_comp_x = UNKNOWN;  // set no longer pending
 		}
 
+		ArcNeeded = move == G_1 && beta > small_angle;
+
+
+		// if allowing Concave Corners we must defer moving until we have the next move
+		if (settings->AllowConcaveCorners) // AllowConcaveCorners?
+		{
+			// save info for Arc
+			settings->ConcaveArcNeeded = ArcNeeded;
+			settings->Concave_start_x = start_x;
+			settings->Concave_start_y = start_y;
+			settings->Concave_mid_x = mid_x;
+			settings->Concave_mid_y = mid_y;
+
+			// save this GCode Path
+			settings->ConcaveDeferP1.x = settings->program_x;
+			settings->ConcaveDeferP1.y = settings->program_y;
+			settings->ConcaveDeferP2.x = px;
+			settings->ConcaveDeferP2.y = py;
+			settings->ConcaveDeferX = end_x; // end of motion not considering gouge 
+			settings->ConcaveDeferY = end_y;
+			settings->ConcaveDeferZ = end_z;
+			settings->ConcaveDeferAA = AA_end;
+			settings->ConcaveDeferBB = BB_end;
+			settings->ConcaveDeferCC = CC_end;
+			settings->ConcaveDeferUU = UU_end;
+			settings->ConcaveDeferVV = VV_end;
+			settings->ConcaveMoveType = move;
+			settings->ConcaveDefered = TRUE;
+			settings->program_x = px;
+			settings->program_y = py;
+
+			return RS274NGC_OK;  // exit without doing it.
+		}
+		else
+		{
+			if (ArcNeeded) /* if ARC NEEDED do it first */
+			{
+				{	/* ARC NEEDED */
+					if (settings->feed_mode == INVERSE_TIME)
+						inverse_time_rate_as(start_x, start_y, (side == LEFT) ? -1 : 1, mid_x, mid_y,
+							end_x, end_y, end_z, AA_end, BB_end, CC_end, UU_end, VV_end, pblock, settings);
+
+					// if we previously stopped after the arc, then skip it
+
+					if (CHECK_PREVIOUS_STOP(mid_x, mid_y, 1))
+						ARC_FEED(mid_x, mid_y, start_x, start_y,
+							((side == LEFT) ? -1 : 1), settings->current_z,
+							AA_end, BB_end, CC_end, UU_end, VV_end, 1);
+				}
+			}
+
+			if (CM->GetAbort())
+				return RS274NGC_EXIT;  // exit without doing it.
+		}
+
+
 
 		if (move == G_0)
 			STRAIGHT_TRAVERSE(end_x, end_y, end_z, AA_end, BB_end, CC_end, UU_end, VV_end);
 		else if (move == G_1)
 		{
-			if (beta > small_angle)
-			{	/* ARC NEEDED */
-				if (settings->feed_mode == INVERSE_TIME)
-					inverse_time_rate_as(start_x, start_y, (side == LEFT) ? -1 : 1, mid_x, mid_y,
-						end_x, end_y, end_z, AA_end, BB_end, CC_end, UU_end, VV_end, block, settings);
-
-				// if we previously stopped after the arc, then skip it
-
-				if (CHECK_PREVIOUS_STOP(mid_x, mid_y, 1))
-					ARC_FEED(mid_x, mid_y, start_x, start_y,
-					((side == LEFT) ? -1 : 1), settings->current_z,
-						AA_end, BB_end, CC_end, UU_end, VV_end, 1);
-
-				STRAIGHT_FEED(end_x, end_y, end_z, AA_end, BB_end, CC_end, UU_end, VV_end, 3);
-			}
-			else
-			{
-				if (settings->feed_mode == INVERSE_TIME)
-					inverse_time_rate_straight(end_x, end_y, end_z, AA_end,	BB_end, CC_end, UU_end, VV_end, block, settings);
-				STRAIGHT_FEED(end_x, end_y, end_z, AA_end, BB_end, CC_end, UU_end, VV_end);
-			}
+			if (settings->feed_mode == INVERSE_TIME)
+					inverse_time_rate_straight(end_x, end_y, end_z, AA_end,	BB_end, CC_end, UU_end, VV_end, pblock, settings);
+			STRAIGHT_FEED(end_x, end_y, end_z, AA_end, BB_end, CC_end, UU_end, VV_end);
 		}
 		else
 			ERM(NCE_BUG_CODE_NOT_G0_OR_G1);
@@ -5982,7 +6316,109 @@ static int convert_straight_comp2(	/* ARGUMENTS */
 }
 
 
+// when doing a straight radius compensated motion we defer doing the motion
+// until we have determined if there is a subsequent staight move that would
+// cause gougeing.  If the next motion is not a straight motion then we execute
+// the motion fully here.
 
+int FlushConcaveDeferred(setup_pointer settings)
+{
+	static wchar_t name[] = L"FlushConcaveDeferred";
+
+	if (settings->ConcaveDefered)
+	{
+		int side = settings->cutter_comp_side == LEFT ? -1 : 1;
+		block temp_block;  // we only need this for f_number
+		temp_block.f_number = settings->ConcaveFeedRate;
+
+
+		if (settings->ConcaveArcNeeded) /* if ARC NEEDED do it first */
+		{
+			{	/* ARC NEEDED */
+				if (settings->feed_mode == INVERSE_TIME)
+					inverse_time_rate_as(settings->Concave_start_x, settings->Concave_start_y, side,
+						settings->Concave_mid_x, settings->Concave_mid_y,
+						settings->ConcaveDeferX, settings->ConcaveDeferY, settings->ConcaveDeferZ,
+						settings->ConcaveDeferAA, settings->ConcaveDeferBB, settings->ConcaveDeferCC,
+						settings->ConcaveDeferUU, settings->ConcaveDeferVV, &temp_block, settings);
+
+				// if we previously stopped after the arc, then skip it
+
+				if (CHECK_PREVIOUS_STOP(settings->Concave_mid_x, settings->Concave_mid_y, 1))
+					ARC_FEED(settings->Concave_mid_x, settings->Concave_mid_y, settings->Concave_start_x, settings->Concave_start_y,
+						side, settings->current_z,
+						settings->ConcaveDeferAA, settings->ConcaveDeferBB, settings->ConcaveDeferCC,
+						settings->ConcaveDeferUU, settings->ConcaveDeferVV, 1);
+			}
+
+			settings->current_x = settings->Concave_mid_x;  // update to after compensated move
+			settings->current_y = settings->Concave_mid_y;
+		}
+
+		if (CM->GetAbort())
+			return RS274NGC_EXIT;  // exit without doing it.
+
+
+		bool DoLinear = true;
+		// if resuming and we didn't stop in the arc before the staright segment
+		// then check if we were within the staright segment
+		if (CM->m_PreviouslyStopped && CM->m_PreviouslyStoppedID != 1)
+		{
+			Point2D s0, s1, CurP;
+
+			s0.x = settings->current_x;
+			s0.y = settings->current_y;
+
+			s1.x = settings->ConcaveDeferX;
+			s1.y = settings->ConcaveDeferY;
+
+			// convert absolute CAD position where we stopped to Interpreter coodinates
+			CurP.x = GC->ConvertAbsToUserUnitsX(CM->current_x);
+			CurP.y = GC->ConvertAbsToUserUnitsY(CM->current_y);
+
+			//	Finds distance from point s1 to line segment s0-s2.
+			//
+			// Returns:
+			// - perpendicular distance if projection of s1 falls within segment s0-s2
+			// - distance to closest endpoint if projection falls outside segment
+			double dist = FindDistPointToSegment2D(&s0, &CurP, &s1);
+			double tol = GC->InchesToUserUnits(CM->Kinematics->m_MotionParams.CollinearTol);
+
+#define TOLERANCE_MIN_INCH 1e-5
+			if (tol < TOLERANCE_MIN_INCH) tol = TOLERANCE_MIN_INCH;
+			DoLinear = dist <= tol;
+		}
+
+		if (DoLinear)  // if we halted after the linear section then skip this
+		{
+			if (settings->ConcaveMoveType == G_0)
+				STRAIGHT_TRAVERSE(settings->ConcaveDeferX, settings->ConcaveDeferY, settings->ConcaveDeferZ,
+					settings->ConcaveDeferAA, settings->ConcaveDeferBB, settings->ConcaveDeferCC,
+					settings->ConcaveDeferUU, settings->ConcaveDeferVV);
+			else if (settings->ConcaveMoveType == G_1)
+			{
+				block temp_block;  // we only need this for f_number
+				temp_block.f_number = settings->ConcaveFeedRate;
+
+				if (settings->feed_mode == INVERSE_TIME)
+					inverse_time_rate_straight(settings->ConcaveDeferX, settings->ConcaveDeferY, settings->ConcaveDeferZ,
+						settings->ConcaveDeferAA, settings->ConcaveDeferBB, settings->ConcaveDeferCC,
+						settings->ConcaveDeferUU, settings->ConcaveDeferVV, &temp_block, settings);
+				STRAIGHT_FEED(settings->ConcaveDeferX, settings->ConcaveDeferY, settings->ConcaveDeferZ,
+					settings->ConcaveDeferAA, settings->ConcaveDeferBB, settings->ConcaveDeferCC,
+					settings->ConcaveDeferUU, settings->ConcaveDeferVV);
+			}
+			else
+				ERM(NCE_BUG_CODE_NOT_G0_OR_G1);
+
+		}
+					
+		settings->current_x = settings->ConcaveDeferX;  // update to after compensated move
+		settings->current_y = settings->ConcaveDeferY;
+		settings->ConcaveDefered = FALSE;  // do this after State has been saved
+	}
+	return RS274NGC_OK;
+}
 
 /****************************************************************************/
 
@@ -6016,7 +6452,7 @@ static int convert_thread(	/* ARGUMENTS */
     block_pointer block,	/* pointer to a block of RS274 instructions */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_thread";
+    static wchar_t name[] = L"convert_thread";
     double end_x;
     double end_y;
     double end_z;
@@ -6114,7 +6550,7 @@ to this one.
 static int convert_tool_change(	/* ARGUMENTS */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_tool_change";
+    static wchar_t name[] = L"convert_tool_change";
 
 	// Accumulate Tool Wear stats
 	if (AccumToolWearStats(settings, settings->current_slot, false)) return RS274NGC_EXIT;
@@ -6177,14 +6613,14 @@ integer when it was read, so that check does not need to be repeated.
 
 */
 
-static int convert_tool_length_offset(	/* ARGUMENTS */
+int convert_tool_length_offset(	/* ARGUMENTS */
     int g_code,			/* g_code being executed (must be G_43 or
 				   G_49) */
     block_pointer block,	/* pointer to a block of RS274/NGC
 				   instructions */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_tool_length_offset";
+    static wchar_t name[] = L"convert_tool_length_offset";
     int index,result;
     double length, xoffset, yoffset;
 
@@ -6259,7 +6695,7 @@ static int convert_tool_select(	/* ARGUMENTS */
     block_pointer block,	/* pointer to a block of RS274 instructions */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "convert_tool_select";
+    static wchar_t name[] = L"convert_tool_select";
 	int result;
 
 	if (result=ConvertToolToIndex(settings,block->t_number,&settings->selected_tool_slot)) return result;
@@ -6298,7 +6734,7 @@ static int cycle_feed(		/* ARGUMENTS */
     double end2,		/* second coordinate value */
     double end3)
 {				/* third coordinate value */
-    static char name[] = "cycle_feed";
+    static wchar_t name[] = L"cycle_feed";
 
     if (plane == CANON_PLANE_XY)
 	STRAIGHT_FEED(end1, end2, end3, _setup.AA_current, _setup.BB_current, _setup.CC_current, _setup.UU_current, _setup.VV_current);
@@ -6341,7 +6777,7 @@ static int cycle_traverse(	/* ARGUMENTS */
     double end2,		/* second coordinate value */
     double end3)
 {				/* third coordinate value */
-    static char name[] = "cycle_traverse";
+    static wchar_t name[] = L"cycle_traverse";
     if (plane == CANON_PLANE_XY)
 	STRAIGHT_TRAVERSE(end1, end2, end3, _setup.AA_current,
 	    _setup.BB_current, _setup.CC_current, _setup.UU_current, _setup.VV_current);
@@ -6395,7 +6831,7 @@ static int enhance_block(	/* ARGUMENTS */
     block_pointer block,	/* pointer to a block to be checked */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "enhance_block";
+    static wchar_t name[] = L"enhance_block";
     int axis_flag;
     int mode_zero_covets_axes;
     int mode0;
@@ -6462,7 +6898,7 @@ This just calls either execute_binary1 or execute_binary2.
 
 static int execute_binary(double *left, int operation, double *right)
 {
-    static char name[] = "execute_binary";
+    static wchar_t name[] = L"execute_binary";
     int status;
 
     if (operation < AND2)
@@ -6498,7 +6934,7 @@ static int execute_binary1(	/* ARGUMENTS */
     int operation,		/* integer code for the operation */
     double *right)
 {				/* pointer to the right operand */
-    static char name[] = "execute_binary1";
+    static wchar_t name[] = L"execute_binary1";
     switch (operation) {
     case DIVIDED_BY:
 	CHK((*right == 0.0), NCE_ATTEMPT_TO_DIVIDE_BY_ZERO);
@@ -6555,7 +6991,7 @@ static int execute_binary2(	/* ARGUMENTS */
     int operation,		/* integer code for the operation */
     double *right)
 {				/* pointer to the right operand */
-    static char name[] = "execute_binary2";
+    static wchar_t name[] = L"execute_binary2";
     switch (operation) {
     case AND2:
 	*left = ((*left == 0.0) || (*right == 0.0)) ? 0.0 : 1.0;
@@ -6650,7 +7086,7 @@ static int execute_block(	/* ARGUMENTS */
 				   instructions */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "execute_block";
+    static wchar_t name[] = L"execute_block";
     int status;
 
     if (block->comment[0] != 0) {
@@ -6724,7 +7160,7 @@ static int execute_unary(	/* ARGUMENTS */
     double *double_ptr,		/* pointer to the operand */
     int operation)
 {				/* integer code for the operation */
-    static char name[] = "execute_unary";
+    static wchar_t name[] = L"execute_unary";
     switch (operation) {
     case ABS:
 	if (*double_ptr < 0.0)
@@ -6904,7 +7340,7 @@ static int find_ends(		/* ARGUMENTS */
     if (block->g_modes[0] == G_53) {	/* distance mode is absolute in this
 					   case */
 #ifdef DEBUG_EMC
-	COMMENT(Translate("interpreter: offsets temporarily suspended").c_str());
+	COMMENT(Translate("interpreter: offsets temporarily suspended"));
 #endif
 	*px = (block->x_flag == ON) ? (block->x_number -
 	    (settings->tool_xoffset +
@@ -7428,7 +7864,7 @@ static int inverse_time_rate_straight(	/* ARGUMENTS */
 	block_pointer block,	/* pointer to a block of RS274 instructions */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "inverse_time_rate_straight";
+    static wchar_t name[] = L"inverse_time_rate_straight";
     double length;
     double rate;
 
@@ -7466,11 +7902,11 @@ Called by:  rs274ngc_read
 */
 
 static int parse_line(		/* ARGUMENTS */
-    char *line,			/* array holding a line of RS274 code */
+    wchar_t *line,			/* array holding a line of RS274 code */
     block_pointer block,	/* pointer to a block to be filled */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "parse_line";
+    static wchar_t name[] = L"parse_line";
     int status;
 
     CHP(init_block(block));
@@ -7543,7 +7979,7 @@ may be involved.
 */
 
 static int read_a(		/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -7551,7 +7987,7 @@ static int read_a(		/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_a";
+    static wchar_t name[] = L"read_a";
     double value;
     int status;
 
@@ -7601,13 +8037,13 @@ although using degrees (not radians) is specified.
 */
 
 static int read_atan(		/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on line */
     double *double_ptr,		/* pointer to double to be read */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_atan";
+    static wchar_t name[] = L"read_atan";
     double argument2;
     int status;
 
@@ -7655,7 +8091,7 @@ may be involved.
 */
 
 static int read_b(		/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -7663,7 +8099,7 @@ static int read_b(		/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_b";
+    static wchar_t name[] = L"read_b";
     double value;
     int status;
 
@@ -7720,7 +8156,7 @@ AXIS_ERROR flag is not defined, nothing is done.
 */
 
 static int read_c(		/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -7728,7 +8164,7 @@ static int read_c(		/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_c";
+    static wchar_t name[] = L"read_c";
     double value;
     int status;
 
@@ -7775,7 +8211,7 @@ may be involved.
 */
 
 static int read_u(		/* ARGUMENTS */
-	char *line,			/* string: line of RS274/NGC code being
+	wchar_t *line,			/* string: line of RS274/NGC code being
 						processed */
 	int *counter,		/* pointer to a counter for position on the
 						line */
@@ -7783,7 +8219,7 @@ static int read_u(		/* ARGUMENTS */
 							line */
 	double *parameters)
 {				/* array of system parameters */
-	static char name[] = "read_u";
+	static wchar_t name[] = L"read_u";
 	double value;
 	int status;
 
@@ -7831,7 +8267,7 @@ may be involved.
 */
 
 static int read_v(		/* ARGUMENTS */
-	char *line,			/* string: line of RS274/NGC code being
+	wchar_t *line,			/* string: line of RS274/NGC code being
 						processed */
 	int *counter,		/* pointer to a counter for position on the
 						line */
@@ -7839,7 +8275,7 @@ static int read_v(		/* ARGUMENTS */
 							line */
 	double *parameters)
 {				/* array of system parameters */
-	static char name[] = "read_v";
+	static wchar_t name[] = L"read_v";
 	double value;
 	int status;
 
@@ -7890,7 +8326,7 @@ present only so that this will have the same argument list as the other
 */
 
 static int read_comment(	/* ARGUMENTS */
-    char *line,			/* string: line of RS274 code being processed 
+    wchar_t *line,			/* string: line of RS274 code being processed 
 				 */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -7898,7 +8334,7 @@ static int read_comment(	/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_comment";
+    static wchar_t name[] = L"read_comment";
     int n;
 
     CHK((line[*counter] != '('),
@@ -7968,7 +8404,7 @@ is made here, and the parameters argument is also needed.
 */
 
 static int read_d(		/* ARGUMENTS */
-    char *line,			/* string: line of RS274 code being processed 
+    wchar_t *line,			/* string: line of RS274 code being processed 
 				 */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -7976,7 +8412,7 @@ static int read_d(		/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_d";
+    static wchar_t name[] = L"read_d";
     int value;
     int status;
 
@@ -8025,7 +8461,7 @@ a feed rate.
 */
 
 static int read_f(		/* ARGUMENTS */
-    char *line,			/* string: line of RS274 code being processed 
+    wchar_t *line,			/* string: line of RS274 code being processed 
 				 */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -8033,7 +8469,7 @@ static int read_f(		/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_f";
+    static wchar_t name[] = L"read_f";
     double value;
     int status;
 
@@ -8100,7 +8536,7 @@ mode. If this happens, the G80 is simply ignored.
 */
 
 static int read_g(		/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -8108,7 +8544,7 @@ static int read_g(		/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_g";
+    static wchar_t name[] = L"read_g";
     double value_read;
     int value;
     int mode;
@@ -8173,7 +8609,7 @@ offset).
 */
 
 static int read_h(		/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -8181,7 +8617,7 @@ static int read_h(		/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_h";
+    static wchar_t name[] = L"read_h";
     int value;
     int status;
 
@@ -8230,7 +8666,7 @@ may be involved.
 */
 
 static int read_i(		/* ARGUMENTS */
-    char *line,			/* string: line of RS274 code being processed 
+    wchar_t *line,			/* string: line of RS274 code being processed 
 				 */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -8238,7 +8674,7 @@ static int read_i(		/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_i";
+    static wchar_t name[] = L"read_i";
     double value;
     int status;
 
@@ -8252,6 +8688,32 @@ static int read_i(		/* ARGUMENTS */
     return RS274NGC_OK;
 }
 
+int optimized_strtoi(const char* str) {
+	int result = 0;
+	int sign = 1;
+
+	// Skip leading whitespaces
+	while (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r' || *str == '\f' || *str == '\v') {
+		++str;
+	}
+
+	// Handle sign
+	if (*str == '-') {
+		sign = -1;
+		++str;
+	}
+	else if (*str == '+') {
+		++str;
+	}
+
+	// Convert characters to integer
+	while (*str >= '0' && *str <= '9') {
+		result = result * 10 + (*str - '0');
+		++str;
+	}
+
+	return sign * result;
+}
 /****************************************************************************/
 
 /* read_integer_unsigned
@@ -8260,7 +8722,7 @@ Returned Value: int
    If any of the following errors occur, this returns the error shown.
    Otherwise, RS274NGC_OK is returned.
    1. The first character is not a digit: NCE_BAD_FORMAT_UNSIGNED_INTEGER
-   2. sscanf fails: NCE_SSCANF_FAILED
+   2. swscanf fails: NCE_SSCANF_FAILED
 
 Side effects:
    The number read from the line is put into what integer_ptr points at.
@@ -8274,26 +8736,32 @@ the integer. Note that if the first character is a sign (+ or -),
 an error will be reported (since a sign is not a digit).
 
 */
+#define MAXDIG 50
 
 static int read_integer_unsigned(	/* ARGUMENTS */
-    char *line,			/* string: line of RS274 code being processed 
+    wchar_t *line,			/* string: line of RS274 code being processed 
 				 */
     int *counter,		/* pointer to a counter for position on the
 				   line */
     int *integer_ptr)
 {				/* pointer to the value being read */
-    static char name[] = "read_integer_unsigned";
+    static wchar_t name[] = L"read_integer_unsigned";
     int n;
-    char c;
+    wchar_t c;
+	char ca[MAXDIG +1];
+	char* cp = ca;
 
     for (n = *counter;; n++) {
 	c = line[n];
-	if ((c < 48) || (c > 57))
+	*cp++ = (char)c;
+	if ((c < 48) || (c > 57) || cp >= ca + MAXDIG)
 	    break;
     }
+	*cp = 0;
     CHK((n == *counter), NCE_BAD_FORMAT_UNSIGNED_INTEGER);
-    if (sscanf(line + *counter, "%d", integer_ptr) == 0)
-	ERM(NCE_SSCANF_FAILED);
+//    if (sscanf(ca, "%d", integer_ptr) == 0)
+//  	ERM(NCE_SSCANF_FAILED);
+	*integer_ptr = optimized_strtoi(ca);
     *counter = n;
     return RS274NGC_OK;
 }
@@ -8333,14 +8801,14 @@ close to an integer, then returning the integer it is close to.
 */
 
 static int read_integer_value(	/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
     int *integer_ptr,		/* pointer to the value being read */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_integer_value";
+    static wchar_t name[] = L"read_integer_value";
     double float_value;
     int status;
 
@@ -8374,16 +8842,16 @@ Called by: parse_line
 static int read_items(		/* ARGUMENTS */
     block_pointer block,	/* pointer to a block being filled from the
 				   line */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_items";
+    static wchar_t name[] = L"read_items";
     int counter;
     int length;
     int status;
 
-    length = (int)strlen(line);
+    length = (int)wcslen(line);
     counter = 0;
 
 	if (line[counter] == '/') {	/* block delete character?? */
@@ -8435,7 +8903,7 @@ involved.
 */
 
 static int read_j(		/* ARGUMENTS */
-    char *line,			/* string: line of RS274 code being processed 
+    wchar_t *line,			/* string: line of RS274 code being processed 
 				 */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -8443,7 +8911,7 @@ static int read_j(		/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_j";
+    static wchar_t name[] = L"read_j";
     double value;
     int status;
 
@@ -8491,7 +8959,7 @@ involved.
 */
 
 static int read_k(		/* ARGUMENTS */
-    char *line,			/* string: line of RS274 code being processed 
+    wchar_t *line,			/* string: line of RS274 code being processed 
 				 */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -8499,7 +8967,7 @@ static int read_k(		/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_k";
+    static wchar_t name[] = L"read_k";
     double value;
     int status;
 
@@ -8545,7 +9013,7 @@ L codes are used for:
 */
 
 static int read_l(		/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -8553,7 +9021,7 @@ static int read_l(		/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_l";
+    static wchar_t name[] = L"read_l";
     int value;
     int status;
 
@@ -8598,14 +9066,14 @@ line number to be too large.
 */
 
 static int read_line_number(	/* ARGUMENTS */
-    char *line,			/* string: line of RS274 code being processed 
+    wchar_t *line,			/* string: line of RS274 code being processed 
 				 */
     int *counter,		/* pointer to a counter for position on the
 				   line */
     block_pointer block)
 {				/* pointer to a block being filled from the
 				   line */
-    static char name[] = "read_line_number";
+    static wchar_t name[] = L"read_line_number";
     int value;
     int status;
 
@@ -8654,7 +9122,7 @@ is needed here, and the parameters argument is also needed.
 */
 
 static int read_m(		/* ARGUMENTS */
-    char *line,			/* string: line of RS274 code being processed 
+    wchar_t *line,			/* string: line of RS274 code being processed 
 				 */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -8662,7 +9130,7 @@ static int read_m(		/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_m";
+    static wchar_t name[] = L"read_m";
     int value;
     int mode;
     int status;
@@ -8728,7 +9196,7 @@ has been found, and that comments are not nested.
 */
 
 static int read_one_item(	/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -8736,12 +9204,12 @@ static int read_one_item(	/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_one_item";
+    static wchar_t name[] = L"read_one_item";
     int status;
     read_function_pointer function_pointer;
-    char letter;
 
-    letter = line[*counter];	/* check if in array range */
+	int letter = wctob(line[*counter]);
+
     CHK(((letter < 0) || (letter > 'z')), NCE_BAD_CHARACTER_USED);
     function_pointer = _readers[letter];
     CHK((function_pointer == 0), NCE_BAD_CHARACTER_USED);
@@ -8779,14 +9247,14 @@ If not, an error is reported as described above.
 */
 
 static int read_operation(	/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
     int *operation)
 {				/* pointer to operation to be read */
-    static char name[] = "read_operation";
-    char c;
+    static wchar_t name[] = L"read_operation";
+    wchar_t c;
 
     c = line[*counter];
     *counter = (*counter + 1);
@@ -8904,14 +9372,14 @@ abs, acos, asin, atan, cos, exp, fix, fup, ln, round, sin, sqrt, tan.
 */
 
 static int read_operation_unary(	/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
     int *operation)
 {				/* pointer to operation to be read */
-    static char name[] = "read_operation_unary";
-    char c;
+    static wchar_t name[] = L"read_operation_unary";
+    wchar_t c;
 
     c = line[*counter];
     *counter = (*counter + 1);
@@ -8920,13 +9388,13 @@ static int read_operation_unary(	/* ARGUMENTS */
 	if ((line[*counter] == 'b') && (line[(*counter) + 1] == 's')) {
 	    *operation = ABS;
 	    *counter = (*counter + 2);
-	} else if (strncmp((line + *counter), "cos", 3) == 0) {
+	} else if (wcsncmp((line + *counter), L"cos", 3) == 0) {
 	    *operation = ACOS;
 	    *counter = (*counter + 3);
-	} else if (strncmp((line + *counter), "sin", 3) == 0) {
+	} else if (wcsncmp((line + *counter), L"sin", 3) == 0) {
 	    *operation = ASIN;
 	    *counter = (*counter + 3);
-	} else if (strncmp((line + *counter), "tan", 3) == 0) {
+	} else if (wcsncmp((line + *counter), L"tan", 3) == 0) {
 	    *operation = ATAN;
 	    *counter = (*counter + 3);
 	} else
@@ -8964,7 +9432,7 @@ static int read_operation_unary(	/* ARGUMENTS */
 	    ERM(NCE_UNKNOWN_WORD_STARTING_WITH_L);
 	break;
     case 'r':
-	if (strncmp((line + *counter), "ound", 4) == 0) {
+	if (wcsncmp((line + *counter), L"ound", 4) == 0) {
 	    *operation = ROUND;
 	    *counter = (*counter + 4);
 	} else
@@ -8974,7 +9442,7 @@ static int read_operation_unary(	/* ARGUMENTS */
 	if ((line[*counter] == 'i') && (line[(*counter) + 1] == 'n')) {
 	    *operation = SIN;
 	    *counter = (*counter + 2);
-	} else if (strncmp((line + *counter), "qrt", 3) == 0) {
+	} else if (wcsncmp((line + *counter), L"qrt", 3) == 0) {
 	    *operation = SQRT;
 	    *counter = (*counter + 3);
 	} else
@@ -9030,7 +9498,7 @@ P codes are used for:
 */
 
 static int read_p(		/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -9038,7 +9506,7 @@ static int read_p(		/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_p";
+    static wchar_t name[] = L"read_p";
     double value;
     int status;
 
@@ -9091,14 +9559,14 @@ sequentially, the value of #2 would be 10 after the line was executed.
 */
 
 static int read_parameter(	/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
     double *double_ptr,		/* pointer to double to be read */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_parameter";
+    static wchar_t name[] = L"read_parameter";
     int index;
     int status;
 
@@ -9180,7 +9648,7 @@ to be evaluated. That situation is handled by read_parameter.
 */
 
 static int read_parameter_setting(	/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -9188,7 +9656,7 @@ static int read_parameter_setting(	/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_parameter_setting";
+    static wchar_t name[] = L"read_parameter_setting";
     int index;
     double value;
     int status;
@@ -9241,7 +9709,7 @@ be positive.
 */
 
 static int read_q(		/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -9249,7 +9717,7 @@ static int read_q(		/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_q";
+    static wchar_t name[] = L"read_q";
     double value;
     int status;
 
@@ -9300,7 +9768,7 @@ may be involved.
 */
 
 static int read_r(		/* ARGUMENTS */
-    char *line,			/* string: line of RS274 code being processed 
+    wchar_t *line,			/* string: line of RS274 code being processed 
 				 */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -9308,7 +9776,7 @@ static int read_r(		/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_r";
+    static wchar_t name[] = L"read_r";
     double value;
     int status;
 
@@ -9520,14 +9988,14 @@ when read_rest_bop1 returns.
 
 #ifdef UNDEFINED
 static int read_real_expression(	/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
     double *value,		/* pointer to double to be read */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_real_expression";
+    static wchar_t name[] = L"read_real_expression";
     int next_operation;
     int status;
 
@@ -9575,14 +10043,14 @@ times-like operations, and power).
 #define MAX_STACK 5
 
 static int read_real_expression(	/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
     double *value,		/* pointer to double to be computed */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_real_expression";
+    static wchar_t name[] = L"read_real_expression";
     double values[MAX_STACK];
     int operators[MAX_STACK];
     int stack_index;
@@ -9621,6 +10089,54 @@ static int read_real_expression(	/* ARGUMENTS */
     return RS274NGC_OK;
 }
 
+double optimized_strtod(const char* str, char** endptr) {
+	double result = 0.0;
+	double fraction = 0.0;
+	double fraction_divider = 10.0;
+	int sign = 1;
+	bool is_fraction = false;
+
+	// Skip leading whitespaces
+	while (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r' || *str == '\f' || *str == '\v') {
+		++str;
+	}
+
+	// Handle sign
+	if (*str == '-') {
+		sign = -1;
+		++str;
+	}
+	else if (*str == '+') {
+		++str;
+	}
+
+	// Convert characters to number
+	while (*str) {
+		if (*str >= '0' && *str <= '9') {
+			if (is_fraction) {
+				fraction += (*str - '0') / fraction_divider;
+				fraction_divider *= 10.0;
+			}
+			else {
+				result = result * 10.0 + (*str - '0');
+			}
+		}
+		else if (*str == '.' && !is_fraction) {
+			is_fraction = true;
+		}
+		else {
+			break; // Invalid character
+		}
+		++str;
+	}
+
+	if (endptr) {
+		*endptr = (char*)str;
+	}
+
+	return sign * (result + fraction);
+}
+
 /****************************************************************************/
 
 /* read_real_number
@@ -9633,7 +10149,7 @@ Returned Value: int
    2. No digits are found after the first character and before the
       end of the line or the next character that cannot be part of a real:
       NCE_NO_DIGITS_FOUND_WHERE_REAL_NUMBER_SHOULD_BE
-   3. sscanf fails: NCE_SSCANF_FAILED
+   3. swscanf fails: NCE_SSCANF_FAILED
 
 Side effects:
    The number read from the line is put into what double_ptr points at.
@@ -9658,15 +10174,18 @@ handle.
 
 */
 
+#define MAXDIG 50
 static int read_real_number(	/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
     double *double_ptr)
 {				/* pointer to double to be read */
-    static char name[] = "read_real_number";
-    char c;			/* for character being processed */
+    static wchar_t name[] = L"read_real_number";
+    wchar_t c;			/* for character being processed */
+	char ca[MAXDIG+1];
+	char* cp = ca;
     int flag_digit;		/* set to ON if digit found */
     int flag_point;		/* set to ON if decimal point found */
     int n;			/* for indexing line */
@@ -9681,14 +10200,16 @@ static int read_real_number(	/* ARGUMENTS */
 	*counter = (*counter + 1);	/* skip plus sign */
 	n++;
     } else if (c == '-') {
+	*cp++ = (char)c;
 	n++;
     } else if ((c != '.') && ((c < 48) || (c > 57)))
 	ERM(NCE_BAD_NUMBER_FORMAT);
 
 /* check out rest of characters (must be digit or decimal point) */
-    for (; (c = line[n]) != (char) NULL; n++) {
+    for (; (c = line[n]) != (wchar_t) NULL && cp < ca + MAXDIG; n++) {
+	*cp++ = (char)c;
 	if ((47 < c) && (c < 58)) {
-	    flag_digit = ON;
+	flag_digit = ON;
 	} else if (c == '.') {
 	    if (flag_point == OFF) {
 		flag_point = ON;
@@ -9700,12 +10221,12 @@ static int read_real_number(	/* ARGUMENTS */
     }
 
     CHK((flag_digit == OFF), NCE_NO_DIGITS_FOUND_WHERE_REAL_NUMBER_SHOULD_BE);
-    line[n] = (char) NULL;	/* temporary string termination for sscanf */
-    if (sscanf(line + *counter, "%lf", double_ptr) == 0) {
-	line[n] = c;
-	ERM(NCE_SSCANF_FAILED);
+	*cp = 0;
+	//    if (swscanf(line + *counter, L"%lf", double_ptr) == 0) {
+	*double_ptr = optimized_strtod(ca, &cp);
+	if (cp == ca) {
+		ERM(NCE_SSCANF_FAILED);
     } else {
-	line[n] = c;
 	*counter = n;
     }
     return RS274NGC_OK;
@@ -9761,15 +10282,15 @@ other readers, depending upon the first character.
 */
 
 static int read_real_value(	/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
     double *double_ptr,		/* pointer to double to be read */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_real_value";
-    char c;
+    static wchar_t name[] = L"read_real_value";
+    wchar_t c;
     int status;
 
     c = line[*counter];
@@ -9821,7 +10342,7 @@ of read_real_expression. It has been tested.
 
 #ifdef UNDEFINED
 static int read_rest_bop1(	/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -9830,7 +10351,7 @@ static int read_rest_bop1(	/* ARGUMENTS */
 				   operation */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_rest_bop1";
+    static wchar_t name[] = L"read_rest_bop1";
     double next_value;
     int next_operation;
     int status;
@@ -9881,7 +10402,7 @@ of read_real_expression. It has been tested.
 
 #ifdef UNDEFINED
 static int read_rest_bop2(	/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -9889,7 +10410,7 @@ static int read_rest_bop2(	/* ARGUMENTS */
     int last_operation,		/* last operation read */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_rest_bop2";
+    static wchar_t name[] = L"read_rest_bop2";
     double next_value;
     int next_operation;
     int status;
@@ -9941,7 +10462,7 @@ may be involved.
 */
 
 static int read_s(		/* ARGUMENTS */
-    char *line,			/* string: line of RS274NGC code being
+    wchar_t *line,			/* string: line of RS274NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -9949,7 +10470,7 @@ static int read_s(		/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_s";
+    static wchar_t name[] = L"read_s";
     double value;
     int status;
 
@@ -9995,7 +10516,7 @@ may be involved.
 */
 
 static int read_t(		/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -10003,7 +10524,7 @@ static int read_t(		/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_t";
+    static wchar_t name[] = L"read_t";
     int value;
     int status;
 
@@ -10083,19 +10604,19 @@ the reduced line.
 */
 
 static int read_text(		/* ARGUMENTS */
-    const char *command,	/* a string which may have input text, or
+    const wchar_t *command,	/* a string which may have input text, or
 				   null */
     FILE * inport,		/* a file pointer for an input file, or null */
-    char *raw_line,		/* array to write raw input line into */
-    char *line,			/* array for input line to be processed in */
+    wchar_t *raw_line,		/* array to write raw input line into */
+    wchar_t *line,			/* array for input line to be processed in */
     int *length)
 {				/* a pointer to an integer to be set */
-    static char name[] = "read_text";
+    static wchar_t name[] = L"read_text";
     int status;			/* used in CHP */
     int index;
 
     if (command == NULL) {
-	if (fgets(raw_line, RS274NGC_TEXT_SIZE, inport) == NULL) {
+	if (fgetws(raw_line, RS274NGC_TEXT_SIZE, inport) == NULL) {
 	    if (_setup.percent_flag == ON)
 		ERM(NCE_FILE_ENDED_WITH_NO_PERCENT_SIGN);
 	    else
@@ -10103,26 +10624,26 @@ static int read_text(		/* ARGUMENTS */
 	}
 	_setup.sequence_number++;	/* moved from version1, was outside
 					   if */
-	if ((int)strlen(raw_line) == (RS274NGC_TEXT_SIZE - 1)) {	/* line is
+	if ((int)wcslen(raw_line) == (RS274NGC_TEXT_SIZE - 1)) {	/* line is
 	    too long. need to finish reading the line to recover */
 	    for (; fgetc(inport) != '\n';) {
 	    }			// could also look for EOF
 	    ERM(NCE_COMMAND_TOO_LONG);
 	}
-	for (index = ((int)strlen(raw_line) - 1);	/* index set on last char */
+	for (index = ((int)wcslen(raw_line) - 1);	/* index set on last char */
 	    (index >= 0) && (isspace(raw_line[index])); index--) { /* remove 
 	     space at end of raw_line, especially CR & LF */
 	    raw_line[index] = 0;
 	}
 	
-	strcpy(line, raw_line);
+	wcscpy(line, raw_line);
 	CHP(close_and_downcase(line));
 	if ((line[0] == '%') && (line[1] == 0) && (_setup.percent_flag == ON))
 	    return RS274NGC_ENDFILE;
     } else {
-	CHK(((int)strlen(command) >= RS274NGC_TEXT_SIZE), NCE_COMMAND_TOO_LONG);
-	strcpy(raw_line, command);
-	strcpy(line, command);
+	CHK(((int)wcslen(command) >= RS274NGC_TEXT_SIZE), NCE_COMMAND_TOO_LONG);
+	wcscpy(raw_line, command);
+	wcscpy(line, command);
 	CHP(close_and_downcase(line));
     }
     _setup.parameter_occurrence = 0;	/* initialize parameter buffer */
@@ -10131,7 +10652,7 @@ static int read_text(		/* ARGUMENTS */
 	if ((line[0] == 0) || ((line[0] == '/') && (line[1] == 0)))
 	*length = 0;
     else
-	*length = (int)strlen(line);
+	*length = (int)wcslen(line);
 
     return RS274NGC_OK;
 //    return ((line[0] == '/') ? RS274NGC_EXECUTE_FINISH : RS274NGC_OK);
@@ -10167,14 +10688,14 @@ handled specially because it is followed by two arguments.
 */
 
 static int read_unary(		/* ARGUMENTS */
-    char *line,			/* string: line of RS274/NGC code being
+    wchar_t *line,			/* string: line of RS274/NGC code being
 				   processed */
     int *counter,		/* pointer to a counter for position on the
 				   line */
     double *double_ptr,		/* pointer to double to be read */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_unary";
+    static wchar_t name[] = L"read_unary";
     int operation;
     int status;
 
@@ -10230,7 +10751,7 @@ may be involved.
 */
 
 static int read_x(		/* ARGUMENTS */
-    char *line,			/* string: line of RS274 code being processed 
+    wchar_t *line,			/* string: line of RS274 code being processed 
 				 */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -10238,7 +10759,7 @@ static int read_x(		/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_x";
+    static wchar_t name[] = L"read_x";
     double value;
     int status;
 
@@ -10286,7 +10807,7 @@ may be involved.
 */
 
 static int read_y(		/* ARGUMENTS */
-    char *line,			/* string: line of RS274 code being processed 
+    wchar_t *line,			/* string: line of RS274 code being processed 
 				 */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -10294,7 +10815,7 @@ static int read_y(		/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_y";
+    static wchar_t name[] = L"read_y";
     double value;
     int status;
 
@@ -10342,7 +10863,7 @@ may be involved.
 */
 
 static int read_z(		/* ARGUMENTS */
-    char *line,			/* string: line of RS274 code being processed 
+    wchar_t *line,			/* string: line of RS274 code being processed 
 				 */
     int *counter,		/* pointer to a counter for position on the
 				   line */
@@ -10350,7 +10871,7 @@ static int read_z(		/* ARGUMENTS */
 				   line */
     double *parameters)
 {				/* array of system parameters */
-    static char name[] = "read_z";
+    static wchar_t name[] = L"read_z";
     double value;
     int status;
 
@@ -10381,7 +10902,7 @@ Called by:  rs274ngc_read
 static int set_probe_data(	/* ARGUMENTS */
     setup_pointer settings)
 {				/* pointer to machine settings */
-    static char name[] = "set_probe_data";
+    static wchar_t name[] = L"set_probe_data";
 
     settings->current_x = GET_EXTERNAL_POSITION_X();
     settings->current_y = GET_EXTERNAL_POSITION_Y();
@@ -10611,9 +11132,9 @@ This executes a previously parsed block.
 
 */
 
-int rs274ngc_execute(const char *command)
+int rs274ngc_execute(const wchar_t *command)
 {
-    static char name[] = "rs274ngc_execute";
+    static wchar_t name[] = L"rs274ngc_execute";
     int status;
     int n;
 
@@ -10663,7 +11184,7 @@ written. Otherwise, the default parameter file name is used.
 
 int rs274ngc_exit()
 {				/* NO ARGUMENTS */
-    char file_name[RS274NGC_TEXT_SIZE];
+    wchar_t file_name[RS274NGC_TEXT_SIZE];
 
     GET_EXTERNAL_PARAMETER_FILE_NAME(file_name, (RS274NGC_TEXT_SIZE - 1));
     rs274ngc_save_parameters
@@ -10703,11 +11224,11 @@ always calls SET_FEED_REFERENCE(CANON_XYZ).
 
 int rs274ngc_init()
 {				/* NO ARGUMENTS */
-    static char name[] = "rs274ngc_init";
+    static wchar_t name[] = L"rs274ngc_init";
     int k;			// starting index in parameters of origin
     // offsets
     int status;
-    char filename[RS274NGC_TEXT_SIZE];
+    wchar_t filename[RS274NGC_TEXT_SIZE];
     double *pars;		// short name for _setup.parameters
 
     INIT_CANON();
@@ -10716,9 +11237,33 @@ int rs274ngc_init()
     USE_LENGTH_UNITS(_setup.length_units);
     GET_EXTERNAL_PARAMETER_FILE_NAME(filename, RS274NGC_TEXT_SIZE);
     if (filename[0] == 0)
-	strcpy(filename, RS274NGC_PARAMETER_FILE_NAME_DEFAULT);
+	wcscpy(filename, RS274NGC_PARAMETER_FILE_NAME_DEFAULT);
     CHP(rs274ngc_restore_parameters(filename));
     pars = _setup.parameters;
+
+    // G92 units stamp (parameter 5219, written by every G92/G52 and by the
+    // offsets screen): if the saved G92 offsets were recorded in different
+    // units than this session starts in, convert them NOW so the DROs are
+    // correct immediately and a later G20/G21 scales correctly.  A Vars
+    // file with no stamp (pre-5.5.0, 5219 = 0) is left raw: the first
+    // G20/G21 will ADOPT the numbers in the program's units instead of
+    // scaling them (see convert_length_units).
+    {
+	int su = (int) (pars[5219] + 0.0001);
+	if ((su == CANON_UNITS_INCHES || su == CANON_UNITS_MM)
+		&& su != _setup.length_units)
+	{
+	    double uf = (su == CANON_UNITS_INCHES) ? MM_PER_INCH : INCH_PER_MM;
+	    for (k = 5211; k <= 5218; k++)
+		pars[PChanged(k)] = pars[k] * uf;
+	    pars[PChanged(5219)] = (double) _setup.length_units;
+	    su = _setup.length_units;
+	}
+	_setup.length_units_of_axis_offset =
+	    (su == CANON_UNITS_INCHES || su == CANON_UNITS_MM) ?
+		(CANON_UNITS) su : CANON_UNITS_UNDEFINED;
+    }
+
     _setup.origin_index = (int) (pars[5220] + 0.0001);
     CHK(((_setup.origin_index < 1) || (_setup.origin_index > 9)),
 	NCE_COORDINATE_SYSTEM_INDEX_PARAMETER_5220_OUT_OF_RANGE);
@@ -10780,6 +11325,9 @@ int rs274ngc_init()
     _setup.program_y = UNKNOWN;	/* for cutter comp */
     _setup.pending_comp_x = UNKNOWN;	/* for fanuc cutter comp */
     _setup.pending_comp_y = UNKNOWN;	/* for fanuc cutter comp */
+	_setup.ConcaveDefered = FALSE; // no pending Compensation moves
+	_setup.control_mode = CANON_EXACT_PATH;
+	_setup.path_tolerance = -1.0;	// G64 P tolerance: machine default
 //_setup.retract_mode does not need initialization
 //_setup.selected_tool_slot set in rs274ngc_synch
     _setup.sequence_number = 0;	/* DOES THIS NEED TO BE AT TOP? */
@@ -10833,7 +11381,7 @@ _setup.tool_max is intended to be set for a particular machine.
 
 int rs274ngc_load_tool_table()
 {				/* NO ARGUMENTS */
-    static char name[] = "rs274ngc_load_tool_table";
+    static wchar_t name[] = L"rs274ngc_load_tool_table";
     int n;
 
     CHK((_setup.tool_max > CANON_TOOL_MAX), NCE_TOOL_MAX_TOO_LARGE);
@@ -10842,8 +11390,8 @@ int rs274ngc_load_tool_table()
 		_setup.tool_table[n].xoffset = 0;
 		_setup.tool_table[n].yoffset = 0;
 		_setup.tool_table[n].slot = 0;
-		_setup.tool_table[n].Comment = "";
-		_setup.tool_table[n].ToolImage = "";
+		_setup.tool_table[n].Comment = L"";
+		_setup.tool_table[n].ToolImage = L"";
     }
     for (; n <= CANON_TOOL_MAX; n++) {
 	_setup.tool_table[n].id = 0;
@@ -10852,8 +11400,8 @@ int rs274ngc_load_tool_table()
 		_setup.tool_table[n].xoffset = 0;
 		_setup.tool_table[n].yoffset = 0;
 		_setup.tool_table[n].slot = 0;
-		_setup.tool_table[n].Comment = "";
-		_setup.tool_table[n].ToolImage = "";
+		_setup.tool_table[n].Comment = L"";
+		_setup.tool_table[n].ToolImage = L"";
     }
 
     return RS274NGC_OK;
@@ -10906,47 +11454,73 @@ file.
 */
 
 int rs274ngc_open(		/* ARGUMENTS */
-	const char *filename)
+	const wchar_t *filename)
 {				/* string: the name of the input NC-program
 				   file */
-	static char name[] = "rs274ngc_open";
+	static wchar_t name[] = L"rs274ngc_open";
+
 
 	CHK((_setup.file_pointer != NULL), NCE_A_FILE_IS_ALREADY_OPEN);
-	CHK(((int)strlen(filename) > (RS274NGC_TEXT_SIZE - 1)),
+	CHK(((int)wcslen(filename) > (RS274NGC_TEXT_SIZE - 1)),
 		NCE_FILE_NAME_TOO_LONG);
-	_setup.file_pointer = fopen(filename, "rb");
 
-	if (_setup.file_pointer == NULL)
-	{
-		wchar_t s[500];
-
-		swprintf(s, 500, Translate("Unable to open input file %s\r\r code=%d").c_str(), filename, errno);
-		MessageBoxW(NULL, s, L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
-	}
-	CHK((_setup.file_pointer == NULL), NCE_UNABLE_TO_OPEN_FILE);
-
-	int result = skip_percent();
+	int result = open_file_skip_percent(filename);
 	if (result) return result;
 
-	strcpy(_setup.filename, filename);
+	wcscpy(_setup.filename, filename);
 	rs274ngc_reset();
 	return RS274NGC_OK;
 }
 
+int open_file_skip_percent(const wchar_t* filename)
+{
+	static wchar_t name[] = L"open_file_skip_percent";
 
+	bool FirstTime = true;
+	bool Done;
+
+	do
+	{
+		_tfopen_s(&_setup.file_pointer, filename, _T("rt,ccs=UTF-8"));
+
+
+		if (_setup.file_pointer == NULL)
+		{
+			wchar_t s[500];
+
+			swprintf(s, 500, Translate("Unable to open input file %ls\r\r code=%d"), filename, errno);
+			MessageBoxW(NULL, s, L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
+		}
+		CHK((_setup.file_pointer == NULL), NCE_UNABLE_TO_OPEN_FILE);
+
+
+		if (FirstTime)
+		{
+			int result = skip_percent();
+			if (result) return result;
+		}
+
+		Done = (_setup.percent_flag == ON) || !FirstTime;
+		FirstTime = false;
+
+		if (!Done) fclose(_setup.file_pointer);
+	} while (!Done);
+
+	return RS274NGC_OK;
+}
 
 int skip_percent(void)
 {
-	static char name[] = "skip_percent";
-	char *line;
+	static wchar_t name[] = L"skip_percent";
+	wchar_t *line;
 	int index;
 	int length;
 	line = _setup.linetext;
 	for (index = -1; index == -1;)
 	{	/* skip blank lines */
-		CHK((fgets(line, RS274NGC_TEXT_SIZE, _setup.file_pointer) == NULL),
+		CHK((fgetws(line, RS274NGC_TEXT_SIZE, _setup.file_pointer) == NULL),
 			NCE_FILE_ENDED_WITH_NO_PERCENT_SIGN);
-		length = (int)strlen(line);
+		length = (int)wcslen(line);
 		if (length == (RS274NGC_TEXT_SIZE - 1))
 		{	/* line is too long.
 			need to finish reading the line to recover */
@@ -10966,14 +11540,12 @@ int skip_percent(void)
 		}
 		else
 		{
-			fseek(_setup.file_pointer, 0, SEEK_SET);
 			_setup.percent_flag = OFF;
 			_setup.sequence_number = 0;	// Going back to line 0
 		}
 	}
 	else
 	{
-		fseek(_setup.file_pointer, 0, SEEK_SET);
 		_setup.percent_flag = OFF;
 		_setup.sequence_number = 0;	// Going back to line 0
 	}
@@ -11012,9 +11584,9 @@ zero, this parses the line into the _setup.block1.
 */
 
 int rs274ngc_read(		/* ARGUMENTS */
-    const char *command)
+    const wchar_t *command)
 {				/* may be NULL or a string to read */
-    static char name[] = "rs274ngc_read";
+    static wchar_t name[] = L"rs274ngc_read";
     int status;
     int read_status;
 
@@ -11117,11 +11689,11 @@ has its value set to zero.
 
 */
 int rs274ngc_restore_parameters(	/* ARGUMENTS */
-    const char *filename)
+    const wchar_t *filename)
 {				/* name of parameter file to read */
-    static char name[] = "rs274ngc_restore_parameters";
+    static wchar_t name[] = L"rs274ngc_restore_parameters";
     FILE *infile;
-    char line[256];
+    wchar_t line[256];
     int variable;
     double value;
     int required;		// number of next required parameter
@@ -11130,13 +11702,13 @@ int rs274ngc_restore_parameters(	/* ARGUMENTS */
     int k;
 
     // open original for reading
-    infile = fopen(filename, "r");
+	_tfopen_s(&infile, filename, _T("rt,ccs=UTF-8"));
 
 	if (infile == NULL) 
 	{
 		wchar_t s[500];
 
-		swprintf(s, 500, Translate("Unable to open file %s").c_str(),filename);
+		swprintf(s, 500, Translate("Unable to open file %ls"),filename);
 		MessageBoxW(NULL, s, L"KMotion" , MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 	}
 
@@ -11148,11 +11720,11 @@ int rs274ngc_restore_parameters(	/* ARGUMENTS */
     required = _required_parameters[index++];
 	n_actual_parameters_to_save = 0;
     while (feof(infile) == 0) {
-	if (fgets(line, 256, infile) == NULL) {
+	if (fgetws(line, 256, infile) == NULL) {
 	    break;
 	}
 	// try for a variable-value match in the file
-	if (sscanf(line, "%d %lf", &variable, &value) == 2) {
+	if (swscanf(line, L"%d %lf", &variable, &value) == 2) {
 	    CHK(((variable <= 0) || (variable >= RS274NGC_MAX_PARAMETERS)),
 		NCE_PARAMETER_NUMBER_OUT_OF_RANGE);
 	    for (; k < RS274NGC_MAX_PARAMETERS; k++) {
@@ -11170,20 +11742,108 @@ int rs274ngc_restore_parameters(	/* ARGUMENTS */
 		} else		// if (k < variable)
 		{
 		    if (k == required)
-			ERM(NCE_REQUIRED_PARAMETER_MISSING);
-		    else
-			pars[k] = 0;
+		    {
+			// A required parameter added in a newer version is
+			// absent from an older Vars file: default it silently
+			// (the next save writes it) rather than erroring -
+			// Users must never see "Required parameter missing"
+			// just because the file predates the parameter (e.g.
+			// 5219 G92 units stamp, U/V offsets added in 5.5.0).
+			// TRACK it (as 0) so save-changed detection notices
+			// when it becomes nonzero - otherwise the first-ever
+			// units stamp was never saved at exit.
+			actual_parameters_to_save[n_actual_parameters_to_save] = k;
+			actual_parameters_saved_values[n_actual_parameters_to_save++] = 0.0;
+			required = _required_parameters[index++];
+		    }
+		    pars[k] = 0;
 		}
 	    }
 	}
     }
     fclose(infile);
-    CHK((required != RS274NGC_MAX_PARAMETERS),
-	NCE_REQUIRED_PARAMETER_MISSING);
+    // required parameters the file never reached (truncated or older file):
+    // default to zero, TRACK them for save-changed detection, no error
+    while (required != RS274NGC_MAX_PARAMETERS) {
+	actual_parameters_to_save[n_actual_parameters_to_save] = required;
+	actual_parameters_saved_values[n_actual_parameters_to_save++] = 0.0;
+	required = _required_parameters[index++];
+    }
     for (; k < RS274NGC_MAX_PARAMETERS; k++) {
 	pars[k] = 0;
     }
+	if (pars[5220] < 1.0)
+		pars[5220] = 1.0; // force 5220 (Fixture number) to a value allowed if needed
+
     return RS274NGC_OK;
+}
+
+/***********************************************************************/
+
+/* rs274ngc_resync_axis_offset_units
+
+Re-derive the ACTIVE G92 axis offsets from the units-stamped parameter
+tuple (5211-5218 + stamp 5219).  Call after anything that may have
+raw-reassigned length_units without converting - notably read_setup_file:
+the stock "DefaultKeepOffsets<units>.set" files deliberately flip the
+units and reinterpret raw numbers, which mis-reads a stamped G92 set
+saved in the other units (a 12mm offset became a 12 inch offset).  The
+stamp says what units the stored offsets really are, so convert them to
+the CURRENT units instead of reinterpreting.  An unstamped tuple (0)
+keeps the stock raw-adoption behavior unchanged.
+
+*/
+void rs274ngc_resync_axis_offset_units(void)
+{
+    double *pars = _setup.parameters;
+    int su = (int) (pars[5219] + 0.0001);
+
+    if (su != CANON_UNITS_INCHES && su != CANON_UNITS_MM)
+	return;			// unstamped: stock raw adoption
+
+    if (su != _setup.length_units)
+    {
+	double uf = (su == CANON_UNITS_INCHES) ? MM_PER_INCH : INCH_PER_MM;
+	int k;
+	for (k = 5211; k <= 5218; k++)
+	    pars[PChanged(k)] = pars[k] * uf;
+	pars[PChanged(5219)] = (double) _setup.length_units;
+    }
+    _setup.axis_offset_x = pars[5211];
+    _setup.axis_offset_y = pars[5212];
+    _setup.axis_offset_z = pars[5213];
+    _setup.AA_axis_offset = pars[5214];
+    _setup.BB_axis_offset = pars[5215];
+    _setup.CC_axis_offset = pars[5216];
+    _setup.UU_axis_offset = pars[5217];
+    _setup.VV_axis_offset = pars[5218];
+    _setup.length_units_of_axis_offset = (CANON_UNITS) _setup.length_units;
+}
+
+/***********************************************************************/
+
+/* rs274ngc_stamp_axis_offset_units
+
+Record that the persisted G92 tuple (5211-5218) holds values in the
+interpreter's CURRENT length units.  Every writer of the tuple other than
+G92 itself must call this: the DRO Zero / Set value / PC_COMM_SET_x paths
+(offset derived from the interpreter's own position), the offsets screen
+and the SetOrigin API (numbers the interpreter is about to apply in its
+current units - so "current units" IS their unit at write time, however
+they were typed).  Keeping the stamp and the in-memory marker coherent is
+what lets the next G20/G21, and a startup in the other units, convert the
+stored and the active offsets TOGETHER.  Before this, those writers left a
+stale or cleared stamp behind: at the next units switch the active offset
+was converted but the stored tuple was not, the offsets screen then showed
+the raw stored number and re-applying it moved the axis (-30mm reapplied
+as -30 inches), and a hand-typed mm offset came back as inches at an
+inch-mode startup.  Only a pre-5.5.0 file (stamp 0) is ever unstamped now.
+
+*/
+void rs274ngc_stamp_axis_offset_units(void)
+{
+    _setup.parameters[PChanged(5219)] = (double) _setup.length_units;
+    _setup.length_units_of_axis_offset = (CANON_UNITS) _setup.length_units;
 }
 
 /***********************************************************************/
@@ -11221,60 +11881,60 @@ complain, but does write it in the output file.
 
 */
 int rs274ngc_save_parameters(	/* ARGUMENTS */
-    const char *filename,	/* name of file to write */
+    const wchar_t *filename,	/* name of file to write */
     const double parameters[])
 {				/* parameters to save */
-    static char name[] = "rs274ngc_save_parameters";
+    static wchar_t name[] = L"rs274ngc_save_parameters";
     FILE *infile;
     FILE *outfile;
-    char line[256];
+    wchar_t line[256];
     int variable;
     double value;
     int required;		// number of next required parameter
     int index;			// index into _required_parameters
     int actual_saved_index,k;
 
-    // rename as .bak
-    strcpy(line, filename);
-    strcat(line, RS274NGC_PARAMETER_FILE_BACKUP_SUFFIX);
+    // _wrename as .bak
+    wcscpy(line, filename);
+    wcscat(line, RS274NGC_PARAMETER_FILE_BACKUP_SUFFIX);
 
     // check if the backup already exists
-    infile = fopen(line, "r");
+	_tfopen_s(&infile, filename, _T("rt,ccs=UTF-8"));
 	if (infile != NULL)
 	{
 		// yes, it exists, close it and delete it
 		fclose(infile);
-		remove(line);
+		_wremove(line);
 	}
 
-    CHK((rename(filename, line) != 0), NCE_CANNOT_CREATE_BACKUP_FILE);
+    CHK((_wrename(filename, line) != 0), NCE_CANNOT_CREATE_BACKUP_FILE);
 
     // open backup for reading
-    infile = fopen(line, "r");
-    CHK((infile == NULL), NCE_CANNOT_OPEN_BACKUP_FILE);
+	_tfopen_s(&infile, line, _T("rt,ccs=UTF-8"));
+	CHK((infile == NULL), NCE_CANNOT_OPEN_BACKUP_FILE);
 
     // open original for writing
-    outfile = fopen(filename, "w");
-    CHK((outfile == NULL), NCE_CANNOT_OPEN_VARIABLE_FILE);
+	_tfopen_s(&outfile, filename, _T("wt,ccs=UTF-8"));
+	CHK((outfile == NULL), NCE_CANNOT_OPEN_VARIABLE_FILE);
 
     k = 0;
     index = 0;
 	actual_saved_index = 0;
     required = _required_parameters[index++];
     while (feof(infile) == 0) {
-	if (fgets(line, 256, infile) == NULL) {
+	if (fgetws(line, 256, infile) == NULL) {
 	    break;
 	}
 	// try for a variable-value match
-	if (sscanf(line, "%d %lf", &variable, &value) == 2) {
+	if (swscanf(line, L"%d %lf", &variable, &value) == 2) {
 	    CHK(((variable <= 0) || (variable >= RS274NGC_MAX_PARAMETERS)),
 		NCE_PARAMETER_NUMBER_OUT_OF_RANGE);
 	    for (; k < RS274NGC_MAX_PARAMETERS; k++) {
 		if (k > variable)
 		    ERM(NCE_PARAMETER_FILE_OUT_OF_ORDER);
 		else if (k == variable) {
-		    snprintf(line, 256, "%d\t%f\n", k, parameters[k]);
-		    fputs(line, outfile);
+		    swprintf (line, 255, L"%d\t%f\n", k, parameters[k]);
+		    fputws(line, outfile);
 			// keep track of which variables get saved
 			actual_parameters_to_save[actual_saved_index] = k;
 			actual_parameters_saved_values[actual_saved_index++] = parameters[k];
@@ -11284,8 +11944,8 @@ int rs274ngc_save_parameters(	/* ARGUMENTS */
 		    break;
 		} else if (k == required)	// know (k < variable)
 		{
-		    snprintf(line, 256, "%d\t%f\n", k, parameters[k]);
-		    fputs(line, outfile);
+		    swprintf (line, 255, L"%d\t%f\n", k, parameters[k]);
+		    fputws(line, outfile);
 			// keep track of which variables get saved
 			actual_parameters_to_save[actual_saved_index] = k;
 			actual_parameters_saved_values[actual_saved_index++] = parameters[k];
@@ -11297,8 +11957,8 @@ int rs274ngc_save_parameters(	/* ARGUMENTS */
     fclose(infile);
     for (; k < RS274NGC_MAX_PARAMETERS; k++) {
 	if (k == required) {
-	    snprintf(line, 256, "%d\t%f\n", k, parameters[k]);
-	    fputs(line, outfile);
+	    swprintf (line, 255, L"%d\t%f\n", k, parameters[k]);
+	    fputws(line, outfile);
 		// keep track of which variables get saved
 		actual_parameters_to_save[actual_saved_index] = k;
 		actual_parameters_saved_values[actual_saved_index++] = parameters[k];
@@ -11346,6 +12006,7 @@ the controller.
 int rs274ngc_synch()
 {				/* NO ARGUMENTS */
     _setup.control_mode = GET_EXTERNAL_MOTION_CONTROL_MODE();
+    _setup.path_tolerance = GET_EXTERNAL_MOTION_CONTROL_TOLERANCE();
     _setup.spindle_mode = GET_EXTERNAL_SPINDLE_MODE();
     _setup.AA_current = GET_EXTERNAL_POSITION_A();
 	_setup.BB_current = GET_EXTERNAL_POSITION_B();
@@ -11505,11 +12166,11 @@ max_size, in which case a null string is put in the file_name array.
 */
 
 void rs274ngc_file_name(	/* ARGUMENTS */
-    char *file_name,		/* string: to copy file name into */
+    wchar_t *file_name,		/* string: to copy file name into */
     int max_size)
 {				/* maximum number of characters to copy */
-    if ((int)strlen(_setup.filename) < ((size_t) max_size))
-	strcpy(file_name, _setup.filename);
+    if ((int)wcslen(_setup.filename) < ((size_t) max_size))
+	wcscpy(file_name, _setup.filename);
     else
 	file_name[0] = 0;
 }
@@ -11548,11 +12209,11 @@ last non-null character.
 */
 
 void rs274ngc_line_text(	/* ARGUMENTS */
-    char *line_text,		/* string: to copy line into */
+    wchar_t *line_text,		/* string: to copy line into */
     int max_size)
 {				/* maximum number of characters to copy */
     int n;
-    char *the_text;
+    wchar_t *the_text;
 
     the_text = _setup.linetext;
     for (n = 0; n < (max_size - 1); n++) {
@@ -11609,11 +12270,11 @@ empty string is returned for the name.
 
 void rs274ngc_stack_name(	/* ARGUMENTS */
     int stack_index,		/* index into stack of function names */
-    char *function_name,	/* string: to copy function name into */
+    wchar_t *function_name,	/* string: to copy function name into */
     int max_size)
 {				/* maximum number of characters to copy */
     int n;
-    char *the_name;
+    wchar_t *the_name;
 
     if ((stack_index > -1) && (stack_index < 20)) {
 	the_name = _setup.stack[stack_index];
@@ -11663,7 +12324,10 @@ int	call_sub(int label, int loop_count)
 
 	if (!found)
 	{
-		rewind(_setup.file_pointer);
+		fclose(_setup.file_pointer); // reopen file so UTF-8 BOM is handled properly
+		int result = open_file_skip_percent(_setup.filename);
+		if (result) return result;
+
 		lineno=-1;
 		err = search_label(label, &found, &lineno);
 		if (err != RS274NGC_OK) return err;
@@ -11697,15 +12361,31 @@ int return_sub()
 	if (-- _setup.sub_stack_call_cnt[_setup.stacki] == 0)
 	{
 		// put the file pointer and line number back to caller
-		fsetpos(_setup.file_pointer,&_setup.sub_stack_pos[_setup.stacki]);
+		if (_setup.sub_stack_pos[_setup.stacki] == 0) // beginning of file (M99 return with no call)?
+		{
+			fclose(_setup.file_pointer); // reopen file so UTF-8 BOM is handled properly
+			_tfopen_s(&_setup.file_pointer, _setup.filename, _T("rt,ccs=UTF-8"));
+		}
+		else
+		{
+			fsetpos(_setup.file_pointer, &_setup.sub_stack_pos[_setup.stacki]);
+		}
 		_setup.current_line = _setup.sub_stack_lineno[_setup.stacki]; 
 	}
 	else
 	{
 		// still more loops
 		// put the file pointer and line number back to beg of subroutine
-		fsetpos(_setup.file_pointer,&_setup.sub_stack_sub_start_pos[_setup.stacki]);
-		_setup.current_line = _setup.sub_stack_sub_start_lineno[_setup.stacki]; 
+		if (_setup.sub_stack_sub_start_pos[_setup.stacki] == 0) // beginning of file (M99 return with no call)?
+		{
+			fclose(_setup.file_pointer); // reopen file so UTF-8 BOM is handled properly
+			_tfopen_s(&_setup.file_pointer, _setup.filename, _T("rt,ccs=UTF-8"));
+		}
+		else
+		{
+			fsetpos(_setup.file_pointer, &_setup.sub_stack_sub_start_pos[_setup.stacki]);
+		}
+		_setup.current_line = _setup.sub_stack_sub_start_lineno[_setup.stacki];
 
 		// push the stack again
 		if (++_setup.stacki >= MAX_SUB_STACK) _setup.stacki = 0;
@@ -11718,9 +12398,9 @@ int return_sub()
 
 int search_label(int label, BOOL *pfound, int *lineno)
 {
-	char s[INTERP_TEXT_SIZE];
+	wchar_t s[INTERP_TEXT_SIZE];
 	int i,n,L,result,nc;
-	char *read_ok;
+	wchar_t *read_ok;
 	BOOL found=false;
 
 	*pfound = false;
@@ -11728,11 +12408,11 @@ int search_label(int label, BOOL *pfound, int *lineno)
 	// search forward for the label
 	do
 	{
-		read_ok = fgets(s, INTERP_TEXT_SIZE,_setup.file_pointer);
+		read_ok = fgetws(s, INTERP_TEXT_SIZE,_setup.file_pointer);
 		if (read_ok && !feof(_setup.file_pointer)) 
 		{
 			(*lineno)++;
-			n = (int)strlen(s);
+			n = (int)wcslen(s);
 
 			// skip spaces and tabs
 			for (i=0; i<n; i++)
@@ -11742,7 +12422,7 @@ int search_label(int label, BOOL *pfound, int *lineno)
 			if (i<n-1 && (s[i] == 'o' || s[i] =='O'))
 			{
 				// convert the following number
-				result = sscanf(s+i+1,"%d%n",&L,&nc);
+				result = swscanf(s+i+1, L"%d%n", &L, &nc);
 
 				if (result == 1 && L == label)
 				{
@@ -11759,9 +12439,9 @@ int search_label(int label, BOOL *pfound, int *lineno)
 
 					if (i<n)  // anything left ?
 					{
-						if (strstr(s+i,"(MSG,") != NULL) return NCE_INVALID_LABEL; 
-						if (strstr(s+i,"(CMD,") != NULL) return NCE_INVALID_LABEL; 
-						if (strstr(s+i,"(BUF,") != NULL) return NCE_INVALID_LABEL; 
+						if (wcsstr(s+i,L"(MSG,") != NULL) return NCE_INVALID_LABEL; 
+						if (wcsstr(s+i,L"(CMD,") != NULL) return NCE_INVALID_LABEL; 
+						if (wcsstr(s+i,L"(BUF,") != NULL) return NCE_INVALID_LABEL; 
 						
 						if (s[i] != '(') return NCE_INVALID_LABEL;
 						{
@@ -11805,4 +12485,200 @@ int PChanged(int index)
 /* end of file */
 
 
+// Anti-gouge fillet calculation between two line segments
 
+// 2D scalar cross product
+static double cross2(double ax, double ay, double bx, double by)
+{
+	return ax * by - ay * bx;
+}
+
+// Returns 0 on success
+// 1 = Segment 1 too short (P1 ~= P2)
+// 2 = Segment 2 too short (P2 ~= P3)
+// 3 = Segments nearly parallel, no fillet
+// 4 = Segment 2 too short to define tool stop (tangent outside)
+// 5 = Segment 1 too short to define tool start (tangent outside)
+// 6 = Segments are convex so do full length in prep to add arc
+//
+// side  +1 = left of P1->P2, -1 = right
+
+int ComputePCandP0(
+	const Point2D& P1,
+	const Point2D& P2,
+	const Point2D& P3,
+	double R,
+	int side,
+	Point2D& P0_out,
+	Point2D& PC_out)
+{
+	const double EPS = 1e-12;
+
+	int Convex = CornerTypeP0P1P2(P1, P2, P3, side);  // check for convex situation
+
+	// Segment 1: P1 to P2
+	double d1x = P2.x - P1.x;
+	double d1y = P2.y - P1.y;
+	double L1 = sqrt(d1x * d1x + d1y * d1y);
+	if (L1 < EPS) return NCE_CONCAVE_SEGMENT_1_TOO_SHORT;
+	d1x /= L1;
+	d1y /= L1;
+
+	// Segment 2: P2 to P3
+	double d2x = P3.x - P2.x;
+	double d2y = P3.y - P2.y;
+	double L2 = sqrt(d2x * d2x + d2y * d2y);
+	if (L2 < EPS) return NCE_CONCAVE_SEGMENT_2_TOO_SHORT;
+	d2x /= L2;
+	d2y /= L2;
+
+	// Normals
+	double n1x = -d1y;
+	double n1y = d1x;
+	double n2x = -d2y;
+	double n2y = d2x;
+
+	if (side < 0)
+	{
+		n1x = -n1x; n1y = -n1y;
+		n2x = -n2x; n2y = -n2y;
+	}
+
+	// Offset point at P1
+	P0_out.x = P1.x + n1x * R;
+	P0_out.y = P1.y + n1y * R;
+
+	// Offset lines through P2
+	Point2D Q1 = { P2.x + n1x * R, P2.y + n1y * R };
+	Point2D Q2 = { P2.x + n2x * R, P2.y + n2y * R };
+
+	// Intersection of offset lines
+	double denom = cross2(d1x, d1y, d2x, d2y);
+	if (fabs(denom) < EPS)
+		return NCE_CONCAVE_SEGMENTS_NEARLY_PARALLEL;
+
+	double q2q1x = Q2.x - Q1.x;
+	double q2q1y = Q2.y - Q1.y;
+
+	// Parameters along each segment direction
+	double t = cross2(q2q1x, q2q1y, d2x, d2y) / denom;
+	double u = cross2(q2q1x, q2q1y, d1x, d1y) / denom;
+
+
+	if (Convex >= 0)
+	{
+		// Circle center
+		PC_out.x = Q1.x;
+		PC_out.y = Q1.y;
+
+		return 6;  // return for motion to do full length parallel to seg #1
+	}
+
+
+	// Tangent on segment 2 must satisfy 0 <= u <= L2
+	if (u < -EPS || u > L2 + EPS)
+		return NCE_CONCAVE_SEGMENT_2_TOO_SHORT_TO_DEFINE_TOOL_STOP;
+
+	// Tangent on segment 1 must satisfy -L1 <= t <= 0
+	if (t < -L1 - EPS || t > EPS)
+		return NCE_CONCAVE_SEGMENT_1_TOO_SHORT_TO_DEFINE_TOOL_START;
+
+	// Circle center
+	PC_out.x = Q1.x + d1x * t;
+	PC_out.y = Q1.y + d1y * t;
+
+	return 0;
+}
+
+
+
+// Returns:
+//  1 = convex corner at P1
+// -1 = concave corner at P1``				
+//  0 = collinear / degenerate
+// side  +1 = left of P1->P2, -1 = right
+
+int CornerTypeP0P1P2(const Point2D& P0,
+	const Point2D& P1,
+	const Point2D& P2,
+	int side)
+{
+	const double EPS = 1e-12;
+
+	double v1x = P1.x - P0.x;
+	double v1y = P1.y - P0.y;
+	double v2x = P2.x - P1.x;
+	double v2y = P2.y - P1.y;
+
+	double z = v1x * v2y - v1y * v2x;
+
+	if (z > EPS)
+		return -side;   // left turn convex if on right, concave if left
+	else if (z < -EPS)
+		return side;    // right turn convex if on left, concave if right
+	else
+		return 0;   // collinear
+}
+
+
+
+//	Finds distance from point s1 to line segment s0-s2.
+//
+// Returns:
+// - perpendicular distance if projection of s1 falls within segment s0-s2
+// - distance to closest endpoint if projection falls outside segment
+double FindDistPointToSegment2D(const Point2D* s0,
+	const Point2D* s1,
+	const Point2D* s2)
+{
+	double dx, dy;
+	double a, b, c;
+	double s, v, h;
+
+	/* a = distance s0 to s1 */
+	dx = s1->x - s0->x;
+	dy = s1->y - s0->y;
+	a = sqrt(dx * dx + dy * dy);
+
+	/* b = distance s1 to s2 */
+	dx = s2->x - s1->x;
+	dy = s2->y - s1->y;
+	b = sqrt(dx * dx + dy * dy);
+
+	/* c = distance s0 to s2 */
+	dx = s2->x - s0->x;
+	dy = s2->y - s0->y;
+	c = sqrt(dx * dx + dy * dy);
+
+	s = (a + b + c) / 2.0;
+
+	/* If segment length is zero, return distance to either endpoint */
+	if (c <= 0.0)
+	{
+		return (a < b) ? a : b;
+	}
+
+	/*
+		Heron's formula:
+		Area = sqrt(s * (s-a) * (s-b) * (s-c))
+
+		Height from point s1 to base s0-s2:
+		h = 2 * Area / c
+	*/
+	v = s * (s - a) * (s - b) * (s - c);
+
+	if (v > 0.0)
+		h = 2.0 * sqrt(v) / c;
+	else
+		h = 0.0;
+
+	/*
+		If projection is outside segment, return distance to closest endpoint.
+	*/
+	if (a * a - h * h > c * c || b * b - h * h > c * c)
+	{
+		return (a < b) ? a : b;
+	}
+
+	return h;
+}

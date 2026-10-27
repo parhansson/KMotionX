@@ -4,8 +4,8 @@
 #include <stdio.h>		// FILE
 
 
-extern std::string Output;
-extern std::string ErrorOutput;
+extern CString Output;
+extern CString ErrorOutput;
 extern int ErrorFileLineNumber;
 extern int line_number;
 
@@ -145,7 +145,7 @@ struct CANON_POSITION {
 	u = _u;
 	v = _v;
 	}
-    double x, y, z, a, b, c, u, v;
+    double x=0, y=0, z=0, a=0, b=0, c=0, u=0, v=0;
 };
 
 /* Tools are numbered 1..CANON_TOOL_MAX, with tool 0 meaning no tool. */
@@ -161,8 +161,8 @@ struct CANON_TOOL_TABLE {
     double yoffset;
     double FeedTime;
     double FeedDist;
-    std::string Comment;
-	std::string ToolImage;
+    CString Comment;
+	CString ToolImage;
 };
 
 /* Initialization */
@@ -309,7 +309,11 @@ for the same motions.
 
 */
 
-extern void SET_MOTION_CONTROL_MODE(CANON_MOTION_MODE mode);
+// tolerance is the G64 P blend tolerance in INCHES: >= 0 sets it,
+// -1 reverts to the machine (Tool Setup) default, omitted leaves the
+// current tolerance unchanged (used by canned cycles that temporarily
+// force CANON_EXACT_PATH and then restore the saved mode).
+extern void SET_MOTION_CONTROL_MODE(CANON_MOTION_MODE mode, double tolerance = -2.0);
 
 /*
 
@@ -523,7 +527,7 @@ extern void FLOOD_OFF();
 extern void FLOOD_ON();
 /* Turn flood coolant on. */
 
-extern void MESSAGE(char *s);
+extern void MESSAGE(wchar_t *s);
 
 extern void MIST_OFF();
 /* Turn mist coolant off. */
@@ -613,6 +617,9 @@ extern int GET_EXTERNAL_MIST();
 // Returns the current motion control mode
 extern CANON_MOTION_MODE GET_EXTERNAL_MOTION_CONTROL_MODE();
 
+// current G64 P blend tolerance in inches (< 0 = machine default)
+extern double GET_EXTERNAL_MOTION_CONTROL_TOLERANCE();
+
 // Returns the current spindle mode
 extern CANON_SPINDLE_MODE GET_EXTERNAL_SPINDLE_MODE();
 
@@ -641,7 +648,7 @@ extern double GET_EXTERNAL_ORIGIN_Z();
 // returns nothing but copies the name of the parameter file into
 // the filename array, stopping at max_size if the name is longer
 // An empty string may be placed in filename.
-extern void GET_EXTERNAL_PARAMETER_FILE_NAME(char *filename, int max_size);
+extern void GET_EXTERNAL_PARAMETER_FILE_NAME(wchar_t *filename, int max_size);
 
 // returns the currently active plane
 extern CANON_PLANE GET_EXTERNAL_PLANE();
@@ -728,7 +735,7 @@ extern double GET_EXTERNAL_TRAVERSE_RATE();
 extern FILE *_outfile;		/* where to print, set in main */
 extern CANON_TOOL_TABLE _tools[];	/* in canon.cc */
 extern int _tool_max;		/* in canon.cc */
-extern char _parameter_file_name[];	/* in canon.cc */
+extern wchar_t _parameter_file_name[];	/* in canon.cc */
 #define PARAMETER_FILE_NAME_LENGTH 100
 
 extern int CHECK_INIT_ON_EXE();

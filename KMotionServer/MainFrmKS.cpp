@@ -53,6 +53,25 @@ CMainFrame::~CMainFrame()
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
+	TheFrame = this;
+
+	// -no_ethernet (or /no_ethernet) anywhere on the command line disables
+	// the Kogna Ethernet scan (for KFLOP only systems).  Must not block here:
+	// the named pipe is not created until OnTimer and the client App gives up
+	// after ~10 seconds, so no modal message.
+	for (int i = 1; i < __argc; i++)
+	{
+		LPCWSTR pszParam = __targv[i];
+		if (pszParam != NULL && (_wcsicmp(pszParam, L"/no_ethernet") == 0 ||
+			                     _wcsicmp(pszParam, L"-no_ethernet") == 0))
+		{
+			NoEthernet = true;
+			OutputDebugStringW(L"KMotionServer: No Ethernet mode enabled (Kogna scan disabled)\n");
+		}
+	}
+
+
+
 	if (CFrameWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
 	
@@ -77,8 +96,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndToolBar.EnableDocking(CBRS_ALIGN_ANY);
 	EnableDocking(CBRS_ALIGN_ANY);
 	DockControlBar(&m_wndToolBar);
-
-	TheFrame=this;
 
 	SetTimer(0,1,NULL);
 

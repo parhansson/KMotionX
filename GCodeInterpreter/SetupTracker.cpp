@@ -36,19 +36,20 @@ int CSetupTracker::InsertState(setup *CurSetup)
 	{
 		int n;
 		int i,k = 0;
-		int64_t *s=(int64_t *)CurSetup;   // new state
-		int64_t *d=(int64_t *)&cur_state; // previous state
-		int64_t X;
+		__int64 *s=(__int64 *)CurSetup;   // new state
+		__int64 *d=(__int64 *)&cur_state; // previous state
+		__int64 X;
+
 		// only compare the first part of the structure that
 		// has all the misc stuff.  The interpreter keeps track
 		// of each parameter that gets changed so only check
 		// the parameter table if it detected a change
 		
 //		if (CurSetup->parameter_occurrence > 0)
-//			n = offsetof(setup,line_length)/sizeof(int64_t);
+//			n = offsetof(setup,line_length)/sizeof(__int64);
 //		else
 		
-		n = offsetof(setup,parameters)/sizeof(int64_t);
+		n = offsetof(setup,parameters)/sizeof(__int64);
 		
 		C.first = true;
 		for (i=0; i<n; i++)
@@ -72,7 +73,7 @@ int CSetupTracker::InsertState(setup *CurSetup)
 
 	    for (int n = 0; n < CurSetup->n_ParamChanges; n++)
 		{	
-			i = (int64_t *)(&CurSetup->parameters[_setup.ParamChanges[n]]) - s;
+			i = (int)((__int64 *)(&CurSetup->parameters[_setup.ParamChanges[n]]) - s);
 			X = s[i] ^ d[i];  // xor words
 			if (X)  // Changed?
 			{
@@ -94,7 +95,7 @@ int CSetupTracker::InsertState(setup *CurSetup)
 int CSetupTracker::RestoreState(int sequence_number, setup *CurSetup)
 {
 	CHANGE C;
-	int64_t *d=(int64_t *)CurSetup;
+	__int64 *d=(__int64 *)CurSetup;
 
 	*CurSetup = cur_state;  // restore to last known state 
 
@@ -126,7 +127,7 @@ int CSetupTracker::RestoreState(int sequence_number, setup *CurSetup)
 int CSetupTracker::AdvanceState(int sequence_number)
 {
 	CHANGE C;
-	int64_t *d=(int64_t *)&realtime_state;
+	__int64 *d=(__int64 *)&realtime_state;
 
 	if (realtime_state.sequence_number <= sequence_number)  // need to advance forward?
 	{

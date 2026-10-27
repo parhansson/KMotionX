@@ -92,7 +92,7 @@ CKMotionIO::~CKMotionIO()
 }
 
 
-SOCKET CKMotionIO::ConnectToKognaSocket(std::wstring* pReason, unsigned long ipAddress, int port)
+SOCKET CKMotionIO::ConnectToKognaSocket(CString* pReason, unsigned long ipAddress, int port)
 {
 #ifndef _KMOTIONX
 	unsigned char DynoMAC[6] = { 0x8c, 0x1f, 0x64, 0x15, 0xe0, 0x00 }; // dymotion purchased MAC base address
@@ -172,7 +172,7 @@ void * DoExecuteShell(void *lpdwParam)
 // the connection in a worker Thread and keep returning no connection until
 // the worker thread successfully connects
 
-SOCKET CKMotionIO::TryConnectToSocket(std::wstring* pReason, unsigned long ipAddress, int port)
+SOCKET CKMotionIO::TryConnectToSocket(CString* pReason, unsigned long ipAddress, int port)
 {
 #ifndef _KMOTIONX
 	HANDLE Thread = NULL;
@@ -328,7 +328,7 @@ return 0;
 
 
 
-bool CKMotionIO::RequestedDeviceAvail(std::wstring *Reason)
+bool CKMotionIO::RequestedDeviceAvail(CString *Reason)
 {
 	int i;
 	bool TryKogna = Requested_ID == 0 || Requested_ID >  MAX_USB_ID;
@@ -435,7 +435,7 @@ bool CKMotionIO::RequestedDeviceAvail(std::wstring *Reason)
 
 int CKMotionIO::Connect()
 {
-	std::wstring reason;
+	CString reason;
 	CHiResTimer Timer;
 
 	int ftStatus;
@@ -492,24 +492,19 @@ Timer.Start();
 	// to be there, try for a while to open it
 	for (;;) 
 	{
-		// Actual_ID > 255 we have packed both bus and adress into this integer
+		// Actual_ID is the LocId from the KFLOP scan (PingX.cpp), which packs
+		// bus number and device address: (bus << 8) | address.
+		// The bus number can legitimately be 0 (macOS derives it from the top
+		// byte of the location id, e.g. 0x00130000), so it must not be used as
+		// a "no bus" marker.  The device address is never 0, so always open by
+		// bus and address.
 		uint8_t bus_number = (Actual_ID >> 8) & 0xFF;  // Extract the higher byte
     	uint8_t device_address = Actual_ID & 0xFF;         // Extract the lower byte
-		if(bus_number > 0){
-			log_info("Connecting to device with bus_number: %d device_address: %d", bus_number, device_address);
-			ftStatus = ftdi_usb_open_bus_addr(ftdi, bus_number, device_address);
-			if (ftStatus != FT_OK){
-				log_info("ftdi_usb_open_bus_addr failed: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
-				log_info("Failed connecting to bus %d and addr: %d", bus_number, device_address );
-			}
-		} else {
-			log_info("Connecting to device by index with bus_number: %d device_address: %d", bus_number, device_address);
-			//Open by index this is does notwork well becaues 0 is used as a special case
-			ftStatus = ftdi_usb_open_desc_index(ftdi, VENDOR, PRODUCT, NULL, NULL, Actual_ID);
-			if (ftStatus != FT_OK){
-				log_info("ftdi_usb_open_desc_index failed: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
-				log_info("Failed connecting to index Actual_ID: %d", Actual_ID );
-			}
+		log_info("Connecting to device with bus_number: %d device_address: %d", bus_number, device_address);
+		ftStatus = ftdi_usb_open_bus_addr(ftdi, bus_number, device_address);
+		if (ftStatus != FT_OK){
+			log_info("ftdi_usb_open_bus_addr failed: %d (%s)", ftStatus, ftdi_get_error_string(ftdi));
+			log_info("Failed connecting to bus %d and addr: %d", bus_number, device_address );
 		}
 
 		if (ftStatus == FT_OK) 
@@ -1364,7 +1359,7 @@ int CKMotionIO::KMotionLock(const char *CallerID)
 {
 	int result;
 	//int board = (int)(this - KMotionLocal.KMotionIO);
-	std::wstring reason;
+	CString reason;
 	if (!Mutex->Lock(3000)) return KMOTION_NOT_CONNECTED;
 
 	if (!m_Connected)

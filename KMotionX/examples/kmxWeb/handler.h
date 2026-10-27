@@ -15,13 +15,13 @@ void initHandler();
 void info_handler(int signum);
 void teardown();
 
-void ErrMsgHandler(const char *msg);
-int ConsoleHandler(const char *msg);
+void ErrMsgHandler(const wchar_t *msg);
+int ConsoleHandler(const wchar_t *msg);
 int MessageBoxHandler(const wchar_t *, const wchar_t *, uint32_t );
 int MUserCallback(int);
-int UserCallback(const char *);
-void StatusCallback(int line_no, const char *msg);
-void CompleteCallback(int status, int line_no, int sequence_number,const char *err);
+int UserCallback(const wchar_t *);
+void StatusCallback(int line_no, const wchar_t *msg);
+void CompleteCallback(int status, int line_no, int sequence_number,const wchar_t *err);
 
 #ifdef __cplusplus
 }

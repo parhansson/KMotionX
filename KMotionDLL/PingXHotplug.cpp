@@ -16,6 +16,9 @@ int hotplug_callback(struct libusb_context *ctx, struct libusb_device *device,
                      libusb_hotplug_event event, void *user_data);
 libusb_context *ctx = NULL;
 libusb_hotplug_callback_handle hp_handle;
+pthread_t event_thread;
+volatile bool event_thread_running = false;  // set while event_thread is started and not yet joined
+volatile bool event_thread_stop = false;
 
 pthread_mutex_t *KognaListMutex = NULL;
 pthread_mutex_t *KFLOPListMutex = NULL;
@@ -26,19 +29,31 @@ bool volatile FirstKognasScanComplete = false;
 
 uint8_t nKFLOPs;
 KFLOP_INFO KFLOPs[MAX_KFLOPS]; // KFLOP Online list
-int FindKognas()
+void CreateKognaListMutex()
 {
     // Create a mutex with no initial owner
     KognaListMutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    memset(KognaListMutex, 0, sizeof(pthread_mutex_t));
 
     // Initialize the mutex
     pthread_mutex_init(KognaListMutex, NULL);
-
+}
+int FindKognas()
+{
+    CreateKognaListMutex();
     return 0;
 }
 void CleanupFindKFLOPs()
 {
     // Clean up
+    // The event thread must be stopped before libusb_exit, libusb asserts if
+    // libusb_exit is called while another thread is inside libusb_handle_events.
+    if (event_thread_running)
+    {
+        event_thread_stop = true;
+        pthread_join(event_thread, NULL);
+        event_thread_running = false;
+    }
     if (ctx != NULL)
     {
         libusb_hotplug_deregister_callback(ctx, hp_handle);
@@ -96,8 +111,8 @@ int FindKFLOPs()
     rc = libusb_hotplug_register_callback(ctx,
                                           LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED | LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT,
                                           LIBUSB_HOTPLUG_ENUMERATE,
-                                          VENDOR, // LIBUSB_HOTPLUG_MATCH_ANY
-                                          PRODUCT, //LIBUSB_HOTPLUG_MATCH_ANY
+                                          VENDOR,
+                                          LIBUSB_HOTPLUG_MATCH_ANY, // PRODUCT or PRODUCT_FTDI_DEFAULT, filtered in add_device
                                           LIBUSB_HOTPLUG_MATCH_ANY,
                                           hotplug_callback, NULL, &hp_handle);
     if (rc != LIBUSB_SUCCESS)
@@ -107,16 +122,14 @@ int FindKFLOPs()
         return 1;
     }
 
-    pthread_t event_thread;
-
-    // Start event handling in a separate thread
+    // Start event handling in a separate thread, joined in CleanupFindKFLOPs
+    event_thread_stop = false;
     if (pthread_create(&event_thread, NULL, &::ScanKFLOPs, (void *)ctx) != 0)
     {
         log_err("Failed to create event thread");
         return 1;
     }
-    // Wait for the event thread to finish (if needed)
-    // pthread_join(event_thread, NULL);
+    event_thread_running = true;
 
     // Main event handling loop
     // while (1) {
@@ -144,86 +157,71 @@ int FindKFLOPs()
     return 0;
 }
 
+// KFLOPs may use the Dynomotion PID or the FTDI default PID (built-in Windows drivers)
+static bool IsKFLOPId(uint16_t vid, uint16_t pid)
+{
+    return vid == VENDOR && (pid == PRODUCT || pid == PRODUCT_FTDI_DEFAULT);
+}
+
 // Function to update the device array on device arrival
 void add_device(libusb_device *device, libusb_device_descriptor *desc)
 {
     uint16_t vid = desc->idVendor;
     uint16_t pid = desc->idProduct;
-    if (vid == VENDOR && pid == PRODUCT)
+    if (!IsKFLOPId(vid, pid))
+        return;
+
+    // Lock the mutex before updating the device list
+    if (pthread_mutex_lock(KFLOPListMutex) != 0)
+        return;
+
+    if (nKFLOPs < MAX_KFLOPS)
     {
-
-        // Lock the mutex before updating the device list
-        int dwWaitResult = pthread_mutex_lock(KFLOPListMutex); // no time-out interval
-        if (dwWaitResult == 0)
+        struct ftdi_context *ftdi = ftdi_new();
+        if (!ftdi)
         {
-
-            if (nKFLOPs < MAX_KFLOPS)
-            {
-                struct ftdi_context *ftdi = ftdi_new();
-        
-                if (!ftdi)
-                {
-                    log_err("Failed to create ftdi context");
-                    pthread_mutex_unlock(KFLOPListMutex);
-                    return;
-                }
-
-                // Open FTDI device
-    
-                if (1 || ftdi_usb_open_dev(ftdi, device) == 0)
-                {
-                    KFLOP_INFO *info = &KFLOPs[nKFLOPs];
-                    info->vid = vid;
-                    info->pid = pid;
-
-                    // Get bus number and device address
-                    // TODO maybe we should use both bus and device adress for better accuracy
-                    // OR serialnumber
-     
-                    //libusb_get_device_string(LIBUSB_DEVICE_STRING_MANUFACTURER) is a new featerue not yet released
-                    uint8_t bus_number = libusb_get_bus_number(device);
-                    uint8_t device_address = libusb_get_device_address(device);
-                    // hack to pack bus and address into LocId
-                    info->LocId = (bus_number << 8) | device_address;
-                    info->bus_number = bus_number;
-                    info->device_address = device_address;
-
-                    // Print bus number and device address
-                    log_info("Device on bus %03u address %03u connected", bus_number, device_address);
-
-                    // Get the serial number and description
-                    
-                    if (ftdi_usb_get_strings(ftdi, device, info->Manufacturer, sizeof(info->Manufacturer), info->Description, sizeof(info->Description), info->SerialNumber, sizeof(info->SerialNumber)) == 0)
-                    {
-                        log_err("Failed to get device strings");
-                    }
-                    else
-                    {
-                        nKFLOPs++;
-                        log_info("KFLOP list updated: %d devices found", nKFLOPs);
-                        for (size_t i = 0; i < 16; i++)
-                        {
-                            // Notify the main thread or perform any necessary actions
-                            // For example, you could use a condition variable or an event
-                            // to signal that the list has changed.
-                            log_info("Device %d: Bus %d, Address %d, LocId=%d, SerialNumber=%s, Description=%s", i, KFLOPs[i].bus_number, KFLOPs[i].device_address, KFLOPs[i].LocId, KFLOPs[i].SerialNumber, KFLOPs[i].Description);
-                        }
-                    }   
-
-                    ftdi_usb_close(ftdi);
-                }
-                else
-                {
-                    log_err("Unable to open FTDI device");
-                }
-
-                ftdi_free(ftdi);
-            }
-
-            // Unlock the mutex after updating
+            log_err("Failed to create ftdi context");
             pthread_mutex_unlock(KFLOPListMutex);
+            return;
         }
+
+        KFLOP_INFO *info = &KFLOPs[nKFLOPs];
+        memset(info, 0, sizeof(*info));
+
+        // Get the serial number and description (returns < 0 on error)
+        int rc = ftdi_usb_get_strings(ftdi, device, info->Manufacturer, sizeof(info->Manufacturer),
+                                      info->Description, sizeof(info->Description),
+                                      info->SerialNumber, sizeof(info->SerialNumber));
+        if (rc < 0)
+        {
+            log_err("ftdi_usb_get_strings failed: %d (%s)", rc, ftdi_get_error_string(ftdi));
+        }
+        else if (strstr(info->Description, "KFLOP") != NULL ||
+                 strstr(info->Description, "KMotion") != NULL ||
+                 strstr(info->Description, "Dynomotion") != NULL)
+        {
+            info->vid = vid;
+            info->pid = pid;
+
+            // The bus number is 0 on some systems (e.g. macOS), the device address never is.
+            // Pack both into LocId, CKMotionIO::Connect opens the device by bus and address.
+            uint8_t bus_number = libusb_get_bus_number(device);
+            uint8_t device_address = libusb_get_device_address(device);
+            info->LocId = (bus_number << 8) | device_address;
+            info->bus_number = bus_number;
+            info->device_address = device_address;
+
+            nKFLOPs++;
+            log_info("KFLOP list updated: %d devices found", nKFLOPs);
+            log_info("Device %d: Bus %d, Address %d, LocId=%d, SerialNumber=%s, Description=%s",
+                     nKFLOPs - 1, info->bus_number, info->device_address, info->LocId, info->SerialNumber, info->Description);
+        }
+
+        ftdi_free(ftdi);
     }
+
+    // Unlock the mutex after updating
+    pthread_mutex_unlock(KFLOPListMutex);
 }
 
 // Function to remove a device from the list
@@ -243,7 +241,7 @@ void remove_device(libusb_device *device, libusb_device_descriptor *desc)
             // if (KFLOPs[i].vid == vid && KFLOPs[i].pid == pid && strcmp(KFLOPs[i].SerialNumber, serial_number) == 0)
             if (KFLOPs[i].vid == vid && KFLOPs[i].pid == pid && KFLOPs[i].LocId == locationId)
             {
-                log_info("Device on bus %03u address %03u removed", bus_number, device_address);
+                log_info("KFLOP on bus %03u address %03u removed", bus_number, device_address);
                 // Shift the rest of the array to fill the gap
                 for (int j = i; j < nKFLOPs - 1; j++)
                 {
@@ -284,15 +282,16 @@ int hotplug_callback(struct libusb_context *ctx, struct libusb_device *device,
 void *ScanKFLOPs(void *lpdwParam)
 {
     libusb_context *ctx = (libusb_context *)lpdwParam;
-    while (1)
+    while (!event_thread_stop)
     {
-        int rc = libusb_handle_events(ctx);
+        // Bounded wait so the thread notices event_thread_stop
+        struct timeval tv = {0, 100000};
+        int rc = libusb_handle_events_timeout(ctx, &tv);
         if (rc != LIBUSB_SUCCESS)
         {
             log_err("libusb_handle_events() failed: %s", libusb_error_name(rc));
             break;
         }
-        usleep(10000); // Optional sleep
     }
     return NULL;
 }

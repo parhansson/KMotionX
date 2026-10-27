@@ -74,4 +74,4 @@ char *mralloc(char *p, int size);
 void load_msg(char *a, long b, long c, long d, long e, long f, long g);  /* WRITE OUT LOADER DEBUG INFO           */
 
 
-int LoadCoff(CKMotionDLL *KMotionDLLtoUse, const char * Name, unsigned int *EntryPoint, int PackToFlash);
+int LoadCoff(CKMotionDLL *KMotionDLLtoUse, const wchar_t * Name, unsigned int *EntryPoint, int PackToFlash);

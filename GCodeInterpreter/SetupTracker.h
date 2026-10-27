@@ -5,7 +5,7 @@
 
 typedef struct
 {
-	int64_t data; 
+	__int64 data; 
 	int offset;
 	bool first;
 } CHANGE;

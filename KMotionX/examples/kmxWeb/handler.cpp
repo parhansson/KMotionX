@@ -56,20 +56,21 @@ void teardown(){
   kmxCtrl = NULL;
 }
 
-void CompleteCallback(int status, int line_no, int sequence_number,const char *err) {
-  kmxCtrl->OnCompleteCallback(status, line_no, sequence_number, err);
+// The library hands over wide strings, the web controller works with UTF-8 (JSON)
+void CompleteCallback(int status, int line_no, int sequence_number,const wchar_t *err) {
+  kmxCtrl->OnCompleteCallback(status, line_no, sequence_number, kmx::wstrtostr(err).c_str());
 }
 
-void StatusCallback(int line_no, const char *msg) {
-  kmxCtrl->OnStatusCallback(line_no, msg);
+void StatusCallback(int line_no, const wchar_t *msg) {
+  kmxCtrl->OnStatusCallback(line_no, kmx::wstrtostr(msg).c_str());
 }
 
-void ErrMsgHandler(const char *msg) {
-  kmxCtrl->OnErrorMessageCallback(msg);
+void ErrMsgHandler(const wchar_t *msg) {
+  kmxCtrl->OnErrorMessageCallback(kmx::wstrtostr(msg).c_str());
 }
 
-int ConsoleHandler(const char *msg) {
-  return kmxCtrl->OnConsoleCallback(msg);
+int ConsoleHandler(const wchar_t *msg) {
+  return kmxCtrl->OnConsoleCallback(kmx::wstrtostr(msg).c_str());
 }
 
 //(Afx)MessageBox implementet as callback.
@@ -81,8 +82,8 @@ int MessageBoxHandler(const wchar_t *title, const wchar_t *msg, uint32_t options
   return kmxCtrl->OnMessageBoxCallback(titlestr.c_str(), msgstr.c_str(), options);
 }
 
-int UserCallback(const char *msg) {
-  return kmxCtrl->OnUserCallback(msg);
+int UserCallback(const wchar_t *msg) {
+  return kmxCtrl->OnUserCallback(kmx::wstrtostr(msg).c_str());
 }
 int MUserCallback(int mCode) {
   return kmxCtrl->OnMcodeUserCallback(mCode);

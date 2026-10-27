@@ -30,8 +30,7 @@ public:
 	virtual ~CKinematicsGeppetto();
 	virtual int TransformCADtoActuators(double x, double y, double z, double a, double b, double c, double *Acts, bool NoGeo = false);
 	virtual int TransformActuatorstoCAD(double *Acts, double *x, double *y, double *z, double *a, double *b, double *c, bool NoGeo = false);
-	int InvertTransformCADtoActuators(double *Acts, double *xr, double *yr, double *zr, double *ar, double *br, double *cr, bool NoGeo = false);
-	virtual int ReadGeoTable(const char *name);
+	virtual int ReadGeoTable(const wchar_t *name);
 	int GeoCorrect(double x, double y, double z, double a, double b, double c,
 		double *rx, double *ry, double *rz, double *ra, double *rb, double *rc);
 

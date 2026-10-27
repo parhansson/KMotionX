@@ -70,8 +70,8 @@
 #define RS274NGC_ACTIVE_SETTINGS 3
 
 // name of parameter file for saving/restoring interpreter variables
-#define RS274NGC_PARAMETER_FILE_NAME_DEFAULT "rs274ngc.var"
-#define RS274NGC_PARAMETER_FILE_BACKUP_SUFFIX ".bak"
+#define RS274NGC_PARAMETER_FILE_NAME_DEFAULT L"rs274ngc.var"
+#define RS274NGC_PARAMETER_FILE_BACKUP_SUFFIX L".bak"
 
 // max number of m codes on one line
 #define MAX_EMS  4
@@ -231,7 +231,7 @@ typedef struct block_struct {
 	double u_number;
 	ON_OFF v_flag;
 	double v_number;
-	char comment[256];
+	wchar_t comment[256];
     int d_number;
     double f_number;
     int g_modes[15];
@@ -266,6 +266,14 @@ typedef struct block_struct {
 } block;
 
 typedef block *block_pointer;
+
+struct Point2D // 2D Point used for fillet calculations
+{
+    double x;
+    double y;
+};
+
+
 
 /*
 
@@ -309,6 +317,7 @@ typedef struct setup_struct {
     double axis_offset_z;	// Z-axis g92 offset
     // gone
     CANON_MOTION_MODE control_mode;	// exact path or cutting mode
+    double path_tolerance;	// G64 P blend tolerance in INCHES; < 0 = machine default
     CANON_SPINDLE_MODE spindle_mode;	// exact path or cutting mode
     int current_slot;		// carousel slot number of current tool
     double current_x;		// current X-axis position
@@ -316,6 +325,26 @@ typedef struct setup_struct {
     double current_z;		// current Z-axis position
     double cutter_comp_radius;	// current cutter compensation radius
     int cutter_comp_side;	// current cutter compensation side
+    int AllowConcaveCorners; // option to allow concave corners requiring motion deferred until next motion is known
+    BOOL ConcaveArcNeeded; // compensated arc required before the compensated motion
+    double Concave_start_x; // parameter for deferred arc 
+    double Concave_start_y; // parameter for deferred arc 
+    double Concave_mid_x; // parameter for deferred arc 
+    double Concave_mid_y; // parameter for deferred arc 
+    Point2D ConcaveDeferP1; // Deferred point of P0 P1 P2 used to check for gouge
+    Point2D ConcaveDeferP2; // Deferred point of P0 P1 P2 used to check for gouge
+    double ConcaveDeferX; // end of motion not considering gouge
+    double ConcaveDeferY; // end of motion not considering gouge
+    double ConcaveDeferZ; // end of motion not considering gouge
+    double ConcaveDeferAA;// end of motion not considering gouge
+	double ConcaveDeferBB;// end of motion not considering gouge  
+	double ConcaveDeferCC;// end of motion not considering gouge
+	double ConcaveDeferUU;// end of motion not considering gouge
+	double ConcaveDeferVV;// end of motion not considering gouge
+    int ConcaveMoveType;   // G0 or G1;
+	double ConcaveFeedRate; // fnumber for first segment
+    int ConcaveSeqNumber; // save the line that created the motion so it can be specified when actually made.
+    BOOL ConcaveDefered;
     double cycle_cc;		// cc-value (normal) for canned cycles
     double cycle_i;		// i-value for canned cycles
     double cycle_j;		// j-value for canned cycles
@@ -391,26 +420,34 @@ typedef struct setup_struct {
 	// or shouldn't change within continuous execution
 	
     int line_length;		// length of line last read
-    char linetext[RS274NGC_TEXT_SIZE];	// text of most recent line read
-    char filename[RS274NGC_TEXT_SIZE];	// name of currently open NC code
+    wchar_t linetext[RS274NGC_TEXT_SIZE];	// text of most recent line read
+    wchar_t filename[RS274NGC_TEXT_SIZE];	// name of currently open NC code
     // file
     FILE *file_pointer;		// file pointer for open NC code file
     int parameter_occurrence;	// parameter buffer index
     int parameter_numbers[50];	// parameter number buffer
     double parameter_values[50];	// parameter value buffer
-    char stack[50][80];		// stack of calls for error reporting
+    wchar_t stack[50][80];		// stack of calls for error reporting
     int stack_index;		// index into the stack
     CANON_TOOL_TABLE tool_table[CANON_TOOL_MAX + 1];	// index is slot
 	block block1;		// parsed next block
-    char blocktext[RS274NGC_TEXT_SIZE];	// linetext downcased, white space
+    wchar_t blocktext[RS274NGC_TEXT_SIZE];	// linetext downcased, white space
 	int n_ParamChanges;
 	int ParamChanges[MAX_PARAM_CHANGES];
+	CANON_UNITS length_units_of_axis_offset; // units the in-memory G92 axis
+	                    // offsets are expressed in.  CANON_UNITS_UNDEFINED =
+	                    // restored from a Vars file with no units stamp
+	                    // (parameter 5219, pre-5.5.0 file): the numbers are
+	                    // unitless and the first G20/G21 ADOPTS them in the
+	                    // program's units instead of scaling them (the
+	                    // fixture-table convention).  Appended at the struct
+	                    // end so existing field offsets are preserved.
 } setup;
 
 typedef setup *setup_pointer;
 
 // pointer to function that reads
-typedef int (*read_function_pointer) (char *, int *, block_pointer, double *);
+typedef int (*read_function_pointer) (wchar_t *, int *, block_pointer, double *);
 
 /*************************************************************************/
 /*
@@ -428,7 +465,7 @@ int AccumToolWearStats(setup_pointer settings, int ToolIndex, bool ForceSave);
 extern int rs274ngc_close();
 
 // execute a line of NC code
-extern int rs274ngc_execute(const char *command = 0);
+extern int rs274ngc_execute(const wchar_t *command = 0);
 
 // stop running
 extern int rs274ngc_exit();
@@ -440,22 +477,28 @@ extern int rs274ngc_init();
 extern int rs274ngc_load_tool_table();
 
 // open a file of NC code
-extern int rs274ngc_open(const char *filename);
+extern int rs274ngc_open(const wchar_t *filename);
 
 // read the mdi or the next line of the open NC code file
-extern int rs274ngc_read(const char *mdi = 0);
+extern int rs274ngc_read(const wchar_t *mdi = 0);
 
 // reset yourself
 extern int rs274ngc_reset();
 
 // restore interpreter variables from a file
-extern int rs274ngc_restore_parameters(const char *filename);
+extern int rs274ngc_restore_parameters(const wchar_t *filename);
 
 // save interpreter variables to file
-extern int rs274ngc_save_parameters(const char *filename,
+extern int rs274ngc_save_parameters(const wchar_t *filename,
     const double parameters[]);
 
 extern bool rs274ngc_save_parameters_changed(void);
+
+// re-derive the active G92 axis offsets from the units-stamped parameter
+// tuple (5211-5219) after length_units may have been raw-reassigned
+// (e.g. by a KeepOffsets setup file)
+extern void rs274ngc_resync_axis_offset_units(void);
+extern void rs274ngc_stamp_axis_offset_units(void);   /* G92 tuple written in the CURRENT units */
 
 
 // synchronize your internal model with the external world
@@ -488,14 +531,14 @@ extern void rs274ngc_error_text(int error_code, wchar_t *error_text,
 
 // copy the name of the currently open file into the file_name array,
 // but stop at max_size if the name is longer
-extern void rs274ngc_file_name(char *file_name, int max_size);
+extern void rs274ngc_file_name(wchar_t *file_name, int max_size);
 
 // return the length of the most recently read line
 extern int rs274ngc_line_length();
 
 // copy the text of the most recently read line into the line_text array,
 // but stop at max_size if the text is longer
-extern void rs274ngc_line_text(char *line_text, int max_size);
+extern void rs274ngc_line_text(wchar_t *line_text, int max_size);
 
 // return the current sequence number (how many lines read)
 extern int rs274ngc_sequence_number();
@@ -503,24 +546,24 @@ extern int rs274ngc_sequence_number();
 // copy the function name from the stack_index'th position of the
 // function call stack at the time of the most recent error into
 // the function name string, but stop at max_size if the name is longer
-extern void rs274ngc_stack_name(int stack_index, char *function_name,
+extern void rs274ngc_stack_name(int stack_index, wchar_t *function_name,
     int max_size);
 
 // Get the parameter file name from the ini file.
-extern int rs274ngc_ini_load(const char *filename);
+extern int rs274ngc_ini_load(const wchar_t *filename);
 static inline int rs274ngc_line()
 {
     return rs274ngc_sequence_number();
 }
-static inline const char *rs274ngc_command()
+static inline const wchar_t *rs274ngc_command()
 {
-    static char buf[100];
+    static wchar_t buf[100];
     rs274ngc_line_text(buf, 100);
     return buf;
 }
-static inline const char *rs274ngc_file()
+static inline const wchar_t *rs274ngc_file()
 {
-    static char buf[100];
+    static wchar_t buf[100];
     rs274ngc_file_name(buf, 100);
     return buf;
 }
@@ -529,6 +572,8 @@ extern const int _gees[];  // maps GCode to groups
 
 extern setup _setup;
 
+extern int convert_tool_length_offset(int g_code, block_pointer block,
+    setup_pointer settings);
 
 
 #endif
