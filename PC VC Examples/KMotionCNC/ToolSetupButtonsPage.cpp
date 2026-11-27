@@ -179,16 +179,16 @@ void CToolSetupButtonsPage::DoDataExchange(CDataExchange* pDX)
 
 	if (pDX->m_bSaveAndValidate)
 	{
-		strncpy(McodeActions[11].String,m_PS_M11,255);
-		strncpy(McodeActions[12].String,m_PS_M12,255);
-		strncpy(McodeActions[13].String,m_PS_M13,255);
-		strncpy(McodeActions[14].String,m_PS_M14,255);
-		strncpy(McodeActions[15].String,m_PS_M15,255);
-		strncpy(McodeActions[16].String,m_PS_M16,255);
-		strncpy(McodeActions[17].String,m_PS_M17,255);
-		strncpy(McodeActions[18].String,m_PS_M18,255);
-		strncpy(McodeActions[19].String,m_PS_M19,255);
-		strncpy(McodeActions[20].String,m_PS_M20,255);
+		wcsncpy(McodeActions[11].String,m_PS_M11,255);
+		wcsncpy(McodeActions[12].String,m_PS_M12,255);
+		wcsncpy(McodeActions[13].String,m_PS_M13,255);
+		wcsncpy(McodeActions[14].String,m_PS_M14,255);
+		wcsncpy(McodeActions[15].String,m_PS_M15,255);
+		wcsncpy(McodeActions[16].String,m_PS_M16,255);
+		wcsncpy(McodeActions[17].String,m_PS_M17,255);
+		wcsncpy(McodeActions[18].String,m_PS_M18,255);
+		wcsncpy(McodeActions[19].String,m_PS_M19,255);
+		wcsncpy(McodeActions[20].String,m_PS_M20,255);
 	}
 }
 

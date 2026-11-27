@@ -1,19 +1,19 @@
 // driver.h
 
 
-extern char  _interpreter_linetext[];
-extern char  _interpreter_blocktext[];
+extern wchar_t  _interpreter_linetext[];
+extern wchar_t  _interpreter_blocktext[];
 
 
 int read_tool_file(      /* ARGUMENT VALUES             */
- const char * tool_file,       /* name of tool file           */
+ wchar_t * tool_file,       /* name of tool file           */
  setup_pointer settings); /* pointer to machine settings */
 
-int save_tool_file(const char* File);  // save tool file with occasional backup
-int save_tool_file_0(const char* File);  // save tool file
+int save_tool_file(const wchar_t* File);  // save tool file with occasional backup
+int save_tool_file_0(const wchar_t* File);  // save tool file
 
 
 int read_setup_file(     /* ARGUMENT VALUES             */
- const char * setup_file,      /* name of setup file          */
+ wchar_t * setup_file,      /* name of setup file          */
  setup_pointer settings); /* pointer to machine settings */
 

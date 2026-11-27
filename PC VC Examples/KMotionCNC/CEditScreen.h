@@ -21,20 +21,21 @@ public:
 
 	CEditScreen();
 	virtual ~CEditScreen();
-	void SetFont(const char *szFaceName, int height, bool Bold, bool Italic);
-	CStringW ToolTipText;
-	CStringW PrevWindowText;
+	void SetFont(const wchar_t *szFaceName, int height, bool Bold, bool Italic);
+	CString ToolTipText;
+	CString PrevWindowText;
 	int Var;
 	void Reset();
 	void GetPersistText(void);
 	static int SavePersists(void);
-	CStringW GetWText();
-	void SetWText(CStringW w);
+	CString GetWText();
+	void SetWText(CString w);
 	static bool PersistDirty;
 	int GetID();
 	CString GetIDName();
 	static CList <LPCEditScreen, LPCEditScreen> EditScreens;
-
+	void SetColors(COLORREF Text, COLORREF Back);  // CLR_DEFAULT = standard color
+	HBRUSH CtlColor(CDC *pDC);
 
 
 
@@ -42,6 +43,9 @@ protected:
 	CFont m_font;
 	int CachedID;
 	CString CachedIDName;
+	COLORREF m_TextColor, m_BackColor;
+	CBrush m_BackBrush;
+	bool m_DarkTheme;  // Windows dark theme applied to the border and scroll bar
 	// Overrides
 	 // ClassWizard generated virtual function overrides
 	 //{{AFX_VIRTUAL(CEditScreen)

@@ -20,7 +20,7 @@ int hlast=0,hlastsolid=-1,hcount=0;
 int rlast=0,rlastsolid=-1,rcount=0;
 int zlast=0,zlastsolid=-1,zcount=0;
 
-main()
+int main()
 {
 	int result;
 

@@ -3,6 +3,7 @@
 #define PING_H_
 #include "dbg.h"
 int FindKognas();
+void CreateKognaListMutex(); // without scanning, used when Ethernet is disabled
 int FindKFLOPs();
 void CleanupFindKFLOPs();
 #define MAX_KOGNAS 16

@@ -2,7 +2,7 @@
 
 #define FAXIS 6
 
-main()
+int main()
 {
 	double T0, T1, Pos,Pos0, Freq;
 	

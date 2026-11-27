@@ -4,7 +4,7 @@
 //
 // Assume index mark  
 
-void main() 
+int main() 
 {
     float k=0,A=30.0f;   // set coil current amplitude to 30 PWM units
 

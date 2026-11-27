@@ -1,0 +1,1 @@
+__dynoShard("terms/t_vn",{"vnmg":[[39,0,2,[1510,3]]]});

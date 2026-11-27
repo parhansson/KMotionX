@@ -435,10 +435,8 @@ static void set_options(char *argv[]) {
   set_absolute_path(options, "ssl_certificate");
 
   if (!path_exists(get_option(options, "document_root"), 1)) {
-    set_option(options, "document_root", s_default_document_root);
-    set_absolute_path(options, "document_root");
-    notify("Setting document_root to [%s]",
-        mg_get_option(server, "document_root"));
+    die("Webroot missing: %s. Install the frontend or pass -document_root <frontend-build>.",
+        get_option(options, "document_root"));
   }
 
   // Make extra verification for certain options
@@ -460,9 +458,7 @@ static void set_options(char *argv[]) {
     free(options[i + 1]);
   }
 
-  // Change current working directory to document root. This way,
-  // scripts can use relative paths.
-  chdir(mg_get_option(server, "document_root"));
+  // Machine file access must not depend on the static document root or cwd.
 
 #if 0
   // Add an ability to pass listening socket to mongoose
@@ -500,10 +496,17 @@ static void set_options(char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-  s_default_document_root = kmx::getMachineDataPath();
+  std::string webroot = std::string(kmx::getResourcePath()) + "/web";
+  s_default_document_root = webroot.c_str();
   init_server_name();
   start_mongoose(argc, argv);
-  initHandler();
+  try {
+    initHandler();
+  } catch (const std::exception &error) {
+    fprintf(stderr, "Machine initialization failed: %s\n", error.what());
+    mg_destroy_server(&server);
+    return EXIT_FAILURE;
+  }
   printf("%s serving [%s] on port %s\n", server_name,
       mg_get_option(server, "document_root"),
       mg_get_option(server, "listening_port"));

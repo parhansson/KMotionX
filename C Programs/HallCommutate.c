@@ -33,7 +33,7 @@ float CommTable[8] =
 	0.0					// Hall=7 invalid
 };
 
-void main() 
+int main() 
 {
     float A=AMPLITUDE;   // set coil current amplitude
 	int WhichSnap,WhichClamp,WhichClampEnable;

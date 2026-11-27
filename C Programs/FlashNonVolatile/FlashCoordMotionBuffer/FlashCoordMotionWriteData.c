@@ -3,7 +3,7 @@
 void *memcpy(void *s1, const void *s2, size_t n);  // copy bytes from s2 -> s1 
 
 
-void main()
+int main()
 {
 	char *gb = (char *)gather_buffer;  // Pointer of 1 bytes starting at beginning of gather_buffer
 	int nBytes = (ParametricIndex+1)*sizeof(ParametricCoeffs[0]); //Quantity of bytes to save

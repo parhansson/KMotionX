@@ -18,7 +18,7 @@ void ServiceKonnectPWM(void);
 double T,T0=0;
 float Vout=0.0;  // desired voltage
 
-main()
+int main()
 {
 	InitAux();
 	AddKonnect_Aux0(0,&VirtualBits,VirtualBitsEx);

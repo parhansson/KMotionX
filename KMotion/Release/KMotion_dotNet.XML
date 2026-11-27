@@ -335,9 +335,24 @@
             Jogging uses its own velocity passed in
             </summary>
         </member>
+        <member name="F:KMotion_dotNet.KM_Axis._CoordVelocity">
+            <summary>
+            Velocity to use during Coordinated Motion using Trajectory Planner
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_Axis._CoordAccel">
+            <summary>
+            Acceleration to use during Coordinated Motion using Trajectory Planner
+            </summary>
+        </member>
         <member name="F:KMotion_dotNet.KM_Axis._CPU">
             <summary>
-            Multiplier for the velocity
+            Multiplier for the velocity in counts/unit
+            </summary>
+        </member>
+        <member name="F:KMotion_dotNet.KM_Axis._CPU_is_mm">
+            <summary>
+            The level of jog percenatage computed from the commanded jog velocity
             </summary>
         </member>
         <member name="F:KMotion_dotNet.KM_Axis._JogPercent">
@@ -375,20 +390,39 @@
             </summary>
             
         </member>
+        <member name="P:KMotion_dotNet.KM_Axis.CoordVelocity">
+            <summary>
+            Max Commanded velocity to use during Coordinated Motion Feeds
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_Axis.CoordAccel">
+            <summary>
+            Max Acceleration to to use during Coordinated Motion Feeds
+            </summary>
+        </member>
         <member name="P:KMotion_dotNet.KM_Axis.Velocity">
             <summary>
-            Commanded velocity to use during positioning 
+            Commanded velocity to use during Rapids and Independent Motion
             </summary>
         </member>
         <member name="P:KMotion_dotNet.KM_Axis.Acceleration">
             <summary>
-            Acceleration to use during positioning
-            Jogging uses its own velocity passed in
+            Acceleration to use during Rapids and Independent Motion
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_Axis.Jerk">
+            <summary>
+            Jerk to to use during Rapids and Independent Motion
             </summary>
         </member>
         <member name="P:KMotion_dotNet.KM_Axis.CPU">
             <summary>
-            Counts per unit
+            Counts per unit, must set before Velocity, Acceleration, and Jerk
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_Axis.CPU_is_mm">
+            <summary>
+            Indicates if CPU (Counts/unit) is mm otherwise inches
             </summary>
         </member>
         <member name="P:KMotion_dotNet.KM_Axis.JogPercent">
@@ -844,6 +878,11 @@
             Converts Arcs to linear segments (User Setting)
             </summary>
         </member>
+        <member name="P:KMotion_dotNet.KM_MotionParams.DoRapidsAsFeeds">
+            <summary>
+            Property for DoRapidsAsFeeds (For non-linear Kinematics Rapids must be treated as feeds and subdivided)
+            </summary>
+        </member>
         <member name="P:KMotion_dotNet.KM_MotionParams.DegreesA">
             <summary>
             Whether Axis A is in units of Degrees
@@ -1205,6 +1244,20 @@
             Property setter Accessor for UseOnlyLinearSegments (Converts Arcs to Linear Segments based on Kinematic Setting)
             </summary>
             <param name="value">UseOnlyLinearSegments to set (Converts Arcs to Linear Segments based on Kinematic Setting)</param>
+        </member>
+        <member name="M:KMotion_dotNet.KM_MotionParams.Get_DoRapidsAsFeeds">
+            <summary>
+            Property getter Accessor for DoRapidsAsFeeds (For non-linear Kinematics Rapids must be treated as feeds and subdivided 
+            into small line segments)
+            </summary>
+            <returns>Current DoRapidsAsFeeds</returns>
+        </member>
+        <member name="M:KMotion_dotNet.KM_MotionParams.Set_DoRapidsAsFeeds(System.Boolean)">
+            <summary>
+            Property setter Accessor for DoRapidsAsFeeds (For non-linear Kinematics Rapids must be treated as feeds and subdivided 
+            into small line segments)
+            </summary>
+            <param name="value">DoRapidsAsFeeds to set (Converts Arcs to Linear Segments based on Kinematic Setting)</param>
         </member>
         <member name="M:KMotion_dotNet.KM_MotionParams.Get_ArcsToSegs">
             <summary>
@@ -2168,6 +2221,7 @@
             Set the current fixture
             </summary>
             <param name="fixture">Fixture Index</param>
+            <returns>0 if successful else error code</returns>
         </member>
         <member name="M:KMotion_dotNet.KM_Interpreter.SetOrigin(System.Int32,System.Double,System.Double,System.Double,System.Double,System.Double,System.Double)">
             <summary>
@@ -2409,6 +2463,12 @@
             <summary>
             Gets the file to be used to store/restore Interpreter GCode Variables
             </summary>
+        </member>
+        <member name="M:KMotion_dotNet.KM_Interpreter.SaveVars">
+            <summary>
+            Saves Interpreter GCode Variables to disk in filename specified by VarsFile
+            </summary>
+            <returns>Returns true if successful</returns>
         </member>
         <member name="M:KMotion_dotNet.KM_Interpreter.Set_VarsFile(System.String)">
             <summary>
@@ -2697,6 +2757,11 @@
             Flag to determine that this object has been properly initialized
             </summary>
         </member>
+        <member name="P:KMotion_dotNet.KM_CoordMotion.RapidParamsDirty">
+            <summary>
+            Gets/Sets the RapidParamsDirty, if set Rapid parameters will be refressed from KFLOP/Kogna
+            </summary>
+        </member>
         <member name="P:KMotion_dotNet.KM_CoordMotion.FeedRateOverride">
             <summary>
             Gets/Sets the Feedrate override for all axes
@@ -2792,6 +2857,12 @@
             Stop the execution of current motion in a controlled number
             </summary>
         </member>
+        <member name="M:KMotion_dotNet.KM_CoordMotion.GetRapidParamsDirty">
+            <summary>
+            Gets the RapidParamsDirty, if set Rapid parameters will be refressed from KFLOP/Kogna
+            </summary>
+            <returns>RapidParamsDirty</returns>
+        </member>
         <member name="M:KMotion_dotNet.KM_CoordMotion.GetFeedRateOverride">
             <summary>
             Gets the current Feedrate override
@@ -2803,6 +2874,12 @@
             Gets the current Feedrate Rapidoverride
             </summary>
             <returns>override percentage</returns>
+        </member>
+        <member name="M:KMotion_dotNet.KM_CoordMotion.SetRapidParamsDirty(System.Boolean)">
+            <summary>
+            Sets the RapidParamsDirty, if set Rapid parameters will be refressed from KFLOP/Kogna
+            </summary>
+            <param name="value">RapidParamsDirty</param>
         </member>
         <member name="M:KMotion_dotNet.KM_CoordMotion.SetFeedRateOverride(System.Double)">
             <summary>
@@ -4231,6 +4308,9 @@
         <member name="M:KMotion_dotNet.KM_Controller.GetUserData(System.Int32)">
             <summary>
             Gets a 32 bit word of user data
+            
+            To set int value in KFLOP in C do:
+            persist.UserData[index] = i;
             </summary>
             <param name="index">array offset (0-199)</param>
             <returns>Int32 data from the array</returns>
@@ -5416,19 +5496,9 @@
             Spindle 1 Carriage, Wrist, etc...
             </summary>
         </member>
-        <member name="F:KMotion_dotNet.KM_AxisGroup._Velocity">
+        <member name="F:KMotion_dotNet.KM_AxisGroup._FeedRate">
             <summary>
-            Velocity to use during positioning
-            </summary>
-        </member>
-        <member name="F:KMotion_dotNet.KM_AxisGroup._MaxVelocity">
-            <summary>
-            Maximum velocity to use during positioning and coordinated motion
-            </summary>
-        </member>
-        <member name="F:KMotion_dotNet.KM_AxisGroup._Acceleration">
-            <summary>
-            Acceleration to use during positioning 
+            Desired FeedRate in inches/sec for coordinated motion Feeds (G1,G2,G3) 
             </summary>
         </member>
         <member name="F:KMotion_dotNet.KM_AxisGroup._AxisList">
@@ -5505,20 +5575,9 @@
             Spindle 1 Carriage, Wrist, etc...
             </summary>
         </member>
-        <member name="P:KMotion_dotNet.KM_AxisGroup.Velocity">
+        <member name="P:KMotion_dotNet.KM_AxisGroup.FeedRate">
             <summary>
-            Commanded velocity to use during positioning 
-            </summary>
-        </member>
-        <member name="P:KMotion_dotNet.KM_AxisGroup.MaxVelocity">
-            <summary>
-            Maximum velocity to use during positioning and coordinated motion
-            </summary>
-        </member>
-        <member name="P:KMotion_dotNet.KM_AxisGroup.Acceleration">
-            <summary>
-            Velocity to use during positioning
-            Jogging uses its own velocity passed in
+            Desired FeedRate in inches/sec for coordinated motion Feeds (G1,G2,G3)  
             </summary>
         </member>
         <member name="P:KMotion_dotNet.KM_AxisGroup.AxisList">
@@ -5575,6 +5634,11 @@
         <member name="P:KMotion_dotNet.KM_AxisGroup.PreviousStopped">
             <summary>
             Get/Set Previous Stopped after Halt State
+            </summary>
+        </member>
+        <member name="P:KMotion_dotNet.KM_AxisGroup.RapidParamsDirty">
+            <summary>
+            Gets/Sets the RapidParamsDirty, if set Rapid parameters will be refressed from KFLOP/Kogna
             </summary>
         </member>
         <member name="P:KMotion_dotNet.KM_AxisGroup.FeedRateOverride">

@@ -62,14 +62,14 @@ CString MainPathRoot;
 CKMotionApp::CKMotionApp()
 {
 	
-	GetModuleFileName(GetModuleHandle("KMotionDLL.dll"),MainPath.GetBuffer(MAX_PATH),MAX_PATH);
+	GetModuleFileName(GetModuleHandle(L"KMotionDLL.dll"),MainPath.GetBuffer(MAX_PATH),MAX_PATH);
 	MainPath.ReleaseBuffer();
 	
 	// Save for everybody what directory we are installed in
 
 	// Avoid strange relative paths
 	CString s;
-	if (_fullpath(s.GetBufferSetLength(MAX_PATH), MainPath, MAX_PATH) == NULL)
+	if (_wfullpath(s.GetBufferSetLength(MAX_PATH), MainPath, MAX_PATH) == NULL)
 	{
 		MessageBoxW(NULL, Translate("Error Module PathName"), L"KMotion", MB_ICONSTOP | MB_OK);
 	}
@@ -77,7 +77,7 @@ CKMotionApp::CKMotionApp()
 	MainPath = s;
 
 
-	MainPath.Replace("\"","");  // remove quotes
+	MainPath.Replace(L"\"",L"");  // remove quotes
 	MainPath.TrimRight();
 	MainPath.TrimLeft();
 
@@ -87,7 +87,7 @@ CKMotionApp::CKMotionApp()
 	// Check if we are running from a 64bit directory directory
 	// if we are, then strip it off
 
-	if (MainPathDLL.Right(2).CompareNoCase("64") == 0)
+	if (MainPathDLL.Right(2).CompareNoCase(L"64") == 0)
 	{
 		MainPathDLL = MainPathDLL.Left(MainPathDLL.GetLength() - 2);
 	}
@@ -97,7 +97,7 @@ CKMotionApp::CKMotionApp()
 	// Check if we are running from the debug directory
 	// if we are, then strip it off
 
-	if (MainPath.Right(6).CompareNoCase("\\debug") == 0)
+	if (MainPath.Right(6).CompareNoCase(L"\\debug") == 0)
 	{
 		MainPath = MainPath.Left(MainPath.GetLength() - 6);
 	}
@@ -105,14 +105,14 @@ CKMotionApp::CKMotionApp()
 	// Check if we are running from the release directory
 	// if we are, then strip it off
 
-	if (MainPath.Right(8).CompareNoCase("\\release") == 0)
+	if (MainPath.Right(8).CompareNoCase(L"\\release") == 0)
 	{
 		MainPath = MainPath.Left(MainPath.GetLength() - 8);
 	}
 
 	// Now set the root install directory
 
-	if (MainPath.Right(8).CompareNoCase("\\KMotion") == 0)
+	if (MainPath.Right(8).CompareNoCase(L"\\KMotion") == 0)
 	{
 		MainPathRoot = MainPath.Left(MainPath.GetLength()-8);
 	}
@@ -129,7 +129,7 @@ CKMotionApp theApp;
 
 BOOL CKMotionApp::InitApplication() 
 {
-	char s[MAX_PATH];
+	wchar_t s[MAX_PATH];
 
 	GetModuleFileName(NULL,s,MAX_PATH);
 	return CWinApp::InitApplication();

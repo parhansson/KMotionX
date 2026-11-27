@@ -1,11 +1,11 @@
-#include "KMotionDef.h"
+﻿#include "KMotionDef.h"
 
 // Default Initial Configuration for 3 Axis Analog DAC Servo with encoder feedback
 //
 // Note Low Gains, Limited Max Limits, No Limit Options, No Soft Limits, 
 // Large allowed Following Error, No Feed Forward, No Filters, etc
 
-void main()
+int main()
 {
 	SetBit(152);  // enable AMPS
 	SetBit(157);

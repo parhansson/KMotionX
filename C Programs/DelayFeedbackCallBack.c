@@ -57,7 +57,7 @@ void CallBack(void)
 }
 
 
-main()
+int main()
 {
 	int i;
 	

@@ -9,7 +9,7 @@
 #define YHOME 169
 #define ZHOME 170
 
-main()
+int main()
 {
 	// do z homing
 	SimpleHome( 2,   	// axis

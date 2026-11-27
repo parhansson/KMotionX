@@ -15,7 +15,7 @@ float SpeedRatioTable[8]={1.0f,  		// 0=Gear A
 					0.0f}; 				// 7=Invalid Sensor combo
 
 
-main()
+int main()
 {
 	int Gear;
 	float SpeedRatio;

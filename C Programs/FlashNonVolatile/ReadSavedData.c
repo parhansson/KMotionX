@@ -1,6 +1,6 @@
 #include "KMotionDef.h"
 
-main()
+int main()
 {
 	double *p=(double*)FLASH_USER;  // pointer to the FLASH Chip
 		

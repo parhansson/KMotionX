@@ -11,7 +11,7 @@ double SlaveGain,ToCut,TotalCut,Z0,S0;
 void DoSlave(int Axis);
 void DoTap(int Axis, double Pitch, double Dist, double RPM);
 
-main()
+int main()
 {
 	// Set variables
 

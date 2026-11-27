@@ -36,6 +36,7 @@
 #define TEMP_GCODE_FILE					"\\KMotion\\Data\\Temp_Gcode_Temp_.ngc"
 #define LOG_RUNTIME_FILE				"\\KMotion\\Data\\RunLog.txt"
 #define EDIT_CONTROL_PERSIST_FILE		"\\KMotion\\Data\\EditControlPersist.txt"
+#define TOOL_SETUP_PASSWORD_FILE        "\\KMotion\\Data\\ToolSetupPassword.txt"
 
 
 #define NCOMMAND_HISTORY 10
@@ -62,12 +63,12 @@ public:
 	HWND hwndTT;  // tool tip for title
 	TOOLINFO ti;
 	void SetStepText(int i,double v,int ID);
-	double CurAbsX,CurAbsY,CurAbsZ,CurAbsA,CurAbsB,CurAbsC;
+	double CurAbsX, CurAbsY, CurAbsZ, CurAbsA, CurAbsB, CurAbsC, CurAbsU, CurAbsV;
 	float m_JogSpeedFactor;
-	double m_Joyvx, m_Joyvy, m_Joyvz, m_Joyva, m_Joyvb, m_Joyvc;
-	double m_JoyExtvx, m_JoyExtvy, m_JoyExtvz, m_JoyExtva, m_JoyExtvb, m_JoyExtvc;
-	double m_Joyx0,m_Joyy0,m_Joyz0,m_Joya0,m_Joyb0,m_Joyc0;
-	bool m_JoyMovedx,m_JoyMovedy,m_JoyMovedz,m_JoyMoveda,m_JoyMovedb,m_JoyMovedc;
+	double m_Joyvx, m_Joyvy, m_Joyvz, m_Joyva, m_Joyvb, m_Joyvc, m_Joyvu, m_Joyvv;
+	double m_JoyExtvx, m_JoyExtvy, m_JoyExtvz, m_JoyExtva, m_JoyExtvb, m_JoyExtvc, m_JoyExtvu, m_JoyExtvv;
+	double m_Joyx0, m_Joyy0, m_Joyz0, m_Joya0, m_Joyb0, m_Joyc0, m_Joyu0, m_Joyv0;
+	bool m_JoyMovedx,m_JoyMovedy,m_JoyMovedz,m_JoyMoveda, m_JoyMovedb, m_JoyMovedc, m_JoyMovedu, m_JoyMovedv;
 	bool PersistRestored;
 	bool FirstStartup;
 	bool FirstInitDlg;
@@ -83,7 +84,7 @@ public:
 	BOOL ShuttingDownApplication;
 	MAIN_STATUS MainStatus;
 	double PrevMainStatusTimeStamp;
-	double PrevDROx,PrevDROy,PrevDROz,PrevDROa,PrevDROb,PrevDROc;
+	double PrevDROx, PrevDROy, PrevDROz, PrevDROa, PrevDROb, PrevDROc, PrevDROu, PrevDROv;
 	int prev_length_units;
 	int m_BulkStatusCount;
 	int CS_axis[MAX_ACTUATORS];
@@ -97,6 +98,7 @@ public:
 	TRACKMOUSEEVENT Track;
 	bool TrackOn = false;
 	bool EnableJogKeys;
+	bool ForceDisableJogKeys;  // disable keys whether or not a job is running
 	bool GCodeThreadActive[N_USER_GCODE_FILES];
 	bool ThreadHadError[N_USER_GCODE_FILES];
 	DWORD m_exitcode;
@@ -137,6 +139,29 @@ public:
 	double	m_CountsPerInchZ;
 	double	m_CountsPerInchU;
 	double	m_CountsPerInchV;
+
+	// Constraints in Actuator Space option (see MOTION_PARAMS)
+	BOOL	m_ActuatorLimits;
+	double	m_ActScale[MAX_TP_ACTUATORS];
+	double	m_MaxActVel[MAX_TP_ACTUATORS];
+	double	m_MaxActAccel[MAX_TP_ACTUATORS];
+	double	m_MaxActJerk[MAX_TP_ACTUATORS];
+	BOOL	m_ActDegrees[MAX_TP_ACTUATORS];
+
+	// 3rd Order (jerk limited) TP option: entered per-CAD-axis Jerk
+	// (independent of the uploaded stop-to-stop Rapid jerk)
+	BOOL	m_ThirdOrderTP;
+	BOOL	m_TPLogSegs;
+	BOOL	m_TPCubicKnots;
+	double	m_MaxJerkX;
+	double	m_MaxJerkY;
+	double	m_MaxJerkZ;
+	double	m_MaxJerkA;
+	double	m_MaxJerkB;
+	double	m_MaxJerkC;
+	double	m_MaxJerkU;
+	double	m_MaxJerkV;
+
 	double  m_JogSpeed[MAX_ACTUATORS];
 	double  m_JogSpeedOverride[MAX_ACTUATORS];
 	double  m_JogSlowPercent;
@@ -162,6 +187,7 @@ public:
 	BOOL	m_ToolLengthImmediately;
 	BOOL	m_ToolTableDoM6;
 	BOOL	m_ConfirmExit;
+	BOOL	m_AllowConcaveCorners;
 	BOOL	m_ArcsToSegs;
 	BOOL	m_DisplayEncoder;
 	BOOL	m_DegreesA;
@@ -218,6 +244,68 @@ public:
 	CColor m_ColorFeed;
 	CColor m_ColorJump;
 
+	// ---- G-code viewer: full-path preview + cut progress ----------------------
+	// (see kmotioncnc-src/DESIGN-gviewer-progress.md)
+	CColor m_ColorPreviewFeed, m_ColorPreviewTraverse;	// uncut (gray / muted red)
+	CColor m_ColorCutFeed, m_ColorCutTraverse;			// cut (white / light red)
+	bool PreviewEnabled();				// G Viewer Setup "Preview program on load"; false = exact stock behaviour
+	int  m_PreviewRequestThread;		// -1 = none; file to preview when idle
+	volatile bool m_PreviewRunning;		// quiet simulation of the file in progress
+	bool m_PreviewLaunching;			// StartPreview is inside LaunchExecution
+	bool m_PreviewFinishPending, m_PreviewFinishOk;	// completed; restore when interpreter thread exits
+	int  m_PreviewThread;				// thread (file tab) being / last previewed
+	bool m_PreviewValid;				// viewer path == complete preview of m_PreviewFile
+	CString m_PreviewFile;				// file + its size/time when previewed (staleness)
+	ULONGLONG m_PreviewFileSize;
+	CTime m_PreviewFileTime;
+	CArray<int, int> m_PreviewFileLine;	// file line of each path vertex (preview only)
+	CArray<double, double> m_PreviewTime;	// estimated seconds from program start to each vertex
+	bool m_PreviewPrevValid;			// last preview point (before tool offset), for splitting moves
+	double m_PreviewPrevX, m_PreviewPrevY, m_PreviewPrevZ;
+	setup *m_PreviewSetupSave;			// interpreter state snapshot, restored after
+	int  m_PreviewSavedCurrentLine;
+	BOOL m_PreviewSavedHadError;
+	int  m_PreviewSavedThreadLaunched, m_PreviewSavedThreadStopped;
+	int  m_PreviewSavedStopping, m_PreviewSavedStopped[4];
+	double m_PreviewSavedStoppedPos[24];
+	bool m_ProgressActive;				// real run is colouring the kept preview
+	int  m_ProgressIndex;				// first vertex not yet coloured "cut"
+	int  m_ProgressSeqOffset;			// preview seq - this run's seq (mid-file start)
+	int  m_PreviewSeq0;					// interpreter seq before the first block (1 if the file starts with %)
+	bool m_PreviewSeqMonotonic;			// preview seqs never decrease (no subroutine file reopen)
+	bool m_PreviewLineMonotonic;		// preview lines never decrease (no loops or subroutines)
+	bool m_ChainValid;					// last mapped run stopped at m_ChainLine ...
+	int  m_ChainLine;
+	int  m_ChainSeq;					// ... after the block with this preview seq
+	int  m_CompleteLine, m_CompleteSeq;	// completed run: next line, last seq read (its numbering)
+	bool m_CompleteStopped;				// completed run was halted (state restored to the halted block)
+	bool m_ToolViewValid;				// tool position in path coordinates (set by the viewer)
+	double m_ToolViewX, m_ToolViewY, m_ToolViewZ;
+	bool m_ProgressToolMoved;			// tool has left where it was when the run started
+	bool m_ProgressToolStartValid;
+	double m_ProgressToolStartX, m_ProgressToolStartY, m_ProgressToolStartZ;
+	double m_ProgressAdvanceWall;		// wall clock when progress last advanced
+	bool m_PlaybackArmed;				// Simulate run over the preview: play it back when done
+	bool m_PlaybackRunning, m_PlaybackPaused;	// animating the cut along the preview (Simulate)
+	double m_PlaybackTime;				// simulated seconds from program start
+	double m_PlaybackWall;				// wall clock at the last playback tick
+	int  m_PlaybackEnd;					// vertex where the playback stops (exclusive)
+	void PlotPathVertex(double x, double y, double z, bool rapid, double rate_in_per_sec, int sequence_number, int ID);
+	void AddPreviewVertex(double x, double y, double z, CColor &c, double t, int sequence_number, int ID);
+	void StopPlayback();
+	int  FindToolOnPath(int first);
+	void UpdatePlayback();
+	void RequestPreview(int thread);
+	void ServicePreview();
+	void StartPreview(int thread);
+	void FinishPreview(bool ok);
+	bool PreviewMatchesFile(const CString &file);
+	void ArmProgress(int begin, const CString &file);
+	int  PreviewIndexAfterRun();
+	void UpdateProgress();
+	void ColorPreviewRange(int first, int last, bool cut);
+	void SaveResumeState(bool save);
+
 	CMutex *GCodeMutex;
 	int DisplayedThreadStat[N_USER_GCODE_FILES];  // -1 = undefined, 1=active, 0 = inactive
 	int NumberToThreadID(int i) ;
@@ -235,7 +323,7 @@ public:
 	void SaveOnExit(FILE * f);
 	void RestoreOnStart(FILE * f);
 	void SaveFileNames();
-	int SaveLoadConfig(FILE *f, char *s, bool save);
+	int SaveLoadConfig(FILE *f, wchar_t *s, bool save);
 	int SaveConfig();
 	int LoadConfig();
 	void LoadFile(int thread,bool ResetPosition);
@@ -249,6 +337,7 @@ public:
 	int DoActPositionExp(int i, double p, double tau);
 	bool AxisInputModeNone(int axis);
 	int GetAxisDRO(int axis, double *Act, double *Dest, bool *DisplayedEnc);
+	bool GetEncodedDROValue(int ID, bool KMotionPresent, double *value, bool *DisplayedEnc, int *Chan);
 	int SendOneDouble(int i, double d);
 	int SendCoordinates(int i, bool MachineCoords);
 	int ConvertToolToIndex(int number,int *index);
@@ -260,7 +349,7 @@ public:
 
 
 	CString m_ErrorOutput;
-	CStringW ToolTipText;
+	CString ToolTipText;
     CDlgToolBar *m_GCodeTools;
 
 	CHiResTimer ElapsedTimer;
@@ -295,8 +384,11 @@ public:
 	BOOL	m_ShowLineNumbers;
 	BOOL	m_ShowMach;
 	int m_LastToolSetupPage;
+	BOOL m_LastConfigUnitsMM;
 	CEditScreen	m_FeedRateEdit;
 	CEditScreen	m_SpindleRateEdit;
+	CDisplay	m_PosV;
+	CDisplay	m_PosU;
 	CDisplay	m_PosC;
 	CDisplay	m_PosB;
 	CDisplay	m_PosA;
@@ -332,6 +424,20 @@ public:
 	CMotionButton	m_Cminus;
 	CMotionButton	m_CminusStep;
 
+	CMotionButton	m_Uplus2;
+	CMotionButton	m_Uplus;
+	CMotionButton	m_UplusStep;
+	CMotionButton	m_Uminus2;
+	CMotionButton	m_Uminus;
+	CMotionButton	m_UminusStep;
+
+	CMotionButton	m_Vplus2;
+	CMotionButton	m_Vplus;
+	CMotionButton	m_VplusStep;
+	CMotionButton	m_Vminus2;
+	CMotionButton	m_Vminus;
+	CMotionButton	m_VminusStep;
+
 
 	CMotionButton	m_Right2;
 	CMotionButton	m_Right;
@@ -356,12 +462,16 @@ public:
 	CImageButton m_ZeroA;
 	CImageButton m_ZeroB;
 	CImageButton m_ZeroC;
+	CImageButton m_ZeroU;
+	CImageButton m_ZeroV;
 	CImageButton m_SetX;
 	CImageButton m_SetY;
 	CImageButton m_SetZ;
 	CImageButton m_SetA;
 	CImageButton m_SetB;
 	CImageButton m_SetC;
+	CImageButton m_SetU;
+	CImageButton m_SetV;
 	CImageButton m_EditToolFile;
 	CImageButton m_EditFixtures;
 	CImageButton m_SetFixture;
@@ -385,6 +495,8 @@ public:
 	CImageButton m_StaticLabelA;
 	CImageButton m_StaticLabelB;
 	CImageButton m_StaticLabelC;
+	CImageButton m_StaticLabelU;
+	CImageButton m_StaticLabelV;
 	CImageButton m_StaticTool;
 	CImageButton m_StaticThread;
 	CImageButton m_SimulateStatic;
@@ -489,8 +601,9 @@ public:
 protected:
 	void CKMotionCNCDlg::MakeUnicode(int ID, CImageButton &I);
 
-	void SetBigValues(CDisplay *Disp0, CDisplay *Disp1, CDisplay *Disp2, CDisplay *Disp3, CDisplay *Disp4, CDisplay *Disp5, bool KMotionPresent);
-	void SetBigValueColor(CDisplay *Disp0,int axis, bool KMotionPresent, bool DisplayedEnc);
+	void SetBigValues(CDisplay *Disp0, CDisplay *Disp1, CDisplay *Disp2, CDisplay *Disp3, CDisplay* Disp4, CDisplay* Disp5, CDisplay* Disp6, CDisplay* Disp7, bool KMotionPresent);
+	void DoDROText(CDisplay *Disp, CString DefaultFormat, char X, double x);
+	void SetBigValueColor(CDisplay *Disp0,int axis, bool KMotionPresent, bool DisplayedEnc, int ChanOverride = -1);
 	CString LastTitleText;
 	CString LastTitleElapsed;
 	HACCEL  m_hAccelTable;
@@ -530,6 +643,8 @@ protected:
 	afx_msg void OnZeroA();
 	afx_msg void OnZeroB();
 	afx_msg void OnZeroC();
+	afx_msg void OnZeroU();
+	afx_msg void OnZeroV();
 	afx_msg void OnIhelp();
 	afx_msg void OnRapid();
 	afx_msg void OnFeed();
@@ -566,6 +681,8 @@ protected:
 	afx_msg void OnUpdateHalt(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateExecute(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateRestart(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateOpenFile(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateNew(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateSingleStep(CCmdUI* pCmdUI);
 	afx_msg void OnGView();
 	afx_msg void OnSimulate();
@@ -603,6 +720,8 @@ protected:
 	afx_msg void OnSetA();
 	afx_msg void OnSetB();
 	afx_msg void OnSetC();
+	afx_msg void OnSetU();
+	afx_msg void OnSetV();
 	afx_msg void OnStopStep();
 	afx_msg void Onmm();
 	afx_msg void Oninch();
@@ -615,7 +734,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 private:
 	void SetStepSizes();
-	int DoActVelocity(int i, double v, CString &c);
+	int DoActVelocity(int i, double v, CStringA &c);
 	int DoAllActVelocity(double *V);
 	int StopAxis(int i);
 	double CKMotionCNCDlg::DoJoyAxis(int axis, int joystick);
@@ -627,7 +746,7 @@ private:
 	void FillComboWithCountFixture(int i0, int i1, CComboBoxScreen *Box);
 	void MakeSureFileIsntReadOnly(CString FN);
 	int DoJoyStick();
-	int ReadInterpPos(double *x, double *y, double *z, double *a, double *b, double *c);
+	int ReadInterpPos(double *x, double *y, double *z, double *a, double *b, double *c, double* u, double* v);
 	int UpdateScreen(bool KMotionPresent);
 	void ServiceKFLOPCommands();
 	int SetKFLOPCommandResult(int r);
@@ -643,20 +762,44 @@ private:
 	void LogJobEndTime(double seconds);
 	void setMainPathAndRoot(LPWSTR arg0);
 	void RoundReasonable(double &v);
+	bool DetermineEnableDisableKeys();
 
 	int UnpackSingleAxisDestVel(int axis, CString s, double * d, double * v);
-	int GetCurrentDestsVels(double * ActsDest, double * ActsVel, double * CurAbsX, double * CurAbsY, double * CurAbsZ, double * CurAbsA, double * CurAbsB, double * CurAbsC);
-	CStringW InterprocessString;
+	int GetCurrentDestsVels(double * ActsDest, double * ActsVel, double * CurAbsX, double * CurAbsY, double * CurAbsZ, double * CurAbsA, double* CurAbsB, double* CurAbsC, double* CurAbsU, double* CurAbsV);
+	CString InterprocessString;
+
+public:
+	// Coordinated (kinematics-exact) jog streaming: under NONLINEAR
+	// kinematics, jogs are executed as short coordinated moves streamed
+	// through the trajectory planner (the one the machine is CONFIGURED
+	// with - legacy or 3rd Order) instead of open-loop actuator velocity
+	// jogs - the controller then follows the exact kinematic path at the
+	// servo rate.  The stream runs on its own worker thread so the GUI
+	// timer is never blocked by downloads (see CoordJogWorker).
+	int DoCoordinatedJog(double *v);     // UI side: publish v, spawn worker
+	bool JogKinematicsNonlinear(double *v);
+	void CoordJogWorker();               // worker thread: passes + respawn
+	void CoordJogWorkerOnce();           // one press-to-teardown jog pass
+	volatile bool m_CoordJogActive = false;
+	volatile bool m_CoordJogLaunched = false;  // coordinated jog buffer executing:
+	                                           // gates the GUI-thread release stop
+	double m_CoordJogStopTime = 0.3;           // planner-limit stop ramp time for
+	                                           // the release stop (set per jog)
+	double m_CoordJogV[8] = {0};         // commanded CAD velocities (shared)
+	CRITICAL_SECTION m_CoordJogCS;       // guards m_CoordJogV
+	bool m_CoordJogCSInit = false;
 	
 	HWND HWndClient;
 
 public:
-	int GetStringFromGather(int WordOffset, CString *msg, int nWords);
-	int SetStringToGather(int WordOffset, CString msg);
+	int GetStringFromGather(int WordOffset, CStringA *msg, int nWords);
+	int SetStringToGather(int WordOffset, CStringA msg);
 	int GetVar(int Var, int *value);
 	int SetVar(int Var, int value);
 
 	void WhenIdle();  // called by Ap pclass when message queue Idle
+
+	void HandleEnable(CImageButton& M);  // handle enable/disable dynamicly or override with Control's Var setting 0 or 1
 
 	int GetBoardType();
 

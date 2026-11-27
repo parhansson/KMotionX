@@ -123,6 +123,7 @@ either expressed or implied, of the FreeBSD Project.
 
 #ifdef __cplusplus
 extern int AfxMessageBox(const char* value, int type = 0/*NULL*/);
+extern int AfxMessageBox(const wchar_t* value, int type = 0/*NULL*/);
 extern int MessageBoxW(long hwnd, const wchar_t* value,const wchar_t* title, int type);
 extern int MessageBoxW(long hwnd, std::wstring value,const wchar_t* title, int type);
 extern int MessageBox(long hwnd,const char* value,const char* title, int type);

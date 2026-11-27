@@ -14,6 +14,11 @@
 #include "MotionButton.h"
 #include "CEditScreen.h"
 #include "CComboBoxScreen.h"
+#include <map>
+
+#define DARK_TEXT_COLOR RGB(0xdc, 0xdc, 0xdc)  // default text color on a dark background
+#define DARK_SEL_COLOR RGB(0x26, 0x4f, 0x78)   // default selection color on a dark background
+
 
 typedef struct 
 {
@@ -28,9 +33,9 @@ typedef struct
 	CString FontName;
 	int FontSize;
 	int HotKey;
-	CStringW Text;
-	CStringW ToolTipText;
-	CStringW Script;
+	CString Text;
+	CString ToolTipText;
+	CString Script;
 	bool selected;
 	bool show;
 	bool Bold;
@@ -69,30 +74,32 @@ public:
 	int FindResourceIDs(CString s);
 	CString FindResourceName(int ID);
 	DLG_CONTROL *FindDlgControl(int ID);
-	int ParseString(CStringW &s, CString label, CStringW &r, bool NoErrors = false);
-	int ParseString(CStringW &s, CString label, CString &r, bool NoErrors = false);
-	int ParseInt(CStringW &s, CString label, int &r, bool NoErrors = false);
-	int ParseIntHex(CStringW &s, CString label, int &r);
+	int ParseString(CString &s, CString label, CString &r, bool NoErrors = false);
+	int ParseInt(CString &s, CString label, int &r, bool NoErrors = false);
+	int ParseIntHex(CString &s, CString label, int &r);
 	CString Part(int n, CString p);
 	int PartHex(int n, CString p);
+	COLORREF PartColor(int n, CString p);
+	static bool IsDarkColor(COLORREF c);
+	static COLORREF BlendColor(COLORREF c0, COLORREF c1, int percent);
 	int SwapRGB(int n);
 	bool CheckForScreenEditorToolTip(UINT id, LPWSTR Tip);
-	int GetEditScreenVar(int Var, CString *s);
-	CString ConvertWideToANSI(CStringW s);
-	CStringW ConvertANSIToWide(CString s);
+	int GetEditScreenVar(int Var, CStringA *s);
+	CStringA ConvertWideToANSI(CString s);
+	CString ConvertANSIToWide(CStringA s);
 	bool CheckForScreenEditorHotKey(int VirtualKey, UINT *ID, CImageButton **I);
 	bool Find3MotionButtonsSameAxisDir(int axis, int dir, CMotionButton **B, CMotionButton **B2, CMotionButton **Bstep);
-	int Execute(CStringW s, DLG_CONTROL *Dlg, bool *NewControl, int OffX = 0, int OffY = 0);
-	int DoControlID(CStringW s, DLG_CONTROL *Dlg, bool *NewControl,  int OffX, int OffY);
+	int Execute(CString s, DLG_CONTROL *Dlg, bool *NewControl, int OffX = 0, int OffY = 0);
+	int DoControlID(CString s, DLG_CONTROL *Dlg, bool *NewControl,  int OffX, int OffY);
 	void AddRelPaths(CString & file);
 	CString Recurse(CString pstr, CString File);
 	bool CheckIfFileExists(CString Name);
 	int DoCompatibility(DLG_CONTROL *Dlg);
-	int DoMainDlg(CStringW s);
-	int DoScriptName(CStringW s);
-	int DoSScript(CStringW s, int OffX = 0, int OffY = 0);
-	int DoAction(CStringW s);
-	int DoWinMsg(CStringW s);
+	int DoMainDlg(CString s);
+	int DoScriptName(CString s);
+	int DoSScript(CString s, int OffX = 0, int OffY = 0);
+	int DoAction(CString s);
+	int DoWinMsg(CString s);
 	CImageButton* FindImageButton(int ID);
 	CMotionButton* FindMotionButton(int ID);
 	CImageButton * FindImageButtonHotKey(int VirtualKey);
@@ -100,15 +107,16 @@ public:
 	CComboBoxScreen* FindComboBoxScreen(int ID);
 	CComboBoxScreen * FindComboBoxScreenFromHandle(HWND w);
 	CDisplay* FindDisplay(int ID);
-	CStringW CreateScript(DLG_CONTROL *DlgCtrl);
+	CString CreateScript(DLG_CONTROL *DlgCtrl);
 	int ServiceImageButtons();
 	bool GetStatusBit(int bit);
 	bool ReadBitCached(int bit);
 	void HandleRadioButton(CDialog *Dlg, int nIDC);
-	void RemoveCommasW(CStringW &s);
+	void RemoveCommasW(CString &s);
 	void Convert24to32(CImage *img);
-	CStringW GetPersistText(CString IDNameToFind);
+	CString GetPersistText(CString IDNameToFind);
 	void ResetAllControls();
+	void SetViewBackColor(COLORREF c);
 	int EditScreenChangesCount;
 	bool CheckIfOKtoChangeText(int ID);
 
@@ -120,12 +128,16 @@ public:
 	CString LastLoadedScreen;
 
 	int MainCX,MainCY,MainBackColor;
+	COLORREF ViewBackColor;  // 3D Viewer (IDC_viewctl) background from the Screen Script, CLR_DEFAULT = standard
 	int Caption, MaxBox, MinBox, ResizeFrame, Maximize;
 	CString BackBitmap;
 
 	CString BGFile_loaded;
 	CImage BGimg;
 	CBitmap BitmapFile;				// bitmap we are drawing
+
+	// Static cache: maps File to the directory path where it was found
+	std::map<CString, CString> cache;
 };
 
 /////////////////////////////////////////////////////////////////////////////

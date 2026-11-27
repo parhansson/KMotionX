@@ -41,11 +41,12 @@ public:
 	BOOL m_IncludeB;
 	BOOL m_IncludeC;
 	BOOL m_IncludeToolAngles;
+	BOOL m_PreviewOnLoad;     // G Viewer Setup: preview (plot) a G code file as soon as it is loaded
 
 	~CGViewDlg(); 
 	void SaveOnExit(FILE * f);
 	void RestoreOnStart(FILE * f);
-	int SaveLoadConfig(FILE *f, char *s, bool save);
+	int SaveLoadConfig(FILE *f, wchar_t *s, bool save);
 	int LoadConfig();
 	int SaveConfig();
 	void RefreshTitle(); 

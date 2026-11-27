@@ -5,7 +5,7 @@
 #define QA_2 28	// define to which IO bits the AB signals are connected 
 #define QB_2 29	
 
-main()
+int main()
 {
 	int Change1=0,  Change2=0,   Pos=0;
 	int Change1_2=0,Change2_2=0, Pos_2=0;

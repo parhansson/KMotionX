@@ -1,0 +1,1 @@
+__dynoShard("terms/t_rn",{"rnwksfaqf9jbjnep9":[[1292,0,1,[619]]]});

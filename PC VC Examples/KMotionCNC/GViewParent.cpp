@@ -148,7 +148,7 @@ void CGViewParent::AddAxisToScene()
 	}
 	else
 	{
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to load GCode Axis Image file:") + (CStringW)m_AxisShapeFile, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to load GCode Axis Image file:") + m_AxisShapeFile, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 	}
 }
 
@@ -173,7 +173,7 @@ CString CGViewParent::GetToolFileToDisplay(bool *UsingDefault)
 	}
 	// check if there is no path specified, then add in default
 
-	if (file.Find(':') == -1 && file.Find("\\\\") == -1)
+	if (file.Find(':') == -1 && file.Find(L"\\\\") == -1)
 	{
 		file = TheFrame->MainPathRoot + TOOL_IMAGE_SUB_DIR + file;
 	}
@@ -229,7 +229,7 @@ void CGViewParent::AddToolToScene()
 		if (!MessDisplayed)
 		{
 			MessDisplayed=true;
-			MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to load GCode Tool Image file:") + (CStringW)file, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+			MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to load GCode Tool Image file:") + file, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 			MessDisplayed=false;
 		}
 	}
@@ -263,13 +263,25 @@ BOOL CGViewParent::OnInitDialog()
 // set's the view distance based on extents
 // or Box whichever is bigger
 
-void CGViewParent::SetViewDistance(ViewDir View) 
+void CGViewParent::SetViewDistance(ViewDir View, bool PathOnly)
 {
 	float xScaling, yScaling, zScaling, aspect=1.0, limiting_size;
 	float FillFactor = 0.75f;
 	CGViewDlg *GVDlg = &TheFrame->GViewDlg;
 
 	FindExtents();
+
+	// G-code viewer: fit just the tool path (not the machine box), filling most of the view
+	if (PathOnly && m_Path->NbVertex() > 0)
+	{
+		const float MinSize = 0.1f;		// inches; keeps a tiny / flat path from dividing by zero
+		FillFactor = 0.9f;
+		if (m_maxx - m_minx < MinSize) { float m = (m_maxx + m_minx) / 2; m_minx = m - MinSize/2; m_maxx = m + MinSize/2; }
+		if (m_maxy - m_miny < MinSize) { float m = (m_maxy + m_miny) / 2; m_miny = m - MinSize/2; m_maxy = m + MinSize/2; }
+		if (m_maxz - m_minz < MinSize) { float m = (m_maxz + m_minz) / 2; m_minz = m - MinSize/2; m_maxz = m + MinSize/2; }
+	}
+	else
+	{
 
 	if (GVDlg->m_BoxOffsetX-GVDlg->m_BoxX/2 < m_minx) m_minx = GVDlg->m_BoxOffsetX-GVDlg->m_BoxX/2;
 	if (GVDlg->m_BoxOffsetY-GVDlg->m_BoxY/2 < m_miny) m_miny = GVDlg->m_BoxOffsetY-GVDlg->m_BoxY/2;
@@ -278,6 +290,7 @@ void CGViewParent::SetViewDistance(ViewDir View)
 	if (GVDlg->m_BoxOffsetX+GVDlg->m_BoxX/2 > m_maxx) m_maxx = GVDlg->m_BoxOffsetX+GVDlg->m_BoxX/2;
 	if (GVDlg->m_BoxOffsetY+GVDlg->m_BoxY/2 > m_maxy) m_maxy = GVDlg->m_BoxOffsetY+GVDlg->m_BoxY/2;
 	if (GVDlg->m_BoxOffsetZ+GVDlg->m_BoxZ/2 > m_maxz) m_maxz = GVDlg->m_BoxOffsetZ+GVDlg->m_BoxZ/2;
+	}
 
 	float sizex = m_maxx-m_minx;
 	float midx = (m_maxx+m_minx)/2;
@@ -380,7 +393,18 @@ void CGViewParent::SetViewDistance(ViewDir View)
 }
 
 
-void CGViewParent::OnXy() 
+// G-code viewer: zoom to the tool path in the current view direction
+// (the view keeps its rotation; any non-side view fits as top view).
+void CGViewParent::FitPath()
+{
+	ViewDir View = VIEWXY;
+	if (m_view.m_xRotation == -90.0f && m_view.m_zRotation == 0.0f && m_view.m_yRotation == 0.0f) View = VIEWXZ;
+	else if (m_view.m_xRotation == -90.0f && m_view.m_zRotation == -90.0f) View = VIEWYZ;
+	SetViewDistance(View, true);
+	m_view.Invalidate(FALSE);
+}
+
+void CGViewParent::OnXy()
 {
 	m_view.m_xRotation = 0.0f;
 	m_view.m_yRotation = 0.0f;
@@ -479,9 +503,43 @@ void CGViewParent::AddBox()
 
 void CGViewParent::ClearPaths() 
 {
+	if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Lock(); // to be safe lock for the entire function
+
 	m_Path->m_ToolOffsetValid=false;
-	((CPath3d *)m_view.m_SceneGraph.GetAt(0))->Free();
+	m_Path->Free();
+
+	// G-code viewer: whatever cleared the path, there is no preview any more
+	// (a starting preview run re-validates it when it completes)
+	if (TheFrame)
+	{
+		TheFrame->GCodeDlg.m_PreviewValid = false;
+		TheFrame->GCodeDlg.m_ProgressActive = false;
+		TheFrame->GCodeDlg.m_PreviewFileLine.RemoveAll();
+		TheFrame->GCodeDlg.m_PreviewTime.RemoveAll();
+		TheFrame->GCodeDlg.StopPlayback();
+	}
+	wglDeleteContext(m_view.m_hGLContext);
+	m_view.m_hGLContext = NULL;
+//tktk	CMesh3d::shaderProgram = 0;
+//tktk	CPath3d::shaderProgram = 0;
+	m_view.OpenGLInit();
+
+	unsigned int i, size = m_view.m_SceneGraph.NbObject();
+	for (i = 0; i < size; i++)
+	{
+		CObject3d* pObject3d = m_view.m_SceneGraph.GetAt(i);
+		if (pObject3d != NULL)
+		{
+			pObject3d->InvalidateDisplayList(); // any previous display Arrays/Buffers are invalid
+			pObject3d->SetModified();
+		}
+	}
+
+// should already be there	AddBox();
+
+	if (TheFrame) TheFrame->GCodeDlg.ActualGViewParent->m_view.OpenGLMutex->Unlock();
 }
+
 
 void CGViewParent::OnShowAxis() 
 {
@@ -493,27 +551,18 @@ void CGViewParent::OnShowAxis()
 		((CMesh3d *)m_view.m_SceneGraph.GetAt(i))->Show(GVDlg->m_ShowAxis);
 }
 
-void CGViewParent::OnOrtho() 
+void CGViewParent::OnOrtho()
 {
 	CGViewDlg *GVDlg = &TheFrame->GViewDlg;
 	GVDlg->m_Ortho = !GVDlg->m_Ortho;
-	m_view.m_Ortho = GVDlg->m_Ortho!=0;
+
+	// convert the view state (zoom/pan, different currencies in the two
+	// modes) so what is on screen stays the same; must run BEFORE
+	// SetupOpenGL since it reads the depth buffer of the last render
+	// in the OLD projection
+	m_view.SwitchProjection(GVDlg->m_Ortho!=0);
 	m_view.SetupOpenGL();
 	m_view.Invalidate();
-
-
-	if (m_view.m_Ortho)
-	{
-		m_view.m_xTranslation *= m_view.m_Scaling0;
-		m_view.m_yTranslation *= m_view.m_Scaling0;
-		m_view.m_zTranslation = -(m_view.m_zTranslation - m_view.m_zTranslation0_Persp) * m_view.m_Scaling0 + m_view.m_zTranslation0_Ortho;
-	}
-	else if (m_view.m_Scaling0 != 0.0)
-	{
-		m_view.m_xTranslation /= m_view.m_Scaling0;
-		m_view.m_yTranslation /= m_view.m_Scaling0;
-		m_view.m_zTranslation = -(m_view.m_zTranslation - m_view.m_zTranslation0_Ortho) / m_view.m_Scaling0 + m_view.m_zTranslation0_Persp;
-	}
 }
 
 void CGViewParent::OnShowTool()
@@ -523,7 +572,7 @@ void CGViewParent::OnShowTool()
 
 	if (GVDlg->m_ToolShapeFile.IsEmpty())
 	{
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Tool Image VRML file is blank.  Please specify a valid VRML file in the G Viewer Setup"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Tool Image VRML file is blank.  Please specify a valid VRML file in the G Viewer Setup"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 	}
 	
 	for (int i=StartIndexTool; i<EndIndexTool; i++)
@@ -590,6 +639,9 @@ void CGViewParent::OnGViewerSetup()
 	GViewerSetup.m_IncludeB = GVDlg->m_IncludeB;
 	GViewerSetup.m_IncludeC = GVDlg->m_IncludeC;
 	GViewerSetup.m_IncludeToolAngles = GVDlg->m_IncludeToolAngles;
+	GViewerSetup.m_PreviewOnLoad = GVDlg->m_PreviewOnLoad;
+	GViewerSetup.ConfigUnitsMM = TheFrame->GCodeDlg.m_LastConfigUnitsMM;
+
 
 	if (GViewerSetup.DoModal() == IDOK)
 	{
@@ -609,10 +661,16 @@ void CGViewParent::OnGViewerSetup()
 		GVDlg->m_IncludeB = GViewerSetup.m_IncludeB;
 		GVDlg->m_IncludeC = GViewerSetup.m_IncludeC;
 		GVDlg->m_IncludeToolAngles = GViewerSetup.m_IncludeToolAngles;
+		BOOL TurnedOn = GViewerSetup.m_PreviewOnLoad && !GVDlg->m_PreviewOnLoad;
+		GVDlg->m_PreviewOnLoad = GViewerSetup.m_PreviewOnLoad;
+		TheFrame->GCodeDlg.m_LastConfigUnitsMM = GViewerSetup.ConfigUnitsMM;
 
 		DeleteAllScene();
 		InitializeScene();
 		GVDlg->SaveConfig();
+
+		// just turned on: preview the file already loaded (no reload needed)
+		if (TurnedOn) TheFrame->GCodeDlg.RequestPreview(TheFrame->GCodeDlg.m_Thread);
 	}
 }
 
@@ -733,6 +791,12 @@ void CGViewParent::ChangeToolPosition()
 
 	CVector3d offset(x,y,z);
 
+	// G-code viewer progress: where the tool is, in the path's coordinates
+	Dlg->m_ToolViewValid = !Dlg->m_Simulate && Dlg->m_ConnectedForStatus;
+	Dlg->m_ToolViewX = x;
+	Dlg->m_ToolViewY = y;
+	Dlg->m_ToolViewZ = z;
+
 	if (GVDlg->m_IncludeToolAngles)
 	{
 		TransformTool.SetValueRotationYZ(a);
@@ -774,8 +838,6 @@ void CGViewParent::ChangeToolPosition()
 			TransformAxis.SetTranslation(OriginalOffset);
 			mesh->SetTransform(TransformAxis);
 		}
-
-		mesh->SetModified();
 	}
 
 	CVector3d scaleAxis(GVDlg->m_AxisSize,GVDlg->m_AxisSize,GVDlg->m_AxisSize);
@@ -794,7 +856,6 @@ void CGViewParent::ChangeToolPosition()
 			if (doC) OriginalOffset.RotateXY(c*PI / 180.0);
 			TransformAxis.SetTranslation(OriginalOffset);
 			mesh->SetTransform(TransformAxis);
-			mesh->SetModified();
 		}
 	}
 

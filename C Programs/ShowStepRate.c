@@ -1,6 +1,6 @@
 #include "KMotionDef.h"
 
-main()
+int main()
 {
 	double t0,t1,new,old;
 	for (;;)

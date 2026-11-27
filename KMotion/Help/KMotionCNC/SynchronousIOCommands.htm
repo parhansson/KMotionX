@@ -71,32 +71,32 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 
 <h1>Synchronous IO Commands Embedded in Coordinated Motion</h1>
 
-<p>KMotionCNC allows I/O operations to be embedded into the 
+<p>KMotionCNC allows IO operations to be embedded into the 
 Coordinated Motion Buffer such that the IO commands are output synchronously 
 (within 90us Servo Sample) with motion. (Buffered IO operations can also 
 be inserted with Library calls from custom applications).</p>
 
-<p>This example shows two MCodes configured to set bits I/O 
-bits 46 and 47 high and also MCode M6 configured to wait for I/O bit 46 to be 
+<p>This example shows two MCodes configured to set bits IO 
+bits 46 and 47 high and also MCode M6 configured to wait for IO bit 46 to be 
 low.</p>
 
 <p><img src="KMotionCNCfiles/ToolSetupBufferedBits.png" /></p>
 
-<p>A simple GCode Fragment shows the MCodes embedded within a 
+<p>A simple G Code Fragment shows the MCodes embedded within a 
 continuous straight motion right at the point the motion reaches X=1.0.</p>
 <p>The Trajectory Planner normally combines very collinear 
 motion blocks together for smoothing and so forth. But in this case it is 
-careful to not combine segments that cross a buffered I/O boundary.</p>
+careful to not combine segments that cross a buffered IO boundary.</p>
 
 <p><img src="KMotionCNCfiles/BufferedIOGCode.png" width="390" height="240" /></p>
 
-<p>Executing the GCode we can observe the IO bits 46 and 67 
+<p>Executing the G Code we can observe the IO bits 46 and 47 
 set high as the motion crosses X=1.0</p>
 
 <p><img src="KMotionCNCfiles/BufferedIOGCodeViewerPlot.png" width="564" height="454" /></p>
 
-<p>The GCode below demonstrates a right-triangle motion path 
-with the I/O commands inserted at a corner.</p>
+<p>The G Code below demonstrates a right-triangle motion path 
+with the IO commands inserted at a corner.</p>
 
 <p><img src="KMotionCNCfiles/BufferedIOGCodeRounded.png" width="372" height="248"></p>
 
@@ -160,7 +160,7 @@ Such as the very beginning of a path or at a corner where motion comes to a
 stop. Otherwise an instantaneous stop will occur without any acceleration. 
 Wait commands are useful when motion must proceed instantly on command. 
 This is possible because the motion has already been Interpreted, planned, 
-downloaded, and commanded to execute ahead of time. See the example GCode 
+downloaded, and commanded to execute ahead of time. See the example G Code 
 below where a wait has been inserted at a corner. </p>
 
 <p><img src="KMotionCNCfiles/BufferedIOWaitBitBuf.png" /></p>
@@ -168,10 +168,11 @@ below where a wait has been inserted at a corner. </p>
 <p>The plot below shows where the wait will stall execution 
 if the specified bit is false.</p>
 
-<p><img src="KMotionCNCfiles/BufferedIOWaitGCodeViewer.png" width="556" height="583" /></p>
+<p><img src="KMotionCNCfiles/BufferedIOWaitGCodeViewer.PNG" width="556" height="583" /></p>
 
 <p>&nbsp;</p>
 	</div>
+<script src="../search/searchbox.js" defer></script>
 </body>
 
 </html>

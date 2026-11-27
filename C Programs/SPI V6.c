@@ -12,7 +12,7 @@ int SPI_OUT(int data);
 #define N 1000
 
 
-main()
+int main()
 {
 	int i;
 	double TX,T0,T1,T2,T3,T4;

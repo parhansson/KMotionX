@@ -70,7 +70,7 @@ BEGIN
     CONTROL         "",IDC_view,"Static",SS_BLACKFRAME | SS_NOTIFY,165,38,104,67
 END
 
-IDD_GViewerSetup DIALOGEX 0, 0, 365, 172
+IDD_GViewerSetup DIALOGEX 0, 0, 365, 188
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "G Viewer Setup"
 FONT 8, "Courier New", 0, 0, 0x0
@@ -87,8 +87,8 @@ BEGIN
     EDITTEXT        IDC_BoxOffsetY,93,124,47,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_BoxOffsetZ,144,124,47,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_AxisSize,266,132,47,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "Cancel",IDCANCEL,277,150,36,15
-    DEFPUSHBUTTON   "OK",IDOK,319,150,32,15,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,279,167,36,15
+    DEFPUSHBUTTON   "OK",IDOK,321,167,32,15,WS_GROUP
     PUSHBUTTON      ">",IDC_BrowseToolShapeFile,321,22,16,14
     LTEXT           "VRML File",IDC_STATIC,13,26,37,8
     CTEXT           "X",IDC_STATIC,59,93,10,8
@@ -98,20 +98,24 @@ BEGIN
     CTEXT           "Offset",IDC_STATIC,13,125,25,8
     LTEXT           "Tool Scale",IDC_STATIC,12,52,41,8
     LTEXT           "Offset",IDC_STATIC,107,52,25,8
-    GROUPBOX        "Box",IDC_STATIC,7,79,216,68
+    GROUPBOX        "Box",IDC_STATIC,7,79,216,89
     GROUPBOX        "Tool Shape",IDC_STATIC,7,9,351,64
     CTEXT           "X",IDC_STATIC,149,39,10,8
     CTEXT           "Y",IDC_STATIC,198,39,10,8
     CTEXT           "Z",IDC_STATIC,246,39,10,8
     LTEXT           "Axis Scale",IDC_STATIC,267,120,41,8
-    CTEXT           "Inches",IDC_STATIC,193,105,25,8
-    CTEXT           "Inches",IDC_STATIC,193,125,25,8
-    PUSHBUTTON      "Help",ID_HELP,233,150,36,15
+    CTEXT           "Inches",IDC_StaticBoxSizeUnits,193,105,25,8
+    CTEXT           "Inches",IDC_StaticBoxOffsetUnits,193,125,25,8
+    PUSHBUTTON      "Help",ID_HELP,235,167,36,15
     CONTROL         "A",IDC_IncludeA,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,258,92,19,15
     GROUPBOX        "Incl Rotational Axis w Radius",IDC_STATIC,231,79,128,33
     CONTROL         "B",IDC_IncludeB,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,284,92,19,15
     CONTROL         "C",IDC_IncludeC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,310,92,19,15
     CONTROL         "Incl ABC angles",IDC_IncludeToolAngles,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,283,51,73,10
+    RADIOBUTTON     "mm",IDC_mm,93,148,26,11,WS_GROUP
+    RADIOBUTTON     "inch",IDC_inch,124,148,26,11
+    GROUPBOX        "units",IDC_STATIC,82,140,73,23
+    CONTROL         "Preview program on load",IDC_PreviewOnLoad,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,231,151,127,10
 END
 
 IDD_Transform DIALOGEX 30, 73, 311, 262
@@ -225,7 +229,7 @@ CAPTION "About KMotionCNC"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     LTEXT           "KMotionCNC Version X.XX",IDC_KMotionCNCVersion,67,11,90,8,SS_NOPREFIX
-    LTEXT           "Copyright © DynoMotion 2006 - 2024",IDC_STATIC,85,34,118,8
+    LTEXT           "Copyright © DynoMotion 2006 - 2026",IDC_STATIC,67,34,150,8
     DEFPUSHBUTTON   "OK",IDOK,226,32,50,14,WS_GROUP
     CONTROL         IDD_GView,IDC_STATIC,"Static",SS_BITMAP | SS_CENTERIMAGE | SS_REALSIZEIMAGE,7,6,42,40
 END
@@ -403,6 +407,17 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,34,38,50,14
     DEFPUSHBUTTON   "Set",IDOK,115,38,50,14
     CTEXT           "Enter Value",IDC_Label,17,13,80,12,SS_CENTERIMAGE
+END
+
+IDD_EnterPassword DIALOGEX 0, 0, 193, 70
+STYLE DS_SETFONT | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+CAPTION "Enter Password"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    EDITTEXT        IDC_ValueCombo,100,12,82,12,ES_AUTOHSCROLL | WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,34,38,50,14
+    DEFPUSHBUTTON   "OK",IDOK,115,38,50,14
+    CTEXT           "Password",IDC_Label,17,13,80,12,SS_CENTERIMAGE
 END
 
 IDD_SetValueHalf DIALOGEX 0, 0, 193, 70
@@ -1186,8 +1201,6 @@ BEGIN
     PUSHBUTTON      "zero",IDC_ZeroZ,163,45,30,14
     PUSHBUTTON      "set",IDC_SetZ,195,45,30,14
     PUSHBUTTON      "measure",IDC_Measure,243,28,40,18
-    RADIOBUTTON     "mm",IDC_mm,181,76,30,12,WS_GROUP
-    RADIOBUTTON     "inch",IDC_inch,181,87,30,12
     RADIOBUTTON     "rel",IDC_Rel,243,75,30,12,WS_GROUP
     RADIOBUTTON     "abs",IDC_Abs,243,86,30,12
     CONTROL         "",IDC_tool,"ComboBoxEx32",CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP,173,121,46,108
@@ -1265,7 +1278,6 @@ BEGIN
     CTEXT           "Z",IDC_STATIC,277,175,10,11,SS_CENTERIMAGE
     CTEXT           "Y",IDC_STATIC,138,67,10,11,SS_CENTERIMAGE
     CTEXT           "A",IDC_STATIC,402,210,10,11,SS_CENTERIMAGE | NOT WS_VISIBLE
-    GROUPBOX        "units",IDC_STATIC,175,68,39,33
     GROUPBOX        "coord",IDC_STATIC,238,67,39,33
     CONTROL         "",IDC_PosX,"Static",SS_BLACKRECT | SS_NOTIFY,1,1,158,20
     CONTROL         "",IDC_PosY,"Static",SS_BLACKRECT | SS_NOTIFY,1,22,158,20
@@ -1310,6 +1322,9 @@ BEGIN
     RTEXT           "1234.5",IDC_SpindleRateCmd,317,228,27,9
     CONTROL         "S",IDC_Cust2,"Button",BS_OWNERDRAW,300,229,13,17
     CONTROL         "F",IDC_Cust3,"Button",BS_OWNERDRAW,245,229,13,17
+    RADIOBUTTON     "inch",IDC_inch,181,87,30,12
+    GROUPBOX        "units",IDC_STATIC,175,68,39,33
+    RADIOBUTTON     "mm",IDC_mm,181,76,30,12,WS_GROUP
 END
 
 IDD_KMOTIONCNC_5_BASIC_2_AXES DIALOGEX 0, 0, 678, 449
@@ -1633,10 +1648,8 @@ CAPTION "KMotionCNC"
 CLASS "KMotionCNC"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    PUSHBUTTON      "zero all",IDC_ZeroAll,7,130,36,14
-    PUSHBUTTON      "zero",IDC_ZeroX,163,3,30,14
+    PUSHBUTTON      "zero",IDC_ZeroX,163,3,30,14,WS_GROUP
     PUSHBUTTON      "set",IDC_SetX,195,3,30,14
-    CONTROL         "Machine Coord",IDC_ShowMach,"Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_GROUP | WS_TABSTOP,235,9,68,9
     PUSHBUTTON      "zero",IDC_ZeroY,163,24,30,14
     PUSHBUTTON      "set",IDC_SetY,195,24,30,14
     PUSHBUTTON      "zero",IDC_ZeroZ,163,45,30,14
@@ -1647,33 +1660,31 @@ BEGIN
     PUSHBUTTON      "set",IDC_SetB,195,87,30,14
     PUSHBUTTON      "zero",IDC_ZeroC,163,108,30,14
     PUSHBUTTON      "set",IDC_SetC,195,108,30,14
+    PUSHBUTTON      "zero",IDC_ZeroU,469,65,30,14,NOT WS_VISIBLE
+    PUSHBUTTON      "set",IDC_SetU,501,65,30,14,NOT WS_VISIBLE
+    PUSHBUTTON      "zero",IDC_ZeroV,469,87,30,14,NOT WS_VISIBLE
+    PUSHBUTTON      "set",IDC_SetV,501,87,30,14,NOT WS_VISIBLE
+    PUSHBUTTON      "zero all",IDC_ZeroAll,7,130,36,14
     PUSHBUTTON      "measure",IDC_Measure,7,146,35,14
-    RADIOBUTTON     "mm",IDC_mm,241,34,30,12,WS_GROUP
-    RADIOBUTTON     "inch",IDC_inch,241,44,30,12
-    RADIOBUTTON     "rel",IDC_Rel,241,74,30,12,WS_GROUP
-    RADIOBUTTON     "abs",IDC_Abs,241,84,30,12
-    CONTROL         "",IDC_fixture,"ComboBoxEx32",CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP,200,224,50,129
-    PUSHBUTTON      "edit",IDC_EditFixtures,195,240,29,12,BS_CENTER | BS_VCENTER
-    PUSHBUTTON      "set",IDC_SetFixture,227,240,29,12,BS_CENTER | BS_VCENTER
-    CONTROL         "",IDC_tool,"ComboBoxEx32",CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP,228,148,46,108
-    CONTROL         "0.0001",IDC_Step0,"Button",BS_AUTORADIOBUTTON | WS_GROUP,176,136,40,12
-    CONTROL         "0.001",IDC_Step1,"Button",BS_AUTORADIOBUTTON,176,147,30,12
-    CONTROL         "0.01",IDC_Step2,"Button",BS_AUTORADIOBUTTON,176,158,30,12
-    CONTROL         "0.1",IDC_Step3,"Button",BS_AUTORADIOBUTTON,176,169,30,12
-    CONTROL         "1.0",IDC_Step4,"Button",BS_AUTORADIOBUTTON,176,180,30,12
-    CONTROL         "10.0",IDC_Step5,"Button",BS_AUTORADIOBUTTON,176,191,30,12
+    CONTROL         "Keyboard Jog",IDC_KeyJogMode,"Button",BS_OWNERDRAW | WS_TABSTOP,5,175,66,26
+    CONTROL         "Halt",IDC_GO,"Button",BS_OWNERDRAW | WS_TABSTOP,11,251,56,47
+    CONTROL         "EmergencyStop",IDC_EmergencyStop,"Button",BS_OWNERDRAW | WS_TABSTOP,3,400,56,47
+    CONTROL         "<",IDC_Reverse,"Button",BS_OWNERDRAW | WS_TABSTOP,63,400,27,47
+    CONTROL         "Feed Hold",IDC_FeedHold,"Button",BS_OWNERDRAW | WS_TABSTOP,90,400,56,47
+    CONTROL         ">",IDC_Forward,"Button",BS_OWNERDRAW | WS_TABSTOP,145,400,27,47
+    CONTROL         "<",IDC_Left2,"Button",BS_OWNERDRAW | WS_TABSTOP,11,210,27,25
+    CONTROL         "<",IDC_Left,"Button",BS_OWNERDRAW | WS_TABSTOP,39,210,27,25
+    CONTROL         "<",IDC_LeftStep,"Button",BS_OWNERDRAW | WS_TABSTOP,67,210,10,25
+    CONTROL         "X",IDC_StopStep,"Button",BS_OWNERDRAW | BS_CENTER | BS_VCENTER | WS_TABSTOP,81,214,20,20
+    CONTROL         "<",IDC_RightStep,"Button",BS_OWNERDRAW | WS_TABSTOP,105,210,10,25
+    CONTROL         ">",IDC_Right,"Button",BS_OWNERDRAW | WS_TABSTOP,115,210,27,25
+    CONTROL         ">",IDC_Right2,"Button",BS_OWNERDRAW | WS_TABSTOP,143,210,27,25
     CONTROL         "^",IDC_Up2,"Button",BS_OWNERDRAW | WS_GROUP | WS_TABSTOP,77,148,27,25
     CONTROL         "^",IDC_Up,"Button",BS_OWNERDRAW | WS_TABSTOP,77,174,27,25
     CONTROL         "^",IDC_UpStep,"Button",BS_OWNERDRAW | WS_TABSTOP,77,199,27,10
     CONTROL         "v",IDC_DownStep,"Button",BS_OWNERDRAW | WS_TABSTOP,77,238,27,10
     CONTROL         "v",IDC_Down,"Button",BS_OWNERDRAW | WS_TABSTOP,77,248,27,25
     CONTROL         "v",IDC_Down2,"Button",BS_OWNERDRAW | WS_TABSTOP,77,273,27,25
-    CONTROL         "<",IDC_Left2,"Button",BS_OWNERDRAW | WS_TABSTOP,11,210,27,25
-    CONTROL         "<",IDC_Left,"Button",BS_OWNERDRAW | WS_TABSTOP,39,210,27,25
-    CONTROL         "<",IDC_LeftStep,"Button",BS_OWNERDRAW | WS_TABSTOP,67,210,10,25
-    CONTROL         "<",IDC_RightStep,"Button",BS_OWNERDRAW | WS_TABSTOP,105,210,10,25
-    CONTROL         ">",IDC_Right,"Button",BS_OWNERDRAW | WS_TABSTOP,115,210,27,25
-    CONTROL         ">",IDC_Right2,"Button",BS_OWNERDRAW | WS_TABSTOP,143,210,27,25
     CONTROL         "^",IDC_Zplus2,"Button",BS_OWNERDRAW | WS_TABSTOP,127,142,27,25
     CONTROL         "^",IDC_Zplus,"Button",BS_OWNERDRAW | WS_TABSTOP,127,167,27,25
     CONTROL         "^",IDC_ZplusStep,"Button",BS_OWNERDRAW | WS_TABSTOP,127,193,27,10
@@ -1686,10 +1697,86 @@ BEGIN
     CONTROL         "<",IDC_AplusStep,"Button",BS_OWNERDRAW | WS_TABSTOP,104,313,10,25
     CONTROL         ">",IDC_Aplus,"Button",BS_OWNERDRAW | WS_TABSTOP,114,313,27,25
     CONTROL         ">",IDC_Aplus2,"Button",BS_OWNERDRAW | WS_TABSTOP,142,313,27,25
-    CONTROL         "EmergencyStop",IDC_EmergencyStop,"Button",BS_OWNERDRAW | WS_TABSTOP,3,400,56,47
+    CONTROL         "<",IDC_Bminus2,"Button",BS_OWNERDRAW | WS_TABSTOP,10,342,27,25
+    CONTROL         "<",IDC_Bminus,"Button",BS_OWNERDRAW | WS_TABSTOP,38,342,27,25
+    CONTROL         "<",IDC_BminusStep,"Button",BS_OWNERDRAW | WS_TABSTOP,66,342,10,25
+    CONTROL         "<",IDC_BplusStep,"Button",BS_OWNERDRAW | WS_TABSTOP,104,342,10,25
+    CONTROL         ">",IDC_Bplus,"Button",BS_OWNERDRAW | WS_TABSTOP,114,342,27,25
+    CONTROL         ">",IDC_Bplus2,"Button",BS_OWNERDRAW | WS_TABSTOP,142,342,27,25
+    CONTROL         "<",IDC_Cminus2,"Button",BS_OWNERDRAW | WS_TABSTOP,10,370,27,25
+    CONTROL         "<",IDC_Cminus,"Button",BS_OWNERDRAW | WS_TABSTOP,38,370,27,25
+    CONTROL         "<",IDC_CminusStep,"Button",BS_OWNERDRAW | WS_TABSTOP,66,370,10,25
+    CONTROL         "<",IDC_CplusStep,"Button",BS_OWNERDRAW | WS_TABSTOP,104,370,10,25
+    CONTROL         ">",IDC_Cplus,"Button",BS_OWNERDRAW | WS_TABSTOP,114,370,27,25
+    CONTROL         ">",IDC_Cplus2,"Button",BS_OWNERDRAW | WS_TABSTOP,142,370,27,25
+    CONTROL         "<",IDC_Uminus2,"Button",BS_OWNERDRAW | NOT WS_VISIBLE | WS_TABSTOP,308,116,27,25
+    CONTROL         "<",IDC_Uminus,"Button",BS_OWNERDRAW | NOT WS_VISIBLE | WS_TABSTOP,336,116,27,25
+    CONTROL         "<",IDC_UminusStep,"Button",BS_OWNERDRAW | NOT WS_VISIBLE | WS_TABSTOP,364,116,10,25
+    CONTROL         "<",IDC_UplusStep,"Button",BS_OWNERDRAW | NOT WS_VISIBLE | WS_TABSTOP,402,116,10,25
+    CONTROL         ">",IDC_Uplus,"Button",BS_OWNERDRAW | NOT WS_VISIBLE | WS_TABSTOP,412,116,27,25
+    CONTROL         ">",IDC_Uplus2,"Button",BS_OWNERDRAW | NOT WS_VISIBLE | WS_TABSTOP,440,116,27,25
+    CONTROL         "<",IDC_Vminus2,"Button",BS_OWNERDRAW | NOT WS_VISIBLE | WS_TABSTOP,308,144,27,25
+    CONTROL         "<",IDC_Vminus,"Button",BS_OWNERDRAW | NOT WS_VISIBLE | WS_TABSTOP,336,144,27,25
+    CONTROL         "<",IDC_VminusStep,"Button",BS_OWNERDRAW | NOT WS_VISIBLE | WS_TABSTOP,364,144,10,25
+    CONTROL         "<",IDC_VplusStep,"Button",BS_OWNERDRAW | NOT WS_VISIBLE | WS_TABSTOP,402,144,10,25
+    CONTROL         ">",IDC_Vplus,"Button",BS_OWNERDRAW | NOT WS_VISIBLE | WS_TABSTOP,412,144,27,25
+    CONTROL         ">",IDC_Vplus2,"Button",BS_OWNERDRAW | NOT WS_VISIBLE | WS_TABSTOP,440,144,27,25
+    CONTROL         "Machine Coord",IDC_ShowMach,"Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_GROUP | WS_TABSTOP,235,9,68,9
+    RADIOBUTTON     "mm",IDC_mm,241,34,30,12,WS_GROUP
+    RADIOBUTTON     "inch",IDC_inch,241,44,30,12
+    RADIOBUTTON     "rel",IDC_Rel,241,74,30,12,WS_GROUP
+    RADIOBUTTON     "abs",IDC_Abs,241,84,30,12
+    CONTROL         "",IDC_tool,"ComboBoxEx32",CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP,228,148,46,108
+    PUSHBUTTON      "edit",IDC_EditToolFile,235,165,29,12,BS_CENTER | BS_VCENTER
+    CONTROL         "0.0001",IDC_Step0,"Button",BS_AUTORADIOBUTTON | WS_GROUP,176,136,40,12
+    CONTROL         "0.001",IDC_Step1,"Button",BS_AUTORADIOBUTTON,176,147,30,12
+    CONTROL         "0.01",IDC_Step2,"Button",BS_AUTORADIOBUTTON,176,158,30,12
+    CONTROL         "0.1",IDC_Step3,"Button",BS_AUTORADIOBUTTON,176,169,30,12
+    CONTROL         "1.0",IDC_Step4,"Button",BS_AUTORADIOBUTTON,176,180,30,12
+    CONTROL         "10.0",IDC_Step5,"Button",BS_AUTORADIOBUTTON,176,191,30,12
+    PUSHBUTTON      "fixture offset",IDC_STATICFIXTURE_GROUP,192,211,69,11
+    CONTROL         "",IDC_fixture,"ComboBoxEx32",CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP,200,224,50,129
+    PUSHBUTTON      "edit",IDC_EditFixtures,195,240,29,12,BS_CENTER | BS_VCENTER
+    PUSHBUTTON      "set",IDC_SetFixture,227,240,29,12,BS_CENTER | BS_VCENTER
+    EDITTEXT        IDC_FeedRateEdit,179,293,25,12,ES_CENTER | ES_AUTOHSCROLL
+    PUSHBUTTON      "apply",IDC_FeedRateApply,205,292,25,14,BS_CENTER | BS_VCENTER
+    EDITTEXT        IDC_SpindleRateEdit,231,293,25,12,ES_CENTER | ES_AUTOHSCROLL
+    PUSHBUTTON      "apply",IDC_SpindleRateApply,257,292,25,14,BS_CENTER | BS_VCENTER
+    CONTROL         "feed override",IDC_Feed,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,215,306,61,12
+    CONTROL         "",IDC_FeedSlider,"msctls_trackbar32",TBS_AUTOTICKS | TBS_VERT | WS_GROUP,183,316,23,127
+    PUSHBUTTON      "on cw",IDC_SpindleOnCW,255,325,29,24,BS_CENTER | BS_VCENTER
+    PUSHBUTTON      "on ccw",IDC_SpindleOnCCW,255,364,29,24,BS_CENTER | BS_VCENTER
+    PUSHBUTTON      "off",IDC_SpindleOff,255,402,29,24,BS_CENTER | BS_VCENTER
+    PUSHBUTTON      "home",IDC_But0,307,2,72,12
+    PUSHBUTTON      "home",IDC_But1,381,2,72,12
+    PUSHBUTTON      "home",IDC_But2,455,2,72,12
+    PUSHBUTTON      "home",IDC_But3,529,2,72,12
+    PUSHBUTTON      "home",IDC_But4,603,2,72,12
+    PUSHBUTTON      "home",IDC_But5,307,15,72,12
+    PUSHBUTTON      "home",IDC_But6,381,15,72,12
+    PUSHBUTTON      "home",IDC_But7,455,15,72,12
+    PUSHBUTTON      "home",IDC_But8,529,15,72,12
+    PUSHBUTTON      "home",IDC_But9,603,15,72,12
+    PUSHBUTTON      "XY",IDC_XY,290,33,33,20
+    PUSHBUTTON      "YZ",IDC_YZ,325,33,33,20
+    PUSHBUTTON      "XZ",IDC_XZ,360,33,33,20
+    PUSHBUTTON      "ROT XY",IDC_RotXY,395,33,33,20
+    PUSHBUTTON      "CLEAR",IDC_ClearPaths,430,33,33,20
+    PUSHBUTTON      "Axis",IDC_ShowAxis,465,33,33,20
+    PUSHBUTTON      "BOX",IDC_Box,500,33,33,20
+    PUSHBUTTON      "TOOL",IDC_ShowTool,535,33,33,20
+    PUSHBUTTON      "ORTHO",IDC_Ortho,570,33,33,20
+    PUSHBUTTON      "SETUP",IDC_GViewerSetup,605,33,33,20
+    PUSHBUTTON      "New",IDC_New,293,210,33,20
+    PUSHBUTTON      "Open",IDC_OpenFile,329,210,33,20
+    PUSHBUTTON      "Save",IDC_SaveFile,363,210,33,20
+    PUSHBUTTON      "Save As",IDC_SaveAs,399,210,33,20
+    PUSHBUTTON      "Restart",IDC_Restart,433,210,33,20
+    PUSHBUTTON      "S Step",IDC_SingleStep,469,210,33,20
+    PUSHBUTTON      "T Setup",IDC_ToolSetup,503,210,33,20
+    PUSHBUTTON      "GViewer",IDC_GView,539,210,33,20
     CONTROL         "",IDC_Command,"ComboBoxEx32",CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP,306,423,326,150
     DEFPUSHBUTTON   "Send",IDC_Send,639,420,25,16
-    CONTROL         "Custom1",IDC_Editor,"Scintilla",0x0,293,230,348,185
     CONTROL         "1",IDC_Thread1,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,647,114,23,12
     CONTROL         "2",IDC_Thread2,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,647,126,23,12
     CONTROL         "3",IDC_Thread3,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,647,137,23,12
@@ -1697,11 +1784,17 @@ BEGIN
     CONTROL         "5",IDC_Thread5,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,647,161,23,12
     CONTROL         "6",IDC_Thread6,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,647,173,23,12
     CONTROL         "7",IDC_Thread7,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,647,185,23,12
+    PUSHBUTTON      "Simulate",IDC_SimulateStatic,641,211,31,9
     CONTROL         "",IDC_Simulate,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,653,224,11,9
     PUSHBUTTON      "run",IDC_RunSimulate,644,237,29,12,BS_CENTER | BS_VCENTER
     PUSHBUTTON      "Do",IDC_DoTimeStatic,646,252,27,11,NOT WS_VISIBLE
     PUSHBUTTON      "Times",IDC_DoTimeStatic2,646,261,27,11,NOT WS_VISIBLE
+    CONTROL         "",IDC_DoTime,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_GROUP | WS_TABSTOP,653,274,11,9
+    PUSHBUTTON      "Block",IDC_BlockDeleteStatic,646,325,27,11
+    PUSHBUTTON      "Delete",IDC_BlockDeleteStatic2,646,335,27,11
+    CONTROL         "",IDC_BlockDelete,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,654,350,11,9
     PUSHBUTTON      "Help",IDC_KMotion_HELP,649,385,25,16
+    CONTROL         "Custom1",IDC_Editor,"Scintilla",0x0,293,230,348,185
     PUSHBUTTON      "X",IDC_STATICX,171,216,10,11,BS_RIGHT
     PUSHBUTTON      "Z",IDC_STATICZ,134,129,10,11,BS_RIGHT
     PUSHBUTTON      "Y",IDC_STATICY,85,135,10,11,BS_RIGHT
@@ -1718,51 +1811,10 @@ BEGIN
     CONTROL         "",IDC_PosB,"Static",SS_BLACKRECT | SS_NOTIFY,1,85,158,20
     CONTROL         "",IDC_PosC,"Static",SS_BLACKRECT | SS_NOTIFY,1,106,158,20
     PUSHBUTTON      "File:",IDC_Thread,646,100,17,9
-    PUSHBUTTON      "Simulate",IDC_SimulateStatic,641,211,31,9
     PUSHBUTTON      "step size",IDC_STATICSTEP_SIZE,170,125,47,12
-    CONTROL         "X",IDC_StopStep,"Button",BS_OWNERDRAW | BS_CENTER | BS_VCENTER | WS_TABSTOP,81,214,20,20
     CONTROL         "",IDC_STATIC_REF,"Static",SS_BLACKFRAME | NOT WS_VISIBLE,0,0,20,20
-    CONTROL         "Feed Hold",IDC_FeedHold,"Button",BS_OWNERDRAW | WS_TABSTOP,90,400,56,47
-    PUSHBUTTON      "edit",IDC_EditToolFile,235,165,29,12,BS_CENTER | BS_VCENTER
-    CONTROL         "Keyboard Jog",IDC_KeyJogMode,"Button",BS_OWNERDRAW | WS_TABSTOP,5,175,66,26
-    CONTROL         "<",IDC_Bminus2,"Button",BS_OWNERDRAW | WS_TABSTOP,10,342,27,25
-    CONTROL         "<",IDC_Bminus,"Button",BS_OWNERDRAW | WS_TABSTOP,38,342,27,25
-    CONTROL         "<",IDC_BminusStep,"Button",BS_OWNERDRAW | WS_TABSTOP,66,342,10,25
-    CONTROL         "<",IDC_BplusStep,"Button",BS_OWNERDRAW | WS_TABSTOP,104,342,10,25
-    CONTROL         ">",IDC_Bplus,"Button",BS_OWNERDRAW | WS_TABSTOP,114,342,27,25
-    CONTROL         ">",IDC_Bplus2,"Button",BS_OWNERDRAW | WS_TABSTOP,142,342,27,25
-    CONTROL         "<",IDC_Cminus2,"Button",BS_OWNERDRAW | WS_TABSTOP,10,370,27,25
-    CONTROL         "<",IDC_Cminus,"Button",BS_OWNERDRAW | WS_TABSTOP,38,370,27,25
-    CONTROL         "<",IDC_CminusStep,"Button",BS_OWNERDRAW | WS_TABSTOP,66,370,10,25
-    CONTROL         "<",IDC_CplusStep,"Button",BS_OWNERDRAW | WS_TABSTOP,104,370,10,25
-    CONTROL         ">",IDC_Cplus,"Button",BS_OWNERDRAW | WS_TABSTOP,114,370,27,25
-    CONTROL         ">",IDC_Cplus2,"Button",BS_OWNERDRAW | WS_TABSTOP,142,370,27,25
-    PUSHBUTTON      "home",IDC_But0,307,2,72,12
-    PUSHBUTTON      "home",IDC_But1,381,2,72,12
-    PUSHBUTTON      "home",IDC_But2,455,2,72,12
-    PUSHBUTTON      "home",IDC_But3,529,2,72,12
-    PUSHBUTTON      "home",IDC_But4,603,2,72,12
-    PUSHBUTTON      "home",IDC_But5,307,15,72,12
-    PUSHBUTTON      "home",IDC_But6,381,15,72,12
-    PUSHBUTTON      "home",IDC_But7,455,15,72,12
-    PUSHBUTTON      "home",IDC_But8,529,15,72,12
-    PUSHBUTTON      "home",IDC_But9,603,15,72,12
-    CONTROL         "Halt",IDC_GO,"Button",BS_OWNERDRAW | WS_TABSTOP,11,251,56,47
-    PUSHBUTTON      "Block",IDC_BlockDeleteStatic,646,325,27,11
-    PUSHBUTTON      "Delete",IDC_BlockDeleteStatic2,646,335,27,11
-    CONTROL         "",IDC_BlockDelete,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,654,350,11,9
-    PUSHBUTTON      "fixture offset",IDC_STATICFIXTURE_GROUP,192,211,69,11
-    EDITTEXT        IDC_FeedRateEdit,179,293,25,12,ES_CENTER | ES_AUTOHSCROLL
-    PUSHBUTTON      "apply",IDC_FeedRateApply,205,292,25,14,BS_CENTER | BS_VCENTER
-    EDITTEXT        IDC_SpindleRateEdit,231,293,25,12,ES_CENTER | ES_AUTOHSCROLL
-    PUSHBUTTON      "apply",IDC_SpindleRateApply,257,292,25,14,BS_CENTER | BS_VCENTER
     CONTROL         "rapid",IDC_Rapid,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,183,306,28,12
-    CONTROL         "feed override",IDC_Feed,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,215,306,61,12
-    CONTROL         "",IDC_FeedSlider,"msctls_trackbar32",TBS_AUTOTICKS | TBS_VERT | WS_GROUP,183,316,23,127
     CONTROL         "",IDC_SpindleSlider,"msctls_trackbar32",TBS_AUTOTICKS | TBS_VERT | TBS_TOP,229,316,23,127
-    PUSHBUTTON      "on cw",IDC_SpindleOnCW,255,325,29,24,BS_CENTER | BS_VCENTER
-    PUSHBUTTON      "on ccw",IDC_SpindleOnCCW,255,364,29,24,BS_CENTER | BS_VCENTER
-    PUSHBUTTON      "off",IDC_SpindleOff,255,402,29,24,BS_CENTER | BS_VCENTER
     GROUPBOX        "",IDC_STATICFSGROUP,175,262,112,182
     RTEXT           "2.00",IDC_STATIC200,209,320,15,8
     RTEXT           "1.00",IDC_STATIC100,209,345,15,8
@@ -1780,8 +1832,6 @@ BEGIN
     RTEXT           "1234.5",IDC_SpindleRateCmd,253,270,27,9
     CONTROL         "S",IDC_Cust2,"Button",BS_OWNERDRAW,235,271,13,17
     CONTROL         "F",IDC_Cust3,"Button",BS_OWNERDRAW,181,271,13,17
-    CONTROL         ">",IDC_Forward,"Button",BS_OWNERDRAW | WS_TABSTOP,145,400,27,47
-    CONTROL         "<",IDC_Reverse,"Button",BS_OWNERDRAW | WS_TABSTOP,63,400,27,47
     PUSHBUTTON      "Label",IDC_But10,697,34,23,11
     PUSHBUTTON      "Label",IDC_But11,697,54,23,11
     PUSHBUTTON      "Label",IDC_But12,697,74,23,11
@@ -1862,25 +1912,7 @@ BEGIN
     EDITTEXT        IDC_Edit37,768,373,16,12,ES_CENTER | ES_AUTOHSCROLL | NOT WS_VISIBLE
     EDITTEXT        IDC_Edit38,768,393,16,12,ES_CENTER | ES_AUTOHSCROLL | NOT WS_VISIBLE
     EDITTEXT        IDC_Edit39,768,413,16,12,ES_CENTER | ES_AUTOHSCROLL | NOT WS_VISIBLE
-    CONTROL         "",IDC_viewctl,"Static",SS_BLACKFRAME | SS_NOTIFY,291,52,347,149
-    PUSHBUTTON      "XY",IDC_XY,290,33,33,20
-    PUSHBUTTON      "YZ",IDC_YZ,325,33,33,20
-    PUSHBUTTON      "XZ",IDC_XZ,360,33,33,20
-    PUSHBUTTON      "ROT XY",IDC_RotXY,395,33,33,20
-    PUSHBUTTON      "CLEAR",IDC_ClearPaths,430,33,33,20
-    PUSHBUTTON      "Axis",IDC_ShowAxis,465,33,33,20
-    PUSHBUTTON      "BOX",IDC_Box,500,33,33,20
-    PUSHBUTTON      "TOOL",IDC_ShowTool,535,33,33,20
-    PUSHBUTTON      "ORTHO",IDC_Ortho,570,33,33,20
-    PUSHBUTTON      "SETUP",IDC_GViewerSetup,605,33,33,20
-    PUSHBUTTON      "New",IDC_New,293,210,33,20
-    PUSHBUTTON      "Open",IDC_OpenFile,329,210,33,20
-    PUSHBUTTON      "Save",IDC_SaveFile,363,210,33,20
-    PUSHBUTTON      "Save As",IDC_SaveAs,399,210,33,20
-    PUSHBUTTON      "Restart",IDC_Restart,433,210,33,20
-    PUSHBUTTON      "S Step",IDC_SingleStep,469,210,33,20
-    PUSHBUTTON      "T Setup",IDC_ToolSetup,503,210,33,20
-    PUSHBUTTON      "GViewer",IDC_GView,539,210,33,20
+    CONTROL         "",IDC_viewctl,"Static",SS_BLACKFRAME | SS_NOTIFY | NOT WS_VISIBLE,291,52,347,149
     CONTROL         "",IDC_Combo0,"ComboBoxEx32",CBS_DROPDOWN | CBS_SORT | NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP,789,32,18,200
     CONTROL         "",IDC_Combo1,"ComboBoxEx32",CBS_DROPDOWN | CBS_SORT | NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP,789,52,18,200
     CONTROL         "",IDC_Combo2,"ComboBoxEx32",CBS_DROPDOWN | CBS_SORT | NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP,789,72,18,200
@@ -1961,7 +1993,10 @@ BEGIN
     PUSHBUTTON      "Label",IDC_But87,857,374,23,11,NOT WS_VISIBLE
     PUSHBUTTON      "Label",IDC_But88,857,393,23,11,NOT WS_VISIBLE
     PUSHBUTTON      "Label",IDC_But89,857,414,23,11,NOT WS_VISIBLE
-    CONTROL         "",IDC_DoTime,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_GROUP | WS_TABSTOP,653,274,11,9
+    CONTROL         "",IDC_PosU,"Static",SS_BLACKRECT | SS_NOTIFY | NOT WS_VISIBLE,307,63,158,20
+    CONTROL         "",IDC_PosV,"Static",SS_BLACKRECT | SS_NOTIFY | NOT WS_VISIBLE,307,84,158,20
+    PUSHBUTTON      "U",IDC_STATICU,381,122,10,11,BS_RIGHT | NOT WS_VISIBLE
+    PUSHBUTTON      "V",IDC_STATICV,381,149,10,11,BS_RIGHT | NOT WS_VISIBLE
 END
 
 IDD_ToolSetupM1Page DIALOGEX 0, 275, 493, 314
@@ -2692,7 +2727,7 @@ BEGIN
     CTEXT           "Key",Butt12,4,8,17,10
 END
 
-IDD_ToolSetupTPPage DIALOGEX 0, 275, 486, 334
+IDD_ToolSetupTPPage DIALOGEX 0, 275, 486, 340
 STYLE DS_SETFONT | WS_CHILD | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Trajectory Planner"
 FONT 8, "Courier New", 0, 0, 0x0
@@ -2702,14 +2737,20 @@ BEGIN
     EDITTEXT        IDC_CollinearTol,238,13,35,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_CornerTol,330,13,35,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_FacetAngle,409,13,35,12,ES_AUTOHSCROLL
+    CONTROL         "Log",IDC_TPLogSegs,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,24,27,40,12
+    CONTROL         "Cubic Knots",IDC_TPCubicKnots,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,70,27,60,12
     CONTROL         "Arcs to Segments",IDC_ArcsToSegs,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,212,27,77,12
-    EDITTEXT        IDC_JogSpeedX,71,57,29,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_JogSpeedY,117,57,29,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_JogSpeedZ,163,57,29,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_JogSpeedA,209,57,29,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_JogSpeedB,255,57,29,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_JogSpeedC,301,57,29,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_JogSlowPercent,368,57,29,12,ES_AUTOHSCROLL
+    CONTROL         "3rd Order Planner",IDC_ThirdOrderTP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,302,27,80,12
+    CONTROL         "Actuator Space Limits",IDC_ActLimitsEnable,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,386,27,94,12
+    EDITTEXT        IDC_JogSpeedX,63,60,29,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_JogSpeedY,96,60,29,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_JogSpeedZ,129,60,29,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_JogSpeedA,162,60,29,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_JogSpeedB,195,60,29,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_JogSpeedC,228,60,29,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_JogSpeedU,261,60,29,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_JogSpeedV,294,60,29,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_JogSlowPercent,368,60,29,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_Step0,87,75,29,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_Step1,120,75,29,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_Step2,153,75,29,12,ES_AUTOHSCROLL
@@ -2718,30 +2759,46 @@ BEGIN
     EDITTEXT        IDC_Step5,252,75,29,12,ES_AUTOHSCROLL
     CONTROL         "Reverse R/Z",IDC_ReverseZA,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,294,74,57,14
     CONTROL         "Enable Gamepad",IDC_EnableGamePad,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,356,74,67,14
-    EDITTEXT        IDC_CountsPerInchX,22,121,47,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_MaxVelX,79,121,47,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_MaxAccelX,136,121,47,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_CountsPerInchY,22,135,47,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_MaxVelY,79,135,47,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_MaxAccelY,136,135,47,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_CountsPerInchZ,22,149,47,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_MaxVelZ,79,149,47,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_MaxAccelZ,136,149,47,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_CountsPerInchA,22,210,47,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_MaxVelA,79,210,47,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_MaxAccelA,136,210,47,12,ES_AUTOHSCROLL
-    CONTROL         "Degrees",IDC_DegreesA,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,191,209,41,14
-    EDITTEXT        IDC_RadiusA,238,210,47,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_CountsPerInchB,22,236,47,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_MaxVelB,79,236,47,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_MaxAccelB,136,236,47,12,ES_AUTOHSCROLL
-    CONTROL         "Degrees",IDC_DegreesB,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,191,235,41,14
-    EDITTEXT        IDC_RadiusB,238,236,47,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_CountsPerInchC,22,263,47,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_MaxVelC,79,263,47,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_MaxAccelC,136,263,47,12,ES_AUTOHSCROLL
-    CONTROL         "Degrees",IDC_DegreesC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,191,262,41,14
-    EDITTEXT        IDC_RadiusC,238,263,47,12,ES_AUTOHSCROLL
+    RADIOBUTTON     "mm",IDC_mm,448,56,26,11,WS_GROUP
+    RADIOBUTTON     "inch",IDC_inch,448,68,26,11
+    EDITTEXT        IDC_CountsPerInchX,22,121,42,12,ES_AUTOHSCROLL | WS_GROUP
+    EDITTEXT        IDC_MaxVelX,68,121,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxAccelX,114,121,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxJerkX,160,121,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        IDC_CountsPerInchY,22,135,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxVelY,68,135,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxAccelY,114,135,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxJerkY,160,135,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        IDC_CountsPerInchZ,22,149,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxVelZ,68,149,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxAccelZ,114,149,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxJerkZ,160,149,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        IDC_CountsPerInchU,22,165,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxVelU,68,165,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxAccelU,114,165,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxJerkU,160,165,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        IDC_CountsPerInchV,22,179,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxVelV,68,179,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxAccelV,114,179,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxJerkV,160,179,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        IDC_CountsPerInchA,22,210,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxVelA,68,210,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxAccelA,114,210,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxJerkA,160,210,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    CONTROL         "Degrees",IDC_DegreesA,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,206,209,41,14
+    EDITTEXT        IDC_RadiusA,252,210,40,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CountsPerInchB,22,236,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxVelB,68,236,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxAccelB,114,236,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxJerkB,160,236,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    CONTROL         "Degrees",IDC_DegreesB,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,206,235,41,14
+    EDITTEXT        IDC_RadiusB,252,236,40,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CountsPerInchC,22,263,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxVelC,68,263,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxAccelC,114,263,42,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MaxJerkC,160,263,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    CONTROL         "Degrees",IDC_DegreesC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,206,262,41,14
+    EDITTEXT        IDC_RadiusC,252,263,40,12,ES_AUTOHSCROLL
     CONTROL         "Lathe",IDC_Lathe,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,315,110,33,14
     CONTROL         "Diameter Mode",IDC_DiameterMode,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,353,110,61,14
     CONTROL         "X Positive Front",IDC_XPosFront,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,315,127,79,14
@@ -2750,61 +2807,68 @@ BEGIN
     CONTROL         "Rapids as Feeds",IDC_DoRapidsAsFeeds,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,315,186,70,14
     CONTROL         "Display Encoders",IDC_DisplayEncoders,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,315,207,77,14
     CONTROL         "Zero Using Fixture Offsets ",IDC_ZeroUsingFixtures,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,315,222,115,14
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,315,221,115,14
     CONTROL         "Tool Length/Offset Immediately ",IDC_ToolLengthImmediately,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,315,237,133,14
-    CONTROL         "M6 on Tool Table Changes ",IDC_ToolTableDoM6,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,315,252,111,14
-    EDITTEXT        IDC_ArcRadiusTol,393,289,35,12,ES_AUTOHSCROLL
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,315,235,133,14
+    CONTROL         "M6 on Tool Table Changes ",IDC_ToolTableDoM6,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,315,249,111,14
+    CONTROL         "Allow Concave Corners",IDC_AllowConcaveCorners,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,315,263,100,14
+    CONTROL         "Confirm Program Exit",IDC_ConfirmExit,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,315,277,100,14
+    EDITTEXT        IDC_ArcRadiusTol,393,299,35,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_ArcRSmallTol,393,314,35,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_SpindleType,35,294,14,12,ES_AUTOHSCROLL | ES_NUMBER
     EDITTEXT        IDC_SpindleAxis,135,294,14,12,ES_AUTOHSCROLL | ES_NUMBER
     EDITTEXT        IDC_SpindleUpdateTime,200,294,22,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_SpindleTau,119,314,22,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_SpindleCntsPerRev,202,314,41,12,ES_AUTOHSCROLL
-    CTEXT           "X",IDC_STATIC,10,123,10,8
-    CTEXT           "Y",IDC_STATIC,10,138,10,8
-    CTEXT           "Z",IDC_STATIC,10,151,10,8
-    CTEXT           "A",IDC_STATIC,10,213,10,8
-    CTEXT           "Cnts/inch",IDC_STATIC,24,110,37,8
-    CTEXT           "Vel in/sec",IDC_STATIC,78,110,41,8
-    CTEXT           "Accel in/sec2",IDC_STATIC,132,110,53,8
+    CTEXT           "X",IDC_CADRowX,10,123,10,8
+    CTEXT           "Y",IDC_CADRowY,10,138,10,8
+    CTEXT           "Z",IDC_CADRowZ,10,151,10,8
+    CTEXT           "A",IDC_CADRowA,10,213,10,8
+    CTEXT           "Cnts/inch",IDC_CntsUnit,22,110,42,8
+    CTEXT           "Vel in/sec",IDC_StaticVel,66,110,46,8
+    CTEXT           "Accel in/sec2",IDC_StaticAccel,110,110,50,8
+    CTEXT           "Jerk in/sec3",IDC_StaticJerk,156,110,50,8,NOT WS_VISIBLE
     CTEXT           "degrees",IDC_STATIC,68,15,29,8
-    CTEXT           "Look ahead",IDC_STATIC,104,11,23,17
-    GROUPBOX        "Axis Parameters",IDC_STATIC,4,101,291,179
-    GROUPBOX        "Trajectory Planner",IDC_STATIC_TP,5,3,478,38
+    CTEXT           "Look ahead",IDC_STATIC,104,12,23,17
+    GROUPBOX        "Axis Parameters",IDC_AxisParamGroup,4,101,291,179
+    GROUPBOX        "Trajectory Planner",IDC_STATIC_TP,5,3,476,38
     CTEXT           "seconds",IDC_STATIC,160,15,29,8
-    LTEXT           "Break Angle",IDC_STATIC,13,11,20,19
-    CTEXT           "in/sec",IDC_STATIC,333,58,25,8
-    CTEXT           "Jog Speeds",IDC_STATIC,12,58,41,8
-    CTEXT           "X",IDC_STATIC,59,58,10,8
-    CTEXT           "Y",IDC_STATIC,105,58,10,8
-    CTEXT           "Z",IDC_STATIC,151,58,10,8
-    CTEXT           "A",IDC_STATIC,197,58,10,8
-    GROUPBOX        "Joystick/Jog",IDC_STATIC,5,43,425,52
-    CTEXT           "Collinear Tolerance",IDC_STATIC,195,11,42,18
-    CTEXT           "in",IDC_STATIC,275,15,9,8
+    LTEXT           "Break Angle",IDC_STATIC,13,10,20,19
+    CTEXT           "in/sec",IDC_UnitPerSec,327,61,25,8
+    CTEXT           "Jog Speeds",IDC_STATIC,16,61,41,8
+    CTEXT           "X",IDC_STATIC,72,52,10,8
+    CTEXT           "Y",IDC_STATIC,105,52,10,8
+    CTEXT           "Z",IDC_STATIC,138,52,10,8
+    CTEXT           "A",IDC_STATIC,171,52,10,8
+    GROUPBOX        "Joystick/Jog",IDC_STATIC,5,43,425,57
+    CTEXT           "Collinear Tolerance",IDC_STATIC,195,9,42,20
+    CTEXT           "in",IDC_Unit1,275,15,9,8
     CTEXT           "Step Increments",IDC_STATIC,20,78,61,8
-    CTEXT           "B",IDC_STATIC,10,238,10,8
-    CTEXT           "C",IDC_STATIC,10,265,10,8
-    CTEXT           "B",IDC_STATIC,243,58,10,8
-    CTEXT           "C",IDC_STATIC,289,58,10,8
-    CTEXT           "Corner Tolerance",IDC_STATIC,291,10,37,20
-    CTEXT           "in",IDC_STATIC,366,15,9,8
-    CTEXT           "Facet Angle",IDC_STATIC,381,10,27,20
+    CTEXT           "B",IDC_CADRowB,10,238,10,8
+    CTEXT           "C",IDC_CADRowC,10,265,10,8
+    CTEXT           "B",IDC_STATIC,204,52,10,8
+    CTEXT           "C",IDC_STATIC,237,52,10,8
+    CTEXT           "Corner Tolerance",IDC_STATIC,291,9,37,20
+    CTEXT           "in",IDC_Unit2,366,15,9,8
+    CTEXT           "Facet Angle",IDC_STATIC,381,9,27,20
     CTEXT           "degrees",IDC_STATIC,447,15,29,8
-    CTEXT           "Cnts/inch",IDC_StaticUnitsA,24,199,37,8
-    CTEXT           "Vel in/sec",IDC_StaticVelA,78,199,41,8
-    CTEXT           "Accel in/sec2",IDC_StaticAccelA,132,199,53,8
-    CTEXT           "Cnts/inch",IDC_StaticUnitsB,24,226,37,8
-    CTEXT           "Vel in/sec",IDC_StaticVelB,78,226,41,8
-    CTEXT           "Accel in/sec2",IDC_StaticAccelB,132,226,53,8
-    CTEXT           "Cnts/inch",IDC_StaticUnitsC,24,253,37,8
-    CTEXT           "Vel in/sec",IDC_StaticVelC,78,253,41,8
-    CTEXT           "Accel in/sec2",IDC_StaticAccelC,132,253,53,8
-    CTEXT           "Slow%",IDC_STATIC,399,58,21,8
-    CTEXT           "Radius inches",IDC_StaticRadiusA,236,199,53,8
-    CTEXT           "Radius inches",IDC_StaticRadiusB,236,226,53,8
-    CTEXT           "Radius inches",IDC_StaticRadiusC,236,253,53,8
-    GROUPBOX        "Threading",IDC_STATIC,4,282,253,50
+    CTEXT           "Cnts/inch",IDC_StaticUnitsA,22,199,42,8
+    CTEXT           "Vel in/sec",IDC_StaticVelA,66,199,46,8
+    CTEXT           "Accel in/sec2",IDC_StaticAccelA,110,199,50,8
+    CTEXT           "Jerk in/sec3",IDC_StaticJerkA,156,199,50,8,NOT WS_VISIBLE
+    CTEXT           "Cnts/inch",IDC_StaticUnitsB,22,226,42,8
+    CTEXT           "Vel in/sec",IDC_StaticVelB,66,226,46,8
+    CTEXT           "Accel in/sec2",IDC_StaticAccelB,110,226,50,8
+    CTEXT           "Jerk in/sec3",IDC_StaticJerkB,156,226,50,8,NOT WS_VISIBLE
+    CTEXT           "Cnts/inch",IDC_StaticUnitsC,22,253,42,8
+    CTEXT           "Vel in/sec",IDC_StaticVelC,66,253,46,8
+    CTEXT           "Accel in/sec2",IDC_StaticAccelC,110,253,50,8
+    CTEXT           "Jerk in/sec3",IDC_StaticJerkC,156,253,50,8,NOT WS_VISIBLE
+    CTEXT           "Slow%",IDC_STATIC,399,61,21,8
+    CTEXT           "Radius inches",IDC_StaticRadiusA,244,199,50,8
+    CTEXT           "Radius inches",IDC_StaticRadiusB,244,226,50,8
+    CTEXT           "Radius inches",IDC_StaticRadiusC,244,253,50,8
+    GROUPBOX        "Threading",IDC_STATIC,4,281,253,50
     CTEXT           "Sensor Type",IDC_STATIC,9,292,24,17
     LTEXT           "0=none 1=encoder",IDC_STATIC,52,291,33,18
     CTEXT           "Encoder Axis",IDC_STATIC,98,292,33,16
@@ -2817,20 +2881,69 @@ BEGIN
     LTEXT           "Hardware Range",IDC_STATIC,353,159,60,8
     GROUPBOX        "Feed Rate Override",IDC_STATIC,306,146,112,56
     LTEXT           "Max Rapid FRO",IDC_STATIC,353,174,60,8
-    RTEXT           "Arc beg/end radius Tol",IDC_STATIC,298,290,92,10
-    CTEXT           "inch",IDC_StaticRadiusC2,429,290,17,8
-    EDITTEXT        IDC_CountsPerInchU,22,165,47,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_MaxVelU,79,165,47,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_MaxAccelU,136,165,47,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_CountsPerInchV,22,179,47,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_MaxVelV,79,179,47,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_MaxAccelV,136,179,47,12,ES_AUTOHSCROLL
-    CTEXT           "U",IDC_STATIC,10,168,10,8
-    CTEXT           "V",IDC_STATIC,10,181,10,8
-    EDITTEXT        IDC_ArcRSmallTol,393,304,35,12,ES_AUTOHSCROLL
-    RTEXT           "Arc radius small Tol",IDC_STATIC,298,305,92,10
-    CTEXT           "inch",IDC_StaticRadiusC3,429,305,17,8
-    CONTROL         "Confirm Program Exit",IDC_ConfirmExit,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,315,267,100,14
+    RTEXT           "Arc beg/end radius Tol",IDC_STATIC,298,300,92,10
+    CTEXT           "inch",IDC_Unit3Full,429,300,17,8
+    CTEXT           "U",IDC_CADRowU,10,168,10,8
+    CTEXT           "V",IDC_CADRowV,10,181,10,8
+    RTEXT           "Arc radius small Tol",IDC_STATIC,298,315,92,10
+    CTEXT           "inch",IDC_Unit4Full,429,315,17,8
+    GROUPBOX        "units",IDC_STATIC,437,43,44,42
+    CTEXT           "U",IDC_STATIC,270,52,10,8
+    CTEXT           "V",IDC_STATIC,303,52,10,8
+    CTEXT           "Scale cnt/unit",IDC_ActHdrScale,18,110,50,8,NOT WS_VISIBLE
+    CTEXT           "Vel unit/sec",IDC_ActHdrVel,66,110,46,8,NOT WS_VISIBLE
+    CTEXT           "Accel unit/s2",IDC_ActHdrAccel,110,110,50,8,NOT WS_VISIBLE
+    CTEXT           "Jerk unit/s3",IDC_ActHdrJerk,156,110,50,8,NOT WS_VISIBLE
+    CTEXT           "0",12080,8,123,10,8,NOT WS_VISIBLE
+    EDITTEXT        12010,22,121,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12020,68,121,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12030,114,121,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12040,160,121,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    CONTROL         "Degrees",12050,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,206,120,45,14
+    CTEXT           "1",12081,8,139,10,8,NOT WS_VISIBLE
+    EDITTEXT        12011,22,137,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12021,68,137,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12031,114,137,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12041,160,137,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    CONTROL         "Degrees",12051,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,206,136,45,14
+    CTEXT           "2",12082,8,155,10,8,NOT WS_VISIBLE
+    EDITTEXT        12012,22,153,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12022,68,153,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12032,114,153,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12042,160,153,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    CONTROL         "Degrees",12052,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,206,152,45,14
+    CTEXT           "3",12083,8,171,10,8,NOT WS_VISIBLE
+    EDITTEXT        12013,22,169,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12023,68,169,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12033,114,169,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12043,160,169,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    CONTROL         "Degrees",12053,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,206,168,45,14
+    CTEXT           "4",12084,8,187,10,8,NOT WS_VISIBLE
+    EDITTEXT        12014,22,185,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12024,68,185,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12034,114,185,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12044,160,185,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    CONTROL         "Degrees",12054,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,206,184,45,14
+    CTEXT           "5",12085,8,203,10,8,NOT WS_VISIBLE
+    EDITTEXT        12015,22,201,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12025,68,201,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12035,114,201,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12045,160,201,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    CONTROL         "Degrees",12055,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,206,200,45,14
+    CTEXT           "6",12086,8,219,10,8,NOT WS_VISIBLE
+    EDITTEXT        12016,22,217,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12026,68,217,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12036,114,217,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12046,160,217,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    CONTROL         "Degrees",12056,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,206,216,45,14
+    CTEXT           "7",12087,8,235,10,8,NOT WS_VISIBLE
+    EDITTEXT        12017,22,233,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12027,68,233,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12037,114,233,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        12047,160,233,42,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    CONTROL         "Degrees",12057,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,206,232,45,14
+    LTEXT           "Actuator units: deg if Degrees else mm/inch. Slot channels set by DefineCS.",IDC_ActNote,10,251,282,16,NOT WS_VISIBLE
+    PUSHBUTTON      "Copy from CAD Axes",IDC_CopyFromCAD,196,264,92,13,NOT WS_VISIBLE
 END
 
 IDD_ToolSetupFilesPage DIALOGEX 0, 275, 440, 241
@@ -3052,7 +3165,7 @@ BEGIN
     CONTROL         "<",IDC_Reverse,"Button",BS_OWNERDRAW | WS_TABSTOP,73,356,27,47
 END
 
-IDD_EditFixtures DIALOGEX 0, 0, 343, 221
+IDD_EditFixtures DIALOGEX 0, 0, 429, 221
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Edit Fixture Offsets"
 FONT 8, "Courier New", 400, 0, 0x0
@@ -3063,65 +3176,86 @@ BEGIN
     EDITTEXT        IDC_FixtureA0,173,20,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureB0,218,20,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureC0,263,20,41,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_FixtureU0,307,20,41,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_FixtureV0,351,20,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureX1,38,37,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureY1,83,37,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureZ1,128,37,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureA1,173,37,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureB1,218,37,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureC1,263,37,41,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_FixtureU1,307,37,41,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_FixtureV1,351,37,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureX2,38,54,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureY2,83,54,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureZ2,128,54,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureA2,173,54,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureB2,218,54,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureC2,263,54,41,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_FixtureU2,307,54,41,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_FixtureV2,351,54,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureX3,38,70,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureY3,83,70,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureZ3,128,70,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureA3,173,70,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureB3,218,70,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureC3,263,70,41,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_FixtureU3,307,70,41,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_FixtureV3,351,70,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureX4,38,86,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureY4,83,86,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureZ4,128,86,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureA4,173,86,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureB4,218,86,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureC4,263,86,41,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_FixtureU4,307,86,41,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_FixtureV4,351,86,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureX5,38,102,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureY5,83,102,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureZ5,128,102,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureA5,173,102,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureB5,218,102,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureC5,263,102,41,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_FixtureU5,307,102,41,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_FixtureV5,351,102,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureX6,38,118,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureY6,83,118,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureZ6,128,118,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureA6,173,118,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureB6,218,118,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureC6,263,118,41,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_FixtureU6,307,118,41,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_FixtureV6,351,118,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureX7,38,134,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureY7,83,134,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureZ7,128,134,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureA7,173,134,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureB7,218,134,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureC7,263,134,41,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_FixtureU7,307,134,41,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_FixtureV7,351,134,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureX8,38,149,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureY8,83,149,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureZ8,128,149,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureA8,173,149,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureB8,218,149,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_FixtureC8,263,149,41,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_FixtureU8,307,149,41,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_FixtureV8,351,149,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_GlobalX,38,175,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_GlobalY,83,175,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_GlobalZ,128,175,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_GlobalA,173,175,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_GlobalB,218,175,41,12,ES_RIGHT | ES_AUTOHSCROLL
     EDITTEXT        IDC_GlobalC,263,175,41,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_GlobalU,307,175,41,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_GlobalV,351,175,41,12,ES_RIGHT | ES_AUTOHSCROLL
     PUSHBUTTON      "Clear ALL",IDC_ClearAll,11,199,42,16
     PUSHBUTTON      "Save",IDC_Save,70,199,42,16
-    PUSHBUTTON      "Help",IDC_HelpFixture,193,199,42,16
-    PUSHBUTTON      "Cancel",IDCANCEL,243,199,42,16
-    DEFPUSHBUTTON   "OK",IDOK,292,199,42,16,WS_GROUP
+    CONTROL         "Save Always",IDC_SaveFixtureOnOK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,118,203,54,9
+    PUSHBUTTON      "Help",IDC_HelpFixture,218,199,42,16
+    PUSHBUTTON      "Cancel",IDCANCEL,268,199,42,16
+    DEFPUSHBUTTON   "OK",IDOK,317,199,42,16,WS_GROUP
     CTEXT           "Fixture",IDC_STATIC,12,7,34,8
     CTEXT           "X",IDC_STATIC,53,9,10,8
     CTEXT           "Y",IDC_STATIC,97,9,10,8
@@ -3146,17 +3280,20 @@ BEGIN
     CTEXT           "A",IDC_STATIC,187,165,10,8
     CTEXT           "B",IDC_STATIC,232,165,10,8
     CTEXT           "C",IDC_STATIC,277,165,10,8
-    PUSHBUTTON      "Clear",IDC_Clear0,309,19,28,14
-    PUSHBUTTON      "Clear",IDC_Clear1,309,36,28,14
-    PUSHBUTTON      "Clear",IDC_Clear2,309,53,28,14
-    PUSHBUTTON      "Clear",IDC_Clear3,309,69,28,14
-    PUSHBUTTON      "Clear",IDC_Clear4,309,85,28,14
-    PUSHBUTTON      "Clear",IDC_Clear5,309,101,28,14
-    PUSHBUTTON      "Clear",IDC_Clear6,309,117,28,14
-    PUSHBUTTON      "Clear",IDC_Clear7,309,133,28,14
-    PUSHBUTTON      "Clear",IDC_Clear8,309,148,28,14
-    PUSHBUTTON      "Clear",IDC_ClearG,309,174,28,14
-    CONTROL         "Save Always",IDC_SaveFixtureOnOK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,118,203,54,9
+    PUSHBUTTON      "Clear",IDC_Clear0,394,19,28,14
+    PUSHBUTTON      "Clear",IDC_Clear1,394,36,28,14
+    PUSHBUTTON      "Clear",IDC_Clear2,394,53,28,14
+    PUSHBUTTON      "Clear",IDC_Clear3,394,69,28,14
+    PUSHBUTTON      "Clear",IDC_Clear4,394,85,28,14
+    PUSHBUTTON      "Clear",IDC_Clear5,394,101,28,14
+    PUSHBUTTON      "Clear",IDC_Clear6,394,117,28,14
+    PUSHBUTTON      "Clear",IDC_Clear7,394,133,28,14
+    PUSHBUTTON      "Clear",IDC_Clear8,394,148,28,14
+    PUSHBUTTON      "Clear",IDC_ClearG,394,174,28,14
+    CTEXT           "U",IDC_STATIC,321,9,10,8
+    CTEXT           "V",IDC_STATIC,366,9,10,8
+    CTEXT           "U",IDC_STATIC,321,165,10,8
+    CTEXT           "V",IDC_STATIC,366,165,10,8
 END
 
 DIALOG_PREVIEW DIALOGEX 0, 0, 274, 257
@@ -4461,7 +4598,7 @@ BEGIN
     IDD_GViewerSetup, DIALOG
     BEGIN
         RIGHTMARGIN, 364
-        BOTTOMMARGIN, 150
+        BOTTOMMARGIN, 184
     END
 
     IDD_Transform, DIALOG
@@ -4533,7 +4670,7 @@ BEGIN
     IDD_ToolSetupTPPage, DIALOG
     BEGIN
         RIGHTMARGIN, 485
-        BOTTOMMARGIN, 332
+        BOTTOMMARGIN, 338
     END
 
     IDD_ToolSetupFilesPage, DIALOG
@@ -4548,7 +4685,7 @@ BEGIN
 
     IDD_EditFixtures, DIALOG
     BEGIN
-        RIGHTMARGIN, 240
+        RIGHTMARGIN, 422
         BOTTOMMARGIN, 209
     END
 
@@ -4628,8 +4765,6 @@ CONTENTSU               BITMAP                  "res\\ContentsU.bmp"
 
 CONTENTSX               BITMAP                  "res\\ContentsX.bmp"
 
-IDB_Icon48              BITMAP                  "res\\KMotionCNC48.bmp"
-
 IDB_LeftStep            BITMAP                  "res\\leftstep.bmp"
 
 IDB_UpStep              BITMAP                  "res\\upstep.bmp"
@@ -4687,13 +4822,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_App16               ICON                    "res\\KMotionCNC16.ico"
-
-IDI_App32               ICON                    "res\\KMotionCNC32.ico"
-
-IDI_App48               ICON                    "res\\KMotionCNC48.ico"
-
-0                       ICON                    "res\\KMotionCNC256.ico"
+IDR_MAINFRAME           ICON                    "res\\KMotionCNC256.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -4876,6 +5005,12 @@ END
 STRINGTABLE
 BEGIN
     IDC_DoTime              "When checked Simulate performs Trajecory Planning and reports expected runtime"
+    IDC_Vminus2             "Jog Fast (-V)"
+    IDC_Vminus              "Jog (-V)"
+    IDC_VminusStep          "Step (-V)"
+    IDC_VplusStep           "Step (+V)"
+    IDC_Vplus               "Jog (+V)"
+    IDC_Vplus2              "Jog Fast (+V)"
 END
 
 STRINGTABLE
@@ -4899,6 +5034,20 @@ BEGIN
     IDC_SetC                "Shift Axis Offset to Set Current C to specified position"
     IDC_SetFixture          "Set Fixture Offset to move Origin here"
     IDC_SetX                "Shift Axis Offset to Set Current X to specified position"
+END
+
+STRINGTABLE
+BEGIN
+    IDC_Uminus2             "Jog Fast (-U)"
+    IDC_Uminus              "Jog (-U)"
+    IDC_UminusStep          "Step (-U)"
+    IDC_UplusStep           "Step (+U)"
+    IDC_Uplus               "Jog (+U)"
+    IDC_Uplus2              "Jog Fast (+U)"
+    IDC_ZeroU               "Shift Axis Offset to Zero U"
+    IDC_SetU                "Shift Axis Offset to Set Current U to specified position"
+    IDC_ZeroV               "Shift Axis Offset to Zero V"
+    IDC_SetV                "Shift Axis Offset to Set Current V to specified position"
 END
 
 STRINGTABLE

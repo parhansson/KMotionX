@@ -73,7 +73,7 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 <h1>Configuration and FLASH Screen</h1>
 
 <p><img src="ConfigurationScreen.png" alt="" width="563" height="663" usemap="#FPMap0Map"/>
-  <map name="FPMap0Map"><area alt="Jump to Axis Parameters Utility Functions description" coords="21,573,377,616" shape="rect" href="#Utilities"><area alt="Jump to Limit Switch Options description" coords="9,411,414,569" shape="rect" href="#Limit_Switch_Options"><area alt="Jump to Output Channel description" coords="7,295,248,404" shape="rect" href="#Output_Channels"><area alt="Jump to Input Channel description" coords="5,191,248,292" shape="rect" href="#Input_Channels"><area alt="Jump to Axis Mode Description" coords="4,70,153,188" shape="rect" href="#Axis_Modes"><area href="#Backlash_Settings" shape="rect" coords="255,279,420,393"><area href="#Master/Slave_Settings" shape="rect" coords="253,157,420,277"><area alt="Jump to Flash memory description" coords="427,240,558,461" shape="rect" href="#FLASH"><area alt="Jump to Launch Threads description" coords="430, 45, 558, 235" shape="rect" href="#Launch_on_Power_U"><area alt="Jump to Lead Compensation description" coords="167,124,415,154" shape="rect" href="#Lead_Compensation"><area alt="Jump to InvDistPerCycle description" coords="165,95,414,123" shape="rect" href="#Inv_Dist_Per_Cycle"><area alt="Jump to Max Following Error description" coords="158,66,420,94" shape="rect" href="#Max_Following_Error"><area alt="Jump to Microstepper Amplitude description" coords="148,28,419,64" shape="rect" href="#Microstepper_Amplitude">
+  <map name="FPMap0Map"><area alt="Jump to Axis Parameters Utility Functions description" coords="21,573,377,656" shape="rect" href="#Utilities"><area alt="Jump to Limit Switch Options description" coords="9,411,414,569" shape="rect" href="#Limit_Switch_Options"><area alt="Jump to Output Channel description" coords="7,295,248,404" shape="rect" href="#Output_Channels"><area alt="Jump to Input Channel description" coords="5,191,248,292" shape="rect" href="#Input_Channels"><area alt="Jump to Axis Mode Description" coords="4,70,153,188" shape="rect" href="#Axis_Modes"><area href="#Backlash_Settings" shape="rect" coords="255,279,420,393"><area href="#Master/Slave_Settings" shape="rect" coords="253,157,420,277"><area alt="Jump to Flash memory description" coords="427,240,558,461" shape="rect" href="#FLASH"><area alt="Jump to Launch Threads description" coords="430, 45, 558, 235" shape="rect" href="#Launch_on_Power_U"><area alt="Jump to Lead Compensation description" coords="167,124,415,154" shape="rect" href="#Lead_Compensation"><area alt="Jump to InvDistPerCycle description" coords="165,95,414,123" shape="rect" href="#Inv_Dist_Per_Cycle"><area alt="Jump to Max Following Error description" coords="158,66,420,94" shape="rect" href="#Max_Following_Error"><area alt="Jump to Microstepper Amplitude description" coords="148,28,419,64" shape="rect" href="#Microstepper_Amplitude">
     <area alt="Jump to channel selection description" coords="12, 34, 140, 64" shape="rect" href="#channel_">
   </map>
 </p>
@@ -98,7 +98,7 @@ and remain set unless a physical change to the hardware is made. For
 example, a Stepper motor might be replaced with a Brushless Motor and Encoder.</p>
 <p>The <em>Step Response Screen</em> contains parameters that are <em>tuning</em> related and 
 are located where the tuning response is most often adjusted and checked. 
-For example, PID (proportional, intparameters are located there. </p>
+For example, PID (Proportional Integral Derivative) Parameters are located there. </p>
 <p>The <em>IIR Filter Screen </em>contains parameters related to servo 
 <em>filters</em>.</p>
 
@@ -182,7 +182,7 @@ and <a href="../ClosedLoopStep/ClosedLoopStepper.htm">Closed Loop Step/Dir Outpu
 device will be used. Some Input Modes require two devices to be specified 
 and some Input Modes only require one device. If the selected Input Mode 
 only requires one device then the second Input Channel (Input Chan 1) is not 
-used and my be set to any number. This may be the channel of an Encoder input or an ADC 
+used and may be set to any number. This may be the channel of an Encoder input or an ADC 
 input depending on the selected input mode. Resolvers require two ADC 
 input channels (for sine and cosine), for all other modes the second channel 
 number is not used.</p>
@@ -213,7 +213,7 @@ radians per cycle.</p>
 
 <p>An ADC input uses a single absolute ADC channel 
 input to obtain the position measurement Gain0 and Offset0 may be used to 
-modify the ADC counts from -2048 .. +2047 to and desired range.</p>
+modify the ADC counts from -2048 .. +2047 to any desired range.</p>
 
 <h2><a name="Output_Channels">Output Channels</a></h2>
 
@@ -224,7 +224,7 @@ device will be used. Some Output Modes require two devices to be specified
 and some Output Modes only require one device. For Output modes that only 
 require one output device the second device will be disabled. If the selected Output Mode 
 only requires one device then the second Output Channel (Output Chan 1) is not 
-used and my be set to any number. The specified output device may be the channel of a <a href="../PWM_Description/PWM_Description.htm">PWM</a> connected to an 
+used and may be set to any number. The specified output device may be the channel of a <a href="../PWM_Description/PWM_Description.htm">PWM</a> connected to an 
 on-board power amplifier, a Step/Direction Generator, or a DAC that is used to drive an external power amplifier.  </p>
 
 <p>Stepper mode and 4 phase brushless mode require two channels of PWM to be 
@@ -236,7 +236,7 @@ specified.</p>
 3 Phase output mode, only the Output Channel 0 value is used and must be set to 
 an even PWM number.</p>
 
-<p>For Step and Direction output mode and CL Step (Closed Loop Step/Dir), the output channel 0 is used to specify which Step/Direction Generator will be used.&nbsp; Also the Output mode (step/Dir, quadrature, or CW/CCW) and drive type (LVTTL active high/low, or open collector, or differential) to be used. Each Step/Direction Generator has assigned I/O Pins. See <a href="../StepAndDirection/StepAndDir.htm">Step and Direction 
+<p>For Step and Direction output mode and CL Step (Closed Loop Step/Dir), the output channel 0 is used to specify which Step/Direction Generator will be used.&nbsp; Also the Output mode (step/Dir, quadrature, or CW/CCW) and drive type (LVTTL active high/low, or open collector, or differential) to be used. Each Step/Direction Generator has assigned IO Pins. See <a href="../StepAndDirection/StepAndDir.htm">Step and Direction 
 Output Mode - KFLOP</a>  and <a href="../StepAndDirection/StepAndDirKogna.htm">Step and Direction Output Mode - Kogna</a>.</p>
 <p>Some output devices support the application of a 
 gain and offset See also the related Console Commands
@@ -531,10 +531,10 @@ when a limit is detected. </p>
 
 <p>Specify a <em>bit no.</em> for which bit is to be monitored for the limit 
 condition. See the <a href="../DigitalIOScreenKFLOP/DigitalIOScreen.htm">
-Digital IO Screen</a> for current I/O bit status and a recommended bit 
+Digital IO Screen</a> for current IO bit status and a recommended bit 
 assignment for limit switches (bits 12 through 19). If in a particular 
 application it isn't critical to determine which Limit Switch (either positive 
-or negative, or even which axis) the number of digital I/O bits consumed by 
+or negative, or even which axis) the number of digital IO bits consumed by 
 limit switches may be reduced by &quot;wire ORing&quot; (connecting in parallel) multiple 
 switches together. In this case, the same bit number may be specified more 
 than one place.</p>
@@ -590,7 +590,7 @@ KFLOP</strong></em>.</p>
 
 <div style="clear: both;"></div>
 
-<p>To configure a program execute on power up, perform the following steps:</p>
+<p>To configure a program to execute on power up, perform the following steps:</p>
 <ol>
   <li><em>Compile and Download</em> a C Program to a particular Thread Space.</li>
   <li>Select <em>Launch on Power Up</em> for the same Thread.</li>
@@ -688,5 +688,6 @@ may be used to recover from the situation. To perform the recovery:</p>
 <p>&nbsp;</p>
 
 	</div>
+<script src="../search/searchbox.js" defer></script>
 </body>
 </html>

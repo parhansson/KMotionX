@@ -105,13 +105,33 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 
 
 
-<p>The area of the CAD Space to be corrected is defined by a 
+<p>The area of the CAD Space to be corrected is covered by a rectangular grid of 
+measurement points (nodes).  The grid is described by three numbers in each axis:</p>
 
-number of rows and columns and an XY Grid size. A CAD point falling within 
+<ul>
+<li><strong>Number of Rows and Columns</strong> - Columns run along X, Rows run along Y.  
+A 3 column by 2 row table has 6 nodes.</li>
+<li><strong>Grid Spacing X and Y</strong> - the distance between <em>adjacent</em> columns 
+(X) and between <em>adjacent</em> rows (Y), in CAD units (inches).  This is the pitch of the 
+grid, not its overall size.  A grid of 2 rows that spans from Y=-1.5 to Y=+1.5 has a 
+Y Spacing of 3.0 (not 1.5).</li>
+<li><strong>Grid Offset X and Y</strong> - the CAD coordinate of the <em>first</em> node 
+(row 0, column 0).  This positions (shifts) the whole grid in CAD Space.</li>
+</ul>
 
-a grid uses a bilinear interpolation from the 4 points making up the grid region 
+<p>Every node then has a defined CAD position:</p>
 
-to map to actuator space.</p>
+<p><code>CAD X of node(row,col) = Offset X + col * Spacing X</code><br />
+<code>CAD Y of node(row,col) = Offset Y + row * Spacing Y</code></p>
+
+<p>The data lines of the table give, for each node, the <em>Actuator Space</em> 
+position that places the machine exactly at that node's CAD position (the position 
+measured when the machine is physically at the ideal grid point).  A CAD point 
+falling within a grid rectangle uses a bilinear interpolation from the 4 nodes making 
+up that rectangle to map to actuator space; the inverse mapping (actuator to CAD, used 
+for the DROs) interpolates the same table the other way.  Because of this, if a 
+Spacing or Offset does not match where the nodes were really measured, the DROs will 
+report the node's <em>table</em> coordinate rather than its true position.</p>
 
 
 
@@ -177,9 +197,8 @@ a simple transformation:</p>
 
 <p><strong>Corresponding Geo File:</strong></p>
 
-
-
-<p>Simple 2x2 grid on CAD Space Grid Spacing of 1 inch in X and 1 inch in Y.</p>
+<p>Simple 2x2 grid, Grid Spacing of 1 inch in X and 1 inch in Y, first node 
+(row 0, col 0) at CAD (-0.5,-0.5) so the grid spans -0.5..+0.5 in both axes.</p>
 
 <p>Then 4 grid points (row,col,X,Y,Z)</p>
 
@@ -201,10 +220,82 @@ a simple transformation:</p>
 
 
 
+<h2><a name="File_Format">Geo Correction File Format</a></h2>
+
+<p>The file is plain text with comma separated values, one entry per line:</p>
+
+<table border="1" cellpadding="4">
+<tr><th>Line</th><th>Contents</th><th>Meaning</th></tr>
+<tr><td>1</td><td><code>NRows,NCols</code></td><td>number of rows (along Y) and columns (along X), each 2..4000</td></tr>
+<tr><td>2</td><td><code>SpacingX,SpacingY</code></td><td>distance between adjacent columns and between adjacent rows (CAD units)</td></tr>
+<tr><td>3</td><td><code>OffsetX,OffsetY</code></td><td>CAD coordinate of node row 0, column 0 (the grid origin)</td></tr>
+<tr><td>4...</td><td><code>row,col,X,Y,Z</code></td><td>one line per node (NRows x NCols lines, any order): the Actuator Space X,Y at that node, and the Z offset to apply there (0 if no flattening)</td></tr>
+</table>
+
+<p>The row and column indices identify the node; its CAD position is always computed 
+from the Spacing and Offset as shown above - it is not stored in the file.  All values 
+are absolute machine (CAD) coordinates in inches, independent of any Fixture or G92 
+offsets in effect.</p>
+
+
+
+<h2><a name="Shifting_the_Origin">Positioning (Shifting) the Grid</a></h2>
+
+<p>Only the Offset line determines where the grid sits in CAD Space.  To move the 
+grid, change OffsetX,OffsetY to the CAD coordinate where the first node (row 0, 
+column 0 - the lowest X, lowest Y corner) should be; the Spacing values and all data 
+lines stay the same.  For example a 3 column x 2 row grid with columns 5 inches 
+apart and rows 3 inches apart:</p>
+
+<ul>
+<li>centered on the machine origin: Offset <code>-5,-1.5</code> (nodes at X = -5, 0, 5 and Y = -1.5, +1.5)</li>
+<li>starting at the machine origin: Offset <code>0,0</code> (nodes at X = 0, 5, 10 and Y = 0, 3)</li>
+</ul>
+
+<p>Measure the table with the machine in the same coordinate frame the Offset is 
+given in (machine coordinates, no fixture offset), or the correction will be applied 
+shifted from where it was measured.</p>
+
+<p><strong>Worked example (3 columns x 2 rows, centered):</strong></p>
+
+<p>2,3<br />
+
+5,3<br />
+
+-5,-1.5<br />
+
+0,0,-4.760279,-1.111109,1.201516<br />
+
+0,1,0.113906,-1.368111,1.057638<br />
+
+0,2,4.849017,-1.707536,0.908999<br />
+
+1,0,-4.565361,1.871193,1.296117<br />
+
+1,1,0.257103,1.611877,1.241198<br />
+
+1,2,5.167226,1.254432,1.537146</p>
+
+<p>Row 0 is the Y = -1.5 row and row 1 is the Y = +1.5 row (Offset Y -1.5 plus one 
+Spacing Y of 3.0).  Columns 0, 1, 2 are X = -5, 0, +5.  The measured actuator 
+positions are close to, but not exactly, the ideal node positions - those small 
+differences are the geometric distortion the table corrects.</p>
+
+<p><strong>Common mistake:</strong> entering the Spacing as the half-width of the grid 
+instead of the node pitch.  With <code>5,1.5</code> on line 2 in the example above the 
+table would place row 1 at Y = 0 instead of Y = +1.5.  The machine still moves to 
+the measured positions, but standing physically on the top-right node the DRO 
+reads 5,0 (the node's table coordinate) instead of the expected 5,1.5.  If the DRO 
+at a node does not read that node's intended CAD position, check the Spacing and 
+Offset lines first.</p>
+
+
+
 <p></p>
 
 	</div>
 
+<script src="../search/searchbox.js" defer></script>
 </body>
 
 

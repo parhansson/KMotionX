@@ -180,7 +180,7 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
     perform an arc while Z, A, B, and C move linearly.</p>
   <p>Although the Arc command may be sent directly, the Arc command is normally 
     generated automatically to perform a planned trajectory by the 
-    coordinated motion library or GCode.</p>
+    coordinated motion library or G Code.</p>
   <p><em>(<strong>X<sub>C</sub>,Y<sub>C</sub></strong>)</em> - center of circle</p>
   <p><em>(<strong>R<sub>X</sub>,R<sub>Y</sub></strong>)</em> - <em>x</em> radius and <em>y</em> radius</p>
   <p><strong><em>&#952;<sub>0</sub></em></strong> - initial angle for 
@@ -610,7 +610,7 @@ the same rate.</p>
 <h3>Description</h3>
         <p>Displays the status of the Coordinated Motion Buffer.
 <em><strong>KMotion</strong></em> contains a Coordinated Motion Buffer where move segments 
-(linear and arcs) and I/O commands may be downloaded and executed in real time.</p>
+(linear and arcs) and IO commands may be downloaded and executed in real time.</p>
 
         <p>Displays:</p>
       
@@ -691,10 +691,64 @@ Returns 1 if executing, 0 if not executing.</p>
   
         <hr />
         
+        <h2><a name="CHex8"></a>CHex8<em>&lt;X<sub>a</sub>&gt; &lt;X<sub>b</sub>&gt; &lt;X<sub>c</sub>&gt; &lt;X<sub>d</sub>&gt;
+        &lt;Y<sub>a</sub>&gt; &lt;Y<sub>b</sub>&gt; &lt;Y<sub>c</sub>&gt; &lt;Y<sub>d</sub>&gt;
+        &lt;Z<sub>a</sub>&gt; &lt;Z<sub>b</sub>&gt; &lt;Z<sub>c</sub>&gt; &lt;Z<sub>d</sub>&gt;
+        &lt;A<sub>a</sub>&gt; &lt;A<sub>b</sub>&gt; &lt;A<sub>c</sub>&gt; &lt;A<sub>d</sub>&gt;
+        &lt;B<sub>a</sub>&gt; &lt;B<sub>b</sub>&gt; &lt;B<sub>c</sub>&gt; &lt;B<sub>d</sub>&gt;
+        &lt;C<sub>a</sub>&gt; &lt;C<sub>b</sub>&gt; &lt;C<sub>c</sub>&gt; &lt;C<sub>d</sub>&gt;
+        &lt;U<sub>a</sub>&gt; &lt;U<sub>b</sub>&gt; &lt;U<sub>c</sub>&gt; &lt;U<sub>d</sub>&gt;
+        &lt;V<sub>a</sub>&gt; &lt;V<sub>b</sub>&gt; &lt;V<sub>c</sub>&gt; &lt;V<sub>d</sub>&gt;
+        &lt;t<sub>F</sub>&gt;</em></h2>
+
+<h3>Description</h3>
+        <p>Place a Cubic Knot (TRAJECTORY_CUBIC8) segment (in 8 dimensions) into the
+        coordinated motion buffer. Unlike the <a href="#Linear">Linear</a> and
+        <a href="#Arc">Arc</a> commands, which define a path through space plus a
+        parametric equation describing how the path is traversed, each axis of a
+        Cubic Knot is given its own independent cubic polynomial of time. The
+        controller evaluates the polynomials exactly every servo sample so velocity
+        is perfectly continuous and curves have no faceting. The position of each
+        axis during the segment is:</p>
+        <p><em>x</em> = <em><strong>a</strong> t</em><strong><sup>3</sup></strong> + <em><strong>b</strong></em> <em>t</em><strong><sup>2</sup></strong> + <em><strong>c</strong></em> <em>t</em> + <em><strong>d</strong></em></p>
+        <p>This motion segment will be performed over a time period of <strong><em>t</em><sub>F</sub></strong>,
+        where <strong><em>t</em></strong> varies from <strong>0</strong> ... <strong><em>t</em><sub>F</sub></strong>.
+        The constant coefficient <em><strong>d</strong></em> of each axis is therefore
+        the starting position of the segment and should match the end point of
+        the previous segment for continuous motion. Axes are routed according to
+        the <a href="#DefineCSEX">DefineCSEX</a> coordinate system assignments.
+        Note that unlike <a href="#LinearHex">LinearHex</a>, CHex8 does not
+        record an end point for use by a following <a href="#LHex1">LHex1</a> or
+        <a href="#LHex2">LHex2</a> command.</p>
+        <p>All 33 parameters are specified as 32-bit hexadecimal values which are
+        the binary images of 32-bit floating point values. This command is used
+        by the KMotionCNC <a href="KMotionCNC/ToolSetupScreenTP3.htm#Cubic_Knots">Cubic
+        Knots</a> option of the 3rd Order Trajectory Planner and is normally
+        generated automatically by the host software rather than typed by hand.
+        Requires KFLOP/Kogna firmware that supports Cubic Knots (KMotion 5.5.0 or
+        later), otherwise "error, invalid command" is reported.
+        See also <a href="CoordinatedMotion.htm">KMotion Coordinated Motion</a>.</p>
+
+<h3>Parameters</h3>
+<p><strong><em>&lt;X<sub>a</sub>&gt; &lt;X<sub>b</sub>&gt; &lt;X<sub>c</sub>&gt; &lt;X<sub>d</sub>&gt;</em></strong> - X axis cubic coefficients <em>a, b, c, d</em></p>
+<p><strong><em>&lt;Y<sub>a</sub>&gt; &lt;Y<sub>b</sub>&gt; &lt;Y<sub>c</sub>&gt; &lt;Y<sub>d</sub>&gt;</em></strong> - Y axis cubic coefficients <em>a, b, c, d</em></p>
+<p><strong><em>&lt;Z<sub>a</sub>&gt; &lt;Z<sub>b</sub>&gt; &lt;Z<sub>c</sub>&gt; &lt;Z<sub>d</sub>&gt;</em></strong> - Z axis cubic coefficients <em>a, b, c, d</em></p>
+<p><strong><em>&lt;A<sub>a</sub>&gt; &lt;A<sub>b</sub>&gt; &lt;A<sub>c</sub>&gt; &lt;A<sub>d</sub>&gt;</em></strong> - A axis cubic coefficients <em>a, b, c, d</em></p>
+<p><strong><em>&lt;B<sub>a</sub>&gt; &lt;B<sub>b</sub>&gt; &lt;B<sub>c</sub>&gt; &lt;B<sub>d</sub>&gt;</em></strong> - B axis cubic coefficients <em>a, b, c, d</em></p>
+<p><strong><em>&lt;C<sub>a</sub>&gt; &lt;C<sub>b</sub>&gt; &lt;C<sub>c</sub>&gt; &lt;C<sub>d</sub>&gt;</em></strong> - C axis cubic coefficients <em>a, b, c, d</em></p>
+<p><strong><em>&lt;U<sub>a</sub>&gt; &lt;U<sub>b</sub>&gt; &lt;U<sub>c</sub>&gt; &lt;U<sub>d</sub>&gt;</em></strong> - U axis cubic coefficients <em>a, b, c, d</em></p>
+<p><strong><em>&lt;V<sub>a</sub>&gt; &lt;V<sub>b</sub>&gt; &lt;V<sub>c</sub>&gt; &lt;V<sub>d</sub>&gt;</em></strong> - V axis cubic coefficients <em>a, b, c, d</em></p>
+<p><strong><em>&lt;t</em><sub>F</sub><em>&gt;</em></strong> - time for segment (seconds)</p>
+
+<h3>Example - X moves linearly from 0 to 1 over 1 second (x = t), all other axes remain at 0</h3>
+<p>CHex8 0 0 3F800000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3F800000</p>
+
+        <hr />
+
         <h2><a name="ClearBit"></a>ClearBit<em>&lt;N&gt;</em></h2>
 
 <h3>Description</h3>
-        <p>Clears an actual I/O bit or virtual I/O bit. Note that actual I/O bits must be previously defined as an output, see <a href="#SetBitDirection">SetBitDirection</a> </p>
+        <p>Clears an actual IO bit or virtual IO bit. Note that actual IO bits must be previously defined as an output, see <a href="#SetBitDirection">SetBitDirection</a> </p>
 
 <h3>Parameters</h3>
 <p><em><strong>&lt;N&gt;</strong></em></p>
@@ -709,7 +763,7 @@ Returns 1 if executing, 0 if not executing.</p>
  <h2><a name="ClearBitBuf"></a>ClearBitBuf<em>&lt;N&gt;</em></h2>
 
 <h3>Description</h3>
-        <p>Inserts into the coordinated move buffer a command to clear an I/O bit (actual I/O bits must be defined as an output, see <a href="#SetBitDirection">SetBitDirection</a>).</p>
+        <p>Inserts into the coordinated move buffer a command to clear an IO bit (actual IO bits must be defined as an output, see <a href="#SetBitDirection">SetBitDirection</a>).</p>
 
 <h3>Parameters</h3>
 <p><em><strong>&lt;N&gt;</strong></em></p>
@@ -1122,7 +1176,7 @@ FRO. </p>
 <p>Displays the amount of the Coordinated Motion Buffer that has 
 been already executed in terms of <em>Time</em>.
 <em><strong>KMotion</strong></em> contains a Coordinated Motion Buffer where move segments 
-(linear and arcs) and I/O commands may be downloaded and executed in real time. 
+(linear and arcs) and IO commands may be downloaded and executed in real time. 
 This command is useful for determining how long before the Coordinated Motion 
 Buffer will complete. For example, if a number of segments have been 
 downloaded where their total execution time is 10 seconds, and they are 
@@ -1249,6 +1303,26 @@ Feed Rate reduction in an attempt to avoid buffer underflow. </p>
 <p>FPGA 261 192</p>
 
 <hr />
+<h2><a name="FPGAConfig">FPGAConfig</a> (KFLOP only)</h2>
+
+<h3>Description</h3>
+<p>Displays which FPGA Configuration the currently loaded firmware embeds, as a 4
+character identifier:</p>
+<p><strong>KFLP</strong> - Classic configuration (RS232 supported, no Serial Servo support)</p>
+<p><strong>KFLS</strong> - Serial Servo configuration (STS3215 Serial Servo bus supported, no RS232)</p>
+<p>The two configurations are built as separate KFLOP firmware versions. Use
+this command to verify which one is installed. User C Programs may test the
+same value using the global variable FPGA_CONFIG_ID (FPGA_CONFIG_CLASSIC or
+FPGA_CONFIG_SERIAL, see KMotionDef.h). See also <a href="#InputMode">InputMode</a>
+and <a href="#OutputMode">OutputMode</a> for the Serial Servo axis modes.</p>
+
+<h3>Parameters</h3>
+<p>None</p>
+
+<h3>Example</h3>
+<p>FPGAConfig</p>
+
+<hr />
 <h2><a name="FPGAW">FPGAW</a><em>&lt;N&gt; &lt;M&gt;</em></h2>
 
 <h3>Description</h3>
@@ -1331,7 +1405,7 @@ Range - any.</p>
 
 <h3>Parameters</h3>
 <p><em><strong>&lt;N&gt;</strong> </em></p>
-<p>I/O bit number. Accepted range 0...2047</p>
+<p>IO bit number. Accepted range 0...2047</p>
 
 <h3>Example</h3>
 <p>GetBitDirection0</p>
@@ -1550,7 +1624,7 @@ A feedhold stop can be initiated from C code or from the Console Command
 <h2> <a name="GetVirtualBits" id="GetVirtualBits">GetVirtualBits<em>&lt;N&gt; &lt;O&gt;</em></a></h2>
 
 <h3>Description</h3>
-<p>KFLOP supports an extended range of 1024 virtual I/O bits. These bits reside in KFLOP's memory as a table of 32 32-bit words. The command GetVirtualBits is used to upload KFLOP virtual bit words to the PC in bulk. Any consecutive group of words can be uploaded with a single command. The words are uploaded as hexadecimal values.</p>
+<p>KFLOP supports an extended range of 1024 virtual IO bits. These bits reside in KFLOP's memory as a table of 32 32-bit words. The command GetVirtualBits is used to upload KFLOP virtual bit words to the PC in bulk. Any consecutive group of words can be uploaded with a single command. The words are uploaded as hexadecimal values.</p>
 
 <h3>Parameters</h3>
 <p><em><strong>&lt;N&gt;</strong></em></p>
@@ -1697,16 +1771,21 @@ InputChan0 3</p>
 	#define ADC_MODE 2
 	#define RESOLVER_MODE 3
 	#define USER_INPUT_MODE 4
+	#define SERIAL_SERVO_INPUT_MODE 5
     </code>
     </pre>
-        
+
+<p>SERIAL_SERVO_INPUT_MODE reads the axis Position from an STS3215 Serial Servo
+on the daisy chained Serial Servo bus (InputChan0 = servo ID 0...7). Requires
+Kogna or the KFLOP Serial Servo firmware, see <a href="#FPGAConfig">FPGAConfig</a>.</p>
+
 <h3>Parameters</h3>
 <p><em><strong>&lt;N&gt;</strong></em></p>
 <p>Selected Axis for command. Valid range 0...7 (KFLOP) 0..15 (Kogna).</p>
 
 <p><em><strong>&lt;M&gt;</strong> </em></p>
-<p>Mode. Valid range 1...4</p>
-        
+<p>Mode. Valid range 0...5</p>
+
 <h3>Example</h3>
 <p>SetInputMode0=1</p>
 
@@ -1926,7 +2005,7 @@ Uses <a href="#Accel">Accel</a> and <a href="#Jerk">Jerk</a> parameters for the 
 <h3>Description</h3>
 <p>Place linear (in 6 dimensions) interpolated move into the coordinated motion buffer. See also <a href="CoordinatedMotion.htm">KMotion Coordinated Motion</a>. A path through space is defined where <em>x,</em> <em>y, z, a, b, and c</em> are changing in a linear manner. A parametric equation is defined which describes which portion of the path as well as how as a function of time the path is to be traversed.</p>
 
-<p>Although the Linear command may be sent directly, the Linear command is normally generated automatically to perform a planned trajectory by the coordinated motion library or GCode.</p>
+<p>Although the Linear command may be sent directly, the Linear command is normally generated automatically to perform a planned trajectory by the coordinated motion library or G Code.</p>
 
 <p><em>(<strong>X<sub>0</sub>,Y</strong><sub><strong>0</strong></sub><strong>,Z</strong><sub><strong>0</strong></sub><strong>,A</strong><sub><strong>0</strong></sub><strong>,B</strong><sub><strong>0</strong></sub><strong>,C</strong><sub><strong>0</strong></sub>)</em> - beginning of path</p>
 
@@ -1983,7 +2062,7 @@ Uses <a href="#Accel">Accel</a> and <a href="#Jerk">Jerk</a> parameters for the 
 
         <p>Although the LinearEx command may be sent directly, the LinearEx command is normally 
         generated automatically to perform a planned trajectory by the 
-        coordinated motion library or GCode.</p>
+        coordinated motion library or G Code.</p>
 
   <p><em>(<strong>X<sub>0</sub>,Y</strong><sub><strong>0</strong></sub><strong>,Z</strong><sub><strong>0</strong></sub><strong>,A</strong><sub><strong>0</strong></sub><strong>,B</strong><sub><strong>0</strong></sub><strong>,C</strong><strong><sub>0,</sub>U</strong><sub><strong>0</strong></sub><strong>,V</strong><sub><strong>0</strong></sub>)</em> 
         - beginning of path</p>
@@ -2129,7 +2208,7 @@ Uses <a href="#Accel">Accel</a> and <a href="#Jerk">Jerk</a> parameters for the 
 
         <p>Although the LinearEx command may be sent directly, the LinearEx command is normally 
         generated automatically to perform a planned trajectory by the 
-        coordinated motion library or GCode, however currently the GCode 
+        coordinated motion library or G Code, however currently the G Code 
 		Interpreter only supports 8 axes of simultaneous motion.</p>
 
   <p><em>(<strong>X<sub>0</sub>,Y</strong><sub><strong>0</strong></sub><strong>,Z</strong><sub><strong>0</strong></sub><strong>,A</strong><sub><strong>0</strong></sub><strong>,B</strong><sub><strong>0</strong></sub><strong>,C</strong><strong><sub>0,</sub>U</strong><sub><strong>0</strong></sub><strong>,V</strong><sub><strong>0</strong></sub><strong>,XP<sub>0</sub>,YP</strong><sub><strong>0</strong></sub><strong>,ZP</strong><sub><strong>0</strong></sub><strong>,AP</strong><sub><strong>0</strong></sub><strong>,BP</strong><sub><strong>0</strong></sub><strong>,CP</strong><strong><sub>0,</sub>UP</strong><sub><strong>0</strong></sub><strong>,VP</strong><sub><strong>0</strong></sub>)</em> 
@@ -2968,14 +3047,26 @@ Mode Type. Max Range for all Types 0...63.</p>
 		#define STEP_DIR_MODE 6
 		#define CL_STEP_DIR_MODE 7
 		#define CL_MICROSTEP_MODE 8
+		#define SERIAL_SERVO_MODE 9
+		#define CL_SERIAL_SERVO_MODE 10
 	</code>
 	</pre>
-       
+
+<p>SERIAL_SERVO_MODE writes the commanded Position to an STS3215 Serial Servo on
+the daisy chained Serial Servo bus (OutputChan0 = servo ID 0...7).
+CL_SERIAL_SERVO_MODE is the same but with the KFLOP/Kogna servo loop correction
+(PID/Feed Forward Output) added to the commanded position, closing the loop on the
+axis Input (normally <a href="#InputMode">InputMode</a> SERIAL_SERVO_INPUT_MODE).
+Note that in this mode <a href="#MaxOutput">MaxOutput</a> must be nonzero or the
+correction is clamped away.
+Requires Kogna or the KFLOP Serial Servo firmware, see
+<a href="#FPGAConfig">FPGAConfig</a>.</p>
+
 <h3>Parameters</h3>
 <p><em><strong>&lt;N&gt;</strong></em></p>
 <p>Selected Axis for command. Valid range 0...7 (KFLOP) 0..15 (Kogna).</p>
 <p><em><strong>&lt;M&gt;</strong> </em></p>
-<p>Mode. Valid range 1...4</p>
+<p>Mode. Valid range 0...10</p>
 
 <h3>Example</h3>
 <p>SetOutputMode0=1</p>
@@ -3083,7 +3174,7 @@ Mode Type. Max Range for all Types 0...63.</p>
 <h2><a name="ReadBit"></a>ReadBit<em>&lt;N&gt;</em></h2>
 
 <h3>Description</h3>
-<p>Displays whether an actual hardware I/O bit N or Virtual IO bit is high (1) or low (0) . A bit defined as an output (See <a href="#SetBitDirection">SetBitDirection</a>) may also be read back.</p>
+<p>Displays whether an actual hardware IO bit N or Virtual IO bit is high (1) or low (0) . A bit defined as an output (See <a href="#SetBitDirection">SetBitDirection</a>) may also be read back.</p>
 
 <h3>Parameters</h3>
 <p><em><strong>&lt;N&gt;</strong></em></p>
@@ -3138,7 +3229,7 @@ Mode Type. Max Range for all Types 0...63.</p>
 <h2><a name="SetBit"></a>SetBit<em>&lt;N&gt;</em></h2>
 
 <h3>Description</h3>
-<p>Sets an actual hardware I/O bit N or Virtual I/O bit to high (1) .</p>
+<p>Sets an actual hardware IO bit N or Virtual IO bit to high (1) .</p>
 
 <h3>Parameters</h3>
 <p>Bit number to set. Accepted range 0...2047</p>
@@ -3150,7 +3241,7 @@ Mode Type. Max Range for all Types 0...63.</p>
 <h2><a name="SetBitBuf"></a>SetBitBuf<em>&lt;N&gt;</em></h2>
 
 <h3>Description</h3>
-<p>Inserts into the coordinated move buffer a command to set an I/O bit (actual I/O bits must be defined as an output, see <a href="#SetBitDirection">SetBitDirection</a>).</p>
+<p>Inserts into the coordinated move buffer a command to set an IO bit (actual IO bits must be defined as an output, see <a href="#SetBitDirection">SetBitDirection</a>).</p>
 
 <h3>Parameters</h3>
 <p><em><strong>&lt;N&gt;</strong></em></p>
@@ -3163,8 +3254,8 @@ Mode Type. Max Range for all Types 0...63.</p>
 <h2><a name="SetBitDirection"></a>SetBitDirection<em>&lt;N&gt;=&lt;M&gt;</em></h2>
 
 <h3>Description</h3>
-        <p>Defines the direction of an I/O bit to be an input or output. See also
-        <a href="DigitalIOScreenKFLOP/DigitalIOScreen.htm">Digital I/O Screen</a>. Depending on the type of I/O, it may not be possible to change direction as some I/O bits are strictly inputs, and some are strictly outputs.</p>
+        <p>Defines the direction of an IO bit to be an input or output. See also
+        <a href="DigitalIOScreenKFLOP/DigitalIOScreen.htm">Digital IO Screen</a>. Depending on the type of IO, it may not be possible to change direction as some IO bits are strictly inputs, and some are strictly outputs.</p>
 
 <h3>Parameters</h3>
 <p><em><strong>&lt;N&gt;</strong></em></p>
@@ -3345,14 +3436,17 @@ drive time in reverse. Valid range -100...+100</p>
 <h2><a name="SetIpAddr"></a>SetIpAddr<em>&lt;D&gt; &lt;D&gt; &lt;D&gt; &lt;D&gt;</em> (Kogna only)</h2>
 
 <h3>Description</h3>
-        <p>Set  board's Ethernet IP Address.</p>
+        <p>Set  board's Ethernet IP Address. The address is written to Flash and used at the next boot or network connection.</p>
 
 <h3>Parameters</h3>
 <p><em><strong>&lt;D&gt;</strong></em></p>
 <p>Each  D is 0..255.
 </p>
+<p>0.0.0.0 (or a single 0) requests the address from the network's DHCP Server. If none responds within about 5 seconds Kogna becomes the DHCP Server itself at 192.168.113.100.</p>
+<p>255.255.255.255 (or a single 255) makes Kogna the DHCP Server at 192.168.113.100 immediately without searching. Use for a direct cable connection to a PC.</p>
 <h3>Example</h3>
-<p>SetSerialNumber  192.168.10.9</p>
+<p>SetIpAddr  192.168.10.9</p>
+<p>SetIpAddr  255</p>
 
 <hr />		
 		  
@@ -3557,10 +3651,43 @@ drive time in reverse. Valid range -100...+100</p>
 
 
 <hr />
+<h2><a name="SetStarveTime">SetStarveTime</a><em>&lt;T&gt;</em></h2>
+
+<h3>Description</h3>
+<p>Declares the worst-case stop time (in seconds) of the content in the current
+Coordinated Motion Buffer so that buffer starvation protection only requires the
+amount of buffered data actually needed to stop. While coordinated motion is
+executing, KFLOP/Kogna monitors how much un-executed time remains in the buffer
+and, if too little remains to perform a controlled stop, automatically reduces the
+Feed Rate (eventually to a stop) in order to avoid buffer underflow. By default
+the amount of data required is conservatively based on the time to stop from the
+maximum velocity of all the axes in the coordinate system, which forces slow
+motion to be buffered much further ahead than necessary before it can start.
+When the Host knows the actual worst-case stop time of what it has downloaded it
+may declare it with this command so slow motion can begin almost immediately
+while fast content still receives its full margin.</p>
+<p>Any <em>increase</em> in the stop time must be sent <em>before</em> downloading
+the faster content so that the guarantee holds for everything already in the
+buffer even if the Host stalls. The setting is cleared by <a href="#OpenBuf">OpenBuf</a>
+(reverting to the conservative default). After <a href="#FlushBuf">FlushBuf</a> has
+been sent starvation protection is disabled and the setting has no further effect.
+This command is normally issued automatically by the KMotionCNC Trajectory Planner.
+Supported by KFLOP and Kogna. See also <a href="#ExecBuf">ExecBuf</a>,
+<a href="#ExecTime">ExecTime</a> and <a href="CoordinatedMotion.htm">Coordinated Motion</a>.</p>
+
+<h3>Parameters</h3>
+<p><em><strong>&lt;T&gt;</strong></em></p>
+<p>Worst-case stop time of the buffered motion in seconds. Valid range - any
+positive value (values less than 0.001 are treated as 0.001).</p>
+
+<h3>Example</h3>
+<p>SetStarveTime 0.1</p>
+
+<hr />
 <h2><a name="SetStateBit"></a>SetStateBit<em>&lt;N&gt;=&lt;M&gt;</em></h2>
 
 <h3>Description</h3>
-<p>Sets the state of an actual hardware I/O bit N or Virtual IO bit to either low (0) or high (1) . Actual I/O bits must be defined as an output, see <a href="#SetBitDirection">SetBitDirection</a>.</p>
+<p>Sets the state of an actual hardware IO bit N or Virtual IO bit to either low (0) or high (1) . Actual IO bits must be defined as an output, see <a href="#SetBitDirection">SetBitDirection</a>.</p>
 
 <h3>Parameters</h3>
 <p><em><strong>&lt;N&gt;</strong></em></p>
@@ -3576,7 +3703,7 @@ drive time in reverse. Valid range -100...+100</p>
 <h2><a name="SetStateBitBuf"></a>SetStateBitBuf<em>&lt;N&gt;=&lt;M&gt;</em></h2>
 
 <h3>Description</h3>
-<p>Inserts into the <a href="CoordinatedMotion.htm">coordinated move buffer</a> a command to set the state of an I/O bit (actual IO bits must be defined as an output, see <a href="#SetBitDirection">SetBitDirection</a>).</p>
+<p>Inserts into the <a href="CoordinatedMotion.htm">coordinated move buffer</a> a command to set the state of an IO bit (actual IO bits must be defined as an output, see <a href="#SetBitDirection">SetBitDirection</a>).</p>
 
 <h3>Parameters</h3>
 <p><em><strong>&lt;N&gt;</strong></em></p>
@@ -3617,7 +3744,7 @@ SlaveGain0</p>
 		the Action Type Selected for the Hardware Limit Switches. To 
 		disable Soft Limits set them to a huge range which could never occur. 
 		Soft Limits prevent motion within KFLOP when Jogging, moving and so 
-		forth. They also are are uploaded by Applications such as 
+		forth. They also are uploaded by Applications such as 
 		KMotionCNC and used to prevent motion during Trajectory Planning. 
 		The Negative Soft Limit is used to prevent motion beyond a limit in the 
 		negative direction. The Negative Soft Limit does not necessarily 
@@ -3796,7 +3923,7 @@ the specified value. This will be the output amplitude when stopped or moving sl
 <h3>Description</h3>
 <p>Inserts into the coordinated move buffer a command to wait for an IO bitto be at a high level. This command is useful for synchronizing motion to external events without any PC delays.</p>
 
-<p>This command can be inserted into the Coordinated motion buffer from KMotionCNC GCode using the special comment command format of:</p>
+<p>This command can be inserted into the Coordinated motion buffer from KMotionCNC G Code using the special comment command format of:</p>
 
 <p>(BUF,WaitBitBuf46)</p>
 
@@ -3813,7 +3940,7 @@ the specified value. This will be the output amplitude when stopped or moving sl
 <h3>Description</h3>
 <p>Inserts into the coordinated move buffer a command to wait for an IO bitto be at a low level. This command is useful for synchronizing motion to external events without any PC delays.</p>
 
-<p>This command can be inserted into the Coordinated motion buffer from KMotionCNC GCode using the special comment command format of:</p>
+<p>This command can be inserted into the Coordinated motion buffer from KMotionCNC G Code using the special comment command format of:</p>
 
 <p>(BUF,WaitNotBitBuf46)</p>
 
@@ -3845,6 +3972,7 @@ the specified value. This will be the output amplitude when stopped or moving sl
     	</div>
        </div>
 
+<script src="search/searchbox.js" defer></script>
 </body>
 
 </html>

@@ -12,7 +12,7 @@ int CheckALimit(CHAN *ch, double Min, double Max);
 
 #define SIGMA 0.01
 
-main()
+int main()
 {
 	for (;;)  // loop forever
 	{

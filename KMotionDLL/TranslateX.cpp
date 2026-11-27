@@ -5,21 +5,14 @@
 
 CTranslate Trans;
 
-std::wstring Translate(std::string s)
+CString Translate(CString s)
 {
 	return Trans.Translate(s);
 }
 
 CTranslate::CTranslate() : CheckedForList(false), ListLoaded(false) {}
 
-std::wstring CTranslate::Translate(std::string s) {
-    std::wstring w = Translate(s.c_str());
-    return w;
-}
-
-std::wstring CTranslate::Translate(const char* s) {
-    // Convert const char* to std::wstring
-    std::wstring w(s, s + strlen(s));
+CString CTranslate::Translate(CString w) {
     if (CheckedForList && !ListLoaded) return w;
 
     if (!CheckedForList) {

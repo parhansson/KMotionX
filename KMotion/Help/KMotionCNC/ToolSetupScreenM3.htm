@@ -84,11 +84,11 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 
 <p>The Tool Setup Screen allows <em>KMotionCNC</em> to be configured for a 
 particular machine tool. Each machine tool is likely to have different 
-motion resolution, speeds, and acceleration limits. It is also likely to 
-different I/O requirements with regard to Spindle control and such. 
+motion resolution, speeds, and acceleration limits. It is also likely have to 
+different IO requirements with regard to Spindle control and such. 
 Additionally a machine may have different initialization and homing 
 requirements. <em>KMotionCNC</em> has a flexible mechanism for defining what 
-type of action is to be performed for various M Codes and Custom Buttons.</p>
+type of action is to be performed for various M Codes and Custom Buttons. <a href="ToolSetupPasswordProtection.htm">See here</a> how to password-protect these parameters.</p>
 
 <h2><a name="G_Code_Actions_-_M3_-_M9"></a>G Code Actions - M0 - M30</h2>
 	
@@ -117,8 +117,8 @@ automatically executed on Program Stop or Rewind.</p>
 
 <p>Additionally Actions can be performed when certain KMotionCNC functions occur. These include:</p>
 
-<p><strong>Cycle Start</strong> - Action performed when the Cycle Start Button is pressed and before GCode begins execution</p>
-<p><strong>Halt</strong> - Action performed when the Halt Button is pressed after GCode stops execution. Commonly used to execute a C Program to move the Z axis to a safe height and turn off the Spindle. See the 
+<p><strong>Cycle Start</strong> - Action performed when the Cycle Start Button is pressed and before G Code begins execution</p>
+<p><strong>Halt</strong> - Action performed when the Halt Button is pressed after G Code stops execution. Commonly used to execute a C Program to move the Z axis to a safe height and turn off the Spindle. See the 
 SafeZ_SpindleOff.c as an example.</p>
 <p><strong>Stop</strong> - Action performed after Stop Button is pressed</p>
 <p><strong>FeedHold</strong> - Action performed after Stop Button is pressed</p>
@@ -130,8 +130,8 @@ SafeZ_SpindleOff.c as an example.</p>
 
 <ul>
 	<li>None</li>
-	<li>Set or Reset one I/O Bit</li>
-	<li>Set or Reset two I/O Bits</li>
+	<li>Set or Reset one IO Bit</li>
+	<li>Set or Reset two IO Bits</li>
 	<li>Set a DAC to a variable's value (S parameter)</li>
 	<li>Wait (stall motion) until an Input to be in the specified state</li>
 	<li>Execute a C Program in the KMotion Control Board</li>
@@ -144,18 +144,18 @@ SafeZ_SpindleOff.c as an example.</p>
 
 <p>To specify a particular action first select the Action Type. Each 
 Action Type requires a different number and type of parameters. Next fill 
-in the appropriate parameters. The one and two bit I/O commands are 
+in the appropriate parameters. The one and two bit IO commands are 
 inserted directly into the coordinated motion control buffer. In this way 
-they are exactly synchronized with any motion before or after the I/O commands. 
+they are exactly synchronized with any motion before or after the IO commands. 
 This is useful in systems where a fast shutter or other operation is required at 
 precise times relative to the motion.</p>
 
 <p>The seven Action Types are described below:</p>
 
-<p>For <strong>one I/O</strong> bit specify the I/O bit number and the state 0 or 1 to set it to.</p>
+<p>For <strong>one IO</strong> bit specify the IO bit number and the state 0 or 1 to set it to.</p>
 <p><img src="KMotionCNCfiles/OneBit.png" /></p>
 
-<p>For <strong>two I/O</strong> bits specify the I/O bit numbers and the state 0 or 1 to 
+<p>For <strong>two IO</strong> bits specify the IO bit numbers and the state 0 or 1 to 
 set each to. Often systems with two direction spindle control will require 
 setting two outputs that control on/off and cw/ccw. This command is 
 designed to handle those situations.</p>
@@ -163,7 +163,7 @@ designed to handle those situations.</p>
 <p><img src="KMotionCNCfiles/TwoBits.png" /></p>
 
 <p>For a special command to pause motion until an external 
-Input is activated select <strong>Wait Bit</strong> and specify the I/O bit number and the state 0 or 1 to 
+Input is activated select <strong>Wait Bit</strong> and specify the IO bit number and the state 0 or 1 to 
 wait for.</p>
 
 <p><img src="KMotionCNCfiles/WaitBit.png" width="449" height="30" /></p>
@@ -181,13 +181,23 @@ S (Spindle speed) G Code Command.</p>
 
 <p>For <strong>Execute Prog</strong> specify the program Thread (1 through 7) where the program is to be downloaded and executed, a Persist Variable (0-199) that will be set before the program executes, and the name of the C Program to be Compiled, Downloaded, and Executed. This method is very powerful in that anything that may be programmed in C may be invoked. See the  KMotion documentation and <a href="http://www.dynomotion.com/wiki/index.php?title=KFLOP_C_Programs">wiki</a> for information on writing C Programs for the KMotion Motion Control Board. There are a number of example C programs in the &lt;Install Dir&gt;\C Programs folder. The Example "\KStep\InitKStep3Axis.c" s an example which completely configures all necessary parameters in the KFLOP/Kogna Board to drive 3 stepping motors using KStep's amplifiers.</p>
 
-<p>Persist Variables are used for passing parameters and information to KFLOP/Kogna before executing the C Program. The parameters are Action Specific. The 'S' Action will pass the Speed as a 32-bit Floating point value. The 'M6" Tool Change Action will pass the Tool Slot and Tool ID as 32-bit integer values in consecutive Persist Variables. MCodes can pass GCode PQR Parameters. See <a href="http://dynomotion.com/Help/KMotionCNC/MCodesWithParams.htm">here</a> for an example. If no parameter is associated with the Action, then the Action Table Index will be passed that can be used to inform the C Program which Action invoked it. Specifying a Var value as &quot;-1&quot; will not write anything into any variable.</p>
+<p><strong>Warning - Thread assignment:</strong> Executing a program on a Thread kills and
+replaces whatever program was previously running on that Thread. Persistent programs -
+an Initialization program with a forever loop, an E-stop or limit watchdog, a pendant
+service, and similar - must be assigned a Thread that no other Action, M-Code, or program
+will ever be launched onto. For example, if an Initialization program runs forever on
+Thread 2 and the Spindle S Action is also assigned to Thread 2, the first S word of a job
+silently terminates the Initialization program (and any safety monitoring inside it) for
+the remainder of the session. Reserve a dedicated Thread for each persistent program and
+keep the Threads used by M-Codes and Actions separate from them.</p>
+
+<p>Persist Variables are used for passing parameters and information to KFLOP/Kogna before executing the C Program. The parameters are Action Specific. The 'S' Action will pass the Speed as a 32-bit Floating point value. The 'M6" Tool Change Action will pass the Tool Slot and Tool ID as 32-bit integer values in consecutive Persist Variables. MCodes can pass G Code PQR Parameters. See <a href="http://dynomotion.com/Help/KMotionCNC/MCodesWithParams.htm">here</a> for an example. If no parameter is associated with the Action, then the Action Table Index will be passed that can be used to inform the C Program which Action invoked it. Specifying a Var value as &quot;-1&quot; will not write anything into any variable.</p>
 
 <p>Note that normally the *.c Source Program File is specified, which simplifies making any changes as they will automatically be re-compiled and have effect. C Source programs are also independent of KFLOP/Kogna Version as they are always Compiled to the current version before use. However it is possible to specify an *.out binary file that has already been compiled for faster operation since it has already been compiled and only needs to be downloaded. When a file is compiled into binary executable code it is compiled to run in a particular Thread space (memory specific) and also for a particular KFLOP/Kogna Version. The compiler automatically marks the filename with (N).out. Where N is the Thread number that the code has been compiled to run in.</p>
 
 <p>If the Filename is left blank, then it will be assumed that a program has been previously downloaded to the specified Thread and will just be re-executed. It is up to the designer to make sure a valid program has been downloaded and still exists in the specified Thread Space.</p>
 
-<p>Additionally a program filename specified with a *.ngc extension will be treated as GCode and the GCode Interpreter will be invoked to execute the GCode file. Note that the GCode Interpreter is not re-entrant (Interpreter can not call itself). This means that MCodes and other Actions invoked by the Interpreter can not Invoke GCode. This restriction also applies to C Programs that may in turn execute GCodeThis essentially limits User Buttons and Special Commands (ie Program Start) to specifying GCode for execution. This functionality should be limited to simple GCode operations that should execute quickly.</p>
+<p>Additionally a program filename specified with a *.ngc extension will be treated as G Code and the G Code Interpreter will be invoked to execute the G Code file. Note that the G Code Interpreter is not re-entrant (Interpreter can not call itself). This means that MCodes and other Actions invoked by the Interpreter can not Invoke G Code. This restriction also applies to C Programs that may in turn execute G Code. This essentially limits User Buttons and Special Commands (ie Program Start) to specifying G Code for execution. This functionality should be limited to simple G Code operations that should execute quickly.</p>
 
 <p><img src="KMotionCNCfiles/ExecuteProg.png" /></p>
 
@@ -203,6 +213,7 @@ S (Spindle speed) G Code Command.</p>
 <p>&nbsp;</p>
 	</div>
 
+<script src="../search/searchbox.js" defer></script>
 </body>
 
 </html>

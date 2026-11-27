@@ -66,7 +66,7 @@ const wchar_t * _rs274ngc_errors[] = {
 /*  64 */ L"Cannot use xz plane with cutter radius comp", // convert_set_plane
 /*  65 */ L"Cannot use yz plane with cutter radius comp", // convert_set_plane
 /*  66 */ L"Command too long", // read_text, rs274ngc_open
-/*  67 */ L"Concave corner with cutter radius comp", // convert_arc_comp2, convert_straight_comp2
+/*  67 */ L"Concave corner with cutter radius comp\r\rTo allow Concave Corners enable:\rTool Setup | Trajectory Planner | Allow Concave Corners", // convert_straight_comp2
 /*  68 */ L"Coordinate system index parameter 5220 out of range", // rs274ngc_init
 /*  69 */ L"Current point same as end point of arc", // arc_data_r
 /*  70 */ L"Cutter gouging with cutter radius comp", // convert_arc_comp1, convert_straight_comp1
@@ -139,7 +139,7 @@ const wchar_t * _rs274ngc_errors[] = {
 /* 137 */ L"Offset index missing", // convert_tool_length_offset
 /* 138 */ L"P value not an integer with g10 l2 M98", // check_g_codes
 /* 139 */ L"P value out of range with g10 l2", // check_g_codes
-/* 140 */ L"P word with no g4 g10 g82 g83 g86 g88 g89 M98 M100-119", // check_other_codes
+/* 140 */ L"P word with no g4 g10 g49 g82 g83 g86 g88 g89 M98 M100-119", // check_other_codes
 /* 141 */ L"Parameter file out of order", // rs274ngc_restore_parameters, rs274ngc_save_parameters
 /* 142 */ L"Parameter number out of range", // read_parameter, read_parameter_setting, rs274ngc_restore_parameters, rs274ngc_save_parameters
 /* 143 */ L"Q word missing with g83", // convert_cycle_xy, convert_cycle_yz, convert_cycle_zx
@@ -213,6 +213,13 @@ const wchar_t * _rs274ngc_errors[] = {
 /* 211 */ L"Multiple u words on one line", // read_u
 /* 212 */ L"Multiple v words on one line", // read_v
 /* 213 */ L"Invalid Q Value in G83 Canned Cycle", // convert_cycle_g83
+/* 214 */ L"P word not 1 or 2 with M49", // convert_m
+/* 215 */ L"g41/g42 Concave Corner : Segment 1 too short (P1 ~= P2)",// 1 = Segment 1 too short (P1 ~= P2)
+/* 216 */ L"g41/g42 Concave Corner : Segment 2 too short (P2 ~= P3)",// 2 = Segment 2 too short (P2 ~= P3)
+/* 217 */ L"g41/g42 Concave Corner : Segments nearly parallel, no fillet",// 3 = Segments nearly parallel, no fillet
+/* 218 */ L"g41/g42 Concave Corner : Segment 2 too short to define tool stop (tangent outside)",// 4 = Segment 2 too short to define tool stop (tangent outside)
+/* 219 */ L"g41/g42 Concave Corner : Segment 1 too short to define tool start (tangent outside)",// 5 = Segment 1 too short to define tool start (tangent outside)
+/* 220 */ L"Concave corner caused by Arc with cutter radius comp", // convert_arc_comp2
 
 L"The End"};
 

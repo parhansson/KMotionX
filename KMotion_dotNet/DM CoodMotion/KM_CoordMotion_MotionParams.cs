@@ -445,6 +445,20 @@ namespace KMotion_dotNet
             }
         }
         /// <summary>
+        /// Property for DoRapidsAsFeeds (For non-linear Kinematics Rapids must be treated as feeds and subdivided)
+        /// </summary>
+        public bool DoRapidsAsFeeds
+        {
+            get
+            {
+                return Get_DoRapidsAsFeeds();
+            }
+            set
+            {
+                Set_DoRapidsAsFeeds(value);
+            }
+        }
+        /// <summary>
         /// Whether Axis A is in units of Degrees
         /// </summary>
         public bool DegreesA
@@ -2056,6 +2070,65 @@ namespace KMotion_dotNet
             {
                 throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
                   this.ToString(), "Set_UseOnlyLinearSegments"));
+            }
+        }
+
+        /// <summary>
+        /// Property getter Accessor for DoRapidsAsFeeds (For non-linear Kinematics Rapids must be treated as feeds and subdivided 
+        /// into small line segments)
+        /// </summary>
+        /// <returns>Current DoRapidsAsFeeds</returns>
+        private bool Get_DoRapidsAsFeeds()
+        {
+            try
+            {
+                return KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Get_DoRapidsAsFeeds(_InstanceHandle);
+            }
+            catch (DllNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                    this.ToString(), "Get_DoRapidsAsFeeds"));
+            }
+            catch (EntryPointNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                   this.ToString(), "Get_DoRapidsAsFeeds"));
+            }
+            catch (Exception e)
+            {
+                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                  this.ToString(), "Get_DoRapidsAsFeeds"));
+            }
+        }
+
+
+
+        /// <summary>
+        /// Property setter Accessor for DoRapidsAsFeeds (For non-linear Kinematics Rapids must be treated as feeds and subdivided 
+        /// into small line segments)
+        /// </summary>
+        /// <param name="value">DoRapidsAsFeeds to set (Converts Arcs to Linear Segments based on Kinematic Setting)</param>
+        private void Set_DoRapidsAsFeeds(bool value)
+        {
+            try
+            {
+                KM_dotnet_Interop_CoordMotion_MOTION_PARAMS_Set_DoRapidsAsFeeds(_InstanceHandle, value);
+                SetTPParams();
+            }
+            catch (DllNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                    this.ToString(), "Set_DoRapidsAsFeeds"));
+            }
+            catch (EntryPointNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                   this.ToString(), "Set_DoRapidsAsFeeds"));
+            }
+            catch (Exception e)
+            {
+                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                  this.ToString(), "Set_DoRapidsAsFeeds"));
             }
         }
 

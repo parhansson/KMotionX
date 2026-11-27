@@ -4,7 +4,7 @@
 #include "KflopToKMotionCNCFunctions.c"
 
 
-main()
+int main()
 {
 	char s[80];
 	// Read String from a KMotionCNC Edit Control

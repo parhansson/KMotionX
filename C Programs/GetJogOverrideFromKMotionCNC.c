@@ -6,7 +6,7 @@
 #define ORIGINAL_SPEED_VARS_X 30 // variable to save original X Speed as a float
 #define ORIGINAL_SPEED_VARS_Y 31 // variable to save original Y Speed as a float
 
-main()
+int main()
 {
 	DoPC(PC_COMM_GET_JOG_OVERRIDE_X);
 	persist.UserData[ORIGINAL_SPEED_VARS_X]=persist.UserData[PC_COMM_PERSIST+1];

@@ -641,6 +641,7 @@ void CVertex3d::glDrawHighlight(const float radius,
 																CMesh3d *pMesh /* = NULL */,
 																unsigned char *ColorNeightbor /* = NULL */)
 {
+#if 0 // Vertex are never displayed and this used depreciated functions
 	GLUquadricObj* pQuadric = gluNewQuadric();
 
 
@@ -714,7 +715,7 @@ void CVertex3d::glDrawHighlight(const float radius,
 	// Restore
 	if(pMesh != NULL)
 		::glPopMatrix();
-
+#endif
 }
 
 //********************************************
@@ -722,6 +723,8 @@ void CVertex3d::glDrawHighlight(const float radius,
 //********************************************
 int CVertex3d::glDraw()
 {
+#if 0 // Vertex are never displayed and this used depreciated functions
+
 	GLUquadricObj* pQuadric = gluNewQuadric();
 
 	// Main vertex
@@ -730,6 +733,7 @@ int CVertex3d::glDraw()
 	glTranslated(m_Coord[0],m_Coord[1],m_Coord[2]);
 	gluSphere(pQuadric,0.01,8,8); 
 	glPopMatrix();
+#endif
 	return 1;
 }
 
@@ -740,6 +744,7 @@ void CVertex3d::glDraw(const float radius,
 											 unsigned char *ColorVertex,
 											 CMesh3d *pMesh /* = NULL */)
 {
+#if 0 // Vertex are never displayed and this used depreciated functions
 	GLUquadricObj* pQuadric = gluNewQuadric();
 
 	// Transform
@@ -779,6 +784,7 @@ void CVertex3d::glDraw(const float radius,
 	// Restore
 	if(pMesh != NULL)
 		::glPopMatrix();
+#endif
 }
 
 

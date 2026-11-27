@@ -6,7 +6,7 @@
 
 void ConfigAll(void);
 #define XX 0.85
-void main() 
+int main() 
 {
     float k=0,A=10.0f;   // set coil current amplitude PWM units
 	double p0,p1;

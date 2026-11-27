@@ -1,4 +1,4 @@
 Unitsmm 0
 JogSpeed 1
-VideoDevice 1
+VideoDevice 0
 MouseMag 1.25

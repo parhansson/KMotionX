@@ -195,7 +195,7 @@ void CPreviewFileDialog::OnFileNameChange(bool FolderChanged)
 
 		CString Comb=Path+"\\"+FName;
 		if ((Comb != FullName && FName!="") || FolderChanged)  // must have selected a directory
-			m_pPreview->SetPreviewFile("");
+			m_pPreview->SetPreviewFile(L"");
 		else
 			m_pPreview->SetPreviewFile(FullName);
 		
@@ -272,13 +272,15 @@ void CPreviewFileDialog::DeleteAllScene()
 	int i;
 	for (i=EndIndexTool-1; i>=StartIndexTool; i--)
 	{
-		delete ((CMesh3d *)m_view.m_SceneGraph.GetAt(i));
+		if ((CMesh3d*)m_view.m_SceneGraph.GetAt(i))
+			delete ((CMesh3d*)m_view.m_SceneGraph.GetAt(i));
 		m_view.m_SceneGraph.RemoveAt(i);
 	}
 
 	for (i=EndIndexAxis-1; i>=StartIndexAxis; i--)
 	{
-		delete ((CMesh3d *)m_view.m_SceneGraph.GetAt(i));
+		CMesh3d* Mesh = (CMesh3d*)m_view.m_SceneGraph.GetAt(i);
+		if (Mesh)	delete Mesh;
 		m_view.m_SceneGraph.RemoveAt(i);
 	}
 
@@ -344,7 +346,7 @@ void CPreviewFileDialog::AddAxisToScene()
 	}
 	else
 	{
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to load GCode Axis Image file:") + (CStringW)m_AxisShapeFile, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to load GCode Axis Image file:") + m_AxisShapeFile, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 	}
 }
 
@@ -435,7 +437,7 @@ void CPreviewFileDialog::AddToolToScene()
 	else
 	{
 		m_ToolFileDisplayed = file;
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to load GCode Tool Image file:") + (CStringW)file, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to load GCode Tool Image file:") + file, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 	}
 }
 

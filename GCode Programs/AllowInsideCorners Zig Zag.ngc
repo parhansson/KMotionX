@@ -1,0 +1,59 @@
+﻿( Tool Table should contain:     )
+( Slot 1 Length 0.000 Diam 0.500 )
+
+G49 G40 G54
+G20  (inches mode)
+
+G0 x0y0z0 (Path with no compensation) 
+T1 M6
+F500
+G0X5
+G0Y5
+G0X10
+G0X5Y10
+G0X2Y8
+G0X4Y4
+G0X0Y0
+
+
+G0 x2y1.5z0 
+G41 D1 (Tool #1 Radius comp Right of contour) 
+F200
+
+G1X2Y1
+G3X3Y0I1J0
+G1X3Y0
+G1X5
+G1Y5
+G1X10
+G1X5Y10
+G1X2Y8
+G1X4Y4
+G1X0Y0
+G1X3
+G3X4Y1I0J1
+G40
+G0X2y1.5z0
+
+
+
+G0 x2y-1.5z0 
+G42 D1 (Tool #1 Radius comp Right of contour) 
+F500
+M0
+G1X2Y-1
+G2X3Y0I1J0
+G1X3Y0
+G1X5
+G1Y5
+G1X10
+G1X5Y10
+G1X2Y8
+G1X4Y4
+G1X0Y0
+G1X3
+M0
+G2X4Y-1I0J-1
+G40
+G0X2y-1.5z0
+M30

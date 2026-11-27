@@ -78,6 +78,7 @@ const char Commands[][MAX_CMD_LENGTH] = {
 "OPENBUF ",									// OpenBuf/Clear and open the buffer for/coordinated linear and circular segments/ie. OpenBuf
 "EXECBUF ",									// ExecBuf/Execute the buffer of coordinated/linear and circular segments/ie. ExecBuf
 "FLUSHBUF ",								// FlushBuf/Marks the Coord Motion Buffer as complete/turns off buffer starvation protection/ie. FlushBuf
+"SETSTARVETIME G",							// SetStarveTime T/Declares the worst-case stop time (seconds) of the content/in the current coordinated buffer so buffer starvation/protection only requires the data actually needed to stop/Send any INCREASE before downloading faster content/Cleared by OpenBuf (reverts to conservative default)/ie. SetStarveTime 0.1
 "EXECTIME ",								// ExecTime/Display Total Time (seconds) of segments in the buffer that have already been completed/Negative if buffer halted (starved)/ie. ExecTime
 "LINEARHEXEX HHHHHHHHHHHHHHHHHHHHH",        // LinearHexEx x0 y0 z0 a0 b0 c0 u0 v0 x1 y1 z1 a1 b1 c1 u1 v1 a b c d t/place linear interpolated move into buffer/start point, end point, and parametric eq/values are hex floats/ie. LinearHexEx 0 0 0 0 0 0 0 0 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 0 0 3f800000 0 3f800000
 "LINEARHEXP HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",// LinearHexP x0 y0 z0 a0 b0 c0 u0 v0 xp0 yp0 zp0 ap0 bp0 cp0 up0 vp0/x1 y1 z1 a1 b1 c1 u1 v1 xp1 yp1 zp1 ap1 bp1 cp1 up1 vp1 a b c d t/place linear interpolated move including primes into buffer/start point, end point, and parametric eq/values are hex floats/ie. LinearHexP 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 0 0 3f800000 0 3f800000
@@ -87,6 +88,7 @@ const char Commands[][MAX_CMD_LENGTH] = {
 "LHEXP1 HHHHHHHHHHHHHHHHHHHHH",             // LHexP1 x1 y1 z1 a1 b1 c1 u1 v1 xp1 yp1 zp1 ap1 bp1 cp1 up1 vp1 a b c d t/place 16 axes linear interpolated move into buffer/start point(from last), end point, and parametric eq/values are hex floats/ie. LHexP1 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 0 0 3f800000 0 3f800000
 "LHEX2 HHHHH",                              // LHex2 a b c d t/place linear interpolated move into buffer/uses start point, end point from previous command, and parametric eq/values are hex floats/ie. LHex2 0 0 3f800000 0 3f800000
 "LHEXP2 HHHHH",                             // LHexP2 a b c d t/place linear interpolated move into buffer/uses start point, end point from previous command, including primes and parametric eq/values are hex floats/ie. LHexP2 0 0 3f800000 0 3f800000
+"CHEX8 HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",	// CHex8 xa xb xc xd ya yb yc yd za zb zc zd aa ab ac ad ba bb bc bd ca cb cc cd ua ub uc ud va vb vc vd t/place Cubic Knot into buffer/each axis an independent cubic position polynomial of time/x = ((a*t+b)*t+c)*t+d/values are hex floats/ie. CHex8 0 0 3f800000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3f800000
 "LINEAREX GGGGGGGGGGGGGGGGGGGGG",           // LinearEx x0 y0 z0 a0 b0 c0 u0 v0 x1 y1 z1 a1 b1 c1 u1 v1 a b c d t/place linear interpolated move into buffer/3D start point, end point, and parametric eq/ie. Linear 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 0.0 0.0 1.0 0.0 1.0
 "LINEARP GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",// LinearP x0 y0 z0 a0 b0 c0 u0 v0 xp0 yp0 zp0 ap0 bp0 cp0 up0 vp0/x1 y1 z1 a1 b1 c1 u1 v1 xp1 yp1 zp1 ap1 bp1 cp1 up1 vp1 a b c d t/place linear interpolated move including primes into buffer/3D start point, end point, and parametric eq/ie. LinearP 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 0.0 0.0 1.0 0.0 1.0
 "LINEAR GGGGGGGGGGGGGGGGG", 				// Linear x0 y0 z0 a0 b0 c0 x1 y1 z1 a1 b1 c1 a b c d t/place linear interpolated move into buffer/3D start point, end point, and parametric eq/ie. Linear 0.0 0.0 0.0 0.0 0.0 0.0 1.0 1.0 1.0 1.0 1.0 1.0 0.0 0.0 1.0 0.0 1.0
@@ -108,9 +110,9 @@ const char Commands[][MAX_CMD_LENGTH] = {
 "SETFRO G",									// SetFRO F/Set Feed Rate Override (1.0 = Normal Feed Rate)/ie. SetFRO 0.9
 "SETRAPIDFRO G",							// SetRapidFRO F/Set Rapid Feed Rate Override (1.0 = Normal Feed Rate)/ie. SetRapidFRO 0.9
 "SETFROTEMP G",								// SetFROTemp F/Temporarily Set Feed Rate Override (1.0 = Normal Feed Rate)/Force regardless of FeedHold, don't save as last FRO/ie. SetFRO 0.9
-"SETFROWRATE G G",							// SetFROwRate F R/Set Feed Rate Override (1.0 = Normal Feed Rate) with rate/based on caller specified time (in seconds)/to change from FRO 1.0 to 0.0/ie. SetFRO 0.9 0.25
-"SETRAPIDFROWRATE G G",						// SetRapidFROwRate F R/Set Rapid Feed Rate Override (1.0 = Normal Feed Rate) with rate/based on caller specified time (in seconds)/to change from FRO 1.0 to 0.0/ie. SetRapidFROwRate 0.9 0.25
-"SETFROWRATETEMP G G",						// SetFROwRateTemp F R/Temporarily Set Feed Rate Override (1.0 = Normal Feed Rate) with rate/based on caller specified time (in seconds)/to change from FRO 1.0 to 0.0/Force regardless of FeedHold, don't save as last FRO/ie. FRO 0.9 0.25
+"SETFROWRATE GG",							// SetFROwRate F R/Set Feed Rate Override (1.0 = Normal Feed Rate) with rate/based on caller specified time (in seconds)/to change from FRO 1.0 to 0.0/ie. SetFRO 0.9 0.25
+"SETRAPIDFROWRATE GG",						// SetRapidFROwRate F R/Set Rapid Feed Rate Override (1.0 = Normal Feed Rate) with rate/based on caller specified time (in seconds)/to change from FRO 1.0 to 0.0/ie. SetRapidFROwRate 0.9 0.25
+"SETFROWRATETEMP GG",						// SetFROwRateTemp F R/Temporarily Set Feed Rate Override (1.0 = Normal Feed Rate) with rate/based on caller specified time (in seconds)/to change from FRO 1.0 to 0.0/Force regardless of FeedHold, don't save as last FRO/ie. FRO 0.9 0.25
 "GETSTOPSTATE ",							// GetStopState/Get State of StopImmediate/0=none,1=stopping indep,2=stopping coord, 3=stopped indep, 4=stopped coord/ie. GetStopState 
 "GETSPINDLERPS ",							// GetSpindleRPS/Get measured Spindle RPM in Revs per second/ie. GetSpindleRPS
 "GETALLDESTVELHEX ",						// GetAllDestVelHex/Get all 8 Axis Destinations and Velocities as 64 bit doubles/Each as 2 32-bit Hexadecimal Values (low|high)/ie. GetAllDestVelHex
@@ -132,8 +134,8 @@ const char Commands[][MAX_CMD_LENGTH] = {
 "HRPWMSETMODE D0 3 =D0 1",                  // HRPWMSetModeN=N/Set HRPWM Pin Mode mux channels 0-3 1=GPIO 0=HRPWM/ie. HRPWMSetMode0=1
 "GETKOGNAPWMEN D0 7",                       // GetKognaPWMEneN=N/Get Kogna PWM Enable channels 0-7 1=Enable 0=Disable/ie. GetKognaPWMEn0
 "SETKOGNAPWMEN D0 7 =D0 1",                 // SetKognaPWMEneN=N/Set Kogna PWM Enable channels 0-7 1=Enable 0=Disable/ie. SetKognaPWMEn0=1
-"GETKOGNAPWMLength D0 7 =D0 255",           // GetKognaPWMLengthN=N/Get Kogna PWM Pulse Length channels 0-7 0-255 counts/ie. GetKognaPWMLength0
-"SETKOGNAPWMLength D0 7 =D0 255",           // SetKognaPWMLengthN=N/Set Kogna PWM Pulse Length channels 0-7 0-255 counts/ie. SetKognaPWMLength0=128
+"GETKOGNAPWMLENGTH D0 7",					// GetKognaPWMLengthN=N/Get Kogna PWM Pulse Length channels 0-7 0-255 counts/ie. GetKognaPWMLength0
+"SETKOGNAPWMLENGTH D0 7 =D0 255",           // SetKognaPWMLengthN=N/Set Kogna PWM Pulse Length channels 0-7 0-255 counts/ie. SetKognaPWMLength0=128
 "SPISETMODE D0 5 =D0 2",                    // SPISetModeN=N/Set SPI Pin Mode mux channels 0-5 1=GPIO 0=HRPWM 2=I2C/ie. SPISetMode0=1
 "DEFINECS ?6=ddddddc",						// DefineCS = X Y Z A B C/Define the 6 Axes that make up/the xyzabc Coordinate System/set unused Axes to -1/ie. DefineCS = 0 1 -1 -1 -1 -1
 "DEFINECSEX ?8=ddddddddm",                  // DefineCSEx = X Y Z A B C U V/Define the 8 Axes that make up/the xyzabcuv Coordinate System/set unused Axes to -1/ie. DefineCSEx = 0 1 -1 -1 -1 -1 -1 -1
@@ -141,9 +143,9 @@ const char Commands[][MAX_CMD_LENGTH] = {
 "LIMITSWITCHNEGBIT D0 15 ?1=D0 2047 i",		// LimitSwitchNegBitN=D/Configure Limit Switch Negative Bit for Axis/Specify Decimal Value/ie. LimitSwitchNegBit2 1024
 "LIMITSWITCHPOSBIT D0 15 ?1=D0 2047 i",		// LimitSwitchPosBitN=D/Configure Limit Switch Positive Bit for Axis/Specify Decimal Value/ie. LimitSwitchPosBit2 1024
 "LIMITSWITCH D0 15 ?4=Hi",					// LimitSwitchN=H/Configure Limit Switch Options/Specify Hex value where/Bit 0 1=Stop Motor on Neg Limit, 0=Ignore Neg limit/Bit 1 1=Stop Motor on Pos Limit, 0=Ignore Pos limit/Bit 2 Neg Limit Polarity 0=stop on high, 1=stop on low/Bit 3 Pos Limit Polarity 0=stop on high, 1=stop on low/Bits 4-7/       Action - 0 Kill Motor Drive/       1 Disallow drive in direction of limit/       2 Stop movement/Bits 16-23 Neg Limit Bit number/Bits 24-31 Pos Limit Bit number/ie. LimitSwitch2 0C0D0003
-"INPUTMODE D0 15 ?1=D0 4 i",				// InputModeN=D/Set position input mode for axis/ENCODER_MODE 1/ADC_MODE 2/RESOLVER_MODE 3/USER_INPUT_MODE 4/ie. InputMode0=1
+"INPUTMODE D0 15 ?1=D0 5 i",				// InputModeN=D/Set position input mode for axis/ENCODER_MODE 1/ADC_MODE 2/RESOLVER_MODE 3/USER_INPUT_MODE 4/SERIAL_SERVO_INPUT_MODE 5/ie. InputMode0=1
 "BACKLASHMODE D0 15 ?1=D0 4 i",				// BacklashModeN=D/Set Backlash mode of operation for axis/BACKLASH_OFF 0/BACKLASH_LINEAR 1/ie. BacklashMode0=1
-"OUTPUTMODE D0 15 ?1=D0 8 i", 				// OutputModeN=D/Set motor output mode for axis/MICROSTEP_MODE 1/DC_SERVO_MODE 2/BRUSHLESS_3PH_MODE 3/BRUSHLESS_4PH_MODE 4/DAC_SERVO_MODE 5/STEP_DIR_MODE 6/CL_STEP_DIR_MODE 7/CL_MICROSTEP_MODE 8/ie. SetOutputMode0=1
+"OUTPUTMODE D0 15 ?1=D0 10 i", 				// OutputModeN=D/Set motor output mode for axis/MICROSTEP_MODE 1/DC_SERVO_MODE 2/BRUSHLESS_3PH_MODE 3/BRUSHLESS_4PH_MODE 4/DAC_SERVO_MODE 5/STEP_DIR_MODE 6/CL_STEP_DIR_MODE 7/CL_MICROSTEP_MODE 8/SERIAL_SERVO_MODE 9/CL_SERIAL_SERVO_MODE 10/ie. SetOutputMode0=1
 "DEST D0 15 ?3=Gg",                 		// DestN/Set last commanded Destination for axis N/ie. Dest0      
 "POS D0 15 ?3=Gg",							// PosN=P/Set measured position of axis N to P/ie. Pos0=100.0      
 "ENABLED D0 15 ?1",							// EnabledN/Display whether the specified axis is enabled/ie. Enabled0      
@@ -161,7 +163,7 @@ const char Commands[][MAX_CMD_LENGTH] = {
 "BACKLASHRATE D0 15 ?2=F0 1e12 f",			// BacklashRateN=R/Get or Set Backlash Rate of change int step or counts per second for axis N/ie. BacklashRate=1000.0
 "STEPPERAMPLITUDE D0 15 ?2=F0 255 f",		// StepperAmplitudeN=A/Get or Set output magnitude used/for axis N (if in MicroStepping Mode) to/A output units when stopped or with zero Lead/ie. StepperAmplitude0=250 
 "LEAD D0 15 ?2=F0 1e4 f",					// LeadN=L/Get or Set axis N Lead Compensation to L/ie. Lead0=10.0 
-"INPUTCHAN0 D0 15 ?1=D0 15 i",				// InputChan0N=C/Get or Set first Input Channel of axis N to C/ie. InputChan03=3 
+"INPUTCHAN0 D0 15 ?1=D0 27 i",				// InputChan0N=C/Get or Set first Input Channel of axis N to C/ie. InputChan03=3
 "INPUTCHAN1 D0 15 ?1=D0 15 i",				// InputChan1N=C/Get or Set 2nd Input Channel of axis N to C/ie. InputChan13=4 
 "OUTPUTCHAN0 D0 15 ?1=D0 255 i",			// OutputChan0N=C/Get or Set first Output Channel of axis N to C/ie. OutputChan03=3
 "OUTPUTCHAN1 D0 15 ?1=D0 15 i",				// OutputChan1N=C/Get or Set 2nd Output Channel of axis N to C/ie. OutputChan13=3 

@@ -17,7 +17,7 @@ void CallBack(void)
 	T1=T0;
 }
 
-main()
+int main()
 {
 	int i;
 	

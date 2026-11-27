@@ -1,0 +1,27 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migrate", "Migrate.csproj", "{875189F6-1671-47FC-9792-F548CA7923D4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug64|Any CPU = Debug64|Any CPU
+		Release|Any CPU = Release|Any CPU
+		Release64|Any CPU = Release64|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{875189F6-1671-47FC-9792-F548CA7923D4}.Debug|Any CPU.ActiveCfg = Debug|AnyCPU
+		{875189F6-1671-47FC-9792-F548CA7923D4}.Debug|Any CPU.Build.0 = Debug|AnyCPU
+		{875189F6-1671-47FC-9792-F548CA7923D4}.Debug64|Any CPU.ActiveCfg = Debug64|AnyCPU
+		{875189F6-1671-47FC-9792-F548CA7923D4}.Debug64|Any CPU.Build.0 = Debug64|AnyCPU
+		{875189F6-1671-47FC-9792-F548CA7923D4}.Release|Any CPU.ActiveCfg = Release|AnyCPU
+		{875189F6-1671-47FC-9792-F548CA7923D4}.Release|Any CPU.Build.0 = Release|AnyCPU
+		{875189F6-1671-47FC-9792-F548CA7923D4}.Release64|Any CPU.ActiveCfg = Release64|AnyCPU
+		{875189F6-1671-47FC-9792-F548CA7923D4}.Release64|Any CPU.Build.0 = Release64|AnyCPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

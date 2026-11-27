@@ -5,6 +5,7 @@
 
 
 #include "stdafx.h"
+#include <typeinfo>
 #include "afxglobals.h"
 #include "MainFrm.h"
 #include "EditToolFile.h"
@@ -16,6 +17,8 @@
 #include "OpenDlg.h"
 #include "Frame.h"
 #include "HiResTimer.h"
+#include "..\GCodeInterpreter\rs274ngc_return.h"	// RS274NGC_EXIT / _ENDFILE (G-code viewer preview)
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -45,8 +48,62 @@ static char THIS_FILE[] = __FILE__;
 #define ACTION_PROG_START 30
 #define ACTION_PROG_EXIT 31
 
+// Axis indices
+#define AXIS_X 0
+#define AXIS_Y 1
+#define AXIS_Z 2
+#define AXIS_A 3
+#define AXIS_B 4
+#define AXIS_C 5
+#define AXIS_U 6
+#define AXIS_V 7
+#define NUM_AXES 8
 
-//static callbacks
+// Parameter type indices
+#define PT_VEL              0
+#define PT_ACCEL            1
+#define PT_COUNTS_PER_INCH  2
+#define PT_JOG_VEL          3
+#define NUM_PARAM_TYPES     4
+
+// Note PT_JOG_VEL is not in this table (m_JogSpeed is an array member so no
+// pointer-to-member is possible) - the GET/SET handlers treat it as a special
+// case before indexing here.  Only the first 3 rows are initialized.
+double CKMotionCNCDlg::* TP_ParamMember[NUM_PARAM_TYPES][NUM_AXES] =
+{
+	{
+		&CKMotionCNCDlg::m_MaxVelX,
+		&CKMotionCNCDlg::m_MaxVelY,
+		&CKMotionCNCDlg::m_MaxVelZ,
+		&CKMotionCNCDlg::m_MaxVelA,
+		&CKMotionCNCDlg::m_MaxVelB,
+		&CKMotionCNCDlg::m_MaxVelC,
+		&CKMotionCNCDlg::m_MaxVelU,
+		&CKMotionCNCDlg::m_MaxVelV
+	},
+	{
+		&CKMotionCNCDlg::m_MaxAccelX,
+		&CKMotionCNCDlg::m_MaxAccelY,
+		&CKMotionCNCDlg::m_MaxAccelZ,
+		&CKMotionCNCDlg::m_MaxAccelA,
+		&CKMotionCNCDlg::m_MaxAccelB,
+		&CKMotionCNCDlg::m_MaxAccelC,
+		&CKMotionCNCDlg::m_MaxAccelU,
+		&CKMotionCNCDlg::m_MaxAccelV
+	},
+	{
+		&CKMotionCNCDlg::m_CountsPerInchX,
+		&CKMotionCNCDlg::m_CountsPerInchY,
+		&CKMotionCNCDlg::m_CountsPerInchZ,
+		&CKMotionCNCDlg::m_CountsPerInchA,
+		&CKMotionCNCDlg::m_CountsPerInchB,
+		&CKMotionCNCDlg::m_CountsPerInchC,
+		&CKMotionCNCDlg::m_CountsPerInchU,
+		&CKMotionCNCDlg::m_CountsPerInchV
+	}
+};
+
+//status callbacks
 
 void StraightTraverseCallback(double x, double y, double z, double a, double b, double c, int sequence_number);
 
@@ -61,7 +118,7 @@ void StraightFeedCallback(double DesiredFeedRate_in_per_sec,
 							   double x, double y, double z, double a, double b, double c, int sequence_number, int ID);
 
 
-int DoProcessScript(const char *FileName);
+int DoProcessScript(const wchar_t *FileName);
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -115,10 +172,10 @@ END_MESSAGE_MAP()
 
 void CKMotionCNCDlg::SaveOnExit(FILE * f)
 {
-	fprintf(f,"%d %d\n",m_Thread,m_Rapid);
-	fprintf(f,"%d %d\n",m_Simulate, m_DoTime);
-	fprintf(f,"%d\n",m_ShowMach);
-	fprintf(f,"%d\n",m_StepSize);
+	fwprintf(f,L"%d %d\n",m_Thread,m_Rapid);
+	fwprintf(f,L"%d %d\n",m_Simulate, m_DoTime);
+	fwprintf(f,L"%d\n",m_ShowMach);
+	fwprintf(f,L"%d\n",m_StepSize);
 	CDlgX::SaveOnExit(f);
 
 	SaveFileNames();
@@ -129,52 +186,58 @@ void CKMotionCNCDlg::RestoreOnStart(FILE * f)
 {
 	CString s;
 
-	fgets(s.GetBufferSetLength(100),99,f);
+	fgetws(s.GetBufferSetLength(100),99,f);
 	s.ReleaseBuffer();
 
 	if (s.IsEmpty() || s=="\n")  // skip over a blank line
 	{
-		fgets(s.GetBufferSetLength(100),99,f);
+		fgetws(s.GetBufferSetLength(100),99,f);
 		s.ReleaseBuffer();
 	}
-	int result = sscanf(s,"%d%d",&m_Thread, &m_Rapid);
+	int result = swscanf(s,L"%d%d",&m_Thread, &m_Rapid);
 	if (result < 2) m_Rapid=1;
 
-	int r = fscanf(f,"%d %d",&m_Simulate, &m_DoTime);
+
+	fgetws(s.GetBufferSetLength(100), 99, f);
+	s.ReleaseBuffer();
+
+	int r = swscanf(s,L"%d %d",&m_Simulate, &m_DoTime);
 	if (r < 2) m_DoTime = 0;
-	fscanf(f,"%d",&m_ShowMach);
-	fscanf(f,"%d",&m_StepSize);
+	fwscanf(f,L"%d",&m_ShowMach);
+	fwscanf(f,L"%d",&m_StepSize);
 
 	// also read in file names
 
 	for (int i=0; i<N_USER_GCODE_FILES; i++)      // set to default names
 	{
-		s.Format("user%d.ngc",i+1);
+		s.Format(L"user%d.ngc",i+1);
 		FileNames[i] = TheFrame->MainPath + s;
 	}
 
 	CString File = TheFrame->MainPath + GCODE_FILES;
 	
-	FILE *g = fopen(File.GetBuffer(0),"rt");
+	FILE *g;
+	_tfopen_s(&g, File, _T("rt,ccs=UTF-8"));
+
 	
 	if (!g)
 	{
-		CStringW s;
-		s.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Error opening file %s\nPrevious G Code Filenames"), File.GetBuffer(MAX_PATH));
+		CString s;
+		s.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Error opening file %ls\nPrevious G Code Filenames"), File.GetBuffer(MAX_PATH));
 
-		::MessageBoxW(NULL,s, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBox(s, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 	}
 	else
 	{
 		for (int i=0; i<N_USER_GCODE_FILES && !feof(g); i++)
 		{
-			fgets(FileNames[i].GetBuffer(MAX_PATH),MAX_PATH,g);
+			fgetws(FileNames[i].GetBuffer(MAX_PATH),MAX_PATH,g);
 			FileNames[i].ReleaseBuffer();
 			FileNames[i].Remove('\n');
 
 			// check if there is no path specified, then add in default
 
-			if (FileNames[i].Find("\\\\") == -1 && FileNames[i].Find(':') == -1)
+			if (FileNames[i].Find(L"\\\\") == -1 && FileNames[i].Find(':') == -1)
 			{
 				FileNames[i] = TheFrame->MainPathRoot + GCODE_SUB_DIR + FileNames[i];
 			}
@@ -200,7 +263,7 @@ void CKMotionCNCDlg::RestoreOnStart(FILE * f)
 	
 
 
-int CKMotionCNCDlg::SaveLoadConfig(FILE *f, char *s, bool save)
+int CKMotionCNCDlg::SaveLoadConfig(FILE *f, wchar_t *s, bool save)
 {
 	CSTRING_PATH(m_SetupFile, DATA_SUB_DIR);
 	CSTRING_PATH(m_ToolFile, DATA_SUB_DIR);
@@ -239,6 +302,8 @@ int CKMotionCNCDlg::SaveLoadConfig(FILE *f, char *s, bool save)
 	DOUBLE(m_JogSpeed[3]);
 	DOUBLE(m_JogSpeed[4]);
 	DOUBLE(m_JogSpeed[5]);
+	DOUBLE(m_JogSpeed[6]);
+	DOUBLE(m_JogSpeed[7]);
 	DOUBLE(m_JogSlowPercent);
 	DOUBLE(m_HardwareFRORange);
 	DOUBLE(m_MaxRapidFRO);
@@ -272,7 +337,33 @@ int CKMotionCNCDlg::SaveLoadConfig(FILE *f, char *s, bool save)
 	DOUBLE(m_CountsPerInchZ);
 	DOUBLE(m_CountsPerInchU);
 	DOUBLE(m_CountsPerInchV);
-	
+
+	// Constraints in Actuator Space (keys must be literal, so unrolled;
+	// absent keys in an old config leave the defaults => mode off)
+	INT(m_ActuatorLimits);
+	DOUBLE(m_ActScale[0]);    DOUBLE(m_ActScale[1]);    DOUBLE(m_ActScale[2]);    DOUBLE(m_ActScale[3]);
+	DOUBLE(m_ActScale[4]);    DOUBLE(m_ActScale[5]);    DOUBLE(m_ActScale[6]);    DOUBLE(m_ActScale[7]);
+	DOUBLE(m_MaxActVel[0]);   DOUBLE(m_MaxActVel[1]);   DOUBLE(m_MaxActVel[2]);   DOUBLE(m_MaxActVel[3]);
+	DOUBLE(m_MaxActVel[4]);   DOUBLE(m_MaxActVel[5]);   DOUBLE(m_MaxActVel[6]);   DOUBLE(m_MaxActVel[7]);
+	DOUBLE(m_MaxActAccel[0]); DOUBLE(m_MaxActAccel[1]); DOUBLE(m_MaxActAccel[2]); DOUBLE(m_MaxActAccel[3]);
+	DOUBLE(m_MaxActAccel[4]); DOUBLE(m_MaxActAccel[5]); DOUBLE(m_MaxActAccel[6]); DOUBLE(m_MaxActAccel[7]);
+	DOUBLE(m_MaxActJerk[0]);  DOUBLE(m_MaxActJerk[1]);  DOUBLE(m_MaxActJerk[2]);  DOUBLE(m_MaxActJerk[3]);
+	DOUBLE(m_MaxActJerk[4]);  DOUBLE(m_MaxActJerk[5]);  DOUBLE(m_MaxActJerk[6]);  DOUBLE(m_MaxActJerk[7]);
+	INT(m_ActDegrees[0]);     INT(m_ActDegrees[1]);     INT(m_ActDegrees[2]);     INT(m_ActDegrees[3]);
+	INT(m_ActDegrees[4]);     INT(m_ActDegrees[5]);     INT(m_ActDegrees[6]);     INT(m_ActDegrees[7]);
+
+	INT(m_ThirdOrderTP);
+	INT(m_TPLogSegs);
+	INT(m_TPCubicKnots);
+	DOUBLE(m_MaxJerkX);
+	DOUBLE(m_MaxJerkY);
+	DOUBLE(m_MaxJerkZ);
+	DOUBLE(m_MaxJerkA);
+	DOUBLE(m_MaxJerkB);
+	DOUBLE(m_MaxJerkC);
+	DOUBLE(m_MaxJerkU);
+	DOUBLE(m_MaxJerkV);
+
 	DOUBLE(m_Step0);
 	DOUBLE(m_Step1);
 	DOUBLE(m_Step2);
@@ -286,6 +377,7 @@ int CKMotionCNCDlg::SaveLoadConfig(FILE *f, char *s, bool save)
 	INT(m_ToolLengthImmediately);
 	INT(m_ToolTableDoM6);
 	INT(m_ConfirmExit);
+	INT(m_AllowConcaveCorners);
 	INT(m_ArcsToSegs);
 	INT(m_DisplayEncoder);
 	INT(m_Lathe);
@@ -383,7 +475,7 @@ int CKMotionCNCDlg::SaveLoadConfig(FILE *f, char *s, bool save)
 
 int CKMotionCNCDlg::SaveConfig()
 {
-	char s[81];
+	wchar_t s[81];
 	CString Name;
 	FILE *f;
 
@@ -394,13 +486,13 @@ int CKMotionCNCDlg::SaveConfig()
 		else
 			Name = TheFrame->MainPathRoot + TheFrame->config_file_backup;
 
-		f=fopen(Name.GetBuffer(0),"wb");
-		
+		_tfopen_s(&f, Name, _T("wt,ccs=UTF-8"));
+
 		if (!f)
 		{
-			CStringW cs;
-			cs.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Error Opening Configuration File %s"), Name.GetBuffer(0));
-			MessageBoxW(NULL, cs,/*TRAN*/TheFrame->KMotionDLL->Translate("Error"),MB_ICONSTOP|MB_OK);
+			CString cs;
+			cs.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Error Opening Configuration File %ls"), Name.GetBuffer(0));
+			MessageBox( cs,/*TRAN*/TheFrame->KMotionDLL->Translate("Error"),MB_ICONSTOP|MB_OK);
 		}
 		else
 		{
@@ -422,7 +514,7 @@ int CKMotionCNCDlg::SaveConfig()
 
 int CKMotionCNCDlg::LoadConfig()
 {
-	char s[301];
+	wchar_t s[301];
 	CString Name;
 	FILE *f;
 	int success=false;
@@ -436,13 +528,13 @@ int CKMotionCNCDlg::LoadConfig()
 
 		m_ConfigCheckWord=0;
 
-		f=fopen(Name.GetBuffer(0),"rb");
+		_tfopen_s(&f, Name, _T("rt,ccs=UTF-8"));
 		
 		if (f)
 		{
 			while (!feof(f))
 			{
-				fgets(s,300,f);
+				fgetws(s,300,f);
 				if (!feof(f))
 				{
 					SaveLoadConfig(f, s, false);
@@ -461,12 +553,12 @@ int CKMotionCNCDlg::LoadConfig()
 		{
 			if (iTry==0)
 			{
-				if (MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Previous Configuration File:\r\r") + (CStringW) Name +
+				if (MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Previous Configuration File:\r\r") +  Name +
 							  /*TRAN*/TheFrame->KMotionDLL->Translate("\r\rcould not be read.  Attempt to recover settings from Backup file?\r"),
 							  L"KMotion", MB_YESNO | MB_ICONSTOP)
 							  != IDYES)
 				{
-					if (MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Previous Configuration File:\r\r") + (CStringW) Name +
+					if (MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Previous Configuration File:\r\r") +  Name +
 								  /*TRAN*/TheFrame->KMotionDLL->Translate("\r\rcould not be read.  Continuing will cause a loss of all\rsettings.  Are you sure you would like to continue?"),
 								  L"KMotion", MB_YESNO|MB_ICONSTOP)
 								  != IDYES)
@@ -477,7 +569,7 @@ int CKMotionCNCDlg::LoadConfig()
 			}
 			else
 			{
-				if (MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Backup Configuration File:\r\r") + (CStringW) Name +
+				if (MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Backup Configuration File:\r\r") +  Name +
 							  /*TRAN*/TheFrame->KMotionDLL->Translate("\r\rcould not be read.  Continuing will cause a loss of all\rsettings.  Are you sure you would like to continue?"),
 							  L"KMotion", MB_YESNO|MB_ICONSTOP)
 							  != IDYES)
@@ -499,21 +591,22 @@ void CKMotionCNCDlg::SaveFileNames()
 {
 	CString File = TheFrame->MainPath + GCODE_FILES;
 
-	FILE *g = fopen(File.GetBuffer(0),"wt");
-	
+	FILE *g;
+	_tfopen_s(&g, File, _T("wt,ccs=UTF-8"));
+
 	if (!g)
 	{
-		CStringW s;
-		s.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Error opening file %s\nTo store Previous GCode Filenames"),
+		CString s;
+		s.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Error opening file %ls\nTo store Previous GCode Filenames"),
 				 File.GetBuffer(MAX_PATH));
-		MessageBoxW(m_hWnd,s, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBox(s, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 	}
 	else
 	{
 		for (int i=0; i<N_USER_GCODE_FILES && !feof(g); i++)
 		{
 			// if the path is the default, and there is no other path specified, strip it off
-			fprintf(g,"%s\n",StripPathMatch(FileNames[i], GCODE_SUB_DIR).GetBuffer());
+			fwprintf(g,L"%ls\n",StripPathMatch(FileNames[i], GCODE_SUB_DIR).GetBuffer());
 		}
 
 		fclose(g);
@@ -523,53 +616,92 @@ void CKMotionCNCDlg::SaveFileNames()
 
 void CKMotionCNCDlg::LoadFile(int thread,bool ResetPosition)
 {
-	CStringW s;
-	CString fs;
-	int fsize;
+	CString s;
 	CString DefaultPath = TheFrame->MainPathRoot + GCODE_SUB_DIR;
+	char* UTF8;
+	int BOM_offset = 0;  // offset if BOM found
 
+	// A Thread whose file has since been deleted or moved (a remembered
+	// name from a previous session, or the Thread about to receive another
+	// file) silently becomes a blank, unnamed file - no error box, and the
+	// previous Thread's text does not linger in the editor.
+	if (!FileNames[thread].IsEmpty() &&
+		GetFileAttributes(FileNames[thread]) == INVALID_FILE_ATTRIBUTES &&
+		(GetLastError() == ERROR_FILE_NOT_FOUND || GetLastError() == ERROR_PATH_NOT_FOUND))
+	{
+		FileNames[thread] = "";
+	}
 
 	if (FileNames[thread].IsEmpty() || FileNames[thread] == DefaultPath)
 	{
 		// if filename for the thread is undefined
 		// just set the editor empty
 
-		s="";
+		UTF8 = new char[1];
+		UTF8[0]=0;
 	}
 	else
 	{
-		FILE *f=fopen(FileNames[thread],"rb");
+		CFileStatus filestatus;
+		BOOL success = CFile::GetStatus(FileNames[thread], filestatus);
 
-		if (!f)
+		FILE* f;
+		_tfopen_s(&f, FileNames[thread], _T("rb,ccs=UTF-8"));
+
+		if (!f || success != TRUE)
 		{
-			s.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Error opening GCode file %s\nFrom Previous G Code Filenames"),
-					(CStringW)FileNames[thread]);
-			MessageBoxW(m_hWnd,s, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+			if (f) fclose(f);
+			s.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Error opening GCode file %ls\nFrom Previous G Code Filenames"),
+				FileNames[thread]);
+			MessageBox(s, L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
 
-			s="";
-			FileNames[thread]="";
+			s = "";
+			FileNames[thread] = "";
+
+			// after the error the editor shows an empty, unnamed file rather
+			// than whatever program was displayed before
+			UTF8 = new char[1];
+			UTF8[0] = 0;
 		}
 		else
 		{
-			fsize = fseek(f,0,SEEK_END);
-			fsize = ftell(f);
+			UTF8 = new char[filestatus.m_size + 1];
+			int result = (int)fread(UTF8, 1, filestatus.m_size, f);
 
-			fseek(f,0,SEEK_SET);
-			
-			if (fsize>0 && fread(fs.GetBuffer(fsize),fsize,1,f) != 1)
+			fclose(f);
+
+			if (result != filestatus.m_size)
 			{
-				MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("unable to open file"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+				delete [] UTF8;
+
+				s.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Error reading GCode file %ls"),
+					FileNames[thread]);
+				MessageBox(s, L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
+
+				s = "";
+				FileNames[thread] = "";
+
+				UTF8 = new char[1];
+				UTF8[0] = 0;
 			}
 			else
 			{
-				fclose(f);
-				fs.ReleaseBuffer(fsize);
+				UTF8[filestatus.m_size] = 0;  // terminate
+
+				// check for one or more BOM and remove them
+				unsigned char BOM[3] = { 0xEF, 0xBB, 0xBF };
+				while (filestatus.m_size >= 3 && memcmp(UTF8 + BOM_offset, BOM, 3) == 0)
+				{
+					BOM_offset += 3;
+					filestatus.m_size -= 3;
+				}
 			}
 		}
 	}
 
 	m_Editor.SetReadOnly(FALSE);
-	m_Editor.SetText(fs);
+	m_Editor.SetText(UTF8 + BOM_offset);  // set text skipping over any BOMs
+	delete [] UTF8;
 	m_Editor.EmptyUndoBuffer();
 	m_Editor.SetSavePoint();
 
@@ -580,16 +712,18 @@ void CKMotionCNCDlg::LoadFile(int thread,bool ResetPosition)
 	
 	if (ResetPosition)
 		OnRestart(); // reset to the beginning
-	
+
 	RefreshTitle();
-	
+
 	UpdateData(FALSE);
+
+	RequestPreview(thread);	// G-code viewer: plot the whole file once the interpreter is idle
 }
 
 
 int CKMotionCNCDlg::SaveFile(int thread, bool ForceSave)
 {
-	CString s;
+	char *UTF8;
 
 	// if the user isn't explicitly saving and the 
 	// user hasn't changed anything then don't save
@@ -598,43 +732,66 @@ int CKMotionCNCDlg::SaveFile(int thread, bool ForceSave)
 
 	// save the edit window
 
-	int length = m_Editor.GetTextLength();
+	int nUTF8Length = m_Editor.GetTextLength();
 
+	UTF8 = new char[nUTF8Length + 1];
 
-	s = m_Editor.GetText(length+1);
+	if (UTF8 == NULL)
+	{
+		MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("unable to allocate memory"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		return 1;
+	}
+
+	m_Editor.GetText(nUTF8Length + 1, UTF8);
 
 	// if the file to save to is undefined and the editor is empty, forget it
 
-	if (s.IsEmpty() && FileNames[thread].IsEmpty()) return 0;
+	if (UTF8[0] == 0 && FileNames[thread].IsEmpty())
+	{
+		delete UTF8;
+		return 0;
+	}
 
 	if (FileNames[thread].IsEmpty())
 	{
 		// if there is something to save, but the filename is undefined
 		// ask user where to save it 
 
+		delete UTF8;
 		return DoSaveAs(thread);
 	}
 
-	FILE *f=fopen(FileNames[thread],"wb");
+	FILE *f;
+	_tfopen_s(&f, FileNames[thread], _T("wb,ccs=UTF-8"));
 
 	if (!f)
 	{
 		// if we couldn't open the file and the editor is
 		// empty, then just forget it
 
-		if (s.IsEmpty()) return 0;
+		if (UTF8[0] == 0)
+		{
+			delete UTF8;
+			return 0;
+		}
 
-		CStringW err;
-		err.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Error saving GCode file %s\nFrom Previous GCode Filenames\r\rUse SaveAs to save to different directory or filename"), (CStringW)FileNames[thread]);
-		MessageBoxW(NULL,err, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		delete UTF8;
+		CString err;
+		err.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Error saving GCode file %ls\nFrom Previous GCode Filenames\r\rUse SaveAs to save to different directory or filename"), FileNames[thread]);
+		MessageBox(err, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 
 		return 1;
 	}
 	else
 	{
-		if (s.GetLength()>0 && fwrite(s.GetBuffer(0),s.GetLength(),1,f) != 1)
+		int length = (int)strlen(UTF8);
+		unsigned char BOM[3] = { 0xEF, 0xBB, 0xBF };
+		if (length > 0 &&
+			(fwrite(BOM, 3, 1, f) != 1
+			|| fwrite(UTF8, length, 1, f) != 1))
 		{
-			MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("unable to write to file"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+			MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("unable to write to file"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+			delete UTF8;
 			return 1;
 		}
 		else
@@ -643,8 +800,11 @@ int CKMotionCNCDlg::SaveFile(int thread, bool ForceSave)
 		}
 	}
 
+	delete UTF8;
 	m_Editor.SetSavePoint();  // clear the Modified Flag
 	RefreshTitle();
+
+	RequestPreview(thread);	// G-code viewer: the file changed on disk, re-plot the preview
 
 	return 0;
 }
@@ -659,12 +819,12 @@ void CKMotionCNCDlg::DoDataExchange(CDataExchange* pDX)
 		if (m_Rapid==0)
 		{
 			DDX_Text(pDX, IDC_FeedRateEdit, m_FeedRateRapidValue);
-			DDV_MinMaxDouble(pDX, m_FeedRateRapidValue, 0.1, 2.);
+			DDV_MinMaxDouble(pDX, m_FeedRateRapidValue, 0.001, 2.);
 		}
 		else
 		{
 			DDX_Text(pDX, IDC_FeedRateEdit, m_FeedRateValue);
-			DDV_MinMaxDouble(pDX, m_FeedRateValue, 0.1, 2.);
+			DDV_MinMaxDouble(pDX, m_FeedRateValue, 0.001, 2.);
 		}
 	}
 
@@ -751,6 +911,28 @@ void CKMotionCNCDlg::DoDataExchange(CDataExchange* pDX)
 
 	if (m_DialogFaceInUse == CUSTOM_DLG_FACE)
 	{
+		DDX_Control(pDX, IDC_PosV, m_PosV);
+		DDX_Control(pDX, IDC_PosU, m_PosU);
+
+		DDX_Control(pDX, IDC_Uplus2, m_Uplus2);
+		DDX_Control(pDX, IDC_Uplus, m_Uplus);
+		DDX_Control(pDX, IDC_UplusStep, m_UplusStep);
+		DDX_Control(pDX, IDC_Uminus2, m_Uminus2);
+		DDX_Control(pDX, IDC_Uminus, m_Uminus);
+		DDX_Control(pDX, IDC_UminusStep, m_UminusStep);
+
+		DDX_Control(pDX, IDC_Vplus2, m_Vplus2);
+		DDX_Control(pDX, IDC_Vplus, m_Vplus);
+		DDX_Control(pDX, IDC_VplusStep, m_VplusStep);
+		DDX_Control(pDX, IDC_Vminus2, m_Vminus2);
+		DDX_Control(pDX, IDC_Vminus, m_Vminus);
+		DDX_Control(pDX, IDC_VminusStep, m_VminusStep);
+
+		DDX_Control(pDX, IDC_ZeroU, m_ZeroU);
+		DDX_Control(pDX, IDC_ZeroV, m_ZeroV);
+		DDX_Control(pDX, IDC_SetU, m_SetU);
+		DDX_Control(pDX, IDC_SetV, m_SetV);
+
 		for (int i=0; i<MAX_USER_BUTTONS; i++)
 			DDX_Control(pDX, IDC_But0+i, m_UserImageBut[i]);
 
@@ -766,6 +948,8 @@ void CKMotionCNCDlg::DoDataExchange(CDataExchange* pDX)
 		DDX_Control(pDX, IDC_STATICA, m_StaticLabelA);
 		DDX_Control(pDX, IDC_STATICB, m_StaticLabelB);
 		DDX_Control(pDX, IDC_STATICC, m_StaticLabelC);
+		DDX_Control(pDX, IDC_STATICU, m_StaticLabelU);
+		DDX_Control(pDX, IDC_STATICV, m_StaticLabelV);
 
 
 		DDX_Control(pDX, IDC_FeedRateCmd, m_FeedRateCmd);
@@ -853,12 +1037,16 @@ void CKMotionCNCDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_ZeroA, m_ZeroA);
 	DDX_Control(pDX, IDC_ZeroB, m_ZeroB);
 	DDX_Control(pDX, IDC_ZeroC, m_ZeroC);
+	if (m_ZeroU.m_hWnd) DDX_Control(pDX, IDC_ZeroU, m_ZeroU);
+	if (m_ZeroV.m_hWnd) DDX_Control(pDX, IDC_ZeroV, m_ZeroV);
 	DDX_Control(pDX, IDC_SetX, m_SetX);
 	DDX_Control(pDX, IDC_SetY, m_SetY);
 	DDX_Control(pDX, IDC_SetZ, m_SetZ);
 	DDX_Control(pDX, IDC_SetA, m_SetA);
 	DDX_Control(pDX, IDC_SetB, m_SetB);
 	DDX_Control(pDX, IDC_SetC, m_SetC);
+	if (m_SetU.m_hWnd) DDX_Control(pDX, IDC_SetU, m_SetU);
+	if (m_SetV.m_hWnd) DDX_Control(pDX, IDC_SetV, m_SetV);
 	DDX_Control(pDX, IDC_EditToolFile, m_EditToolFile);
 	DDX_Control(pDX, IDC_ZeroAll, m_ZeroAll);
 	DDX_Control(pDX, IDC_Measure, m_Measure);
@@ -879,12 +1067,12 @@ void CKMotionCNCDlg::DoDataExchange(CDataExchange* pDX)
 		if (m_Rapid==0)
 		{
 			DDX_Text(pDX, IDC_FeedRateEdit, m_FeedRateRapidValue);
-			DDV_MinMaxDouble(pDX, m_FeedRateRapidValue, 0.1, 2.);
+			DDV_MinMaxDouble(pDX, m_FeedRateRapidValue, 0.001, 2.);
 		}
 		else
 		{
 			DDX_Text(pDX, IDC_FeedRateEdit, m_FeedRateValue);
-			DDV_MinMaxDouble(pDX, m_FeedRateValue, 0.1, 2.);
+			DDV_MinMaxDouble(pDX, m_FeedRateValue, 0.001, 2.);
 		}
 	}
 }
@@ -908,6 +1096,8 @@ BEGIN_MESSAGE_MAP(CKMotionCNCDlg, CDlgX)
 	ON_BN_CLICKED(IDC_ZeroA, OnZeroA)
 	ON_BN_CLICKED(IDC_ZeroB, OnZeroB)
 	ON_BN_CLICKED(IDC_ZeroC, OnZeroC)
+	ON_BN_CLICKED(IDC_ZeroU, OnZeroU)
+	ON_BN_CLICKED(IDC_ZeroV, OnZeroV)
 	ON_BN_CLICKED(IDC_KMotion_HELP, OnIhelp)
 	ON_BN_CLICKED(IDC_Rapid, OnRapid)
 	ON_BN_CLICKED(IDC_Feed,  OnFeed)
@@ -930,6 +1120,8 @@ BEGIN_MESSAGE_MAP(CKMotionCNCDlg, CDlgX)
 	ON_COMMAND(IDC_Restart, OnRestart)
 	ON_UPDATE_COMMAND_UI(IDC_Restart, OnUpdateRestart)
 	ON_UPDATE_COMMAND_UI(IDC_SingleStep, OnUpdateSingleStep)
+	ON_UPDATE_COMMAND_UI(IDC_New, OnUpdateNew)
+	ON_UPDATE_COMMAND_UI(IDC_OpenFile, OnUpdateOpenFile)
 	ON_COMMAND(IDC_GView, OnGView)
 	ON_BN_CLICKED(IDC_Simulate, OnSimulate)
 	ON_BN_CLICKED(IDC_DoTime, OnDoTime)
@@ -966,6 +1158,8 @@ BEGIN_MESSAGE_MAP(CKMotionCNCDlg, CDlgX)
 	ON_BN_CLICKED(IDC_SetA, OnSetA)
 	ON_BN_CLICKED(IDC_SetB, OnSetB)
 	ON_BN_CLICKED(IDC_SetC, OnSetC)
+	ON_BN_CLICKED(IDC_SetU, OnSetU)
+	ON_BN_CLICKED(IDC_SetV, OnSetV)
 	ON_BN_CLICKED(IDC_StopStep, OnStopStep)
 	ON_BN_CLICKED(IDC_mm, Onmm)
 	ON_BN_CLICKED(IDC_inch, Oninch)
@@ -1177,9 +1371,9 @@ void CKMotionCNCDlg::OnNew()
 {
 	CString File;
 	
-	File.Format("user%d.ngc",m_Thread+1);
+	File.Format(L"user%d.ngc",m_Thread+1);
 
-	int answer = MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Overwrite File:") + (CStringW)File+" ?"
+	int answer = MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Overwrite File:") + File+" ?"
 		, L"KMotion", MB_ICONSTOP|MB_YESNO|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 
 	if (answer != IDYES) return;
@@ -1206,10 +1400,10 @@ void CKMotionCNCDlg::OnOpenFile()
 	CString s;
 	
 	DisableKeyJog();
-	CPersistOpenDlg FileDlg (TRUE, ".ngc", 
-		TheFrame->GCodeDlg.InitialFile(FileNames[m_Thread], GCODE_SUB_DIR, "Dynomotion.ngc"),
+	CPersistOpenDlg FileDlg (TRUE, L".ngc", 
+		TheFrame->GCodeDlg.InitialFile(FileNames[m_Thread], GCODE_SUB_DIR, L"Dynomotion.ngc"),
 				OFN_HIDEREADONLY | OFN_FILEMUSTEXIST | OFN_ENABLESIZING, 
-		/*TRAN*/"GCode Files (*.ngc *.nc *.ncc *.cnc *.tap *.txt)|*.ngc;*.nc;*.ncc;*.cnc;*.tap;*.txt|All Files (*.*)|*.*||");
+		/*TRAN*/L"GCode Files (*.ngc *.nc *.ncc *.cnc *.tap *.txt)|*.ngc;*.nc;*.ncc;*.cnc;*.tap;*.txt|All Files (*.*)|*.*||");
 
 	if (FileDlg.DoModal() == IDOK)
 	{
@@ -1231,10 +1425,10 @@ int CKMotionCNCDlg::DoSaveAs(int thread)
 	CString NoFile;
 
 	DisableKeyJog();
-	CPersistOpenDlg FileDlg (FALSE, ".ngc",
-		TheFrame->GCodeDlg.InitialFile(FileNames[thread], GCODE_SUB_DIR, ""),
+	CPersistOpenDlg FileDlg (FALSE, L".ngc",
+		TheFrame->GCodeDlg.InitialFile(FileNames[thread], GCODE_SUB_DIR, L""),
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_ENABLESIZING,
-		/*TRAN*/"GCode Files (*.ngc *.nc *.ncc *.cnc *.tap *.txt)|*.ngc;*.nc;*.ncc;*.cnc;*.tap;*.txt|All Files (*.*)|*.*||");
+		/*TRAN*/L"GCode Files (*.ngc *.nc *.ncc *.cnc *.tap *.txt)|*.ngc;*.nc;*.ncc;*.cnc;*.tap;*.txt|All Files (*.*)|*.*||");
 
 	// check if the last filename exists, if not
 	// don't try to select it otherwise the file dialog fails
@@ -1242,7 +1436,8 @@ int CKMotionCNCDlg::DoSaveAs(int thread)
 	FILE *f=NULL;
 	
 	if (!FileNames[thread].IsEmpty())
-		f=fopen(FileNames[thread],"r");
+		_tfopen_s(&f, FileNames[thread], _T("rt,ccs=UTF-8"));
+
 
 	if (f)
 	{
@@ -1273,8 +1468,61 @@ void CKMotionCNCDlg::RefreshTitle()
 }
 
 
-void CKMotionCNCDlg::OnExecuteComplete() 
+void CKMotionCNCDlg::OnExecuteComplete()
 {
+	// G-code viewer: the quiet preview simulation finished.  The interpreter
+	// thread still runs a little after the complete callback (tool-wear stats),
+	// so state is restored by ServicePreview once that thread has exited.
+	if (m_PreviewRunning)
+	{
+		m_PreviewFinishOk = (m_exitcode == 0 || m_exitcode == RS274NGC_ENDFILE || m_exitcode == RS274NGC_EXIT);
+		m_PreviewFinishPending = true;
+		ServicePreview();
+		return;
+	}
+
+	// G-code viewer: a run over the preview stopped part way (Single Step, run to
+	// a line, M0/M1, Halt).  Remember where, in the preview's block numbering, so
+	// a run continuing from that line maps exactly - also inside loops and
+	// subroutines, where one file line is drawn many times.  A halted run's
+	// state is restored to the halted block, which the resumed run re-reads.
+	if (m_PlaybackArmed || m_ProgressActive)
+	{
+		m_ChainValid = m_CompleteLine > 0 &&
+			(m_exitcode == 0 || (m_exitcode == 1005 && m_CompleteStopped));
+		m_ChainLine = m_CompleteLine;
+		m_ChainSeq = m_CompleteSeq + m_ProgressSeqOffset - (m_exitcode == 0 ? 0 : 1);
+	}
+
+	// G-code viewer: Simulate over the preview finished -> play back what it executed
+	if (m_PlaybackArmed)
+	{
+		m_PlaybackArmed = false;
+		m_ProgressActive = false;
+		int n = ActualGViewParent->m_Path->NbVertex();
+		if (m_PreviewValid && m_PreviewTime.GetSize() == n && m_PreviewFileLine.GetSize() == n)
+		{
+			m_PlaybackEnd = PreviewIndexAfterRun();
+			if (m_PlaybackEnd > m_ProgressIndex)
+			{
+				m_PlaybackTime = m_ProgressIndex > 0 ? m_PreviewTime[m_ProgressIndex - 1] : 0.0;
+				m_PlaybackWall = ElapsedTimer.Elapsed_Seconds();
+				m_PlaybackPaused = false;
+				m_PlaybackRunning = true;
+			}
+		}
+	}
+	// G-code viewer: a job over the preview finished - what it executed is all cut
+	else if (m_ProgressActive)
+	{
+		int e = PreviewIndexAfterRun();
+		if (e > m_ProgressIndex)
+		{
+			ColorPreviewRange(m_ProgressIndex, e - 1, true);
+			m_ProgressIndex = e;
+		}
+	}
+
 	if (m_Simulate)
 	{
 		if (m_DoingSimulationRun)
@@ -1315,13 +1563,29 @@ void CKMotionCNCDlg::OnExecuteComplete()
 
 
 
-void CompleteCallback(int status, int lineno, int sequence_number, const char *err)
+void CompleteCallback(int status, int lineno, int sequence_number, const wchar_t *err)
 {
 	CKMotionCNCDlg *p=&TheFrame->GCodeDlg;
 	CCoordMotion *CM = p->Interpreter->CoordMotion;
 
+	// G-code viewer preview simulation finished: no editor line, error pop-up,
+	// job time or resume bookkeeping -- FinishPreview (GUI thread) restores state.
+	if (p->m_PreviewRunning)
+	{
+		p->m_exitcode = status;
+		p->m_PreviewSeq0 = p->Interpreter->p_setup->percent_flag == ON ? 1 : 0;	// before FinishPreview restores p_setup
+		p->ThreadIsExecuting = false;
+		if (p->m_hWnd)
+			p->PostMessage(WM_COMMAND, IDC_ExecuteComplete, 0);
+		return;
+	}
+
 	p->m_ErrorOutput=err;
 	p->m_exitcode=status;
+	// G-code viewer: where this run stopped, for playback / progress and the next run
+	p->m_CompleteLine = lineno;
+	p->m_CompleteSeq = sequence_number;
+	p->m_CompleteStopped = CM->m_Stopping != STOPPED_NONE;
 
 	if (p->m_ThreadThatWasLaunched>=0)
 		p->GCodeThreadActive[p->m_ThreadThatWasLaunched]=false;
@@ -1378,13 +1642,17 @@ void CompleteCallback(int status, int lineno, int sequence_number, const char *e
 				y = x0 * sin(Theta) + y * cos(Theta);
 			}
 
-			if (CM->m_PreviouslyStoppedID==1 &&
-				CM->m_Stopping == STOPPED_COORD)
-				p->ActualGViewParent->m_Path->RemovePathEnd(sequence_number,-1,x,y,z);
-			else
-				p->ActualGViewParent->m_Path->RemovePathEnd(sequence_number,1,x,y,z);
+			// (not over a kept preview: its unexecuted part stays drawn, uncut)
+			if (!p->m_ProgressActive)
+			{
+				if (CM->m_PreviouslyStoppedID==1 &&
+					CM->m_Stopping == STOPPED_COORD)
+					p->ActualGViewParent->m_Path->RemovePathEnd(sequence_number,-1,x,y,z);
+				else
+					p->ActualGViewParent->m_Path->RemovePathEnd(sequence_number,1,x,y,z);
 
-			p->ActualGViewParent->m_Path->SetModified();
+				p->ActualGViewParent->m_Path->SetModified();
+			}
 		}
 
 		if (p->m_ThreadThatWasLaunched>=0)
@@ -1393,7 +1661,7 @@ void CompleteCallback(int status, int lineno, int sequence_number, const char *e
 		if (!p->ShuttingDownApplication && 
 			CM->m_Stopping == STOPPED_NONE &&
 			status != 1005)
-			MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("G Code Error\r\r") + (CStringW) p->m_ErrorOutput,
+			MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("G Code Error\r\r") +  p->m_ErrorOutput,
 				L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 	}
 	else
@@ -1438,17 +1706,18 @@ void CompleteCallback(int status, int lineno, int sequence_number, const char *e
 	if (p->m_PerformPostHaltCommand)
 	{
 		p->m_PerformPostHaltCommand=false;
-		p->Interpreter->InvokeAction(ACTION_HALT,FALSE);  // Do Special Action
+		if (!p->m_Simulate)
+			p->Interpreter->InvokeAction(ACTION_HALT,FALSE);  // Do Special Action
 	}
 }
 
-void StatusCallback(int line_no, const char *msg)
+void StatusCallback(int line_no, const wchar_t *msg)
 {
 	CKMotionCNCDlg *p=&TheFrame->GCodeDlg;
 
 	p->GCodeMutex->Lock();
 
-	if (p->m_ThreadThatWasLaunched>=0)
+	if (p->m_ThreadThatWasLaunched>=0 && !p->m_PreviewRunning)	// a preview must not move the editor's line
 		p->CurrentLine[p->m_ThreadThatWasLaunched]=line_no;
 
 	p->GCodeMutex->Unlock();
@@ -1458,18 +1727,21 @@ void CKMotionCNCDlg::OnGO()
 {
 	if (ThreadIsExecuting)
 		OnHalt();
+	else if (m_PlaybackRunning)
+		StopPlayback();		// Simulate playback is only an animation: nothing to Halt
 	else
 		OnExecute();
 }
 
-void CKMotionCNCDlg::OnExecute() 
+void CKMotionCNCDlg::OnExecute()
 {
 	if (!ThreadIsExecuting)
 	{
 		Interpreter->CoordMotion->ClearAbort();
 		Interpreter->CoordMotion->ClearHalt();
 		Interpreter->m_Halt = false;
-		Interpreter->InvokeAction(ACTION_CYCLE_START, FALSE);  // Do Special Action
+		if (!m_Simulate)
+			Interpreter->InvokeAction(ACTION_CYCLE_START, FALSE);  // Do Special Action
 
 		MSG msg;
 		while (Interpreter->m_InvokeThreadID != -1 && GetMessage(&msg, NULL, 0, 0)) {
@@ -1529,6 +1801,7 @@ void CKMotionCNCDlg::OnRestart()
 	ThreadHadError[m_Thread]=false;
 	CurrentLine[m_Thread]=0;
 	Interpreter->CoordMotion->m_PreviouslyStopped = STOPPED_NONE;
+	Interpreter->p_setup->ConcaveDefered = FALSE;
 }
 
 
@@ -1538,22 +1811,32 @@ int CKMotionCNCDlg::LaunchExecution(CString InFile,int begin, int end)
 
 	if (InFile.IsEmpty())
 	{
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Filename Specified"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Filename Specified"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 1;
 	}
+
+	// A quiet preview simulation is running; don't start anything else until it
+	// finishes (a fraction of a second to a few seconds after loading a file).
+	if (m_PreviewRunning && !m_PreviewLaunching) return 1;
+
+	StopPlayback();		// a Simulate playback of the previous run is only a picture
+
+	// The preview runs simulated WITHOUT touching the dialog's Simulate checkbox
+	// (m_Simulate), so the DROs etc. keep showing the machine.
+	bool Simulating = m_Simulate || m_PreviewLaunching;
 
 	Interpreter->CoordMotion->SetStraightTraverseCallback(StraightTraverseCallback);
 	Interpreter->CoordMotion->SetStraightFeedCallback(StraightFeedCallback);
 	Interpreter->CoordMotion->SetArcFeedCallback(ArcFeedCallback);
 
-	Interpreter->CoordMotion->m_Simulate = (m_Simulate == 0) ? false : true;
-	Interpreter->CoordMotion->m_DoTime = (m_DoTime == 0) ? false : true;
+	Interpreter->CoordMotion->m_Simulate = Simulating;
+	Interpreter->CoordMotion->m_DoTime = (m_DoTime != 0) && !m_PreviewLaunching;
 	Interpreter->CoordMotion->m_DisableSoftLimits = false;
 
 	SetMotionParams();
 
 
-	if (m_Simulate==0)
+	if (!Simulating)
 		if (Interpreter->CoordMotion->KMotionDLL->CheckKMotionVersion( &BoardType)) return 1;
 
 	Interpreter->CoordMotion->KMotionDLL->BoardID=board;
@@ -1565,13 +1848,30 @@ int CKMotionCNCDlg::LaunchExecution(CString InFile,int begin, int end)
 	Interpreter->CoordMotion->SetFeedRateOverride(m_FeedRateValue);
 	Interpreter->CoordMotion->SetFeedRateRapidOverride(m_FeedRateRapidValue);
 
+	Interpreter->p_setup->AllowConcaveCorners = m_AllowConcaveCorners;
 
-	if (!m_Simulate && CheckForResumeCircumstances()) return 1; // check if we should move back to where we stopped
+
+	if (!Simulating && CheckForResumeCircumstances()) return 1; // check if we should move back to where we stopped
+
+	// G-code viewer: a real run over an up-to-date preview keeps the preview and
+	// colours it as it is cut, instead of clearing and plotting live.
+	// A Simulate run over an up-to-date preview also keeps it: the simulation
+	// itself is near-instant, so the cut is played back afterwards (UpdatePlayback).
+	if (m_PlaybackRunning) StopPlayback();	// e.g. the next Single Step before the last one finished playing
+	if (!Simulating)
+		ArmProgress(begin, InFile);
+	else if (!m_PreviewLaunching)
+	{
+		ArmProgress(begin, InFile);
+		m_PlaybackArmed = m_ProgressActive;
+	}
+	else
+		m_ProgressActive = false;
 
 	ThreadIsExecuting=true;
 	EnableJogKeys=false;
 
-	if (begin==0 && m_ThreadThatWasLaunched!=-1)
+	if (begin==0 && m_ThreadThatWasLaunched!=-1 && !m_ProgressActive)
 	{
 		m_PrevABCPlotValid = false;
 		ActualGViewParent->ClearPaths();
@@ -1606,12 +1906,21 @@ int CKMotionCNCDlg::CheckForResumeCircumstances()
 
 	if (!CM->m_PreviouslyStopped) return 0;
 
-	if (((CM->x_axis < 0) || (Machinex == CM->m_StoppedMachinex)) &&
-		((CM->y_axis < 0) || (Machiney == CM->m_StoppedMachiney)) &&
-		((CM->z_axis < 0) || (Machinez == CM->m_StoppedMachinez)) &&
-		((CM->a_axis < 0) || (Machinea == CM->m_StoppedMachinea)) &&
-		((CM->b_axis < 0) || (Machineb == CM->m_StoppedMachineb)) &&
-		((CM->c_axis < 0) || (Machinec == CM->m_StoppedMachinec))) return 0;
+	// "Moved" must be judged with a small tolerance, not exact equality:
+	// on machines with a Kinematics class the Actuator->CAD direction is
+	// an ITERATIVE inversion converging to ~1e-6, so two reads of the
+	// SAME (unmoved) destinations land at slightly different points in
+	// the convergence ball - exact equality only ever held for trivial
+	// linear kinematics where both sides derive bit-identically from
+	// counts.  1e-5 (0.25um on linear axes, negligible on degree axes)
+	// is 10x the inversion tolerance and far below any real motion.
+	#define RESUME_MOVED_TOL 1e-5
+	if (((CM->x_axis < 0) || (fabs(Machinex - CM->m_StoppedMachinex) <= RESUME_MOVED_TOL)) &&
+		((CM->y_axis < 0) || (fabs(Machiney - CM->m_StoppedMachiney) <= RESUME_MOVED_TOL)) &&
+		((CM->z_axis < 0) || (fabs(Machinez - CM->m_StoppedMachinez) <= RESUME_MOVED_TOL)) &&
+		((CM->a_axis < 0) || (fabs(Machinea - CM->m_StoppedMachinea) <= RESUME_MOVED_TOL)) &&
+		((CM->b_axis < 0) || (fabs(Machineb - CM->m_StoppedMachineb) <= RESUME_MOVED_TOL)) &&
+		((CM->c_axis < 0) || (fabs(Machinec - CM->m_StoppedMachinec) <= RESUME_MOVED_TOL))) return 0;
 
 
 	CResumeDlg ResumeDlg;
@@ -1623,8 +1932,19 @@ int CKMotionCNCDlg::CheckForResumeCircumstances()
 	ResumeDlg.m_Metric = Interpreter->p_setup->length_units == CANON_UNITS_MM;
 
 
-	ResumeDlg.m_TraverseSafeX = CM->m_Stoppedx;
-	ResumeDlg.m_TraverseSafeY = CM->m_Stoppedy;
+	// DISPLAY the positions rounded to 0.1um (metric) / 1uinch so the
+	// dialog is not cluttered with iterative-inversion noise digits -
+	// but COMMAND the exact stop position: if the user leaves a field
+	// at its displayed value the exact unrounded position is restored
+	// below (some machines have nanometer-scale precision), while an
+	// edited field is honored as typed.
+	double PosQuantum = ResumeDlg.m_Metric ? 0.0001 : 0.000001;
+	double ExactX = CM->m_Stoppedx, ExactY = CM->m_Stoppedy, ExactZ = CM->m_Stoppedz;
+	double DispX = floor(ExactX / PosQuantum + 0.5) * PosQuantum;
+	double DispY = floor(ExactY / PosQuantum + 0.5) * PosQuantum;
+	double DispZ = floor(ExactZ / PosQuantum + 0.5) * PosQuantum;
+	ResumeDlg.m_TraverseSafeX = DispX;
+	ResumeDlg.m_TraverseSafeY = DispY;
 
 	if (Interpreter->m_StoppedInterpState.spindle_turning == CANON_STOPPED)
 	{
@@ -1643,7 +1963,7 @@ int CKMotionCNCDlg::CheckForResumeCircumstances()
 	}
 
 	ResumeDlg.m_DoSafeFeedZ = TRUE;
-	ResumeDlg.m_FeedSafeZ = CM->m_Stoppedz;
+	ResumeDlg.m_FeedSafeZ = DispZ;
 	ResumeDlg.m_ResumeFeedRate = ResumeDlg.m_ZFeedRate = Interpreter->m_StoppedInterpState.feed_rate;
 	ResumeDlg.m_RestoreFeedRate = TRUE;
 
@@ -1664,12 +1984,18 @@ int CKMotionCNCDlg::CheckForResumeCircumstances()
 		Interpreter->m_ResumeSafeRelAbs=ResumeDlg.m_SafeRelAbs;
 		Interpreter->m_ResumeMoveToSafeZ=ResumeDlg.m_MoveToSafeZ;
 		Interpreter->m_ResumeTraverseXY=ResumeDlg.m_TraverseXY;
-		Interpreter->m_ResumeTraverseSafeX=ResumeDlg.m_TraverseSafeX;
-		Interpreter->m_ResumeTraverseSafeY=ResumeDlg.m_TraverseSafeY;
+		// a field returned at its displayed (rounded) value was not
+		// edited: command the EXACT stop position instead.  Any
+		// intentional edit differs by at least one display quantum.
+		Interpreter->m_ResumeTraverseSafeX =
+			(fabs(ResumeDlg.m_TraverseSafeX - DispX) < 0.5*PosQuantum) ? ExactX : ResumeDlg.m_TraverseSafeX;
+		Interpreter->m_ResumeTraverseSafeY =
+			(fabs(ResumeDlg.m_TraverseSafeY - DispY) < 0.5*PosQuantum) ? ExactY : ResumeDlg.m_TraverseSafeY;
 		Interpreter->m_ResumeSafeStartSpindle=ResumeDlg.m_SafeStartSpindle;
 		Interpreter->m_ResumeSafeSpindleCWCCW=ResumeDlg.m_SafeSpindleCWCCW;
 		Interpreter->m_ResumeDoSafeFeedZ=ResumeDlg.m_DoSafeFeedZ;
-		Interpreter->m_ResumeFeedSafeZ=ResumeDlg.m_FeedSafeZ;
+		Interpreter->m_ResumeFeedSafeZ =
+			(fabs(ResumeDlg.m_FeedSafeZ - DispZ) < 0.5*PosQuantum) ? ExactZ : ResumeDlg.m_FeedSafeZ;
 		Interpreter->m_ResumeResumeFeedRate=ResumeDlg.m_ResumeFeedRate;
 		Interpreter->m_ResumeZFeedRate=ResumeDlg.m_ZFeedRate;
 		Interpreter->m_ResumeRestoreFeedRate=ResumeDlg.m_RestoreFeedRate;
@@ -1714,10 +2040,53 @@ void CKMotionCNCDlg::SetMotionParams()
 	p->CountsPerInchA = m_CountsPerInchA;
 	p->CountsPerInchB = m_CountsPerInchB;
 	p->CountsPerInchC = m_CountsPerInchC;
-	strcpy(Interpreter->ToolFile,m_ToolFile);
-	strcpy(Interpreter->SetupFile,m_SetupFile);
-	strcpy(Interpreter->GeoFile,m_GeoFile);
-	strcpy(Interpreter->VarsFile,m_VarsFile);
+	p->ActuatorLimits = m_ActuatorLimits != 0;
+	for (int i = 0; i < MAX_TP_ACTUATORS; i++)
+	{
+		p->ActScale[i]    = m_ActScale[i];
+		p->MaxActVel[i]   = m_MaxActVel[i];
+		p->MaxActAccel[i] = m_MaxActAccel[i];
+		p->MaxActJerk[i]  = m_MaxActJerk[i];
+		p->ActDegrees[i]  = m_ActDegrees[i] != 0;
+	}
+	// Actuator Space Limits mode: the visible Scale column is the single
+	// source of truth for counts scaling -- it overrides the (hidden) CAD
+	// Counts/inch fields so the transform, download, and limit conversion
+	// all use the same values and no cross-mode matching is ever needed
+	if (m_ActuatorLimits)
+	{
+		p->CountsPerInchX = m_ActScale[0];
+		p->CountsPerInchY = m_ActScale[1];
+		p->CountsPerInchZ = m_ActScale[2];
+		p->CountsPerInchA = m_ActScale[3];
+		p->CountsPerInchB = m_ActScale[4];
+		p->CountsPerInchC = m_ActScale[5];
+		p->CountsPerInchU = m_ActScale[6];
+		p->CountsPerInchV = m_ActScale[7];
+	}
+
+	p->ThirdOrderTP = m_ThirdOrderTP != 0;
+	p->LogSegments = m_TPLogSegs != 0;
+	p->CubicKnots = m_TPCubicKnots != 0;
+	if (p->ThirdOrderTP)
+	{
+		// the 3rd Order planner always streams rapids as feeds and facets
+		// arcs to segments (Collinear Tolerance governs the faceting)
+		p->DoRapidsAsFeeds = true;
+		p->ArcsToSegs = true;
+	}
+	p->MaxJerkX = m_MaxJerkX;
+	p->MaxJerkY = m_MaxJerkY;
+	p->MaxJerkZ = m_MaxJerkZ;
+	p->MaxJerkA = m_MaxJerkA;
+	p->MaxJerkB = m_MaxJerkB;
+	p->MaxJerkC = m_MaxJerkC;
+	p->MaxJerkU = m_MaxJerkU;
+	p->MaxJerkV = m_MaxJerkV;
+	wcscpy(Interpreter->ToolFile,m_ToolFile);
+	wcscpy(Interpreter->SetupFile,m_SetupFile);
+	wcscpy(Interpreter->GeoFile,m_GeoFile);
+	wcscpy(Interpreter->VarsFile,m_VarsFile);
 	p->DegreesA = m_DegreesA!=0;
 	p->DegreesB = m_DegreesB!=0;
 	p->DegreesC = m_DegreesC!=0;
@@ -1880,12 +2249,12 @@ LRESULT CALLBACK KbdProc    (   int     nCode,  // hook code
 	}
 	
 	// Check Motion Buttons
-	if (p->m_KeyJogMode.Toggled && (!p->ThreadIsExecuting || p->EnableJogKeys))	
+	if (p->m_KeyJogMode.Toggled && (!p->ThreadIsExecuting || p->EnableJogKeys) && !p->ForceDisableJogKeys)	
 	{
 		CMotionButton *B, *B2, *Bstep;
 
 		// check for Motion Button sets with same Axis, Directions, and HotKeys then handle as group
-		for(int axis = 0; axis < ACTUATORS_CONTROLLED; axis++)
+		for(int axis = 0; axis < MAX_ACTUATORS; axis++)
 			for (int dir = -1; dir <=1; dir+=2)
 				if (p->Screen.Find3MotionButtonsSameAxisDir(axis, dir, &B, &B2, &Bstep))
 				{
@@ -1924,8 +2293,8 @@ void CKMotionCNCDlg::MakeUnicode(int ID, CImageButton &I)
 	ScreenToClient(&rect);
 
 	CString txt;
-	GetDlgItem(ID)->GetWindowTextA(txt);
-	CStringW wtxt = txt;
+	GetDlgItem(ID)->GetWindowText(txt);
+	CString wtxt = txt;
 
 	CFont *Font = GetDlgItem(ID)->GetFont();
 
@@ -1937,7 +2306,7 @@ void CKMotionCNCDlg::MakeUnicode(int ID, CImageButton &I)
 	CString ClassName;
 	GetClassName(GetDlgItem(ID)->m_hWnd, ClassName.GetBufferSetLength(200), 199);
 	ClassName.ReleaseBuffer();
-	CStringW wClassName = ClassName;
+	CString wClassName = ClassName;
 
 	GetDlgItem(ID)->DestroyWindow();
 
@@ -1986,8 +2355,6 @@ BOOL CKMotionCNCDlg::OnInitDialog()
 
 	CDialogEx::OnInitDialog(); // bypass CDlgX Init Dialog for Modal Dialogs like this
 
-	Screen.ResetAllControls();
-
 	// Make Controls Wide Unicode
 	MakeUnicode(IDC_ShowMach, m_ShowMachButton);
 	MakeUnicode(IDC_Simulate, m_SimulateButton);
@@ -2017,6 +2384,11 @@ BOOL CKMotionCNCDlg::OnInitDialog()
 	MakeUnicode(IDC_Rel, m_Rel);
 	MakeUnicode(IDC_Abs, m_Abs);
 
+	// after MakeUnicode: controls are only reset while attached to a window, so
+	// resetting before it left the radio buttons, check boxes etc. with the
+	// colors/fonts of a previously loaded custom screen when switching faces
+	Screen.ResetAllControls();
+
 	CDC *screen = GetDC();
 	dpiX = screen->GetDeviceCaps(LOGPIXELSX);
 	dpiY = screen->GetDeviceCaps(LOGPIXELSY);
@@ -2035,7 +2407,7 @@ BOOL CKMotionCNCDlg::OnInitDialog()
 
 	Interpreter->p_setup->DiameterMode = m_DiameterMode;
 
-	m_Editor.SetupForGCode(10, "Courier New");
+	m_Editor.SetupForGCode(10, L"Courier New");
 
 	for (i = 0; i < N_USER_GCODE_FILES; i++)
 	{
@@ -2083,10 +2455,10 @@ BOOL CKMotionCNCDlg::OnInitDialog()
 	m_FeedHold.LoadBitmaps(IDB_FeedHold, IDB_FeedHoldPause, 0);
 	m_FeedHold.Style = DualButton;
 
-	m_FR.LoadBitmaps("FR.png", "FR32.png", "");
+	m_FR.LoadBitmaps(L"FR.png", L"FR32.png", L"");
 	m_FR.Style = DualLabel;
 
-	m_SR.LoadBitmaps("SR.png", "SRCSS.png", "");
+	m_SR.LoadBitmaps(L"SR.png", L"SRCSS.png", L"");
 	m_SR.Style = DualLabel;
 
 	m_LeftStep.LoadBitmaps(IDB_LeftStep, 0, 0);
@@ -2131,6 +2503,22 @@ BOOL CKMotionCNCDlg::OnInitDialog()
 	m_Cplus.LoadBitmaps(IDB_Right, 0, 0);
 	m_Cplus2.LoadBitmaps(IDB_Right2, 0, 0);
 
+	if (m_DialogFaceInUse == CUSTOM_DLG_FACE)
+	{
+		m_UminusStep.LoadBitmaps(IDB_LeftStep, 0, 0);
+		m_Uminus.LoadBitmaps(IDB_Left, 0, 0);
+		m_Uminus2.LoadBitmaps(IDB_Left2, 0, 0);
+		m_UplusStep.LoadBitmaps(IDB_LeftStep, 0, 0);
+		m_Uplus.LoadBitmaps(IDB_Right, 0, 0);
+		m_Uplus2.LoadBitmaps(IDB_Right2, 0, 0);
+
+		m_VminusStep.LoadBitmaps(IDB_LeftStep, 0, 0);
+		m_Vminus.LoadBitmaps(IDB_Left, 0, 0);
+		m_Vminus2.LoadBitmaps(IDB_Left2, 0, 0);
+		m_VplusStep.LoadBitmaps(IDB_LeftStep, 0, 0);
+		m_Vplus.LoadBitmaps(IDB_Right, 0, 0);
+		m_Vplus2.LoadBitmaps(IDB_Right2, 0, 0);
+	}
 
 	m_StopStep.LoadBitmaps(IDB_StopStep, 0, 0);
 
@@ -2213,6 +2601,20 @@ BOOL CKMotionCNCDlg::OnInitDialog()
 	m_Cminus.Init(this, 5, -1, &m_JogSlowPercent, false, -1);
 	m_Cminus2.Init(this, 5, -1, &full, false, -1);
 
+	m_UplusStep.Init(this, 6, 1, &m_JogSlowPercent, true, -1);
+	m_Uplus.Init(this, 6, 1, &m_JogSlowPercent, false, -1);
+	m_Uplus2.Init(this, 6, 1, &full, false, -1);
+	m_UminusStep.Init(this, 6, -1, &m_JogSlowPercent, true, -1);
+	m_Uminus.Init(this, 6, -1, &m_JogSlowPercent, false, -1);
+	m_Uminus2.Init(this, 6, -1, &full, false, -1);
+
+	m_VplusStep.Init(this, 7, 1, &m_JogSlowPercent, true, -1);
+	m_Vplus.Init(this, 7, 1, &m_JogSlowPercent, false, -1);
+	m_Vplus2.Init(this, 7, 1, &full, false, -1);
+	m_VminusStep.Init(this, 7, -1, &m_JogSlowPercent, true, -1);
+	m_Vminus.Init(this, 7, -1, &m_JogSlowPercent, false, -1);
+	m_Vminus2.Init(this, 7, -1, &full, false, -1);
+
 	m_Forward.Init(this, 1, 0.2);
 	m_Reverse.Init(this, -1, 0.2);
 
@@ -2235,11 +2637,15 @@ BOOL CKMotionCNCDlg::OnInitDialog()
 		m_StaticLabelB.SetText(L"B");
 		m_StaticLabelC.Style = Label;
 		m_StaticLabelC.SetText(L"C");
+		m_StaticLabelU.Style = Label;
+		m_StaticLabelU.SetText(L"U");
+		m_StaticLabelV.Style = Label;
+		m_StaticLabelV.SetText(L"V");
 
 		m_StaticTool.Style = Label;
 		m_StaticTool.SetText(L"tool");
 		m_StaticThread.Style = Label;
-		m_StaticThread.SetText(/*TRAN*/TheFrame->KMotionDLL->Translate("file"));
+		m_StaticThread.SetText(/*TRAN*/TheFrame->KMotionDLL->Translate(L"file"));
 		m_SimulateStatic.Style = Label;
 		m_SimulateStatic.SetText(L"Simulate");
 		m_StaticUnits.Style = Label;
@@ -2264,30 +2670,30 @@ BOOL CKMotionCNCDlg::OnInitDialog()
 		m_SimulateButton.Style=CheckBox;
 		m_BlockDeleteButton.Style=CheckBox;
 
-		m_GVXY.LoadBitmaps("GV_XY.png", "", "");
-		m_GVYZ.LoadBitmaps("GV_YZ.png", "", "");
-		m_GVXZ.LoadBitmaps("GV_XZ.png", "", "");
-		m_GVRotXY.LoadBitmaps("GV_RotXY.png", "", "");
+		m_GVXY.LoadBitmaps(L"GV_XY.png", L"", L"");
+		m_GVYZ.LoadBitmaps(L"GV_YZ.png", L"", L"");
+		m_GVXZ.LoadBitmaps(L"GV_XZ.png", L"", L"");
+		m_GVRotXY.LoadBitmaps(L"GV_RotXY.png", L"", L"");
 		m_GVRotXY.Style = ToggleButton;
-		m_GVClearPaths.LoadBitmaps("GV_ClearPaths.png", "", "");
-		m_GVShowAxis.LoadBitmaps("GV_ShowAxis.png", "", "");
+		m_GVClearPaths.LoadBitmaps(L"GV_ClearPaths.png", L"", L"");
+		m_GVShowAxis.LoadBitmaps(L"GV_ShowAxis.png", L"", L"");
 		m_GVShowAxis.Style = ToggleButton;
-		m_GVBox.LoadBitmaps("GV_Box.png", "", "");
+		m_GVBox.LoadBitmaps(L"GV_Box.png", L"", L"");
 		m_GVBox.Style = ToggleButton;
-		m_GVShowTool.LoadBitmaps("GV_ShowTool.png", "", "");
+		m_GVShowTool.LoadBitmaps(L"GV_ShowTool.png", L"", L"");
 		m_GVShowTool.Style = ToggleButton;
-		m_GVOrtho.LoadBitmaps("GV_Ortho.png", "", "");
+		m_GVOrtho.LoadBitmaps(L"GV_Ortho.png", L"", L"");
 		m_GVOrtho.Style = ToggleButton;
-		m_GVGViewerSetup.LoadBitmaps("GV_GViewerSetup.png", "", "");
+		m_GVGViewerSetup.LoadBitmaps(L"GV_GViewerSetup.png", L"", L"");
 
-		m_GCNew.LoadBitmaps("GC_New.png", "", "");
-		m_GCOpenFile.LoadBitmaps(/*TRAN*/"GC_OpenFile.png", "", "");
-		m_GCSaveFile.LoadBitmaps(/*TRAN*/"GC_SaveFile.png", "", "");
-		m_GCSaveAs.LoadBitmaps("GC_SaveAs.png", "", "");
-		m_GCRestart.LoadBitmaps("GC_Restart.png", "", "");
-		m_GCSingleStep.LoadBitmaps("GC_SingleStep.png", "", "");
-		m_GCToolSetup.LoadBitmaps("GC_ToolSetup.png", "", "");
-		m_GView.LoadBitmaps("GC_GView.png", "", "");
+		m_GCNew.LoadBitmaps(L"GC_New.png", L"", L"");
+		m_GCOpenFile.LoadBitmaps(/*TRAN*/"GC_OpenFile.png", L"", L"");
+		m_GCSaveFile.LoadBitmaps(/*TRAN*/"GC_SaveFile.png", L"", L"");
+		m_GCSaveAs.LoadBitmaps(L"GC_SaveAs.png", L"", L"");
+		m_GCRestart.LoadBitmaps(L"GC_Restart.png", L"", L"");
+		m_GCSingleStep.LoadBitmaps(L"GC_SingleStep.png", L"", L"");
+		m_GCToolSetup.LoadBitmaps(L"GC_ToolSetup.png", L"", L"");
+		m_GView.LoadBitmaps(L"GC_GView.png", L"", L"");
 
 		// these newer controls should be hidden if not specified in legacy files
 		if (m_ScreenScriptFile != "")
@@ -2330,7 +2736,7 @@ BOOL CKMotionCNCDlg::OnInitDialog()
 		if (!strAboutMenu.IsEmpty())
 		{
 			pSysMenu->AppendMenu(MF_SEPARATOR);
-			pSysMenu->AppendMenu(MF_STRING, IDM_TOOLSETUP, "Tool Setup Screens");
+			pSysMenu->AppendMenu(MF_STRING, IDM_TOOLSETUP, L"Tool Setup Screens");
 			pSysMenu->AppendMenu(MF_SEPARATOR);
 			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
 		}
@@ -2338,11 +2744,11 @@ BOOL CKMotionCNCDlg::OnInitDialog()
 
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
-	m_hIcon = AfxGetApp()->LoadIcon(IDI_KMotionCNC16);
-	SetIcon(m_hIcon,FALSE);
-	m_hIcon = AfxGetApp()->LoadIcon(IDI_KMotionCNC32);
-	SetIcon(m_hIcon,TRUE);
-	
+	m_hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDR_MAINFRAME));
+	SendMessage(WM_SETICON, ICON_SMALL, (LPARAM)m_hIcon);
+	m_hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDR_MAINFRAME));
+	SendMessage(WM_SETICON, ICON_BIG, (LPARAM)m_hIcon);
+
 
 	if (m_GCodeTools)
 		delete m_GCodeTools;
@@ -2409,7 +2815,7 @@ BOOL CKMotionCNCDlg::OnInitDialog()
 
 	m_GCodeTools->MoveWindow(rcWindow, FALSE);	
 	
-	m_Editor.SetupForGCode(10, "Courier New");
+	m_Editor.SetupForGCode(10, L"Courier New");
 
 	FillComboWithTools(&m_tool);
 	FillComboWithCountFixture(1,9,&m_FixtureOffset);
@@ -2471,9 +2877,9 @@ BOOL CKMotionCNCDlg::OnInitDialog()
 		else
 			s.Delete(0,5);
 
-		sscanf(s,"%d",&tool);
+		swscanf(s,L"%d",&tool);
 
-		s.Format("H%dG43.4",tool);
+		s.Format(L"H%dG43.4",tool);
 		DoGCodeLine(s);
 	}
 
@@ -2523,7 +2929,7 @@ void CKMotionCNCDlg::CreateToolTipForRect(HWND hwndParent)
 	ti.uFlags = TTF_SUBCLASS;
 	ti.hwnd = hwndParent;
 	ti.hinst = g_hInst;
-	ti.lpszText = TEXT("KMotionCNC");
+	ti.lpszText = L"KMotionCNC";
 
 	::GetClientRect(hwndParent, &ti.rect);
 
@@ -2553,64 +2959,45 @@ void StraightTraverseCallback(double x, double y, double z, double a, double b, 
 		p->m_PrevPlotC = c;
 	}
 
+	// Determine if any angle needs to be subdivided that is in degrees mode with radius
+	if ((TheFrame->GViewDlg.m_IncludeA && MP->DegreesA && MP->RadiusA > 0.0 && fabs(a - p->m_PrevPlotA) > ABCPlotAngle) ||
+		(TheFrame->GViewDlg.m_IncludeB && MP->DegreesB && MP->RadiusB > 0.0 && fabs(b - p->m_PrevPlotB) > ABCPlotAngle) ||
+		(TheFrame->GViewDlg.m_IncludeC && MP->DegreesC && MP->RadiusC > 0.0 && fabs(c - p->m_PrevPlotC) > ABCPlotAngle))
+	{
+		StraightTraverseCallback((x + p->m_PrevPlotX) / 2.0, (y + p->m_PrevPlotY) / 2.0, (z + p->m_PrevPlotZ) / 2.0, (a + p->m_PrevPlotA) / 2.0, (b + p->m_PrevPlotB) / 2.0, (c + p->m_PrevPlotC) / 2.0, sequence_number);
+		StraightTraverseCallback(x, y, z, a, b, c, sequence_number);
+		return;
+	}
+
+
 	// rotation about X axis changes Y and Z Axis as a function of A
 	if (TheFrame->GViewDlg.m_IncludeA && MP->DegreesA && MP->RadiusA > 0.0)
 	{
-		// subdivide to make small angles
-		if (fabs(a - p->m_PrevPlotA) > ABCPlotAngle)
-		{
-			StraightTraverseCallback((x + p->m_PrevPlotX) / 2.0, (y + p->m_PrevPlotY) / 2.0, (z + p->m_PrevPlotZ) / 2.0, (a + p->m_PrevPlotA) / 2.0, (b + p->m_PrevPlotB) / 2.0, (c + p->m_PrevPlotC) / 2.0, sequence_number);
-			StraightTraverseCallback(x, y, z, a, b, c, sequence_number);
-			return;
-		}
-		else
-		{
-			double Theta = a*PI / 180.0;
-			double y0 = y + MP->RadiusA;
-			y = y0 * cos(Theta) - z * sin(Theta);
-			z = y0 * sin(Theta) + z * cos(Theta);
-		}
+		double Theta = a * PI / 180.0;
+		double y0 = y + MP->RadiusA;
+		y = y0 * cos(Theta) - z * sin(Theta);
+		z = y0 * sin(Theta) + z * cos(Theta);
 	}
 
 	// rotation about Y axis changes Z and X Axis as a function of B
 	if (TheFrame->GViewDlg.m_IncludeB && MP->DegreesB && MP->RadiusB > 0.0)
 	{
-		// subdivide to make small angles
-		if (fabs(b - p->m_PrevPlotB) > ABCPlotAngle)
-		{
-			StraightTraverseCallback((x + p->m_PrevPlotX) / 2.0, (y + p->m_PrevPlotY) / 2.0, (z + p->m_PrevPlotZ) / 2.0, (a + p->m_PrevPlotA) / 2.0, (b + p->m_PrevPlotB) / 2.0, (c + p->m_PrevPlotC) / 2.0, sequence_number);
-			StraightTraverseCallback(x, y, z, a, b, c, sequence_number);
-			return;
-		}
-		else
-		{
-			double Theta = b*PI / 180.0;
-			double z0 = z + MP->RadiusB;
-			z = z0 * cos(Theta) - x * sin(Theta);
-			x = z0 * sin(Theta) + x * cos(Theta);
-		}
+		double Theta = b * PI / 180.0;
+		double z0 = z + MP->RadiusB;
+		z = z0 * cos(Theta) - x * sin(Theta);
+		x = z0 * sin(Theta) + x * cos(Theta);
 	}
 
 	// rotation about Z axis changes X and Y Axis as a function of C
 	if (TheFrame->GViewDlg.m_IncludeC && MP->DegreesC && MP->RadiusC > 0.0)
 	{
-		// subdivide to make small angles
-		if (fabs(c - p->m_PrevPlotC) > ABCPlotAngle)
-		{
-			StraightTraverseCallback((x + p->m_PrevPlotX) / 2.0, (y + p->m_PrevPlotY) / 2.0, (z + p->m_PrevPlotZ) / 2.0, (a + p->m_PrevPlotA) / 2.0, (b + p->m_PrevPlotB) / 2.0, (c + p->m_PrevPlotC) / 2.0, sequence_number);
-			StraightTraverseCallback(x, y, z, a, b, c, sequence_number);
-			return;
-		}
-		else
-		{
-			double Theta = c*PI / 180.0;
-			double x0 = x + MP->RadiusC;
-			x = x0 * cos(Theta) - y * sin(Theta);
-			y = x0 * sin(Theta) + y * cos(Theta);
-		}
+		double Theta = c * PI / 180.0;
+		double x0 = x + MP->RadiusC;
+		x = x0 * cos(Theta) - y * sin(Theta);
+		y = x0 * sin(Theta) + y * cos(Theta);
 	}
 
-	p->ActualGViewParent->m_Path->AddVertexTool(new CVertex3dFast(x, y, z, p->m_ColorTraverse, sequence_number, 0));
+	p->PlotPathVertex(x, y, z, true, 0.0, sequence_number, 0);	// rapid
 	p->ActualGViewParent->m_Path->SetModified();
 
 	p->m_PrevPlotX = Xorig;
@@ -2698,7 +3085,7 @@ void StraightFeedCallback(double DesiredFeedRate_in_per_sec,
 		}
 	}
 
-	p->ActualGViewParent->m_Path->AddVertexTool(new CVertex3dFast(x, y, z, p->m_ColorFeed, sequence_number, ID));
+	p->PlotPathVertex(x, y, z, false, DesiredFeedRate_in_per_sec, sequence_number, ID);	// feed
 	p->ActualGViewParent->m_Path->SetModified();
 
 	p->m_PrevPlotX = Xorig;
@@ -2836,19 +3223,497 @@ void ArcFeedCallback(bool ZeroLenAsFullCircles, double DesiredFeedRate_in_per_se
 			y = x0 * sin(Theta) + y * cos(Theta);
 		}
 
-		p->ActualGViewParent->m_Path->AddVertexTool(new CVertex3dFast(x,y,z,p->m_ColorFeed,sequence_number,ID));
+		p->PlotPathVertex(x, y, z, false, DesiredFeedRate_in_per_sec, sequence_number, ID);	// arc feed
 	}
 	p->ActualGViewParent->m_Path->SetModified();
 }
 
 
-int DoProcessScript(const char *FileName)
+//***************************************************************************
+// G-code viewer: full-path preview on load + cut progress while running.
+// Design notes: kmotioncnc-src/DESIGN-gviewer-progress.md
+//***************************************************************************
+
+static bool SameColor(CColor *a, CColor &b)
+{
+	return a->r() == b.r() && a->g() == b.g() && a->b() == b.b();
+}
+
+// Preview moves are split into pieces of about this many seconds (at 100%
+// feed) so the cut colouring can advance smoothly within a long move rather
+// than a whole G-code block at a time.
+#define PREVIEW_PIECE_TIME 0.05
+#define PREVIEW_MAX_PIECES 500
+
+// Every plotted path vertex goes through here (called from the interpreter's
+// motion callbacks).  During a real run that is colouring a kept preview the
+// path already holds every vertex, so nothing is added.  rate_in_per_sec is
+// the programmed feed rate (0 for rapids).
+void CKMotionCNCDlg::PlotPathVertex(double x, double y, double z, bool rapid, double rate_in_per_sec, int sequence_number, int ID)
+{
+	if (m_ProgressActive) return;
+
+	if (!m_PreviewRunning)	// stock plotting
+	{
+		CColor &c = rapid ? m_ColorTraverse : m_ColorFeed;
+		ActualGViewParent->m_Path->AddVertexTool(new CVertex3dFast((float)x, (float)y, (float)z, c, sequence_number, ID));
+		return;
+	}
+
+	CColor &c = rapid ? m_ColorPreviewTraverse : m_ColorPreviewFeed;
+	int n = (int)m_PreviewTime.GetSize();
+	double t0 = n > 0 ? m_PreviewTime[n - 1] : 0.0;
+
+	if (!m_PreviewPrevValid)
+	{
+		AddPreviewVertex(x, y, z, c, t0, sequence_number, ID);
+	}
+	else
+	{
+		// estimated time for the move: programmed feed (or rapid) rate, limited
+		// by the axis maximum velocities, ignoring acceleration
+		double dx = x - m_PreviewPrevX, dy = y - m_PreviewPrevY, dz = z - m_PreviewPrevZ;
+		double d = sqrt(dx*dx + dy*dy + dz*dz);
+		double t = 0.0;
+		if (d > 0.0)
+		{
+			CKinematics *K = Interpreter->CoordMotion->Kinematics;
+			double rate = 0.0, maxrate = 0.0;
+			K->MaxRateInDirection(dx, dy, dz, 0, 0, 0, 0, 0, &maxrate);
+			if (rapid)
+			{
+				// rapids run at KFLOP's rapid settings (3rd-order rapids) or the Tool
+				// Setup max velocities; take the faster so the estimate stays optimistic
+				if (K->MaxRapidRateInDirection(dx, dy, dz, 0, 0, 0, 0, 0, &rate) || rate < maxrate) rate = maxrate;
+			}
+			else
+			{
+				rate = rate_in_per_sec;
+				if (maxrate > 0.0 && (rate <= 0.0 || rate > maxrate)) rate = maxrate;
+			}
+			if (rate > 0.0) t = d / rate;
+		}
+
+		int pieces = (int)ceil(t / PREVIEW_PIECE_TIME);
+		if (pieces < 1) pieces = 1;
+		if (pieces > PREVIEW_MAX_PIECES) pieces = PREVIEW_MAX_PIECES;
+
+		for (int k = 1; k <= pieces; k++)
+		{
+			double f = (double)k / pieces;
+			if (k == pieces)
+				AddPreviewVertex(x, y, z, c, t0 + t, sequence_number, ID);
+			else
+				AddPreviewVertex(m_PreviewPrevX + f*dx, m_PreviewPrevY + f*dy, m_PreviewPrevZ + f*dz, c, t0 + f*t, sequence_number, ID);
+		}
+	}
+
+	m_PreviewPrevX = x;
+	m_PreviewPrevY = y;
+	m_PreviewPrevZ = z;
+	m_PreviewPrevValid = true;
+}
+
+// Add one preview vertex, recording its file line and time.  AddVertexTool may
+// also insert a tool-change "jump" vertex, so record every vertex actually added.
+void CKMotionCNCDlg::AddPreviewVertex(double x, double y, double z, CColor &c, double t, int sequence_number, int ID)
+{
+	CPath3d *path = ActualGViewParent->m_Path;
+	int n0 = path->NbVertex();
+	int n = (int)m_PreviewTime.GetSize();
+	double tprev = n > 0 ? m_PreviewTime[n - 1] : 0.0;
+
+	path->AddVertexTool(new CVertex3dFast((float)x, (float)y, (float)z, c, sequence_number, ID));
+
+	int line = Interpreter->p_setup->current_line;
+	int n1 = path->NbVertex();
+	for (int i = n0; i < n1; i++)
+	{
+		m_PreviewFileLine.Add(line);
+		m_PreviewTime.Add(i == n1 - 1 ? t : tprev);
+	}
+}
+
+// Recolour vertices [first,last]: cut=true turns preview colours into cut
+// colours, cut=false turns them back.  Other colours (e.g. tool-change jumps)
+// are left alone.
+void CKMotionCNCDlg::ColorPreviewRange(int first, int last, bool cut)
+{
+	CPath3d *path = ActualGViewParent->m_Path;
+	int n = path->NbVertex();
+	if (first < 0) first = 0;
+	if (last > n - 1) last = n - 1;
+	if (first > last) return;
+
+	ActualGViewParent->m_view.OpenGLMutex->Lock();
+	for (int i = first; i <= last; i++)
+	{
+		CVertex3dFast *v = path->GetVertex(i);
+		CColor *c = v->GetColor();
+		if (cut)
+		{
+			if (SameColor(c, m_ColorPreviewFeed))          v->SetColor(m_ColorCutFeed);
+			else if (SameColor(c, m_ColorPreviewTraverse)) v->SetColor(m_ColorCutTraverse);
+		}
+		else
+		{
+			if (SameColor(c, m_ColorCutFeed))              v->SetColor(m_ColorPreviewFeed);
+			else if (SameColor(c, m_ColorCutTraverse))     v->SetColor(m_ColorPreviewTraverse);
+		}
+	}
+	path->MarkRecolor(first, last);
+	ActualGViewParent->m_view.OpenGLMutex->Unlock();
+}
+
+// A file was loaded into the editor: preview it once the interpreter is idle.
+// the feature switch lives with the other G Viewer settings (GViewer.txt)
+bool CKMotionCNCDlg::PreviewEnabled()
+{
+	return TheFrame->GViewDlg.m_PreviewOnLoad != 0;
+}
+
+void CKMotionCNCDlg::RequestPreview(int thread)
+{
+	if (!PreviewEnabled()) return;
+	m_PreviewRequestThread = thread;
+}
+
+// Timer: start a requested preview when nothing is running.
+void CKMotionCNCDlg::ServicePreview()
+{
+	// finish a completed preview once the interpreter thread has fully exited
+	if (m_PreviewFinishPending && Interpreter->m_InterpretThreadID == (DWORD)-1)
+	{
+		m_PreviewFinishPending = false;
+		FinishPreview(m_PreviewFinishOk);
+	}
+
+	if (m_PreviewRequestThread < 0 || m_PreviewRunning || ThreadIsExecuting) return;
+
+	int thread = m_PreviewRequestThread;
+	m_PreviewRequestThread = -1;
+
+	if (thread != m_Thread) return;		// user switched to another file tab meanwhile
+	if (FileNames[thread].IsEmpty() || FileNames[thread] == TheFrame->MainPathRoot + GCODE_SUB_DIR) return;
+
+	StartPreview(thread);
+}
+
+// Save (save=true) or restore the stopped/resume state the interpreter keeps,
+// which a completed simulation would otherwise clear.
+void CKMotionCNCDlg::SaveResumeState(bool save)
+{
+	CCoordMotion *CM = Interpreter->CoordMotion;
+	double *pos[24] = {
+		&CM->m_Stoppedx, &CM->m_Stoppedy, &CM->m_Stoppedz, &CM->m_Stoppeda, &CM->m_Stoppedb, &CM->m_Stoppedc, &CM->m_Stoppedu, &CM->m_Stoppedv,
+		&CM->m_StoppedMidx, &CM->m_StoppedMidy, &CM->m_StoppedMidz, &CM->m_StoppedMida, &CM->m_StoppedMidb, &CM->m_StoppedMidc, &CM->m_StoppedMidu, &CM->m_StoppedMidv,
+		&CM->m_StoppedMachinex, &CM->m_StoppedMachiney, &CM->m_StoppedMachinez, &CM->m_StoppedMachinea, &CM->m_StoppedMachineb, &CM->m_StoppedMachinec, &CM->m_StoppedMachineu, &CM->m_StoppedMachinev };
+	int *st[5] = { &CM->m_Stopping, &CM->m_PreviouslyStopped, &CM->m_PreviouslyStoppedType, &CM->m_PreviouslyStoppedID, &CM->m_PreviouslyStoppedSeqNo };
+
+	if (save)
+	{
+		for (int i = 0; i < 24; i++) m_PreviewSavedStoppedPos[i] = *pos[i];
+		m_PreviewSavedStopping = *st[0];
+		for (int i = 0; i < 4; i++) m_PreviewSavedStopped[i] = *st[i + 1];
+		m_PreviewSavedThreadStopped = m_ThreadThatWasOriginallyStopped;
+	}
+	else
+	{
+		for (int i = 0; i < 24; i++) *pos[i] = m_PreviewSavedStoppedPos[i];
+		*st[0] = m_PreviewSavedStopping;
+		for (int i = 0; i < 4; i++) *st[i + 1] = m_PreviewSavedStopped[i];
+		m_ThreadThatWasOriginallyStopped = m_PreviewSavedThreadStopped;
+	}
+}
+
+// Quietly simulate the whole file to plot the preview.  Everything the run
+// could disturb is snapshotted here and restored in FinishPreview.
+void CKMotionCNCDlg::StartPreview(int thread)
+{
+	CFileStatus fs;
+	if (!CFile::GetStatus(FileNames[thread], fs)) return;
+	m_PreviewFile = FileNames[thread];
+	m_PreviewFileSize = fs.m_size;
+	m_PreviewFileTime = fs.m_mtime;
+
+	// interpreter state: a simulated G92/G10 changes offsets in p_setup->parameters
+	// (which the periodic emc.var save would persist), plus modal state, tool, ...
+	if (!m_PreviewSetupSave) m_PreviewSetupSave = new setup;
+	*m_PreviewSetupSave = *Interpreter->p_setup;
+
+	m_PreviewSavedCurrentLine = CurrentLine[thread];
+	m_PreviewSavedHadError = ThreadHadError[thread];
+	m_PreviewSavedThreadLaunched = m_ThreadThatWasLaunched;
+	SaveResumeState(true);
+
+	m_ProgressActive = false;
+	m_PreviewValid = false;
+	m_ChainValid = false;
+	m_PreviewFileLine.RemoveAll();
+	m_PreviewTime.RemoveAll();
+	m_PreviewPrevValid = false;
+	m_PreviewThread = thread;
+	m_PreviewRunning = true;
+	m_ThreadThatWasLaunched = thread;	// so LaunchExecution clears the path first
+
+	m_PreviewLaunching = true;
+	int err = LaunchExecution(FileNames[thread], 0, -1);
+	m_PreviewLaunching = false;
+
+	if (err) FinishPreview(false);
+}
+
+// Preview simulation done (or failed to start): restore everything.
+void CKMotionCNCDlg::FinishPreview(bool ok)
+{
+	int thread = m_PreviewThread;
+
+	if (m_PreviewSetupSave) *Interpreter->p_setup = *m_PreviewSetupSave;
+	Interpreter->CoordMotion->m_Simulate = (m_Simulate != 0);
+
+	if (thread >= 0 && thread < N_USER_GCODE_FILES)
+	{
+		CurrentLine[thread] = m_PreviewSavedCurrentLine;
+		ThreadHadError[thread] = m_PreviewSavedHadError;
+	}
+	m_ThreadThatWasLaunched = m_PreviewSavedThreadLaunched;
+	SaveResumeState(false);
+
+	CPath3d *path = ActualGViewParent->m_Path;
+	m_PreviewValid = ok && path->NbVertex() > 0 && m_PreviewFileLine.GetSize() == path->NbVertex()
+					 && m_PreviewTime.GetSize() == path->NbVertex();
+	if (m_PreviewValid) ActualGViewParent->FitPath();	// zoom to the program
+
+	// how runs from a mid-file line can be mapped onto the preview (ArmProgress)
+	m_PreviewSeqMonotonic = m_PreviewLineMonotonic = m_PreviewValid;
+	for (int i = 1; m_PreviewValid && i < path->NbVertex(); i++)
+	{
+		if (path->GetVertex(i)->Get_sequence_number() < path->GetVertex(i - 1)->Get_sequence_number()) m_PreviewSeqMonotonic = false;
+		if (m_PreviewFileLine[i] < m_PreviewFileLine[i - 1]) m_PreviewLineMonotonic = false;
+	}
+	m_PreviewRunning = false;
+}
+
+// Is the kept preview still an exact picture of this file on disk?
+bool CKMotionCNCDlg::PreviewMatchesFile(const CString &file)
+{
+	if (!m_PreviewValid || file.CompareNoCase(m_PreviewFile) != 0) return false;
+	CFileStatus fs;
+	if (!CFile::GetStatus(file, fs)) return false;
+	return fs.m_size == m_PreviewFileSize && fs.m_mtime == m_PreviewFileTime;
+}
+
+// Real run starting at file line 'begin': if the preview matches the file,
+// keep it (reset to uncut, or cut up to the start line for a mid-file start)
+// and arm progress colouring.  Otherwise leave m_ProgressActive false (stock).
+void CKMotionCNCDlg::ArmProgress(int begin, const CString &file)
+{
+	m_ProgressActive = false;
+	if (!PreviewEnabled() || !PreviewMatchesFile(file)) return;
+
+	CPath3d *path = ActualGViewParent->m_Path;
+	int n = path->NbVertex();
+	if (n == 0 || m_PreviewFileLine.GetSize() != n) return;
+
+	// The interpreter numbers blocks as it reads them from the file's start; a
+	// mid-file start skips lines without numbering them.  m_ProgressSeqOffset
+	// converts this run's numbering to the preview's.
+	int k = 0;
+	if (begin <= 0)
+	{
+		m_ProgressSeqOffset = 0;
+	}
+	else if (m_ChainValid && begin == m_ChainLine && m_PreviewSeqMonotonic)
+	{
+		// continues where the last run over the preview stopped
+		m_ProgressSeqOffset = m_ChainSeq - m_PreviewSeq0;
+		while (k < n && path->GetVertex(k)->Get_sequence_number() <= m_ChainSeq) k++;
+	}
+	else if (m_PreviewLineMonotonic && m_PreviewSeqMonotonic)
+	{
+		// straight-through program: the start line is drawn in one place only
+		while (k < n && m_PreviewFileLine[k] < begin) k++;
+		if (k < n)
+			m_ProgressSeqOffset = path->GetVertex(k)->Get_sequence_number()
+								  - (m_PreviewSeq0 + 1 + m_PreviewFileLine[k] - begin);
+	}
+	else
+		return;		// a line inside a loop or subroutine: which pass is unknown, stock behaviour
+
+	m_ChainValid = false;	// re-established when this run stops part way
+	if (k > 0) ColorPreviewRange(0, k - 1, true);
+	ColorPreviewRange(k, n - 1, false);
+	m_ProgressIndex = k;
+	m_ProgressToolMoved = false;
+	m_ProgressToolStartValid = false;
+	m_ProgressAdvanceWall = ElapsedTimer.Elapsed_Seconds();
+	m_ProgressActive = true;
+}
+
+// The run over the preview completed: the first vertex after the blocks it
+// executed (-1 = unknown).  M2/M30 (line reset to 0) and end of file ran to the
+// end; otherwise it stopped after block m_CompleteSeq (its own numbering).
+int CKMotionCNCDlg::PreviewIndexAfterRun()
+{
+	CPath3d *path = ActualGViewParent->m_Path;
+	int n = path->NbVertex();
+
+	if (m_exitcode == RS274NGC_ENDFILE || m_exitcode == RS274NGC_EXIT || (m_exitcode == 0 && m_CompleteLine <= 0))
+		return n;
+	if (m_exitcode != 0 || !m_PreviewSeqMonotonic) return -1;
+
+	int last = m_CompleteSeq + m_ProgressSeqOffset;
+	int i = m_ProgressIndex;
+	while (i < n && path->GetVertex(i)->Get_sequence_number() <= last) i++;
+	return i;
+}
+
+// Timer (after m_RealTimeSetup is refreshed): colour everything before the
+// block the machine is executing as cut.
+void CKMotionCNCDlg::UpdateProgress()
+{
+	if (!m_ProgressActive || m_PlaybackArmed || !ThreadIsExecuting) return;
+
+	CCoordMotion *CM = Interpreter->CoordMotion;
+	CPath3d *path = ActualGViewParent->m_Path;
+	int n = path->NbVertex();
+	int i = m_ProgressIndex;
+
+	// 1) KMotionCNC's record of which block is executing: everything before it is cut
+	if (CM->m_realtime_Sequence_number_valid && m_RealTimeSetup)
+	{
+		int target = m_RealTimeSetup->sequence_number + m_ProgressSeqOffset;
+		while (i < n && path->GetVertex(i)->Get_sequence_number() < target) i++;
+	}
+
+	// 2) where the tool actually is: within a long move, and near the end of a
+	// program where the block record stops updating until motion finishes
+	int j = FindToolOnPath(i);
+	if (j > i) i = j;
+
+	if (i > m_ProgressIndex)
+	{
+		ColorPreviewRange(m_ProgressIndex, i - 1, true);
+		m_ProgressIndex = i;
+		m_ProgressAdvanceWall = ElapsedTimer.Elapsed_Seconds();
+	}
+}
+
+// Distance from point p to segment ab, squared.
+static double DistToSegment2(double px, double py, double pz, CVertex3dFast *a, CVertex3dFast *b)
+{
+	double ax = a->x(), ay = a->y(), az = a->z();
+	double dx = b->x() - ax, dy = b->y() - ay, dz = b->z() - az;
+	double L2 = dx*dx + dy*dy + dz*dz;
+	double t = L2 > 0.0 ? ((px - ax)*dx + (py - ay)*dy + (pz - az)*dz) / L2 : 0.0;
+	if (t < 0.0) t = 0.0; else if (t > 1.0) t = 1.0;
+	double ex = ax + t*dx - px, ey = ay + t*dy - py, ez = az + t*dz - pz;
+	return ex*ex + ey*ey + ez*ez;
+}
+
+// Find the path segment the tool is on, searching forward from vertex 'first'.
+// Returns j such that the tool is on segment (j-1 -> j), i.e. vertices before j
+// are cut; or -1.  The search only reaches as far along the path as the tool
+// could physically have gone since progress last advanced (using the preview's
+// time estimate, which is optimistic), so a later pass that happens to cross
+// the tool's position can't be mistaken for the current one.
+#define TOOL_ON_PATH_TOL 0.01		// inches
+int CKMotionCNCDlg::FindToolOnPath(int first)
+{
+	if (!m_ToolViewValid) return -1;
+
+	CPath3d *path = ActualGViewParent->m_Path;
+	int n = path->NbVertex();
+	if (n < 2 || m_PreviewTime.GetSize() != n || first >= n) return -1;
+
+	double tx = m_ToolViewX, ty = m_ToolViewY, tz = m_ToolViewZ;
+
+	// don't track until the tool has moved from where the run found it
+	if (!m_ProgressToolMoved)
+	{
+		if (!m_ProgressToolStartValid)
+		{
+			m_ProgressToolStartX = tx; m_ProgressToolStartY = ty; m_ProgressToolStartZ = tz;
+			m_ProgressToolStartValid = true;
+			return -1;
+		}
+		double dx = tx - m_ProgressToolStartX, dy = ty - m_ProgressToolStartY, dz = tz - m_ProgressToolStartZ;
+		if (dx*dx + dy*dy + dz*dz < TOOL_ON_PATH_TOL*TOOL_ON_PATH_TOL) return -1;
+		m_ProgressToolMoved = true;
+	}
+
+	double ovr = 1.0;
+	if (m_FeedRateValue > ovr) ovr = m_FeedRateValue;
+	if (m_FeedRateRapidValue > ovr) ovr = m_FeedRateRapidValue;
+	double reach = m_PreviewTime[m_ProgressIndex < n ? m_ProgressIndex : n - 1]
+				 + (ElapsedTimer.Elapsed_Seconds() - m_ProgressAdvanceWall) * ovr * 1.5 + 0.5;
+
+	double tol2 = TOOL_ON_PATH_TOL * TOOL_ON_PATH_TOL;
+	for (int j = first > 1 ? first : 1; j < n && m_PreviewTime[j - 1] <= reach; j++)
+	{
+		CVertex3dFast *b = path->GetVertex(j);
+		if (DistToSegment2(tx, ty, tz, path->GetVertex(j - 1), b) <= tol2)
+		{
+			// at the segment's end point: that segment is done too
+			double ex = b->x() - tx, ey = b->y() - ty, ez = b->z() - tz;
+			if (ex*ex + ey*ey + ez*ez <= tol2) return j + 1;
+			return j;
+		}
+	}
+
+	return -1;
+}
+
+void CKMotionCNCDlg::StopPlayback()
+{
+	m_PlaybackArmed = false;
+	m_PlaybackRunning = false;
+	m_PlaybackPaused = false;
+}
+
+// Timer: a Simulate run over the preview is played back at the programmed
+// speed (times the feed-rate override), colouring the path as if it were cut.
+// Feed Hold pauses it; Halt, E-stop, a new run or reloading stop it.
+void CKMotionCNCDlg::UpdatePlayback()
+{
+	if (!m_PlaybackRunning) return;
+
+	double now = ElapsedTimer.Elapsed_Seconds();
+	double dt = now - m_PlaybackWall;
+	m_PlaybackWall = now;
+	if (m_PlaybackPaused) return;
+
+	CPath3d *path = ActualGViewParent->m_Path;
+	int n = path->NbVertex();
+	if (!m_PreviewValid || m_PreviewTime.GetSize() != n)
+	{
+		StopPlayback();
+		return;
+	}
+
+	if (dt > 0.0 && m_FeedRateValue > 0.0) m_PlaybackTime += dt * m_FeedRateValue;
+
+	int end = m_PlaybackEnd < n ? m_PlaybackEnd : n;
+	int i = m_ProgressIndex;
+	while (i < end && m_PreviewTime[i] <= m_PlaybackTime) i++;
+
+	if (i > m_ProgressIndex)
+	{
+		ColorPreviewRange(m_ProgressIndex, i - 1, true);
+		m_ProgressIndex = i;
+	}
+	if (i >= end) StopPlayback();
+}
+
+
+int DoProcessScript(const wchar_t *FileName)
 {
 	return TheFrame->GCodeDlg.Screen.ProcessScript(FileName);
 }
 	
 void CKMotionCNCDlg::OnHalt() 
 {
+	StopPlayback();
 	m_PerformPostHaltCommand=true;
 	Interpreter->Halt();
 }
@@ -2867,6 +3732,17 @@ HBRUSH CKMotionCNCDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 	// ComboBox uses these for dropdown
 	if (ID == 1000 || ID == 1001) return hbr;
+
+	// Edit controls may have Screen Script colors (read only ones use CTLCOLOR_STATIC)
+	if (nCtlColor == CTLCOLOR_EDIT || nCtlColor == CTLCOLOR_STATIC)
+	{
+		CEditScreen *E = Screen.FindEditScreen(ID);
+		if (E)
+		{
+			HBRUSH EditBrush = E->CtlColor(pDC);
+			if (EditBrush) return EditBrush;
+		}
+	}
 
 	CImageButton *I;
 	I = Screen.FindImageButton(ID);
@@ -3082,6 +3958,8 @@ void CKMotionCNCDlg::OnTimer(UINT_PTR nIDEvent)
 	static int skip=0;
 	int result=KMOTION_IN_USE;
 
+	InitDialogComplete = TRUE;  // Time only runs after window has been created and displayed
+
 	if (Entry>0) return;  // do not allow re-entries
 	Entry++;
 
@@ -3145,16 +4023,16 @@ void CKMotionCNCDlg::OnTimer(UINT_PTR nIDEvent)
 		if (ThreadIsExecuting && JobStartTimeValid)
 		{
 			if (m_Simulate && m_DoTime && JobDoTimeValid)
-				LastTitleElapsed.Format("Job Time: %s", convertSeconds(JobDoTimeSecs));
+				LastTitleElapsed.Format(L"Job Time: %ls", convertSeconds(JobDoTimeSecs));
 			else
-				LastTitleElapsed.Format("Run Time: %s", convertSeconds(ElapsedTimer.Elapsed_Seconds() - JobStartTimeSecs));
+				LastTitleElapsed.Format(L"Run Time: %ls", convertSeconds(ElapsedTimer.Elapsed_Seconds() - JobStartTimeSecs));
 		}
 		else if (JobStartTimeValid && JobEndTimeValid)
 		{
 			if (m_DoTime && JobDoTimeValid)
-				LastTitleElapsed.Format("Job Time: %s", convertSeconds(JobDoTimeSecs));
+				LastTitleElapsed.Format(L"Job Time: %ls", convertSeconds(JobDoTimeSecs));
 			else
-				LastTitleElapsed.Format("Run Time: %s", convertSeconds(JobEndTimeSecs-JobStartTimeSecs));
+				LastTitleElapsed.Format(L"Run Time: %ls", convertSeconds(JobEndTimeSecs-JobStartTimeSecs));
 		}
 
 		if (LastTitleElapsed != "")
@@ -3175,6 +4053,9 @@ void CKMotionCNCDlg::OnTimer(UINT_PTR nIDEvent)
 	}
 
 	DoJoyStick();
+
+	ServicePreview();	// G-code viewer: start a requested full-path preview when idle
+	UpdatePlayback();	// G-code viewer: animate a Simulate run's cut along the preview
 
 
 	int ThreadStat;
@@ -3199,7 +4080,9 @@ void CKMotionCNCDlg::OnTimer(UINT_PTR nIDEvent)
 	if (Line != DisplayedCurrentLine ||
 		ThreadHadError[m_Thread] != DisplayedThreadHadError)
 	{
-		m_Editor.MarkerDeleteAll(0);
+	//	m_Editor.MarkerDeleteAll(0);
+
+		m_Editor.MarkerDelete(DisplayedCurrentLine,0);
 
 		if (ThreadHadError[m_Thread])
 		{
@@ -3208,7 +4091,7 @@ void CKMotionCNCDlg::OnTimer(UINT_PTR nIDEvent)
 		}
 		else
 		{
-			m_Editor.MarkerSetFore(0,FLAG_COLOR);
+			m_Editor.MarkerSetFore(0,FLAG_COLOR); // bluish green
 			m_Editor.MarkerSetBack(0,FLAG_COLOR);
 		}
 		
@@ -3266,12 +4149,13 @@ void CKMotionCNCDlg::OnTimer(UINT_PTR nIDEvent)
 		FirstStartup=false;
 		if (Interpreter->InvokeAction(ACTION_PROG_START,FALSE))  // Special Command
 		{
-			MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to perform Startup Action"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+			MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate(L"Unable to perform Startup Action"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		}
 	}
 
-	// periodically save parameters
-	if (m_SaveFixtureOnOK)
+	// periodically save parameters (not while a preview simulation is running:
+	// it may have changed parameters with G10/G92 that are about to be restored)
+	if (m_SaveFixtureOnOK && !m_PreviewRunning)
 	{
 		if (!m_OffsetTimerStarted || m_OffsetSaveTimer.Elapsed_Seconds() > OFFSET_SAVE_TIME)
 		{
@@ -3279,7 +4163,7 @@ void CKMotionCNCDlg::OnTimer(UINT_PTR nIDEvent)
 			{
 				if (Interpreter->rs274ngc_save_parameters())
 				{
-					MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Saving Interpreter variables"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+					MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate(L"Error Saving Interpreter variables"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 				}
 			}
 			m_OffsetSaveTimer.Start();
@@ -3294,7 +4178,7 @@ void CKMotionCNCDlg::OnTimer(UINT_PTR nIDEvent)
 		{
 			if (CEditScreen::SavePersists())
 			{
-				MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Saving Edit Control Values"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+				MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate(L"Error Saving Edit Control Values"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 			}
 			m_EditScreenSaveTimer.Start();
 			m_EditScreenTimerStarted = true;
@@ -3312,9 +4196,10 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 	static bool ErrorDisplayed=false;
 	static bool MsgDisplayed=false;
 	static bool GcodeInProgress=false;
-	double x,y,z,a,b,c,*dp;
+	double x,y,z,a,b,c,u,v,*dp;
 	float F,NewValue;
-	CString s;
+	CStringA s;
+	CString w;
 	int i,result,index;
 	MOTION_PARAMS *MP;
 	CCoordMotion *CM = Interpreter->CoordMotion;
@@ -3336,8 +4221,14 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 	switch (MainStatus.PC_comm[0])
 	{
 	case PC_COMM_ESTOP:
-		OnEmergencyStop();
+		// Ack the command, then perform the Emergency Stop from the normal
+		// message loop (same as clicking the Screen button) rather than
+		// synchronously inside command servicing.  OnEmergencyStop is a heavy
+		// sequence (kills user threads, Halt/Abort, disables all axes, runs
+		// the Stop Action) and executing it here while a Job is running can
+		// deadlock with the executing GCode worker thread.
 		SetKFLOPCommandResult(0);
+		PostMessage(WM_COMMAND, IDC_EmergencyStop, 0);
 		break;
 
 	case PC_COMM_HALT:
@@ -3352,11 +4243,42 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 
 	case PC_COMM_ENABLE_JOG_KEYS:
 		EnableJogKeys=true;
+		ForceDisableJogKeys = false;
 		SetKFLOPCommandResult(0);
 		break;
 
 	case PC_COMM_DISABLE_JOG_KEYS:
-		EnableJogKeys=false;
+		EnableJogKeys = false;
+		ForceDisableJogKeys = false;
+		SetKFLOPCommandResult(0);
+		break;
+
+	case PC_COMM_FORCE_DISABLE_JOG_KEYS:
+		ForceDisableJogKeys = true;
+		SetKFLOPCommandResult(0);
+		break;
+
+	case PC_COMM_ENABLE_CONTROLS:
+		if (GetStringFromGather(MainStatus.PC_comm[1], &s, 200)) break;
+
+		for (int i = 0; i < 200; i++) // process each ID
+		{
+			int ID = ((int*)(s.GetBuffer()))[i];
+			if (ID <= 0) break;
+			GetDlgItem(ID)->EnableWindow(true);
+		}
+		SetKFLOPCommandResult(0);
+		break;
+
+	case PC_COMM_DISABLE_CONTROLS:
+		if (GetStringFromGather(MainStatus.PC_comm[1], &s, 200)) break;
+
+		for (int i = 0; i < 200; i++) // process each ID
+		{
+			int ID = ((int*)(s.GetBuffer()))[i];
+			if (ID <= 0) break;
+			GetDlgItem(ID)->EnableWindow(false);
+		}
 		SetKFLOPCommandResult(0);
 		break;
 
@@ -3386,15 +4308,20 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 
 	case PC_COMM_SET_FRO:
 		NewValue = *(float *)&MainStatus.PC_comm[1];
-		if (NewValue > 0.001 && NewValue < 1000.0)   // ignore if crazy number
+		if (NewValue > 0.00099 && NewValue < 1000.0)   // ignore if crazy number
 		{
 			m_FeedRateValue = NewValue;
-			m_FeedRateValue = ((int)(m_FeedRateValue*100.0 + 0.5)) / 100.0;
+			m_FeedRateValue = ((int)(m_FeedRateValue*1000.0 + 0.5)) / 1000.0;
 			Interpreter->CoordMotion->SetFeedRateOverride(m_FeedRateValue);
 			if (m_Rapid == 1)
 			{
-				s.Format("%.2f", m_FeedRateValue);
-				SetDlgItemText(IDC_FeedRateEdit, s);
+				w.Format(L"%.3f", m_FeedRateValue);
+
+				// Remove trailing zeros after decimal
+				while (w.Find(L'.') >= 0 && w.GetLength() > 0 && w.Right(1) == L"0")
+					w = w.Left(w.GetLength() - 1);
+
+				SetDlgItemText(IDC_FeedRateEdit, w);
 				m_FeedSlider.SetPos(m_FeedRateValue);
 			}
 			SetKFLOPCommandResult(0);
@@ -3407,15 +4334,19 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 
 	case PC_COMM_SET_RRO:
 		NewValue = *(float *)&MainStatus.PC_comm[1];
-		if (NewValue > 0.001 && NewValue < 1000.0)   // ignore if crazy number
+		if (NewValue > 0.00099 && NewValue < 1000.0)   // ignore if crazy number
 		{
 			m_FeedRateRapidValue = NewValue;
-			m_FeedRateRapidValue = ((int)(m_FeedRateRapidValue*100.0 + 0.5)) / 100.0;
+			m_FeedRateRapidValue = ((int)(m_FeedRateRapidValue*1000.0 + 0.5)) / 1000.0;
 			Interpreter->CoordMotion->SetFeedRateRapidOverride(m_FeedRateRapidValue);
 			if (m_Rapid == 0)
 			{
-				s.Format("%.2f", m_FeedRateRapidValue);
-				SetDlgItemText(IDC_FeedRateEdit, s);
+				w.Format(L"%.3f", m_FeedRateRapidValue);
+				// Remove trailing zeros after decimal
+				while (w.Find(L'.') >= 0 && w.GetLength() > 0 && w.Right(1) == L"0")
+					w = w.Left(w.GetLength() - 1);
+
+				SetDlgItemText(IDC_FeedRateEdit, w);
 				m_FeedSlider.SetPos(m_FeedRateRapidValue);
 			}
 			SetKFLOPCommandResult(0);
@@ -3428,11 +4359,15 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 
 	case PC_COMM_SET_SSO:
 		NewValue = *(float *)&MainStatus.PC_comm[1];
-		if (NewValue > 0.001 && NewValue < 1000.0)   // ignore if crazy number
+		if (NewValue > 0.00099 && NewValue < 1000.0)   // ignore if crazy number
 		{
 			m_SpindleRateValue = NewValue;
-			s.Format("%.2f",m_SpindleRateValue);
-			SetDlgItemText(IDC_SpindleRateEdit,s);
+			w.Format(L"%.3f",m_SpindleRateValue);
+			// Remove trailing zeros after decimal
+			while (w.Find(L'.') >= 0 && w.GetLength() > 0 && w.Right(1) == L"0")
+				w = w.Left(w.GetLength() - 1);
+
+			SetDlgItemText(IDC_SpindleRateEdit,w);
 			Interpreter->CoordMotion->SetSpindleRateOverride(m_SpindleRateValue);
 			m_SpindleSlider.SetPos(m_SpindleRateValue);
 			Interpreter->InvokeAction(10,FALSE);  // resend new Speed
@@ -3446,15 +4381,18 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 
 	case PC_COMM_SET_FRO_INC:
 		NewValue = *(float *)&MainStatus.PC_comm[1] * m_FeedRateValue;
-		if (NewValue > 0.001 && NewValue < 1000.0)   // ignore if crazy number
+		if (NewValue > 0.00099 && NewValue < 1000.0)   // ignore if crazy number
 		{
 			m_FeedRateValue = NewValue;
-			m_FeedRateValue = ((int)(m_FeedRateValue*100.0 + 0.5)) / 100.0;
+			m_FeedRateValue = ((int)(m_FeedRateValue*1000.0 + 0.5)) / 1000.0;
 			Interpreter->CoordMotion->SetFeedRateOverride(m_FeedRateValue);
 			if (m_Rapid == 1)
 			{
-				s.Format("%.2f", m_FeedRateValue);
-				SetDlgItemText(IDC_FeedRateEdit, s);
+				w.Format(L"%.3f", m_FeedRateValue);
+				// Remove trailing zeros after decimal
+				while (w.Find(L'.') >= 0 && w.GetLength() > 0 && w.Right(1) == L"0")
+					w = w.Left(w.GetLength() - 1);
+				SetDlgItemText(IDC_FeedRateEdit, w);
 				m_FeedSlider.SetPos(m_FeedRateValue);
 			}
 			SetKFLOPCommandResult(0);
@@ -3467,15 +4405,18 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 
 	case PC_COMM_SET_RRO_INC:
 		NewValue = *(float *)&MainStatus.PC_comm[1] * m_FeedRateRapidValue;
-		if (NewValue > 0.001 && NewValue < 1000.0)   // ignore if crazy number
+		if (NewValue > 0.00099 && NewValue < 1000.0)   // ignore if crazy number
 		{
 			m_FeedRateRapidValue = NewValue;
-			m_FeedRateRapidValue = ((int)(m_FeedRateRapidValue*100.0 + 0.5)) / 100.0;
+			m_FeedRateRapidValue = ((int)(m_FeedRateRapidValue*1000.0 + 0.5)) / 1000.0;
 			Interpreter->CoordMotion->SetFeedRateRapidOverride(m_FeedRateRapidValue);
 			if (m_Rapid == 0)
 			{
-				s.Format("%.2f", m_FeedRateRapidValue);
-				SetDlgItemText(IDC_FeedRateEdit, s);
+				w.Format(L"%.3f", m_FeedRateRapidValue);
+				// Remove trailing zeros after decimal
+				while (w.Find(L'.') >= 0 && w.GetLength() > 0 && w.Right(1) == L"0")
+					w = w.Left(w.GetLength() - 1);
+				SetDlgItemText(IDC_FeedRateEdit, w);
 				m_FeedSlider.SetPos(m_FeedRateRapidValue);
 			}
 			SetKFLOPCommandResult(0);
@@ -3488,11 +4429,14 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 
 	case PC_COMM_SET_SSO_INC:
 		NewValue = *(float *)&MainStatus.PC_comm[1] * m_SpindleRateValue;
-		if (NewValue > 0.001 && NewValue < 1000.0)   // ignore if crazy number
+		if (NewValue > 0.00099 && NewValue < 1000.0)   // ignore if crazy number
 		{
 			m_SpindleRateValue = NewValue;
-			s.Format("%.2f",m_SpindleRateValue);
-			SetDlgItemText(IDC_SpindleRateEdit,s);
+			w.Format(L"%.3f",m_SpindleRateValue);
+			// Remove trailing zeros after decimal
+			while (w.Find(L'.') >= 0 && w.GetLength() > 0 && w.Right(1) == L"0")
+				w = w.Left(w.GetLength() - 1);
+			SetDlgItemText(IDC_SpindleRateEdit,w);
 			Interpreter->CoordMotion->SetSpindleRateOverride(m_SpindleRateValue);
 			m_SpindleSlider.SetPos(m_SpindleRateValue);
 			Interpreter->InvokeAction(10,FALSE);  // resend new Speed
@@ -3506,11 +4450,12 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 
 	case PC_COMM_SET_X:
 		NewValue = *(float *)&MainStatus.PC_comm[1];
-		if (!ThreadIsExecuting && !ReadInterpPos(&x,&y,&z,&a,&b,&c))
+		if (!ThreadIsExecuting && !ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v))
 		{
 			Interpreter->p_setup->axis_offset_x += x - NewValue;
 			RoundReasonable(Interpreter->p_setup->axis_offset_x);
 			Interpreter->p_setup->parameters[5211]=Interpreter->p_setup->axis_offset_x;
+			Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
 			SetKFLOPCommandResult(0);
 		}
 		else
@@ -3521,11 +4466,12 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 
 	case PC_COMM_SET_Y:
 		NewValue = *(float *)&MainStatus.PC_comm[1];
-		if (!ThreadIsExecuting && !ReadInterpPos(&x,&y,&z,&a,&b,&c))
+		if (!ThreadIsExecuting && !ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v))
 		{
 			Interpreter->p_setup->axis_offset_y += y - NewValue;
 			RoundReasonable(Interpreter->p_setup->axis_offset_y);
 			Interpreter->p_setup->parameters[5212]=Interpreter->p_setup->axis_offset_y;
+			Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
 			SetKFLOPCommandResult(0);
 		}
 		else
@@ -3536,11 +4482,12 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 
 	case PC_COMM_SET_Z:
 		NewValue = *(float *)&MainStatus.PC_comm[1];
-		if (!ThreadIsExecuting && !ReadInterpPos(&x,&y,&z,&a,&b,&c))
+		if (!ThreadIsExecuting && !ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v))
 		{
 			Interpreter->p_setup->axis_offset_z += z - NewValue;
 			RoundReasonable(Interpreter->p_setup->axis_offset_z);
 			Interpreter->p_setup->parameters[5213]=Interpreter->p_setup->axis_offset_z;
+			Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
 			SetKFLOPCommandResult(0);
 		}
 		else
@@ -3551,11 +4498,12 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 
 	case PC_COMM_SET_A:
 		NewValue = *(float *)&MainStatus.PC_comm[1];
-		if (!ThreadIsExecuting && !ReadInterpPos(&x,&y,&z,&a,&b,&c))
+		if (!ThreadIsExecuting && !ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v))
 		{
 			Interpreter->p_setup->AA_axis_offset += a - NewValue;
 			RoundReasonable(Interpreter->p_setup->AA_axis_offset);
 			Interpreter->p_setup->parameters[5214]=Interpreter->p_setup->AA_axis_offset;
+			Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
 			SetKFLOPCommandResult(0);
 		}
 		else
@@ -3566,11 +4514,12 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 
 	case PC_COMM_SET_B:
 		NewValue = *(float *)&MainStatus.PC_comm[1];
-		if (!ThreadIsExecuting && !ReadInterpPos(&x,&y,&z,&a,&b,&c))
+		if (!ThreadIsExecuting && !ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v))
 		{
 			Interpreter->p_setup->BB_axis_offset += b - NewValue;
 			RoundReasonable(Interpreter->p_setup->BB_axis_offset);
 			Interpreter->p_setup->parameters[5215]=Interpreter->p_setup->BB_axis_offset;
+			Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
 			SetKFLOPCommandResult(0);
 		}
 		else
@@ -3580,12 +4529,45 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 		break;
 
 	case PC_COMM_SET_C:
-		NewValue = *(float *)&MainStatus.PC_comm[1];
-		if (!ThreadIsExecuting && !ReadInterpPos(&x,&y,&z,&a,&b,&c))
+		NewValue = *(float*)&MainStatus.PC_comm[1];
+		if (!ThreadIsExecuting && !ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v))
 		{
 			Interpreter->p_setup->CC_axis_offset += c - NewValue;
 			RoundReasonable(Interpreter->p_setup->CC_axis_offset);
-			Interpreter->p_setup->parameters[5216]=Interpreter->p_setup->CC_axis_offset;
+			Interpreter->p_setup->parameters[5216] = Interpreter->p_setup->CC_axis_offset;
+			Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
+			SetKFLOPCommandResult(0);
+		}
+		else
+		{
+			SetKFLOPCommandResult(-1);
+		}
+		break;
+
+	case PC_COMM_SET_U:
+		NewValue = *(float*)&MainStatus.PC_comm[1];
+		if (!ThreadIsExecuting && !ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v))
+		{
+			Interpreter->p_setup->UU_axis_offset += u - NewValue;
+			RoundReasonable(Interpreter->p_setup->UU_axis_offset);
+			Interpreter->p_setup->parameters[5217] = Interpreter->p_setup->UU_axis_offset;
+			Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
+			SetKFLOPCommandResult(0);
+		}
+		else
+		{
+			SetKFLOPCommandResult(-1);
+		}
+		break;
+
+	case PC_COMM_SET_V:
+		NewValue = *(float*)&MainStatus.PC_comm[1];
+		if (!ThreadIsExecuting && !ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v))
+		{
+			Interpreter->p_setup->VV_axis_offset += v - NewValue;
+			RoundReasonable(Interpreter->p_setup->VV_axis_offset);
+			Interpreter->p_setup->parameters[5218] = Interpreter->p_setup->VV_axis_offset;
+			Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
 			SetKFLOPCommandResult(0);
 		}
 		else
@@ -3622,9 +4604,10 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 		if (!MsgDisplayed)
 		{
 			if (GetStringFromGather(MainStatus.PC_comm[1],&s,50)) break;
+			CString sw = Screen.ConvertANSIToWide(s);
 			MsgDisplayed=true;
 			MainStatus.PC_comm[0]=0;  // clear the command now that it has been executed
-			result = AfxMessageBox(s,MainStatus.PC_comm[2]);
+			result = AfxMessageBox(sw,MainStatus.PC_comm[2]);
 			MsgDisplayed=false;
 			s.Format("SetPersistDec%d %d",PC_COMM_PERSIST+3,result);
 			if (TheFrame->KMotionDLL->WriteLine(s)) break;
@@ -3639,8 +4622,8 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 			static CSetValue SetDlg(IDD_SetValue);
 			float fvalue;
 			DisableKeyJog();
-			if (GetStringFromGather(MainStatus.PC_comm[1],&SetDlg.m_Label,50)) break;
-			MainStatus.PC_comm[0]=0;  // clear the command now that it has been executed
+			if (GetStringFromGather(MainStatus.PC_comm[1],&s,50)) break;
+			SetDlg.m_Label = s;
 			MsgDisplayed=true;
 			if (SetDlg.DoModal() == IDOK)
 				result = 0;
@@ -3686,7 +4669,7 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 			if (!ThreadIsExecuting)
 			{
 				if (GetStringFromGather(MainStatus.PC_comm[1],&s,50)) break;
-				if (DoGCodeLine(s))
+				if (DoGCodeLine((CString)s))
 					SetKFLOPCommandResult(-1);  // failed tell KFLOP
 				else
 					GcodeInProgress=true;  // GCode is successfully Launched!
@@ -3989,6 +4972,70 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 		break;
 
 
+
+		// GetToolTableComment Persist+1 = Tool Table Index
+		//					   Persist+2 = gather buffer offset (32-bit words) to where to place Comment string
+		//					   Result indicating complete.  0=Not Complete, 1=Complete, -1=Err reading Tool File, -2=Invalid Tool Index
+	case PC_COMM_GET_TOOLTABLE_COMMENT:
+	{
+		index = MainStatus.PC_comm[1];
+
+		if (index >= 0 && index < 100)
+		{
+			index = MainStatus.PC_comm[1];
+
+			if (index >= 0 && index < 100)
+			{
+				int gather_offset;
+
+				if (TheFrame->GCodeDlg.Interpreter->m_ReadToolFile)
+					TheFrame->GCodeDlg.Interpreter->ReadToolFile();
+
+				s = Interpreter->p_setup->tool_table[index].Comment;
+				gather_offset = MainStatus.PC_comm[2];
+				if (SetStringToGather(gather_offset, s)) return;
+				SetKFLOPCommandResult(0);
+			}
+			else
+			{
+				SetKFLOPCommandResult(-2);
+			}
+		}
+	}
+	break;
+
+		// SetToolTableComment Persist+1 = Tool Table Index
+		//					   Persist+2 = gather buffer offset (32-bit words) to where to get Comment string
+		//					   Result indicating complete.  0=Not Complete, 1=Complete, -1=Invalid Tool Index
+	case PC_COMM_SET_TOOLTABLE_COMMENT:
+	{
+		CEditToolFile EditToolFile;
+		// first read the Tool Table File
+		if (EditToolFile.LoadFile(m_ToolFile))
+		{
+			SetKFLOPCommandResult(-1);
+			break;
+		}
+
+		index = MainStatus.PC_comm[1];
+
+		if (index >= 0 && index < 100)
+		{
+			int gather_offset;
+			TheFrame->GCodeDlg.Interpreter->m_ReadToolFile = true;
+			gather_offset = MainStatus.PC_comm[2];
+			if (GetStringFromGather(gather_offset, &s, 50)) return;
+			EditToolFile.ChangeComment(index, (CString)s);
+			EditToolFile.SaveFile(m_ToolFile);
+			SetKFLOPCommandResult(0);
+		}
+		else
+		{
+			SetKFLOPCommandResult(-1);
+		}
+		break;
+	}
+
 	case PC_COMM_GET_TOOLTABLE_INDEX:
 	{
 		int ToolIndex;
@@ -4073,6 +5120,8 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 	case PC_COMM_GET_JOG_OVERRIDE_A:
 	case PC_COMM_GET_JOG_OVERRIDE_B:
 	case PC_COMM_GET_JOG_OVERRIDE_C:
+	case PC_COMM_GET_JOG_OVERRIDE_U:
+	case PC_COMM_GET_JOG_OVERRIDE_V:
 		{
 			F = m_JogSpeedOverride[MainStatus.PC_comm[0] - PC_COMM_GET_JOG_OVERRIDE_X];
 			s.Format("SetPersistHex%d %x",PC_COMM_PERSIST+1,*(int*)&F);
@@ -4087,6 +5136,8 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 	case PC_COMM_SET_JOG_OVERRIDE_A:
 	case PC_COMM_SET_JOG_OVERRIDE_B:
 	case PC_COMM_SET_JOG_OVERRIDE_C:
+	case PC_COMM_SET_JOG_OVERRIDE_U:
+	case PC_COMM_SET_JOG_OVERRIDE_V:
 		{
 			m_JogSpeedOverride[MainStatus.PC_comm[0] - PC_COMM_SET_JOG_OVERRIDE_X] = *(float*)&MainStatus.PC_comm[1];
 			SetKFLOPCommandResult(0);
@@ -4126,7 +5177,7 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 		{
 			bool NewControl;
 			if (GetStringFromGather(MainStatus.PC_comm[1], &s, 50)) break;
-			CStringW sw = s;
+			CString sw = s;
 			if (Screen.DlgControls.GetCount() > 0 && Screen.Execute(sw, Screen.DlgControls.GetHead(), &NewControl))
 				SetKFLOPCommandResult(-1);  // failed tell KFLOP
 			else
@@ -4134,11 +5185,140 @@ void CKMotionCNCDlg::ServiceKFLOPCommands()
 		}
 		break;
 
+		// Get Current GCode Line Persist+1 = gather buffer offset (32-bit words) to where to place GCode string
+		//					   Result indicating complete.  0=Not Complete, 1=Complete, -1=error
+	case PC_COMM_GET_GCODE_LINE:
+	{
+		int gather_offset = MainStatus.PC_comm[1];
+		s = Screen.ConvertWideToANSI(m_RealTimeSetup->linetext);
+		if (SetStringToGather(gather_offset, s)) return;
+		SetKFLOPCommandResult(0);
+	}
+	break;
+
+	// Get Current GCode Line Persist+1 = gather buffer offset (32-bit words) to where to place GCode string
+	//					   Result indicating complete.  0=Not Complete, 1=Complete, -1=error
+	case PC_COMM_GET_DATE_TIME:
+	{
+		int gather_offset = MainStatus.PC_comm[1];
+		CTime t = CTime::GetCurrentTime();
+		s = Screen.ConvertWideToANSI(t.Format("%a, %b %d, %Y, %I:%M:%S  "));
+		if (SetStringToGather(gather_offset, s)) return;
+		SetKFLOPCommandResult(0);
+	}
+	break;
+
+	// Get Trajectory Planner Axis Parameter Persist+1 = Parameter Type number (integer) Velocity, Acceleration, CountsPerInch, JogSpeed
+	//										 Persist+2 = Axis Number (integer) XYZABCUV
+	//										 Persist+3 = where to set value to KFLOP persist (double offset)
+	//     (Parameter -> KFLOP persist) note: vars are transferred as doubles 2 persists each
+	//					   Result indicating complete.  0=Not Complete, 1=Complete, -1=error
+	case PC_COMM_GET_TP_PARAM:
+	{
+		int Type = MainStatus.PC_comm[1];
+		int Axis = MainStatus.PC_comm[2];
+		int Offset = MainStatus.PC_comm[3];
+
+		if (Type >= 0 && Type < NUM_PARAM_TYPES && Axis >= 0 && Axis < NUM_AXES && Offset >= 0 && Offset < 100)
+		{
+			double d;
+			if (Type == PT_JOG_VEL)
+				d = m_JogSpeed[Axis];
+			else
+				d = this->*TP_ParamMember[Type][Axis];
+			if (SendOneDouble(Offset, d)) break;
+			SetKFLOPCommandResult(0);
+		}
+		else
+		{
+			SetKFLOPCommandResult(-2);
+		}
+	}
+	break;
+
+	// Set Trajectory Planner Axis Parameter Persist+1 = Parameter Type number (integer) Velocity, Acceleration, CountsPerInch, JogSpeed
+	//										 Persist+2 = Axis Number (integer) XYZABCUV
+	//										 Persist+3 = where to get value from KFLOP persist (double offset)
+	//     (Parameter -> KFLOP persist) note: vars are transferred as doubles 2 persists each
+	//					   Result indicating complete.  0=Not Complete, 1=Complete, -1=error
+	case PC_COMM_SET_TP_PARAM:
+	{
+		int Type = MainStatus.PC_comm[1];
+		int Axis = MainStatus.PC_comm[2];
+		int Offset = MainStatus.PC_comm[3];
+
+		if (Type >= 0 && Type < NUM_PARAM_TYPES && Axis >= 0 && Axis < NUM_AXES && Offset >= 0 && Offset < 100)
+		{
+			double *dp;
+			if (Type == PT_JOG_VEL)
+				dp = &m_JogSpeed[Axis];
+			else
+				dp = &(this->*TP_ParamMember[Type][Axis]);
+			if (GetVar(Offset * 2, (int*)dp)) break;
+			if (GetVar(Offset * 2 + 1, ((int*)dp) + 1)) break;
+			SetMotionParams();
+			SetKFLOPCommandResult(0);
+		}
+		else
+		{
+			SetKFLOPCommandResult(-2);
+		}
+	}
+	break;
+
+	// Do G43 Hxx Set Tool Length Comp On for Tool xx Persist+1 = H number (integer) from G43Hxx command
+	case PC_COMM_G43:
+	{
+		int Tool = MainStatus.PC_comm[1];
+
+		if (Interpreter->convert_tool_length_offset(G_43, Tool) == 0)
+		{
+			SetKFLOPCommandResult(0);
+		}
+		else
+		{
+			SetKFLOPCommandResult(-1);
+		}
+	}
+	break;
+
+	// Do G43.4 Hxx Set Tool Length Comp On (with TCP for Tool xx Persist+1 = H number (integer) from G43Hxx command
+	case PC_COMM_G43_4:
+	{
+		int Tool = MainStatus.PC_comm[1];
+
+		if (Interpreter->convert_tool_length_offset(G_43_4, Tool) == 0)
+		{
+			SetKFLOPCommandResult(0);
+		}
+		else
+		{
+			SetKFLOPCommandResult(-1);
+		}
+	}
+	break;
+
+	// Do G49 Set Tool Length Comp Off
+	case PC_COMM_G49:
+	{
+		if (Interpreter->convert_tool_length_offset(G_49, -1) == 0)
+		{
+			SetKFLOPCommandResult(0);
+		}
+		else
+		{
+			SetKFLOPCommandResult(-1);
+		}
+	}
+	break;
+
+
 	default:
 		if (!ErrorDisplayed)
 		{
 			ErrorDisplayed=true;
-			MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid External Command Received"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+			SetKFLOPCommandResult(-1);  // failed tell KFLOP
+			MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid External Command Received"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 			ErrorDisplayed=false;
 		}
 		break;
@@ -4187,31 +5367,35 @@ int CKMotionCNCDlg::ConvertToolToIndex(int number,int *index)
 
 int CKMotionCNCDlg::SendCoordinates(int n, bool MachineCoords)
 {
-	double ActsDest[MAX_ACTUATORS],x,y,z,a,b,c;
+	double ActsDest[MAX_ACTUATORS],x,y,z,a,b,c,u,v;
 	CCoordMotion *CM = Interpreter->CoordMotion;
 
 	for (int i=0; i<MAX_ACTUATORS; i++) ActsDest[i]=0.0;
 
-	if (CM->x_axis >=0)	ActsDest[0] = MainStatus.Dest[CM->x_axis];
-	if (CM->y_axis >=0)	ActsDest[1] = MainStatus.Dest[CM->y_axis];
-	if (CM->z_axis >=0)	ActsDest[2] = MainStatus.Dest[CM->z_axis];
-	if (CM->a_axis >=0)	ActsDest[3] = MainStatus.Dest[CM->a_axis];
-	if (CM->b_axis >=0)	ActsDest[4] = MainStatus.Dest[CM->b_axis];
-	if (CM->c_axis >=0)	ActsDest[5] = MainStatus.Dest[CM->c_axis];
+	if (CM->x_axis >= 0) ActsDest[0] = MainStatus.Dest[CM->x_axis];
+	if (CM->y_axis >= 0) ActsDest[1] = MainStatus.Dest[CM->y_axis];
+	if (CM->z_axis >= 0) ActsDest[2] = MainStatus.Dest[CM->z_axis];
+	if (CM->a_axis >= 0) ActsDest[3] = MainStatus.Dest[CM->a_axis];
+	if (CM->b_axis >= 0) ActsDest[4] = MainStatus.Dest[CM->b_axis];
+	if (CM->c_axis >= 0) ActsDest[5] = MainStatus.Dest[CM->c_axis];
+	if (CM->u_axis >= 0) ActsDest[6] = MainStatus.Dest[CM->u_axis];
+	if (CM->v_axis >= 0) ActsDest[7] = MainStatus.Dest[CM->v_axis];
 
-	CM->Kinematics->TransformActuatorstoCAD(ActsDest,&x,&y,&z,&a,&b,&c);
+	CM->Kinematics->TransformActuatorstoCAD(ActsDest,&x,&y,&z,&a,&b,&c,&u,&v);
 
 	if (MachineCoords)
-		Interpreter->ConvertAbsoluteToMachine(x,y,z,a,b,c,&x,&y,&z,&a,&b,&c);
+		Interpreter->ConvertAbsoluteToMachine(x,y,z,a,b,c,u,v,&x,&y,&z,&a,&b,&c,&u,&v);
 	else
-		Interpreter->ConvertAbsoluteToInterpreterCoord(x,y,z,a,b,c,&x,&y,&z,&a,&b,&c);
+		Interpreter->ConvertAbsoluteToInterpreterCoord(x,y,z,a,b,c,u,v,&x,&y,&z,&a,&b,&c,&u,&v);
 
-	if (SendOneDouble(n,  x)) return 1;
-	if (SendOneDouble(n+1,y)) return 1;
-	if (SendOneDouble(n+2,z)) return 1;
-	if (SendOneDouble(n+3,a)) return 1;
-	if (SendOneDouble(n+4,b)) return 1;
-	if (SendOneDouble(n+5,c)) return 1;
+	if (SendOneDouble(n + 0, x)) return 1;
+	if (SendOneDouble(n + 1, y)) return 1;
+	if (SendOneDouble(n + 2, z)) return 1;
+	if (SendOneDouble(n + 3, a)) return 1;
+	if (SendOneDouble(n + 4, b)) return 1;
+	if (SendOneDouble(n + 5, c)) return 1;
+	if (SendOneDouble(n + 6, u)) return 1;
+	if (SendOneDouble(n + 7, v)) return 1;
 	return 0;
 }
 
@@ -4219,7 +5403,7 @@ int CKMotionCNCDlg::SendCoordinates(int n, bool MachineCoords)
 // Send one double to KFLOP as two 32-bit binary images
 int CKMotionCNCDlg::SendOneDouble(int i, double d)
 {
-	CString s,r;
+	CStringA s,r;
 
 	s.Format("SetPersistHex%d %x",i*2,((int*)&d)[0]);
 	if (TheFrame->KMotionDLL->WriteLine(s)) return 1;
@@ -4230,21 +5414,28 @@ int CKMotionCNCDlg::SendOneDouble(int i, double d)
 
 int CKMotionCNCDlg::GetVar(int Var, int *value)
 {
-	CString s,r;
+	CStringA s,r;
 
 	if (Var >= 0 && Var < 200)
 	{
 		s.Format("GetPersistHex %d",Var);
-		if(TheFrame->KMotionDLL->WriteLineReadLine(s, r.GetBufferSetLength(100))) return 1;
+		if(TheFrame->KMotionDLL->WriteLineReadLine(s, r.GetBufferSetLength(200))) return 1;
 		r.ReleaseBuffer();
-		sscanf(r,"%x",value);
+		if (sscanf(r,"%x",value) != 1)
+		{
+			// response not valid hex - comm stream out of sync.  Treat as fatal
+			// like any other comm error (disconnect/reconnect) rather than
+			// silently keeping a stale or garbled value
+			TheFrame->KMotionDLL->Failed();
+			return 1;
+		}
 	}
 	return 0;
 }
 
 int CKMotionCNCDlg::SetVar(int Var, int value)
 {
-	CString s, r;
+	CStringA s, r;
 
 	if (Var >= 0 && Var < 200)
 	{
@@ -4256,9 +5447,9 @@ int CKMotionCNCDlg::SetVar(int Var, int value)
 
 
 
-int CKMotionCNCDlg::GetStringFromGather(int WordOffset, CString *msg, int nWords)
+int CKMotionCNCDlg::GetStringFromGather(int WordOffset, CStringA *msg, int nWords)
 {
-	CString s;
+	CStringA s;
 
 	int L = 256;
 	if (GetBoardType() == BOARD_TYPE_KFLOP) L = 8;
@@ -4272,7 +5463,11 @@ int CKMotionCNCDlg::GetStringFromGather(int WordOffset, CString *msg, int nWords
 		if ((i%L)==0)  // every 8 hex get a new line
 		{
 			s.Empty();
-			if (TheFrame->KMotionDLL->ReadLineTimeOut( s.GetBuffer(MAX_LINE+1),5000)) return 1;  
+			if (TheFrame->KMotionDLL->ReadLineTimeOut( s.GetBuffer(MAX_LINE+1),5000))
+			{
+				TheFrame->KMotionDLL->ReleaseToken();
+				return 1;
+			}
 			s.ReleaseBuffer();
 		}
 
@@ -4296,9 +5491,9 @@ int CKMotionCNCDlg::GetStringFromGather(int WordOffset, CString *msg, int nWords
 
 
 
-int CKMotionCNCDlg::SetStringToGather(int WordOffset, CString msg)
+int CKMotionCNCDlg::SetStringToGather(int WordOffset, CStringA msg)
 {
-	CString s, s2;
+	CStringA s, s2;
 
 	int L = 256;
 	if (GetBoardType() == BOARD_TYPE_KFLOP) L = 8;
@@ -4327,7 +5522,11 @@ int CKMotionCNCDlg::SetStringToGather(int WordOffset, CString msg)
 
 		if (((i % L) == L-1) || i == nWords - 1)  // every 8/256 or on the last send it
 		{
-			if (TheFrame->KMotionDLL->WriteLine(s))  return 1;
+			if (TheFrame->KMotionDLL->WriteLine(s))
+			{
+				TheFrame->KMotionDLL->ReleaseToken();
+				return 1;
+			}
 		}
 	}
 	TheFrame->KMotionDLL->ReleaseToken();
@@ -4338,7 +5537,7 @@ int CKMotionCNCDlg::SetStringToGather(int WordOffset, CString msg)
 
 int CKMotionCNCDlg::SetKFLOPCommandResult(int r)
 {
-	CString s;
+	CStringA s;
 
 	MainStatus.PC_comm[0]=0;  // clear the command now that it has been executed
 	s.Format("SetPersistDec%d %d",PC_COMM_PERSIST,r);
@@ -4367,12 +5566,42 @@ int CKMotionCNCDlg::NumberToThreadID(int i)
 
 void CKMotionCNCDlg::OnToolSetup() 
 {
-	bool lathe_changed, slow_jog_changed, screen_script_changed;;
+	bool lathe_changed, slow_jog_changed, screen_script_changed;
 
-	CAllToolSetupSheet Dlg("Tool Setup Screen",this);
+	CString PasswordFile = TheFrame->MainPathRoot + TOOL_SETUP_PASSWORD_FILE;
+
+	FILE* f;
+	_tfopen_s(&f, PasswordFile, _T("rt,ccs=UTF-8"));
+
+	if (f)
+	{
+		CString Password;
+		fgetws(Password.GetBufferSetLength(256), 255, f);
+		Password.ReleaseBuffer();
+		Password.Remove('\n');
+		Password.Remove('\r');
+		fclose(f);
+
+		CSetValue SetDlg(IDD_EnterPassword);
+		SetDlg.StringMode = true;
+
+		if (SetDlg.DoModal() != IDOK) return;
+
+		if (SetDlg.m_ValueString != Password)
+		{
+			MessageBox(/*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Tool Setup Password"),
+				/*TRAN*/TheFrame->KMotionDLL->Translate("Password"),
+				MB_OK | MB_ICONERROR);
+			return;
+		}
+	}
+
+
+	CAllToolSetupSheet Dlg(L"Tool Setup Screen",this);
 
 	DisableKeyJog();
 	Dlg.LastPageViewed = m_LastToolSetupPage;
+	Dlg.m_ToolSetupTPPage.ConfigUnitsMM = m_LastConfigUnitsMM;
 	Dlg.m_ToolSetupFilesPage.m_ToolFile = m_ToolFile;
 	Dlg.m_ToolSetupFilesPage.m_SetupFile = m_SetupFile;
 	Dlg.m_ToolSetupFilesPage.m_GeoFile = m_GeoFile;
@@ -4388,6 +5617,7 @@ void CKMotionCNCDlg::OnToolSetup()
 	Dlg.m_ToolSetupTPPage.m_ToolLengthImmediately = m_ToolLengthImmediately;
 	Dlg.m_ToolSetupTPPage.m_ToolTableDoM6 = m_ToolTableDoM6;
 	Dlg.m_ToolSetupTPPage.m_ConfirmExit = m_ConfirmExit;
+	Dlg.m_ToolSetupTPPage.m_AllowConcaveCorners = m_AllowConcaveCorners;
 	Dlg.m_ToolSetupTPPage.m_ArcsToSegs = m_ArcsToSegs;
 	Dlg.m_ToolSetupTPPage.m_DisplayEncoder = m_DisplayEncoder;
 	Dlg.m_ToolSetupTPPage.m_DegreesA = m_DegreesA;
@@ -4408,6 +5638,8 @@ void CKMotionCNCDlg::OnToolSetup()
 	Dlg.m_ToolSetupTPPage.m_JogSpeedA = m_JogSpeed[3];
 	Dlg.m_ToolSetupTPPage.m_JogSpeedB = m_JogSpeed[4];
 	Dlg.m_ToolSetupTPPage.m_JogSpeedC = m_JogSpeed[5];
+	Dlg.m_ToolSetupTPPage.m_JogSpeedU = m_JogSpeed[6];
+	Dlg.m_ToolSetupTPPage.m_JogSpeedV = m_JogSpeed[7];
 	Dlg.m_ToolSetupTPPage.m_Step0 = m_Step0;
 	Dlg.m_ToolSetupTPPage.m_Step1 = m_Step1;
 	Dlg.m_ToolSetupTPPage.m_Step2 = m_Step2;
@@ -4431,9 +5663,11 @@ void CKMotionCNCDlg::OnToolSetup()
 	Dlg.m_ToolSetupTPPage.m_MaxAccelA = m_MaxAccelA;
 	Dlg.m_ToolSetupTPPage.m_MaxAccelB = m_MaxAccelB;
 	Dlg.m_ToolSetupTPPage.m_MaxAccelC = m_MaxAccelC;
+
 	Dlg.m_ToolSetupTPPage.m_RadiusA = m_RadiusA;
 	Dlg.m_ToolSetupTPPage.m_RadiusB = m_RadiusB;
 	Dlg.m_ToolSetupTPPage.m_RadiusC = m_RadiusC;
+	
 	Dlg.m_ToolSetupTPPage.m_MaxVelC = m_MaxVelC;
 	Dlg.m_ToolSetupTPPage.m_MaxVelB = m_MaxVelB;
 	Dlg.m_ToolSetupTPPage.m_MaxVelA = m_MaxVelA;
@@ -4442,6 +5676,7 @@ void CKMotionCNCDlg::OnToolSetup()
 	Dlg.m_ToolSetupTPPage.m_MaxVelZ = m_MaxVelZ;
 	Dlg.m_ToolSetupTPPage.m_MaxVelU = m_MaxVelU;
 	Dlg.m_ToolSetupTPPage.m_MaxVelV = m_MaxVelV;
+
 	Dlg.m_ToolSetupTPPage.m_CountsPerInchC = m_CountsPerInchC;
 	Dlg.m_ToolSetupTPPage.m_CountsPerInchB = m_CountsPerInchB;
 	Dlg.m_ToolSetupTPPage.m_CountsPerInchA = m_CountsPerInchA;
@@ -4450,6 +5685,29 @@ void CKMotionCNCDlg::OnToolSetup()
 	Dlg.m_ToolSetupTPPage.m_CountsPerInchZ = m_CountsPerInchZ;
 	Dlg.m_ToolSetupTPPage.m_CountsPerInchU = m_CountsPerInchU;
 	Dlg.m_ToolSetupTPPage.m_CountsPerInchV = m_CountsPerInchV;
+
+	// Actuator Space Limits + 3rd Order TP options (on the TP page)
+	Dlg.m_ToolSetupTPPage.m_ActuatorLimits = m_ActuatorLimits;
+	for (int iact = 0; iact < MAX_TP_ACTUATORS; iact++)
+	{
+		Dlg.m_ToolSetupTPPage.m_ActScale[iact]    = m_ActScale[iact];
+		Dlg.m_ToolSetupTPPage.m_MaxActVel[iact]   = m_MaxActVel[iact];
+		Dlg.m_ToolSetupTPPage.m_MaxActAccel[iact] = m_MaxActAccel[iact];
+		Dlg.m_ToolSetupTPPage.m_MaxActJerk[iact]  = m_MaxActJerk[iact];
+		Dlg.m_ToolSetupTPPage.m_ActDegrees[iact]  = m_ActDegrees[iact];
+	}
+	Dlg.m_ToolSetupTPPage.m_ThirdOrderTP = m_ThirdOrderTP;
+	Dlg.m_ToolSetupTPPage.m_TPLogSegs = m_TPLogSegs;
+	Dlg.m_ToolSetupTPPage.m_TPCubicKnots = m_TPCubicKnots;
+	Dlg.m_ToolSetupTPPage.m_MaxJerkX = m_MaxJerkX;
+	Dlg.m_ToolSetupTPPage.m_MaxJerkY = m_MaxJerkY;
+	Dlg.m_ToolSetupTPPage.m_MaxJerkZ = m_MaxJerkZ;
+	Dlg.m_ToolSetupTPPage.m_MaxJerkA = m_MaxJerkA;
+	Dlg.m_ToolSetupTPPage.m_MaxJerkB = m_MaxJerkB;
+	Dlg.m_ToolSetupTPPage.m_MaxJerkC = m_MaxJerkC;
+	Dlg.m_ToolSetupTPPage.m_MaxJerkU = m_MaxJerkU;
+	Dlg.m_ToolSetupTPPage.m_MaxJerkV = m_MaxJerkV;
+
 	Dlg.m_ToolSetupButtonsPage.m_Button0 = m_Button0;
 	Dlg.m_ToolSetupButtonsPage.m_Button1 = m_Button1;
 	Dlg.m_ToolSetupButtonsPage.m_Button2 = m_Button2;
@@ -4492,6 +5750,7 @@ void CKMotionCNCDlg::OnToolSetup()
 		m_ToolLengthImmediately = Dlg.m_ToolSetupTPPage.m_ToolLengthImmediately;
 		m_ToolTableDoM6 = Dlg.m_ToolSetupTPPage.m_ToolTableDoM6;
 		m_ConfirmExit = Dlg.m_ToolSetupTPPage.m_ConfirmExit;
+		m_AllowConcaveCorners = Dlg.m_ToolSetupTPPage.m_AllowConcaveCorners;
 		m_ArcsToSegs = Dlg.m_ToolSetupTPPage.m_ArcsToSegs;
 		m_DisplayEncoder = Dlg.m_ToolSetupTPPage.m_DisplayEncoder;
 		m_DegreesA = Dlg.m_ToolSetupTPPage.m_DegreesA;
@@ -4508,12 +5767,16 @@ void CKMotionCNCDlg::OnToolSetup()
 		m_MaxRapidFRO = Dlg.m_ToolSetupTPPage.m_MaxRapidFRO;
 		m_ArcRadiusTol = Dlg.m_ToolSetupTPPage.m_ArcRadiusTol;
 		m_ArcRSmallTol = Dlg.m_ToolSetupTPPage.m_ArcRSmallTol;
+
 		m_JogSpeed[0] = Dlg.m_ToolSetupTPPage.m_JogSpeedX;
 		m_JogSpeed[1] = Dlg.m_ToolSetupTPPage.m_JogSpeedY;
 		m_JogSpeed[2] = Dlg.m_ToolSetupTPPage.m_JogSpeedZ;
 		m_JogSpeed[3] = Dlg.m_ToolSetupTPPage.m_JogSpeedA;
 		m_JogSpeed[4] = Dlg.m_ToolSetupTPPage.m_JogSpeedB;
 		m_JogSpeed[5] = Dlg.m_ToolSetupTPPage.m_JogSpeedC;
+		m_JogSpeed[6] = Dlg.m_ToolSetupTPPage.m_JogSpeedU;
+		m_JogSpeed[7] = Dlg.m_ToolSetupTPPage.m_JogSpeedV;
+		
 		m_Step0 = Dlg.m_ToolSetupTPPage.m_Step0;
 		m_Step1 = Dlg.m_ToolSetupTPPage.m_Step1;
 		m_Step2 = Dlg.m_ToolSetupTPPage.m_Step2;
@@ -4536,9 +5799,11 @@ void CKMotionCNCDlg::OnToolSetup()
 		m_MaxAccelA = Dlg.m_ToolSetupTPPage.m_MaxAccelA;
 		m_MaxAccelB = Dlg.m_ToolSetupTPPage.m_MaxAccelB;
 		m_MaxAccelC = Dlg.m_ToolSetupTPPage.m_MaxAccelC;
+
 		m_RadiusA = Dlg.m_ToolSetupTPPage.m_RadiusA;
 		m_RadiusB = Dlg.m_ToolSetupTPPage.m_RadiusB;
 		m_RadiusC = Dlg.m_ToolSetupTPPage.m_RadiusC;
+		
 		m_MaxVelC = Dlg.m_ToolSetupTPPage.m_MaxVelC;
 		m_MaxVelB = Dlg.m_ToolSetupTPPage.m_MaxVelB;
 		m_MaxVelA = Dlg.m_ToolSetupTPPage.m_MaxVelA;
@@ -4547,6 +5812,7 @@ void CKMotionCNCDlg::OnToolSetup()
 		m_MaxVelZ = Dlg.m_ToolSetupTPPage.m_MaxVelZ;
 		m_MaxVelU = Dlg.m_ToolSetupTPPage.m_MaxVelU;
 		m_MaxVelV = Dlg.m_ToolSetupTPPage.m_MaxVelV;
+
 		m_CountsPerInchC = Dlg.m_ToolSetupTPPage.m_CountsPerInchC;
 		m_CountsPerInchB = Dlg.m_ToolSetupTPPage.m_CountsPerInchB;
 		m_CountsPerInchA = Dlg.m_ToolSetupTPPage.m_CountsPerInchA;
@@ -4555,6 +5821,28 @@ void CKMotionCNCDlg::OnToolSetup()
 		m_CountsPerInchZ = Dlg.m_ToolSetupTPPage.m_CountsPerInchZ;
 		m_CountsPerInchU = Dlg.m_ToolSetupTPPage.m_CountsPerInchU;
 		m_CountsPerInchV = Dlg.m_ToolSetupTPPage.m_CountsPerInchV;
+
+		m_ActuatorLimits = Dlg.m_ToolSetupTPPage.m_ActuatorLimits;
+		for (int iact = 0; iact < MAX_TP_ACTUATORS; iact++)
+		{
+			m_ActScale[iact]    = Dlg.m_ToolSetupTPPage.m_ActScale[iact];
+			m_MaxActVel[iact]   = Dlg.m_ToolSetupTPPage.m_MaxActVel[iact];
+			m_MaxActAccel[iact] = Dlg.m_ToolSetupTPPage.m_MaxActAccel[iact];
+			m_MaxActJerk[iact]  = Dlg.m_ToolSetupTPPage.m_MaxActJerk[iact];
+			m_ActDegrees[iact]  = Dlg.m_ToolSetupTPPage.m_ActDegrees[iact];
+		}
+		m_ThirdOrderTP = Dlg.m_ToolSetupTPPage.m_ThirdOrderTP;
+		m_TPLogSegs = Dlg.m_ToolSetupTPPage.m_TPLogSegs;
+		m_TPCubicKnots = Dlg.m_ToolSetupTPPage.m_TPCubicKnots;
+		m_MaxJerkX = Dlg.m_ToolSetupTPPage.m_MaxJerkX;
+		m_MaxJerkY = Dlg.m_ToolSetupTPPage.m_MaxJerkY;
+		m_MaxJerkZ = Dlg.m_ToolSetupTPPage.m_MaxJerkZ;
+		m_MaxJerkA = Dlg.m_ToolSetupTPPage.m_MaxJerkA;
+		m_MaxJerkB = Dlg.m_ToolSetupTPPage.m_MaxJerkB;
+		m_MaxJerkC = Dlg.m_ToolSetupTPPage.m_MaxJerkC;
+		m_MaxJerkU = Dlg.m_ToolSetupTPPage.m_MaxJerkU;
+		m_MaxJerkV = Dlg.m_ToolSetupTPPage.m_MaxJerkV;
+
 		m_Button0 = Dlg.m_ToolSetupButtonsPage.m_Button0;
 		m_Button1 = Dlg.m_ToolSetupButtonsPage.m_Button1;
 		m_Button2 = Dlg.m_ToolSetupButtonsPage.m_Button2;
@@ -4606,25 +5894,35 @@ void CKMotionCNCDlg::OnToolSetup()
 		SaveConfig();
 	}
 	m_LastToolSetupPage = Dlg.LastPageViewed;
+	m_LastConfigUnitsMM = Dlg.m_ToolSetupTPPage.ConfigUnitsMM;
 }
-
-
 
 
 void CKMotionCNCDlg::OnUpdateRestart(CCmdUI* pCmdUI) 
 {
-	pCmdUI->Enable(CurrentLine[m_Thread]!=0 && !ThreadIsExecuting);
+	pCmdUI->Enable(CurrentLine[m_Thread]!=0 && !ThreadIsExecuting && !ForceDisableJogKeys);
 }
 
-void CKMotionCNCDlg::OnUpdateSingleStep(CCmdUI* pCmdUI) 
+void CKMotionCNCDlg::OnUpdateSingleStep(CCmdUI* pCmdUI)
 {
-	pCmdUI->Enable(!ThreadIsExecuting);
+	pCmdUI->Enable(!ThreadIsExecuting && !ForceDisableJogKeys);
+}
+
+void CKMotionCNCDlg::OnUpdateOpenFile(CCmdUI* pCmdUI)
+{
+	pCmdUI->Enable(!ThreadIsExecuting && !ForceDisableJogKeys);
+}
+
+void CKMotionCNCDlg::OnUpdateNew(CCmdUI* pCmdUI)
+{
+	pCmdUI->Enable(!ThreadIsExecuting && !ForceDisableJogKeys);
 }
 
 int CKMotionCNCDlg::SetExecutionPoint(int line)
 {
 	CurrentLine[m_Thread] = line;
 	Interpreter->CoordMotion->m_PreviouslyStopped = STOPPED_NONE;
+	Interpreter->p_setup->ConcaveDefered = FALSE;
 	if (SaveFile(m_Thread,false)) return 1;  // don't force the save
 	Interpreter->DoReverseSearch(FileNames[m_Thread],line);
 	m_ThreadThatWasOriginallyStopped = m_Thread; // remember what Thread/file we are set to restore 
@@ -4679,7 +5977,7 @@ void CKMotionCNCDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 			// round to 2 digits so fits in display
 			m_FeedRateRapidValue = ((int)(m_FeedRateRapidValue*100.0 + 0.5))/100.0;
 
-			s.Format("%.2f",m_FeedRateRapidValue);
+			s.Format(L"%.2f",m_FeedRateRapidValue);
 
 			SetDlgItemText(IDC_FeedRateEdit,s);
 			m_FeedSlider.SetPos(m_FeedRateRapidValue);
@@ -4692,7 +5990,7 @@ void CKMotionCNCDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 			// round to 2 digits so fits in display
 			m_FeedRateValue = ((int)(m_FeedRateValue*100.0 + 0.5))/100.0;
 
-			s.Format("%.2f",m_FeedRateValue);
+			s.Format(L"%.2f",m_FeedRateValue);
 
 			SetDlgItemText(IDC_FeedRateEdit,s);
 			
@@ -4710,7 +6008,7 @@ void CKMotionCNCDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		// round to 2 digits so fits in display
 		m_SpindleRateValue = ((int)(m_SpindleRateValue*100.0 + 0.5))/100.0;
 
-		s.Format("%.2f",m_SpindleRateValue);
+		s.Format(L"%.2f",m_SpindleRateValue);
 
 		SetDlgItemText(IDC_SpindleRateEdit,s);
 		
@@ -4768,13 +6066,47 @@ CKMotionCNCDlg::CKMotionCNCDlg(CWnd* pParent /*=NULL*/)
 	m_ColorFeed.Set(0,255,0);
 	m_ColorJump.Set(0,0,0);
 
+	// G-code viewer preview + cut progress.  Colours must be entries of the path
+	// palette (CPath3d::colorlookup) or they draw white.
+	m_ColorPreviewFeed.Set(150,150,150);	// medium gray (UNCUT_FEED_COLOR_INDEX)
+	m_ColorPreviewTraverse.Set(200,80,80);	// muted red   (UNCUT_RAPID_COLOR_INDEX)
+	m_ColorCutFeed.Set(255,255,255);		// white       (WHITE_COLOR_INDEX)
+	m_ColorCutTraverse.Set(255,175,175);	// light red   (CUT_RAPID_COLOR_INDEX)
+	m_PreviewRequestThread = -1;
+	m_PreviewRunning = false;
+	m_PreviewLaunching = false;
+	m_PreviewFinishPending = false;
+	m_PreviewFinishOk = false;
+	m_PreviewThread = -1;
+	m_PreviewValid = false;
+	m_PreviewFileSize = 0;
+	m_PreviewSetupSave = NULL;
+	m_ProgressActive = false;
+	m_ProgressIndex = 0;
+	m_ProgressSeqOffset = 0;
+	m_PreviewSeq0 = 0;
+	m_PreviewSeqMonotonic = m_PreviewLineMonotonic = false;
+	m_ChainValid = false;
+	m_ChainLine = m_ChainSeq = 0;
+	m_CompleteLine = m_CompleteSeq = 0;
+	m_CompleteStopped = false;
+	m_PreviewPrevValid = false;
+	m_PreviewPrevX = m_PreviewPrevY = m_PreviewPrevZ = 0.0;
+	m_PlaybackArmed = m_PlaybackRunning = m_PlaybackPaused = false;
+	m_PlaybackEnd = 0;
+	m_ToolViewValid = m_ProgressToolMoved = m_ProgressToolStartValid = false;
+	m_ToolViewX = m_ToolViewY = m_ToolViewZ = 0.0;
+	m_ProgressToolStartX = m_ProgressToolStartY = m_ProgressToolStartZ = 0.0;
+	m_ProgressAdvanceWall = 0.0;
+	m_PlaybackTime = m_PlaybackWall = 0.0;
+
 	m_GCodeTools = NULL;
 	GreenBrush = NULL;
 
 	FirstInitDlg=FirstStartup=true;
 	m_PerformPostHaltCommand=false;
 
-	GCodeMutex = new CMutex(FALSE,"GCodeInterpreter",NULL);
+	GCodeMutex = new CMutex(FALSE,L"GCodeInterpreter",NULL);
 	
 	int i;
 	for (i=0; i<N_USER_GCODE_FILES; i++)
@@ -4799,6 +6131,7 @@ CKMotionCNCDlg::CKMotionCNCDlg(CWnd* pParent /*=NULL*/)
 	m_EnableGamePad = true;
 	m_ZeroUsingFixtures = false;
 	m_ConfirmExit = true;
+	m_AllowConcaveCorners = false;
 	m_ToolLengthImmediately = false;
 	m_ToolTableDoM6 = false;
 	m_ArcsToSegs = true;
@@ -4838,6 +6171,20 @@ CKMotionCNCDlg::CKMotionCNCDlg(CWnd* pParent /*=NULL*/)
 	m_CountsPerInchZ = 100.0;
 	m_CountsPerInchU = 100.0;
 	m_CountsPerInchV = 100.0;
+	m_ActuatorLimits = FALSE;
+	for (i = 0; i < MAX_TP_ACTUATORS; i++)
+	{
+		m_ActScale[i] = 100.0;
+		m_MaxActVel[i] = 1.0;
+		m_MaxActAccel[i] = 10.0;
+		m_MaxActJerk[i] = 100.0;
+		m_ActDegrees[i] = FALSE;
+	}
+	m_ThirdOrderTP = FALSE;
+	m_TPLogSegs = FALSE;
+	m_TPCubicKnots = FALSE;
+	m_MaxJerkX = m_MaxJerkY = m_MaxJerkZ = m_MaxJerkA = 1.0;
+	m_MaxJerkB = m_MaxJerkC = m_MaxJerkU = m_MaxJerkV = 1.0;
 	m_Step0 = 0.0001;
 	m_Step1 = 0.001;
 	m_Step2 = 0.01;
@@ -4854,7 +6201,7 @@ CKMotionCNCDlg::CKMotionCNCDlg(CWnd* pParent /*=NULL*/)
 	m_SpindleCntsPerRev = 1000;
 	m_SafeZ = 0.0;
 	m_SafeRelAbs = 0;
-	m_JoyExtvx = m_JoyExtvy = m_JoyExtvz = m_JoyExtva = m_JoyExtvb = m_JoyExtvc = 0.0;
+	m_JoyExtvx = m_JoyExtvy = m_JoyExtvz = m_JoyExtva = m_JoyExtvb = m_JoyExtvc = m_JoyExtvu = m_JoyExtvv = 0.0;
 	m_SaveFixtureOnOK = TRUE;
 	m_EditScreenTimerStarted = m_OffsetTimerStarted = false;
 
@@ -4866,6 +6213,7 @@ CKMotionCNCDlg::CKMotionCNCDlg(CWnd* pParent /*=NULL*/)
 	m_Simulate = m_DoTime = FALSE;
 	m_ShowLineNumbers = FALSE;
 	m_LastToolSetupPage = 0;
+	m_LastConfigUnitsMM = FALSE;
 	m_ShowMach = FALSE;
 	m_FeedRateValue = 1.0;
 	m_FeedRateRapidValue = 1.0;
@@ -4888,9 +6236,9 @@ CKMotionCNCDlg::CKMotionCNCDlg(CWnd* pParent /*=NULL*/)
 	m_ArcRadiusTol=TOLERANCE_INCH_DEFAULT;
 	m_ArcRSmallTol=TOLERANCE_RSMALL_INCH_DEFAULT;
 
-	if (LoadLibrary("SciLexer.DLL")==NULL)
+	if (LoadLibrary(L"SciLexer.DLL")==NULL)
 	{
-		MessageBoxW(m_hWnd, /*TRAN*/TheFrame->KMotionDLL->Translate("The Scintilla DLL could not be loaded."),
+		MessageBox(/*TRAN*/TheFrame->KMotionDLL->Translate("The Scintilla DLL could not be loaded."),
 		/*TRAN*/TheFrame->KMotionDLL->Translate("Error loading Scintilla"),
 		MB_OK | MB_ICONERROR);
 	}
@@ -4908,6 +6256,8 @@ CKMotionCNCDlg::CKMotionCNCDlg(CWnd* pParent /*=NULL*/)
 	m_JoyMoveda = false;
 	m_JoyMovedb = false;
 	m_JoyMovedc = false;
+	m_JoyMovedu = false;
+	m_JoyMovedv = false;
 	m_LastFixtureDisplayed=m_LastToolDisplayed=-1;
 
 	m_RestoreStoppedState=false;
@@ -4926,6 +6276,8 @@ CKMotionCNCDlg::CKMotionCNCDlg(CWnd* pParent /*=NULL*/)
 		m_UserButtonKeys[i]=-1;
 
 	m_DisplayGViewer=FALSE;
+
+	EnableJogKeys = ForceDisableJogKeys = false;
 }
 
 CKMotionCNCDlg::~CKMotionCNCDlg()
@@ -4934,6 +6286,8 @@ CKMotionCNCDlg::~CKMotionCNCDlg()
 		delete m_GCodeTools;
 
 	if (GreenBrush) delete GreenBrush;
+
+	if (m_PreviewSetupSave) delete m_PreviewSetupSave;
 
 	delete m_pvBackBits;
 
@@ -4953,7 +6307,7 @@ void CKMotionCNCDlg::OnDropdownCommand()
 	
 	for (int i=0; i<NCOMMAND_HISTORY; i++)
 		if (!CommandHistory[i].IsEmpty())
-			m_Command.InsertItemW((CStringW)CommandHistory[i]);
+			m_Command.InsertItem(CommandHistory[i]);
 
 }
 
@@ -5017,7 +6371,7 @@ HCURSOR CKMotionCNCDlg::OnQueryDragIcon()
 
 void CKMotionCNCDlg::OnESC() 
 {
-	if (AfxMessageBox("ABORT?",MB_ICONQUESTION|MB_YESNO)==IDYES)
+	if (AfxMessageBox(L"ABORT?",MB_ICONQUESTION|MB_YESNO)==IDYES)
 		OnEmergencyStop();
 }
 
@@ -5060,16 +6414,16 @@ BOOL CKMotionCNCDlg::PreTranslateMessage(MSG* pMsg)
 		CComboBoxScreen *C = Screen.FindComboBoxScreenFromHandle(pMsg->hwnd);
 		if (C)
 		{
-			CStringW LocalToolTipText;
+			CString LocalToolTipText;
 
 			if (C->GetID() == IDC_fixture)
 			{
 				CString s;
 				double *d = &m_RealTimeSetup->parameters[5200 + (m_RealTimeSetup->origin_index * 20)];
 				LocalToolTipText.Format(L"Offsets X:%.4f Y:%.4f Z:%.4f", d[1], d[2], d[3]);
-				if (d[4] != 0) { s.Format(" A:%.4f", d[4]); LocalToolTipText += s; }
-				if (d[5] != 0) { s.Format(" B:%.4f", d[5]); LocalToolTipText += s; }
-				if (d[6] != 0) { s.Format(" C:%.4f", d[6]); LocalToolTipText += s; }
+				if (d[4] != 0) { s.Format(L" A:%.4f", d[4]); LocalToolTipText += s; }
+				if (d[5] != 0) { s.Format(L" B:%.4f", d[5]); LocalToolTipText += s; }
+				if (d[6] != 0) { s.Format(L" C:%.4f", d[6]); LocalToolTipText += s; }
 			}
 			else if (C->GetID() == IDC_tool)
 			{
@@ -5080,12 +6434,12 @@ BOOL CKMotionCNCDlg::PreTranslateMessage(MSG* pMsg)
 				if (T->Comment.IsEmpty()) { ToolTipText = "Tool"; }
 				else { LocalToolTipText = T->Comment; }
 
-				if (T->slot > 0) { s.Format(" Slot:%d", T->slot); LocalToolTipText += s; }
-				if (T->id > 0) { s.Format(" ID:%d", T->id); LocalToolTipText += s; }
-				if (T->length > 0) { s.Format(" Length:%.4f", T->length); LocalToolTipText += s; }
-				if (T->diameter > 0) { s.Format(" Diam:%.4f", T->diameter); LocalToolTipText += s; }
-				if (T->xoffset != 0) { s.Format(" X offset:%.4f", T->xoffset); LocalToolTipText += s; }
-				if (T->yoffset != 0) { s.Format(" Y offset:%.4f", T->yoffset); LocalToolTipText += s; }
+				if (T->slot > 0) { s.Format(L" Slot:%d", T->slot); LocalToolTipText += s; }
+				if (T->id > 0) { s.Format(L" ID:%d", T->id); LocalToolTipText += s; }
+				if (T->length > 0) { s.Format(L" Length:%.4f", T->length); LocalToolTipText += s; }
+				if (T->diameter > 0) { s.Format(L" Diam:%.4f", T->diameter); LocalToolTipText += s; }
+				if (T->xoffset != 0) { s.Format(L" X offset:%.4f", T->xoffset); LocalToolTipText += s; }
+				if (T->yoffset != 0) { s.Format(L" Y offset:%.4f", T->yoffset); LocalToolTipText += s; }
 			}
 			else
 			{
@@ -5163,7 +6517,7 @@ int CKMotionCNCDlg::DoJoyStick()
 			FirstFeedRateHigh=false;
 			// remember what it was
 			GetDlgItemText(IDC_FeedRateEdit,OrigFeedRate);
-			SetDlgItemText(IDC_FeedRateEdit,"2.0");
+			SetDlgItemText(IDC_FeedRateEdit,L"2.0");
 			PostMessage(WM_COMMAND,IDC_FeedRateApply);
 		}
 
@@ -5178,7 +6532,7 @@ int CKMotionCNCDlg::DoJoyStick()
 			FirstFeedRateLow=false;
 			// remember what it was
 			GetDlgItemText(IDC_FeedRateEdit,OrigFeedRate);
-			SetDlgItemText(IDC_FeedRateEdit,"0.5");
+			SetDlgItemText(IDC_FeedRateEdit,L"0.5");
 			PostMessage(WM_COMMAND,IDC_FeedRateApply);
 		}
 
@@ -5234,7 +6588,7 @@ int CKMotionCNCDlg::DoJoyStick()
 		//
 		// in case of loss of connection stop any jogs
 
-		m_Joyvx = m_Joyvy = m_Joyvz = m_Joyva = m_Joyvb = m_Joyvc = 0.0;
+		m_Joyvx = m_Joyvy = m_Joyvz = m_Joyva = m_Joyvb = m_Joyvc = m_Joyvu = m_Joyvv = 0.0;
 	}
 
 	// handle external Jog commands
@@ -5245,6 +6599,8 @@ int CKMotionCNCDlg::DoJoyStick()
 	if (m_Joyva == 0.0) m_Joyva = m_JoyExtva;
 	if (m_Joyvb == 0.0) m_Joyvb = m_JoyExtvb;
 	if (m_Joyvc == 0.0) m_Joyvc = m_JoyExtvc;
+	if (m_Joyvu == 0.0) m_Joyvu = m_JoyExtvu;
+	if (m_Joyvv == 0.0) m_Joyvv = m_JoyExtvv;
 
 
 	if (m_Simulate)
@@ -5255,6 +6611,8 @@ int CKMotionCNCDlg::DoJoyStick()
 		CM->current_a += m_Joyva * STATUS_TIME;
 		CM->current_b += m_Joyvb * STATUS_TIME;
 		CM->current_c += m_Joyvc * STATUS_TIME;
+		CM->current_u += m_Joyvu * STATUS_TIME;
+		CM->current_v += m_Joyvv * STATUS_TIME;
 	}
 	else
 	{
@@ -5262,6 +6620,530 @@ int CKMotionCNCDlg::DoJoyStick()
 	}
 
 	return 0;
+}
+
+// ----- Coordinated (kinematics-exact) jog streaming ----------------------
+//
+// Open-loop actuator velocity jogs cannot follow curved actuator paths:
+// the direction tangent goes stale at the Windows update rate (at
+// A=100 deg/s a 100ms-old tangent misses a 300mm tool point by many mm)
+// and independent per-axis accel ramps skew the velocity ratios during
+// every change.  Under nonlinear kinematics, jogs are instead STREAMED
+// as short coordinated moves: each timer tick dead-reckons the target
+// along the commanded CAD ray and appends that stretch through
+// StraightFeedAccelRapid (which subdivides through the kinematics
+// exactly like G-code feeds).  The controller then executes the exact
+// kinematic path at the servo rate:
+//  - per-axis velocity/accel limits are honored by the planner
+//  - axes not being jogged are held EXACTLY (no feedback needed, no
+//    final correction move)
+//  - if input pauses, the firmware's buffer-starvation feed-forward
+//    ramps TimeBase to zero ON PATH near the data end and ramps back up
+//    automatically when appending resumes
+//  - releasing the input flushes the tail, which plans a decel to rest
+//    exactly at the last streamed point
+// The jog uses the LEGACY planner (ThirdOrderTP temporarily off) with a
+// short TPLookahead so the stream launches quickly and OutputSegment's
+// throttle bounds any overfeed; pacing against wall time keeps roughly
+// COORD_JOG_HORIZON seconds buffered so the motion tracks the sticks.
+
+#define COORD_JOG_MINLEN    2e-4  // accumulate very slow jogs until the
+                                  // stretch is resolvable (CAD units)
+
+static UINT CoordJogWorkerEntry(LPVOID p)
+{
+	((CKMotionCNCDlg*)p)->CoordJogWorker();
+	return 0;
+}
+
+// Probe whether the kinematics is locally NONLINEAR along the commanded
+// jog direction: transform the endpoints and midpoint of a FIXED
+// CAD-space span - if the midpoint image deviates from the chord by more
+// than a fraction of a count the actuator path is curved and velocity
+// jogs cannot follow it.  Purely linear machines return false and keep
+// the classic jog behavior identically.
+// The span must NOT scale with the commanded speed (it originally probed
+// v * 4*STATUS_TIME): chord sagitta grows with span squared, so the same
+// pose then classified nonlinear at 100% jog speed but linear at Slow
+// 25% - the two speeds took entirely different jog mechanisms.
+#define COORD_JOG_PROBE_SPAN 0.4   // CAD units, ~ what a 1 unit/s jog
+                                   // covers in the classic jog's pacing
+bool CKMotionCNCDlg::JogKinematicsNonlinear(double *v)
+{
+	int i;
+	CCoordMotion *CM=Interpreter->CoordMotion;
+	double d[8], A0[MAX_ACTUATORS], A1[MAX_ACTUATORS], Am[MAX_ACTUATORS];
+
+	double F=0;
+	for (i=0;i<8;i++) F += v[i]*v[i];
+	F = sqrt(F);
+	if (F < 1e-12) return false;
+
+	for (i=0;i<8;i++) d[i]=v[i]*(COORD_JOG_PROBE_SPAN/F);
+
+	double x=CurAbsX, y=CurAbsY, z=CurAbsZ, a=CurAbsA;
+	double b=CurAbsB, c=CurAbsC, u=CurAbsU, vv=CurAbsV;
+
+	if (CM->Kinematics->TransformCADtoActuators(x, y, z, a, b, c, u, vv, A0)) return false;
+	if (CM->Kinematics->TransformCADtoActuators(x+d[0], y+d[1], z+d[2], a+d[3],
+			b+d[4], c+d[5], u+d[6], vv+d[7], A1)) return false;
+	if (CM->Kinematics->TransformCADtoActuators(x+d[0]/2, y+d[1]/2, z+d[2]/2, a+d[3]/2,
+			b+d[4]/2, c+d[5]/2, u+d[6]/2, vv+d[7]/2, Am)) return false;
+
+	double err=0, span=0;
+	for (i=0;i<MAX_ACTUATORS;i++)
+	{
+		double e=fabs(Am[i]-0.5*(A0[i]+A1[i]));
+		double s=fabs(A1[i]-A0[i]);
+		if (e>err) err=e;
+		if (s>span) span=s;
+	}
+	return err > 0.25 && err > 1e-6*span;   // curved by > 1/4 count
+}
+
+// UI side of a streaming jog: publish the commanded CAD velocities and
+// make sure the worker thread is running.  NEVER blocks - all controller
+// communication happens on the worker.
+int CKMotionCNCDlg::DoCoordinatedJog(double *v)
+{
+	int i;
+
+	if (!m_CoordJogCSInit)
+	{
+		InitializeCriticalSection(&m_CoordJogCS);
+		m_CoordJogCSInit = true;
+	}
+
+	EnterCriticalSection(&m_CoordJogCS);
+	for (i=0;i<8;i++) m_CoordJogV[i]=v[i];
+	LeaveCriticalSection(&m_CoordJogCS);
+
+	bool anyv=false;
+	for (i=0;i<8;i++) if (v[i]!=0.0) anyv=true;
+
+	static bool s_prevAny = false;   // for release-EDGE detection below
+
+	if (!m_CoordJogActive)
+	{
+		if (!anyv) { s_prevAny = false; return 0; }
+
+		m_CoordJogActive = true;    // worker clears on exit
+		AfxBeginThread(::CoordJogWorkerEntry, this);
+	}
+	else if (!anyv && s_prevAny)
+	{
+		// RELEASE EDGE: stop NOW from this (GUI) thread rather than
+		// waiting for the worker to notice.  Near a kinematic fold one
+		// worker operation (replan over the inflated buffered set + a
+		// download chunk) takes 0.2-0.35s, so worker-detected release
+		// always lags the button.
+		// The flag FIRST, and UNGATED: the worker may be inside a
+		// controller-paced DLWAIT - including one entered by
+		// OutputSegment's own auto-launch BEFORE the worker ever set
+		// m_CoordJogLaunched (near a fold one emission can finalize
+		// past the auto-launch threshold in a single call).  Gating
+		// the flag on m_CoordJogLaunched left that wait unsupervised:
+		// a release during it sent nothing and the board ran the
+		// emission excess at full speed until the wait drained.
+		Interpreter->CoordMotion->m_JogReleaseRequested = true;
+
+		if (m_CoordJogLaunched)
+		{
+			// The STOP COMMAND stays gated on the coordinated buffer
+			// actually EXECUTING (m_CoordJogLaunched, maintained by the
+			// worker): a stop sent to an idle controller parks an
+			// independent-stop state that nothing clears - observed as
+			// feedhold pinned ON after velocity flickers re-fired the
+			// release edge post-teardown.
+			// SetFROwRateTemp ramps TimeBase to zero at the PLANNER-limit
+			// rate (the content was planned within those limits, so it
+			// can stop within them) - the firmware's channel-parameter
+			// stop cushion made near-fold stops take ~1s.  It also raises
+			// no stop state, so the feedhold indicator never flashes.
+			CStringA scmd;
+			scmd.Format("SetFROwRateTemp 0 %.3f", m_CoordJogStopTime);
+			TheFrame->KMotionDLL->WriteLine(scmd);
+		}
+	}
+	s_prevAny = anyv;
+	return 0;
+}
+
+// Worker thread: stream the jog as coordinated motion until the input is
+// released, then drain and clean up.  Runs the CONFIGURED planner (legacy
+// or 3rd Order - StraightFeedAccelRapid routes by MP->ThirdOrderTP) with
+// a shortened TPLookahead so the stream launches promptly and stays only
+// a fraction of a second ahead of execution.
+//
+// The wrapper below re-runs the jog pass if the operator pressed a jog
+// again while the previous pass was still tearing down: such a press
+// only updates m_CoordJogV (the GUI sees m_CoordJogActive and spawns no
+// new worker), and was previously swallowed - the jog appeared dead for
+// ~0.5s after every stop.
+void CKMotionCNCDlg::CoordJogWorker()
+{
+	for (;;)
+	{
+		CoordJogWorkerOnce();
+
+		bool again = false;
+		EnterCriticalSection(&m_CoordJogCS);
+		for (int i=0;i<8;i++) if (m_CoordJogV[i]!=0.0) again=true;
+		LeaveCriticalSection(&m_CoordJogCS);
+		if (!again || Interpreter->CoordMotion->GetAbort()) break;
+		Sleep(50);   // paced: a comms-dead pass cannot hot-loop
+	}
+	m_CoordJogActive = false;
+}
+
+void CKMotionCNCDlg::CoordJogWorkerOnce()
+{
+	int i, tries;
+	CCoordMotion *CM=Interpreter->CoordMotion;
+	MOTION_PARAMS *MP=CM->GetMotionParams();
+	CStringA response;
+	double v[8], target[8];
+	double SaveLookahead = MP->TPLookahead;
+	bool ok = true;
+
+	// settle guard: take the position reference only at rest (bounded wait)
+	for (tries = 0; tries < 300; tries++)
+	{
+		if (TheFrame->KMotionDLL->WriteLineReadLine("CheckDoneXYZABC",response.GetBufferSetLength(MAX_LINE)))
+			{ return; }
+		response.ReleaseBuffer();
+		if (response != "0")
+		{
+			if (TheFrame->KMotionDLL->WriteLineReadLine("CheckDoneBuf",response.GetBufferSetLength(MAX_LINE)))
+				{ return; }
+			response.ReleaseBuffer();
+			if (response != "0") break;
+		}
+		Sleep(10);
+	}
+	if (tries >= 300) { return; }
+
+	// start the streaming run from the actual machine position
+	if (CM->ReadCurAbsPosition(&CM->current_x,&CM->current_y,&CM->current_z,&CM->current_a,
+			&CM->current_b,&CM->current_c,&CM->current_u,&CM->current_v,true))
+		{ return; }
+
+	target[0]=CM->current_x; target[1]=CM->current_y;
+	target[2]=CM->current_z; target[3]=CM->current_a;
+	target[4]=CM->current_b; target[5]=CM->current_c;
+	target[6]=CM->current_u; target[7]=CM->current_v;
+
+	// Jog horizon: fixed.  The host now declares the buffer's ACTUAL
+	// worst-case stop time to the controller (SetStarveTime, emitted
+	// automatically by OutputSegment), so the firmware's starvation
+	// margin matches the jog's real speed instead of the
+	// worst-case-from-max-velocity default - the horizon works for slow
+	// AND fast machines.  Sized to ride through a step in the planner's
+	// emission margin: the end-fade term is TIME through a fixed arc
+	// length, so when nonlinear kinematics slow the actuator path mid-jog
+	// the margin can jump by most of a second in one replan and that
+	// update emits NOTHING (observed: 1.60 -> 2.35s on a 3Link X jog).
+	// With only 0.25s downloaded the controller ran dry before the next
+	// update (underflow canary at 0.24s ahead).  Release latency is
+	// unaffected - release stops via the FRO ramp, not by draining the
+	// buffer; the cost is a slightly longer launch fill.  The DLWAIT cap
+	// (lookahead) must stay above the horizon or bursts can never top
+	// the cushion up.
+	double lookahead = 0.85;
+	double horizon = 0.75;
+
+	// The 3rd Order streaming planner withholds its emission margin
+	// (decel shadow + jerk filter history + end-fade TIME) from
+	// finalization: nothing downloads until MORE than that much content
+	// is buffered.  The stream allowance must exceed it or the jog can
+	// never emit a single sample - the planner swallows everything
+	// streamed, the launch no-ops forever, and the jog does nothing (or
+	// crawls at a few percent).  The margin is speed dependent (the end
+	// fade is a fixed ARC length, so its TIME grows as the actuator
+	// path slows - dramatically near a kinematic fold), so the bound is
+	// re-read from the planner's ACTUAL margin every pass below.
+	double stream_bound = CM->TP3ActualEmissionMargin() + horizon + 0.5;
+	if (stream_bound < 1.5) stream_bound = 1.5;
+
+	MP->TPLookahead = lookahead;
+	CM->m_LookaheadOverride = true;   // our own short Lookahead - don't warn
+	                                  // about the user's configured value
+
+	CM->ClearAbort();
+	CM->ClearHalt();
+	CM->m_JogReleaseRequested = false;   // armed by the GUI at release
+	CM->SetTPParams();
+	m_CoordJogStopTime = CM->TP3PlannedStopTime();   // release ramp time
+
+	double streamed = 0.0;
+	DWORD T0 = GetTickCount();
+	bool launched = false;
+
+	for (;;)
+	{
+		EnterCriticalSection(&m_CoordJogCS);
+		for (i=0;i<8;i++) v[i]=m_CoordJogV[i];
+		LeaveCriticalSection(&m_CoordJogCS);
+
+		bool anyv=false;
+		for (i=0;i<8;i++) if (v[i]!=0.0) anyv=true;
+		if (!anyv) break;   // released: stop below
+		if (CM->GetAbort()) { ok=false; break; }
+
+		// executed time from the controller (negative = not launched or
+		// externally stopped)
+		double exec = 0.0;
+		{
+			if (TheFrame->KMotionDLL->WriteLineReadLine("ExecTime",response.GetBufferSetLength(MAX_LINE)))
+				{ ok=false; break; }
+			response.ReleaseBuffer();
+			double e;
+			if (sscanf(response, "%lf", &e) == 1)
+			{
+				if (e >= 0.0) exec = e;
+				else if (launched)
+				{
+					// Negative after launch: either the buffer RAN DRY
+					// (executed everything downloaded before the next
+					// download burst arrived - the controller finishes
+					// and reports not-executing) or an EXTERNAL stop
+					// (feedhold, halt).  GetStopState discriminates:
+					// 0 = nothing stopped us - re-arm and relaunch once
+					// more content is down; nonzero = real stop.
+					CStringA ss;
+					if (TheFrame->KMotionDLL->WriteLineReadLine("GetStopState",ss.GetBufferSetLength(MAX_LINE)))
+						{ ok=false; break; }
+					ss.ReleaseBuffer();
+					if (ss != "0")
+						break;       // real external stop: tear down
+					CM->RearmCoordLaunch();  // ran dry: re-arm ExecBuf
+					launched = false;
+				}
+			}
+		}
+
+		// Pace on DOWNLOADED time vs EXECUTED time.  The controller can
+		// only consume segments the planner has marked Done and the host
+		// has downloaded - at fast jog speeds the Done-marking lags the
+		// stream end by the decel shadow, so pacing on commanded time vs
+		// wall clock underfed the controller (observed as a mid-jog
+		// buffer underflow).  Append stretches until the downloaded
+		// prefix truly covers the horizon.
+		// track the planner's actual margin (grows as the buffered path
+		// slows; the initial estimate is only a floor)
+		double sb = CM->TP3ActualEmissionMargin() + horizon + 0.5;
+		if (sb > stream_bound) stream_bound = sb;
+
+		double elapsed = (DWORD)(GetTickCount()-T0)*1e-3;
+		int guard = 0;
+		DWORD burst0 = GetTickCount();
+		while ((CM->m_TotalDownloadedTime - exec) < horizon
+				&& streamed - elapsed < stream_bound  // runaway bound (> planner emission margin)
+				&& guard++ < 12)
+		{
+			// Respond to RELEASE inside the burst: near a kinematic fold
+			// the buffered waypoint set is large and each stretch's
+			// replan is expensive - a full 12-stretch burst was observed
+			// taking ~1 second, during which the button release went
+			// unseen and the machine kept following the streamed path.
+			// Also cap the burst's wall time for the same reason.
+			EnterCriticalSection(&m_CoordJogCS);
+			for (i=0;i<8;i++) v[i]=m_CoordJogV[i];
+			LeaveCriticalSection(&m_CoordJogCS);
+			anyv=false;
+			for (i=0;i<8;i++) if (v[i]!=0.0) anyv=true;
+			if (!anyv) break;
+			if (GetTickCount() - burst0 > 100) break;   // re-check release at least 10x/sec
+
+			double dt = 0.10;
+			BOOL pure_angle;
+			double F = CM->FeedRateDistance(v[0],v[1],v[2],v[3],v[4],v[5],v[6],v[7],&pure_angle);
+			if (F <= 1e-9 || F*dt < COORD_JOG_MINLEN) break;
+
+			double t[8];
+			for (i=0;i<8;i++) t[i]=target[i]+v[i]*dt;
+
+			if (CM->StraightFeedAccelRapid(F, 1e99, false, true,
+					t[0],t[1],t[2],t[3],t[4],t[5],t[6],t[7], 0, 0))
+			{
+				// A nonzero return here is USUALLY the DLWAIT release
+				// bail surfacing through the in-flight call (the GUI
+				// froze the controller and set m_JogReleaseRequested) -
+				// that is a clean RELEASE, not a planner failure, and
+				// must not SetAbort.
+				if (CM->m_JogReleaseRequested)
+					break;
+				ok=false; break;
+			}
+
+			for (i=0;i<8;i++) target[i]=t[i];
+			streamed += dt;
+
+			// start execution as soon as anything is downloaded - the
+			// auto-launch waits for TPLookahead of PLANNED time, which a
+			// slow jog never reaches.  Only mark launched once something
+			// HAS downloaded: LaunchIfNotStarted no-ops on an empty
+			// buffer (3rd Order planner still inside its emission
+			// margin), and treating that as launched made the negative
+			// ExecTime that follows look like an external stop - the jog
+			// tore down ~40ms after the press without ever moving.
+			// Launch only once a real cushion is downloaded: launching on
+			// the first knot (20ms) let the controller execute it to
+			// completion before the next download burst (~30ms cadence)
+			// arrived - it then reported not-executing and the jog tore
+			// down after 0.5mm.  0.15s rides through several bursts (and
+			// content time accumulates fast - the stream runs well ahead
+			// of real time - so the added press-to-motion latency is ms).
+			if (CM->m_TotalDownloadedTime > 0.15)
+			{
+				// Never (re)launch after the release edge: the GUI's
+				// SetFROwRateTemp raised no stop state, so a late
+				// ExecBuf would SNAP TimeBase straight back to full
+				// rate (firmware restores TIMEBASE*LastFRO whenever
+				// StoppingState==0) and resume the abandoned buffer.
+				if (CM->m_JogReleaseRequested)
+					break;
+				if (CM->LaunchIfNotStarted()) { ok=false; break; }
+				if (!launched)
+				{
+					launched = true;
+					m_CoordJogLaunched = true;   // enables the GUI release stop
+				}
+			}
+		}
+		if (!ok) break;
+		Sleep(20);
+	}
+
+	{
+		// RELEASE: feedhold instead of running out the streamed buffer.
+		// StopImmediate0's TimeBase ramp is computed by the firmware from
+		// the CURRENT axis velocities, so it stops ON PATH in the true
+		// decel distance; draining the buffer instead would continue to
+		// the end of everything streamed ahead (a horizon's worth of
+		// overshoot).  The remaining streamed path is then abandoned.
+		bool comms = true;
+
+		// VERIFIED stop.  First attempt: SetFROwRateTemp 0 - ramps
+		// TimeBase to rest at the PLANNER-limit rate (fast: the content
+		// was planned within those limits) with no stop state raised.
+		// Wait for ExecTime to freeze (ramp done) or go negative (buffer
+		// finished), detach with StopImmediate2, and CONFIRM the
+		// controller reports not-executing - a relaunch ExecBuf could
+		// still be in flight from the last streaming burst.  Retries
+		// fall back to StopImmediate0 (belt and braces).
+		for (int attempt = 0; comms && attempt < 5; attempt++)
+		{
+			if (attempt == 0)
+			{
+				CStringA scmd;
+				scmd.Format("SetFROwRateTemp 0 %.3f", m_CoordJogStopTime);
+				if (TheFrame->KMotionDLL->WriteLine(scmd)) { comms=false; ok=false; break; }
+			}
+			else
+			{
+				if (TheFrame->KMotionDLL->WriteLine("StopImmediate0")) { comms=false; ok=false; break; }
+
+				for (tries = 0; tries < 500; tries++)
+				{
+					if (TheFrame->KMotionDLL->WriteLineReadLine("GetStopState",response.GetBufferSetLength(MAX_LINE)))
+						{ comms=false; ok=false; break; }
+					response.ReleaseBuffer();
+					// 3/4 = stopped (coord/indep); 0 = the stop found nothing
+					if (response=="3" || response=="4" || response=="0") break;
+					Sleep(10);
+				}
+				if (!comms) break;
+			}
+
+			// wait for the ramp: ExecTime frozen (two equal reads) or
+			// negative (buffer ran out first)
+			double lastE = -1e9;
+			int same = 0;
+			for (tries = 0; tries < 100; tries++)
+			{
+				if (TheFrame->KMotionDLL->WriteLineReadLine("ExecTime",response.GetBufferSetLength(MAX_LINE)))
+					{ comms=false; ok=false; break; }
+				response.ReleaseBuffer();
+				double e1;
+				if (sscanf(response, "%lf", &e1) != 1) break;
+				if (e1 < 0.0) break;
+				if (fabs(e1 - lastE) < 1e-6) { if (++same >= 2) break; }
+				else { same = 0; lastE = e1; }
+				Sleep(30);
+			}
+			if (!comms) break;
+
+			// StopImmediate2 detaches the buffer and clears any stop
+			// state (an uncleared StopImmediate0 would pin StoppingState
+			// and freeze the NEXT ExecBuf at TimeBase 0)
+			if (TheFrame->KMotionDLL->WriteLine("StopImmediate2")) { ok=false; break; }
+
+			// let any in-flight ExecBuf land, then confirm not executing
+			Sleep(50);
+			if (TheFrame->KMotionDLL->WriteLineReadLine("ExecTime",response.GetBufferSetLength(MAX_LINE)))
+				{ comms=false; ok=false; break; }
+			response.ReleaseBuffer();
+			double e2;
+			if (sscanf(response, "%lf", &e2) == 1 && e2 < 0.0)
+				break;   // confirmed stopped
+			// still executing (e.g. an in-flight relaunch ExecBuf beat the
+			// stop): loop to the next attempt's StopImmediate0 fallback
+		}
+
+		// SETTLE: backstop for a stop state left standing after the
+		// attempt loop - e.g. the StopImmediate0 fallback parked
+		// StoppingState and its paired StopImmediate2 failed transiently.
+		// An uncleared state would pin the feedhold indicator ON with the
+		// abandoned buffer still attached (toggling feedhold would then
+		// RESUME orphaned content in little lurches), and every following
+		// jog pass would die in its at-rest settle guard.  Clear it:
+		// StopImmediate2 also detaches the buffer, so nothing is left to
+		// resume.
+		for (int settle = 0; comms && settle < 6; settle++)
+		{
+			Sleep(75);
+			if (TheFrame->KMotionDLL->WriteLineReadLine("GetStopState",response.GetBufferSetLength(MAX_LINE)))
+				{ comms=false; ok=false; break; }
+			response.ReleaseBuffer();
+			if (response == "0")
+				break;
+			if (TheFrame->KMotionDLL->WriteLine("StopImmediate2")) { ok=false; break; }
+		}
+
+		// reset the host planner and download bookkeeping.  NOT via
+		// SetAbort+ClearAbort: raising the global abort flag from this
+		// thread invited a concurrent ClearAbort (e.g. a GUI action)
+		// into the same TP3 teardown - observed as a double-delete of
+		// the streaming planner
+		CM->AbandonCoordBuffer();
+	}
+	if (!ok) CM->SetAbort();   // ClearAbort at next start resets planner state
+
+	MP->TPLookahead = SaveLookahead;
+	CM->m_LookaheadOverride = false;  // restored: the user's Lookahead is
+	                                  // in effect again and may warn
+	CM->SetTPParams();
+
+	// machine is at rest exactly on the commanded path; restart the
+	// classic jog bookkeeping from here
+	if (ok)
+	{
+		double ActsDest[MAX_ACTUATORS], ActsVel[MAX_ACTUATORS];
+		if (GetCurrentDestsVels(ActsDest, ActsVel, &CurAbsX, &CurAbsY, &CurAbsZ,
+				&CurAbsA, &CurAbsB, &CurAbsC, &CurAbsU, &CurAbsV)==0)
+		{
+			m_Joyx0 = CurAbsX; m_Joyy0 = CurAbsY; m_Joyz0 = CurAbsZ; m_Joya0 = CurAbsA;
+			m_Joyb0 = CurAbsB; m_Joyc0 = CurAbsC; m_Joyu0 = CurAbsU; m_Joyv0 = CurAbsV;
+		}
+	}
+	m_JoyMovedx = m_JoyMovedy = m_JoyMovedz = m_JoyMoveda =
+	m_JoyMovedb = m_JoyMovedc = m_JoyMovedu = m_JoyMovedv = false;
+
+	CM->m_JogReleaseRequested = false;
+	m_CoordJogLaunched = false;   // GUI release stop disabled until next launch
+	// m_CoordJogActive is cleared by the CoordJogWorker wrapper - it may
+	// re-run this pass for a press that arrived during the teardown.
 }
 
 int CKMotionCNCDlg::ProcessChangeInJogVelocity()
@@ -5272,13 +7154,13 @@ int CKMotionCNCDlg::ProcessChangeInJogVelocity()
 	CCoordMotion *CM=Interpreter->CoordMotion;
 	double ActsDest[MAX_ACTUATORS];
 	double ActsVel[MAX_ACTUATORS];
-	double v[ACTUATORS_CONTROLLED];
+	double v[MAX_ACTUATORS];
 
 	if (DoAFinalMove)
 	{
 		// check if we came to a stop yet (either from Jog to stop, or from offset)
 
-		CString response;
+		CStringA response;
 		if (TheFrame->KMotionDLL->WriteLineReadLine("CheckDoneXYZABC",response.GetBufferSetLength(MAX_LINE)))
 		{
 			DoAFinalMove=false; // clear this on fatal error
@@ -5299,6 +7181,8 @@ int CKMotionCNCDlg::ProcessChangeInJogVelocity()
 			if (CM->GetAxisDone(CM->a_axis,&Done)) {CM->SetAbort(); return 1;} else {if (Done==0) return 0;}
 			if (CM->GetAxisDone(CM->b_axis,&Done)) {CM->SetAbort(); return 1;} else {if (Done==0) return 0;}
 			if (CM->GetAxisDone(CM->c_axis,&Done)) {CM->SetAbort(); return 1;} else {if (Done==0) return 0;}
+			if (CM->GetAxisDone(CM->u_axis,&Done)) {CM->SetAbort(); return 1;} else {if (Done==0) return 0;}
+			if (CM->GetAxisDone(CM->v_axis,&Done)) {CM->SetAbort(); return 1;} else {if (Done==0) return 0;}
 		}
 
 
@@ -5308,7 +7192,7 @@ int CKMotionCNCDlg::ProcessChangeInJogVelocity()
 			// or to where it currently is depending on whether that
 			// axis was ever moved or not
 
-			if (GetCurrentDestsVels(ActsDest, ActsVel, &CurAbsX, &CurAbsY, &CurAbsZ, &CurAbsA, &CurAbsB, &CurAbsC)) return 1;
+			if (GetCurrentDestsVels(ActsDest, ActsVel, &CurAbsX, &CurAbsY, &CurAbsZ, &CurAbsA, &CurAbsB, &CurAbsC, &CurAbsU, &CurAbsV)) return 1;
 
 
 			double x = m_JoyMovedx ? CurAbsX : m_Joyx0;
@@ -5317,12 +7201,14 @@ int CKMotionCNCDlg::ProcessChangeInJogVelocity()
 			double a = m_JoyMoveda ? CurAbsA : m_Joya0;
 			double b = m_JoyMovedb ? CurAbsB : m_Joyb0;
 			double c = m_JoyMovedc ? CurAbsC : m_Joyc0;
-		
+			double u = m_JoyMovedu ? CurAbsU : m_Joyu0;
+			double v = m_JoyMovedv ? CurAbsV : m_Joyv0;
+
 			double Acts[MAX_ACTUATORS];
 
-			CM->Kinematics->TransformCADtoActuators(x, y, z, a, b, c, Acts);
+			CM->Kinematics->TransformCADtoActuators(x, y, z, a, b, c, u, v, Acts);
 
-			for (int i=0; i<ACTUATORS_CONTROLLED; i++)
+			for (int i=0; i< MAX_ACTUATORS; i++)
 				if (DoActPosition(i,Acts[i])) return 1;
 
 			m_JoyMovedx = false;
@@ -5331,6 +7217,8 @@ int CKMotionCNCDlg::ProcessChangeInJogVelocity()
 			m_JoyMoveda = false;
 			m_JoyMovedb = false;
 			m_JoyMovedc = false;
+			m_JoyMovedu = false;
+			m_JoyMovedv = false;
 
 			WaitingForFinalMove = true;
 			return 0;
@@ -5344,6 +7232,8 @@ int CKMotionCNCDlg::ProcessChangeInJogVelocity()
 		m_Joya0 = CurAbsA;
 		m_Joyb0 = CurAbsB;
 		m_Joyc0 = CurAbsC;
+		m_Joyu0 = CurAbsU;
+		m_Joyv0 = CurAbsV;
 
 		DoAFinalMove = WaitingForFinalMove = false;
 	}
@@ -5355,6 +7245,8 @@ int CKMotionCNCDlg::ProcessChangeInJogVelocity()
 	v[3] = m_Joyva;
 	v[4] = m_Joyvb;
 	v[5] = m_Joyvc;
+	v[6] = m_Joyvu;
+	v[7] = m_Joyvv;
 
 	m_Right2.PutRawV(v);
 	m_Right.PutRawV(v);
@@ -5386,20 +7278,55 @@ int CKMotionCNCDlg::ProcessChangeInJogVelocity()
 	m_Cminus2.PutRawV(v);
 	m_Cminus.PutRawV(v);
 
+	m_Uplus2.PutRawV(v);
+	m_Uplus.PutRawV(v);
+	m_Uminus2.PutRawV(v);
+	m_Uminus.PutRawV(v);
+
+	m_Vplus2.PutRawV(v);
+	m_Vplus.PutRawV(v);
+	m_Vminus2.PutRawV(v);
+	m_Vminus.PutRawV(v);
+
+
+	// Nonlinear-kinematics jogging: velocity jogs cannot follow curved
+	// actuator paths, so stream the jog as coordinated motion instead
+	// (see DoCoordinatedJog above).
+	// A machine with ANY derived kinematics class (or an active geo-
+	// correction table) ALWAYS jogs coordinated: the local chord probe
+	// alone misrouted locally-flat poses to the classic per-channel jog
+	// (observed on 3Link mid-workspace - the press silently took the
+	// classic path, which follows actuator-space rays instead of the
+	// CAD ray and stops at the channel Accel/Jerk decel, ~1s at soft
+	// demo settings, instead of the planner-limit stop).  The probe
+	// still governs trivial linear kinematics, so classic machines
+	// keep classic jog behavior identically.
+	{
+		CKinematics *Kin = Interpreter->CoordMotion->Kinematics;
+		bool KinNontrivial = (typeid(*Kin) != typeid(CKinematics)) || Kin->GeoTableValid;
+
+		if (m_CoordJogActive ||
+			((v[0]!=0 || v[1]!=0 || v[2]!=0 || v[3]!=0 ||
+			  v[4]!=0 || v[5]!=0 || v[6]!=0 || v[7]!=0)
+				&& !ThreadIsExecuting
+				&& (KinNontrivial || JogKinematicsNonlinear(v))))
+			return DoCoordinatedJog(v);
+	}
+
 
 	// Check if we are to stop
-	
-	if (v[0]==0 && v[1]==0 && v[2]==0 && v[3]==0 && v[4]==0 && v[5]==0)
+
+	if (v[0]==0 && v[1]==0 && v[2]==0 && v[3]==0 && v[4] == 0 && v[5] == 0 && v[6] == 0 && v[7] == 0)
 	{
 		// check if we had been moving
 
-		if (m_JoyMovedx || m_JoyMovedy || m_JoyMovedz || m_JoyMoveda || m_JoyMovedb || m_JoyMovedc)
+		if (m_JoyMovedx || m_JoyMovedy || m_JoyMovedz || m_JoyMoveda || m_JoyMovedb || m_JoyMovedc || m_JoyMovedu || m_JoyMovedv)
 		{
-			for (i = 0; i < ACTUATORS_CONTROLLED; i++) ActsVel[i] = 0.0;
+			for (i = 0; i < MAX_ACTUATORS; i++) ActsVel[i] = 0.0;
 			DoAllActVelocity(ActsVel);  // Stop all actuators
 
 			// Unless we are in FeedHold (likely due to a limit condition)do a final move
-			CString response;
+			CStringA response;
 			if (TheFrame->KMotionDLL->WriteLineReadLine("GetStopState",response.GetBufferSetLength(MAX_LINE))) return 1;
 			response.ReleaseBuffer();
 			if (response == '0')
@@ -5408,7 +7335,7 @@ int CKMotionCNCDlg::ProcessChangeInJogVelocity()
 			}
 			else
 			{
-				m_JoyMovedx=m_JoyMovedy=m_JoyMovedz=m_JoyMoveda=m_JoyMovedb=m_JoyMovedc=false;
+				m_JoyMovedx = m_JoyMovedy = m_JoyMovedz = m_JoyMoveda = m_JoyMovedb = m_JoyMovedc = m_JoyMovedu = m_JoyMovedv = false;
 			}
 		}
 		else
@@ -5421,12 +7348,16 @@ int CKMotionCNCDlg::ProcessChangeInJogVelocity()
 			m_Joya0 = CurAbsA;
 			m_Joyb0 = CurAbsB;
 			m_Joyc0 = CurAbsC;
+			m_Joyu0 = CurAbsU;
+			m_Joyv0 = CurAbsV;
 			m_JoyMovedx = false;
 			m_JoyMovedy = false;
 			m_JoyMovedz = false;
 			m_JoyMoveda = false;
 			m_JoyMovedb = false;
 			m_JoyMovedc = false;
+			m_JoyMovedu = false;
+			m_JoyMovedv = false;
 		}
 	}
 	else
@@ -5439,6 +7370,8 @@ int CKMotionCNCDlg::ProcessChangeInJogVelocity()
 		if (v[3] != 0.0) m_JoyMoveda = true;
 		if (v[4] != 0.0) m_JoyMovedb = true;
 		if (v[5] != 0.0) m_JoyMovedc = true;
+		if (v[6] != 0.0) m_JoyMovedu = true;
+		if (v[7] != 0.0) m_JoyMovedv = true;
 
 		// if an axis was never moved since the last time we were still
 		// then drive it back toward it's original coordinate at a rate
@@ -5462,6 +7395,12 @@ int CKMotionCNCDlg::ProcessChangeInJogVelocity()
 		if (!m_JoyMovedc)
 			v[5] = (m_Joyc0 - CurAbsC) / STATUS_TIME;
 
+		if (!m_JoyMovedu)
+			v[6] = (m_Joyu0 - CurAbsU) / STATUS_TIME;
+
+		if (!m_JoyMovedv)
+			v[7] = (m_Joyv0 - CurAbsV) / STATUS_TIME;
+
 
 		double Acts0[MAX_ACTUATORS];
 		double Acts1[MAX_ACTUATORS];
@@ -5472,6 +7411,8 @@ int CKMotionCNCDlg::ProcessChangeInJogVelocity()
 		double a0 = CurAbsA;
 		double b0 = CurAbsB;
 		double c0 = CurAbsC;
+		double u0 = CurAbsU;
+		double v0 = CurAbsV;
 
 		double x1 = x0 + v[0] * STATUS_TIME;
 		double y1 = y0 + v[1] * STATUS_TIME;
@@ -5479,11 +7420,13 @@ int CKMotionCNCDlg::ProcessChangeInJogVelocity()
 		double a1 = a0 + v[3] * STATUS_TIME;
 		double b1 = b0 + v[4] * STATUS_TIME;
 		double c1 = c0 + v[5] * STATUS_TIME;
+		double u1 = u0 + v[6] * STATUS_TIME;
+		double v1 = v0 + v[7] * STATUS_TIME;
 
-		CM->Kinematics->TransformCADtoActuators(x0, y0, z0, a0, b0, c0, Acts0);
-		CM->Kinematics->TransformCADtoActuators(x1, y1, z1, a1, b1, c1, Acts1);
+		CM->Kinematics->TransformCADtoActuators(x0, y0, z0, a0, b0, c0, u0, v0, Acts0);
+		CM->Kinematics->TransformCADtoActuators(x1, y1, z1, a1, b1, c1, u1, v1, Acts1);
 
-		for (i = 0; i < ACTUATORS_CONTROLLED; i++) ActsVel[i] = (Acts1[i] - Acts0[i]) / STATUS_TIME;
+		for (i = 0; i < MAX_ACTUATORS; i++) ActsVel[i] = (Acts1[i] - Acts0[i]) / STATUS_TIME;
 		if (DoAllActVelocity(ActsVel)) return 1;  // Move all actuators
 	}
 	return 0;
@@ -5491,44 +7434,60 @@ int CKMotionCNCDlg::ProcessChangeInJogVelocity()
 
 int CKMotionCNCDlg::DoAllActVelocity(double *V)
 {
-	CString cmds = "";
-	for (int i = 0; i < ACTUATORS_CONTROLLED; i++)
+	CStringA cmds = "";
+	for (int i = 0; i < MAX_ACTUATORS; i++)
 	{
 		if (DoActVelocity(i, V[i], cmds))
 		{
 			// Error flag all as stopped
-			m_JoyMovedx = m_JoyMovedy = m_JoyMovedz = m_JoyMoveda = m_JoyMovedb = m_JoyMovedc = false;
+			m_JoyMovedx = m_JoyMovedy = m_JoyMovedz = m_JoyMoveda = m_JoyMovedb = m_JoyMovedc = m_JoyMovedu = m_JoyMovedv = false;
+			
 			m_Right2.m_RawVel=
 			m_Right.m_RawVel=
 			m_Left2.m_RawVel=
 			m_Left.m_RawVel=
+			
 			m_Up2.m_RawVel=
 			m_Up.m_RawVel=
 			m_Down2.m_RawVel=
 			m_Down.m_RawVel=
+			
 			m_Zplus2.m_RawVel=
 			m_Zplus.m_RawVel=
 			m_Zminus2.m_RawVel=
 			m_Zminus.m_RawVel=
+			
 			m_Aplus2.m_RawVel=
 			m_Aplus.m_RawVel=
 			m_Aminus2.m_RawVel=
 			m_Aminus.m_RawVel=
+			
 			m_Bplus2.m_RawVel=
 			m_Bplus.m_RawVel=
 			m_Bminus2.m_RawVel=
 			m_Bminus.m_RawVel=
+			
 			m_Cplus2.m_RawVel=
 			m_Cplus.m_RawVel=
 			m_Cminus2.m_RawVel=
-			m_Cminus.m_RawVel=0.0;
+			m_Cminus.m_RawVel=
+			
+			m_Uplus2.m_RawVel=
+			m_Uplus.m_RawVel=
+			m_Uminus2.m_RawVel=
+			m_Uminus.m_RawVel=
+			
+			m_Vplus2.m_RawVel=
+			m_Vplus.m_RawVel=
+			m_Vminus2.m_RawVel=
+			m_Vminus.m_RawVel=0.0;
 			return 1;
 		}
 	}
 
 	if (cmds.GetLength() > 0)
 	{
-		cmds = cmds.Left(cmds.GetLength() - 1);  // strip off last ;
+		if (cmds[cmds.GetLength() - 1] == ';') cmds = cmds.Left(cmds.GetLength() - 1);  // strip off last ;
 		if (TheFrame->KMotionDLL->WriteLine(cmds)) return 1;
 	}
 
@@ -5546,9 +7505,9 @@ int CKMotionCNCDlg::UnpackSingleAxisDestVel(int axis, CString s, double *d, doub
 	if (axis >= 0)
 	{
 		float x;
-		if (sscanf(s.Mid((axis * 3 + 0) * 9, 9), "%x", ((int *)d) + 0) != 1) return 1;
-		if (sscanf(s.Mid((axis * 3 + 1) * 9, 9), "%x", ((int *)d) + 1) != 1) return 1;
-		if (sscanf(s.Mid((axis * 3 + 2) * 9, 9), "%x", ((int *)&x)) != 1) return 1;
+		if (swscanf(s.Mid((axis * 3 + 0) * 9, 9), L"%x", ((int *)d) + 0) != 1) return 1;
+		if (swscanf(s.Mid((axis * 3 + 1) * 9, 9), L"%x", ((int *)d) + 1) != 1) return 1;
+		if (swscanf(s.Mid((axis * 3 + 2) * 9, 9), L"%x", ((int *)&x)) != 1) return 1;
 		*v = x;
 	}
 	else
@@ -5561,32 +7520,35 @@ int CKMotionCNCDlg::UnpackSingleAxisDestVel(int axis, CString s, double *d, doub
 // Get Current Actuators Raw Destinations and Velocities quickly 
 // and also Absolute CAD Units
 
-int CKMotionCNCDlg::GetCurrentDestsVels(double *ActsDest, double *ActsVel, double *CurAbsX, double *CurAbsY, double *CurAbsZ, double *CurAbsA, double *CurAbsB, double *CurAbsC)
+int CKMotionCNCDlg::GetCurrentDestsVels(double *ActsDest, double *ActsVel, double *CurAbsX, double *CurAbsY, double *CurAbsZ,
+ double *CurAbsA, double *CurAbsB, double *CurAbsC, double *CurAbsU, double *CurAbsV)
 {
 	CCoordMotion *CM = Interpreter->CoordMotion;
-	CString response;
+	CStringA response;
 
 	if (TheFrame->KMotionDLL->WriteLineReadLine("GetAllDestVelHex", response.GetBuffer(1000))) return 1;
 	response.ReleaseBuffer();
 
-	if (UnpackSingleAxisDestVel(CM->x_axis, response, &ActsDest[0], &ActsVel[0])) return 1;
-	if (UnpackSingleAxisDestVel(CM->y_axis, response, &ActsDest[1], &ActsVel[1])) return 1;
-	if (UnpackSingleAxisDestVel(CM->z_axis, response, &ActsDest[2], &ActsVel[2])) return 1;
-	if (UnpackSingleAxisDestVel(CM->a_axis, response, &ActsDest[3], &ActsVel[3])) return 1;
-	if (UnpackSingleAxisDestVel(CM->b_axis, response, &ActsDest[4], &ActsVel[4])) return 1;
-	if (UnpackSingleAxisDestVel(CM->c_axis, response, &ActsDest[5], &ActsVel[5])) return 1;
+	if (UnpackSingleAxisDestVel(CM->x_axis, (CString)response, &ActsDest[0], &ActsVel[0])) return 1;
+	if (UnpackSingleAxisDestVel(CM->y_axis, (CString)response, &ActsDest[1], &ActsVel[1])) return 1;
+	if (UnpackSingleAxisDestVel(CM->z_axis, (CString)response, &ActsDest[2], &ActsVel[2])) return 1;
+	if (UnpackSingleAxisDestVel(CM->a_axis, (CString)response, &ActsDest[3], &ActsVel[3])) return 1;
+	if (UnpackSingleAxisDestVel(CM->b_axis, (CString)response, &ActsDest[4], &ActsVel[4])) return 1;
+	if (UnpackSingleAxisDestVel(CM->c_axis, (CString)response, &ActsDest[5], &ActsVel[5])) return 1;
+	if (UnpackSingleAxisDestVel(CM->u_axis, (CString)response, &ActsDest[6], &ActsVel[6])) return 1;
+	if (UnpackSingleAxisDestVel(CM->v_axis, (CString)response, &ActsDest[7], &ActsVel[7])) return 1;
 
-	CM->Kinematics->TransformActuatorstoCAD(ActsDest, CurAbsX, CurAbsY, CurAbsZ, CurAbsA, CurAbsB, CurAbsC);
+	CM->Kinematics->TransformActuatorstoCAD(ActsDest, CurAbsX, CurAbsY, CurAbsZ, CurAbsA, CurAbsB, CurAbsC, CurAbsU, CurAbsV);
 	return 0;
 }
 
 
 // command an actuator to a specified velocity
 
-int CKMotionCNCDlg::DoActVelocity(int i, double v, CString &c)
+int CKMotionCNCDlg::DoActVelocity(int i, double v, CStringA &c)
 {
-	static double LastSpeed[6]={1e99,1e99,1e99,1e99,1e99,1e99};
-	CString s;
+	static double LastSpeed[MAX_ACTUATORS]={1e99,1e99,1e99,1e99,1e99,1e99,1e99,1e99};
+	CStringA s;
 
 	if (fabs(v) < 1e-35) v = 0.0; // check if velocity is so small as a float it might round to zero 
 
@@ -5596,11 +7558,15 @@ int CKMotionCNCDlg::DoActVelocity(int i, double v, CString &c)
 		// so in the case we loose communication it will still stop
 
 		if (fabs(v) > 0) 
-			s.Format("MoveRelAtVel%d=%f %f",CS_axis[i],v*2.0,fabs(v));
+			s.Format("MoveRelAtVel%d=%.8g %.8g",CS_axis[i],v*2.0,fabs(v));
 		else if (LastSpeed[i] != 0)
 			s.Format("Jog%d=%f",CS_axis[i],v);
 
-		c += s + ';';  // pack all commands into one string to send quickly
+		if (s != "")
+		{
+			if (c != "") c += ';';  // add separator if not first
+			c += s;  // pack all commands into one string to send quickly
+		}
 	}
 	LastSpeed[i]=v;
 		
@@ -5612,7 +7578,7 @@ int CKMotionCNCDlg::DoActVelocity(int i, double v, CString &c)
 
 int CKMotionCNCDlg::StopAxis(int i)
 {
-	CString s;
+	CStringA s;
 	
 	if (CS_axis[i]>=0)
 	{
@@ -5627,7 +7593,7 @@ int CKMotionCNCDlg::StopAxis(int i)
 
 int CKMotionCNCDlg::DoActPosition(int i, double p)
 {
-	CString s;
+	CStringA s;
 	
 	if (CS_axis[i]>=0)
 	{
@@ -5645,7 +7611,7 @@ int CKMotionCNCDlg::DoActPosition(int i, double p)
 
 int CKMotionCNCDlg::DoActPositionExp(int i, double p, double tau)
 {
-	CString s;
+	CStringA s;
 	
 	if (CS_axis[i]>=0)
 	{
@@ -5678,7 +7644,7 @@ double CKMotionCNCDlg::DoJoyAxis(int axis, int joystick)
 int CKMotionCNCDlg::GetStatus()
 {
 	int i,result,n;
-	CString s;
+	CStringA s;
 	int *p=(int *)&MainStatus;
 	MOTION_PARAMS *MP = &Interpreter->CoordMotion->Kinematics->m_MotionParams;
 
@@ -5716,7 +7682,7 @@ int CKMotionCNCDlg::GetStatus()
 
 		// get a hex 32 bit int which may really be anything
 		
-		result = sscanf(s.GetBuffer(0),"%8X",p++);
+		result = sscanf(s.GetBuffer(0), "%8X", p++);
 
 		if (result!=1)
 		{
@@ -5758,7 +7724,7 @@ int CKMotionCNCDlg::GetStatus()
 				// update number of words to read
 				if (n!=(MainStatus.VersionAndSize & 0xffff))
 				{
-					int result = MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error: Status Record Size mismatch\r\rDisable further status updates?"),
+					int result = MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Error: Status Record Size mismatch\r\rDisable further status updates?"),
 						L"KMotion", MB_ICONSTOP | MB_YESNO);
 
 					if (result == IDYES)
@@ -5776,7 +7742,7 @@ int CKMotionCNCDlg::GetStatus()
 int CKMotionCNCDlg::UpdateScreen(bool KMotionPresent)
 {
 	int result;
-	CString s,response;
+	CStringA s, response;
 
 	if (KMotionPresent)
 	{
@@ -5793,8 +7759,10 @@ int CKMotionCNCDlg::UpdateScreen(bool KMotionPresent)
 	}
 	
 	m_RealTimeSetup = Interpreter->GetRealTimeState();
-	
-	SetBigValues(&m_PosX, &m_PosY, &m_PosZ, &m_PosA, &m_PosB, &m_PosC, KMotionPresent);
+
+	UpdateProgress();	// G-code viewer: colour the preview up to the executing block
+
+	SetBigValues(&m_PosX, &m_PosY, &m_PosZ, &m_PosA, &m_PosB, &m_PosC, &m_PosU, &m_PosV, KMotionPresent);
 
 	if (m_RealTimeSetup->distance_mode==MODE_ABSOLUTE)
 		CheckRadioButton(IDC_Rel,IDC_Abs,IDC_Abs);
@@ -5828,7 +7796,7 @@ int CKMotionCNCDlg::UpdateScreen(bool KMotionPresent)
 
 	if (Interpreter->CoordMotion->m_TapCycleInProgress && KMotionPresent)
 	{
-		CString r, s;
+		CStringA r, s;
 		MCODE_ACTION *p = &Interpreter->McodeActions[119 - 100 + MCODE_ACTIONS_M100_OFFSET];
 		s.Format("GetPersistHex %d", (int)p->dParams[1]);
 		if (TheFrame->KMotionDLL->WriteLineReadLine(s, r.GetBufferSetLength(100))) return 1;
@@ -5860,12 +7828,15 @@ int CKMotionCNCDlg::UpdateScreen(bool KMotionPresent)
 
 	m_GO.Style = DualButton;
 
-	if (ThreadIsExecuting && m_GO.DualButtonState != 1)
+	// a Simulate playback (G-code viewer) shows Halt too, so it can be stopped
+	bool ShowHalt = ThreadIsExecuting || m_PlaybackRunning;
+
+	if (ShowHalt && m_GO.DualButtonState != 1)
 	{
 		m_GO.DualButtonState = 1;
 		m_GO.Invalidate(0);
 	}
-	else if (!ThreadIsExecuting && m_GO.DualButtonState != 0)
+	else if (!ShowHalt && m_GO.DualButtonState != 0)
 	{
 		m_GO.DualButtonState = 0;
 		m_GO.Invalidate(0);
@@ -5880,11 +7851,16 @@ int CKMotionCNCDlg::UpdateScreen(bool KMotionPresent)
 }
 
 
-void CKMotionCNCDlg::SetBigValueColor(CDisplay *Disp,int axis, bool KMotionPresent, bool DisplayedEnc)
+void CKMotionCNCDlg::SetBigValueColor(CDisplay *Disp,int axis, bool KMotionPresent, bool DisplayedEnc, int ChanOverride)
 {
+	// normally the enable state of the Coordinate System's axis for this DRO
+	// determines the color.  A special encoded-Var DRO (see GetEncodedDROValue)
+	// instead passes the Controller Axis Channel it displays.
+	int Chan = (ChanOverride >= 0) ? ChanOverride : CS_axis[axis];
+
 	if (m_Simulate)
 		Disp->SetTextColor(0xFFFFFF);
-	else if (KMotionPresent && (MainStatus.Enables & (1<<CS_axis[axis])) && CS_axis[axis] >= 0)
+	else if (KMotionPresent && Chan >= 0 && (MainStatus.Enables & (1<<Chan)))
 	{
 		if (m_ShowMach)
 			Disp->SetTextColor(0x0080FF);
@@ -5899,19 +7875,19 @@ void CKMotionCNCDlg::SetBigValueColor(CDisplay *Disp,int axis, bool KMotionPrese
 }
 
 
-void CKMotionCNCDlg::SetBigValues(CDisplay *Disp0, CDisplay *Disp1, CDisplay *Disp2, CDisplay *Disp3, CDisplay *Disp4, CDisplay *Disp5, bool KMotionPresent)
+void CKMotionCNCDlg::SetBigValues(CDisplay *Disp0, CDisplay *Disp1, CDisplay *Disp2, CDisplay *Disp3, CDisplay *Disp4, CDisplay *Disp5, CDisplay *Disp6, CDisplay *Disp7, bool KMotionPresent)
 {
-	double x,y,z,a,b,c;
+	double x,y,z,a,b,c,u,v;
 	CString s;
 	CCoordMotion *CM=Interpreter->CoordMotion;
-	bool DisplayedEnc0,DisplayedEnc1,DisplayedEnc2,DisplayedEnc3,DisplayedEnc4,DisplayedEnc5;
+	bool DisplayedEnc0, DisplayedEnc1, DisplayedEnc2, DisplayedEnc3, DisplayedEnc4, DisplayedEnc5, DisplayedEnc6, DisplayedEnc7;
 
 
 	if (KMotionPresent && !m_Simulate)
 	{
 		// find out which axis is which
 
-		if (CM->GetAxisDefinitions(&CM->x_axis,&CM->y_axis,&CM->z_axis,&CM->a_axis,&CM->b_axis,&CM->c_axis)) {CM->SetAbort(); return;}
+		if (CM->GetAxisDefinitions(&CM->x_axis, &CM->y_axis, &CM->z_axis, &CM->a_axis, &CM->b_axis, &CM->c_axis, &CM->u_axis, &CM->v_axis)) { CM->SetAbort(); return; }
 
 		// read and set all axis (if undefined return interpreter)
 
@@ -5922,15 +7898,17 @@ void CKMotionCNCDlg::SetBigValues(CDisplay *Disp0, CDisplay *Disp1, CDisplay *Di
 		// Get either the Actuator Position or Dest depending on whether there is
 		// a feedback device and the User is requesting to display feedback and
 		// also the current Destination regardless.
-		if (GetAxisDRO(CM->x_axis,&Acts[0],&ActsDest[0],&DisplayedEnc0))return;
-		if (GetAxisDRO(CM->y_axis,&Acts[1],&ActsDest[1],&DisplayedEnc1))return;
-		if (GetAxisDRO(CM->z_axis,&Acts[2],&ActsDest[2],&DisplayedEnc2))return;
-		if (GetAxisDRO(CM->a_axis,&Acts[3],&ActsDest[3],&DisplayedEnc3))return;
-		if (GetAxisDRO(CM->b_axis,&Acts[4],&ActsDest[4],&DisplayedEnc4))return;
-		if (GetAxisDRO(CM->c_axis,&Acts[5],&ActsDest[5],&DisplayedEnc5))return;
+		if (GetAxisDRO(CM->x_axis, &Acts[0], &ActsDest[0], &DisplayedEnc0))return;
+		if (GetAxisDRO(CM->y_axis, &Acts[1], &ActsDest[1], &DisplayedEnc1))return;
+		if (GetAxisDRO(CM->z_axis, &Acts[2], &ActsDest[2], &DisplayedEnc2))return;
+		if (GetAxisDRO(CM->a_axis, &Acts[3], &ActsDest[3], &DisplayedEnc3))return;
+		if (GetAxisDRO(CM->b_axis, &Acts[4], &ActsDest[4], &DisplayedEnc4))return;
+		if (GetAxisDRO(CM->c_axis, &Acts[5], &ActsDest[5], &DisplayedEnc5))return;
+		if (GetAxisDRO(CM->u_axis, &Acts[6], &ActsDest[6], &DisplayedEnc6))return;
+		if (GetAxisDRO(CM->v_axis, &Acts[7], &ActsDest[7], &DisplayedEnc7))return;
 
-		CM->Kinematics->TransformActuatorstoCAD(Acts,&x,&y,&z,&a,&b,&c);
-		CM->Kinematics->TransformActuatorstoCAD(ActsDest,&CurAbsX,&CurAbsY,&CurAbsZ,&CurAbsA,&CurAbsB,&CurAbsC);
+		CM->Kinematics->TransformActuatorstoCAD(Acts,&x,&y,&z,&a, &b, &c, &u, &v);
+		CM->Kinematics->TransformActuatorstoCAD(ActsDest,&CurAbsX,&CurAbsY,&CurAbsZ,&CurAbsA, &CurAbsB, &CurAbsC, &CurAbsU, &CurAbsV);
 	}
 	else
 	{
@@ -5940,15 +7918,36 @@ void CKMotionCNCDlg::SetBigValues(CDisplay *Disp0, CDisplay *Disp1, CDisplay *Di
 		a = Interpreter->CoordMotion->current_a;
 		b = Interpreter->CoordMotion->current_b;
 		c = Interpreter->CoordMotion->current_c;
-		DisplayedEnc0=DisplayedEnc1=DisplayedEnc2=DisplayedEnc3=DisplayedEnc4=DisplayedEnc5=false;
+		u = Interpreter->CoordMotion->current_u;
+		v = Interpreter->CoordMotion->current_v;
+		DisplayedEnc0 = DisplayedEnc1 = DisplayedEnc2 = DisplayedEnc3 = DisplayedEnc4 = DisplayedEnc5 = DisplayedEnc6 = DisplayedEnc7 = false;
 	}
 
-	SetBigValueColor(Disp0,0,KMotionPresent,DisplayedEnc0);
-	SetBigValueColor(Disp1,1,KMotionPresent,DisplayedEnc1);
-	SetBigValueColor(Disp2,2,KMotionPresent,DisplayedEnc2);
-	SetBigValueColor(Disp3,3,KMotionPresent,DisplayedEnc3);
-	SetBigValueColor(Disp4,4,KMotionPresent,DisplayedEnc4);
-	SetBigValueColor(Disp5,5,KMotionPresent,DisplayedEnc5);
+	// Optional special DRO behavior:  a Screen Control Var of the form -1xxyy
+	// makes that DRO display a Controller Axis Channel even though the Axis is
+	// not part of the GCode Coordinate System (see GetEncodedDROValue).  The
+	// final display value is computed here and substituted after the normal
+	// coordinate conversion below.  The encoder flag is overridden first so
+	// the DRO colors behave the same as normal DROs.
+	static const int DROIDs[8] = { IDC_PosX, IDC_PosY, IDC_PosZ, IDC_PosA, IDC_PosB, IDC_PosC, IDC_PosU, IDC_PosV };
+	bool *DisplayedEncPtr[8] = { &DisplayedEnc0, &DisplayedEnc1, &DisplayedEnc2, &DisplayedEnc3, &DisplayedEnc4, &DisplayedEnc5, &DisplayedEnc6, &DisplayedEnc7 };
+	double EncodedValue[8];
+	int EncodedChan[8];
+	bool EncodedDRO[8];
+	for (int i = 0; i < 8; i++)
+	{
+		EncodedChan[i] = -1;
+		EncodedDRO[i] = GetEncodedDROValue(DROIDs[i], KMotionPresent, &EncodedValue[i], DisplayedEncPtr[i], &EncodedChan[i]);
+	}
+
+	SetBigValueColor(Disp0, 0, KMotionPresent, DisplayedEnc0, EncodedChan[0]);
+	SetBigValueColor(Disp1, 1, KMotionPresent, DisplayedEnc1, EncodedChan[1]);
+	SetBigValueColor(Disp2, 2, KMotionPresent, DisplayedEnc2, EncodedChan[2]);
+	SetBigValueColor(Disp3, 3, KMotionPresent, DisplayedEnc3, EncodedChan[3]);
+	SetBigValueColor(Disp4, 4, KMotionPresent, DisplayedEnc4, EncodedChan[4]);
+	SetBigValueColor(Disp5, 5, KMotionPresent, DisplayedEnc5, EncodedChan[5]);
+	SetBigValueColor(Disp6, 6, KMotionPresent, DisplayedEnc6, EncodedChan[6]);
+	SetBigValueColor(Disp7, 7, KMotionPresent, DisplayedEnc7, EncodedChan[7]);
 
 	// display current spindle rate /feed rate
 
@@ -5979,8 +7978,8 @@ void CKMotionCNCDlg::SetBigValues(CDisplay *Disp0, CDisplay *Disp1, CDisplay *Di
 			// if in G32 convert RPM to feet/min or Meters/min depending on units
 			if (m_RealTimeSetup->spindle_mode == CANON_SPINDLE_CSS)
 			{
-				double xp,yp,zp,ap,bp,cp;
-				Interpreter->ConvertAbsoluteToInterpreterCoord(x,y,z,a,b,c,&xp,&yp,&zp,&ap,&bp,&cp,m_RealTimeSetup);
+				double xp,yp,zp,ap,bp,cp,up,vp;
+				Interpreter->ConvertAbsoluteToInterpreterCoord(x, y, z, a, b, c, u, v, &xp, &yp, &zp, &ap, &bp, &cp, &up, &vp, m_RealTimeSetup);
 
 				if (m_RealTimeSetup->DiameterMode) xp *= 0.5; // if result is a diameter, convert to radius to calc surface speed.
 
@@ -6005,8 +8004,8 @@ void CKMotionCNCDlg::SetBigValues(CDisplay *Disp0, CDisplay *Disp1, CDisplay *Di
 				}
 			}
 
-			s.Format("%7.1f",SpindleSpeedToShow);
-			sF.Format("%7.1f",DesiredSpindleRate);
+			s.Format(L"%7.1f",SpindleSpeedToShow);
+			sF.Format(L"%7.1f",DesiredSpindleRate);
 
 			if (m_prevSpindleRateLabel != s)
 			{
@@ -6027,15 +8026,17 @@ void CKMotionCNCDlg::SetBigValues(CDisplay *Disp0, CDisplay *Disp1, CDisplay *Di
 			// display current feed rate
 
 
-			double dx = (CM->x_axis >=0) ? x-PrevDROx : 0.0;
-			double dy = (CM->y_axis >=0) ? y-PrevDROy : 0.0;
-			double dz = (CM->z_axis >=0) ? z-PrevDROz : 0.0;
-			double da = (CM->a_axis >=0) ? a-PrevDROa : 0.0;
-			double db = (CM->b_axis >=0) ? b-PrevDROb : 0.0;
-			double dc = (CM->c_axis >=0) ? c-PrevDROc : 0.0;
+			double dx = (CM->x_axis >= 0) ? x - PrevDROx : 0.0;
+			double dy = (CM->y_axis >= 0) ? y - PrevDROy : 0.0;
+			double dz = (CM->z_axis >= 0) ? z - PrevDROz : 0.0;
+			double da = (CM->a_axis >= 0) ? a - PrevDROa : 0.0;
+			double db = (CM->b_axis >= 0) ? b - PrevDROb : 0.0;
+			double dc = (CM->c_axis >= 0) ? c - PrevDROc : 0.0;
+			double du = (CM->u_axis >= 0) ? u - PrevDROu : 0.0;
+			double dv = (CM->v_axis >= 0) ? v - PrevDROv : 0.0;
 
 			BOOL pure_angle;
-			double Dist=CM->FeedRateDistance(dx, dy, dz, da, db, dc, &pure_angle);
+			double Dist=CM->FeedRateDistance(dx, dy, dz, da, db, dc, du, dv, &pure_angle);
 
 			if (SpindleSpeedToShow <= 0.0) // make sure things are reasonable
 				SpindleSpeedToShow=DesiredSpindleRate;
@@ -6047,8 +8048,8 @@ void CKMotionCNCDlg::SetBigValues(CDisplay *Disp0, CDisplay *Disp1, CDisplay *Di
 				if (m_RealTimeSetup->motion_mode == G_32 || m_RealTimeSetup->feed_mode == UNITS_PER_REV)
 				{
 					SpeedToShow=Dist/dt*60.0*25.4/SpindleSpeedToShow;
-					s.Format("%7.3f",SpeedToShow);
-					sF.Format("%7.3f",DesiredFeedRate);
+					s.Format(L"%7.3f",SpeedToShow);
+					sF.Format(L"%7.3f",DesiredFeedRate);
 				}
 				else
 				{
@@ -6057,8 +8058,8 @@ void CKMotionCNCDlg::SetBigValues(CDisplay *Disp0, CDisplay *Disp1, CDisplay *Di
 					else
 						SpeedToShow=Dist/dt*60.0*25.4;
 
-					s.Format("%7.0f",SpeedToShow);
-					sF.Format("%7.0f",DesiredFeedRate);
+					s.Format(L"%7.0f",SpeedToShow);
+					sF.Format(L"%7.0f",DesiredFeedRate);
 				}
 			}
 			else
@@ -6066,14 +8067,14 @@ void CKMotionCNCDlg::SetBigValues(CDisplay *Disp0, CDisplay *Disp1, CDisplay *Di
 				if (m_RealTimeSetup->motion_mode == G_32 || m_RealTimeSetup->feed_mode == UNITS_PER_REV)
 				{
 					SpeedToShow=Dist/dt*60.0/SpindleSpeedToShow;
-					s.Format("%7.4f",SpeedToShow);
-					sF.Format("%7.4f",DesiredFeedRate);
+					s.Format(L"%7.4f",SpeedToShow);
+					sF.Format(L"%7.4f",DesiredFeedRate);
 				}
 				else
 				{
 					SpeedToShow=Dist/dt*60.0;
-					s.Format("%7.1f",SpeedToShow);
-					sF.Format("%7.1f",DesiredFeedRate);
+					s.Format(L"%7.1f",SpeedToShow);
+					sF.Format(L"%7.1f",DesiredFeedRate);
 				}
 			}
 
@@ -6115,12 +8116,14 @@ void CKMotionCNCDlg::SetBigValues(CDisplay *Disp0, CDisplay *Disp1, CDisplay *Di
 
 	PrevMainStatusTimeStamp=MainStatus.TimeStamp;
 	prev_length_units = m_RealTimeSetup->length_units; 
-	PrevDROx=x;
-	PrevDROy=y;
-	PrevDROz=z;
-	PrevDROa=a;
-	PrevDROb=b;
-	PrevDROc=c;
+	PrevDROx = x;
+	PrevDROy = y;
+	PrevDROz = z;
+	PrevDROa = a;
+	PrevDROb = b;
+	PrevDROc = c;
+	PrevDROu = u;
+	PrevDROv = v;
 
 
 
@@ -6129,37 +8132,135 @@ void CKMotionCNCDlg::SetBigValues(CDisplay *Disp0, CDisplay *Disp1, CDisplay *Di
 	// and metric units
 
 	if (m_ShowMach)
-		Interpreter->ConvertAbsoluteToMachine(x,y,z,a,b,c,&x,&y,&z,&a,&b,&c);
+		Interpreter->ConvertAbsoluteToMachine(x,y,z,a,b,c,u,v,&x,&y,&z,&a,&b,&c,&u,&v);
 	else
-		Interpreter->ConvertAbsoluteToInterpreterCoord(x,y,z,a,b,c,&x,&y,&z,&a,&b,&c,m_RealTimeSetup);
+		Interpreter->ConvertAbsoluteToInterpreterCoord(x,y,z,a,b,c,u,v,&x,&y,&z,&a,&b,&c,&u,&v,m_RealTimeSetup);
+
+	// substitute any special encoded-Var DRO values (already fully converted)
+	if (EncodedDRO[0]) x = EncodedValue[0];
+	if (EncodedDRO[1]) y = EncodedValue[1];
+	if (EncodedDRO[2]) z = EncodedValue[2];
+	if (EncodedDRO[3]) a = EncodedValue[3];
+	if (EncodedDRO[4]) b = EncodedValue[4];
+	if (EncodedDRO[5]) c = EncodedValue[5];
+	if (EncodedDRO[6]) u = EncodedValue[6];
+	if (EncodedDRO[7]) v = EncodedValue[7];
 
 	CString Format;
 	if (m_RealTimeSetup->length_units == CANON_UNITS_MM) Format = ":%10.3f ";
 	else Format = ":%10.4f ";
 
-	s.Format(" X"+Format,x);
-	KillMinusZero(s);
-	Disp0->SetText(s);
+	DoDROText(Disp0, Format, 'X', x);
+	DoDROText(Disp1, Format, 'Y', y);
+	DoDROText(Disp2, Format, 'Z', z);
+	DoDROText(Disp3, Format, 'A', a);
+	DoDROText(Disp4, Format, 'B', b);
+	DoDROText(Disp5, Format, 'C', c);
+	if (m_DialogFaceInUse == CUSTOM_DLG_FACE)
+	{
+		DoDROText(Disp6, Format, 'U', u);
+		DoDROText(Disp7, Format, 'V', v);
+	}
+}
 
-	s.Format(" Y"+Format,y);
-	KillMinusZero(s);
-	Disp1->SetText(s);
+// Optional special DRO behavior:  Setting a Screen Control's Var to a value
+// of the form -1xxyy (-10000 thru -10715) makes that DRO display a Controller
+// Axis Channel even though the Axis is not part of the GCode Coordinate
+// System.  Example: a grinder where GCode moves XY while the Operator moves Z
+// with an external MPG.  xx = GCode axis 0-7 (X,Y,Z,A,B,C,U,V) whose
+// Counts/inch resolution, GCode Offsets, and inch/mm units are applied.
+// yy = Controller Axis Channel (0-15) to read.  A simple linear conversion is
+// used (no Kinematics or Geo Correction).  Commanded Destination vs measured
+// (encoder) Position is selected the same as normal DROs (Display Encoders
+// option).  Example: Var = -10206 displays Channel 6 as a Z axis.
+//
+// Returns true (with *value set to the final display value and *DisplayedEnc
+// updated) if the Screen Control with this ID has a Var of this form.
 
-	s.Format(" Z"+Format,z);
-	KillMinusZero(s);
-	Disp2->SetText(s);
+bool CKMotionCNCDlg::GetEncodedDROValue(int ID, bool KMotionPresent, double *value, bool *DisplayedEnc, int *Chan)
+{
+	// only applies to custom Screens - also avoids acting on stale Screen
+	// controls after switching back to a standard Dialog Face
+	if (m_DialogFaceInUse != CUSTOM_DLG_FACE) return false;
 
-	s.Format(" A"+Format,a);
-	KillMinusZero(s);
-	Disp3->SetText(s);
+	DLG_CONTROL *Dlg = Screen.FindDlgControl(ID);
+	if (!Dlg || Dlg->Var > -10000 || Dlg->Var < -19999) return false;
 
-	s.Format(" B"+Format,b);
-	KillMinusZero(s);
-	Disp4->SetText(s);
+	int n = -Dlg->Var - 10000;
+	int gcode_axis = n / 100;	// xx - GCode axis for resolution/offsets/units
+	int chan = n % 100;			// yy - Controller Axis Channel to display
+	if (gcode_axis >= 8 || chan >= N_CHANNELS_KOGNA) return false;
 
-	s.Format(" C"+Format,c);
+	double cnts = 0.0, dest;
+	bool enc = false;
+	if (KMotionPresent && !m_Simulate)
+		if (GetAxisDRO(chan, &cnts, &dest, &enc)) return false;
+
+	MOTION_PARAMS *MP = &Interpreter->CoordMotion->Kinematics->m_MotionParams;
+	double cpi;
+	switch (gcode_axis)
+	{
+	case 0: cpi = MP->CountsPerInchX; break;
+	case 1: cpi = MP->CountsPerInchY; break;
+	case 2: cpi = MP->CountsPerInchZ; break;
+	case 3: cpi = MP->CountsPerInchA; break;
+	case 4: cpi = MP->CountsPerInchB; break;
+	case 5: cpi = MP->CountsPerInchC; break;
+	case 6: cpi = MP->CountsPerInchU; break;
+	default: cpi = MP->CountsPerInchV; break;
+	}
+
+	// place the absolute position (inches) in the GCode axis slot and convert
+	// identically to the normal DROs (units, Diameter mode, and Offsets)
+	double A[8] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+	double G[8];
+	if (cpi != 0.0) A[gcode_axis] = cnts / cpi;
+
+	if (m_ShowMach)
+		Interpreter->ConvertAbsoluteToMachine(A[0], A[1], A[2], A[3], A[4], A[5], A[6], A[7],
+			&G[0], &G[1], &G[2], &G[3], &G[4], &G[5], &G[6], &G[7]);
+	else
+		Interpreter->ConvertAbsoluteToInterpreterCoord(A[0], A[1], A[2], A[3], A[4], A[5], A[6], A[7],
+			&G[0], &G[1], &G[2], &G[3], &G[4], &G[5], &G[6], &G[7], m_RealTimeSetup);
+
+	*value = G[gcode_axis];
+	*DisplayedEnc = enc;
+	*Chan = chan;
+	return true;
+}
+
+
+// handle DRO custom format from Screen editor
+
+void  CKMotionCNCDlg::DoDROText(CDisplay *Disp, CString DefaultFormat, char X, double x)
+{
+	CString s;
+	CString FormatToUse;
+	CString F = Disp->GetFormat();
+
+	if (F == "")  // any format specified?
+	{
+		FormatToUse.Format(L" %c%s", X, DefaultFormat);
+	}
+	else  // format specified
+	{
+		int i = Disp->GetFormat().Find(';');
+		if (i > 1) // two formats specified for inch & mm?
+		{
+			if (m_RealTimeSetup->length_units == CANON_UNITS_MM)
+				FormatToUse = F.Right(F.GetLength() - i - 1);
+			else
+				FormatToUse = F.Left(i);
+		}
+		else // use specified format for both
+		{
+			FormatToUse = F;
+		}
+	}
+	
+	s.Format(FormatToUse, x);
 	KillMinusZero(s);
-	Disp5->SetText(s);
+	Disp->SetText(s);
 }
 
 
@@ -6196,8 +8297,12 @@ bool CKMotionCNCDlg::AxisInputModeNone(int axis)
 {
 	if (axis < 4)
 		return ((MainStatus.InputModes >> (axis*4)) & 0xf) == NO_INPUT_MODE;
-	else
+	else if (axis < 8)
 		return ((MainStatus.InputModes2 >> ((axis-4)*4)) & 0xf) == NO_INPUT_MODE;
+	else if (axis < 12)
+		return ((MainStatus.InputModes3 >> ((axis-8)*4)) & 0xf) == NO_INPUT_MODE;
+	else
+		return ((MainStatus.InputModes4 >> ((axis-12)*4)) & 0xf) == NO_INPUT_MODE;
 }
 
 // format shows very small negative numbers as -0
@@ -6208,9 +8313,9 @@ void CKMotionCNCDlg::KillMinusZero(CString &s)
 	int i=3;
 	int n=s.GetLength();
 
-	while (s.GetAt(i)==' ' && i<n) i++;  // skip over leading zeros
+	while (i<n && s.GetAt(i)==' ') i++;  // skip over leading zeros
 	
-	if (s.GetAt(i) != '-') return;  // if no minus sign, no problen
+	if (i >=n || s.GetAt(i) != '-') return;  // if no minus sign, no problen
 
 	int k=i++; // remember where minus sign is
 
@@ -6227,8 +8332,10 @@ void CKMotionCNCDlg::KillMinusZero(CString &s)
 
 void CKMotionCNCDlg::OnEmergencyStop() 
 {
-	CString s;
+	CStringA s;
 	int i;
+
+	StopPlayback();
 
 	for (i=1;i<N_USER_THREADS;i++)   // kill all user programs except Thread #1
 	{
@@ -6254,7 +8361,7 @@ void CKMotionCNCDlg::OnEmergencyStop()
 
 void CKMotionCNCDlg::OnZeroAll() 
 {
-	if (AfxMessageBox("Zero All Axes?",MB_YESNO|MB_ICONQUESTION) == IDYES)
+	if (AfxMessageBox(L"Zero All Axes?",MB_YESNO|MB_ICONQUESTION) == IDYES)
 	{
 		OnZeroX();
 		OnZeroY();
@@ -6262,15 +8369,17 @@ void CKMotionCNCDlg::OnZeroAll()
 		OnZeroA();
 		OnZeroB();
 		OnZeroC();
+		OnZeroU();
+		OnZeroV();
 	}
 }
 
 void CKMotionCNCDlg::OnZeroX() 
 {
-	double x,y,z,a,b,c;
+	double x, y, z, a, b, c, u, v;
 	setup_pointer ps = Interpreter->p_setup;
 
-	if (ReadInterpPos(&x,&y,&z,&a,&b,&c)) return;
+	if (ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v)) return;
 	if (m_ZeroUsingFixtures)
 	{
 		int Fix = ps->origin_index-1;
@@ -6283,15 +8392,16 @@ void CKMotionCNCDlg::OnZeroX()
 		ps->axis_offset_x += x;
 		RoundReasonable(ps->axis_offset_x);
 		ps->parameters[5211]=ps->axis_offset_x;
+		Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
 	}
 }
 
 void CKMotionCNCDlg::OnZeroY() 
 {
-	double x,y,z,a,b,c;
+	double x, y, z, a, b, c, u, v;
 	setup_pointer ps = Interpreter->p_setup;
 
-	if (ReadInterpPos(&x,&y,&z,&a,&b,&c)) return;
+	if (ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v)) return;
 	if (m_ZeroUsingFixtures)
 	{
 		int Fix = ps->origin_index-1;
@@ -6304,15 +8414,16 @@ void CKMotionCNCDlg::OnZeroY()
 		ps->axis_offset_y += y;
 		RoundReasonable(ps->axis_offset_y);
 		ps->parameters[5212]=ps->axis_offset_y;
+		Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
 	}
 }
 
 void CKMotionCNCDlg::OnZeroZ() 
 {
-	double x,y,z,a,b,c;
+	double x, y, z, a, b, c, u, v;
 	setup_pointer ps = Interpreter->p_setup;
 
-	if (ReadInterpPos(&x,&y,&z,&a,&b,&c)) return;
+	if (ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v)) return;
 	if (m_ZeroUsingFixtures)
 	{
 		int Fix = ps->origin_index-1;
@@ -6325,15 +8436,16 @@ void CKMotionCNCDlg::OnZeroZ()
 		ps->axis_offset_z += z;
 		RoundReasonable(ps->axis_offset_z);
 		ps->parameters[5213]=ps->axis_offset_z;
+		Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
 	}
 }
 
 void CKMotionCNCDlg::OnZeroA() 
 {
-	double x,y,z,a,b,c;
+	double x, y, z, a, b, c, u, v;
 	setup_pointer ps = Interpreter->p_setup;
 
-	if (ReadInterpPos(&x,&y,&z,&a,&b,&c)) return;
+	if (ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v)) return;
 	if (m_ZeroUsingFixtures)
 	{
 		int Fix = ps->origin_index-1;
@@ -6346,15 +8458,16 @@ void CKMotionCNCDlg::OnZeroA()
 		ps->AA_axis_offset += a;
 		RoundReasonable(ps->AA_axis_offset);
 		ps->parameters[5214]=ps->AA_axis_offset;
+		Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
 	}
 }
 
 void CKMotionCNCDlg::OnZeroB() 
 {
-	double x,y,z,a,b,c;
+	double x, y, z, a, b, c, u, v;
 	setup_pointer ps = Interpreter->p_setup;
 
-	if (ReadInterpPos(&x,&y,&z,&a,&b,&c)) return;
+	if (ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v)) return;
 	if (m_ZeroUsingFixtures)
 	{
 		int Fix = ps->origin_index-1;
@@ -6367,36 +8480,82 @@ void CKMotionCNCDlg::OnZeroB()
 		ps->BB_axis_offset += b;
 		RoundReasonable(ps->BB_axis_offset);
 		ps->parameters[5215]=ps->BB_axis_offset;
+		Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
 	}
 }
 
-void CKMotionCNCDlg::OnZeroC() 
+void CKMotionCNCDlg::OnZeroC()
 {
-	double x,y,z,a,b,c;
+	double x, y, z, a, b, c, u, v;
 	setup_pointer ps = Interpreter->p_setup;
 
-	if (ReadInterpPos(&x,&y,&z,&a,&b,&c)) return;
+	if (ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v)) return;
 	if (m_ZeroUsingFixtures)
 	{
-		int Fix = ps->origin_index-1;
+		int Fix = ps->origin_index - 1;
 		ps->CC_origin_offset += c;
 		RoundReasonable(ps->CC_origin_offset);
-		ps->parameters[5221+Fix*20+5]=ps->CC_origin_offset;
+		ps->parameters[5221 + Fix * 20 + 5] = ps->CC_origin_offset;
 	}
 	else
 	{
 		ps->CC_axis_offset += c;
 		RoundReasonable(ps->CC_axis_offset);
-		ps->parameters[5216]=ps->CC_axis_offset;
+		ps->parameters[5216] = ps->CC_axis_offset;
+		Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
+	}
+}
+
+void CKMotionCNCDlg::OnZeroU()
+{
+	double x, y, z, a, b, c, u, v;
+	setup_pointer ps = Interpreter->p_setup;
+
+	if (ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v)) return;
+	if (m_ZeroUsingFixtures)
+	{
+		int Fix = ps->origin_index - 1;
+		ps->UU_origin_offset += u;
+		RoundReasonable(ps->UU_origin_offset);
+		ps->parameters[5221 + Fix * 20 + 6] = ps->UU_origin_offset;
+	}
+	else
+	{
+		ps->UU_axis_offset += u;
+		RoundReasonable(ps->UU_axis_offset);
+		ps->parameters[5217] = ps->UU_axis_offset;
+		Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
+	}
+}
+
+void CKMotionCNCDlg::OnZeroV()
+{
+	double x, y, z, a, b, c, u, v;
+	setup_pointer ps = Interpreter->p_setup;
+
+	if (ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v)) return;
+	if (m_ZeroUsingFixtures)
+	{
+		int Fix = ps->origin_index - 1;
+		ps->VV_origin_offset += v;
+		RoundReasonable(ps->VV_origin_offset);
+		ps->parameters[5221 + Fix * 20 + 7] = ps->VV_origin_offset;
+	}
+	else
+	{
+		ps->VV_axis_offset += v;
+		RoundReasonable(ps->VV_axis_offset);
+		ps->parameters[5218] = ps->VV_axis_offset;
+		Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
 	}
 }
 
 void CKMotionCNCDlg::MakeSureFileIsntReadOnly(CString FN)
 {
 	FN=TheFrame->MainPathRoot+FN;
-	if (_access(FN,00)==0)						// check if file exists
-		if (_access(FN,06)!=0)					// check if doesn't have r/w
-			_chmod(FN,_S_IREAD | _S_IWRITE);	// make it r/w
+	if (_waccess(FN,00)==0)						// check if file exists
+		if (_waccess(FN,06)!=0)					// check if doesn't have r/w
+			_wchmod(FN,_S_IREAD | _S_IWRITE);	// make it r/w
 }
 
 
@@ -6428,12 +8587,12 @@ void CKMotionCNCDlg::OnCloseuptool()
 	else
 		s.Delete(0,5);
 
-	sscanf(s,"%d",&tool);
+	swscanf(s,L"%d",&tool);
 
 	if (m_ToolLengthImmediately)
-		s.Format("T%dM6H%dG43.4",tool,tool);
+		s.Format(L"T%dM6H%dG43.4",tool,tool);
 	else
-		s.Format("T%dM6",tool);
+		s.Format(L"T%dM6",tool);
 	DoGCodeLine(s);
 }
 }
@@ -6443,12 +8602,20 @@ void CKMotionCNCDlg::OnClose()
 	CHiResTimer Timer;
 	Timer.Start();
 
-	if (m_ConfirmExit && AfxMessageBox("Exit KMotionCNC ??", MB_YESNO | MB_ICONINFORMATION) != IDYES) return;
+	if (m_ConfirmExit && AfxMessageBox(L"Exit KMotionCNC ??", MB_YESNO | MB_ICONINFORMATION) != IDYES) return;
 
 	if (Interpreter->InvokeAction(ACTION_PROG_EXIT, FALSE))  // Special Command
 	{
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to perform Program Exit Action"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to perform Program Exit Action"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 	}
+
+	// wait for any Actions to complete
+	MSG msg;
+	while (Interpreter->m_InvokeThreadID != -1 && GetMessage(&msg, NULL, 0, 0)) {
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+
 
 	ShuttingDownApplication=TRUE;
 
@@ -6461,23 +8628,24 @@ void CKMotionCNCDlg::OnClose()
 
 
 	if (PersistRestored ||  // check if valid parameters were loaded on startup
-			MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Configuration File was not properly loaded on startup.\r\rWould you like to save the current configuration?"),
+			MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Configuration File was not properly loaded on startup.\r\rWould you like to save the current configuration?"),
 				L"KMotion", MB_YESNO | MB_ICONINFORMATION)
 					  == IDYES)
 	{
 		CString File = TheFrame->MainPathRoot + PERSISTANT_FILE;
 		
-		FILE *f=fopen(File.GetBuffer(0),"wt");
-		
+		FILE *f;
+		_tfopen_s(&f, File, _T("wt,ccs=UTF-8"));
+
 		if (f)
 		{
-			fprintf(f,"Version 6\n");
+			fwprintf(f,L"Version 6\n");
 
 			// be nice and remember what directory we were last time
 
-			fprintf(f,"%s\n",CurrentDirectory.GetBuffer());
-			fprintf(f,"%d\n",m_ShowLineNumbers);
-			fprintf(f,"%d\n",m_LastToolSetupPage);
+			fwprintf(f,L"%ls\n",CurrentDirectory.GetBuffer());
+			fwprintf(f,L"%d\n",m_ShowLineNumbers);
+			fwprintf(f,L"%d %d\n",m_LastToolSetupPage, m_LastConfigUnitsMM);
 
 			// sequence through all the dialogs and give them
 			// a chance to save their state
@@ -6504,7 +8672,7 @@ void CKMotionCNCDlg::FillComboWithTools(CComboBoxScreen *Box)
 
 	if (EditToolFile.LoadFile(m_ToolFile))
 	{
-		Box->InsertItemW("");
+		Box->InsertItem("");
 		return;
 	}
 
@@ -6517,13 +8685,13 @@ void CKMotionCNCDlg::FillComboWithTools(CComboBoxScreen *Box)
 		EditToolFile.GetTool(i,Pocket,ID,Length,Diameter,Xoffset,Yoffset,FeedTime,FeedDist,Comment,Image);
 		if (ID>0)
 		{
-			s.Format("ID %d",ID);
-			Box->InsertItemW((CStringW)s);
+			s.Format(L"ID %d",ID);
+			Box->InsertItem(s);
 		}
 		else if (Pocket)
 		{
-			s.Format("Slot %d",Pocket);
-			Box->InsertItemW((CStringW)s);
+			s.Format(L"Slot %d",Pocket);
+			Box->InsertItem(s);
 		}
 	}
 }
@@ -6537,11 +8705,11 @@ void CKMotionCNCDlg::FillComboWithCountFixture(int i0, int i1, CComboBoxScreen *
 	for (int i=i0; i<=i1; i++)
 	{
 		if (i<7)
-			s.Format("%d - G%d",i,53+i);
+			s.Format(L"%d - G%d",i,53+i);
 		else
-			s.Format("%d - G%.1f",i,59+0.1*(i-6));
+			s.Format(L"%d - G%.1f",i,59+0.1*(i-6));
 
-		Box->InsertItemW((CStringW)s);
+		Box->InsertItem(s);
 	}
 }
 
@@ -6592,20 +8760,22 @@ int CKMotionCNCDlg::DoGCodeLine(CString G)
 		Sleep(10);
 		if (i++ > 1000)
 		{
-			MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error - Interpreter Busy"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+			MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Error - Interpreter Busy"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 			return 1;
 		}
 	}
 	
-	FILE *f=fopen(File,"wt");
-	
+	FILE *f;
+	_tfopen_s(&f, File, _T("wt,ccs=UTF-8"));
+		
 	if (!f)
 	{
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to open Temporary File:\r\r") + (CStringW) File, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to open Temporary File:\r\r") +  File, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 1;
 	}
 
-	fwrite(G + '\n',G.GetLength()+1,1,f);
+	G += '\n';
+	fputws(G, f);
 
 	fclose(f);
 
@@ -6653,7 +8823,7 @@ void CKMotionCNCDlg::CreateDlgOrBringToTop(UINT ID, CDialogEx *Dlg)
 void CKMotionCNCDlg::setMainPathAndRoot(LPWSTR arg0)
 {
 	TheFrame->MainPath = arg0;
-	TheFrame->MainPath.Replace("\"", "");  // remove quotes
+	TheFrame->MainPath.Replace(L"\"", L"");  // remove quotes
 	TheFrame->MainPath.TrimRight();
 	TheFrame->MainPath.TrimLeft();
 
@@ -6663,7 +8833,7 @@ void CKMotionCNCDlg::setMainPathAndRoot(LPWSTR arg0)
 	// Check if we are running from a 64bit directory directory
 	// if we are, then strip it off
 
-	if (TheFrame->MainPathDLL.Right(2).CompareNoCase("64") == 0)
+	if (TheFrame->MainPathDLL.Right(2).CompareNoCase(L"64") == 0)
 	{
 		TheFrame->MainPathDLL = TheFrame->MainPathDLL.Left(TheFrame->MainPathDLL.GetLength() - 2);
 	}
@@ -6673,7 +8843,7 @@ void CKMotionCNCDlg::setMainPathAndRoot(LPWSTR arg0)
 	// Check if we are running from the debug directory
 	// if we are, then strip it off
 
-	if (TheFrame->MainPath.Right(6).CompareNoCase("\\debug") == 0)
+	if (TheFrame->MainPath.Right(6).CompareNoCase(L"\\debug") == 0)
 	{
 		TheFrame->MainPath = TheFrame->MainPath.Left(TheFrame->MainPath.GetLength() - 6);
 	}
@@ -6681,14 +8851,14 @@ void CKMotionCNCDlg::setMainPathAndRoot(LPWSTR arg0)
 	// Check if we are running from the release directory
 	// if we are, then strip it off
 
-	if (TheFrame->MainPath.Right(8).CompareNoCase("\\release") == 0)
+	if (TheFrame->MainPath.Right(8).CompareNoCase(L"\\release") == 0)
 	{
 		TheFrame->MainPath = TheFrame->MainPath.Left(TheFrame->MainPath.GetLength() - 8);
 	}
 
 	// Now set the root install directory
 
-	if (TheFrame->MainPath.Right(8).CompareNoCase("\\KMotion") == 0)
+	if (TheFrame->MainPath.Right(8).CompareNoCase(L"\\KMotion") == 0)
 	{
 		TheFrame->MainPathRoot = TheFrame->MainPath.Left(TheFrame->MainPath.GetLength() - 8);
 	}
@@ -6718,22 +8888,28 @@ int CKMotionCNCDlg::ExternalRestore(void)
 	{
 		param = CL[next_param];
 		// do we have key/value pair or a USB id
-		if (param.Left(1) == "/")
+				//switch on the key type
+		if (param == "/no_ethernet" || param == "-no_ethernet") //config file name
+		{
+			TheFrame->KMotionDLL->NoEthernet = true;
+			// increment the parameter count by one
+			next_param += 1;
+		}
+		else if (param.Left(1) == "/" || param.Left(1) == "-")
 			//it's a key/value pair
 		{
 			// make sure there is a param value to fetch
 			if (next_param >= nParams - 1)
 			{
 				// parameter is missing
-				AfxMessageBox("Command line parameter is missing. Rest of command line will be ignored", MB_OK);
+				AfxMessageBox(L"Command line parameter is missing. Rest of command line will be ignored", MB_OK);
 				break;
 			}
 			else
 			{
-				//switch on the key type
 				if (param == "/c" || param == "-c") //config file name
 				{
-					TheFrame->config_file = CString("\\KMotion\\Data\\") + CL[next_param + 1];
+						TheFrame->config_file = CString("\\KMotion\\Data\\") + CL[next_param + 1];
 					TheFrame->config_file_backup = TheFrame->config_file + ".bak";
 				}
 				else if (param == "/i" || param == "-i") //config file name
@@ -6742,13 +8918,13 @@ int CKMotionCNCDlg::ExternalRestore(void)
 
 					// Parse Address
 					int IP[4];
-					if (sscanf(param, "%d.%d.%d.%d", &IP[0], &IP[1], &IP[2], &IP[3]) == 4)
+					if (swscanf(param, L"%d.%d.%d.%d", &IP[0], &IP[1], &IP[2], &IP[3]) == 4)
 					{
 						NewBoard = (IP[0] << 24) | (IP[1] << 16) | (IP[2] << 8) | IP[3];
 					}
 					else
 					{
-						MessageBoxW(m_hWnd, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid IP Address on Command Line \r\r") + (CStringW)param,
+						MessageBox(/*TRAN*/TheFrame->KMotionDLL->Translate("Invalid IP Address on Command Line \r\r") + param,
 							L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
 						NewBoard = 0;
 					}
@@ -6764,7 +8940,7 @@ int CKMotionCNCDlg::ExternalRestore(void)
 				// we drop through here if the flag is not recognized
 				else
 				{
-					AfxMessageBox("Unrecognized option on command line. Rest of command line will be ignored", MB_OK);
+					AfxMessageBox(L"Unrecognized option on command line. Rest of command line will be ignored", MB_OK);
 					break;
 				}
 
@@ -6778,7 +8954,7 @@ int CKMotionCNCDlg::ExternalRestore(void)
 			// USB Board id
 			{
 				param.Delete(0, 2);
-				sscanf(param, "%x", &NewBoard);
+				swscanf(param, L"%x", &NewBoard);
 				board = NewBoard;
 				next_param += 1;
 
@@ -6792,7 +8968,7 @@ int CKMotionCNCDlg::ExternalRestore(void)
 			}
 		else // default error case
 		{
-			AfxMessageBox("Unrecognized text on command line. Rest of command line will be ignored");
+			AfxMessageBox(L"Unrecognized text on command line. Rest of command line will be ignored");
 			break;
 		}
 	}
@@ -6814,23 +8990,25 @@ int CKMotionCNCDlg::ExternalRestore(void)
 
 	CString File = TheFrame->MainPathRoot + PERSISTANT_FILE;
 
-	FILE *f=fopen(File,"rt");
+	FILE *f;
+	_tfopen_s(&f, File, _T("rt,ccs=UTF-8"));
+
 	
 	if (f)
 	{
 		CString Version;
-		fgets(Version.GetBufferSetLength(100),100,f);
+		fgetws(Version.GetBufferSetLength(100),100,f);
 		Version.ReleaseBuffer();
 
 		if (Version=="Version 3\n" || Version=="Version 4\n" || Version=="Version 5\n" || Version == "Version 6\n")  // don't attempt to read if incompatable
 		{
-			fgets(CurrentDirectory.GetBufferSetLength(MAX_PATH),MAX_PATH,f);
+			fgetws(CurrentDirectory.GetBufferSetLength(MAX_PATH),MAX_PATH,f);
 			CurrentDirectory.ReleaseBuffer();
 			SetCurrentDirectory(CurrentDirectory);
 
 			if (Version == "Version 4\n" || Version == "Version 5\n" || Version == "Version 6\n")  // Version 4 adds Line number option
 			{
-				fscanf(f,"%d",&m_ShowLineNumbers);
+				fwscanf(f,L"%d",&m_ShowLineNumbers);
 			}
 
 			if (Version=="Version 5\n" || Version == "Version 6\n")  // Version 5 adds Checkword in Config file
@@ -6840,7 +9018,8 @@ int CKMotionCNCDlg::ExternalRestore(void)
 				
 			if (Version == "Version 6\n")  // Version 6 restores Tool Setup Page
 			{
-				fscanf(f, "%d", &m_LastToolSetupPage);
+				int result = fwscanf(f, L"%d %d", &m_LastToolSetupPage, &m_LastConfigUnitsMM);
+				if (result < 2) m_LastConfigUnitsMM = FALSE;
 			}
 
 			if (m_ShowLineNumbers!=0 && m_ShowLineNumbers!=1) m_ShowLineNumbers=0;
@@ -6854,7 +9033,7 @@ int CKMotionCNCDlg::ExternalRestore(void)
 	}
 	else
 	{
-		if (MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Previous Configuration File:\r\r") + (CStringW) File +
+		if (MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Previous Configuration File:\r\r") +  File +
 			          /*TRAN*/TheFrame->KMotionDLL->Translate("\r\rcould not be read.  Continuing will cause a loss of all\rsettings.  Are you sure you would like to continue?"),
 			L"KMotion", MB_YESNO | MB_ICONSTOP)
 					  != IDYES)
@@ -7006,7 +9185,7 @@ void CKMotionCNCDlg::OnStep5()
 	UpdateData();
 }
 
-int CKMotionCNCDlg::ReadInterpPos(double *x, double *y, double *z, double *a, double *b, double *c) 
+int CKMotionCNCDlg::ReadInterpPos(double *x, double *y, double *z, double *a, double *b, double *c, double *u, double *v)
 {
 	bool KMotionPresent = TheFrame->KMotionDLL->WaitToken(false,100.0,"KMCNCReadInterp") == KMOTION_LOCKED;
 
@@ -7014,7 +9193,7 @@ int CKMotionCNCDlg::ReadInterpPos(double *x, double *y, double *z, double *a, do
 
 	if (KMotionPresent && !m_Simulate)
 	{
-		if (Interpreter->CoordMotion->ReadCurAbsPosition(x,y,z,a,b,c)) return 1;
+		if (Interpreter->CoordMotion->ReadCurAbsPosition(x,y,z,a,b,c,u,v)) return 1;
 	}
 	else
 	{
@@ -7024,13 +9203,15 @@ int CKMotionCNCDlg::ReadInterpPos(double *x, double *y, double *z, double *a, do
 		*a = Interpreter->CoordMotion->current_a;
 		*b = Interpreter->CoordMotion->current_b;
 		*c = Interpreter->CoordMotion->current_c;
+		*u = Interpreter->CoordMotion->current_u;
+		*v = Interpreter->CoordMotion->current_v;
 	}
 
 	// convert absolute machine's position in inches to 
 	// the Interpreter's position that may include offsets
 	// and metric units
 
-	Interpreter->ConvertAbsoluteToInterpreterCoord(*x,*y,*z,*a,*b,*c,x,y,z,a,b,c,m_RealTimeSetup);
+	Interpreter->ConvertAbsoluteToInterpreterCoord(*x, *y, *z, *a, *b, *c, *u, *v, x, y, z, a, b, c, u, v, m_RealTimeSetup);
 
 	return 0;
 }
@@ -7038,10 +9219,10 @@ int CKMotionCNCDlg::ReadInterpPos(double *x, double *y, double *z, double *a, do
 void CKMotionCNCDlg::OnSetX() 
 {
 	static CSetValue SetDlg(IDD_SetValueHalf);
-	double x, y, z, a, b, c;
+	double x, y, z, a, b, c, u, v;
 
 	DisableKeyJog();
-	if (ReadInterpPos(&x, &y, &z, &a, &b, &c)) return;
+	if (ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v)) return;
 
 	SetDlg.halfDRO = x / 2.0;
 
@@ -7061,6 +9242,7 @@ void CKMotionCNCDlg::OnSetX()
 			ps->axis_offset_x += x - SetDlg.m_Value;
 			RoundReasonable(ps->axis_offset_x);
 			ps->parameters[5211]=ps->axis_offset_x;
+			Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
 		}
 	}
 }
@@ -7068,10 +9250,10 @@ void CKMotionCNCDlg::OnSetX()
 void CKMotionCNCDlg::OnSetY() 
 {
 	static CSetValue SetDlg(IDD_SetValueHalf);
-	double x, y, z, a, b, c;
+	double x, y, z, a, b, c, u, v;
 
 	DisableKeyJog();
-	if (ReadInterpPos(&x, &y, &z, &a, &b, &c)) return;
+	if (ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v)) return;
 
 	SetDlg.halfDRO = y / 2.0;
 
@@ -7091,6 +9273,7 @@ void CKMotionCNCDlg::OnSetY()
 			ps->axis_offset_y += y - SetDlg.m_Value;
 			RoundReasonable(ps->axis_offset_y);
 			ps->parameters[5212]=ps->axis_offset_y;
+			Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
 		}
 	}
 }
@@ -7099,10 +9282,10 @@ void CKMotionCNCDlg::OnSetY()
 void CKMotionCNCDlg::OnSetZ() 
 {
 	static CSetValue SetDlg(IDD_SetValueHalf);
-	double x, y, z, a, b, c;
+	double x, y, z, a, b, c, u, v;
 
 	DisableKeyJog();
-	if (ReadInterpPos(&x, &y, &z, &a, &b, &c)) return;
+	if (ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v)) return;
 
 	SetDlg.halfDRO = z / 2.0;
 
@@ -7122,6 +9305,7 @@ void CKMotionCNCDlg::OnSetZ()
 			ps->axis_offset_z += z - SetDlg.m_Value;
 			RoundReasonable(ps->axis_offset_z);
 			ps->parameters[5213]=ps->axis_offset_z;
+			Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
 		}
 	}
 }
@@ -7129,10 +9313,10 @@ void CKMotionCNCDlg::OnSetZ()
 void CKMotionCNCDlg::OnSetA() 
 {
 	static CSetValue SetDlg(IDD_SetValueHalf);
-	double x, y, z, a, b, c;
+	double x, y, z, a, b, c, u, v;
 
 	DisableKeyJog();
-	if (ReadInterpPos(&x, &y, &z, &a, &b, &c)) return;
+	if (ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v)) return;
 
 	SetDlg.halfDRO = a / 2.0;
 
@@ -7152,6 +9336,7 @@ void CKMotionCNCDlg::OnSetA()
 			ps->AA_axis_offset += a - SetDlg.m_Value;
 			RoundReasonable(ps->AA_axis_offset);
 			ps->parameters[5214]=ps->AA_axis_offset;
+			Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
 		}
 	}
 }
@@ -7159,10 +9344,10 @@ void CKMotionCNCDlg::OnSetA()
 void CKMotionCNCDlg::OnSetB() 
 {
 	static CSetValue SetDlg(IDD_SetValueHalf);
-	double x, y, z, a, b, c;
+	double x, y, z, a, b, c, u, v;
 
 	DisableKeyJog();
-	if (ReadInterpPos(&x, &y, &z, &a, &b, &c)) return;
+	if (ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v)) return;
 
 	SetDlg.halfDRO = b / 2.0;
 
@@ -7182,17 +9367,18 @@ void CKMotionCNCDlg::OnSetB()
 			ps->BB_axis_offset += b - SetDlg.m_Value;
 			RoundReasonable(ps->BB_axis_offset);
 			ps->parameters[5215]=ps->BB_axis_offset;
+			Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
 		}
 	}
 }
 
-void CKMotionCNCDlg::OnSetC() 
+void CKMotionCNCDlg::OnSetC()
 {
 	static CSetValue SetDlg(IDD_SetValueHalf);
-	double x, y, z, a, b, c;
+	double x, y, z, a, b, c, u, v;
 
 	DisableKeyJog();
-	if (ReadInterpPos(&x, &y, &z, &a, &b, &c)) return;
+	if (ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v)) return;
 
 	SetDlg.halfDRO = c / 2.0;
 
@@ -7202,16 +9388,79 @@ void CKMotionCNCDlg::OnSetC()
 
 		if (m_ZeroUsingFixtures)
 		{
-			int Fix = ps->origin_index-1;
+			int Fix = ps->origin_index - 1;
 			ps->CC_origin_offset += c - SetDlg.m_Value;
 			RoundReasonable(ps->CC_origin_offset);
-			ps->parameters[5221+Fix*20+5]=ps->CC_origin_offset;
+			ps->parameters[5221 + Fix * 20 + 5] = ps->CC_origin_offset;
 		}
 		else
 		{
 			ps->CC_axis_offset += c - SetDlg.m_Value;
 			RoundReasonable(ps->CC_axis_offset);
-			ps->parameters[5216]=ps->CC_axis_offset;
+			ps->parameters[5216] = ps->CC_axis_offset;
+			Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
+		}
+	}
+}
+
+void CKMotionCNCDlg::OnSetU()
+{
+	static CSetValue SetDlg(IDD_SetValueHalf);
+	double x, y, z, a, b, c, u, v;
+
+	DisableKeyJog();
+	if (ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v)) return;
+
+	SetDlg.halfDRO = u / 2.0;
+
+	if (SetDlg.DoModal() == IDOK)
+	{
+		setup_pointer ps = Interpreter->p_setup;
+
+		if (m_ZeroUsingFixtures)
+		{
+			int Fix = ps->origin_index - 1;
+			ps->CC_origin_offset += u - SetDlg.m_Value;
+			RoundReasonable(ps->UU_origin_offset);
+			ps->parameters[5221 + Fix * 20 + 6] = ps->UU_origin_offset;
+		}
+		else
+		{
+			ps->UU_axis_offset += u - SetDlg.m_Value;
+			RoundReasonable(ps->UU_axis_offset);
+			ps->parameters[5217] = ps->UU_axis_offset;
+			Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
+		}
+	}
+}
+
+void CKMotionCNCDlg::OnSetV()
+{
+	static CSetValue SetDlg(IDD_SetValueHalf);
+	double x, y, z, a, b, c, u, v;
+
+	DisableKeyJog();
+	if (ReadInterpPos(&x, &y, &z, &a, &b, &c, &u, &v)) return;
+
+	SetDlg.halfDRO = v / 2.0;
+
+	if (SetDlg.DoModal() == IDOK)
+	{
+		setup_pointer ps = Interpreter->p_setup;
+
+		if (m_ZeroUsingFixtures)
+		{
+			int Fix = ps->origin_index - 1;
+			ps->VV_origin_offset += v - SetDlg.m_Value;
+			RoundReasonable(ps->VV_origin_offset);
+			ps->parameters[5221 + Fix * 20 + 7] = ps->VV_origin_offset;
+		}
+		else
+		{
+			ps->VV_axis_offset += v - SetDlg.m_Value;
+			RoundReasonable(ps->VV_axis_offset);
+			ps->parameters[5218] = ps->VV_axis_offset;
+			Interpreter->StampAxisOffsetUnits();   // units known: the interpreter's
 		}
 	}
 }
@@ -7250,7 +9499,7 @@ void CKMotionCNCDlg::SetStepText(int i, double v, int ID)
 	if (v != 0)
 	{
 		CString s;
-		s.Format("%f",v);
+		s.Format(L"%f",v);
 		while (s.GetAt(s.GetLength()-1) == '0') s.Delete(s.GetLength()-1);  // remove trailing zeros
 		while (s.GetAt(s.GetLength()-1) == '.') s.Delete(s.GetLength()-1);  // remove trailing decimals
 		SetDlgItemText(ID,s);
@@ -7272,22 +9521,22 @@ void CKMotionCNCDlg::OnStopStep()
 
 void CKMotionCNCDlg::Onmm() 
 {
-	DoGCodeLine("G21");
+	DoGCodeLine(L"G21");
 }
 
 void CKMotionCNCDlg::Oninch() 
 {
-	DoGCodeLine("G20");
+	DoGCodeLine(L"G20");
 }
 
 void CKMotionCNCDlg::OnAbs() 
 {
-	DoGCodeLine("G90");
+	DoGCodeLine(L"G90");
 }
 
 void CKMotionCNCDlg::OnRel() 
 {
-	DoGCodeLine("G91");
+	DoGCodeLine(L"G91");
 }
 
 
@@ -7310,8 +9559,16 @@ BOOL CAboutDlg::OnInitDialog()
 
 void CKMotionCNCDlg::OnBnClickedFeedhold()
 {
-	CString r,s,response;
+	CStringA r,s,response;
 	CCoordMotion *CM = Interpreter->CoordMotion;
+
+	// G-code viewer: during a Simulate playback nothing is moving, so Feed Hold
+	// just pauses / resumes the animation
+	if (m_PlaybackRunning && !ThreadIsExecuting)
+	{
+		m_PlaybackPaused = !m_PlaybackPaused;
+		return;
+	}
 
 	if (CM->m_TapCycleInProgress)
 	{
@@ -7391,14 +9648,14 @@ void CKMotionCNCDlg::HandleToolTableClose()
 			else
 				s.Delete(0,5);
 
-			sscanf(s,"%d",&tool);
+			swscanf(s,L"%d",&tool);
 
 			if (m_ToolTableDoM6)
 			{
 				if (m_ToolLengthImmediately)
-					s.Format("T%dM6H%dG43.4",tool,tool);
+					s.Format(L"T%dM6H%dG43.4",tool,tool);
 				else
-					s.Format("T%dM6",tool);
+					s.Format(L"T%dM6",tool);
 
 				DoGCodeLine(s);
 			}
@@ -7439,6 +9696,12 @@ void CKMotionCNCDlg::OnBnClickedEditfixtures()
 		for (int axis=0; axis<NFIXAXES; axis++)
 			Vars[5211+axis] = EditFixtures.m_Global[axis];
 
+		// the G92 row is displayed and edited in the interpreter's current
+		// units and applied in them below - stamp the tuple accordingly so a
+		// later G20/G21 or a startup in the other units converts it (a mm
+		// offset typed here must not come back as inches)
+		Interpreter->StampAxisOffsetUnits();
+
 		// make sure Settings are in sync with any modified Vars
 		Interpreter->p_setup->origin_index=-1; // set invalid so it updates
 		Interpreter->ChangeFixtureNumber(m_LastFixtureDisplayed);
@@ -7449,6 +9712,8 @@ void CKMotionCNCDlg::OnBnClickedEditfixtures()
 		settings->AA_axis_offset = Vars[5214];
 		settings->BB_axis_offset = Vars[5215];
 		settings->CC_axis_offset = Vars[5216];
+		settings->UU_axis_offset = Vars[5217];
+		settings->VV_axis_offset = Vars[5218];
 	}
 }
 
@@ -7458,16 +9723,18 @@ void CKMotionCNCDlg::OnBnClickedSetfixture()
 	setup_pointer ps = Interpreter->p_setup;
 
 	if (Interpreter->ReadAndSyncCurPositions(&ps->current_x,&ps->current_y,&ps->current_z,
-											&ps->AA_current,&ps->BB_current,&ps->CC_current)) return;
+				&ps->AA_current, &ps->BB_current, &ps->CC_current, &ps->UU_current, &ps->VV_current)) return;
 	
 	int Fix = ps->origin_index-1;
 
-	Vars[5221+Fix*20+0] += ps->current_x;
-	Vars[5221+Fix*20+1] += ps->current_y;
-	Vars[5221+Fix*20+2] += ps->current_z;
-	Vars[5221+Fix*20+3] += ps->AA_current;
-	Vars[5221+Fix*20+4] += ps->BB_current;
-	Vars[5221+Fix*20+5] += ps->CC_current;
+	Vars[5221 + Fix * 20 + 0] += ps->current_x;
+	Vars[5221 + Fix * 20 + 1] += ps->current_y;
+	Vars[5221 + Fix * 20 + 2] += ps->current_z;
+	Vars[5221 + Fix * 20 + 3] += ps->AA_current;
+	Vars[5221 + Fix * 20 + 4] += ps->BB_current;
+	Vars[5221 + Fix * 20 + 5] += ps->CC_current;
+	Vars[5221 + Fix * 20 + 6] += ps->UU_current;
+	Vars[5221 + Fix * 20 + 7] += ps->VV_current;
 
 	// for inches round to 6 digits for mm round to 4 digits
 	for (int axis=0; axis<NFIXAXES; axis++)
@@ -7619,7 +9886,7 @@ BOOL CKMotionCNCDlg::OnToolTipText( UINT id, NMHDR * pNMHDR, LRESULT * pResult )
 		if(nID)        
 		{
 			if (Screen.CheckForScreenEditorToolTip(nID, pTTTW->lpszText)) return TRUE;
-			static CStringW m_strToolTip;
+			static CString m_strToolTip;
 			m_strToolTip = L"";
 			pTTTW->lpszText = m_strToolTip.GetBuffer(1000);
 			int result = GetDefaultToolTipTextFromID(nID, pTTTW->lpszText);
@@ -7633,7 +9900,7 @@ BOOL CKMotionCNCDlg::OnToolTipText( UINT id, NMHDR * pNMHDR, LRESULT * pResult )
 
 BOOL CKMotionCNCDlg::GetDefaultToolTipTextFromID(UINT nID, LPWSTR Tip)
 {
-	CStringW LocalToolTipText;
+	CString LocalToolTipText;
 
 	if (m_Lathe)
 	{
@@ -7676,30 +9943,32 @@ BOOL CKMotionCNCDlg::GetDefaultToolTipTextFromID(UINT nID, LPWSTR Tip)
 
 void CKMotionCNCDlg::LogJobEndTime(double seconds)
 {
-	CString File=TheFrame->MainPathRoot+LOG_RUNTIME_FILE,s;
-	CStdioFile f;
+	CString File=TheFrame->MainPathRoot+LOG_RUNTIME_FILE, s;
 
 	if (m_ThreadThatWasLaunched>=0 && m_ThreadThatWasLaunched<N_USER_GCODE_FILES)
 	{
-		if(!f.Open(File, CFile::modeCreate|CFile::modeWrite|CFile::modeNoTruncate))
+		FILE* f;
+
+		_tfopen_s(&f, File, _T("at+,ccs=UTF-8"));
+
+		if (!f)  // failed
 		{
-			MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to open Runtime Log File\r\r") + (CStringW) File, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+			MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to open Runtime Log File\r\r") +  File, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 			return;
 		}
 
-		f.SeekToEnd();
 
 		CTime t = CTime::GetCurrentTime();
 		CString time = t.Format( "%a, %b %d, %Y, %I:%M:%S  " );	
 
 		if (m_Simulate && m_DoTime && JobDoTimeValid)
-			s.Format("Expected Job Time: %ssec ", convertSeconds(JobDoTimeSecs));
+			s.Format(L"Expected Job Time: %ls ", convertSeconds(JobDoTimeSecs));
 		else
-			s.Format("Elapsed Job Time: %ssec ", convertSeconds(seconds));
+			s.Format(L"Elapsed Job Time: %ls ", convertSeconds(seconds));
 
 		s=time + s + FileNames[m_ThreadThatWasLaunched] + "\n";
-		f.Write(s,s.GetLength());
-		f.Close();
+		fputws(s, f);
+		fclose(f);
 	}
 }
 
@@ -7719,7 +9988,7 @@ afx_msg BOOL CKMotionCNCDlg::OnNcActivate(BOOL bActive)
 			{
 				// stop it
 				if (p->m_hWnd)
-					p->PostMessageA(WM_LBUTTONUP,0,0); 
+					p->PostMessage(WM_LBUTTONUP,0,0); 
 			}
 		}
 	}
@@ -7749,7 +10018,7 @@ int CKMotionCNCDlg::OnScreenScript(UINT nID)
 	DLG_CONTROL Dlg;
 	bool NewControl;
 
-	CStringW ws = InterprocessString;
+	CString ws = InterprocessString;
 	return Screen.Execute(ws, &Dlg, &NewControl);
 }
 
@@ -7757,13 +10026,13 @@ int CKMotionCNCDlg::OnScreenScript(UINT nID)
 int CKMotionCNCDlg::OnGetControlInfo(UINT nID)
 {
 	int ID = -1;
-	CStringW strDataToSend;
+	CString strDataToSend;
 	CImageButton *I;
 	DLG_CONTROL *Dlg, Dlgx;
 
 	if (m_DialogFaceInUse != CUSTOM_DLG_FACE)
 	{
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Please set KMotionCNC Dialog Face to Custom before running Screen Editor"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Error Please set KMotionCNC Dialog Face to Custom before running Screen Editor"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 1;
 	}
 
@@ -7785,7 +10054,7 @@ int CKMotionCNCDlg::OnGetControlInfo(UINT nID)
 		Dlgx.Bold = Dlgx.Italic = false;
 		Dlgx.Script = "";
 
-		CStringW s;
+		CString s;
 		if (ID == IDC_Editor)  // For Scintilla Editor don't get the whole file
 			s = "GCODE";
 		else
@@ -7857,7 +10126,7 @@ int CKMotionCNCDlg::OnGetControlInfo(UINT nID)
 		Dlg->Bold = D->m_Bold;
 		Dlg->Italic = D->m_Italic;
 		CString s;
-		Dlg->Colors.Format(";%X;;",D->m_BackColor);
+		Dlg->Colors.Format(L";%X;;",D->m_BackColor);
 	}
 
 
@@ -7877,9 +10146,10 @@ int CKMotionCNCDlg::OnGetControlInfo(UINT nID)
 
 int CKMotionCNCDlg::OnMainDlgInfo(UINT nID)
 {
-	CStringW strDataToSend, File, LoadedScreen = Screen.LastLoadedScreen;
+	CString strDataToSend, File, LoadedScreen = Screen.LastLoadedScreen;
 
-	strDataToSend.Format(L"%x", m_DlgBackgroundColor);
+	// the Screen Editor (like the Screen Script) expects RRGGBB, not a COLORREF (BBGGRR)
+	strDataToSend.Format(L"%06x", Screen.SwapRGB(m_DlgBackgroundColor));
 	File = Screen.BGFile_loaded;
 	strDataToSend = strDataToSend + L"," + File + L"," + LoadedScreen;
 
@@ -7903,9 +10173,9 @@ BOOL CKMotionCNCDlg::OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct)
 
 int CKMotionCNCDlg::OnDoJog(UINT nID)
 {
-	CString s = InterprocessString;
+	CStringA s;
 
-	sscanf(s, "%lf%lf%lf%lf%lf%lf", &m_JoyExtvx, &m_JoyExtvy, &m_JoyExtvz, &m_JoyExtva, &m_JoyExtvb, &m_JoyExtvc);
+	swscanf(InterprocessString, L"%lf%lf%lf%lf%lf%lf", &m_JoyExtvx, &m_JoyExtvy, &m_JoyExtvz, &m_JoyExtva, &m_JoyExtvb, &m_JoyExtvc);
 
 	if (m_JoyExtvx == 0.0 && m_JoyExtvy == 0.0 && m_JoyExtvz == 0.0 && m_JoyExtva == 0.0 && m_JoyExtvb == 0.0 && m_JoyExtvc == 0.0)
 	{
@@ -7928,10 +10198,9 @@ int CKMotionCNCDlg::OnDoMove(UINT nID)
 	double x, y, z, a, b, c;
 	CCoordMotion *CM = Interpreter->CoordMotion;
 
-	CString s;
+	CStringA s;
 	
-	s = InterprocessString;
-	sscanf(s, "%lf%lf%lf%lf%lf%lf", &x, &y, &z, &a, &b, &c);
+	swscanf(InterprocessString, L"%lf%lf%lf%lf%lf%lf", &x, &y, &z, &a, &b, &c);
 
 	if (CM->ReadCurAbsPosition(&CM->current_x, &CM->current_y, &CM->current_z, &CM->current_a, &CM->current_b, &CM->current_c)) return 1;
 
@@ -7949,10 +10218,7 @@ int CKMotionCNCDlg::OnDoMoveExp(UINT nID)
 	double Acts[MAX_ACTUATORS], x, y, z, a, b, c, tau;
 	CCoordMotion *CM = Interpreter->CoordMotion;
 
-	CString s;
-	
-	s = InterprocessString;
-	sscanf(s, "%lf%lf%lf%lf%lf%lf%lf", &x, &y, &z, &a, &b, &c, &tau);
+	swscanf(InterprocessString, L"%lf%lf%lf%lf%lf%lf%lf", &x, &y, &z, &a, &b, &c, &tau);
 
 	CM->Kinematics->TransformCADtoActuators(x, y, z, a, b, c, Acts);
 
@@ -7990,10 +10256,10 @@ int CKMotionCNCDlg::OnGetPositions2(UINT nID, bool NoGeo)
 
 	CString s;
 
-	sprintf(s.GetBufferSetLength(150), "%f %f %f %f %f %f", x, y, z, a, b, c);
+	swprintf(s.GetBufferSetLength(150), L"%f %f %f %f %f %f", x, y, z, a, b, c);
 	s.ReleaseBuffer();
 
-	CStringW strDataToSend = s;
+	CString strDataToSend = s;
 
 	COPYDATASTRUCT cpd;
 	cpd.dwData = 0;
@@ -8063,81 +10329,105 @@ void CKMotionCNCDlg::OnGViewerSetup()
 	ActualGViewParent->OnGViewerSetup();
 }
 
+bool CKMotionCNCDlg::DetermineEnableDisableKeys()
+{
+	return (!ThreadIsExecuting || EnableJogKeys) && !ForceDisableJogKeys;
+}
 
 void CKMotionCNCDlg::WhenIdle()
 {
-	m_Zplus2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_Zplus.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_ZplusStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_Zminus2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_Zminus.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_ZminusStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_Aplus2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_Aplus.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_AplusStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_Aminus2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_Aminus.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_AminusStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	HandleEnable(m_Zplus2);
+	HandleEnable(m_Zplus);
+	HandleEnable(m_ZplusStep);
+	HandleEnable(m_Zminus2);
+	HandleEnable(m_Zminus);
+	HandleEnable(m_ZminusStep);
+	
+	HandleEnable(m_Aplus2);
+	HandleEnable(m_Aplus);
+	HandleEnable(m_AplusStep);
+	HandleEnable(m_Aminus2);
+	HandleEnable(m_Aminus);
+	HandleEnable(m_AminusStep);
 
-	m_Bplus2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_Bplus.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_BplusStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_Bminus2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_Bminus.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_BminusStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	HandleEnable(m_Bplus2);
+	HandleEnable(m_Bplus);
+	HandleEnable(m_BplusStep);
+	HandleEnable(m_Bminus2);
+	HandleEnable(m_Bminus);
+	HandleEnable(m_BminusStep);
 
-	m_Cplus2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_Cplus.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_CplusStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_Cminus2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_Cminus.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_CminusStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	HandleEnable(m_Cplus2);
+	HandleEnable(m_Cplus);
+	HandleEnable(m_CplusStep);
+	HandleEnable(m_Cminus2);
+	HandleEnable(m_Cminus);
+	HandleEnable(m_CminusStep);
 
-	m_Right2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_Right.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_RightStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_Down2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_Down.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_DownStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_Up2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_Up.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_UpStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_Left2.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_Left.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_LeftStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
-	m_StopStep.EnableWindow((!ThreadIsExecuting || EnableJogKeys));
+	HandleEnable(m_Uplus2);
+	HandleEnable(m_Uplus);
+	HandleEnable(m_UplusStep);
+	HandleEnable(m_Uminus2);
+	HandleEnable(m_Uminus);
+	HandleEnable(m_UminusStep);
 
-	if (m_GCNew.m_hWnd) m_GCNew.EnableWindow(!ThreadIsExecuting);
-	if (m_GCOpenFile.m_hWnd) m_GCOpenFile.EnableWindow(!ThreadIsExecuting);
-	if (m_GCRestart.m_hWnd) m_GCRestart.EnableWindow(CurrentLine[m_Thread] != 0 && !ThreadIsExecuting);
-	if (m_GCSingleStep.m_hWnd) m_GCSingleStep.EnableWindow(!ThreadIsExecuting);
+	HandleEnable(m_Vplus2);
+	HandleEnable(m_Vplus);
+	HandleEnable(m_VplusStep);
+	HandleEnable(m_Vminus2);
+	HandleEnable(m_Vminus);
+	HandleEnable(m_VminusStep);
 
-	GetDlgItem(IDC_EditToolFile)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_tool)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_fixture)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_EditFixtures)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_SetFixture)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_ZeroX)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_ZeroY)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_ZeroZ)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_ZeroA)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_ZeroB)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_ZeroC)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_SetX)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_SetY)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_SetZ)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_SetA)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_SetB)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_SetC)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_SetC)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_ZeroAll)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_mm)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_inch)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_Rel)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_Abs)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_Simulate)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_RunSimulate)->EnableWindow(!ThreadIsExecuting);
-	GetDlgItem(IDC_Send)->EnableWindow(!ThreadIsExecuting);
+	HandleEnable(m_Right2);
+	HandleEnable(m_Right);
+	HandleEnable(m_RightStep);
+	HandleEnable(m_Left2);
+	HandleEnable(m_Left);
+	HandleEnable(m_LeftStep);
+
+	HandleEnable(m_Down2);
+	HandleEnable(m_Down);
+	HandleEnable(m_DownStep);
+	HandleEnable(m_Up2);
+	HandleEnable(m_Up);
+	HandleEnable(m_UpStep);
+
+	HandleEnable(m_StopStep);
+
+	if (m_GCNew.m_hWnd) m_GCNew.EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	if (m_GCOpenFile.m_hWnd) m_GCOpenFile.EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	if (m_GCRestart.m_hWnd) m_GCRestart.EnableWindow(CurrentLine[m_Thread] != 0 && !ThreadIsExecuting && !ForceDisableJogKeys);
+	if (m_GCSingleStep.m_hWnd) m_GCSingleStep.EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+
+	GetDlgItem(IDC_EditToolFile)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_tool)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_fixture)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_EditFixtures)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_SetFixture)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_ZeroX)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_ZeroY)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_ZeroZ)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_ZeroA)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_ZeroB)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_ZeroC)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	if (m_ZeroU.m_hWnd) GetDlgItem(IDC_ZeroU)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	if (m_ZeroV.m_hWnd) GetDlgItem(IDC_ZeroV)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_SetX)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_SetY)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_SetZ)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_SetA)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_SetB)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_SetC)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	if (m_SetU.m_hWnd) GetDlgItem(IDC_SetU)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	if (m_SetV.m_hWnd) GetDlgItem(IDC_SetV)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_ZeroAll)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_mm)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_inch)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_Rel)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_Abs)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_Simulate)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_RunSimulate)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
+	GetDlgItem(IDC_Send)->EnableWindow(!ThreadIsExecuting && !ForceDisableJogKeys);
 
 	if (m_GVShowTool.m_hWnd) m_GVShowTool.SetToggled(TheFrame->GViewDlg.m_ShowTool != 0);
 	if (m_GVShowAxis.m_hWnd) m_GVShowAxis.SetToggled(TheFrame->GViewDlg.m_ShowAxis != 0);
@@ -8146,6 +10436,14 @@ void CKMotionCNCDlg::WhenIdle()
 	if (m_GVRotXY.m_hWnd) m_GVRotXY.SetToggled(ActualGViewParent->m_view.m_xyRotation != 0);
 }
 
+// Motion Buttons (Jog Buttons) now allow individually, forced disable/enable 
+// via setting the Screen Script Var parameter to:
+// 0=Force Disable, 1=Force Enable, -1=dynamic automatic behavior based on Job Running or not. 
+
+void CKMotionCNCDlg::HandleEnable(CImageButton& M)
+{
+	if (M.m_hWnd) M.EnableWindow(M.Var == -1 ? DetermineEnableDisableKeys() : M.Var);
+}
 int CKMotionCNCDlg::GetBoardType()
 {
 	int Type;

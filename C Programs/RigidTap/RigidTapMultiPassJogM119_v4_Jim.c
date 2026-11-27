@@ -15,7 +15,7 @@ void DoSlave(int Axis);
 void DoTap(int Axis, double Pitch, double Dist, double RPM);
 
 
-main()
+int main()
 {
     // Set variables
 

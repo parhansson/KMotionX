@@ -9,7 +9,7 @@
 #define TAU 0.08 // smoothness factor (Low Pass Time constant seconds)
 #define FINAL_TIME 1.0 // Set final dest after this amount of time with no change
 
-main()
+int main()
 {
 	int BitA,Change1=0,Change2=0, DiffX2;
 	int PosNoWrap, NewPos, Pos=0, wraps;

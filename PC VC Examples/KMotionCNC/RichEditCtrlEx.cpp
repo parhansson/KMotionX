@@ -17,17 +17,17 @@ static char THIS_FILE[] = __FILE__;
 #define tabsize 4
 
 //ExcludeTranslate
-const char cKeyWords[] = 
-  "break "
-  "case char const continue "
-  "default do double else enum extern float for "
-  "goto if inline int long "
-  "register return short signed sizeof static struct switch "
-  "typedef union unsigned "
-  "void volatile while ";
+const wchar_t cKeyWords[] = 
+  L"break "
+  L"case char const continue "
+  L"default do double else enum extern float for "
+  L"goto if inline int long "
+  L"register return short signed sizeof static struct switch "
+  L"typedef union unsigned "
+  L"void volatile while ";
 
-const char GKeyWords[] = 
-  "G0 G2 G3 M2 F ";
+const wchar_t GKeyWords[] = 
+  L"G0 G2 G3 M2 F ";
 //ResumeTranslate
 	
 static UINT WM_FINDREPLACE = ::RegisterWindowMessage(FINDMSGSTRING);
@@ -48,6 +48,7 @@ CRichEditCtrlEx::CRichEditCtrlEx()
 	m_esc_pushed=FALSE;
 	ModeCode=-1;
 	ReadWriteVar = -1;
+	m_DarkScrollBars = false;
 }
 
 CRichEditCtrlEx::~CRichEditCtrlEx()
@@ -83,6 +84,8 @@ BEGIN_MESSAGE_MAP(CRichEditCtrlEx, CScintillaCtrl)
 	ON_MESSAGE(WM_TABLET_QUERYSYSTEMGESTURESTATUS, OnTabletQuerySystemGestureStatus)	//}}AFX_MSG_MAP
 	ON_WM_SETFOCUS()
 	ON_WM_KILLFOCUS()
+	ON_WM_TIMER()
+	ON_NOTIFY_REFLECT_EX(SCN_MODIFIED, OnSciModified)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -117,8 +120,9 @@ CString GlobalList="ENCODER_MODE ADC_MODE RESOLVER_MODE USER_INPUT_MODE BACKLASH
 void CRichEditCtrlEx::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	int nItems;
-	bool ListFound=false;
-	char linebuf[1000];
+	bool ListFound = false;
+	wchar_t linebuf[1000];
+	char dummy[1000];
 	CString List,s;
 
 	if (nChar == VK_ESCAPE)
@@ -127,7 +131,9 @@ void CRichEditCtrlEx::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 		m_esc_time.Start();
 	}
 
-	int  current  =  GetCurLine(sizeof(linebuf),linebuf);
+	int  current  =  GetCurLine(sizeof(dummy),dummy);
+	s = GetCurLine();
+	wcscpy(linebuf, s.GetBuffer());
 	int  pos  =  GetCurrentPos();
 
 	CScintillaCtrl::OnKeyUp(nChar, nRepCnt, nFlags);
@@ -135,14 +141,14 @@ void CRichEditCtrlEx::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 	if  (ModeCode==MODE_C && nChar == VK_OEM_6)  // check for '}'  
 	{
-		char  linebuf[1000];
+		wchar_t  linebuf[1000];
 		int  curLine  =  LineFromPosition(pos);
 		int  lineLength  =  LineLength(curLine);
 		
 		if  (lineLength  <  sizeof(linebuf))  
 		{
-			GetLine(curLine, linebuf);
-			linebuf[lineLength]  =  '\0';
+			s=GetLine(curLine);
+			wcscpy(linebuf, s.GetBuffer());
 			
 			// The user just typed a '}'
 			// Search through the line until we find the bracket
@@ -168,7 +174,7 @@ void CRichEditCtrlEx::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 	if  (ModeCode==MODE_C && nChar == VK_RETURN)  
 	{
-		char  linebuf[1000];
+		wchar_t  linebuf[1000];
 		int  curLine  =  LineFromPosition(pos);
 		int  lineLength  =  LineLength(curLine);
 		
@@ -182,9 +188,8 @@ void CRichEditCtrlEx::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 				
 				memcpy(linebuf,  &buflen,  sizeof(buflen));
 				
-				GetLine(curLine -1, linebuf);
-
-				linebuf[prevLineLength]  =  '\0';
+				s = GetLine(curLine-1);
+				wcscpy(linebuf, s.GetBuffer());
 				
 				// go through the copied line until we detect
 				// a non white space character.  Also if we
@@ -229,7 +234,7 @@ void CRichEditCtrlEx::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
     
 		linebuf[current]  =  '\0';
 
-		char*  word  =  linebuf  +  startword;
+		wchar_t*  word  =  linebuf  +  startword;
 		int word_length = current-startword;
 
 		POSITION listpos = GlobalFuncsNames.GetHeadPosition();
@@ -301,7 +306,7 @@ void CRichEditCtrlEx::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
     
 		linebuf[current]  =  '\0';
 
-		char*  word  =  linebuf  +  startword;
+		wchar_t*  word  =  linebuf  +  startword;
 
 		POSITION listpos = GlobalFuncsNames.GetHeadPosition();
 
@@ -330,10 +335,10 @@ void CRichEditCtrlEx::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 
 
-		char*  word  =  linebuf  +  startword;
+		wchar_t*  word  =  linebuf  +  startword;
 		int word_length = current-startword;
 	
-		char prev_char,prev_prev_char;
+		wchar_t prev_char,prev_prev_char;
     
 		// skip backwards over white space
 
@@ -387,7 +392,7 @@ void CRichEditCtrlEx::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 
 
-bool CRichEditCtrlEx::isalpha_numeric(char s)
+bool CRichEditCtrlEx::isalpha_numeric(wchar_t s)
 {
 	if (s>='a' && s<='z') return true;
 	if (s>='A' && s<='Z') return true;
@@ -397,7 +402,7 @@ bool CRichEditCtrlEx::isalpha_numeric(char s)
 	return false;
 }
 
-bool CRichEditCtrlEx::arrow_key(char s)
+bool CRichEditCtrlEx::arrow_key(wchar_t s)
 {
 	if (s == VK_LEFT) return true;
 	if (s == VK_RIGHT) return true;
@@ -430,7 +435,7 @@ bool CRichEditCtrlEx::escape_time()
 
 
 
-bool CRichEditCtrlEx::iswhitespace(char s)
+bool CRichEditCtrlEx::iswhitespace(wchar_t s)
 {
 	if (s==' ') return true;
 	if (s=='\t') return true;
@@ -478,7 +483,7 @@ int CRichEditCtrlEx::DoAutoComplete(CString word, CString &List, CString WordLis
 
 		for (;;)
 		{
-			k=WordList.Find(" ",i);
+			k=WordList.Find(L" ",i);
 			if (k==-1) break;
 			n+=CheckMatch(word,WordList.Mid(i,k-i),List);
 			i=k+1;
@@ -519,41 +524,41 @@ void CRichEditCtrlEx::OnContextMenu(CWnd* pWnd, CPoint point)
 	Menu.CreatePopupMenu();
 	
 	if (CanUndo())
-		Menu.AppendMenu(0,ID_Undo,"Undo (Ctrl-Z)");
+		Menu.AppendMenu(0,ID_Undo,L"Undo (Ctrl-Z)");
 	else
-		Menu.AppendMenu(MF_GRAYED,ID_Undo,"Undo (Ctrl-Z)");
+		Menu.AppendMenu(MF_GRAYED,ID_Undo,L"Undo (Ctrl-Z)");
 
 
 	if (CanRedo())
-		Menu.AppendMenu(0,ID_Redo,"Redo (Ctrl-Y)");
+		Menu.AppendMenu(0,ID_Redo,L"Redo (Ctrl-Y)");
 	else
-		Menu.AppendMenu(MF_GRAYED,ID_Redo,"Redo (Ctrl-Y)");
+		Menu.AppendMenu(MF_GRAYED,ID_Redo,L"Redo (Ctrl-Y)");
 
 
 	Menu.AppendMenu(MF_SEPARATOR);
 	
 	if (GetSelectionEnd() > GetSelectionStart())
 	{
-		Menu.AppendMenu(0,ID_Cut,"Cut (Ctrl-X)");
-		Menu.AppendMenu(0,ID_Copy,"Copy (Ctrl-C)");
+		Menu.AppendMenu(0,ID_Cut,L"Cut (Ctrl-X)");
+		Menu.AppendMenu(0,ID_Copy,L"Copy (Ctrl-C)");
 	}
 	else
 	{
-		Menu.AppendMenu(MF_GRAYED,ID_Cut,"Cut (Ctrl-X)");
-		Menu.AppendMenu(MF_GRAYED,ID_Copy,"Copy (Ctrl-C)");
+		Menu.AppendMenu(MF_GRAYED,ID_Cut,L"Cut (Ctrl-X)");
+		Menu.AppendMenu(MF_GRAYED,ID_Copy,L"Copy (Ctrl-C)");
 	}
 	
 	if (CanPaste())
-		Menu.AppendMenu(0,ID_Paste,"Paste (Ctrl-V)");
+		Menu.AppendMenu(0,ID_Paste,L"Paste (Ctrl-V)");
 	else
-		Menu.AppendMenu(MF_GRAYED,ID_Paste,"Paste (Ctrl-V)");
+		Menu.AppendMenu(MF_GRAYED,ID_Paste,L"Paste (Ctrl-V)");
 	
 
 	Menu.AppendMenu(MF_SEPARATOR);
-	Menu.AppendMenu(0,ID_SelectAll,"Select All (Ctrl-A)");
+	Menu.AppendMenu(0,ID_SelectAll,L"Select All (Ctrl-A)");
 	Menu.AppendMenu(MF_SEPARATOR);
-	Menu.AppendMenu(0,ID_Find,"Find... (Ctrl-F)");
-	Menu.AppendMenu(0,ID_Replace,"Replace... (Ctrl-H)");
+	Menu.AppendMenu(0,ID_Find,L"Find... (Ctrl-F)");
+	Menu.AppendMenu(0,ID_Replace,L"Replace... (Ctrl-H)");
 
 	if (!m_SpecialContext.IsEmpty())
 	{
@@ -563,26 +568,26 @@ void CRichEditCtrlEx::OnContextMenu(CWnd* pWnd, CPoint point)
 
 	if (ModeCode==MODE_G)
 	{
-		Menu.AppendMenu(0,ID_TransformSel,"Transform Sel");
-		Menu.AppendMenu(0,ID_ToggleBlock,"Toggle Block Delete \'\\\'");
+		Menu.AppendMenu(0,ID_TransformSel,L"Transform Sel");
+		Menu.AppendMenu(0,ID_ToggleBlock,L"Toggle Block Delete \'\\\'");
 		if (TheFrame->GCodeDlg.m_ShowLineNumbers)
 		{
-			Menu.AppendMenu(0, ID_ShowLineNumbers, "Hide Line Numbers");
+			Menu.AppendMenu(0, ID_ShowLineNumbers, L"Hide Line Numbers");
 		}
 		else
 		{
-			Menu.AppendMenu(0, ID_ShowLineNumbers, "Show Line Numbers");
+			Menu.AppendMenu(0, ID_ShowLineNumbers, L"Show Line Numbers");
 		}
 
 		if (ReadWriteVar != 2)
 		{
 			if (GetReadOnly())
 			{
-				Menu.AppendMenu(0, ID_MakeReadWrite, "Allow Read/Write");
+				Menu.AppendMenu(0, ID_MakeReadWrite, L"Allow Read/Write");
 			}
 			else
 			{
-				Menu.AppendMenu(0, ID_MakeReadWrite, "Make Read Only");
+				Menu.AppendMenu(0, ID_MakeReadWrite, L"Make Read Only");
 			}
 		}
 	}
@@ -592,11 +597,11 @@ void CRichEditCtrlEx::OnContextMenu(CWnd* pWnd, CPoint point)
 	{
 		if (TheFrame->ProgramDlg.m_ShowLineNumbers)
 		{
-			Menu.AppendMenu(0,ID_ShowLineNumbers,"Hide Line Numbers");
+			Menu.AppendMenu(0,ID_ShowLineNumbers,L"Hide Line Numbers");
 		}
 		else
 		{
-			Menu.AppendMenu(0,ID_ShowLineNumbers,"Show Line Numbers");
+			Menu.AppendMenu(0,ID_ShowLineNumbers,L"Show Line Numbers");
 		}
 	}
 #endif
@@ -606,7 +611,7 @@ void CRichEditCtrlEx::OnContextMenu(CWnd* pWnd, CPoint point)
 }
 
 
-void CRichEditCtrlEx::SetAStyle(int style, COLORREF fore, COLORREF back, int size, const char* face) 
+void CRichEditCtrlEx::SetAStyle(int style, COLORREF fore, COLORREF back, int size, const wchar_t* face) 
 {
 	StyleSetFore(style, fore);
 	StyleSetBack(style, back);
@@ -617,7 +622,9 @@ void CRichEditCtrlEx::SetAStyle(int style, COLORREF fore, COLORREF back, int siz
 		StyleSetFont(style, face);
 }
 
-void CRichEditCtrlEx::SetupForGCode(int size, CString FontName) 
+// Colors passed as CLR_DEFAULT get the standard black on white look, except the text
+// defaults to light on a dark background.  Syntax colors are chosen for the background.
+void CRichEditCtrlEx::SetupForGCode(int size, CString FontName, COLORREF Text, COLORREF Back, COLORREF SelText, COLORREF SelBack)
 {
 	ModeCode=MODE_G;
 
@@ -628,28 +635,65 @@ void CRichEditCtrlEx::SetupForGCode(int size, CString FontName)
 	SetLexer(SCLEX_GCODE);
 	SetKeyWords(0, GKeyWords);
 
+	bool CustomBack = Back != CLR_DEFAULT;
+	if (!CustomBack) Back = RGB(0xff, 0xff, 0xff);
+	bool Dark = CScreen::IsDarkColor(Back);
+	if (Text == CLR_DEFAULT) Text = Dark ? DARK_TEXT_COLOR : RGB(0, 0, 0);
+
 	//Setup styles
-	SetAStyle(STYLE_DEFAULT, RGB(0, 0, 0), RGB(0xff, 0xff, 0xff), size, FontName);
-	SetAStyle(STYLE_LINENUMBER, RGB(0, 0, 0), RGB(0xff, 0xff, 0xff), size, FontName);
-	StyleClearAll();
+	SetAStyle(STYLE_DEFAULT, Text, Back, size, FontName);
+	SetAStyle(STYLE_LINENUMBER, Text, Back, size, FontName);
+	StyleClearAll();  // also sets the margin background to the system button face color
 	SetCodePage(SC_CP_UTF8);
 
-		
-	SetAStyle(SCE_GCODE_IDENTIFIER, RGB(0, 0, 0));
+	// with a custom background shade the margin a little toward the text color like the standard look
+	if (CustomBack)
+		StyleSetBack(STYLE_LINENUMBER, CScreen::BlendColor(Back, Text, 10));
+
+	// the standard syntax colors are too dark to read on a dark background so use lighter ones there
+	SetAStyle(SCE_GCODE_IDENTIFIER, Text, Back);
 	StyleSetBold(SCE_GCODE_IDENTIFIER, 1);
-	SetAStyle(SCE_GCODE_DEFAULT, RGB(0, 0, 0));
-	SetAStyle(SCE_GCODE_COMMENT, RGB(0, 0x80, 0));
-	SetAStyle(SCE_GCODE_NUMBER, RGB(0, 0, 0x80));
+	SetAStyle(SCE_GCODE_DEFAULT, Text, Back);
+	SetAStyle(SCE_GCODE_COMMENT, Dark ? RGB(0x6a, 0xc0, 0x6a) : RGB(0, 0x80, 0), Back);
+	SetAStyle(SCE_GCODE_NUMBER, Dark ? RGB(0x9c, 0xdc, 0xfe) : RGB(0, 0, 0x80), Back);
 	StyleSetBold(SCE_GCODE_NUMBER, 1);
-	SetAStyle(SCE_GCODE_PARAM, RGB(0, 0x80,0x80));
+	SetAStyle(SCE_GCODE_PARAM, Dark ? RGB(0x4e, 0xc9, 0xb0) : RGB(0, 0x80,0x80), Back);
 	StyleSetBold(SCE_GCODE_PARAM, 1);
-	SetAStyle(SCE_GCODE_BUF, RGB(0xc0, 0x0,0x0));
-	SetAStyle(SCE_GCODE_CMD, RGB(0x00, 0x00,0xff));
-	SetAStyle(SCE_GCODE_MSG, RGB(0xff, 0x7f,0x00));
-	
-	
-	
-	SetTabWidth(tabsize);	
+	SetAStyle(SCE_GCODE_BUF, Dark ? RGB(0xff, 0x80, 0x80) : RGB(0xc0, 0x0,0x0), Back);
+	SetAStyle(SCE_GCODE_CMD, Dark ? RGB(0x6c, 0xb6, 0xff) : RGB(0x00, 0x00,0xff), Back);
+	SetAStyle(SCE_GCODE_MSG, Dark ? RGB(0xff, 0xa0, 0x40) : RGB(0xff, 0x7f,0x00), Back);
+
+	SetCaretFore(Text);
+
+	// Highlight colors are for the selection.  By default selected text keeps its syntax colors
+	if (SelText != CLR_DEFAULT)
+		SetSelFore(TRUE, SelText);
+	else
+		SetSelFore(FALSE, 0);
+
+	if (SelBack != CLR_DEFAULT)
+		SetSelBack(TRUE, SelBack);
+	else if (Dark)
+		SetSelBack(TRUE, DARK_SEL_COLOR);
+	else
+	{
+		SetSelBack(TRUE, RGB(0xc0, 0xc0, 0xc0));  // Scintilla's defaults
+		SendMessage(SCI_SETADDITIONALSELBACK, RGB(0xd7, 0xd7, 0xd7));
+	}
+
+	// Windows draws the scroll bars, so on a dark background use its dark theme (Windows 10 1809 and later)
+	if (Dark != m_DarkScrollBars)
+	{
+		m_DarkScrollBars = Dark;
+		::SetWindowTheme(m_hWnd, Dark ? L"DarkMode_Explorer" : NULL, NULL);
+	}
+
+	SetTabWidth(tabsize);
+
+	// Scintilla defaults to a fixed 2000 pixel h-scroll range; track the widest line instead
+	SetScrollWidthTracking(TRUE);
+	UpdateScrollWidthToContent();
+
 	AssignCmdKey((SCMOD_CTRL<<16)|('F'), SCI_NULL);
 	AssignCmdKey((SCMOD_CTRL<<16)|('H'), SCI_NULL);
 
@@ -677,7 +721,7 @@ void CRichEditCtrlEx::SetupForCCode()
 	SetKeyWords(0, cKeyWords);
 
 	//Setup styles
-	SetAStyle(STYLE_DEFAULT, RGB(0, 0, 0), RGB(0xff, 0xff, 0xff), 10, "Courier New");
+	SetAStyle(STYLE_DEFAULT, RGB(0, 0, 0), RGB(0xff, 0xff, 0xff), 10, L"Courier New");
 	StyleClearAll();
 	SetCodePage(SC_CP_UTF8);
 	SetAStyle(SCE_C_DEFAULT, RGB(0, 0, 0));
@@ -694,7 +738,11 @@ void CRichEditCtrlEx::SetupForCCode()
 	SetAStyle(SCE_C_IDENTIFIER, RGB(0, 0, 0));
 	SetAStyle(SCE_C_PREPROCESSOR, RGB(0x80, 0, 0));
 	SetAStyle(SCE_C_OPERATOR, RGB(0x80, 0x80, 0));
-	SetTabWidth(tabsize);	
+	SetTabWidth(tabsize);
+
+	// Scintilla defaults to a fixed 2000 pixel h-scroll range; track the widest line instead
+	SetScrollWidthTracking(TRUE);
+	UpdateScrollWidthToContent();
 
 	AssignCmdKey((SCMOD_CTRL<<16)|('F'), SCI_NULL);
 	AssignCmdKey((SCMOD_CTRL<<16)|('H'), SCI_NULL);
@@ -712,7 +760,7 @@ void CRichEditCtrlEx::SetupForCCode()
 		SetMarginWidthN(0,0);
 	}
 
-	CreateGlobalFunctionDefinitions(TheFrame->MainPathRoot + "\\DSP_KFLOP\\KMotionDef.h");
+	CreateGlobalFunctionDefinitions(TheFrame->MainPathRoot + "\\DSP_KOGNA\\KMotionDef.h");
 #endif
 }
 
@@ -727,7 +775,7 @@ void CRichEditCtrlEx::SetupForCMD()
 	SetLexer(SCLEX_CPP);
 
 	//Setup styles
-	SetAStyle(STYLE_DEFAULT, RGB(0, 0, 0), RGB(0xff, 0xff, 0xff), 10, "Courier New");
+	SetAStyle(STYLE_DEFAULT, RGB(0, 0, 0), RGB(0xff, 0xff, 0xff), 10, L"Courier New");
 	StyleClearAll();
 	SetAStyle(SCE_C_DEFAULT, RGB(0, 0, 0));
 	SetAStyle(SCE_C_COMMENT, RGB(0, 0x80, 0));
@@ -743,7 +791,72 @@ void CRichEditCtrlEx::SetupForCMD()
 	SetAStyle(SCE_C_IDENTIFIER, RGB(0, 0, 0));
 	SetAStyle(SCE_C_PREPROCESSOR, RGB(0x80, 0, 0));
 	SetAStyle(SCE_C_OPERATOR, RGB(0x80, 0x80, 0));
-	SetTabWidth(tabsize);	
+	SetTabWidth(tabsize);
+
+	SetScrollWidthTracking(TRUE);
+	UpdateScrollWidthToContent();
+}
+
+
+void CRichEditCtrlEx::SetText(const wchar_t* text, BOOL bDirect)
+{
+	CScintillaCtrl::SetText(text, bDirect);
+	UpdateScrollWidthToContent();
+}
+
+void CRichEditCtrlEx::SetText(const char* text, BOOL bDirect)
+{
+	CScintillaCtrl::SetText(text, bDirect);
+	UpdateScrollWidthToContent();
+}
+
+// Scintilla only grows a tracked h-scroll range from its blink-timer tick, which requires
+// the control to have had focus, so a freshly loaded file may show no scroll bar.  Compute
+// the widest line and set the range directly; width tracking then grows it while editing.
+void CRichEditCtrlEx::UpdateScrollWidthToContent()
+{
+	int nLines = GetLineCount();
+	int MaxLen = 0, MaxLine = 0;
+
+	for (int i = 0; i < nLines; i++)
+	{
+		int Len = LineLength(i);
+		if (Len > MaxLen)
+		{
+			MaxLen = Len;
+			MaxLine = i;
+		}
+	}
+
+	int nColumns = GetColumn(GetLineEndPosition(MaxLine));
+	int Width = (nColumns + 2) * TextWidth(STYLE_DEFAULT, "9");
+	SetScrollWidth(Width > 50 ? Width : 50);
+}
+
+#define TIMER_UPDATE_SCROLL_WIDTH 0x5C40
+
+BOOL CRichEditCtrlEx::OnSciModified(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	SCNotification* pSCN = reinterpret_cast<SCNotification*>(pNMHDR);
+
+	// deleting text may remove the widest line and width tracking never shrinks,
+	// so recompute after deletions settle (debounced for very large files)
+	if (pSCN->modificationType & SC_MOD_DELETETEXT)
+		SetTimer(TIMER_UPDATE_SCROLL_WIDTH, 350, NULL);
+
+	*pResult = 0;
+	return FALSE;	// continue routing so parent dialogs also receive the notification
+}
+
+void CRichEditCtrlEx::OnTimer(UINT_PTR nIDEvent)
+{
+	if (nIDEvent == TIMER_UPDATE_SCROLL_WIDTH)
+	{
+		KillTimer(nIDEvent);
+		UpdateScrollWidthToContent();
+		return;
+	}
+	Default();	// Scintilla's internal timers (caret blink, etc.) also arrive here
 }
 
 
@@ -751,28 +864,30 @@ void CRichEditCtrlEx::SetupForCMD()
 void CRichEditCtrlEx::CreateGlobalFunctionDefinitions(CString fname) 
 {
 	CString s;
-	FILE *f=fopen(fname,"rb");
+	FILE *f;
+	_tfopen_s(&f, fname, _T("rt,ccs=UTF-8"));
+
 
 	if (!f) return;
 	
 	// global functions of interest are defined as lines
-	// with these characters in sequence "(", ")", ";" "/","/"
+	// with these characters in sequence "(", L")", L";" "/","/"
 
 	GlobalFuncsNames.RemoveAll();
 	GlobalFuncsDefs.RemoveAll();
 
 	while (!feof(f))
 	{
-		fgets(s.GetBuffer(1000),1000,f);
+		fgetws(s.GetBuffer(1000),1000,f);
 		s.ReleaseBuffer();
 
-		if (CheckForChars(s,"();//") != -1)
+		if (CheckForChars(s,L"();//") != -1)
 		{
 			s=WhitespaceToSpace(s);
 
 			s=s.Left(s.GetLength()-2);
 
-			int r = s.Find("(");
+			int r = s.Find(L"(");
 
 			CString t = FindTokenBackwards(s,r-1);
 
@@ -780,8 +895,8 @@ void CRichEditCtrlEx::CreateGlobalFunctionDefinitions(CString fname)
 
 			if (s.GetLength() >0 && s.GetAt(0) == ' ') s.Delete(0);
 
-			if (s.Find("// ") != -1) s.Replace("// ","\n");
-			if (s.Find("//") != -1) s.Replace("// ","\n");
+			if (s.Find(L"// ") != -1) s.Replace(L"// ",L"\n");
+			if (s.Find(L"//") != -1) s.Replace(L"// ",L"\n");
 
 			GlobalFuncsDefs.AddTail(s);
 		}
@@ -813,7 +928,7 @@ CString CRichEditCtrlEx::WhitespaceToSpace(CString s)
 
 	for (int i=0; i<s.GetLength(); i++)
 	{
-		char c = s.GetAt(i);
+		wchar_t c = s.GetAt(i);
 
 		if (in_white_space)
 		{
@@ -976,17 +1091,15 @@ void CRichEditCtrlEx::OnMakeReadWrite()
 
 void CRichEditCtrlEx::OnTransformSel() 
 {
-	CString s;
-
 	int length = GetSelectionEnd()-GetSelectionStart();
 	
 	if (length == 0)
 	{
-		AfxMessageBox("Nothing Selected to Transform");
+		AfxMessageBox(L"Nothing Selected to Transform");
 		return;
 	}
 
-	GetSelText(TransformDlg.Selection.GetBufferSetLength(length+1));
+	TransformDlg.Selection = GetSelText();
 	TransformDlg.Selection.ReleaseBuffer();
 
 	TransformDlg.DoModal();
@@ -1181,7 +1294,7 @@ void CRichEditCtrlEx::OnReplaceAll(LPCTSTR lpszFind, LPCTSTR lpszReplace, BOOL b
 	if (NReplaced>0)
 	{
 		CString s;
-		s.Format("%d occurances replaced",NReplaced);
+		s.Format(L"%d occurances replaced",NReplaced);
 		MessageBox(s);
 	}
 }
@@ -1346,13 +1459,13 @@ void CRichEditCtrlEx::OnToggleBlock()
 
 	if (s.GetLength() == 0)
 	{
-		AfxMessageBox("Nothing Selected to Toggle");
+		AfxMessageBox(L"Nothing Selected to Toggle");
 		return;
 	}
 
 	int oldStart = 0;
 	int newLine  = -1;
-	while((newLine = s.Find("\n", newLine+1)) != -1)
+	while((newLine = s.Find(L"\n", newLine+1)) != -1)
 	{
 		if(s.GetAt(oldStart) == '/')
 		{

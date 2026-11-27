@@ -81,7 +81,7 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 </ul>
 
 <p>KStep is a high efficiency 4-axis microstepping drive that can drive four motors with up to 5Amps @ 48V each.
-  In addition to the 4 motor drives, KStep also provides additional I/O features:</p>
+  In addition to the 4 motor drives, KStep also provides additional IO features:</p>
 
 <ul>
   <li>Sixteen (16) 12-24V tolerant optically isolated filtered inputs</li>
@@ -133,7 +133,7 @@ Figure 2 - KStep + KFLOP</p>
 	
 	<p>If JP36 is not being used to connect KFLOP/Kogna to KStep, then a 3.3V enable signal may be applied to a screw terminal on J6 instead.  If two KSteps are being used (for driving 8 motors), then the screw terminals on J6 should be used as an output on the first KStep to daisy chain the enable signal to the second KStep. </p>
 	
-	<p>For testing purposes KStep may be enabled using the Digital I/O Screen as shown below.</p>
+	<p>For testing purposes KStep may be enabled using the Digital IO Screen as shown below.</p>
 	
 	<p><img src="DigitalEnable.png" width="479" height="533" alt="DigitalEnable" /></p>
 	
@@ -175,7 +175,7 @@ Figure 2 - KStep + KFLOP</p>
 		
 	<h2><a name="digital"></a>Digital Status</h2>
 	
-	<p>The state of the Optically Isolated 12-24V Digital Inputs can be observed by selecting the "Virtual/KStep" Tab on the Digital I/O Screen.  Each input will be marked as active if current is flowing through the optical isolation circuit.  For input circuits and pinouts	<a href="ConnectorsKStep.htm#Optically_isolated_Inputs">see</a>. The KStep Opto Inputs are actually virtual inputs that are multiplexed in through KFLOP/Kogna I/O.  KFLOP/Kogna can perform this multiplexing automatically by setting the global variable <b>KStepPresent.</b> The following line of C code should be added to your Init.c program:</p>
+	<p>The state of the Optically Isolated 12-24V Digital Inputs can be observed by selecting the "Virtual/KStep" Tab on the Digital IO Screen.  Each input will be marked as active if current is flowing through the optical isolation circuit.  For input circuits and pinouts	<a href="ConnectorsKStep.htm#Optically_isolated_Inputs">see</a>. The KStep Opto Inputs are actually virtual inputs that are multiplexed in through KFLOP/Kogna IO.  KFLOP/Kogna can perform this multiplexing automatically by setting the global variable <b>KStepPresent.</b> The following line of C code should be added to your Init.c program:</p>
 	
 	<pre>
 		<code class="language-c">
@@ -187,7 +187,7 @@ Figure 2 - KStep + KFLOP</p>
 	
 	<h2><a name="relay"></a>Relay Driver Outputs</h2>
 	
-	<p>The Optically Isolated 24V outputs can be observed and controlled by selecting the KFLOP/Kogna tab on the Digital I/O Screen.  Each output will be marked as active if current is flowing through the optical isolation circuit.  The KStep outputs are the same as the standard KFLOP/Kogna outputs except they are optically isolated and amplified to handle up to 24V.  For output circuit and pinouts see <a href="ConnectorsKStep.htm#Relay_Driver_Outputs">Relay Driver Outputs</a>.</p>
+	<p>The Optically Isolated 24V outputs can be observed and controlled by selecting the KFLOP/Kogna tab on the Digital IO Screen.  Each output will be marked as active if current is flowing through the optical isolation circuit.  The KStep outputs are the same as the standard KFLOP/Kogna outputs except they are optically isolated and amplified to handle up to 24V.  For output circuit and pinouts see <a href="ConnectorsKStep.htm#Relay_Driver_Outputs">Relay Driver Outputs</a>.</p>
 	
 	<p><img src="DigitalRelayOutputs.png" width="479" height="533" alt="Digital Relay Outputs" /></p>
 	
@@ -282,6 +282,7 @@ Figure 2 - KStep + KFLOP</p>
 <p>&nbsp;</p>
 </div>
 
+<script src="../search/searchbox.js" defer></script>
 </body>
 
 </html>

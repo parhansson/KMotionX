@@ -1,6 +1,6 @@
 #include "KMotionDef.h"
 
-main()
+int main()
 {
 	while(1)  // loop forever
 	{

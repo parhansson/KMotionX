@@ -3,7 +3,7 @@
 // factor to convert speed in counts/sec to DAC counts
 #define FACTOR 0.01 
 
-main()
+int main()
 {
 	double T1,T0=Time_sec();
 	double LastX = ch0->Dest;

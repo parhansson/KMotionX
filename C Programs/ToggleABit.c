@@ -1,7 +1,7 @@
 #include "KMotionDef.h"
 
 #define BB 13
-main()
+int main()
 {
 	int i=0;
 	SetBitDirection(BB,1);

@@ -18,7 +18,7 @@ double Table1[] = { 0.0, -5.0, 2.0, -1.0 };	// correction Table for Axis1
 
 void CorrectEncoder(int EncoderAxis, int MotorAxis, double *Table, int n);
 
-void main()
+int main()
 {
 	// Test the Correction Function
 	ch5->Position = 2250.0;		// test value is quarter the way between last 2 table values

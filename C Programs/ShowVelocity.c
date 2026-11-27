@@ -1,6 +1,6 @@
 #include "KMotionDef.h"
 
-main()
+int main()
 {
 	double x,y,x1,y1,dx1,dy1,t1,t,dx,dy,dt,Ax,Ay,S;
 	

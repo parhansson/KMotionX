@@ -1,6 +1,10 @@
 #pragma once
 #include "ToolSetupPage.h"
 
+void AFXAPI DDX_TextMM(CDataExchange* pDX, int nIDC, double& value, BOOL ModeMM);  // special dat aexchange to handle MM
+void AFXAPI DDX_TextMMInv(CDataExchange* pDX, int nIDC, double& value, BOOL ModeMM);  // special dat aexchange to handle MM
+
+
 // CToolSetupTPPage dialog
 
 class CToolSetupTPPage : public CToolSetupPage
@@ -45,6 +49,8 @@ public:
 	double	m_CountsPerInchZ;
 	double	m_CountsPerInchU;
 	double	m_CountsPerInchV;
+	double	m_JogSpeedV;
+	double	m_JogSpeedU;
 	double	m_JogSpeedC;
 	double	m_JogSpeedB;
 	double	m_JogSpeedA;
@@ -62,6 +68,7 @@ public:
 	BOOL	m_ToolLengthImmediately;
 	BOOL	m_ToolTableDoM6;
 	BOOL	m_ConfirmExit;
+	BOOL	m_AllowConcaveCorners;
 	BOOL	m_ArcsToSegs;
 	BOOL	m_DisplayEncoder;
 	BOOL	m_DegreesA;
@@ -82,7 +89,35 @@ public:
 	double m_SpindleUpdateTime;
 	double m_SpindleTau;
 	double m_SpindleCntsPerRev;
+
+	// 3rd Order (jerk limited) Trajectory Planner option: entered per-CAD-
+	// axis Jerk limits used with MaxVel/MaxAccel (independent of the
+	// uploaded stop-to-stop Rapid jerk)
+	BOOL	m_ThirdOrderTP;
+	BOOL	m_TPLogSegs;
+	BOOL	m_TPCubicKnots;
+	double	m_MaxJerkX;
+	double	m_MaxJerkY;
+	double	m_MaxJerkZ;
+	double	m_MaxJerkA;
+	double	m_MaxJerkB;
+	double	m_MaxJerkC;
+	double	m_MaxJerkU;
+	double	m_MaxJerkV;
+
+	// Constraints in Actuator Space: per-slot table shown in place of the
+	// CAD Axis Parameters when the mode is on (slot i's controller channel
+	// is assigned by DefineCS)
+	BOOL	m_ActuatorLimits;
+	double	m_ActScale[MAX_TP_ACTUATORS];
+	double	m_MaxActVel[MAX_TP_ACTUATORS];
+	double	m_MaxActAccel[MAX_TP_ACTUATORS];
+	double	m_MaxActJerk[MAX_TP_ACTUATORS];
+	BOOL	m_ActDegrees[MAX_TP_ACTUATORS];
+
 	BOOL InitDialogComplete;
+
+	BOOL ConfigUnitsMM;
 
 
 protected:
@@ -97,6 +132,14 @@ public:
 	afx_msg void OnBnClickedDegreesa();
 	afx_msg void OnBnClickedDegreesb();
 	afx_msg void OnBnClickedDegreesc();
+	afx_msg void OnBnClickedThirdOrderTP();
+	afx_msg void OnBnClickedActLimitsEnable();
+	afx_msg void OnBnClickedActDegrees(UINT nID);
+	afx_msg void OnBnClickedCopyFromCAD();
+	afx_msg void Onmm();
+	afx_msg void Oninch();
+
 	void SetStatics();
+	void UpdateAxisParamView();
 	virtual BOOL OnKillActive();
 };

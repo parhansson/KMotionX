@@ -61,8 +61,8 @@ public:
 #ifdef _UNICODE
   void AddText(int length, const wchar_t* text, BOOL bDirect = TRUE);
   void InsertText(long pos, const wchar_t* text, BOOL bDirect = TRUE);
-  CStringW GetSelText(BOOL bDirect = TRUE);
-  CStringW GetCurLine(BOOL bDirect = TRUE);
+  CString GetSelText(BOOL bDirect = TRUE);
+  CString GetCurLine(BOOL bDirect = TRUE);
   void StyleSetFont(int style, const wchar_t* fontName, BOOL bDirect = TRUE);
   void SetWordChars(const wchar_t* characters, BOOL bDirect = TRUE);
   void AutoCShow(int lenEntered, const wchar_t* itemList, BOOL bDirect = TRUE);
@@ -70,10 +70,10 @@ public:
   void AutoCSelect(const wchar_t* text, BOOL bDirect = TRUE);
   void AutoCSetFillUps(const wchar_t* characterSet, BOOL bDirect = TRUE);
   void UserListShow(int listType, const wchar_t* itemList, BOOL bDirect = TRUE);
-  CStringW GetLine(int line, BOOL bDirect = TRUE);
+  CString GetLine(int line, BOOL bDirect = TRUE);
   void ReplaceSel(const wchar_t* text, BOOL bDirect = TRUE);
   void SetText(const wchar_t* text, BOOL bDirect = TRUE);
-  CStringW GetText(int length, BOOL bDirect = TRUE);
+  CString GetText(int length, BOOL bDirect = TRUE);
   int ReplaceTarget(int length, const wchar_t* text, BOOL bDirect = TRUE);
   int ReplaceTargetRE(int length, const wchar_t* text, BOOL bDirect = TRUE);
   int SearchInTarget(int length, const wchar_t* text, BOOL bDirect = TRUE);
@@ -88,12 +88,12 @@ public:
   void SetKeyWords(int keywordSet, const wchar_t* keyWords, BOOL bDirect = TRUE);
   void SetLexerLanguage(const wchar_t* language, BOOL bDirect = TRUE);
   void LoadLexerLibrary(const wchar_t* path, BOOL bDirect = TRUE);
-  CStringW GetProperty(const wchar_t* key, BOOL bDirect = TRUE);
-  CStringW GetPropertyExpanded(const wchar_t* key, BOOL bDirect = TRUE);
+  CString GetProperty(const wchar_t* key, BOOL bDirect = TRUE);
+  CString GetPropertyExpanded(const wchar_t* key, BOOL bDirect = TRUE);
   int GetPropertyInt(const wchar_t* key, BOOL bDirect = TRUE);
-  CStringW StyleGetFont(int style, BOOL bDirect = TRUE);
+  CString StyleGetFont(int style, BOOL bDirect = TRUE);
 
-  static CStringW UTF82W(const char* pszText, int nLength);
+  static CString UTF82W(const char* pszText, int nLength);
   static CStringA W2UTF8(const wchar_t* pszText, int nLength);
 #else
   CStringA GetSelText(BOOL bDirect = TRUE);

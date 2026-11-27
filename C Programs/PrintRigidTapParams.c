@@ -4,7 +4,7 @@
 
 #define CANON_UNITS_INCHES 1  
 
-main()
+int main()
 {
 	// Call MCode M119 to do Rigid Tapping
 	// 

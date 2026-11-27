@@ -2,7 +2,7 @@
 
 //Plugin calls for Mach3 NotifyPlugins Commands
 
-main()
+int main()
 {
 	int msg = persist.UserData[6];  // Mach3 notify Message 10000-10999
 

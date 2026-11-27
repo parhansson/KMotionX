@@ -335,7 +335,7 @@ void ServiceToolButtons(void)
 }
 
 // Loop servicing things
-main()
+int main()
 {
 	for (;;)  // loop forever
 	{

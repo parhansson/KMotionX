@@ -29,7 +29,7 @@ void Write3PH_DACs(CHAN *ch0, float v, double angle_in_cycles);
 float fractionf(double v);
 
 
-void main() 
+int main() 
 {
 	float mid,k=0,dk=0.2,A=AMPLITUDE;   // set coil current amplitude
 	int i,ignore=300,kpos[Ncycles],zmark,m=0;

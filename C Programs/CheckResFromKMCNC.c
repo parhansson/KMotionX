@@ -5,7 +5,7 @@
 
 
 
-main()
+int main()
 {
 	int Answer;
 	

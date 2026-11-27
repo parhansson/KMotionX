@@ -74,37 +74,47 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 
 <p>
 <map name="FPMap0">
-<area href="#Trajectory_Planner" shape="rect" coords="26,51,815,101">
-<area href="#Jog_Speeds" shape="rect" coords="32,112,732,137">
-<area href="#Step_Increments" shape="rect" coords="41,139,727,174">
-<area href="#Axis_Motion_Parameters" shape="rect" coords="25,177,530,390">
-<area href="ToolSetupScreenM3.htm" shape="rect" coords="9,26,64,51">
-<area href="ToolSetupScreenM100.htm" shape="rect" coords="64,24,117,50">
-<area href="ToolSetupScreenButtons.htm" shape="rect" coords="118,26,188,48">
-<area href="ToolSetupScreenFiles.htm" shape="rect" coords="189,26,285,51">
-<area href="#Display_Encoders" shape="rect" coords="540,339,735,359">
-<area href="#Threading/Spindle_Settings" shape="rect" coords="25,393,529,512">
-<area href="#Zero_Using_Fixture_Offsets" shape="rect" coords="540,361,737,379">
-<area coords="535,180,735,244" shape="rect" href="#Lathe_Options">
-<area href="#Feed_Rate_Override" shape="rect" coords="535,247,735,285">
-<area href="#Tool_Length/Offset_Immediately" shape="rect" coords="541,382,738,400">
-<area href="#M6onToolTableChanges" shape="rect" coords="539,405,700,420">
-<area href="#Max_Rapid_FRO" shape="rect" coords="534,286,734,303">
-<area href="#Rapids_as_Feeds" shape="rect" coords="534,310,733,331">
-<area shape="rect" coords="536,456,768,474" href="#arc-beg-end">
-<area shape="rect" coords="536,476,769,496" href="#arc-radius-small">
-<area shape="rect" coords="538,423,687,439" href="#confirm-program-exit">
+<area href="ToolSetupScreenM3.htm" shape="rect" coords="12,40,88,58">
+<area href="ToolSetupScreenM100.htm" shape="rect" coords="92,40,166,58">
+<area href="ToolSetupScreenButtons.htm" shape="rect" coords="170,40,249,58">
+<area href="ToolSetupScreenFiles.htm" shape="rect" coords="253,40,362,58">
+<area href="#Trajectory_Planner" shape="rect" coords="20,72,810,108">
+<area href="TrajectoryPlanner.htm" shape="rect" coords="815,72,1015,108">
+<area href="ToolSetupScreenTP3.htm#Log" shape="rect" coords="55,110,115,130">
+<area href="ToolSetupScreenTP3.htm#Cubic_Knots" shape="rect" coords="155,110,252,130">
+<area href="#Trajectory_Planner" shape="rect" coords="450,110,590,130">
+<area href="ToolSetupScreenTP3.htm" shape="rect" coords="640,110,790,130">
+<area href="ToolSetupScreenTP3.htm#Actuator_Space_Limits" shape="rect" coords="815,110,995,130">
+<area href="#Jog_Speeds" shape="rect" coords="20,140,920,193">
+<area href="#Step_Increments" shape="rect" coords="20,194,920,232">
+<area href="#Units" shape="rect" coords="925,136,1025,210">
+<area href="#Axis_Motion_Parameters" shape="rect" coords="20,238,640,548">
+<area href="#Threading/Spindle_Settings" shape="rect" coords="20,552,555,648">
+<area href="#Lathe_Options" shape="rect" coords="653,236,892,316">
+<area href="#Feed_Rate_Override" shape="rect" coords="653,318,892,361">
+<area href="#Max_Rapid_FRO" shape="rect" coords="660,362,892,387">
+<area href="#Rapids_as_Feeds" shape="rect" coords="660,388,892,410">
+<area href="#Display_Encoders" shape="rect" coords="668,424,905,446">
+<area href="#Zero_Using_Fixture_Offsets" shape="rect" coords="668,448,905,470">
+<area href="#Tool_Length/Offset_Immediately" shape="rect" coords="668,474,905,496">
+<area href="#M6onToolTableChanges" shape="rect" coords="668,500,905,522">
+<area href="#Allow-concave-corners" shape="rect" coords="668,526,905,548">
+<area href="#confirm-program-exit" shape="rect" coords="668,552,905,574">
+<area href="#arc-beg-end" shape="rect" coords="668,584,955,608">
+<area href="#arc-radius-small" shape="rect" coords="668,610,955,634">
 </map>
-<img src="KMotionCNCfiles/ToolSetupTP.PNG" usemap="#FPMap0" width="859" height="553" /><br />
-<span class="small">(Click on Image to Jump to related help)</span></p>
+<img src="KMotionCNCfiles/ToolSetupTPLegacy.png" usemap="#FPMap0" width="1066" height="701" /><br />
+<span class="small">(Click on image to jump to related help. The Log, Cubic Knots, 3rd
+Order Planner, and Actuator Space Limits options are described on the
+<a href="ToolSetupScreenTP3.htm">3rd Order Trajectory Planner</a> page)</span></p>
 	
 <p>The Tool Setup Screen allows <strong><em>KMotionCNC</em></strong> to be configured for a 
 particular machine tool. Each machine tool is likely to have different 
-motion resolution, speeds, and acceleration limits. It is also likely to 
-different I/O requirements with regard to Spindle control and such. 
+motion resolution, speeds, and acceleration limits. It is also likely to have 
+different IO requirements with regard to Spindle control and such. 
 Additionally a machine may have different initialization and homing 
 requirements. <strong><em>KMotionCNC</em></strong> has a flexible mechanism for defining what 
-type of action is to be performed for various M Codes and Custom Buttons.</p>
+type of action is to be performed for various M Codes and Custom Buttons. <a href="ToolSetupPasswordProtection.htm">See here</a> how to password-protect these parameters.</p>
 
 <h2><a name="Trajectory_Planner">Trajectory Planner</a></h2>
 
@@ -124,8 +134,8 @@ velocity limitations.</p>
 
 <p>The Trajectory Planner also has a &quot;<a name="lookahead">lookahead</a>&quot; parameter. With 
   <strong><em>KMotionCNC</em></strong> the G Code Program itself, the G Code Interpreter, and the Trajectory 
-Planner all reside within the PC running Microsoft Windows™. 
-Since the Microsoft Windows™ is <em>not</em> a 
+Planner all reside within the PC running Microsoft Windows<sup class="small">TM</sup>
+Since the Microsoft Windows<sup class="small">TM</sup> is <em>not</em> a 
 real-time OS, a certain amount of motion must be buffered in the motion 
 controller to handle the cases where the PC program doesn't have a chance to 
 execute for a while. These time periods are typically very short (a few 
@@ -142,11 +152,11 @@ the feed rate, since the motion has already been planned and downloaded, the
 rate will not be changed quickly. A value of 3 seconds is very 
 conservative on most systems. If more responsive feed rate override is 
 desirable, an experiment with a smaller value might be made.</p>
-<p>&quot;Collinear Tolerance&quot; allows GCode blocks that are nearly 
+<p>&quot;Collinear Tolerance&quot; allows G Code blocks that are nearly 
 linear, to be combined into a single linear segment to allow faster and smoother 
-motion. Often GCode programs generated by 3D CAD systems contain very 
+motion. Often G Code programs generated by 3D CAD systems contain very 
 small vectors that appear jagged or noisy due to numerical round off errors . 
-See below for an example of a small GCode fragment from an intended circle. 
+See below for an example of a small G Code fragment from an intended circle. 
 The 0.3 inch diameter circle was divided into 10,000 sides each only 0.0001 
 inches in length. Intuitively one would think this would result in an 
 extremely smooth contour. Ironically, rounding off to 4 decimal 
@@ -182,7 +192,7 @@ any segments from being combined. </p>
 <p><img src="KMotionCNCfiles/CollinearTol.PNG" width="347" height="397"></p>
 <p></p>
 <p>The &quot;Arcs To Segments&quot; option allows circular arcs that 
-were specified in the original GCode to be replaced by a number of linear 
+were specified in the original G Code to be replaced by a number of linear 
 segments. Each arc will be recursively subdivided until any cord error 
 deviation from the original path is less than the Collinear Tolerance parameter. 
 Sub dividing the arc (actually a helix) into line segments allows the path 
@@ -206,8 +216,16 @@ generated. The number of segments increases as the square root of the
 inverse of the Collinear Tolerance (cutting the tolerance in half increase the 
 number of segments by 40%).</p>
 
-<p>For a description of the <em>Corner Rounding</em> feature 
+<p>For a description of the <em>Corner Rounding</em> feature
 and Corner Tolerance and Facet Angle see <a href="TrajectoryPlanner.htm">here</a>.</p>
+
+<p>The <strong>3rd Order Planner</strong> option selects the new Jerk Limited
+Trajectory Planner for smoother motion with less dead time, along with the
+related <strong>Cubic Knots</strong>, <strong>Actuator Space Limits</strong>,
+and <strong>Log</strong> options. When selected, additional Jerk settings
+appear in the Axis Parameters and several options on this screen adapt.
+See <a href="ToolSetupScreenTP3.htm">3rd Order Trajectory Planner</a> for a
+full description.</p>
 
 <h2><a name="Jog_Speeds">Jog Speeds</a></h2>
 
@@ -224,7 +242,10 @@ controller.These  speeds are the maximum Jog speeds which are indicated by the o
 <p>Defines the step size distances for the Step Buttons that are displayed on 
 the main <strong><em>KMotionCNC</em></strong> Screen. Setting a step size to zero will hide 
 the size selection. The <em>Enable Gamepad</em> checkbox allows you to enable or disable a gamepad. Some systems falsely indicate that they have a gamepad installed, which may cause errors. In these cases, uncheck the<em> Enable Gamepad</em> checkbox. See Also <a href="KMotionCNC.htm#Jog_Buttons">Jog Buttons</a>.</p>
-
+<h2><a name="Units" id="Units">Units</a></h2>
+<p><img src="KMotionCNCfiles/Units.PNG" alt="Step Increments" /></p>
+<p>Many of the parameters can be displayed as either inch or mm.&nbsp; However the 9 ABC      parameters can be linear (inch or mm) or angular (degrees). The description of other cells      are shown in inch mode, but by clicking the checkbox can be switched to mm mode.&nbsp; Also note that      the units apply for this configuration screen only and do not apply      for G Code and the Operator Screen.<br>
+</p>
 <h2><a name="Lathe_Options">Lathe Options</a></h2>
 <p>
 <img src="KMotionCNCfiles/LatheOptions.png" alt="Lathe Options" /></p>
@@ -244,12 +265,12 @@ the back as X increases. This is more suitable for rear mounted tools.</p>
 <p><strong>X Positive Front</strong></p>
 <p><img src="KMotionCNCfiles/LathePosFront.png" alt="X Positive Front" /></p>
 
-<p>When Diameter Mode is selected the Gcode X Units, X Offset 
+<p>When Diameter Mode is selected the G Code X Units, X Offset 
 Units, and X DRO Units are all in terms of diameter. In this mode actual 
 tool cutter motion is 1/2 the specified value so the the total diameter of the 
 cut part is the specified value. When Diameter Mode is not selected, 
 Radius mode will be used, the tool cutter motion will be the specified value, 
-and the cut part will have a radius of the specified value in the GCode. </p>
+and the cut part will have a radius of the specified value in the G Code. </p>
 
 <h2><a name="Feed_Rate_Override">Feed Rate Override</a></h2>
 
@@ -351,9 +372,14 @@ to part surfaces or features. If nonlinearity is an issue for your system,
 select this option and Rapids will always be performed along a straight line as 
 they will be subdivided into small segments where proper actuator positions are 
 calculated to keep the motion along a straight line. Regardless of whether 
-this option is selected or not the Velocity and Acceleration will be set by the 
-KFLOP Axis Parameters not by the current GCode Feed Rate or Trajectory Planner 
+this option is selected or not the Velocity and Acceleration will be set by the
+KFLOP Axis Parameters not by the current G Code Feed Rate or Trajectory Planner
 Settings.</p>
+
+<p>Note: with the <a href="ToolSetupScreenTP3.htm">3rd Order Planner</a>
+selected this option is hidden - Rapids always join the planned motion stream
+(limited by the Axis Parameters on this screen) and blend with the Feeds
+around them.</p>
 
 <h2><a name="Display_Encoders">Display Encoders</a></h2>
 
@@ -367,7 +393,7 @@ Un-checked all DROs display the commanded position.</p>
 
 <p><img src="KMotionCNCfiles/ZeroUsingFixtureOffsets.png" width="234" height="48" alt="Zero_Using_Fixture_Offsets" /></p>
 <p>Zero/Set Buttons near DROs allow the User to Set the DRO 
-to Zero or a Specified Value. This is accomplished by adjusting GCode 
+to Zero or a Specified Value. This is accomplished by adjusting G Code 
 Offsets. When this option is selected then the currently selected Fixture 
 Offset will be adjusted. When unchecked the Global G92/G52 Offset will be 
 adjusted.</p>
@@ -378,7 +404,7 @@ adjusted.</p>
 
 <p>This option causes the <strong><em>KMotionCNC</em></strong> Drop Down Tool Selector 
 to immediately select and apply the Tool Length (and offsets) Compensation 
-without having to select and turn on the compensation in GCode with &quot;HxxxxG43&quot;.</p>
+without having to select and turn on the compensation in G Code with &quot;HxxxxG43&quot;.</p>
 
 <h2><a name="M6onToolTableChanges">M6 on Tool Table Changes</a></h2>
 
@@ -388,7 +414,9 @@ without having to select and turn on the compensation in GCode with &quot;HxxxxG
 operation after the Tool Table has been edited to re-select the specified Tool 
 so the selected Tool ID, slot, offsets, image all reflect the current state of 
 the Tool Table.</p>
-
+<h2><a name="Allow-concave-corners" id="Allow-concave-corners">Allow Concave Corners</a></h2>
+<p><img src="KMotionCNCfiles/AllowConcaveCorners.png" alt="Allow concave corners" /></p>
+<p>This option allows concave corners with radius compensation on. It is not possible to follow an internal corner path with a round tool. This option allows concave corners with the tool following the path as close as possible without gouging. To use enable Tool Setup | Trajectory Planner | Allow Concave Corners. Example G Code file: AllowInsideCorners Zig Zag.ngc.</p>
 <h2><a name="confirm-program-exit" id="confirm-program-exit">Confirm Program Exit</a></h2>
 
 <p><img src="KMotionCNCfiles/ConfirmProgramExit.png" width="184" height="29" alt="Confirm Program Exit"/></p>
@@ -399,19 +427,25 @@ the Tool Table.</p>
 
 <p><img src="KMotionCNCfiles/ArcBegEndRadiusTol.png" width="297" height="33" alt="Arc beg/end radius Tol" /></p>
 
-<p>The GCode indirectly specifies the Start of the Arc (previous position), the End of the Arc (Specified Position), and the Arc Center Point (Previous Position + IJK offset). The distance between the Start to the Center and the End to the Center should be the same. Specifies the allowed Tolerance the GCode Interpreter will allow between the beginning and ending radius of an arc. This should be a very small number within the rounding tolerance of the numbers.</p>
+<p>The G Code indirectly specifies the Start of the Arc (previous position), the End of the Arc (Specified Position), and the Arc Center Point (Previous Position + IJK offset). The distance between the Start to the Center and the End to the Center should be the same. Specifies the allowed Tolerance the G Code Interpreter will allow between the beginning and ending radius of an arc. This should be a very small number within the rounding tolerance of the numbers.</p>
 
 <h2><a name="arc-radius-small" id="arc-beg-end2">Arc radius small Tol</a></h2>
 
-<p><img src="KMotionCNCfiles/ArcRadiusSmallTol.png" width="295" height="28" border="0"></p>
+<p><img src="KMotionCNCfiles/ArcRadiusSmallTol.png" width="295" height="28" border="0" alt="Arc radius small Tol"></p>
 <p>Tolerance parameter for allowing Arc Radius being smaller than half the distance from the start of Arc to End of Arc when specifying Arcs using R mode.</p>
 
 <h2><a name="Axis_Motion_Parameters">Axis Motion Parameters</a></h2>
 
-<p><img src="KMotionCNCfiles/AxisParams.png" aly="Axis Motion Parameters"/></p>
+<p><img src="KMotionCNCfiles/AxisParams.png" alt="Axis Motion Parameters"/></p>
 
-<p>The Axis Motion Parameters define the scale, maximum feed velocities, and 
+<p>The Axis Motion Parameters define the scale, maximum feed velocities, and
 maximum feed accelerations for each of the six axis.  </p>
+
+<p>Note: with the <a href="ToolSetupScreenTP3.htm">3rd Order Planner</a>
+selected an additional Jerk limit column is shown, and with
+<a href="ToolSetupScreenTP3.htm#Actuator_Space_Limits">Actuator Space
+Limits</a> selected this group instead specifies limits for Actuator slots
+0-7 (the Kinematics outputs) rather than CAD axes.</p>
 <p>The first parameter is the axis's scale in counts/inch. For the example 
 value of 100 shown, <em><strong>KMotionCNC</strong></em> will command the motion controller to move 
 100 counts for each inch of motion in the G Code Program. This value is 
@@ -433,13 +467,13 @@ that each axis's acceleration is at or below the specified limit.</p>
 <p>Axes A,B,C sometimes are angular axes and are programmed 
 to move angles of degrees rather than linear distances. If so select 
 &quot;Degrees&quot; so that the axis moves in degrees regardless of the Inch or mm modes 
-in GCode. </p>
+in G Code. </p>
 <p>The best method for performing coordinated linear and 
 angular combined motion is to use G93 Inverse Time Mode. This mode allows 
-the CAD system to generate GCode that will cause the feed rate at the tool to 
+the CAD system to generate G Code that will cause the feed rate at the tool to 
 always be at the desired feed rate based on the geometry of the system. 
-However this requires a time (specified by its inverse) for each GCode block to 
-be computed and included in the data stream. If Inverse TIme GCode 
+However this requires a time (specified by its inverse) for each G Code block to 
+be computed and included in the data stream. If Inverse TIme G Code 
 data is not available a Radius for each Angular Axis can be specified. 
 This allows the Trajectory planner to convert angular motion rates to linear 
 motion rates. This assumes that the tool will remain at a relatively 
@@ -452,7 +486,7 @@ maximum linear Velocity and Acceleration rates are the same as X, Y, and Z
 assuming a 10 inch radius about the A Axis of rotation.</p>
 <p>57.295 deg/sec x &#960;/180deg x 10in = 10in/sec</p>
 <p>229.183 deg/sec<sup>2</sup> x &#960;/180deg x 10in = 40in/sec<sup>2</sup></p>
-<p>The GCode sequence shown below will perform a G1 Feed a 
+<p>The G Code sequence shown below will perform a G1 Feed a 
 linear distance of 10 inches in both X and A. Because the X and A axis are 
 assumed to be orthogonal the combined distance will be assumed to be 14.1 inches 
 total. At a feed rate of 60 ipm = 1 ips, the total Feed Time will be 14.1 
@@ -478,6 +512,7 @@ M2</p>
 
 <p>&nbsp;</p>
 	</div>
+<script src="../search/searchbox.js" defer></script>
 </body>
 
 </html>

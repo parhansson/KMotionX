@@ -13,7 +13,7 @@ void WriteGrid(int row, int col, FILE *f);
 double TransformX(double x, double y);
 double TransformY(double x, double y);
 
-main()
+int main()
 {
     float value;
     

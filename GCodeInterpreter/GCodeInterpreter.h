@@ -11,7 +11,7 @@
 /*
 
 int Interpret(int board,
-              char *fname,
+              wchar_t *fname,
               int start, int end,
               int restart,
               G_COMPLETE_CALLBACK CompleteFn,
@@ -46,7 +46,7 @@ int board
 
 	specifies KMotion board to send commands to
 
-char *fname
+wchar_t *fname
 
 	GCode FileName
 
@@ -74,11 +74,11 @@ int end,
 
 #define THETA_SIGMA 1e-13
 
-typedef void G_COMPLETE_CALLBACK(int status, int lineno, int sequence_number, const char *err);
-typedef void G_STATUS_CALLBACK(int line_no, const char *msg);
-typedef int G_USER_CALLBACK(const char *msg);
+typedef void G_COMPLETE_CALLBACK(int status, int lineno, int sequence_number, const wchar_t *err);
+typedef void G_STATUS_CALLBACK(int line_no, const wchar_t *msg);
+typedef int G_USER_CALLBACK(const wchar_t *msg);
 typedef int G_M_USER_CALLBACK(int mCode);
-typedef int G_SCREENSCRIPT_CALLBACK(const char *FileName);
+typedef int G_SCREENSCRIPT_CALLBACK(const wchar_t *FileName);
 
 #ifdef _KMOTIONX
 #define C_PROGRAMS_DIR                  "/c-programs/"
@@ -120,7 +120,7 @@ typedef struct
 {
 	int Action;
 	double dParams[MAX_MCODE_DOUBLE_PARAMS];
-	char String[256];
+	wchar_t String[256];
 } MCODE_ACTION; 
 
 
@@ -174,8 +174,10 @@ public:
 
 	int rs274ngc_save_parameters();	// save interpreter vars
 	bool rs274ngc_save_parameters_changed(void);	// check for changes
+	void StampAxisOffsetUnits();	// G92 tuple (5211-5218) written: it is in the interpreter's current units
+	void ResyncAxisOffsetUnits();	// active G92 from the stamped tuple, converted to current units if stale
 
-	int DoReverseSearch(const char * InFile, int CurrentLine); // search backward to try to set Interpreter State
+	int DoReverseSearch(const wchar_t * InFile, int CurrentLine); // search backward to try to set Interpreter State
 
 
 	CGCodeInterpreter(CCoordMotion *CM);
@@ -183,7 +185,7 @@ public:
 
 	int Interpret(
 				  int board_type,
-		          const char *fname,
+		          const wchar_t *fname,
 			      int start, int end,
 				  int restart,
                   G_STATUS_CALLBACK *StatusFn,
@@ -191,21 +193,21 @@ public:
 
 
 	MCODE_ACTION McodeActions[MAX_MCODE_ACTIONS];
-	int ExecutePC(const char *Name, bool NoWait = false);
+	int ExecutePC(const wchar_t *Name, bool NoWait = false);
 	
 	MOTION_PARAMS *GetMotionParams();  // returns a pointer to the GCode Parameters
 
-	char ToolFile[MAX_PATH];
-	char SetupFile[MAX_PATH];
-	char GeoFile[MAX_PATH];
-	char VarsFile[MAX_PATH];
+	wchar_t ToolFile[MAX_PATH];
+	wchar_t SetupFile[MAX_PATH];
+	wchar_t GeoFile[MAX_PATH];
+	wchar_t VarsFile[MAX_PATH];
 
 	CCoordMotion *CoordMotion;
 	bool m_Halt;
 	bool m_HaltNextLine;
 	int m_CurrentLine;
 	int m_GCodeReads;
-	std::string m_InFile;
+	CString m_InFile;
 	int m_exitcode;
 	int m_InvokeExitcode;
 	int DoExecute();
@@ -217,9 +219,10 @@ public:
 	DWORD m_InterpretThreadID;
 	DWORD m_InvokeThreadID;
 #endif
-	void SetToolFile(char *f);
-	void SetSetupFile(char *f);
-	void SetVarsFile(char *f);
+
+	void SetToolFile(wchar_t *f);
+	void SetSetupFile(wchar_t *f);
+	void SetVarsFile(wchar_t *f);
 
 	int SetCSS(int mode);  // set CSS mode
 
@@ -252,10 +255,11 @@ public:
 	double m_ResumeResumeFeedRate;
 	double m_ResumeZFeedRate;
 	BOOL m_ResumeRestoreFeedRate;
+	bool m_BypassGCodeStatusString;
 
 private:
 
-	char *m_fname;
+	wchar_t *m_fname;
 	int m_restart;
 	G_COMPLETE_CALLBACK *m_CompleteFn;
     G_STATUS_CALLBACK *m_StatusFn;
@@ -285,12 +289,13 @@ public:
 	void SetScreenScriptCallback(G_SCREENSCRIPT_CALLBACK *UserFn);
 
 	int ReadToolFile();
+	int convert_tool_length_offset(int g_code, int Tool);
 };
 
 extern CCoordMotion *CM;
 extern CGCodeInterpreter *GC;
 
-std::wstring Translate(std::string s);
+CString Translate(CString s);
 
 #endif
 

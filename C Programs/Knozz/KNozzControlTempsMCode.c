@@ -30,7 +30,7 @@ void ServiceKNozz(void); // Service KNozz Temperature controls
 float *NozSetPoint = (float *)&persist.UserData[NOZ_VAR]; // define convienient pointers to Persist floats
 float *BedSetPoint = (float *)&persist.UserData[BED_VAR];
 
-main()
+int main()
 {
 
     SetBitDirection(CS, 1);

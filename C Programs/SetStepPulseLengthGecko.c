@@ -1,6 +1,6 @@
 #include "KMotionDef.h"
 
-main()
+int main()
 {
 	// address of 6 bit pulse length 0-63= # 16.666MHz clocks, 
 	// bit6 muxes generators 4-7 from JP7 to JP4 and JP6, 

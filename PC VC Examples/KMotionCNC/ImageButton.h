@@ -50,11 +50,15 @@ public:
 	{
 		m_fill = FALSE; ToggleType = false; Var = -1; ErrorDisplayed = Toggled = DrawPushed = ForceDisableFocus = false;
 		m_up_file = ""; m_down_file = ""; m_disabled_file = "";
+		m_GViewPos = false;
 		Style = Undefined;
 		CUniButton::Reset(KeepText);
 	}
 
 	BOOL m_fill; // We want to fill the image
+	static bool ThinEdges;	// screen "Main:...,ThinEdges:1": image buttons get the text buttons' 1px edge, all edges tinted from the button colour
+	static COLORREF EdgeTint(COLORREF c, bool light);	// thin-edge highlight (light) / shadow colour for a button colour
+	bool m_GViewPos;  // screen text "$GViewPos$": shows the G Viewer cursor readout (floating viewer: title bar)
 	double m_scale;
 	DWORD SetHPos(DWORD style); // Set the horizonatal alignment style
 	DWORD SetVPos(DWORD style); // Set the vertical alignment style

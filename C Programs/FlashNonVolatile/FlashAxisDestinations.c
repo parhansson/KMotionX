@@ -14,7 +14,7 @@ double DestData[10];  // room for 8 axes, count, signature
 double DestStable[8]; // used to watch for changes
 
 // for testing
-main()
+int main()
 {
 	for (;;)
 	{

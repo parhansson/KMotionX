@@ -7,7 +7,7 @@ void ServiceJobTimer(void);
 
 #define JOBTIMEPERSIST 162
 
-main()
+int main()
 {
     for (;;)
     {

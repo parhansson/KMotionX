@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "KinematicsScara.h"
 
 #define sqr(x) ((x)*(x))

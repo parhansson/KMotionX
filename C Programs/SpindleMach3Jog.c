@@ -7,7 +7,7 @@ enum { EX_DDA , EX_VMS, EX_COMMAND, EX_SPINON, EX_SPINOFF, EX_SPINSPEED, EX_MOTO
 #define SPINDLE_AXIS 4  // axis set up as Spindle, possibly Step/Dir or Servo
 #define FACTOR 10000.0 		// Converts fractional pulley speed to counts/sec (may be negative)
 
-main()
+int main()
 {
 	int message = persist.UserData[0];  // Mach3 message ID 
 	int Direction = persist.UserData[1];  // Mach3 Spindle Direction 

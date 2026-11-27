@@ -116,8 +116,8 @@ uploaded with bulk status. This is defined in the PC-DSP.h file as:</p>
 	<li>Push a User Defined Action Button</li>
 	<li>Execute an M Code</li>
 	<li>Display a Message Box</li>
-	<li>Get/Set GCode #Vars</li>
-	<li>Execute a MDI line of GCode</li>
+	<li>Get/Set G Code #Vars</li>
+	<li>Execute a MDI line of G Code</li>
 </ul>
 
 <p>A new example called KFLOPtoPCCmdExamples.c is included 
@@ -132,7 +132,7 @@ invoking the actions by setting the proper persist variables. They are:</p>
   	// response IDs are defined in the KMotionDef.h file
   	int MsgBox(char *s, int Flags)
 
-	// put the MDI string (Manual Data Input - GCode) in the
+	// put the MDI string (Manual Data Input - G Code) in the
 	// gather buffer and tell the App where it is
 	int MDI(char *s)
 
@@ -184,13 +184,13 @@ invoking the actions by setting the proper persist variables. They are:</p>
 		pD[11] = 1000.0;
 		pD[12] = 999.9;
 		
-		// transfer up to the GCode Vars
-		SetVars(100,3,10);  // Upload 3 to GCode 100 from persist 10
+		// transfer up to the G Code Vars
+		SetVars(100,3,10);  // Upload 3 to G Code 100 from persist 10
 		
 		MDI(&quot;#100 = [#100 + 1]&quot;);
 		
 		// read them back into different persist Vars
-		GetVars(100,3,13);  // Download 3 from GCode 100 to persist 13
+		GetVars(100,3,13);  // Download 3 from G Code 100 to persist 13
 		
 		printf(&quot;%f %f %f\n&quot;,pD[13],pD[14],pD[15]);
 	}	
@@ -200,6 +200,7 @@ invoking the actions by setting the proper persist variables. They are:</p>
 
 </div>
 
+<script src="../search/searchbox.js" defer></script>
 </body>
 
 </html>

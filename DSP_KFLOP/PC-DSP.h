@@ -6,7 +6,8 @@
 #ifndef __PCDSP_H
 #define __PCDSP_H
 
-#define KMOTION_VER "5.3.2"
+#define KMOTION_VER "5.5.1"
+
 
 #define ABORT_CHAR 0x03  // ctrl-c clears/aborts any command
 
@@ -14,8 +15,10 @@
 
 #define USER_PROG_ADDRESS_KFLOP 0x80050000  // where first user program is loaded
 #define MAX_USER_PROG_SIZE_KFLOP 0x10000    // space between each thread/user program
+#define MAX_USER_PROG_SIZE_KFLOP_7 (5 * 0x10000)    // space for larger Thread #7 user program
 #define USER_PROG_ADDRESS_KOGNA 0xC0080000  // where first user program is loaded
 #define MAX_USER_PROG_SIZE_KOGNA 0x40000    // space between each thread/user program
+#define MAX_USER_PROG_SIZE_KOGNA_7 (4 * 0x40000)    // space between each Thread #7 user program
 #define N_USER_THREADS 7              // how many user programs/threads there are
 #define MAX_SEGMENTS 35000            // max number of parametric segments
 #define N_USER_THREADS 7              // how many user programs/threads there are
@@ -32,9 +35,11 @@
 #define N_DACS_KOGNA 8  // referenced after Kanalog as 8-15
 #define N_ADCS_KOGNA 4  // referenced after Kanalog as 8-11
 
-#define N_ADCS_SNAP 8  	// per snap amp 
+#define N_ADCS_SNAP 8  	// per snap amp
 #define N_PWMS_SNAP 4 	// per snap amp
 #define N_ENCS_SNAP 4
+
+#define N_SERIAL_SERVOS 8  // STS3215 serial servos daisy chained on one wire, IDs 0-7
 
 #define N_BITS 48           // total # bits defined in KFLOP FPGA (space for 6 ports)
 #define N_VIRTUAL_BITS  16	// Number of virtual I/O bits, starting at bit 48 (48-63)
@@ -104,6 +109,15 @@
 #define SNAP_CONVERT_VOLTS_TO_ADC(x) ((int)((x)/FULL_RANGE_VOLTAGE_SNAP*65536.0f+OFFSET_VOLTAGE_SNAP))
 
 
+// Macros to convert STS3215 Serial Servo telemetry counts to engineering units.
+// The DSP decodes the servo's sign-magnitude fields, so these take signed counts.
+// Published scales: current 6.5mA/count, voltage 0.1V/count, load 0-1000 = 0-100%
+
+#define SERVO_CONVERT_TO_AMPS(x)   ((x)*0.0065f)
+#define SERVO_CONVERT_TO_VOLTS(x)  ((x)*0.1f)
+#define SERVO_CONVERT_TO_PERCENT(x) ((x)*0.1f)
+
+
 // Macros to convert Kanalog DAC/ADC settings to/from Volts
 
 #define KANALOG_CONVERT_DAC_TO_VOLTS(x)  ((x)*(-10.0f/2048.0f))
@@ -125,12 +139,16 @@
 #define PC_COMM_SINGLE_STEP 4
 #define PC_COMM_SET_FRO 5 // Persist+1 is the FRO as a float
 #define PC_COMM_SET_FRO_INC 6 // Persist+1 is the factor to change it as float
-#define PC_COMM_SET_X 7  // Persist+1 is the value (32-bit float) to set the DRO to
-#define PC_COMM_SET_Y 8  // Persist+1 is the value (32-bit float) to set the DRO to
-#define PC_COMM_SET_Z 9  // Persist+1 is the value (32-bit float) to set the DRO to
-#define PC_COMM_SET_A 10 // Persist+1 is the value (32-bit float) to set the DRO to
-#define PC_COMM_SET_B 11 // Persist+1 is the value (32-bit float) to set the DRO to
-#define PC_COMM_SET_C 12 // Persist+1 is the value (32-bit float) to set the DRO to
+
+#define PC_COMM_SET_X 100  // Persist+1 is the value (32-bit float) to set the DRO to
+#define PC_COMM_SET_Y 101  // Persist+1 is the value (32-bit float) to set the DRO to
+#define PC_COMM_SET_Z 102  // Persist+1 is the value (32-bit float) to set the DRO to
+#define PC_COMM_SET_A 103 // Persist+1 is the value (32-bit float) to set the DRO to
+#define PC_COMM_SET_B 104 // Persist+1 is the value (32-bit float) to set the DRO to
+#define PC_COMM_SET_C 105 // Persist+1 is the value (32-bit float) to set the DRO to
+#define PC_COMM_SET_U 106 // Persist+1 is the value (32-bit float) to set the DRO to
+#define PC_COMM_SET_V 107 // Persist+1 is the value (32-bit float) to set the DRO to
+
 #define PC_COMM_USER_BUTTON 13 // Persist+1 is which User Button to push
 #define PC_COMM_MCODE 14 // Persist+1 is which MCode to execute
 
@@ -194,6 +212,7 @@
 #define PC_COMM_UPDATE_FIXTURE 28 // Update any change in currently selected Fixture offsets
 
 // InputBox Persist+1 = gather buffer offset (32-bit words) to message string
+// Values for the drop down list can be specifed as values separated by ';' after the message string
 //            Persist+2 = Value returned
 //            Persist+3 = MessageBox Result returned
 #define PC_COMM_INPUT 29   // MessageBox Persist+1=string,+2=Value,+3=result
@@ -236,19 +255,23 @@
 #define PC_COMM_RELOAD_GEOCORRECTION 39  // Reload Geometric Corretion File
 
 
-#define PC_COMM_GET_JOG_OVERRIDE_X 40  // Persist+1 is the is the speed override value (32-bit float) returned
-#define PC_COMM_GET_JOG_OVERRIDE_Y 41  // Persist+1 is the is the speed override value (32-bit float) returned
-#define PC_COMM_GET_JOG_OVERRIDE_Z 42  // Persist+1 is the is the speed override value (32-bit float) returned
-#define PC_COMM_GET_JOG_OVERRIDE_A 43  // Persist+1 is the is the speed override value (32-bit float) returned
-#define PC_COMM_GET_JOG_OVERRIDE_B 44  // Persist+1 is the is the speed override value (32-bit float) returned
-#define PC_COMM_GET_JOG_OVERRIDE_C 45  // Persist+1 is the is the speed override value (32-bit float) returned
+#define PC_COMM_GET_JOG_OVERRIDE_X 200  // Persist+1 is the is the speed override value (32-bit float) returned
+#define PC_COMM_GET_JOG_OVERRIDE_Y 201  // Persist+1 is the is the speed override value (32-bit float) returned
+#define PC_COMM_GET_JOG_OVERRIDE_Z 202  // Persist+1 is the is the speed override value (32-bit float) returned
+#define PC_COMM_GET_JOG_OVERRIDE_A 203  // Persist+1 is the is the speed override value (32-bit float) returned
+#define PC_COMM_GET_JOG_OVERRIDE_B 204  // Persist+1 is the is the speed override value (32-bit float) returned
+#define PC_COMM_GET_JOG_OVERRIDE_C 205  // Persist+1 is the is the speed override value (32-bit float) returned
+#define PC_COMM_GET_JOG_OVERRIDE_U 206  // Persist+1 is the is the speed override value (32-bit float) returned
+#define PC_COMM_GET_JOG_OVERRIDE_V 207  // Persist+1 is the is the speed override value (32-bit float) returned
 
-#define PC_COMM_SET_JOG_OVERRIDE_X 46  // Persist+1 is the value (32-bit float) to set the speed override to
-#define PC_COMM_SET_JOG_OVERRIDE_Y 47  // Persist+1 is the value (32-bit float) to set the speed override to
-#define PC_COMM_SET_JOG_OVERRIDE_Z 48  // Persist+1 is the value (32-bit float) to set the speed override to
-#define PC_COMM_SET_JOG_OVERRIDE_A 49  // Persist+1 is the value (32-bit float) to set the speed override to
-#define PC_COMM_SET_JOG_OVERRIDE_B 50  // Persist+1 is the value (32-bit float) to set the speed override to
-#define PC_COMM_SET_JOG_OVERRIDE_C 51  // Persist+1 is the value (32-bit float) to set the speed override to
+#define PC_COMM_SET_JOG_OVERRIDE_X 210  // Persist+1 is the value (32-bit float) to set the speed override to
+#define PC_COMM_SET_JOG_OVERRIDE_Y 211  // Persist+1 is the value (32-bit float) to set the speed override to
+#define PC_COMM_SET_JOG_OVERRIDE_Z 212  // Persist+1 is the value (32-bit float) to set the speed override to
+#define PC_COMM_SET_JOG_OVERRIDE_A 213  // Persist+1 is the value (32-bit float) to set the speed override to
+#define PC_COMM_SET_JOG_OVERRIDE_B 214  // Persist+1 is the value (32-bit float) to set the speed override to
+#define PC_COMM_SET_JOG_OVERRIDE_C 215  // Persist+1 is the value (32-bit float) to set the speed override to
+#define PC_COMM_SET_JOG_OVERRIDE_U 216  // Persist+1 is the value (32-bit float) to set the speed override to
+#define PC_COMM_SET_JOG_OVERRIDE_V 217  // Persist+1 is the value (32-bit float) to set the speed override to
 
 #define PC_COMM_RECREATE_DIALOG_FACE 52 // Recreate Appication Dialog Face
 
@@ -264,7 +287,14 @@
 //								      Persist+2 = where to set Tool Table Index - persist index 
 #define PC_COMM_GET_TOOLTABLE_INDEX 57 // Persist+1=#ToolID,+2=Dest   
 
+// PC_COMM Last Used = 63
 
+// Note: Persist Variables PC_COMM_PERSIST thru PC_COMM_PERSIST+N_PC_COMM_PERSIST-1
+// (100-107) are RESERVED for KFLOP/Kogna <-> KMotionCNC command communication.
+// No other application (pendants, bridges, etc.) should write these cells, and
+// only ONE command may be in flight at a time: KFLOP/Kogna threads that each
+// issue commands (DoPC) must serialize among themselves.  A second concurrent
+// writer can forge or destroy a command handshake causing silent failures.
 #define PC_COMM_PERSIST 100  // First Persist Variable that is uploaded in status
 #define N_PC_COMM_PERSIST 8  // Number of Persist Variables that are uploaded in status
 
@@ -285,6 +315,55 @@
 //						Tool ID from current Tool Table entry   (integer)
 #define PC_COMM_GET_TOOL_SLOT_ID 115 // Persist+1=Dest for values  
 
+
+#define PC_COMM_FORCE_DISABLE_JOG_KEYS 116  // Disable Jog Buttons regardless if Job is Running or not
+
+// Enable Dialog Controls Persist+1 = gather buffer offset (32-bit words) List of Controls to Enable, defined in resource.h
+#define PC_COMM_ENABLE_CONTROLS 117   // Persist+1=gather offset to null terminated list of int ControlIDs
+
+// Disable Dialog Controls Persist+1 = gather buffer offset (32-bit words) List of Controls to Disable, defined in resource.h
+#define PC_COMM_DISABLE_CONTROLS 118   // Persist+1=gather offset to null terminated list of int ControlIDs
+
+// GetToolTableComment Persist+1 = Tool Table Index
+//					   Persist+2 = gather buffer offset (32-bit words) to where to place Comment string
+//					   Result indicating complete.  0=Not Complete, 1=Complete, -1=Invalid Tool Index
+#define PC_COMM_GET_TOOLTABLE_COMMENT 119 // Persist+1=ToolIndex,+2=string offset in gather buffer
+
+// SetToolTableComment Persist+1 = Tool Table Index
+//					   Persist+2 = gather buffer offset (32-bit words) to where to get Comment string
+//					   Result indicating complete.  0=Not Complete, 1=Complete, -1=Invalid Tool Index
+#define PC_COMM_SET_TOOLTABLE_COMMENT 120 // Persist+1=ToolIndex,+2=string offset in gather buffer
+
+// Get Current GCode Line Persist+1 = gather buffer offset (32-bit words) to where to place GCode string
+//					   Result indicating complete.  0=Not Complete, 1=Complete, -1=error
+#define PC_COMM_GET_GCODE_LINE 121 // Persist+1=string offset in gather buffer
+
+// Get Current Date/Time Line Persist+1 = gather buffer offset (32-bit words) to where to place Date/Time string
+//					   Result indicating complete.  0=Not Complete, 1=Complete, -1=error
+#define PC_COMM_GET_DATE_TIME 122 // Persist+1=string offset in gather buffer
+
+// Get Trajectory Planner Axis Parameter Persist+1 = Parameter Type number (integer) Velocity, Acceleration, CountsPerInch, JogSpeed
+//										 Persist+2 = Axis Number (integer) XYZABCUV
+//										 Persist+3 = where to set value to KFLOP persist (double offset)
+//     (Parameter -> KFLOP persist) note: vars are transferred as doubles 2 persists each
+//					   Result indicating complete.  0=Not Complete, 1=Complete, -1=error
+#define PC_COMM_GET_TP_PARAM 123 // Persist+1=Type, +2=Axis, +3=Where to place Parameter
+
+// Set Trajectory Planner Axis Parameter Persist+1 = Parameter Type number (integer) Velocity, Acceleration, CountsPerInch, JogSpeed
+//										 Persist+2 = Axis Number (integer) XYZABCUV
+//										 Persist+3 = where to get value from KFLOP persist (double offset)
+//     (Parameter -> KFLOP persist) note: vars are transferred as doubles 2 persists each
+//					   Result indicating complete.  0=Not Complete, 1=Complete, -1=error
+#define PC_COMM_SET_TP_PARAM 124 // Persist+1=Type, +2=Axis, +3=Where to get Parameter
+
+// Do G43 Hxx Set Tool Length Comp On for Tool xx Persist+1 = H number (integer) from G43Hxx command
+#define PC_COMM_G43 125 // Persist+1=H Number
+
+// Do G43.4 Hxx Set Tool Length Comp On (with TCP for Tool xx Persist+1 = H number (integer) from G43Hxx command
+#define PC_COMM_G43_4 126 // Persist+1=H Number
+
+// Do G49 Set Tool Length Comp Off
+#define PC_COMM_G49 127 
 
 
 
@@ -363,16 +442,18 @@ typedef struct
 
 #define NO_INPUT_MODE 0
 #define ENCODER_MODE 1
-#define ADC_MODE 2	             
+#define ADC_MODE 2
 #define RESOLVER_MODE 3
 #define USER_INPUT_MODE 4
-#define NUM_INPUT_MODES 4
+#define SERIAL_SERVO_INPUT_MODE 5  // read Position from an STS3215 serial servo (InputChan0 = servo ID 0-7 on the daisy chained bus)
+#define NUM_INPUT_MODES 5
 
 #define TranslateInputMode(x) ( ((x)&0xf) == NO_INPUT_MODE	 ? "No Input" : \
  							    ((x)&0xf) == ENCODER_MODE 	 ? "Encoder" : \
 						   		((x)&0xf) == ADC_MODE  		 ? "ADC" :     \
 						   		((x)&0xf) == RESOLVER_MODE   ? "Resolver" :\
 						   		((x)&0xf) == USER_INPUT_MODE ? "User Input" : \
+						   		((x)&0xf) == SERIAL_SERVO_INPUT_MODE ? "Serial Servo" : \
 						                                       "Invalid")
 
 #define InputModeToDefine(x)  ( ((x)&0xf) == NO_INPUT_MODE 	 ? "NO_INPUT_MODE" : \
@@ -380,6 +461,7 @@ typedef struct
 						   		((x)&0xf) == ADC_MODE  		 ? "ADC_MODE" :     \
 						   		((x)&0xf) == RESOLVER_MODE   ? "RESOLVER_MODE" :\
 						   		((x)&0xf) == USER_INPUT_MODE ? "USER_INPUT_MODE" : \
+						   		((x)&0xf) == SERIAL_SERVO_INPUT_MODE ? "SERIAL_SERVO_INPUT_MODE" : \
 						                                       "Invalid")
 
 
@@ -394,7 +476,9 @@ typedef struct
 #define STEP_DIR_MODE 6
 #define CL_STEP_DIR_MODE 7
 #define CL_MICROSTEP_MODE 8
-#define NUM_SERVO_MODES 8
+#define SERIAL_SERVO_MODE 9        // write Position to an STS3215 serial servo (OutputChan0 = servo ID 0-7 on the daisy chained bus)
+#define CL_SERIAL_SERVO_MODE 10    // same, plus KFLOP servo loop correction added to the commanded position
+#define NUM_SERVO_MODES 10
 
 #define TranslateOutputMode(x) ( ((x)&0xf) == NO_OUTPUT_MODE 	   ? "No Output" : \
 								 ((x)&0xf) == MICROSTEP_MODE 	   ? "Microstep" : \
@@ -405,6 +489,8 @@ typedef struct
 						   		 ((x)&0xf) == STEP_DIR_MODE 	   ? "Step Dir" :     \
 						   		 ((x)&0xf) == CL_STEP_DIR_MODE 	   ? "CL Step" :     \
 						   		 ((x)&0xf) == CL_MICROSTEP_MODE    ? "CL Micro" :     \
+						   		 ((x)&0xf) == SERIAL_SERVO_MODE    ? "Serial Servo" :     \
+						   		 ((x)&0xf) == CL_SERIAL_SERVO_MODE ? "CL Serial Servo" :     \
 						                                             "Invalid")
 
 #define OutputModeToDefine(x) (  ((x)&0xf) == NO_OUTPUT_MODE 	   ? "NO_OUTPUT_MODE" : \
@@ -416,6 +502,8 @@ typedef struct
 						   		 ((x)&0xf) == STEP_DIR_MODE 	   ? "STEP_DIR_MODE" :     \
 						   		 ((x)&0xf) == CL_STEP_DIR_MODE 	   ? "CL_STEP_DIR_MODE" :     \
 						   		 ((x)&0xf) == CL_MICROSTEP_MODE	   ? "CL_MICROSTEP_MODE" :     \
+						   		 ((x)&0xf) == SERIAL_SERVO_MODE	   ? "SERIAL_SERVO_MODE" :     \
+						   		 ((x)&0xf) == CL_SERIAL_SERVO_MODE ? "CL_SERIAL_SERVO_MODE" :     \
 						                                             "Invalid")
 
 // Backlash Compensation Options

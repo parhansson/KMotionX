@@ -31,6 +31,8 @@ public:
 
   //Should be called by application after construction to allow for subclassing Setup()
   int Initialize();
+  // File/UI preview only: never connect, poll hardware or execute actions.
+  bool offline = false;
 
   virtual void Shutdown();
   //Called by Initialize, Subclasses should implement and set members KmxController::settings_file_

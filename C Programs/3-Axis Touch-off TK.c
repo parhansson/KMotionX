@@ -2,7 +2,7 @@
 #define TMP 10 
 #include "KflopToKMotionCNCFunctions.c"// verify correct path 
 
-void main()
+int main()
 {
 	#define XAXIS 0
 	#define YAXIS 2

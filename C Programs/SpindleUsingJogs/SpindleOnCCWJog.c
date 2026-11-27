@@ -9,7 +9,7 @@
 // save in user variable 97 the last desired speed
 
 
-main()
+int main()
 {
 	float speed = *(float *)&persist.UserData[97];  // value stored is actually a float 
 	float LastSpeed = *(float *)&persist.UserData[99];  // get last speed setting 

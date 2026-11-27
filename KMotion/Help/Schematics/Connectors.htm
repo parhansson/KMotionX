@@ -73,8 +73,8 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 
 <h2>JR1 - 5V Power (regulated +/- 5%)</h2>
 
-<p>Typical current = 0.7Amps with no user I/O connected. 
-More current may be required dependent on the amount of Digital I/O and Analog 
+<p>Typical current = 0.7Amps with no user IO connected. 
+More current may be required dependent on the amount of Digital IO and Analog 
 +/- 15V consumed by the user. Up to 2 watts of +/-15 volts is generated on 
 board from this 5V supply (most of which is available for external use). 
 5V @ 2.5A should be more than sufficient under all conditions. The 12V 
@@ -201,11 +201,11 @@ on this connector if needed for external use.</p>
 <h2><a name="JP3"></a>JP3 - Digital/Analog IO</h2>
 
 <p>4 channels of +/- 10V analog inputs, 4 channels of +/- 10V analog outputs, 4 
-channels of 0-4V analog outputs, 22 LVTTL bi-directional digital I/O, and +5, 
-+15, -15 power supply outputs. Many Digital I/O bits are pre-defined as 
+channels of 0-4V analog outputs, 22 LVTTL bi-directional digital IO, and +5, 
++15, -15 power supply outputs. Many Digital IO bits are pre-defined as 
 encoder, home, or limit inputs (see table below) but if not required for the 
-particular application may be used as general purpose I/O. Digital Outputs 
-may sink/source 10 ma. Digital I/O is LVTTL (3.3V) but is 5 V tolerant.</p>
+particular application may be used as general purpose IO. Digital Outputs 
+may sink/source 10 ma. Digital IO is LVTTL (3.3V) but is 5 V tolerant.</p>
 
 <p class="warning">Caution! This connector contains +/- 15 v signals. Shorts to low voltage 
 pins are likely to cause permanent damage to the board!</p>
@@ -337,7 +337,7 @@ pins are likely to cause permanent damage to the board!</p>
     <td>
     IO0</td>
     <td>Gen Purpose 
-    LVTTL I/O or Axis 0 Encoder Input Phase A</td>
+    LVTTL IO or Axis 0 Encoder Input Phase A</td>
   </tr>
   <tr>
     <td>
@@ -345,7 +345,7 @@ pins are likely to cause permanent damage to the board!</p>
     <td>
     IO1</td>
     <td>Gen Purpose 
-    LVTTL I/O or Axis 0 Encoder Input Phase B</td>
+    LVTTL IO or Axis 0 Encoder Input Phase B</td>
   </tr>
   <tr>
     <td>
@@ -353,7 +353,7 @@ pins are likely to cause permanent damage to the board!</p>
     <td>
     IO2</td>
     <td>Gen Purpose 
-    LVTTL I/O or Axis 1 Encoder Input Phase A</td>
+    LVTTL IO or Axis 1 Encoder Input Phase A</td>
   </tr>
   <tr>
     <td>
@@ -361,7 +361,7 @@ pins are likely to cause permanent damage to the board!</p>
     <td>
     IO3</td>
     <td>Gen Purpose 
-    LVTTL I/O or Axis 1 Encoder Input Phase B</td>
+    LVTTL IO or Axis 1 Encoder Input Phase B</td>
   </tr>
   <tr>
     <td>
@@ -369,7 +369,7 @@ pins are likely to cause permanent damage to the board!</p>
     <td>
     IO4</td>
     <td>Gen Purpose 
-    LVTTL I/O or Axis 2 Encoder Input Phase A</td>
+    LVTTL IO or Axis 2 Encoder Input Phase A</td>
   </tr>
   <tr>
     <td>
@@ -377,12 +377,12 @@ pins are likely to cause permanent damage to the board!</p>
     <td>
     IO5</td>
     <td>Gen Purpose 
-    LVTTL I/O or Axis 2 Encoder Input Phase B</td>
+    LVTTL IO or Axis 2 Encoder Input Phase B</td>
   </tr>
   <tr>
     <td class="col10">21</td>
     <td class="col20">IO6</td>
-    <td class="col70">Gen Purpose LVTTL I/O or Axis 3 Encoder Input Phase A</td>
+    <td class="col70">Gen Purpose LVTTL IO or Axis 3 Encoder Input Phase A</td>
   </tr>
   <tr>
     <td>
@@ -390,7 +390,7 @@ pins are likely to cause permanent damage to the board!</p>
     <td>
     IO7</td>
     <td>Gen Purpose 
-    LVTTL I/O or Axis 3 Encoder Input Phase B</td>
+    LVTTL IO or Axis 3 Encoder Input Phase B</td>
   </tr>
   <tr>
     <td>
@@ -398,7 +398,7 @@ pins are likely to cause permanent damage to the board!</p>
     <td>
     IO8</td>
     <td>Gen Purpose 
-    LVTTL I/O or Axis 0 Home or Step 0 output</td>
+    LVTTL IO or Axis 0 Home or Step 0 output</td>
   </tr>
   <tr>
     <td>
@@ -406,7 +406,7 @@ pins are likely to cause permanent damage to the board!</p>
     <td>
     IO9</td>
     <td>Gen Purpose 
-    LVTTL I/O or Axis 1 Home or Dir 0 output</td>
+    LVTTL IO or Axis 1 Home or Dir 0 output</td>
   </tr>
   <tr>
     <td>
@@ -414,7 +414,7 @@ pins are likely to cause permanent damage to the board!</p>
     <td>
     IO10</td>
     <td>Gen Purpose 
-    LVTTL I/O or Axis 2 Home or Step 1 output</td>
+    LVTTL IO or Axis 2 Home or Step 1 output</td>
   </tr>
   <tr>
     <td>
@@ -422,7 +422,7 @@ pins are likely to cause permanent damage to the board!</p>
     <td>
     IO11</td>
     <td>Gen Purpose 
-    LVTTL I/O or Axis 3 Home or Dir 1 output</td>
+    LVTTL IO or Axis 3 Home or Dir 1 output</td>
   </tr>
   <tr>
     <td>
@@ -430,7 +430,7 @@ pins are likely to cause permanent damage to the board!</p>
     <td>
     IO12</td>
     <td>Gen Purpose 
-    LVTTL I/O or Axis 0 + Limit or Step 2 output</td>
+    LVTTL IO or Axis 0 + Limit or Step 2 output</td>
   </tr>
   <tr>
     <td width="10%" height="8" align="center">
@@ -438,7 +438,7 @@ pins are likely to cause permanent damage to the board!</p>
     <td>
     IO13</td>
     <td>Gen Purpose 
-    LVTTL I/O or Axis 0 - Limit or Dir 2 output</td>
+    LVTTL IO or Axis 0 - Limit or Dir 2 output</td>
   </tr>
   <tr>
     <td>
@@ -446,7 +446,7 @@ pins are likely to cause permanent damage to the board!</p>
     <td>
     IO14</td>
     <td>Gen Purpose 
-    LVTTL I/O or Axis 1 + Limit or Step 3 output</td>
+    LVTTL IO or Axis 1 + Limit or Step 3 output</td>
   </tr>
   <tr>
     <td>
@@ -454,7 +454,7 @@ pins are likely to cause permanent damage to the board!</p>
     <td>
     IO15</td>
     <td>Gen Purpose 
-    LVTTL I/O or Axis 1 - Limit or Dir 3 output</td>
+    LVTTL IO or Axis 1 - Limit or Dir 3 output</td>
   </tr>
   <tr>
     <td>
@@ -462,7 +462,7 @@ pins are likely to cause permanent damage to the board!</p>
     <td>
     IO16</td>
     <td>Gen Purpose 
-    LVTTL I/O or Axis 2 + Limit</td>
+    LVTTL IO or Axis 2 + Limit</td>
   </tr>
   <tr>
     <td>
@@ -470,7 +470,7 @@ pins are likely to cause permanent damage to the board!</p>
     <td>
     IO17</td>
     <td>Gen Purpose 
-    LVTTL I/O or Axis 2 - Limit</td>
+    LVTTL IO or Axis 2 - Limit</td>
   </tr>
   <tr>
     <td>
@@ -478,7 +478,7 @@ pins are likely to cause permanent damage to the board!</p>
     <td>
     IO18</td>
     <td>Gen Purpose 
-    LVTTL I/O or Axis 3 + Limit</td>
+    LVTTL IO or Axis 3 + Limit</td>
   </tr>
   <tr>
     <td>
@@ -486,7 +486,7 @@ pins are likely to cause permanent damage to the board!</p>
     <td>
     IO19</td>
     <td>Gen Purpose 
-    LVTTL I/O or Axis 3 - Limit</td>
+    LVTTL IO or Axis 3 - Limit</td>
   </tr>
   <tr>
     <td>
@@ -494,7 +494,7 @@ pins are likely to cause permanent damage to the board!</p>
     <td>
     IO20</td>
     <td>Gen Purpose 
-    LVTTL I/O</td>
+    LVTTL IO</td>
   </tr>
   <tr>
     <td>
@@ -502,7 +502,7 @@ pins are likely to cause permanent damage to the board!</p>
     <td>
     IO21</td>
     <td>Gen Purpose 
-    LVTTL I/O</td>
+    LVTTL IO</td>
   </tr>
   <tr>
     <td>
@@ -541,8 +541,8 @@ pins are likely to cause permanent damage to the board!</p>
 <h2><a name="JP4">JP4</a> - Aux Connector</h2>
 
 <p>Auxiliary connector which supplies power, reset, one 0-4V DAC, and 8 digital 
-I/O normally connected to optional expansion daughter boards. If no 
-expansion module is required these digital I/O may be used for general purpose 
+IO normally connected to optional expansion daughter boards. If no 
+expansion module is required these digital IO may be used for general purpose 
 use. Note: IO20 and IO21 are also routed to JP3 </p>
 
 <p><img src="Aux16pin.png" width="311" height="348" alt="Aux16pin" /></p>
@@ -592,7 +592,7 @@ use. Note: IO20 and IO21 are also routed to JP3 </p>
     <td>
     IO20</td>
     <td>Gen Purpose 
-    LVTTL I/O</td>
+    LVTTL IO</td>
   </tr>
   <tr>
     <td>
@@ -600,7 +600,7 @@ use. Note: IO20 and IO21 are also routed to JP3 </p>
     <td>
     IO21</td>
     <td>Gen Purpose 
-    LVTTL I/O</td>
+    LVTTL IO</td>
   </tr>
   <tr>
     <td>
@@ -608,7 +608,7 @@ use. Note: IO20 and IO21 are also routed to JP3 </p>
     <td>
     IO22</td>
     <td>Gen Purpose 
-    LVTTL I/O</td>
+    LVTTL IO</td>
   </tr>
   <tr>
     <td>
@@ -632,7 +632,7 @@ use. Note: IO20 and IO21 are also routed to JP3 </p>
     <td>
     IO23</td>
     <td>Gen Purpose 
-    LVTTL I/O</td>
+    LVTTL IO</td>
   </tr>
   <tr>
     <td>
@@ -640,7 +640,7 @@ use. Note: IO20 and IO21 are also routed to JP3 </p>
     <td>
     IO24</td>
     <td>Gen Purpose 
-    LVTTL I/O</td>
+    LVTTL IO</td>
   </tr>
   <tr>
     <td>
@@ -648,7 +648,7 @@ use. Note: IO20 and IO21 are also routed to JP3 </p>
     <td>
     IO25</td>
     <td>Gen Purpose 
-    LVTTL I/O</td>
+    LVTTL IO</td>
   </tr>
   <tr>
     <td>
@@ -656,7 +656,7 @@ use. Note: IO20 and IO21 are also routed to JP3 </p>
     <td>
     IO26</td>
     <td>Gen Purpose 
-    LVTTL I/O</td>
+    LVTTL IO</td>
   </tr>
   <tr>
     <td>
@@ -664,7 +664,7 @@ use. Note: IO20 and IO21 are also routed to JP3 </p>
     <td>
     IO27</td>
     <td>Gen Purpose 
-    LVTTL I/O</td>
+    LVTTL IO</td>
   </tr>
   <tr>
     <td>
@@ -704,15 +704,16 @@ may be driven with the Auxiliary Switch:</p>
 
 <p><img src="AuxSwitchExample.PNG" width="547" height="320"></p>
 
-<h2><a name="Analog_I/O_circuit">Analog I/O circuit</a></h2>
+<h2><a name="Analog_IO_circuit">Analog IO circuit</a></h2>
 
-<p>Circuit diagram of analog I/O buffers showing conversion from industry 
+<p>Circuit diagram of analog IO buffers showing conversion from industry 
 standard +/- 10V ranges to onboard 0-4V ADC/DAC converters. Note 50K input 
 impedance. REFP = 4V, REFK = 1.43V</p>
 <p><img src="AnalogCircuit.png" width="771" height="178" alt="AnalogCircuit" /></p>
 
 	</div>
 	<p>&nbsp;</p>
+<script src="../search/searchbox.js" defer></script>
 </body>
 
 </html>

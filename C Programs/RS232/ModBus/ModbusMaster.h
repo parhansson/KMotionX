@@ -15,4 +15,3 @@
 #define MBReg ((unsigned short *)persist.UserData[PERSIST_MBREG_BLOCK_ADR])
 
 #endif
-		

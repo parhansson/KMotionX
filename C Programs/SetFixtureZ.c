@@ -5,7 +5,7 @@
 
 #define Zaxis 2
 
-main()
+int main()
 {
 	int FixtureIndex;
 	double NewOriginOffset,OriginOffsetZ;

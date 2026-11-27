@@ -1,4 +1,4 @@
-
+﻿
 // Handle CSS (Constant Surface Speed) messages from KMotionCNC)
 //
 // This code assumes you have an Axis Channel Configured to control
@@ -20,10 +20,10 @@
 //}
 
 int   *css_mode = &persist.UserData[PC_COMM_CSS_MODE];			// Mode 1=Normal RPM mode. 2=CSS
-float *css_xoff = &persist.UserData[PC_COMM_CSS_X_OFFSET];		// X axis counts for Radius zero
-float *css_xfactor = &persist.UserData[PC_COMM_CSS_X_FACTOR];	// X axis factor to convert counts to inches 
-float *css_s = &persist.UserData[PC_COMM_CSS_S];				// S speed setting in inches/sec
-float *css_max_rpm = &persist.UserData[PC_COMM_CSS_MAX_RPM];	// Limit max RPM to this value as Radius approaches zero
+float *css_xoff = (float*)&persist.UserData[PC_COMM_CSS_X_OFFSET];		// X axis counts for Radius zero
+float *css_xfactor = (float*)&persist.UserData[PC_COMM_CSS_X_FACTOR];	// X axis factor to convert counts to inches 
+float *css_s = (float*)&persist.UserData[PC_COMM_CSS_S];				// S speed setting in inches/sec
+float *css_max_rpm = (float*)&persist.UserData[PC_COMM_CSS_MAX_RPM];	// Limit max RPM to this value as Radius approaches zero
 
 double css_T=0;  // update only every so often
 #define CSS_UPDATE_DT 0.05

@@ -9,7 +9,7 @@ int flast=0,flastsolid=-1,fcount=0;
 
 #define FEEDHOLDBIT 162
 
-main()
+int main()
 {
     // Do an example xy coordinated Move
 	do

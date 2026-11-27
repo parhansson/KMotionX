@@ -1,0 +1,53 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <LangVersion>7.3</LangVersion>
+    <RootNamespace>MotionLogPlotter</RootNamespace>
+    <AssemblyName>MotionLogPlotter</AssemblyName>
+    <Nullable>disable</Nullable>
+
+    <!-- drawn by MakeIcon.ps1; Launcher\Run MotionLogPlotter.rc references the
+         same file, so a redraw updates the application and its launcher -->
+    <ApplicationIcon>MotionLogPlotter.ico</ApplicationIcon>
+
+    <!-- build into the KMotion binary folders like the other examples -->
+    <Configurations>Debug;Release;Debug64;Release64</Configurations>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <OutputPath>..\..\KMotion\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <OutputPath>..\..\KMotion\Release\</OutputPath>
+  </PropertyGroup>
+
+  <!-- the SDK only presets DEBUG/optimize for the standard configuration
+       names, so the 64 variants declare them explicitly -->
+  <PropertyGroup Condition="'$(Configuration)'=='Debug64'">
+    <OutputPath>..\..\KMotion\Debug64\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release64'">
+    <OutputPath>..\..\KMotion\Release64\</OutputPath>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Embedded as well as set via <ApplicationIcon> above.  The Win32 icon
+         only gives the .exe its Explorer icon; a Form's title bar, taskbar
+         button and Alt-Tab entry come from Form.Icon, which MainForm loads
+         from this resource. -->
+    <EmbeddedResource Include="MotionLogPlotter.ico">
+      <LogicalName>MotionLogPlotter.ico</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

@@ -12,6 +12,14 @@
 
 #define MAX_TOOL_LINE 200
 
+
+static const int ID_Map[20] = {
+	IDC_ID0, IDC_ID1, IDC_ID2, IDC_ID3, IDC_ID4,
+	IDC_ID5, IDC_ID6, IDC_ID7, IDC_ID8, IDC_ID9,
+	IDC_ID10, IDC_ID11, IDC_ID12, IDC_ID13, IDC_ID14,
+	IDC_ID15, IDC_ID16, IDC_ID17, IDC_ID18, IDC_ID19
+};
+
 // CEditToolFile dialog
 
 IMPLEMENT_DYNAMIC(CEditToolFile, CDialog)
@@ -246,7 +254,7 @@ BOOL CEditToolFile::OnInitDialog()
 
 
 	if (Units == CANON_UNITS_MM)
-		SetDlgItemText(IDC_InchesMM, "Feed Dist\rmm");
+		SetDlgItemText(IDC_InchesMM, L"Feed Dist\rmm");
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -349,127 +357,127 @@ void CEditToolFile::DoDataExchange(CDataExchange* pDX)
 	DDV_MinMaxInt_Blank(pDX, m_ID19, 0, 999999);
 
 	DDX_Text_Blank(pDX, IDC_Length0, m_Length0);
-	DDV_MinMaxDouble_Blank(pDX, m_Length0, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Length0, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Length1, m_Length1);
-	DDV_MinMaxDouble_Blank(pDX, m_Length1, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Length1, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Length2, m_Length2);
-	DDV_MinMaxDouble_Blank(pDX, m_Length2, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Length2, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Length3, m_Length3);
-	DDV_MinMaxDouble_Blank(pDX, m_Length3, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Length3, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Length4, m_Length4);
-	DDV_MinMaxDouble_Blank(pDX, m_Length4, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Length4, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Length5, m_Length5);
-	DDV_MinMaxDouble_Blank(pDX, m_Length5, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Length5, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Length6, m_Length6);
-	DDV_MinMaxDouble_Blank(pDX, m_Length6, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Length6, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Length7, m_Length7);
-	DDV_MinMaxDouble_Blank(pDX, m_Length7, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Length7, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Length8, m_Length8);
-	DDV_MinMaxDouble_Blank(pDX, m_Length8, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Length8, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Length9, m_Length9);
-	DDV_MinMaxDouble_Blank(pDX, m_Length9, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Length9, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Length10, m_Length10);
-	DDV_MinMaxDouble_Blank(pDX, m_Length10, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Length10, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Length11, m_Length11);
-	DDV_MinMaxDouble_Blank(pDX, m_Length11, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Length11, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Length12, m_Length12);
-	DDV_MinMaxDouble_Blank(pDX, m_Length12, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Length12, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Length13, m_Length13);
-	DDV_MinMaxDouble_Blank(pDX, m_Length13, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Length13, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Length14, m_Length14);
-	DDV_MinMaxDouble_Blank(pDX, m_Length14, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Length14, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Length15, m_Length15);
-	DDV_MinMaxDouble_Blank(pDX, m_Length15, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Length15, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Length16, m_Length16);
-	DDV_MinMaxDouble_Blank(pDX, m_Length16, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Length16, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Length17, m_Length17);
-	DDV_MinMaxDouble_Blank(pDX, m_Length17, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Length17, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Length18, m_Length18);
-	DDV_MinMaxDouble_Blank(pDX, m_Length18, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Length18, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Length19, m_Length19);
-	DDV_MinMaxDouble_Blank(pDX, m_Length19, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Length19, -9999,9999);
 
 	DDX_Text_Blank(pDX, IDC_Xoffset0, m_Xoffset0);
-	DDV_MinMaxDouble_Blank(pDX, m_Xoffset0, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Xoffset0, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Xoffset1, m_Xoffset1);
-	DDV_MinMaxDouble_Blank(pDX, m_Xoffset1, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Xoffset1, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Xoffset2, m_Xoffset2);
-	DDV_MinMaxDouble_Blank(pDX, m_Xoffset2, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Xoffset2, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Xoffset3, m_Xoffset3);
-	DDV_MinMaxDouble_Blank(pDX, m_Xoffset3, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Xoffset3, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Xoffset4, m_Xoffset4);
-	DDV_MinMaxDouble_Blank(pDX, m_Xoffset4, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Xoffset4, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Xoffset5, m_Xoffset5);
-	DDV_MinMaxDouble_Blank(pDX, m_Xoffset5, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Xoffset5, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Xoffset6, m_Xoffset6);
-	DDV_MinMaxDouble_Blank(pDX, m_Xoffset6, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Xoffset6, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Xoffset7, m_Xoffset7);
-	DDV_MinMaxDouble_Blank(pDX, m_Xoffset7, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Xoffset7, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Xoffset8, m_Xoffset8);
-	DDV_MinMaxDouble_Blank(pDX, m_Xoffset8, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Xoffset8, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Xoffset9, m_Xoffset9);
-	DDV_MinMaxDouble_Blank(pDX, m_Xoffset9, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Xoffset9, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Xoffset10, m_Xoffset10);
-	DDV_MinMaxDouble_Blank(pDX, m_Xoffset10, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Xoffset10, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Xoffset11, m_Xoffset11);
-	DDV_MinMaxDouble_Blank(pDX, m_Xoffset11, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Xoffset11, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Xoffset12, m_Xoffset12);
-	DDV_MinMaxDouble_Blank(pDX, m_Xoffset12, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Xoffset12, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Xoffset13, m_Xoffset13);
-	DDV_MinMaxDouble_Blank(pDX, m_Xoffset13, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Xoffset13, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Xoffset14, m_Xoffset14);
-	DDV_MinMaxDouble_Blank(pDX, m_Xoffset14, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Xoffset14, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Xoffset15, m_Xoffset15);
-	DDV_MinMaxDouble_Blank(pDX, m_Xoffset15, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Xoffset15, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Xoffset16, m_Xoffset16);
-	DDV_MinMaxDouble_Blank(pDX, m_Xoffset16, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Xoffset16, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Xoffset17, m_Xoffset17);
-	DDV_MinMaxDouble_Blank(pDX, m_Xoffset17, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Xoffset17, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Xoffset18, m_Xoffset18);
-	DDV_MinMaxDouble_Blank(pDX, m_Xoffset18, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Xoffset18, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Xoffset19, m_Xoffset19);
-	DDV_MinMaxDouble_Blank(pDX, m_Xoffset19, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Xoffset19, -9999,9999);
 
 	DDX_Text_Blank(pDX, IDC_Yoffset0, m_Yoffset0);
-	DDV_MinMaxDouble_Blank(pDX, m_Yoffset0, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Yoffset0, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Yoffset1, m_Yoffset1);
-	DDV_MinMaxDouble_Blank(pDX, m_Yoffset1, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Yoffset1, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Yoffset2, m_Yoffset2);
-	DDV_MinMaxDouble_Blank(pDX, m_Yoffset2, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Yoffset2, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Yoffset3, m_Yoffset3);
-	DDV_MinMaxDouble_Blank(pDX, m_Yoffset3, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Yoffset3, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Yoffset4, m_Yoffset4);
-	DDV_MinMaxDouble_Blank(pDX, m_Yoffset4, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Yoffset4, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Yoffset5, m_Yoffset5);
-	DDV_MinMaxDouble_Blank(pDX, m_Yoffset5, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Yoffset5, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Yoffset6, m_Yoffset6);
-	DDV_MinMaxDouble_Blank(pDX, m_Yoffset6, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Yoffset6, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Yoffset7, m_Yoffset7);
-	DDV_MinMaxDouble_Blank(pDX, m_Yoffset7, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Yoffset7, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Yoffset8, m_Yoffset8);
-	DDV_MinMaxDouble_Blank(pDX, m_Yoffset8, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Yoffset8, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Yoffset9, m_Yoffset9);
-	DDV_MinMaxDouble_Blank(pDX, m_Yoffset9, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Yoffset9, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Yoffset10, m_Yoffset10);
-	DDV_MinMaxDouble_Blank(pDX, m_Yoffset10, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Yoffset10, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Yoffset11, m_Yoffset11);
-	DDV_MinMaxDouble_Blank(pDX, m_Yoffset11, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Yoffset11, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Yoffset12, m_Yoffset12);
-	DDV_MinMaxDouble_Blank(pDX, m_Yoffset12, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Yoffset12, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Yoffset13, m_Yoffset13);
-	DDV_MinMaxDouble_Blank(pDX, m_Yoffset13, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Yoffset13, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Yoffset14, m_Yoffset14);
-	DDV_MinMaxDouble_Blank(pDX, m_Yoffset14, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Yoffset14, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Yoffset15, m_Yoffset15);
-	DDV_MinMaxDouble_Blank(pDX, m_Yoffset15, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Yoffset15, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Yoffset16, m_Yoffset16);
-	DDV_MinMaxDouble_Blank(pDX, m_Yoffset16, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Yoffset16, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Yoffset17, m_Yoffset17);
-	DDV_MinMaxDouble_Blank(pDX, m_Yoffset17, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Yoffset17, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Yoffset18, m_Yoffset18);
-	DDV_MinMaxDouble_Blank(pDX, m_Yoffset18, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Yoffset18, -9999,9999);
 	DDX_Text_Blank(pDX, IDC_Yoffset19, m_Yoffset19);
-	DDV_MinMaxDouble_Blank(pDX, m_Yoffset19, -999,999);
+	DDV_MinMaxDouble_Blank(pDX, m_Yoffset19, -9999,9999);
 
 	DDX_Text_Blank_Seconds(pDX, IDC_FeedTime0, m_FeedTime0);
 	DDV_MinMaxDouble_Blank(pDX, m_FeedTime0,0, 1e9);
@@ -734,6 +742,7 @@ BEGIN_MESSAGE_MAP(CEditToolFile, CDialog)
 	ON_BN_CLICKED(IDC_ResetFeed18, &OnBnClickedResetFeed18)
 	ON_BN_CLICKED(IDC_ResetFeed19, &OnBnClickedResetFeed19)
 	ON_BN_CLICKED(IDC_ResetAllFeed, &OnBnClickedResetallfeed)
+	ON_BN_CLICKED(IDOK, &CEditToolFile::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 void CEditToolFile::DDX_Text_Blank(CDataExchange* pDX, int nIDC, int& value)
@@ -741,7 +750,7 @@ void CEditToolFile::DDX_Text_Blank(CDataExchange* pDX, int nIDC, int& value)
 	CString Buf;
 	m_prevID=nIDC;
 	GetDlgItemText(nIDC,Buf.GetBufferSetLength(MAX_TOOL_LINE+1),MAX_TOOL_LINE);
-	if (Buf[0]==0)SetDlgItemText(nIDC,"0");
+	if (Buf[0]==0)SetDlgItemText(nIDC,L"0");
 	DDX_Text(pDX, nIDC, value);
 }
 
@@ -763,10 +772,10 @@ void CEditToolFile::DDX_Text_Blank_Inches(CDataExchange* pDX, int nIDC, double& 
 			value = 0.0;
 		else
 		{
-			int r = sscanf(Buf, "%lf", &Dist);
+			int r = swscanf(Buf, L"%lf", &Dist);
 			if (r != 1)
 			{
-				MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Number"), L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
+				MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Number"), L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
 				pDX->Fail();  // throws exception
 			}
 
@@ -789,7 +798,7 @@ void CEditToolFile::DDX_Text_Blank_Inches(CDataExchange* pDX, int nIDC, double& 
 			else
 				Dist = value;
 
-			sprintf(Buf.GetBufferSetLength(MAX_TOOL_LINE + 1), "%.0f", Dist);
+			swprintf(Buf.GetBufferSetLength(MAX_TOOL_LINE + 1), L"%.0f", Dist);
 			Buf.ReleaseBuffer();
 		}
 		SetDlgItemText(nIDC, Buf);
@@ -828,28 +837,28 @@ void CEditToolFile::DDX_Text_Blank_Seconds(CDataExchange* pDX, int nIDC, double&
 			}
 			if (colons == 0)
 			{
-				int r = sscanf(Buf, "%lf", &seconds);
+				int r = swscanf(Buf, L"%lf", &seconds);
 				if (r != 1)
 				{
-					MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Number"), L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
+					MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Number"), L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
 					pDX->Fail();  // throws exception
 				}
 			}
 			else if (colons == 1)
 			{
-				int r = sscanf(Buf, "%d:%lf", &min, &seconds);
+				int r = swscanf(Buf, L"%d:%lf", &min, &seconds);
 				if (r != 2)
 				{
-					MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Number"), L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
+					MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Number"), L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
 					pDX->Fail();  // throws exception
 				}
 			}
 			else
 			{
-				int r = sscanf(Buf, "%d:%d:%lf", &hrs, &min, &seconds);
+				int r = swscanf(Buf, L"%d:%d:%lf", &hrs, &min, &seconds);
 				if (r != 3)
 				{
-					MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Number"), L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
+					MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Number"), L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
 					pDX->Fail();  // throws exception
 				}
 			}
@@ -869,11 +878,11 @@ void CEditToolFile::DDX_Text_Blank_Seconds(CDataExchange* pDX, int nIDC, double&
 			seconds = value - hrs * 3600.0 - min * 60.0;
 
 			if (hrs > 0)
-				sprintf(Buf.GetBufferSetLength(MAX_TOOL_LINE + 1), "%d:%02d:%02.0f", hrs, min, seconds);
+				swprintf(Buf.GetBufferSetLength(MAX_TOOL_LINE + 1), L"%d:%02d:%02.0f", hrs, min, seconds);
 			else if (min > 0)
-				sprintf(Buf.GetBufferSetLength(MAX_TOOL_LINE + 1), "%d:%02.0f", min, seconds);
+				swprintf(Buf.GetBufferSetLength(MAX_TOOL_LINE + 1), L"%d:%02.0f", min, seconds);
 			else
-				sprintf(Buf.GetBufferSetLength(MAX_TOOL_LINE + 1), "%.0f", seconds);
+				swprintf(Buf.GetBufferSetLength(MAX_TOOL_LINE + 1), L"%.0f", seconds);
 
 			Buf.ReleaseBuffer();
 		}
@@ -890,7 +899,7 @@ void CEditToolFile::DDX_Text_Blank(CDataExchange* pDX, int nIDC, double& value)
 	GetDlgItemText(nIDC, Buf.GetBufferSetLength(MAX_TOOL_LINE + 1), MAX_TOOL_LINE);
 	Buf.ReleaseBuffer();
 	Buf.Trim();
-	if (Buf[0] == 0)SetDlgItemText(nIDC, "0");
+	if (Buf[0] == 0)SetDlgItemText(nIDC, L"0");
 	DDX_Text(pDX, nIDC, value);
 }
 
@@ -901,7 +910,7 @@ void CEditToolFile::DDV_MinMaxInt_Blank(CDataExchange* pDX, int value, int minVa
 	GetDlgItemText(m_prevID, Buf.GetBufferSetLength(MAX_TOOL_LINE + 1), MAX_TOOL_LINE);
 	Buf.ReleaseBuffer();
 	Buf.Trim();
-	if (Buf[0]=='0' && Buf[1]==0) SetDlgItemText(m_prevID,"");
+	if (Buf[0]=='0' && Buf[1]==0) SetDlgItemText(m_prevID,L"");
 }
 
 void CEditToolFile::DDV_MinMaxDouble_Blank(CDataExchange* pDX, double const& value, double minVal, double maxVal)
@@ -911,7 +920,7 @@ void CEditToolFile::DDV_MinMaxDouble_Blank(CDataExchange* pDX, double const& val
 	GetDlgItemText(m_prevID, Buf.GetBufferSetLength(MAX_TOOL_LINE + 1), MAX_TOOL_LINE);
 	Buf.ReleaseBuffer();
 	Buf.Trim();
-	if (Buf[0]=='0' && Buf[1]==0) SetDlgItemText(m_prevID,"");
+	if (Buf[0]=='0' && Buf[1]==0) SetDlgItemText(m_prevID,L"");
 }
 
 // CEditToolFile message handlers
@@ -923,47 +932,48 @@ int CEditToolFile::LoadFile(CString File)
 	CString Comment,Image,s;
 	int ID,Slot;
 	double Diameter,Length,Xoffset=0,Yoffset=0,FeedTime=0,FeedDist=0;
-	CStdioFile f;
+	FILE *f;
 
 	// check if there is no path specified, then add in default
 
-	if (File.Find(':') == -1 && File.Find("\\\\") == -1)
+	if (File.Find(':') == -1 && File.Find(L"\\\\") == -1)
 	{
 		File = TheFrame->MainPathRoot + DATA_SUB_DIR + File;
 	}
 
-
-	if(!f.Open(File, CFile::modeRead|CFile::typeText))
+	_tfopen_s(&f, File, _T("rt,ccs=UTF-8"));
+	if(!f)
 	{
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to open Tool Table file:\r\r") + (CStringW) File, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to open Tool Table file:\r\r") +  File, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 1;
 	}
 
-	if(!f.ReadString(s))
+	if(fgetws(s.GetBufferSetLength(1001), 1000, f) == NULL)
 	{
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Tool Table file (line 1):\r\r") + (CStringW) File, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
-		f.Close();
+		MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Tool Table file (line 1):\r\r") +  File, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		fclose(f);
 		return 1;
 	}
-
+	s.ReleaseBuffer();
 	s.MakeUpper();
 
-	if (s.Find("COMMENT")==-1 || s.Find("DIAM")==-1 || s.Find("LEN")==-1)
+	if (s.Find(L"COMMENT")==-1 || s.Find(L"DIAM")==-1 || s.Find(L"LEN")==-1)
 	{
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Tool Table file (line 1):\r\r") + (CStringW) File, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
-		f.Close();
+		MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Tool Table file (line 1):\r\r") +  File, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		fclose(f);
 		return 1;
 	}
 
-	if (s.Find("XOFFSET") > 0 && s.Find("YOFFSET") > 0 && s.Find("IMAGE") > 0) Revision = 1;
+	if (s.Find(L"XOFFSET") > 0 && s.Find(L"YOFFSET") > 0 && s.Find(L"IMAGE") > 0) Revision = 1;
 
-	if (s.Find("FEEDTIME") > 0 && s.Find("FEEDDIST") > 0) Revision = 2;
+	if (s.Find(L"FEEDTIME") > 0 && s.Find(L"FEEDDIST") > 0) Revision = 2;
 
 
 	int n,Tool=0,line=1;
 
-	while (f.ReadString(s))
+	while (fgetws(s.GetBufferSetLength(1001), 1000, f) != NULL)
 	{
+		s.ReleaseBuffer();
 		// remove whitespace
 		s.Trim();
 		line++;
@@ -972,46 +982,46 @@ int CEditToolFile::LoadFile(CString File)
 		{
 			if (Tool >= MAX_TOOLS)
 			{
-				MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Tool Table file:\r\r") + (CStringW) File + "\r\rToo many Tools Max Allowed is 99", L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
-				f.Close();
+				MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Tool Table file:\r\r") +  File + "\r\rToo many Tools Max Allowed is 99", L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+				fclose(f);
 				return 1;
 			}
 
 			if (Revision==0)
 			{
-				result = sscanf(s,"%d%d%lf%lf%n",&Slot,&ID,&Length,&Diameter,&n);
+				result = swscanf(s,L"%d%d%lf%lf%n",&Slot,&ID,&Length,&Diameter,&n);
 				Xoffset=Yoffset=0;
 
 				if (result !=4)
 				{
-					CStringW err;
+					CString err;
 					err.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Line %d doesn't have 4 valid numbers"),line);
-					MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Tool Table file:\r\r") + (CStringW) File + "\r\r" + err, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
-					f.Close();
+					MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Tool Table file:\r\r") +  File + "\r\r" + err, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+					fclose(f);
 					return 1;
 				}
 			}
 			else if (Revision==1)
 			{
-				result = sscanf(s, "%d%d%lf%lf%lf%lf%n", &Slot, &ID, &Length, &Diameter, &Xoffset, &Yoffset, &n);
+				result = swscanf(s, L"%d%d%lf%lf%lf%lf%n", &Slot, &ID, &Length, &Diameter, &Xoffset, &Yoffset, &n);
 				if (result != 6)
 				{
-					CStringW err;
+					CString err;
 					err.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Line %d doesn't have 6 valid numbers"), line);
-					MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Tool Table file:\r\r") + (CStringW)File + "\r\r" + err, L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
-					f.Close();
+					MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Tool Table file:\r\r") + File + "\r\r" + err, L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
+					fclose(f);
 					return 1;
 				}
 			}
 			else
 			{
-				result = sscanf(s, "%d%d%lf%lf%lf%lf%lf%lf%n", &Slot, &ID, &Length, &Diameter, &Xoffset, &Yoffset, &FeedTime, &FeedDist, &n);
+				result = swscanf(s, L"%d%d%lf%lf%lf%lf%lf%lf%n", &Slot, &ID, &Length, &Diameter, &Xoffset, &Yoffset, &FeedTime, &FeedDist, &n);
 				if (result != 8)
 				{
-					CStringW err;
+					CString err;
 					err.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Line %d doesn't have 8 valid numbers"), line);
-					MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Tool Table file:\r\r") + (CStringW)File + "\r\r" + err, L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
-					f.Close();
+					MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Tool Table file:\r\r") + File + "\r\r" + err, L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
+					fclose(f);
 					return 1;
 				}
 			}
@@ -1061,19 +1071,19 @@ int CEditToolFile::LoadFile(CString File)
 				}
 				if(!bImageSuccess)
 				{
-					CStringW err;
+					CString err;
 					err.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Line %d doesn't have matching quotation marks for Image"),line);
-					MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Tool Table file:\r\r") + (CStringW) File + "\r\r" + err, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
-					f.Close();
+					MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Tool Table file:\r\r") +  File + "\r\r" + err, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+					fclose(f);
 					return 1;
 				}
 
 				if (!bCommentSuccess)
 				{
-					CStringW err;
+					CString err;
 					err.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Line %d doesn't have quotation marks for comment"),line);
-					MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Tool Table file:\r\r") + (CStringW) File + "\r\r" + err, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
-					f.Close();
+					MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Tool Table file:\r\r") +  File + "\r\r" + err, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+					fclose(f);
 					return 1;
 				}
 			}
@@ -1082,12 +1092,12 @@ int CEditToolFile::LoadFile(CString File)
 			Tool++;
 		}
 	}
-	f.Close();
+	fclose(f);
 
 	// Blank out others
 	for (int i=Tool; i<MAX_TOOLS; i++)
 	{
-		PutTool(i,0,0,0,0,0,0,0,0,"","");
+		PutTool(i,0,0,0,0,0,0,0,0,L"",L"");
 	}
 
 	m_nTools=Tool;  // remember how many tools defined
@@ -1231,19 +1241,47 @@ void CEditToolFile::SortToolTable()
 	}
 }
 
+int CEditToolFile::CheckDuplicateToolID(int* BadRow, int* BadRow2, int *BadID)
+{
+	CString Comment, Comment2, Image, Image2;
+	int ID, ID2, Slot, Slot2;
+	double Diameter, Diameter2, Length, Length2, Xoffset, Xoffset2, Yoffset, Yoffset2, FeedTime, FeedTime2, FeedDist, FeedDist2;
+	for (int k= 0; k < MAX_TOOLS - 2; k++)
+	{
+		GetTool(k, Slot, ID, Length, Diameter, Xoffset, Yoffset, FeedTime, FeedDist, Comment, Image);
+		for (int i = k+1; i < MAX_TOOLS - 1; i++)
+		{
+			GetTool(i, Slot2, ID2, Length2, Diameter2, Xoffset2, Yoffset2, FeedTime2, FeedDist2, Comment2, Image2);
+	
+			// Check for same IDs ignoring blanks
+			if (ID != 0 && ID == ID2)
+			{
+				*BadRow = k;
+				*BadRow2 = i;
+				*BadID = ID;
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+
+
 int CEditToolFile::SaveFile(CString File)
 {
-	FILE *f = fopen(File,"wt");
+	FILE *f;
+	_tfopen_s(&f, File, _T("wt,ccs=UTF-8"));
+
 
 	SortToolTable();
 	if (!f)
 	{
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to write Tool Table file:\r\r") + (CStringW) File, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to write Tool Table file:\r\r") +  File, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 1;
 	}
 
-	fprintf(f,"SLOT    ID        LENGTH         DIAMETER        XOFFSET        YOFFSET        FEEDTIME        FEEDDIST   COMMENT     IMAGE\n");
-	fprintf(f,"\n");
+	fwprintf(f,L"SLOT    ID        LENGTH         DIAMETER        XOFFSET        YOFFSET        FEEDTIME        FEEDDIST   COMMENT     IMAGE\n");
+	fwprintf(f,L"\n");
 
 	CString Comment,Image;
 	int ID, Slot;
@@ -1252,7 +1290,7 @@ int CEditToolFile::SaveFile(CString File)
 	for (int i=0; i<MAX_TOOLS; i++)
 	{
 		GetTool(i,Slot,ID,Length,Diameter,Xoffset,Yoffset, FeedTime, FeedDist,Comment,Image);
-		if (Slot || ID) fprintf(f,"%3d %6d %15.6f %15.6f %15.6f %15.6f %15.1f %15.1f \"%s\" \"%s\"\n",Slot,ID,Length,Diameter,Xoffset,Yoffset,FeedTime,FeedDist,Comment.GetBuffer(),Image.GetBuffer());
+		if (Slot || ID) fwprintf(f,L"%3d %6d %15.6f %15.6f %15.6f %15.6f %15.1f %15.1f \"%ls\" \"%ls\"\n",Slot,ID,Length,Diameter,Xoffset,Yoffset,FeedTime,FeedDist,Comment.GetBuffer(),Image.GetBuffer());
 	}
 	fclose(f);
 	return 0;
@@ -1291,12 +1329,23 @@ void CEditToolFile::ChangeOffsetX(int Tool, double NewXoffset)
 
 void CEditToolFile::ChangeOffsetY(int Tool, double NewYoffset)
 {
-	CString Comment,Image;
+	CString Comment, Image;
 	int ID, Slot;
-	double Diameter,Length,Xoffset,Yoffset,FeedTime,FeedDist;
+	double Diameter, Length, Xoffset, Yoffset, FeedTime, FeedDist;
 
-	GetTool(Tool,Slot,ID,Length,Diameter,Xoffset,Yoffset,FeedTime,FeedDist,Comment,Image);
-	PutTool(Tool,Slot,ID,Length,Diameter,Xoffset,NewYoffset,FeedTime,FeedDist,Comment,Image);
+	GetTool(Tool, Slot, ID, Length, Diameter, Xoffset, Yoffset, FeedTime, FeedDist, Comment, Image);
+	PutTool(Tool, Slot, ID, Length, Diameter, Xoffset, NewYoffset, FeedTime, FeedDist, Comment, Image);
+}
+
+
+void CEditToolFile::ChangeComment(int Tool, CString NewComment)
+{
+	CString Comment, Image;
+	int ID, Slot;
+	double Diameter, Length, Xoffset, Yoffset, FeedTime, FeedDist;
+
+	GetTool(Tool, Slot, ID, Length, Diameter, Xoffset, Yoffset, FeedTime, FeedDist, Comment, Image);
+	PutTool(Tool, Slot, ID, Length, Diameter, Xoffset, Yoffset, FeedTime, FeedDist, NewComment, Image);
 }
 
 void CEditToolFile::ChangeFeedTime(int Tool, double NewFeedTime)
@@ -1598,14 +1647,14 @@ void CEditToolFile::DoImageDir(CString &Image)
 		FullPath="";
 	else 
 	{
-		if (Image.Find(':') == -1 && Image.Find("\\\\") == -1)
+		if (Image.Find(':') == -1 && Image.Find(L"\\\\") == -1)
 			FullPath=ImagePath+Image;
 		else
 			FullPath=Image;
 	}
 
-	CPreviewFileDialog FileDlg(&preview,TRUE,".wrl",FullPath,OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR | OFN_PATHMUSTEXIST,
-			/*TRAN*/"VRML Image Files (*.wrl)|*.wrl|All Files (*.*)|*.*||");
+	CPreviewFileDialog FileDlg(&preview,TRUE,L".wrl",FullPath,OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR | OFN_PATHMUSTEXIST,
+			/*TRAN*/L"VRML Image Files (*.wrl)|*.wrl|All Files (*.*)|*.*||");
 
 	FileDlg.m_ofn.lpstrInitialDir = ImagePath;
 	
@@ -1622,3 +1671,31 @@ void CEditToolFile::DoImageDir(CString &Image)
 }
 
 
+
+void CEditToolFile::OnBnClickedOk()
+{
+	int BadRow, BadRow2, ID;
+
+	if (!UpdateData(TRUE)) return;  // save Screen Values
+
+	if (CheckDuplicateToolID(&BadRow, &BadRow2, &ID))
+	{
+		CheckRadioButton(IDC_Page1, IDC_Page5, IDC_Page1 + BadRow/20);
+		UpdateData(FALSE);
+
+		CEdit* pEdit = (CEdit*)GetDlgItem(ID_Map[BadRow%20]);
+		if (pEdit)
+		{
+			pEdit->SetFocus();
+			pEdit->SetSel(0, -1); // select all text
+		}
+
+		CString err;
+		err.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Warning Multiple Table Entries with same Tool ID of %d\rRow %d and %d\r\rPlease Correct"), ID, BadRow + 1, BadRow2 + 1);
+		MessageBox(err, L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
+
+
+		return;
+	}
+	CDialog::OnOK();
+}

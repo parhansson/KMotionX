@@ -3,7 +3,7 @@
 // Reverses the direction of motion for Step/Dir Outputs
 // or DAC Servo Outputs
 
-main()
+int main()
 {
 	ch0->OutputGain = -1;
 	ch1->OutputGain = -1;

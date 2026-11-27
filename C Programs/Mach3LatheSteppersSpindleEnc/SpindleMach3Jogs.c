@@ -8,7 +8,7 @@ enum { EX_DDA , EX_VMS, EX_COMMAND, EX_SPINON, EX_SPINOFF, EX_SPINSPEED, EX_MOTO
 #define SPINDLEAXIS 3
 #define SPINDLE_ENABLE 0
 
-main()
+int main()
 {
 	int message = persist.UserData[0];  // Mach3 message ID 
 	int Direction = persist.UserData[1];  // Mach3 Spindle Direction 

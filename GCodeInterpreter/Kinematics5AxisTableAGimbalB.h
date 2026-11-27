@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "StdAfx.h"
+#include "stdafx.h"
 
 class CKinematics5AxisTableAGimbalB : public CKinematics  
 {
@@ -19,7 +19,6 @@ public:
 	int Initialize();
 	virtual int TransformCADtoActuators(double x, double y, double z, double a, double b, double c, double *Acts, bool NoGeo = false);
 	virtual int TransformActuatorstoCAD(double *Acts, double *x, double *y, double *z, double *a, double *b, double *c, bool NoGeo = false);
-	int InvertTransformCADtoActuators(double *Acts, double *xr, double *yr, double *zr, double *ar, double *br, double *cr, bool NoGeo = false);
 
 	void Rotate3(double xc,double yc,double zc,double x,double y,double z,double a,double b,double c,
 								double *xp,double *yp,double *zp);

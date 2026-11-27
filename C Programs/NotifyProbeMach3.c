@@ -8,7 +8,7 @@
 
 float DecelTimeForAxis(int axis);
 
-main()
+int main()
 {
 	int msg = persist.UserData[6];  // Mach3 notify Message 10000-10999
 

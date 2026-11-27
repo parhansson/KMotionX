@@ -18,7 +18,7 @@
 void Commutate2Phase(int ch);
 
 
-main()
+int main()
 {
 	// since we are using a 500 count encoder (2000 cnts)
 	ch0->invDistPerCycle = 1.0/2000.0;

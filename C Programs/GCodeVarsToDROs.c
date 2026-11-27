@@ -6,7 +6,7 @@
 #define NVARS 6
 void DoVarsToDROs(void);
 
-main()
+int main()
 {
 	for (;;)
 	{

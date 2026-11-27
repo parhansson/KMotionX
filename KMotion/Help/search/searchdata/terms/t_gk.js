@@ -1,0 +1,1 @@
+__dynoShard("terms/t_gk",{"gkstep":[[769,0,1,[2589]]]});

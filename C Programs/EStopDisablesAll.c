@@ -2,7 +2,7 @@
 
 // Watches for EStop Input and disables Axes when detected
 
-main()
+int main()
 {
 	for (;;)  //loop forever
 	{

@@ -17,9 +17,12 @@
 #include "mongoose.h"
 
 #include "dbg.h"
+#include "KMotionX.h"
+#include "MachinePaths.h"
 
 int mmapNamedFile(MappedFile& mmFile, const char * fileName){
-  FILE *fp = (FILE *) fopen (fileName, "r+");
+  FILE *fp = (FILE *) fopen (fileName, "r");
+  if (!fp) return -1;
   int result = mmapFile(mmFile, fp);
   fclose(fp);
   return result;
@@ -55,21 +58,13 @@ void unmapFile(MappedFile& mmFile){
 }
 
 
-void absolutePath(const char * relativePath, char * actualpath){
-  char absolute [256/*PATH_MAX*/];
-  
-  if(relativePath[0]=='/'){
-    snprintf(absolute, 256, "%s",relativePath);
-  } else {
-    const char * rootDir = mg_get_option(server, "document_root");
-    snprintf(absolute, 256, "%s/%s",rootDir,relativePath);
-  }
-  
-  
-  if(realpath(absolute, actualpath) == NULL){
-    printf("Error resolving relative path %s from %s\n", relativePath, absolute);
-    snprintf(actualpath, 256, "%s",absolute);
-  } 
+bool absolutePath(const char * relativePath, char * actualpath){
+  actualpath[0] = '\0';
+  std::string resolved;
+  if (!relativePath || !resolveMachinePath(kmx::getMachineDataPath(), relativePath, resolved))
+    return false;
+  snprintf(actualpath, 256, "%s", resolved.c_str());
+  return true;
 }
 
 size_t expand_non_ascii(char ** dest, const char * source, size_t srclen){

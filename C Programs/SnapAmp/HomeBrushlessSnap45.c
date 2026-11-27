@@ -5,7 +5,7 @@
 // Assume index mark  
 
 
-void main() 
+int main() 
 {
     float k=0,A=10.0f;   // set coil current amplitude PWM units
 	double p0;

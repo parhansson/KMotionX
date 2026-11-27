@@ -2,7 +2,7 @@
 
 int GetTripState(int ch);
 
-main()
+int main()
 {
 	int NewTripState,OldTripState=-1;
 	for (;;)

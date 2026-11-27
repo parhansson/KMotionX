@@ -100,13 +100,13 @@ namespace kmx
   extern const char *getInstallPath();
   extern const char *getBinPath();
   extern const char *getLocalLanguageFilePath();
-  extern int LaunchServer();
+  extern int LaunchServer(bool noEthernet = false);
   extern int getDspFile(char *OutFile, const int BoardType);
   extern int getCompiler(char *Compiler, int MaxCompilerLen);
-  extern int getCompileCommand(const char *Name, const char *OutFile, uint32_t LoadAddress, const int BoardType, char *command, int cmd_len);
+  extern int getCompileCommand(const wchar_t *Name, const wchar_t *OutFile, uint32_t LoadAddress, const int BoardType, char *command, int cmd_len);
 
 
-
+  extern std::string format(const char* fmt, ...);
   extern std::wstring format(const wchar_t *wformat, ...);
   // extern std::string wstrtostr(std::wstring wideString);
   extern std::string wstrtostr(const std::wstring &wideString);
@@ -125,5 +125,99 @@ namespace kmx
   extern uint8_t randomInt();
 
 }
+
+#ifdef _KMOTIONX
+// Windows CRT compatibility shims.
+// They let code taken unchanged from the Windows original (KMotion) compile as is,
+// so the original source lines do not have to be edited for every upgrade.
+#include <errno.h>
+#include <stdio.h>
+#include <wchar.h>
+
+// Like wcscpy_s, but truncates instead of calling an invalid parameter handler.
+inline int wcscpy_s(wchar_t *dest, size_t destsz, const wchar_t *src)
+{
+  if (!dest || destsz == 0)
+    return EINVAL;
+  size_t i = 0;
+  if (src)
+    for (; i < destsz - 1 && src[i]; i++)
+      dest[i] = src[i];
+  dest[i] = 0;
+  return (src && src[i]) ? ERANGE : 0;
+}
+inline int wcscpy_s(wchar_t *dest, size_t destsz, const std::wstring &src)
+{
+  return wcscpy_s(dest, destsz, src.c_str());
+}
+
+// Windows types used by the original source.
+// CString (wide) and CStringA (narrow) with the MFC member functions the KMotion sources use
+#include "CStringCompat.h"
+typedef int64_t __int64;
+
+// File names are handled as UTF-8 by the C library on Linux and macOS
+inline FILE *_wfopen(const wchar_t *filename, const wchar_t *mode)
+{
+  return fopen(kmx::wstrtostr(filename).c_str(), kmx::wstrtostr(mode).c_str());
+}
+
+// Atomically stores value in *target and returns the previous value
+inline void *InterlockedExchangePointer(void **target, void *value)
+{
+  return __atomic_exchange_n(target, value, __ATOMIC_SEQ_CST);
+}
+
+inline int _wremove(const wchar_t *filename)
+{
+  return remove(kmx::wstrtostr(filename).c_str());
+}
+inline int _wrename(const wchar_t *oldname, const wchar_t *newname)
+{
+  return rename(kmx::wstrtostr(oldname).c_str(), kmx::wstrtostr(newname).c_str());
+}
+
+// On Windows ccs=UTF-8 decodes the file. Here the wide stdio functions decode using LC_CTYPE, and in the
+// default "C" locale UTF-8 is not decoded (macOS reads each byte as a character, glibc rejects non-ASCII).
+// So make sure LC_CTYPE is a UTF-8 locale. Only character handling is changed, number formatting is not.
+#include <clocale>
+#include <mutex>
+inline void kmxEnsureUtf8Locale()
+{
+  static std::once_flag once;
+  std::call_once(once, []() {
+    if (MB_CUR_MAX > 1)
+      return; // already a multibyte locale
+    static const char *names[] = {"C.UTF-8", "en_US.UTF-8", "UTF-8"};
+    for (const char *n : names)
+      if (setlocale(LC_CTYPE, n))
+        return;
+  });
+}
+
+// Unicode TCHAR version of fopen_s. The Microsoft mode flags "t" and ",ccs=UTF-8" have no meaning here,
+// text is converted by the wide stdio functions (fwscanf, fgetws ...) using the locale.
+// Like Windows with ccs=UTF-8, a UTF-8 byte order mark at the start of a file opened for reading is skipped.
+#define _T(x) L##x
+inline int _tfopen_s(FILE **file, const wchar_t *filename, const wchar_t *mode)
+{
+  std::string m = kmx::wstrtostr(mode);
+  bool skipBom = m.find("ccs=") != std::string::npos && m[0] == 'r';
+  if (m.find("ccs=") != std::string::npos)
+    kmxEnsureUtf8Locale();
+  m = m.substr(0, m.find(','));
+  m.erase(std::remove(m.begin(), m.end(), 't'), m.end());
+  *file = fopen(kmx::wstrtostr(filename).c_str(), m.c_str());
+  if (!*file)
+    return errno;
+  if (skipBom)
+  {
+    unsigned char bom[3];
+    if (fread(bom, 1, 3, *file) != 3 || bom[0] != 0xEF || bom[1] != 0xBB || bom[2] != 0xBF)
+      rewind(*file);
+  }
+  return 0;
+}
+#endif // _KMOTIONX
 
 #endif // KMOTIONX_CROSSOVER_H_

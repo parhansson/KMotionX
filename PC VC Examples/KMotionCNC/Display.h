@@ -39,7 +39,9 @@ public:
 	void Reset();
 	void SetTextColor(int color);
 	void SetText(CString OutText);
-	void SetFont(const char *szFaceName, int height, bool Bold, bool Italic);
+	void SetFormat(CString Format);
+	CString GetFormat();
+	void SetFont(const wchar_t *szFaceName, int height, bool Bold, bool Italic);
 	void SetBackColor(int Color);
 	virtual ~CDisplay();
 	static CList <LPCDisplay, LPCDisplay> Displays;
@@ -62,6 +64,7 @@ protected:
 private:
 	int m_TextColor;
 	CString m_OutText;
+	CString m_Format;
 	void RefreshPlot();
 	void DrawText();
 	void DrawBackGrnd();

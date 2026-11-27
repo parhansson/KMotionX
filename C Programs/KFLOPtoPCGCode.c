@@ -5,7 +5,7 @@ int DoPCInt(int cmd, int i);
 #define GATH_OFF 0  // define the offset into the Gather buffer where strings are passed
 
 
-main()
+int main()
 {
 	MDI("G92.1");
 }

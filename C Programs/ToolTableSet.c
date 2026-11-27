@@ -5,7 +5,7 @@
 
 #define Zaxis 2
 
-main()
+int main()
 {
 	int FixtureIndex,Units, TWORD, HWORD, DWORD;
 	double NewToolLength,OriginOffsetZ,AxisOffsetZ;

@@ -53,6 +53,8 @@ class CMutex
 public:
 	CMutex();
 	CMutex(int initiallyOwn,const char *name ,lpsecurityAttr lpsaAttribute = NULL);
+	// Same as above, allows the unchanged Windows original call: CMutex(FALSE, L"name", NULL)
+	CMutex(int initiallyOwn,const wchar_t *name ,lpsecurityAttr lpsaAttribute = NULL);
 
 	//Specifies the amount of time to wait for the synchronization object to be available (signaled).
 	//If INFINITE, Lock will wait until the object is signaled before returning.

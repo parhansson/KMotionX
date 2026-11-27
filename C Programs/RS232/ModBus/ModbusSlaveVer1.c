@@ -397,7 +397,7 @@ double LastInTime;
 char packetBuild[256]; // max length of modbus frame
 int packetSize=0;
 
-main()
+int main()
 {
 	char c;
 	

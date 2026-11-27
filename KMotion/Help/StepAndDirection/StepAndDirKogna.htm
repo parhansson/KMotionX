@@ -93,16 +93,14 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
   15 on JP7 and IO bits 36 through 43 on JP5. Additionally the first 4 Step/Dir 
   outputs can be multiplexed to connectors JP4 and JP6 if desired. This may 
   be required if JP7 is used for some other purpose such as interfacing to the 
-  Kanalog I/O Expander. A global <a href="#Global_Register">multiplexing bit</a> is used to switch the 
+  Kanalog IO Expander. A global <a href="#Global_Register">multiplexing bit</a> is used to switch the 
   outputs to the alternate connectors. </p>
 
-<p>Note that the first 8 of 10 I/O pins of Aux #0 and Aux #1 have internal 150 
+<p>Note that the first 8 of 10 IO pins of Aux #0 and Aux #1 have internal 150 
 Ohm pull down resistors. Therefore Pins JP4-13, JP4-14, JP6-13 and JP6-14 
 may not be used in Open Collector mode. </p>
-<p>&nbsp;</p>
 <p> Axis output channel settings 0-255 are allowed for Kogna. Although only 16 Step and Direction generators are available for Kogna. By adding specific constants to the channel number the operation mode and output mode of each Step/Dir   Generator can be changed independently.  Not all Output Drive modes are valid for all Generators.</p>
-<p> <br>
-  Adding 8 to the channel number uses the same generator to be used except   the output pins are actively driven (high and low) as 3.3V LVTTL signals   instead of only driven low as open collector outputs. <br>
+<p> Adding 8 to the channel number uses the same generator to be used except   the output pins are actively driven (high and low) as 3.3V LVTTL signals   instead of only driven low as open collector outputs. <br>
   <br>
   Adding 16 to the channel number switches the generator from Step/Dir to   Quadrature output mode. <br>
   <br>
@@ -125,7 +123,7 @@ may not be used as general purpose IO.</p>
 
 
   <p>Generators 0-3 have 3 options:</p>
-  <table class="table" style="width:60%;">
+  <table cellpadding="2" cellspacing="2" class="table" style="width:60%;">
 		<tr>
 		  <th style="width:20%;"></th>
 		  <th colspan="2" style="width:30%; background:#58f;">Enable Diff = 1</th>
@@ -185,7 +183,7 @@ may not be used as general purpose IO.</p>
 		<tr>
 			<td>Step 2</td>
 			<td>254</td>
-			<td>JP10 - 9 &amp; 10</td>
+			<td><nobr>JP10 - 9 &amp; 10</nobr></td>
 			<td>12</td>
 			<td>JP7 - 19</td>
 			<td>32</td>
@@ -194,7 +192,7 @@ may not be used as general purpose IO.</p>
 		<tr>
 			<td>Direction 2</td>
 			<td>255</td>
-			<td>JP10 - 11 &amp; 12</td>
+			<td><nobr>JP10 - 11 &amp; 12</nobr></td>
 			<td>13</td>
 			<td>JP7 - 25</td>
 			<td>33</td>
@@ -203,7 +201,7 @@ may not be used as general purpose IO.</p>
 		<tr>
 			<td>Step 3</td>
 			<td>256</td>
-			<td>JP10 - 13 &amp; 14</td>
+			<td><nobr>JP10 - 13 &amp; 14</nobr></td>
 			<td>14</td>
 			<td>JP7 - 21</td>
 			<td>34</td>
@@ -212,16 +210,15 @@ may not be used as general purpose IO.</p>
 		<tr>
 			<td>Direction 3</td>
 			<td>257</td>
-			<td>JP10 - 15 &amp; 16</td>
+			<td><nobr>JP10 - 15 &amp; 16</nobr></td>
 			<td>15</td>
 			<td>JP7 - 22</td>
 			<td>35</td>
 			<td>JP6 - 16</td>
 		</tr>
   </table>
-  <p>&nbsp;</p>
   <p>Generators 4-7 have 2 options:</p>
-<table class="table" style="width:44%;">
+<table class="table" style="width:60%;">
 	  <tr>
 	  		<th style="width:20%;">&nbsp;</th>
 		  	<th colspan="2" style="width:30%; background:#58f;">Enable Diff = 1</th>
@@ -237,116 +234,114 @@ may not be used as general purpose IO.</p>
 		<tr>
 			<td>Step 4</td>
 			<td>258</td>
-			<td>JP10 - 17 &amp; 18</td>
+			<td><nobr>JP10 - 17 &amp; 18</nobr></td>
 			<td>36</td>
 			<td>JP5 - 1</td>
 		</tr>
 		<tr>
 			<td>Direction 4</td>
 			<td>259</td>
-			<td>JP10 -19 &amp; 20</td>
+			<td><nobr>JP10 - 19 &amp; 20</nobr></td>
 			<td>37</td>
 			<td>JP5 - 2</td>
 		</tr>
 		<tr>
 			<td>Step 5</td>
 			<td>260</td>
-			<td>JP10 - 21 &amp; 22</td>
+			<td><nobr>JP10 - 21 &amp; 22</nobr></td>
 			<td>38</td>
 			<td>JP5 - 3</td>
 		</tr>
 		<tr>
 			<td>Direction 5</td>
 			<td>261</td>
-			<td>JP10 - 23 * 24</td>
+			<td><nobr>JP10 - 23 &amp; 24</nobr></td>
 			<td>39</td>
 			<td>JP5 - 4</td>
 		</tr>
 		<tr>
 			<td>Step 6</td>
 			<td>262</td>
-			<td>JP10 - 25 &amp; 26</td>
+			<td><nobr>JP14 - 1 &amp; 2</nobr></td>
 			<td>40</td>
 			<td>JP5 - 5</td>
 		</tr>
 		<tr>
 			<td>Direction 6</td>
 			<td>263</td>
-			<td>JP10 - 27 &amp; 28</td>
+			<td><nobr>JP14 - 3 &amp; 4</nobr></td>
 			<td>41</td>
 			<td>JP5 - 6</td>
 		</tr>
 		<tr>
 			<td>Step 7</td>
 			<td>264</td>
-			<td>JP10 - 29 &amp; 30</td>
+			<td><nobr>JP14 - 5 &amp; 6</nobr></td>
 			<td>42</td>
 			<td>JP5 - 7</td>
 		</tr>
 		<tr>
 			<td>Direction 7</td>
 			<td>265</td>
-			<td>JP10 - 10 &amp; 32</td>
+			<td><nobr>JP14 - 7 &amp; 8</nobr></td>
 			<td>43</td>
 			<td>JP5 - 8</td>
 		</tr>
   </table>
-	<p>&nbsp;</p>
-	<p>Generators 8-11 are Differntial only:</p>
-<table class="table" style="width:295px;">
+	<p>Generators 8-11 are Differential only:</p>
+<table cellpadding="2" cellspacing="2" class="table" style="width:60%;">
 	  <tr>
 			<th style="width:20%;">Signal</th>
-			<th style="width:15%;">IO Bit</th>
+			<th style="width:15%; background:#58f;">IO Bit</th>
 			<th style="width:15%;">Pins</th>
     </tr>
 		<tr>
 			<td>Step 8</td>
 			<td>266</td>
-			<td>JP14 - 1 &amp; 2</td>
+			<td>JP14 - 9 &amp; 10</td>
 		</tr>
 		<tr>
 			<td>Direction 8</td>
 			<td>267</td>
-			<td>JP14 - 3 &amp; 4</td>
+			<td>JP14 - 11 &amp; 12</td>
 		</tr>
 		<tr>
 			<td>Step 9</td>
 			<td>268</td>
-			<td>JP14 - 5 &amp; 6</td>
+			<td>JP14 - 13 &amp; 14</td>
 		</tr>
 		<tr>
 			<td>Direction 9</td>
 			<td>269</td>
-			<td>JP14 - 7 &amp; 8</td>
+			<td>JP14 - 15 &amp; 16</td>
 		</tr>
 		<tr>
 			<td>Step 10</td>
 			<td>270</td>
-			<td>JP14 - 9 &amp; 10</td>
+			<td>JP14 - 17 &amp; 18 </td>
 		</tr>
 		<tr>
 			<td>Direction 10</td>
 			<td>271</td>
-			<td>JP14 - 11 &amp; 12</td>
+			<td><nobr>JP14 - 19 &amp; 20 </nobr></td>
 		</tr>
 		<tr>
 			<td>Step 11</td>
 			<td>272</td>
-			<td>JP14 - 13 &amp; 14</td>
+			<td><nobr>JP14 - 21 &amp; 22</nobr></td>
 		</tr>
 		<tr>
 			<td>Direction 11</td>
 			<td>273</td>
-			<td>JP14 - 15 &amp; 16</td>
+			<td><nobr>JP14 - 23 &amp; 24 </nobr></td>
 		</tr>
   </table>
 
-	<p>&nbsp;</p>
 	<p>Generators 11-15 3.3V IO only:</p>
-<table class="table" style="width:295px;">
+<table class="table" style="width:60%;">
 	  <tr>
 			<th style="width:20%;">Signal</th>
-			<th style="width:15%;">IO Bit</th>
+			<th style="width:15%; background:#58f;">IO Bit</th>
 			<th style="width:15%;">Pin</th>
     </tr>
 		<tr>
@@ -357,7 +352,7 @@ may not be used as general purpose IO.</p>
 		<tr>
 			<td>Direction 12</td>
 			<td>201</td>
-			<td>JP11 -12</td>
+			<td>JP11 - 12</td>
 		</tr>
 		<tr>
 			<td>Step 13</td>
@@ -391,7 +386,6 @@ may not be used as general purpose IO.</p>
 		</tr>
   </table>
 	
-<p>&nbsp;</p>
 <p>The simplest method to configure a Step/Dir Axis and its various channels and modes is to use the KMotion.exe Configuration Screen shown below. To configure an axis as step and direction, on the Configuration Screen   select output mode as "Step Dir" and select which of the 16 available   Step and Direction generators should be used by setting the appropriate   Output Channel 0 setting. Also select the appropriate operational mode and output Drive mode. See below.</p>
 
 <p><img src="StepDirModes.png" width="565" height="668" alt="ConfigStepDir" /></p>
@@ -403,7 +397,7 @@ may not be used as general purpose IO.</p>
 
 <p><img src="OpenCollector.PNG" width="450" height="280" alt="OpenCollector" /></p>
 
-<p>However if the amplifier has standard logic inputs then LVTTL outputs should work better as the pin is actively driven high and low.. </p>
+<p>However if the amplifier has standard logic inputs then LVTTL outputs should work better as the pin is actively driven high and low.</p>
 <p><a name="Quadrature">Quadrature</a> outputs are required for some amplifiers. 
   Quadrature outputs output two A B phases instead of Step/Dir signals. An 
   advantage is that only one signal edge transition takes place for each &quot;step&quot; as 
@@ -554,7 +548,7 @@ may not be used as general purpose IO.</p>
 			<td>208</td>
 			<td>80</td>
 			<td>88</td>
-			<td>192</td>
+			<td>240</td>
 			<td>112</td>
 			<td>120</td>
 		</tr>
@@ -566,7 +560,7 @@ may not be used as general purpose IO.</p>
 			<td>209</td>
 			<td>81</td>
 			<td>89</td>
-			<td>193</td>
+			<td>241</td>
 			<td>113</td>
 			<td>121</td>
 		</tr>
@@ -578,7 +572,7 @@ may not be used as general purpose IO.</p>
 			<td>210</td>
 			<td>82</td>
 			<td>90</td>
-			<td>194</td>
+			<td>242</td>
 			<td>114</td>
 			<td>122</td>
 		</tr>
@@ -590,7 +584,7 @@ may not be used as general purpose IO.</p>
 			<td>211</td>
 			<td>83</td>
 			<td>91</td>
-			<td>195</td>
+			<td>243</td>
 			<td>115</td>
 			<td>123</td>
 		</tr>
@@ -646,7 +640,6 @@ may not be used as general purpose IO.</p>
 	
 <p>&nbsp;</p>
 <p>For a table mapping from Output Channel Number to Generator and mode see <a href="StepAndDirOutputChanToMode.htm">here</a>.</p>
-<p>&nbsp;</p>
 <p>Note when configuring the motion profile for a Step and Direction Axis the appropriate maximum Velocity, Acceleration, and Jerk should be set in units of steps/sec, steps/sec<sup>2</sup>, and steps/sec<sup>3</sup> respectively.  From Kogna's perspective a "step" is the movement for a step pulse to the Drive which may or may not actually be a micro-step depending on the Drive and its settings.</p>
 
 <h2><a name="Global_Register">Global Register</a> sets Pulse Width, Polarity, Multiplexor</h2>
@@ -681,13 +674,13 @@ may not be used as general purpose IO.</p>
 <p>Amplifier Connections - resistors set coil currents (1500 ohms = 3A) and idle standby current (270 ohms = 0.5A). DIP Switches set 
 to ON-OFF-OFF-ON for 128:1 micro-stepping.</p>
 
-<p><img src="RapidsynMotor.JPG" width="336" height="493"></p>
+<p><img src="RapidsynMotor.JPG" width="336" height="493" alt="Rapidsyn stepper motor" /></p>
 <p>Rapidsyn stepper motor. Note coil winding's centertaps are not used.</p>
 
-<p><img src="ConfigStepDir.PNG" width="567" height="669"></p>
+<p><img src="ConfigStepDir.PNG" width="567" height="669" alt="ConfigStepDir" /></p>
 <p>Axis channel 0 configures as &quot;Step Dir&quot; mode and using Step and Direction generator 0.</p>
 
-<p><img src="MoveResponse.PNG" width="893" height="575"></p>
+<p><img src="MoveResponse.PNG" width="893" height="575" alt="MoveResponse" /></p>
 <p>Max Velocity 1.6 x 10<sup>6</sup> steps/sec (1.6e6 / 128 = 12,500 sps = 
 3750 RPM). Note this (and most) steppers lose most all of their useful 
 torque above several thousand full steps per second. The high speed 
@@ -699,7 +692,7 @@ pulse rates.</p>
 <p>1 x 10<sup>6</sup> count Move performed and data captured over 3 seconds.</p>
 <p>Pushing Move downloads all parameters, enables the axis, performs the movement, and plots the result.</p>
 
-<p><img src="DiditalStepOutputs.PNG" width="675" height="532"></p>
+<p><img src="DiditalStepOutputs.PNG" width="675" height="532" alt="DigitalStepOutputs" /></p>
 <p>Note after the axis has been enabled, digital IO bits 8 and 9 have 
 automatically been configured as outputs for use by Step and Direction Generator 
 #0.</p>
@@ -711,6 +704,7 @@ full steps per second (1.6 MHz @ 128 microsteps/full step). </p>
 	<p>&nbsp;</p>
 
 </div>
+<script src="../search/searchbox.js" defer></script>
 </body>
 
 </html>

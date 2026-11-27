@@ -17,7 +17,7 @@ void Write3PH_DACs(CHAN *ch0, float v, double angle_in_cycles);
 // return fractional part of a huge number accurately
 float fractionf(double v);
 
-void main() 
+int main() 
 {
 	float k=0,A=200;   // set coil current amplitude DAC units
 	double p0;

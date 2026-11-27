@@ -6,7 +6,7 @@ int MsgBox(char *s, int Flags);
 int SetVars(int poff, int varoff, int n);
 int GetVars(int varoff, int n, int poff);
 
-main()
+int main()
 {
 	int Answer;
 	int tool = persist.UserData[9];  // value stored is actually a float 

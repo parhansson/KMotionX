@@ -252,6 +252,13 @@ void TriggerGather();                             // starts gathering defined it
 
 
 #define TRAJECTORY_EXPONENTIAL 5  // independent axis (exponentially approach Dest a=Ratio per tick, b=Dest)
+#define TRAJECTORY_CUBIC8 6       // Cubic Knot from coord system 0 - each axis has its own cubic
+                                  // position polynomial in time  (x = ((a*t+b)*t+c)*t+d)
+                                  // the 8 coefficient sets (letter order x,y,z,a,b,c,u,v) are
+                                  // packed as 32 FLOATS (download resolution - the KFLOP entry
+                                  // payload is too small for 32 doubles) beginning at the
+                                  // master 'a' coefficient; axis routing uses the assignment
+                                  // bytes x_axis..v_axis as usual
 
 #define LAST_MOTION_JOG 0		  // type of last independent motion was a jog
 #define LAST_MOTION_MOVE 1		  // type of last independent motion was a move
@@ -471,11 +478,22 @@ typedef struct
 
     TRIP_COEFF *c;               	// move profile polynomial coefficients list (up tp MAX_TRIP)
     IIR iir[N_IIR_FILTERS];         // several IIR filters
+
+	int CmdLead;					// UNUSED on KFLOP - accepted for source
+									// compatibility so serial servo programs shared
+									// with Kogna compile unchanged.  (Kogna: output
+									// taken this many samples ahead of the delayed
+									// reference, see Kogna's CmdDelay delay line)
+	double DelayedDest;				// official commanded reference.  On KFLOP there
+									// is no command delay line so this always equals
+									// Dest; maintained (serial servo axes only) so
+									// lag measurement programs shared with Kogna
+									// read the right thing
 }CHAN;
 
 // continuously sent by DMA to DACs
 extern short int DAC_Buffer[N_DACS];   //  Kanalog format 12 bits data
-#define DAC(ch, v) DAC_Buffer[ch]=((v-2048)&0xfff)  // set DAC channel to value (range -2048/+2047)
+#define DAC(ch, v) DAC_Buffer[ch]=(((v)-2048)&0xfff)  // set DAC channel to value (range -2048/+2047)
 
 extern int ADC_BufferIn[N_ADCS];     //  format   12 bits data 
 #define ADC(ch) (ADC_BufferIn[ch]-2048)   // return ADC reading of specified channel (range -2048/2047)extern int ADC_BufferIn[N_ADCS];     //  format   4-dummy bits 12 bits data 16 dummy 
@@ -490,10 +508,179 @@ extern int ADC_BufferIn[N_ADCS];     //  format   12 bits data
 // 10,11 Side B Coils Currents A and C
 // 12,13 = Supply Voltages side A and B
 // 14,15 = Temperature side A and B
-extern int ADC_BufferInSnap[2*N_ADCS_SNAP];   //  Snap Amp Current ADC format  16-bits data 
+extern int ADC_BufferInSnap[2*N_ADCS_SNAP];   //  Snap Amp Current ADC format  16-bits data
 
-#define FULL_RANGE_CURRENT 4.85f
-#define MeasuredAxisAmps(axis) ((ADC(axis+4)+2048)*(FULL_RANGE_CURRENT/4096.0f))  // returns measured current in an axis (Amperes)
+// ------------------- STS3215 Serial Servos (SERVO VARIANT) -------------------
+// Requires the servo variant FPGA configuration.  The servos daisy chain on a
+// single 1Mbaud wire on IO0, or IO45 when ServoBusEXIO = 1 (IO45 is the former
+// RS232 TX pin - RS232 is absent in this firmware variant).  The FPGA is a
+// dumb byte stream UART with a packet buffer RAM; the DSP does all protocol
+// work (see DoSerialServos in fast.c).  Telemetry below is maintained by the
+// DSP protocol engine for servo IDs claimed by an axis (see
+// SERIAL_SERVO_INPUT_MODE / SERIAL_SERVO_MODE).  Position commands broadcast
+// via SYNC_WRITE roughly every millisecond; telemetry is read from one servo
+// per bus cycle round robin.  Use the SERVO_CONVERT_* macros in PC-DSP.h for
+// engineering units.
+
+extern int ServoPosition[N_SERIAL_SERVOS];  // accumulated position, servo counts, multi turn
+extern int ServoCurrent[N_SERIAL_SERVOS];   // signed, 6.5mA/count
+extern int ServoVolts[N_SERIAL_SERVOS];     // 0.1V/count
+extern int ServoLoad[N_SERIAL_SERVOS];      // signed, 0-1000 = 0-100%
+extern int ServoTemp[N_SERIAL_SERVOS];      // degrees C
+extern int ServoStatus[N_SERIAL_SERVOS];    // moving<<8 | servo status/error byte
+extern int ServoResult[N_SERIAL_SERVOS];    // last transaction result code, 0 = OK
+extern int ServoErrors[N_SERIAL_SERVOS];    // cumulative communication errors (wraps)
+extern int ServoStale[N_SERIAL_SERVOS];     // servo interrupts since fresh telemetry
+extern int ServoPosValid[N_SERIAL_SERVOS];  // servo has reported its position at least once
+extern int ServoActiveMask;                 // bitmap of servo IDs claimed by an axis
+
+extern int ServoSpeed;    // speed limit sent to all servos, counts/sec (default 3400)
+                          // measured to not affect tracking down to ~1200
+extern int ServoAccel;    // acceleration limit sent to all servos.  0 = no limit,
+                          // measured identical to max 254.  Do NOT use a small
+                          // nonzero value - 10 doubles the servo tracking lag
+extern int ServoBusEXIO;  // 0 = bus on IO0 (default), 1 = bus on IO45
+                          // (name kept from Kogna for source compatibility;
+                          //  KFLOP has no EX_IO - the alternate pin is IO45)
+
+extern int ServoCycleTicks; // extra servo interrupts inserted between bus
+                            // cycles, 0 = run back to back (~1ms cycles)
+
+extern int ServoProtocol;   // 0 = Feetech STS3215 protocol (default)
+                            // 1 = Dynamixel Protocol 2.0 (XL430 etc.)
+                            // One servo family on the bus at a time.  Change
+                            // only with no axes configured for serial servo.
+extern int ServoBaud576;    // On KFLOP this flag exists only for source
+                            // compatibility - the FPGA is 1 Mbaud ONLY and
+                            // ignores the baud bit.  Configure factory fresh
+                            // Dynamixels (which ship at 57600) to 1 Mbaud on
+                            // a Kogna or USB adapter first.
+
+extern int CmdDelay;        // UNUSED on KFLOP - accepted for source
+                            // compatibility with Kogna's command delay line
+                            // (trajectory preview for lagging actuators).
+                            // KFLOP has no delay line: leave 0.  Programs that
+                            // depend on nonzero CmdDelay behavior (lead
+                            // scheduling) require a Kogna.
+
+// One configuration read or write to any servo on the bus.  Fill in the
+// fields then set ServoAuxGo = 1; the protocol engine performs it between
+// cyclic transactions and clears ServoAuxGo when finished (typically < 2ms).
+// For reads the value arrives in ServoAuxData.  ServoAuxResult: 0 = OK,
+// else the transaction result code.  Works whether or not any axis claims
+// the bus (with no axes configured the engine runs just to service it).
+
+// (all volatile: the servo interrupt reads/writes them, and results must not
+//  be cached by the compiler across the ServoAuxGo polling loop)
+
+extern volatile int ServoAuxGo;
+extern volatile int ServoAuxID;      // target servo ID 0-253 (or 0xFE broadcast, writes only)
+extern volatile int ServoAuxReg;     // servo control table register address
+                                     // (16 bit for Dynamixel Protocol 2.0)
+extern volatile int ServoAuxData;    // data to write / data read back
+extern volatile int ServoAuxTwo;     // field size: 0 = 1 byte, 1 = 2 bytes,
+                                     // 2 = 4 bytes (4 byte Dynamixel only)
+extern volatile int ServoAuxRead;    // 1 = read, 0 = write
+extern volatile int ServoAuxResult;  // 0 = OK, else transaction result code
+extern volatile int ServoAuxErr;     // servo's error byte from the last
+                                     // validated aux ack (fault flags,
+                                     // 0 = no faults), -1 = no ack seen.
+                                     // NOTE: a servo can ack a write with
+                                     // result 0 yet flag faults here
+
+// Which FPGA configuration does this firmware embed/load?  The ID word
+// lives just past the compressed FPGA image (CompressFPGA emits it, same
+// address in both firmware variants thanks to the padded image blocks).
+// Test from User C, e.g.: if (FPGA_CONFIG_ID == FPGA_CONFIG_SERIAL) ...
+
+#define FPGA_CONFIG_CLASSIC 0x4B464C50   // 'KFLP' - classic (RS232, no serial servo)
+#define FPGA_CONFIG_SERIAL  0x4B464C53   // 'KFLS' - serial servo (no RS232)
+extern int FPGA_CONFIG_ID;
+
+// FPGA registers (16-bit - use FPGAW).  On KFLOP the buffer windows are
+// write-only (TX) / read-only (RX) and 0x200 is write-only.
+
+#define SERVO_BUS_ADD      0x200   // bit0 = bus enable, bit1 = pin: 0 = IO0, 1 = IO45,
+                                   // bit2 = baud select (IGNORED - always 1 Mbaud)
+#define SERVO_TXGO_ADD     0x201   // W: length in bytes, starts transmission
+                                   // R: status - busy(15) ovfl(14) ferr(13) rx count(8:0)
+#define SERVO_FLUSH_ADD    0x202   // W: bit0 clears the receive buffer and error flags
+#define SERVO_TXBUF_ADD    0x240   // transmit buffer, 64 words = 128 bytes, low byte first
+#define SERVO_RXBUF_ADD    0x280   // receive buffer, 128 words = 256 bytes
+
+#define SERVO_ST_BUSY      0x8000
+#define SERVO_ST_OVFL      0x4000
+#define SERVO_ST_FERR      0x2000
+#define SERVO_ST_COUNT     0x01FF
+
+#define SERVO_BUS_IO45_BIT 45      // the alternate bus pin's I/O bit number
+#define SERVO_BUS_EXIO13_BIT SERVO_BUS_IO45_BIT  // Kogna's name for the alternate
+                                   // bus pin - aliased (like ServoBusEXIO) so
+                                   // serial servo programs compile unchanged
+
+// STS3215 control table registers (used with the aux write mechanism)
+#define STS_REG_ID         0x05
+#define STS_REG_RETDELAY   0x07
+#define STS_REG_MODE       0x21
+#define STS_REG_TORQUE     0x28
+#define STS_REG_LOCK       0x37
+
+// STS3215 internal position loop tuning.  These live in the servo's EPROM
+// region, so unlock with STS_REG_LOCK=0, write, then restore STS_REG_LOCK=1.
+// Raising STS_REG_POS_P is the main way to reduce the servo's own tracking lag.
+#define STS_REG_POS_P      0x15    // position loop proportional gain, default 32
+#define STS_REG_POS_D      0x16    // position loop derivative gain, default 32
+#define STS_REG_POS_I      0x17    // position loop integral gain, default 0
+#define STS_REG_MIN_FORCE  0x18    // 2 bytes, minimum output to start moving, default 16
+#define STS_REG_CW_DEAD    0x1A    // CW deadband, encoder steps, default 1
+#define STS_REG_CCW_DEAD   0x1B    // CCW deadband, encoder steps, default 1
+
+// Dynamixel Protocol 2.0 control table registers (XL430 etc.), used with the
+// aux mechanism when ServoProtocol = 1.  Addresses below 64 are EEPROM and
+// only writable with torque disabled (DXL_REG_TORQUE = 0); the servo rejects
+// such writes otherwise and reports it in the status error byte.  Field
+// sizes: set ServoAuxTwo to 0/1/2 for 1/2/4 byte registers as noted.
+
+#define DXL_REG_MODEL      0     // 2 bytes, XL430-W250 reads 1060
+#define DXL_REG_FIRMWARE   6     // 1 byte
+#define DXL_REG_ID         7     // 1 byte, factory default 1
+#define DXL_REG_BAUD       8     // 1 byte: 0=9600 1=57600(factory) 2=115200 3=1M
+#define DXL_REG_RETDELAY   9     // 1 byte, 2us units, factory 250 - set 0
+#define DXL_REG_DRIVEMODE  10    // 1 byte, bit0 reverse, bit2 time based profile
+#define DXL_REG_OPMODE     11    // 1 byte: 1=velocity 3=position(1 turn)
+                                 //         4=extended position (+/-256 turns)
+#define DXL_REG_HOMING     20    // 4 bytes signed, added to Present Position
+#define DXL_REG_TEMP_LIM   31    // 1 byte, deg C
+#define DXL_REG_VOLT_MAX   32    // 2 bytes, 0.1V
+#define DXL_REG_VOLT_MIN   34    // 2 bytes, 0.1V
+#define DXL_REG_PWM_LIM    36    // 2 bytes, 0.113% units
+#define DXL_REG_VEL_LIM    44    // 4 bytes, 0.229 rpm units
+#define DXL_REG_POS_MAX    48    // 4 bytes (position mode only)
+#define DXL_REG_POS_MIN    52    // 4 bytes (position mode only)
+#define DXL_REG_SHUTDOWN   63    // 1 byte, fault mask
+#define DXL_REG_TORQUE     64    // 1 byte, 1 = torque on (REQUIRED for motion;
+                                 // goals are rejected with torque off)
+#define DXL_REG_LED        65    // 1 byte
+#define DXL_REG_STATUS_RET 68    // 1 byte, 2 = respond to all (default)
+#define DXL_REG_HW_ERROR   70    // 1 byte, latched hardware error status
+#define DXL_REG_VEL_I      76    // 2 bytes
+#define DXL_REG_VEL_P      78    // 2 bytes
+#define DXL_REG_POS_D      80    // 2 bytes
+#define DXL_REG_POS_I      82    // 2 bytes
+#define DXL_REG_POS_P      84    // 2 bytes, default 640
+#define DXL_REG_FF2        88    // 2 bytes, acceleration feedforward
+#define DXL_REG_FF1        90    // 2 bytes, velocity feedforward
+#define DXL_REG_PROF_ACC   108   // 4 bytes - 0 = no accel profile (low lag)
+#define DXL_REG_PROF_VEL   112   // 4 bytes - 0 = no velocity profile (low lag)
+#define DXL_REG_GOAL_POS   116   // 4 bytes signed
+#define DXL_REG_MOVING     122   // 1 byte
+#define DXL_REG_PRES_LOAD  126   // 2 bytes signed, 0.1% units
+#define DXL_REG_PRES_VEL   128   // 4 bytes signed, 0.229 rpm units
+#define DXL_REG_PRES_POS   132   // 4 bytes signed
+#define DXL_REG_PRES_VOLT  144   // 2 bytes, 0.1V
+#define DXL_REG_PRES_TEMP  146   // 1 byte, deg C
+
+// ---------------- end STS3215 Serial Servos (SERVO VARIANT) -----------------
 
 // SnapAmp PWM control
 
@@ -874,7 +1061,7 @@ void AddKonnect_Aux0(int BoardAddress, int *OutputAddress, int *InputAddress); /
 // normally the routine exits to the caller quickly
 // unless the queue is full, then it must wait
 
-#define MAX_STRING 128                    
+#define MAX_STRING 256                    
 #define MAX_NSTRINGS 256  // must be binary    
 extern volatile int NextAvailIn;  // when these are equal the queue is empty
 extern volatile int NextAvailOut;
@@ -887,6 +1074,9 @@ int sprintf(char *s, const char *format, ...); 	// Print formatted string to str
 typedef int FILE;
 FILE *fopen(const char*, const char*);		   // Open a text file for writing on the PC 2nd param = "rt" or "wt" or "at"(append write text mode) 
 int fprintf(FILE *f, const char * format, ...);		   // Print formatted string to the PC's Disk File
+int fputs(const char *str, FILE *f);           // Write one line (ending in \n) to the PC's Disk File with no formatting - the fast path, see FormatInt/FormatFixed
+int FormatInt(char *s, int v);                 // fast int -> decimal text into s (null terminated), returns length.  ~1us vs ~20us for a printf %d
+int FormatFixed(char *s, double v, int decimals); // fast double -> fixed point text with 0-9 decimals, rounded, into s, returns length.  ~1us vs ~20us for a printf %f
 int fclose(FILE *f);                           // Close the disk file on the PC
 
 int Print(char *s);                      		// Print a string to the console window
@@ -961,6 +1151,7 @@ void PauseThread(int thread);  // stops a thread from executing
 int ResumeThread(int thread);  // resumes a tread after a pause 
 void ThreadDone(void);         // call to terminate current thread
 extern int volatile CurrentThread;  // current thread that is/was executing  0 = Pri 1-7 = User Threads
+extern int volatile ThreadActive;  // one bit for each thread  
 
 
 
@@ -1077,8 +1268,8 @@ int TestAndSet(int *mutex, int value);
 #define RS232_BAUD_9600 	((16666666/9600/16)-1)	// 8-bit divisor value to set   9600 baud
 #define RS232_BAUD_4800 	((16666666/4800/16)-1)	// 8-bit divisor value to set   4800 baud
 
-void InitRS232(int baud);
-void EnableRS232Cmds(int baud);
+void InitRS232(int baud);  // Configure/Initialize/flush RS232 port and set baud rate
+void EnableRS232Cmds(int baud);  // Initialize RS232 Port, get/put character buffering, and enable receiving commands from it
 
 extern char * volatile pRS232RecIn;  // Buffered Receive Pointer Head
 extern char *pRS232RecOut;           // Buffered Receive Pointer Tail

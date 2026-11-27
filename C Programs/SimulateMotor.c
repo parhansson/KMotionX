@@ -21,7 +21,7 @@ void MyCallBack(void)
 }
 
 
-main()
+int main()
 {
 	int i;
 	P=ch0->Position;

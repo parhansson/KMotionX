@@ -29,8 +29,8 @@ void MyError()
 	exit(1);
 }
 
-int console(const char* msg){
-	printf("Console> %s\n",msg );
+int console(const wchar_t* msg){
+	printf("Console> %s\n",kmx::wstrtostr(msg).c_str() );
 	return 0;
 }
 void testConvertToOut(int thread,const char *file);
@@ -146,11 +146,11 @@ void testMovement(){
 }
 
 void testConvertToOut(int thread,const char *file){
-	char outfile[256];
+	wchar_t outfile[256];
 	char path[256];
 	memset (path,'\0',256);
-	KM->ConvertToOut(thread, file,outfile,256);
-	printf("In: %s\nThread: %d\nOut: %s\n\n",file,thread,outfile);
+	KM->ConvertToOut(thread, kmx::strtowstr(file).c_str(),outfile,256);
+	printf("In: %s\nThread: %d\nOut: %s\n\n",file,thread,kmx::wstrtostr(outfile).c_str());
 	//KM->ExtractPath(file,path); //Change to public before testing function
 	//printf("Path: %s\n\n",path);
 
@@ -166,11 +166,12 @@ void testCheckForReady(){
 void testCompile(){
 	char file[256];
 	snprintf(file, sizeof(file), "%s/c-programs/BlinkKFLOP.c", kmx::getMachineDataPath());
-	char err[1024];
-	KM->CompileAndLoadCoff(file, 1, err, sizeof(err));
+	wchar_t err[1024];
+	err[0] = 0;
+	KM->CompileAndLoadCoff(kmx::strtowstr(file).c_str(), 1, err, sizeof(err)/sizeof(err[0]));
 	if(err[0])
 	{
-    printf("%s\n", err);
+    printf("%s\n", kmx::wstrtostr(err).c_str());
 	} else {
 		printf("compiled %s\n", file); 
 	}
@@ -181,7 +182,7 @@ void testExtractCoffVersion(){
 	char file[256];
 	kmx::getDspFile(file, kmx::BOARD_TYPE_KFLOP);
 	char Version[81];
-	if(KM->ExtractCoffVersionString(file, Version)){
+	if(KM->ExtractCoffVersionString(kmx::strtowstr(file).c_str(), Version)){
 		printf("ExtractCoffVersionString failed\n");
 	} else {
 		printf("CoffVersionString: %s\n",Version);

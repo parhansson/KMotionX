@@ -1,6 +1,6 @@
 #include "KMotionDef.h"
 
-main()
+int main()
 {
 	printf("P = %f Q = %f R = %f\n",
 		*(float *)&persist.UserData[0],

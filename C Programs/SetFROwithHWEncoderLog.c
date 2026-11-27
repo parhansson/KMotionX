@@ -1,4 +1,4 @@
-#include "KMotionDef.h"
+﻿#include "KMotionDef.h"
 
 // Detects changes in a hardware encoder and raises/lowers the FRO
 // accordingly.  Clamp the encoder range so that if the operator
@@ -51,9 +51,8 @@ double LastEncoder=0;
 double LastUpdateEncoder=1e30;  // force immediate update
 double Encoder;
 
-main()
+int main()
 {
-	double Pot,T,FRO;
 	CHAN *ch=&chan[ENCODER_AXIS];
 	double a = (log(FRO_MAX) - log(FRO_MIN))/ALLOWED_ENC_RANGE;
 	double b = log(FRO_MIN);
@@ -67,7 +66,7 @@ main()
 	
 	for (;;)
 	{
-		T = WaitNextTimeSlice();
+		WaitNextTimeSlice();
 
 		ChangeFROAndRRO();
 	}
@@ -78,8 +77,8 @@ void ChangeFROAndRRO()
     static double T;
     static int FirstTime=TRUE;
     static double LastFRO=1, LastTime=0, LastRRO=1, LastEncoder=0, 
-                    LastUpdateEncoder=1e30, Encoder=0, FRO=1, incrementFactorFRO=1, increment=0,
-                    RRO=1, incrementFactorRRO=1, tktk=55;
+                    Encoder=0, FRO=1, incrementFactorFRO=1, increment=0,
+                    RRO=1, incrementFactorRRO=1;
     
     // Initializes the position of the MPG encoder in the first execution.
 	if (FirstTime)

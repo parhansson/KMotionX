@@ -1,12 +1,12 @@
-#include "KMotionDef.h"
+﻿#include "KMotionDef.h"
 
 #define TMP 10 // which spare persist to use to transfer data
 #include "KflopToKMotionCNCFunctions.c"
 
 
-main()
+int main()
 {
-	int Answer;
+	int Answer, I;
 	double D;
 
 //	DoPC(PC_COMM_ESTOP);
@@ -52,9 +52,17 @@ main()
 	printf("%f %f %f\n",GetUserDataDouble(13),GetUserDataDouble(14),GetUserDataDouble(15));
 	
 	// Request Tool #3 Length placed into persist double #16
-	GetToolLength(3-1,&D);
-	printf("Tool Length is %f\n",D);
-
-	// Change Tool #3 Length to 12.34 passed up via persist double #16
-	SetToolLength(3-1,D);
+	
+	if (GetToolTableIndexFromID(4,&I))  // find table index of Slot 3
+	{
+		printf("Tool not found\n");
+	}
+	else
+	{
+		GetToolLength(I,&D);
+		printf("Tool Index %d Length is %f\n",I, D);
+	
+		// Change Tool #3 Length to 12.34 
+		SetToolLength(I,12.34);
+	}
 }

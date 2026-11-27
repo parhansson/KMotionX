@@ -1,6 +1,6 @@
 #include "KMotionDef.h"
 
-main()
+int main()
 {
 	SetBitDirection(26,1);  		// Set bit 26 (PWM 0 as an output)
 	SetBitDirection(29,1);  		// Set bit 29 (DIR 0 as an output)

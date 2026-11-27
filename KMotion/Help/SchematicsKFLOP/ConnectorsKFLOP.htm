@@ -1,46 +1,26 @@
 <!DOCTYPE html>
-
 <html>
-
 <head>
 
-
-
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
-
 <meta http-equiv="Pragma" content="no-cache"/>
-
 <meta http-equiv="Expires" content="0"/>
-
-
 
 <meta name="keywords" content="ethernet 16-axis controller, cnc control, motion control, cnc boards, 4-axis, 8-axis, stepper, brushless, DC motor, servo, encoder, adc, dac, motion controller, automated motion, manufacturing, Mach3">
 
 <meta name="description" content="Manufacturer of premium motion control products for CNC Manufacturing, Robotics and Automation">
-
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-
 <meta http-equiv="Content-Language" content="en-us">
-
-
 
 <title>KFLOP Connectors</title>
 
 
-
 <link rel="stylesheet" type="text/css" href="../css/style.css">
-
 <link rel="stylesheet" href="../css/prism.css" data-noprefix />
-
 <script src="../js/prism.js"></script>
-
 </head>
 
-
-
 <body>
-
-
 
 <div id="logo"><a href="../index.htm"></a></div>
 
@@ -77,9 +57,6 @@
 	       </div>
 </div>	
 
-	
-
-
 <div id="google_translate_element" style="background: transparent;" align="right"><script type="text/javascript">
 if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 		function googleTranslateElementInit() {
@@ -91,22 +68,25 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 </div>		
 <div id="main">
 
-
-
 <h1>KFLOP - Connector Pinouts</h1>
 
+<p><img src="KFLOPConnectors.jpg" width="800" height="500" alt="KFLOP Connectors" /></p>
+<p><a href="#JR1">JR1 - +5V Power (regulated +/- 5%)</a></p>
+<p><a href="#JP2">JP2 - JTAG</a></p>
+<p><a href="#JP7">JP7 - Digital IO</a></p>
+<p><a href="#JP4">JP4 - Aux Connector #0</a></p>
+<p><a href="#JP6">JP6 - Aux Connector #1</a></p>
+<p><a href="#JP5">JP5 - GPIO  / LV Differential Connector</a></p>
+<p>&nbsp;</p>
 
-
-<p><img src="KFLOPConnectors.jpg" width="600" height="415" alt="KFLOP Connectors" /></p>
 <div id="JR1">
   <h2>JR1 - +5V Power (regulated +/- 5%)</h2>
 </div>
 
 
+<p>Typical current = 0.35Amps with no user IO connected. 
 
-<p>Typical current = 0.35Amps with no user I/O connected. 
-
-More current may be required dependent on the amount of Digital I/O and option 
+More current may be required dependent on the amount of Digital IO and option 
 
 boards. +5V @ 2.5A should be more than sufficient under all conditions. The +12V 
 
@@ -166,7 +146,7 @@ on this connector if needed for external use.</p>
 
 
 
-<p>18 LVTTL bi-directional digital I/O, and +5, +12V, 3.3V power supply outputs. 3.3V is generated internally from the applied +5V. +12V is available if +12V is applied by the User to JR1. +12V is not used by KFLOP but routed through KFLOP to various connectors for the convenience of the User. Many Digital I/O bits are pre-defined as encoder, home, or limit inputs (see table below) but if not required for the particular application may be used as general purpose I/O. Digital Outputs may sink/source 10 ma. Digital I/O is LVTTL (3.3V) but are 5V tolerant except for IO44_3V and IO45_3V. None of the IO including the 5V tolerant IO should be driven hard (&gt;10ma) above 3.8V.</p>
+<p>18 LVTTL bi-directional digital IO, and +5, +12V, 3.3V power supply outputs. 3.3V is generated internally from the applied +5V. +12V is available if +12V is applied by the User to JR1. +12V is not used by KFLOP but routed through KFLOP to various connectors for the convenience of the User. Many Digital IO bits are pre-defined as encoder, home, or limit inputs (see table below) but if not required for the particular application may be used as general purpose IO. Digital Outputs may sink/source 10 ma. Digital IO is LVTTL (3.3V) but are 5V tolerant except for IO44_3V and IO45_3V. None of the IO including the 5V tolerant IO should be driven hard (&gt;10ma) above 3.8V.</p>
 
 
 
@@ -186,11 +166,11 @@ pins will cause permanent damage to the board!</p>
 
   <tr>
 
-    <th class="col20">Pin</th>
+    <th class="col10">Pin</th>
 
-    <th class="col20">Name</th>
+    <th class="col10">Name</th>
 
-    <th class="col60">Description</th>
+    <th class="col80">Description</th>
 
   </tr>
 
@@ -258,7 +238,7 @@ pins will cause permanent damage to the board!</p>
 
     <td>Gen Purpose 
 
-    LVTTL I/O (3.3V Only)</td>
+    LVTTL IO (3.3V Only)</td>
 
   </tr>
 
@@ -274,7 +254,7 @@ pins will cause permanent damage to the board!</p>
 
     <td>Gen Purpose 
 
-    LVTTL I/O (3.3V Only)</td>
+    LVTTL IO (3.3V Only)</td>
 
   </tr>
 
@@ -290,7 +270,7 @@ pins will cause permanent damage to the board!</p>
 
     <td>Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or Encoder 0 Input Phase A</td>
+    LVTTL IO (5V Tolerant) or Encoder 0 Input Phase A</td>
 
   </tr>
 
@@ -306,7 +286,7 @@ pins will cause permanent damage to the board!</p>
 
     <td>Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or Encoder 0 Input Phase B</td>
+    LVTTL IO (5V Tolerant) or Encoder 0 Input Phase B</td>
 
   </tr>
 
@@ -322,7 +302,7 @@ pins will cause permanent damage to the board!</p>
 
     <td>Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or Encoder 1 Input Phase A</td>
+    LVTTL IO (5V Tolerant) or Encoder 1 Input Phase A</td>
 
   </tr>
 
@@ -338,7 +318,7 @@ pins will cause permanent damage to the board!</p>
 
     <td>Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or Encoder 1 Input Phase B</td>
+    LVTTL IO (5V Tolerant) or Encoder 1 Input Phase B</td>
 
   </tr>
 
@@ -354,7 +334,7 @@ pins will cause permanent damage to the board!</p>
 
     <td>Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or Encoder 2 Input Phase A</td>
+    LVTTL IO (5V Tolerant) or Encoder 2 Input Phase A</td>
 
   </tr>
 
@@ -370,7 +350,7 @@ pins will cause permanent damage to the board!</p>
 
     <td>Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or Encoder 2 Input Phase B</td>
+    LVTTL IO (5V Tolerant) or Encoder 2 Input Phase B</td>
 
   </tr>
 
@@ -386,7 +366,7 @@ pins will cause permanent damage to the board!</p>
 
     <td>Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or Encoder 3 Input Phase A</td>
+    LVTTL IO (5V Tolerant) or Encoder 3 Input Phase A</td>
 
   </tr>
 
@@ -402,7 +382,7 @@ pins will cause permanent damage to the board!</p>
 
     <td>Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or Encoder 3 Input Phase B</td>
+    LVTTL IO (5V Tolerant) or Encoder 3 Input Phase B</td>
 
   </tr>
 
@@ -418,7 +398,7 @@ pins will cause permanent damage to the board!</p>
 
     <td>Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or Axis 0 Home (or Step 0 
+    LVTTL IO (5V Tolerant) or Axis 0 Home (or Step 0 
 
 	output)</td>
 
@@ -436,7 +416,7 @@ pins will cause permanent damage to the board!</p>
 
     <td>Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or Axis 1 Home (or Dir 
+    LVTTL IO (5V Tolerant) or Axis 1 Home (or Dir 
 
 	0 output)</td>
 
@@ -454,7 +434,7 @@ pins will cause permanent damage to the board!</p>
 
     <td>Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or Axis 2 Home (or Step 1 
+    LVTTL IO (5V Tolerant) or Axis 2 Home (or Step 1 
 
 	output)</td>
 
@@ -472,7 +452,7 @@ pins will cause permanent damage to the board!</p>
 
     <td>Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or Axis 3 Home (or Dir 
+    LVTTL IO (5V Tolerant) or Axis 3 Home (or Dir 
 
 	1 output)</td>
 
@@ -490,7 +470,7 @@ pins will cause permanent damage to the board!</p>
 
     <td>Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or Axis 0 + Limit (or Step 2 output)</td>
+    LVTTL IO (5V Tolerant) or Axis 0 + Limit (or Step 2 output)</td>
 
   </tr>
 
@@ -506,7 +486,7 @@ pins will cause permanent damage to the board!</p>
 
     <td>Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or Axis 0 - Limit (or Dir 2 output)</td>
+    LVTTL IO (5V Tolerant) or Axis 0 - Limit (or Dir 2 output)</td>
 
   </tr>
 
@@ -522,7 +502,7 @@ pins will cause permanent damage to the board!</p>
 
     <td>Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or Axis 1 + Limit (or Step 3 output)</td>
+    LVTTL IO (5V Tolerant) or Axis 1 + Limit (or Step 3 output)</td>
 
   </tr>
 
@@ -538,7 +518,7 @@ pins will cause permanent damage to the board!</p>
 
     <td>Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or Axis 1 - Limit (or Dir 3 output)</td>
+    LVTTL IO (5V Tolerant) or Axis 1 - Limit (or Dir 3 output)</td>
 
   </tr>
 
@@ -606,18 +586,18 @@ pins will cause permanent damage to the board!</p>
 
 <p></p>
 
-<p>Note: Homes and Limits are recommendations only. Any input may be used.</p>
+<p><strong><em>Note:</em></strong> Homes and Limits are recommendations only. Any input may be used.</p>
 <div id="JP4">
   <h2>JP4 - Aux Connector #0</h2>
 </div>
 
 
 
-<p>Auxiliary connector which supplies power, reset, and 10 digital I/O (LVTTL 
+<p>Auxiliary connector which supplies power, reset, and 10 digital IO (LVTTL 
 
 3.3V only) which is normally connected to optional expansion daughter boards (ie. 
 
-SnapAmp 1000). If no expansion module is required, these digital I/O may be used for general purpose 
+SnapAmp 1000). If no expansion module is required, these digital IO may be used for general purpose 
 
 use. The first 8 IO (IO16-IO23) contain 150ohm termination resistors (pull downs).</p>
 
@@ -727,7 +707,7 @@ use. The first 8 IO (IO16-IO23) contain 150ohm termination resistors (pull downs
 
 	Gen Purpose 
 
-    LVTTL I/O (3.3V Only)</td>
+    LVTTL IO (3.3V Only)</td>
 
   </tr>
 
@@ -745,7 +725,7 @@ use. The first 8 IO (IO16-IO23) contain 150ohm termination resistors (pull downs
 
 	Gen Purpose 
 
-    LVTTL I/O (3.3V Only)</td>
+    LVTTL IO (3.3V Only)</td>
 
   </tr>
 
@@ -763,7 +743,7 @@ use. The first 8 IO (IO16-IO23) contain 150ohm termination resistors (pull downs
 
 	Gen Purpose 
 
-    LVTTL I/O (3.3V Only)</td>
+    LVTTL IO (3.3V Only)</td>
 
   </tr>
 
@@ -813,7 +793,7 @@ use. The first 8 IO (IO16-IO23) contain 150ohm termination resistors (pull downs
 
 	Gen Purpose 
 
-    LVTTL I/O (3.3V Only)</td>
+    LVTTL IO (3.3V Only)</td>
 
   </tr>
 
@@ -831,7 +811,7 @@ use. The first 8 IO (IO16-IO23) contain 150ohm termination resistors (pull downs
 
 	Gen Purpose 
 
-    LVTTL I/O (3.3V Only)</td>
+    LVTTL IO (3.3V Only)</td>
 
   </tr>
 
@@ -849,7 +829,7 @@ use. The first 8 IO (IO16-IO23) contain 150ohm termination resistors (pull downs
 
 	Gen Purpose 
 
-    LVTTL I/O (3.3V Only)</td>
+    LVTTL IO (3.3V Only)</td>
 
   </tr>
 
@@ -867,7 +847,7 @@ use. The first 8 IO (IO16-IO23) contain 150ohm termination resistors (pull downs
 
 	Gen Purpose 
 
-    LVTTL I/O (3.3V Only)</td>
+    LVTTL IO (3.3V Only)</td>
 
   </tr>
 
@@ -885,7 +865,7 @@ use. The first 8 IO (IO16-IO23) contain 150ohm termination resistors (pull downs
 
 	Gen Purpose 
 
-    LVTTL I/O (3.3V Only)</td>
+    LVTTL IO (3.3V Only)</td>
 
   </tr>
 
@@ -903,7 +883,7 @@ use. The first 8 IO (IO16-IO23) contain 150ohm termination resistors (pull downs
 
 	Gen Purpose 
 
-    LVTTL I/O (3.3V Only)</td>
+    LVTTL IO (3.3V Only)</td>
 
   </tr>
 
@@ -921,7 +901,7 @@ use. The first 8 IO (IO16-IO23) contain 150ohm termination resistors (pull downs
 
 	Gen Purpose 
 
-    LVTTL I/O (3.3V Only)</td>
+    LVTTL IO (3.3V Only)</td>
 
   </tr>
 
@@ -932,11 +912,11 @@ use. The first 8 IO (IO16-IO23) contain 150ohm termination resistors (pull downs
 
 
 
-<p>Auxiliary connector which supplies power, reset, and 10 digital I/O (LVTTL 
+<p>Auxiliary connector which supplies power, reset, and 10 digital IO (LVTTL 
 
 3.3V only) which is normally connected to optional expansion daughter boards (ie. 
 
-SnapAmp 1000). If no expansion module is required, these digital I/O may be used for general purpose 
+SnapAmp 1000). If no expansion module is required, these digital IO may be used for general purpose 
 
 use. The first 8 IO (IO26-IO33) contain 150ohm termination resistors (pull downs).</p>
 
@@ -1046,7 +1026,7 @@ use. The first 8 IO (IO26-IO33) contain 150ohm termination resistors (pull downs
 
 	Gen Purpose 
 
-    LVTTL I/O (3.3V Only) or PWM0 out</td>
+    LVTTL IO (3.3V Only) or PWM0 out</td>
 
   </tr>
 
@@ -1064,7 +1044,7 @@ use. The first 8 IO (IO26-IO33) contain 150ohm termination resistors (pull downs
 
 	Gen Purpose 
 
-    LVTTL I/O (3.3V Only) or PWM1 out</td>
+    LVTTL IO (3.3V Only) or PWM1 out</td>
 
   </tr>
 
@@ -1082,7 +1062,7 @@ use. The first 8 IO (IO26-IO33) contain 150ohm termination resistors (pull downs
 
 	Gen Purpose 
 
-    LVTTL I/O (3.3V Only) or PWM2 out</td>
+    LVTTL IO (3.3V Only) or PWM2 out</td>
 
   </tr>
 
@@ -1132,7 +1112,7 @@ use. The first 8 IO (IO26-IO33) contain 150ohm termination resistors (pull downs
 
 	Gen Purpose 
 
-    LVTTL I/O (3.3V Only) or PWM3 out</td>
+    LVTTL IO (3.3V Only) or PWM3 out</td>
 
   </tr>
 
@@ -1150,7 +1130,7 @@ use. The first 8 IO (IO26-IO33) contain 150ohm termination resistors (pull downs
 
 	Gen Purpose 
 
-    LVTTL I/O (3.3V Only) or PWM4 out</td>
+    LVTTL IO (3.3V Only) or PWM4 out</td>
 
   </tr>
 
@@ -1168,7 +1148,7 @@ use. The first 8 IO (IO26-IO33) contain 150ohm termination resistors (pull downs
 
 	Gen Purpose 
 
-    LVTTL I/O (3.3V Only) or PWM5 out</td>
+    LVTTL IO (3.3V Only) or PWM5 out</td>
 
   </tr>
 
@@ -1186,7 +1166,7 @@ use. The first 8 IO (IO26-IO33) contain 150ohm termination resistors (pull downs
 
 	Gen Purpose 
 
-    LVTTL I/O (3.3V Only) or PWM6 out</td>
+    LVTTL IO (3.3V Only) or PWM6 out</td>
 
   </tr>
 
@@ -1204,7 +1184,7 @@ use. The first 8 IO (IO26-IO33) contain 150ohm termination resistors (pull downs
 
 	Gen Purpose 
 
-    LVTTL I/O (3.3V Only) or PWM7 out</td>
+    LVTTL IO (3.3V Only) or PWM7 out</td>
 
   </tr>
 
@@ -1222,7 +1202,7 @@ use. The first 8 IO (IO26-IO33) contain 150ohm termination resistors (pull downs
 
 	Gen Purpose 
 
-    LVTTL I/O (3.3V Only)</td>
+    LVTTL IO (3.3V Only)</td>
 
   </tr>
 
@@ -1240,7 +1220,7 @@ use. The first 8 IO (IO26-IO33) contain 150ohm termination resistors (pull downs
 
 	Gen Purpose 
 
-    LVTTL I/O (3.3V Only)</td>
+    LVTTL IO (3.3V Only)</td>
 
   </tr>
 
@@ -1248,14 +1228,14 @@ use. The first 8 IO (IO26-IO33) contain 150ohm termination resistors (pull downs
 
 <p></p>
 <div id="JP5">
-  <p><em><strong>JP5 - GPIO  / LV Differential Connector</strong></em></p>
+  <h2>JP5 - GPIO  / LV Differential Connector</h2>
 </div>
 
 <p>Low Voltage Differential RJ45 Connector. This connector is intended for 
 
 high-speed low-voltage differential communication over a twisted pair 
 
-cable use. However it may also be used as 8 General Purpose digital I/O (LVTTL 
+cable use. However it may also be used as 8 General Purpose digital IO (LVTTL 
 
 5V Tolerant)  </p>
 
@@ -1293,7 +1273,7 @@ cable use. However it may also be used as 8 General Purpose digital I/O (LVTTL
 
 	Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or (or Step 4 output) or (Encoder 4 Input 
+    LVTTL IO (5V Tolerant) or (or Step 4 output) or (Encoder 4 Input 
 
 	Phase A)</td>
 
@@ -1313,7 +1293,7 @@ cable use. However it may also be used as 8 General Purpose digital I/O (LVTTL
 
 	Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or (or Dir 4 output) or 
+    LVTTL IO (5V Tolerant) or (or Dir 4 output) or 
 
 	(Encoder 4 Input Phase B)</td>
 
@@ -1333,7 +1313,7 @@ cable use. However it may also be used as 8 General Purpose digital I/O (LVTTL
 
 	Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or (or Step 5 output) or (Encoder 5 Input 
+    LVTTL IO (5V Tolerant) or (or Step 5 output) or (Encoder 5 Input 
 
 	Phase A)</td>
 
@@ -1353,7 +1333,7 @@ cable use. However it may also be used as 8 General Purpose digital I/O (LVTTL
 
 	Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or (or Dir 5 output) or 
+    LVTTL IO (5V Tolerant) or (or Dir 5 output) or 
 
 	(Encoder 5 Input Phase B)</td>
 
@@ -1373,7 +1353,7 @@ cable use. However it may also be used as 8 General Purpose digital I/O (LVTTL
 
 	Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or (or Step 6 output) or (Encoder 6 Input 
+    LVTTL IO (5V Tolerant) or (or Step 6 output) or (Encoder 6 Input 
 
 	Phase A)</td>
 
@@ -1393,7 +1373,7 @@ cable use. However it may also be used as 8 General Purpose digital I/O (LVTTL
 
 	Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or (or Dir 6 output) or 
+    LVTTL IO (5V Tolerant) or (or Dir 6 output) or 
 
 	(Encoder 6 Input Phase B)</td>
 
@@ -1413,7 +1393,7 @@ cable use. However it may also be used as 8 General Purpose digital I/O (LVTTL
 
 	Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or (or Step 7 output) or (Encoder 7 Input 
+    LVTTL IO (5V Tolerant) or (or Step 7 output) or (Encoder 7 Input 
 
 	Phase A)</td>
 
@@ -1433,7 +1413,7 @@ cable use. However it may also be used as 8 General Purpose digital I/O (LVTTL
 
 	Gen Purpose 
 
-    LVTTL I/O (5V Tolerant) or (or Dir 7 output) or 
+    LVTTL IO (5V Tolerant) or (or Dir 7 output) or 
 
 	(Encoder 7 Input Phase B)</td>
 
@@ -1451,6 +1431,7 @@ cable use. However it may also be used as 8 General Purpose digital I/O (LVTTL
 
 
 
+<script src="../search/searchbox.js" defer></script>
 </body>
 
 

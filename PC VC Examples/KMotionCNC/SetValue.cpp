@@ -18,6 +18,7 @@ static char THIS_FILE[] = __FILE__;
 CSetValue::CSetValue(int DialogID, CWnd* pParent)
 	: CDialog(DialogID, pParent)
 {
+	StringMode = false;
 	//{{AFX_DATA_INIT(CSetValue)
 		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
@@ -54,37 +55,40 @@ void CSetValue::OnOK()
 {
 	UpdateData();
 
-	double v;
-
-	int result = sscanf(m_ValueString,"%lf",&v);
-
-	if (result==1)
+	if (!StringMode)
 	{
-		m_Value = v;
 
-		POSITION pos = Recent.GetHeadPosition();
-		POSITION prev=pos;
-		for (int i=0; i < Recent.GetCount(); i++)
+		double v;
+
+		int result = swscanf(m_ValueString, L"%lf", &v);
+
+		if (result == 1)
 		{
-			if (m_ValueString == Recent.GetNext(pos))
+			m_Value = v;
+
+			POSITION pos = Recent.GetHeadPosition();
+			POSITION prev = pos;
+			for (int i = 0; i < Recent.GetCount(); i++)
 			{
-				Recent.RemoveAt(prev);
+				if (m_ValueString == Recent.GetNext(pos))
+				{
+					Recent.RemoveAt(prev);
+				}
+				prev = pos;
 			}
-			prev = pos;
+
+			if (Recent.GetCount() > 10)
+				Recent.RemoveTail();
+
+			Recent.AddHead(m_ValueString);
+		}
+		else
+		{
+			MessageBox( /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Entry"), L"KMotion", MB_ICONSTOP | MB_OK | MB_TOPMOST | MB_SETFOREGROUND | MB_SYSTEMMODAL);
+			return;
 		}
 
-		if (Recent.GetCount() >10)
-			Recent.RemoveTail();
-
-		Recent.AddHead(m_ValueString);
 	}
-	else
-	{
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Entry"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
-		return;
-	}
-
-	
 	CDialog::OnOK();
 }
 
@@ -95,7 +99,29 @@ BOOL CSetValue::OnInitDialog()
 	m_ValueCombo.ResetContent();
 
 	if (!m_Label.IsEmpty())
-		SetDlgItemText(IDC_Label,m_Label);
+	{
+		int i, k = 0;   // check if recent values separated by ';' are to be set.
+		// extract field
+		while (k < m_Label.GetLength() - 1)  // at least one character left?
+		{
+			CString s;
+
+			i = m_Label.Find(';', k);
+			if (i < 0)  // no more separators ?
+				i = m_Label.GetLength();
+			else if (k == 0)  // first time and separator found
+				Recent.RemoveAll();
+
+			s = m_Label.Mid(k, i - k);
+
+			if (k == 0) // first one?
+				SetDlgItemText(IDC_Label, s);
+			else
+				Recent.AddTail(s);
+
+			k = i + 1;  // move past ';'
+		}
+	}
 
 	if (Recent.GetCount() > 0)
 		m_ValueString = Recent.GetHead();

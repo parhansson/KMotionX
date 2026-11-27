@@ -1,7 +1,7 @@
 #include "KMotionDef.h"
 #include "SimpleHomeIndexFunction.c" 
 
-main()
+int main()
 {
 	int result;
 

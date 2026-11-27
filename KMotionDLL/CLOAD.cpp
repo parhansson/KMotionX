@@ -52,7 +52,7 @@
     #define register // Empty definition to be compatible with older compilers
 #endif
 
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #define KMotionBd 1
 

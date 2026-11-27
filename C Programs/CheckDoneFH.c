@@ -5,7 +5,7 @@ int CheckDoneFH(int ch)
 	return CheckDone(ch) && CS0_StoppingState==0;
 }
 
-main()
+int main()
 {
 	DefineCoordSystem(0,1,2,-1);
 	MoveRel(0,300000);

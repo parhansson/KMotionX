@@ -6,7 +6,7 @@
 #define SPINDLE_AXIS 7
 
 
-main()
+int main()
 {
     int NewState,LastState=ReadBit(SPINDLE_PULSE_BIT);
     for (;;)

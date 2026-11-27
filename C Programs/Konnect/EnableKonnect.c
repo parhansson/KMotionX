@@ -5,7 +5,7 @@
 // 16 Outputs are mapped to Virtual IO 48-63 (VirtualBits)
 // 32 Inputs are mapped to Virtual IO 1024-1055 (VirtualBits[0])
 
-main()
+int main()
 {
 	InitAux();
 	AddKonnect(0,&VirtualBits,VirtualBitsEx);

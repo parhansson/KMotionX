@@ -29,16 +29,19 @@ KmxController::KmxController(CGCodeInterpreter *interpreter)
   
   
   connected = false;
+  offline = getenv("KMX_WEB_OFFLINE") && !strcmp(getenv("KMX_WEB_OFFLINE"), "1");
   interpreting = false;
   simulate = Interpreter->CoordMotion->m_Simulate;
 
-  //TODO init struct before first read. memset?
-  main_status.StopImmediateState = 0;
+  // Offline previews have no hardware status read to initialize these fields.
+  memset(&main_status, 0, sizeof(main_status));
+  tval_poll_callbacks = {};
+  tval_status = {};
 
 }
 
 KmxController::~KmxController() {
-  km->ReleaseToken();
+  if (!offline) km->ReleaseToken();
   if (Interpreter) delete Interpreter;
   if (CM) delete CM;
   if (km) delete km;
@@ -48,11 +51,19 @@ KmxController::~KmxController() {
 }
 
 void KmxController::Shutdown(){
+  if (offline) return;
   // release token since server might still be running
   km->ReleaseToken();
   km->Disconnect();
 }
 int KmxController::Initialize(){
+  if (offline) {
+    setSimulationMode(true);
+    if (Setup()) return -1;
+    UpdateMotionParams();
+    log_info("Offline file/UI preview: hardware access and motion API disabled");
+    return 0;
+  }
 
   int type = BOARD_TYPE_UNKNOWN;
 
@@ -266,7 +277,7 @@ void KmxController::interpret(int BoardType,char *InFile,int start,int end,bool 
     // Set before the interpreter thread starts. A short program can complete (and clear
     // interpreting in OnCompleteCallback) before Interpret() returns
     interpreting = true;
-    if (Interpreter->Interpret(BoardType, InFile, start, end, restart,
+    if (Interpreter->Interpret(BoardType, kmx::strtowstr(InFile).c_str(), start, end, restart,
          ::StatusCallback, ::CompleteCallback)) {
       interpreting = false;
     }
@@ -295,7 +306,10 @@ void KmxController::ForgetStopIfMoved(){
 
 void KmxController::UpdateMotionParams(){
   char fileName[256];
-  absolutePath(settings_file->path, fileName);
+  if (!absolutePath(settings_file->path, fileName)) {
+    DoErrorMessage("Invalid machine settings path");
+    return;
+  }
 
   MappedFile mmFile;
   if(mmapNamedFile(mmFile, fileName)){
@@ -442,6 +456,10 @@ void KmxController::Acknowledge(int id, int returnValue) {
 }
 
 void KmxController::Poll() {
+  if (offline) {
+    if (msPast(&tval_status, 200)) UpdateClient();
+    return;
+  }
   //poll is called every at least every 100 ms but can be alot more often
   if(msPast(&tval_poll_callbacks,200)){
     //debug("polling callbacks");

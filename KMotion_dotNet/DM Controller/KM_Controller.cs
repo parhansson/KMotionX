@@ -1471,6 +1471,9 @@ namespace KMotion_dotNet
 
         /// <summary>
         /// Gets a 32 bit word of user data
+        /// 
+        /// To set int value in KFLOP in C do:
+        /// persist.UserData[index] = i;
         /// </summary>
         /// <param name="index">array offset (0-199)</param>
         /// <returns>Int32 data from the array</returns>

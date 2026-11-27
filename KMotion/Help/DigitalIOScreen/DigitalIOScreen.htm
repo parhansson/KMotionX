@@ -95,7 +95,7 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 
 
 
-<h1>Digital I/O Screen</h1>
+<h1>Digital IO Screen</h1>
 
 
 
@@ -103,13 +103,13 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 
 
 
-<p>The <em><strong>Digital I/O Screen</strong></em> displays and allows changes to the 
+<p>The <em><strong>Digital IO Screen</strong></em> displays and allows changes to the 
 
-current state of the <em><strong>KMotion</strong></em> digital I/O bits. </p>
+current state of the <em><strong>KMotion</strong></em> digital IO bits. </p>
 
 
 
-<p><em><strong>KMotion</strong></em> has a number of digital I/O bits that may be used as <em>
+<p><em><strong>KMotion</strong></em> has a number of digital IO bits that may be used as <em>
 
 GPIO</em> (General Purpose Inputs or Outputs) or as specific dedicated functions 
 
@@ -117,7 +117,7 @@ GPIO</em> (General Purpose Inputs or Outputs) or as specific dedicated functions
 
 27). Each bit may be independently defined as either an input or an 
 
-output. On Power UP <em><strong>KMotion</strong></em> defines all I/O as inputs by 
+output. On Power UP <em><strong>KMotion</strong></em> defines all IO as inputs by 
 
 default. Any bit may be configured as an output by checking the 
 
@@ -135,7 +135,7 @@ SetBitDirection</a>) sent to the <em><strong>KMotion</strong></em>. </p>
 
 
 
-<p>The <em>State</em> of each I/O bit may be observed in the corresponding 
+<p>The <em>State</em> of each IO bit may be observed in the corresponding 
 
 checkbox under the &quot;State&quot; columns. If the bit is defined as an output, 
 
@@ -167,13 +167,13 @@ sent to the <em><strong>KMotion</strong></em>. </p>
 
 
 
-<p>Additionally, <em>buffered</em> commands may change the state of Digital I/O 
+<p>Additionally, <em>buffered</em> commands may change the state of Digital IO 
 
-bits. <em>Buffered</em> I/O commands are I/O commands that are inserted into 
+bits. <em>Buffered</em> IO commands are IO commands that are inserted into 
 
-the coordinated motion buffer. When it is required that I/O bits be 
+the coordinated motion buffer. When it is required that IO bits be 
 
-changed at exact times within a motion sequence, <em>buffered</em> I/O commands 
+changed at exact times within a motion sequence, <em>buffered</em> IO commands 
 
 may be inserted into the motion buffer (see
 
@@ -183,39 +183,39 @@ may be inserted into the motion buffer (see
 
 and <a href="../ConsoleScreen/ConsoleScreen.htm#SETSTATEBITBUF">
 
-SetStateBitBuf</a>). In this case the I/O commands occur when they are 
+SetStateBitBuf</a>). In this case the IO commands occur when they are 
 
-encountered within the motion sequence. The <em><strong>KMotion</strong></em> GCode 
+encountered within the motion sequence. The <em><strong>KMotion</strong></em> G Code 
 
-interpreter allows buffered I/O commands to be inserted within motion sequences 
+interpreter allows buffered IO commands to be inserted within motion sequences 
 
-by using a special form of GCode comment (See
+by using a special form of G Code comment (See
 
-<a href="../GCodeScreen/GCodeScreen.htm#BUF">buffered GCode Commands</a>).</p>
+<a href="../GCodeScreen/GCodeScreen.htm#BUF">buffered G Code Commands</a>).</p>
 
 
 
-<p>The Digital I/O 0 - 21 are routed to connector
+<p>The Digital IO 0 - 21 are routed to connector
 
-<a href="../Schematics/Connectors.htm#JP3">JP3</a>, and Digital I/O 20 - 27 are 
+<a href="../Schematics/Connectors.htm#JP3">JP3</a>, and Digital IO 20 - 27 are 
 
 routed to connector <a href="../Schematics/Connectors.htm#JP4">JP4</a> all as LVTTL 
 
 signals (which are also 5V TTL compliant and tolerant). Note that Digital 
 
-I/O 20 and 21 are routed to both connectors.</p>
+IO 20 and 21 are routed to both connectors.</p>
 
-<p>Digital I/O bits 0 - 7 are wired internally to the 4 quadrature encoder inputs 
+<p>Digital IO bits 0 - 7 are wired internally to the 4 quadrature encoder inputs 
 
 (2 bits - Phase A and Phase B for each encoder). For each encoder that is 
 
-intended to be used, the corresponding Digital I/O bits must be defined as 
+intended to be used, the corresponding Digital IO bits must be defined as 
 
 inputs.</p>
 
 
 
-<p>Digital I/O bit 28 is dedicated as the +/-15V enable. Setting this bit 
+<p>Digital IO bit 28 is dedicated as the +/-15V enable. Setting this bit 
 
 activates the <em><strong>KMotion</strong></em> on-board +/- 15V generator. The +/- 
 
@@ -227,13 +227,13 @@ each supply (~ 130ma). This supply is required to be enable when using the
 
 
 
-<p class="warning">Caution: Shorting + or - 15V to any Digital I/O 
+<p class="warning">Caution: Shorting + or - 15V to any Digital IO 
 
 bit will cause permanent damage.</p>
 
 
 
-<p>Digital I/O bit 29 is dedicated as the <em>Fan Control</em> bit. 
+<p>Digital IO bit 29 is dedicated as the <em>Fan Control</em> bit. 
 
 Applications that supply high currents (&gt; ~ 2Amps) for extended periods (&gt; ~10 
 
@@ -243,7 +243,7 @@ thermal shutdown of the output stages.</p>
 
 
 
-<p>Digital I/O bit 30 is dedicated as the <em>Aux Control Switch</em>. The 
+<p>Digital IO bit 30 is dedicated as the <em>Aux Control Switch</em>. The 
 
 Aux Control Switch may be used to switch some medium power (&lt; 30V @ 2A) device 
 
@@ -253,7 +253,7 @@ example</a>).</p>
 
 
 
-<p>Digital I/O bit 31 is a dedicated input of <em>Thermal Warning Status</em>. 
+<p>Digital IO bit 31 is a dedicated input of <em>Thermal Warning Status</em>. 
 
 Any output stage that is overheating (internal junction temperature &gt; 145 
 
@@ -265,6 +265,7 @@ stages.</p>
 
 
 
+<script src="../search/searchbox.js" defer></script>
 </body>
 
 

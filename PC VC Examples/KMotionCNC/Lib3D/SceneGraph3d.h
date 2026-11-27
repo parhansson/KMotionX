@@ -15,6 +15,20 @@
 #include "Material.h"
 #include "Array3d.h"
 
+enum {
+	RED_COLOR_INDEX,
+	GREEN_COLOR_INDEX,
+	BLUE_COLOR_INDEX,
+	BLACK_COLOR_INDEX,
+	GRAY_COLOR_INDEX,
+	WHITE_COLOR_INDEX,
+	UNCUT_FEED_COLOR_INDEX,		// G-code viewer preview: feed not yet cut
+	UNCUT_RAPID_COLOR_INDEX,	// G-code viewer preview: rapid not yet made
+	CUT_RAPID_COLOR_INDEX,		// G-code viewer preview: rapid made (cut feed = WHITE)
+	N_PATH_COLORS				// size of CPath3d::colorlookup and the shader's colors[]
+};
+
+
 class CSceneGraph3d
 {
 
@@ -27,11 +41,15 @@ private :
 	GLuint *m_pIndexTextureBinding;
 	unsigned int m_ListDone;
 
+
+
+
 public :
 
 	// Constructor
 	CSceneGraph3d();
 	~CSceneGraph3d();
+
 
 	// Datas
 	void Add(CObject3d *pObject3d);
@@ -42,9 +60,9 @@ public :
 	void Free(void);
 
 	// I/O
-	int SaveFile(char *name);
-	int SaveFileRaw(char *name);
-	int WriteHeader(CStdioFile &file,char *name);
+	int SaveFile(wchar_t *name);
+	int SaveFileRaw(wchar_t *name);
+	int WriteHeader(CStdioFile &file,wchar_t *name);
 
 	// Misc
 	int BuildAdjacency();
@@ -62,7 +80,7 @@ public :
 
 	// Textures
 	CArray3d<CTexture> *GetArrayTexture() { return &m_ArrayTexture; }
-	int HasTexture(char *name,int *index);
+	int HasTexture(wchar_t *name,int *index);
 	int NbTexture() { return m_ArrayTexture.GetSize(); }
 	int AddTexture(CTexture *pTexture) { return m_ArrayTexture.Add(pTexture); }
 	void RemoveAllTexture() { m_ArrayTexture.RemoveAll(); }

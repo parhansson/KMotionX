@@ -9,7 +9,7 @@
 #define POLARITY 1    // state to wait for
 #define TIME_OUT 5.0  // Timeout
 
-main()
+int main()
 {
     int Answer;
     double T1,T0=Time_sec();;

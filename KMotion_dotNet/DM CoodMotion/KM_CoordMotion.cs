@@ -184,6 +184,20 @@ namespace KMotion_dotNet
             }
         }
         /// <summary>
+        /// Gets/Sets the RapidParamsDirty, if set Rapid parameters will be refressed from KFLOP/Kogna
+        /// </summary>
+        public bool RapidParamsDirty
+        {
+            get
+            {
+                return GetRapidParamsDirty();
+            }
+            set
+            {
+                SetRapidParamsDirty(value);
+            }
+        }
+        /// <summary>
         /// Gets/Sets the Feedrate override for all axes
         /// </summary>
         public double FeedRateOverride
@@ -561,6 +575,34 @@ namespace KMotion_dotNet
         }
 
         /// <summary>
+        /// Gets the RapidParamsDirty, if set Rapid parameters will be refressed from KFLOP/Kogna
+        /// </summary>
+        /// <returns>RapidParamsDirty</returns>
+        private bool GetRapidParamsDirty()
+        {
+            bool RapidParamsDirty = false;
+            try
+            {
+                RapidParamsDirty = KM_dotnet_Interop_CoordMotion_Get_RapidParamsDirty(_InstanceHandle);
+            }
+            catch (DllNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                    this.ToString(), "GetRapidParamsDirty"));
+            }
+            catch (EntryPointNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                   this.ToString(), "GetRapidParamsDirty"));
+            }
+            catch (Exception e)
+            {
+                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                  this.ToString(), "GetRapidParamsDirty"));
+            }
+            return RapidParamsDirty;
+        }
+        /// <summary>
         /// Gets the current Feedrate override
         /// </summary>
         /// <returns>override percentage</returns>
@@ -617,6 +659,32 @@ namespace KMotion_dotNet
             return feedoverride;
         }
 
+        /// <summary>
+        /// Sets the RapidParamsDirty, if set Rapid parameters will be refressed from KFLOP/Kogna
+        /// </summary>
+        /// <param name="value">RapidParamsDirty</param>
+        private void SetRapidParamsDirty(bool value)
+        {
+            try
+            {
+                KM_dotnet_Interop_CoordMotion_Set_RapidParamsDirty(_InstanceHandle, value);
+            }
+            catch (DllNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Dll Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                    this.ToString(), "SetRapidParamsDirty"));
+            }
+            catch (EntryPointNotFoundException e)
+            {
+                throw new DMException(this, e, String.Format("Entry Point Not Found Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                   this.ToString(), "SetRapidParamsDirty"));
+            }
+            catch (Exception e)
+            {
+                throw new DMException(this, e, String.Format("General Exception thrown :  Caller - [{0}] :: Member - [{1}]",
+                  this.ToString(), "SetRapidParamsDirty"));
+            }
+        }
         /// <summary>
         /// Sets the current Feedrate override
         /// </summary>

@@ -7,7 +7,7 @@ void SetSlowPWM(double duty);
 
 int Period=1.0/(PWM_FREQ*TIMEBASE*2);
 
-main()
+int main()
 {
 	SetSlowPWM(0.1);  // test function at some ratio
 }

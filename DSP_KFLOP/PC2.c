@@ -78,12 +78,14 @@ const char Commands[][MAX_CMD_LENGTH] = {
 "OPENBUF ",									// OpenBuf/Clear and open the buffer for/coordinated linear and circular segments/ie. OpenBuf
 "EXECBUF ",									// ExecBuf/Execute the buffer of coordinated/linear and circular segments/ie. ExecBuf
 "FLUSHBUF ",								// FlushBuf/Marks the Coord Motion Buffer as complete/turns off buffer starvation protection/ie. FlushBuf
+"SETSTARVETIME G",							// SetStarveTime T/Declares the worst-case stop time (seconds) of the content/in the current coordinated buffer so buffer starvation/protection only requires the data actually needed to stop/Send any INCREASE before downloading faster content/Cleared by OpenBuf (reverts to conservative default)/ie. SetStarveTime 0.1
 "EXECTIME ",								// ExecTime/Display Total Time (seconds) of segments in the buffer that have already been completed/Negative if buffer halted (starved)/ie. ExecTime
 "LINEARHEXEX HHHHHHHHHHHHHHHHHHHHH",		// LinearHexEx x0 y0 z0 a0 b0 c0 u0 v0 x1 y1 z1 a1 b1 c1 u1 v1 a b c d t/place linear interpolated move into buffer/start point, end point, and parametric eq/values are hex floats/ie. LinearHexEx 0 0 0 0 0 0 0 0 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 0 0 3f800000 0 3f800000
 "LINEARHEX HHHHHHHHHHHHHHHHH",				// LinearHex x0 y0 z0 a0 b0 c0 x1 y1 z1 a1 b1 c1 a b c d t/place linear interpolated move into buffer/start point, end point, and parametric eq/values are hex floats/ie. LinearHex 0 0 0 0 0 0 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 0 0 3f800000 0 3f800000
 "LHEX1 HHHHHHHHHHH",						// LHex1 x1 y1 z1 a1 b1 c1 a b c d t/place linear interpolated move into buffer/start point(from last), end point, and parametric eq/values are hex floats/ie. LHex1 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 0 0 3f800000 0 3f800000
 "LHEXEX1 HHHHHHHHHHHHH",					// LHexEx1 x1 y1 z1 a1 b1 c1 u1 v1 a b c d t/place 8 axes linear interpolated move into buffer/start point(from last), end point, and parametric eq/values are hex floats/ie. LHexEx1 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 3f800000 0 0 3f800000 0 3f800000
 "LHEX2 HHHHH",								// LHex2 a b c d t/place linear interpolated move into buffer/uses start point, end point from previous command, and parametric eq/values are hex floats/ie. LHex2 0 0 3f800000 0 3f800000
+"CHEX8 HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",	// CHex8 xa xb xc xd ya yb yc yd za zb zc zd aa ab ac ad ba bb bc bd ca cb cc cd ua ub uc ud va vb vc vd t/place Cubic Knot into buffer/each axis an independent cubic position polynomial of time/x = ((a*t+b)*t+c)*t+d/values are hex floats/ie. CHex8 0 0 3f800000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3f800000
 "LINEAREX GGGGGGGGGGGGGGGGGGGGG", 			// LinearEx x0 y0 z0 a0 b0 c0 u0 v0 x1 y1 z1 a1 b1 c1 u1 v1 a b c d t/place linear interpolated move into buffer/3D start point, end point, and parametric eq/ie. Linear 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 0.0 0.0 1.0 0.0 1.0
 "LINEAR GGGGGGGGGGGGGGGGG", 				// Linear x0 y0 z0 a0 b0 c0 x1 y1 z1 a1 b1 c1 a b c d t/place linear interpolated move into buffer/3D start point, end point, and parametric eq/ie. Linear 0.0 0.0 0.0 0.0 0.0 0.0 1.0 1.0 1.0 1.0 1.0 1.0 0.0 0.0 1.0 0.0 1.0
 "ARCHEX HHHHHHHHHHHHHHHHHHH",   			// ArcHex xc yc rx ry theta0 dtheta z0 a0 b0 c0 z1 a1 b1 c1 a b c d t/place circular interpolated (xy) move into buffer/x center, y center, x radius, y radius,/begin theta, delta theta, begin zabc, end zabc,/and parametric eq/ie. ArcHex 3f000000 3f000000 3f800000 3f800000 0 3f800000 0 0 0 0 0 0 0 0 0 0 3f800000 0 3f800000
@@ -101,9 +103,9 @@ const char Commands[][MAX_CMD_LENGTH] = {
 "SETFRO G",									// SetFRO F/Set Feed Rate Override (1.0 = Normal Feed Rate)/ie. SetFRO 0.9
 "SETRAPIDFRO G",							// SetRapidFRO F/Set Rapid Feed Rate Override (1.0 = Normal Feed Rate)/ie. SetRapidFRO 0.9
 "SETFROTEMP G",								// SetFROTemp F/Temporarily Set Feed Rate Override (1.0 = Normal Feed Rate)/Force regardless of FeedHold, don't save as last FRO/ie. SetFRO 0.9
-"SETFROWRATE G G",							// SetFROwRate F R/Set Feed Rate Override (1.0 = Normal Feed Rate) with rate/based on caller specified time (in seconds)/to change from FRO 1.0 to 0.0/ie. SetFRO 0.9 0.25
-"SETRAPIDFROWRATE G G",						// SetRapidFROwRate F R/Set Rapid Feed Rate Override (1.0 = Normal Feed Rate) with rate/based on caller specified time (in seconds)/to change from FRO 1.0 to 0.0/ie. SetRapidFROwRate 0.9 0.25
-"SETFROWRATETEMP G G",						// SetFROwRateTemp F R/Temporarily Set Feed Rate Override (1.0 = Normal Feed Rate) with rate/based on caller specified time (in seconds)/to change from FRO 1.0 to 0.0/Force regardless of FeedHold, don't save as last FRO/ie. FRO 0.9 0.25
+"SETFROWRATE GG",							// SetFROwRate F R/Set Feed Rate Override (1.0 = Normal Feed Rate) with rate/based on caller specified time (in seconds)/to change from FRO 1.0 to 0.0/ie. SetFRO 0.9 0.25
+"SETRAPIDFROWRATE GG",						// SetRapidFROwRate F R/Set Rapid Feed Rate Override (1.0 = Normal Feed Rate) with rate/based on caller specified time (in seconds)/to change from FRO 1.0 to 0.0/ie. SetRapidFROwRate 0.9 0.25
+"SETFROWRATETEMP GG",						// SetFROwRateTemp F R/Temporarily Set Feed Rate Override (1.0 = Normal Feed Rate) with rate/based on caller specified time (in seconds)/to change from FRO 1.0 to 0.0/Force regardless of FeedHold, don't save as last FRO/ie. FRO 0.9 0.25
 "GETSTOPSTATE ",							// GetStopState/Get State of StopImmediate/0=none,1=stopping indep,2=stopping coord, 3=stopped indep, 4=stopped coord/ie. GetStopState 
 "GETSPINDLERPS ",							// GetSpindleRPS/Get measured Spindle RPM in Revs per second/i.e. GetSpindleRPS
 "GETALLDESTVELHEX ",						// GetAllDestVelHex/Get all 8 Axis Destinations and Velocities as 64 bit doubles/Each as 2 32-bit Hexadecimal Values (low|high)/i.e. GetAllDestVelHex
@@ -115,6 +117,7 @@ const char Commands[][MAX_CMD_LENGTH] = {
 "RS232 D9600 115200",						// Commands from RS232 Baud/i.e. RS232 57600
 "FPGA D0 1024 D0 255",						// Write 8 bit value directly to FPGA/i.e. FPGA 6 191
 "FPGAW D0 1024 D0 65535",					// Write 16 bit value directly to FPGA/i.e. FPGAW 6 191
+"FPGACONFIG ",								// FPGAConfig/Display which FPGA Configuration this firmware embeds/KFLP = Classic (RS232, no Serial Servo)/KFLS = Serial Servo (no RS232)/ie. FPGAConfig
 "BEGRAPIDBUF ",								// BegRapidBuf/Inserts into coordinated move buffer/command to indicate Rapid is in progress and to use Rapid FRO/ie. BegRapidBuf
 "ENDRAPIDBUF ",								// EndRapidBuf/Inserts into coordinated move buffer/command to indicate Rapid is no longer in progress and to resume use normal FRO/ie. EndRapidBuf
 "WAITBITBUF D0 2047",						// WaitBitBufN/Inserts into coordinated move buffer/command to wait for an IO bit N(0..255)/or Virtual IO bits 48-63, 1024-2047/to become high/ie. WaitBitBuf0
@@ -125,9 +128,9 @@ const char Commands[][MAX_CMD_LENGTH] = {
 "LIMITSWITCHNEGBIT D0 7 ?1=D0 2047 i",		// LimitSwitchNegBitN=D/Configure Limit Switch Negative Bit for Axis/Specify Decimal Value/ie.LimitSwitchNegBit2 1024  
 "LIMITSWITCHPOSBIT D0 7 ?1=D0 2047 i",		// LimitSwitchPosBitN=D/Configure Limit Switch Positive Bit for Axis/Specify Decimal Value/ie.LimitSwitchPosBit2 1024  
 "LIMITSWITCH D0 7 ?4=Hi",					// LimitSwitchN=H/Configure Limit Switch Options/Specify Hex value where/Bit 0 1=Stop Motor on Neg Limit, 0=Ignore Neg limit/Bit 1 1=Stop Motor on Pos Limit, 0=Ignore Pos limit/Bit 2 Neg Limit Polarity 0=stop on high, 1=stop on low/Bit 3 Pos Limit Polarity 0=stop on high, 1=stop on low/Bits 4-7/       Action - 0 Kill Motor Drive/       1 Disallow drive in direction of limit/       2 Stop movement/Bits 16-23 Neg Limit Bit number/Bits 24-31 Pos Limit Bit number/ie.LimitSwitch2 0C0D0003  
-"INPUTMODE D0 7 ?1=D0 4 i",					// InputModeN=D/Set position input mode for axis/ENCODER_MODE 1/ADC_MODE 2/RESOLVER_MODE 3/USER_INPUT_MODE 4/ie. InputMode0=1
+"INPUTMODE D0 7 ?1=D0 5 i",					// InputModeN=D/Set position input mode for axis/ENCODER_MODE 1/ADC_MODE 2/RESOLVER_MODE 3/USER_INPUT_MODE 4/SERIAL_SERVO_INPUT_MODE 5/ie. InputMode0=1
 "BACKLASHMODE D0 7 ?1=D0 4 i",				// BacklashModeN=D/Set Backlash mode of operation for axis/BACKLASH_OFF 0/BACKLASH_LINEAR 1/ie. BacklashMode0=1
-"OUTPUTMODE D0 7 ?1=D0 8 i", 				// OutputModeN=D/Set motor output mode for axis/MICROSTEP_MODE 1/DC_SERVO_MODE 2/BRUSHLESS_3PH_MODE 3/BRUSHLESS_4PH_MODE 4/DAC_SERVO_MODE 5/STEP_DIR_MODE 6/CL_STEP_DIR_MODE 7/CL_MICROSTEP_MODE 8/ie. SetOutputMode0=1
+"OUTPUTMODE D0 7 ?1=D0 10 i", 				// OutputModeN=D/Set motor output mode for axis/MICROSTEP_MODE 1/DC_SERVO_MODE 2/BRUSHLESS_3PH_MODE 3/BRUSHLESS_4PH_MODE 4/DAC_SERVO_MODE 5/STEP_DIR_MODE 6/CL_STEP_DIR_MODE 7/CL_MICROSTEP_MODE 8/SERIAL_SERVO_MODE 9/CL_SERIAL_SERVO_MODE 10/ie. SetOutputMode0=1
 "DEST D0 7 ?3=Gg",                 			// DestN/Set last commanded Destination for axis N/ie. Dest0      
 "POS D0 7 ?3=Gg",							// PosN=P/Set measured position of axis N to P/ie. Pos0=100.0      
 "ENABLED D0 7 ?1",							// EnabledN/Display whether the specified axis is enabled/ie. Enabled0      

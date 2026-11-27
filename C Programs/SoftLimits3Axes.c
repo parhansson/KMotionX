@@ -9,7 +9,7 @@
 
 int InLimit();
 
-main()
+int main()
 {
 	for (;;)  // loop forever
 	{

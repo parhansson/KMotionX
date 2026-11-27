@@ -54,6 +54,9 @@
     <ClCompile Include="TrajectoryPlanner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TrajectoryPlanner3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="KinematicsGeppetto.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -76,6 +79,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="KinematicsScara.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Kinematics3Link.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Kinematics2AxisRobot.cpp">
@@ -137,6 +143,9 @@
     <ClInclude Include="TrajectoryPlanner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TrajectoryPlanner3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="KinematicsGeppetto.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -159,6 +168,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="KinematicsScara.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Kinematics3Link.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Kinematics2AxisRobot.h">

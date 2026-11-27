@@ -13,7 +13,7 @@
 // no current regulation or chopping.
 // Performance will be poor
 
-main()
+int main()
 {
 	int k;
 	

@@ -2,7 +2,7 @@
 
 #define CntsPerMM 1000.0
 
-main()
+int main()
 {
 	double T1,T0=Time_sec();
 	double LastX = ch0->Dest;

@@ -73,7 +73,7 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 <h2>Introduction</h2>
 
 <p>KStep is an add-on stepper driver for KFLOP and it is perhaps the easiest way available to start controlling stepper motors.</p>
-<p>This guide will help you with the most basic KStep setup so that by the end of these instructions you will be able to control stepper motors using the KMotion setup/configuration screens, C-Code and G-Code.  This guide is not comprehensive, however, and you should spend time reading the help pages for more in-depth information:</p>
+<p>This guide will help you with the most basic KStep setup so that by the end of these instructions you will be able to control stepper motors using the KMotion setup/configuration screens, C-Code and G Code.  This guide is not comprehensive, however, and you should spend time reading the help pages for more in-depth information:</p>
 
 <ul>
     <li>Main manuals page: <a href="index.htm">https://dynomotion.com/Help/index.htm</a></li>
@@ -444,7 +444,7 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 
 // Defines axis 0, 1, 2 as simple step dir outputs
 // enables them
-// sets them as an xyz coordinate system for GCode
+// sets them as an xyz coordinate system for G Code
 
 int main() 
 {
@@ -635,7 +635,7 @@ DefineCoordSystem(0,1,2,-1);
 	    This command defines a coordinate system with 3 axes: 0, 1, 2 and the 4th axis is disabled by entering a '-1', otherwise a '3' would be used to include the 4th axis.</li>
 </ol>
 
-<p>You can add more C code into this initilization file to control your system, or use Dynomotion's KMotionCNC program to run G-Code.</p>
+<p>You can add more C code into this initilization file to control your system, or use Dynomotion's KMotionCNC program to run G Code.</p>
 <p>Since adding C code is more involved, that will be handled in a different tutorial, but here is an example of a simple infinite loop to move one motor that can be added into an init file:<p>
 	<pre>
 		<code class="language-c">
@@ -655,7 +655,7 @@ DefineCoordSystem(0,1,2,-1);
 
 <h3><a name="3d">3D. Use KMotionCNC to jog your motors</a></h3>
 
-<p>After running an Init file such as InitKStep3Axis.c for initialization, you are ready to move your motors by using KMotionCNC.  Try moving the motors by first clicking on the jog buttons (buttons with green arrows at left).  If everything is initialized properly the motors should move when the respective jog button is clicked.  These jog buttons are mapped to the axes by the <span class="code">"DefineCoordSystem(0,1,2,-1);"</span> command discussed above.  In this example, the X-axis is mapped to Axis #0, Y-axis is mapped to Axis #1, Z-axis is mapped to Axis #2 and the A-axis is not used.  If pressing the jog buttons move the motors, then you are ready to begin running G-Code.  To do this, within KMotionCNC choose "Open" and choose a G-Code program from the GCode Programs folder.  If everything has been initialized correctly, the motors will move when the Start button is pressed to start the G-Code.</p>
+<p>After running an Init file such as InitKStep3Axis.c for initialization, you are ready to move your motors by using KMotionCNC.  Try moving the motors by first clicking on the jog buttons (buttons with green arrows at left).  If everything is initialized properly the motors should move when the respective jog button is clicked.  These jog buttons are mapped to the axes by the <span class="code">"DefineCoordSystem(0,1,2,-1);"</span> command discussed above.  In this example, the X-axis is mapped to Axis #0, Y-axis is mapped to Axis #1, Z-axis is mapped to Axis #2 and the A-axis is not used.  If pressing the jog buttons move the motors, then you are ready to begin running G Code.  To do this, within KMotionCNC choose "Open" and choose a G Code program from the G Code Programs folder.  If everything has been initialized correctly, the motors will move when the Start button is pressed to start the G Code.</p>
 
 <p>Note: An initialization C program such as the InitKStep3Axis.c must be run before operating with KMotionCNC will work.  This initialization C program can be called with the 'Init' button in KMotionCNC once programmed to do so by setting the file location and Thread number for the INIT button within the 'Tool Setup' Screen on the 'User Buttons' tab in KMotionCNC:<p>
 
@@ -681,5 +681,6 @@ DefineCoordSystem(0,1,2,-1);
 
 </div>
 
+<script src="search/searchbox.js" defer></script>
 </body>
 </html>

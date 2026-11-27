@@ -2,7 +2,7 @@
 
 void memcpy_from_user_flash(void *dest, int byte_offset_in_user_flash, int num_bytes);
 
-void main()
+int main()
 {
 	int nBytes;
 

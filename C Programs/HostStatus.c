@@ -1,7 +1,7 @@
 #include "KMotionDef.h"
 
 
-main()
+int main()
 {
 	int LastState=-1;
 	for (;;)  // loop forever

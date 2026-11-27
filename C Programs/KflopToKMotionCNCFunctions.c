@@ -99,6 +99,117 @@ int GetToolSlotAndID(int *Slot, int *ID)
 	return 0;
 }
 
+
+// Write a string Comment to a Tool Table entry.
+// Put the string into the gather buffer at the specified offset (in words)
+// KMotionCNC will upload the comment and then clear the persist variable.
+//
+// SetToolTableComment Persist+1 = Tool Table Index
+//					   Persist+2 = gather buffer offset (32-bit words) to where to get Comment string
+//					   Result indicating complete.  0=Not Complete, 1=Complete, -1=Invalid Tool Index
+
+void SetToolComment(int gather_offset, int ToolIndex, char *s)
+{
+	char *p=(char *)gather_buffer+gather_offset*sizeof(int);
+	int i;
+	
+	// now copy string
+	i=0;
+	do 
+	{
+		p[i]=s[i];
+		i++;
+	}
+	while (s[i-1]);
+	
+	persist.UserData[PC_COMM_PERSIST + 2] = gather_offset; // set gather offset
+	DoPCInt(PC_COMM_SET_TOOLTABLE_COMMENT, ToolIndex);
+	return;
+}
+
+// Read a string Comment from a Tool Table entry.
+// KMotionCNC puts the string into the gather buffer at the specified offset (in words)
+// clear the persist variable.
+// GetToolTableComment Persist+1 = Tool Table Index
+//					   Persist+2 = gather buffer offset (32-bit words) to where to place Comment string
+//					   Result indicating complete.  0=Not Complete, 1=Complete, -1=Err reading Tool File, -2=Invalid Tool Index
+
+
+void GetToolComment(int gather_offset, int ToolIndex, char* s)
+{
+	char* p = (char*)gather_buffer + gather_offset * sizeof(int);
+	int i;
+
+	persist.UserData[PC_COMM_PERSIST + 2] = gather_offset; // set gather offset
+	DoPCInt(PC_COMM_GET_TOOLTABLE_COMMENT, ToolIndex);
+
+	// now copy string
+	i = 0;
+	do
+	{
+		s[i] = p[i];
+		i++;
+	} while (s[i - 1]);
+
+	return;
+}
+
+
+// Read the Current line of GCode.
+// KMotionCNC puts the string into the gather buffer at the specified offset (in words)
+// clear the persist variable.
+// GetToolTableComment Persist+1 = gather buffer offset (32-bit words) to where to place Comment string
+//					   Result indicating complete.  0=Not Complete, 1=Complete, -1=Error
+
+
+void GetGCodeLine(int gather_offset, char* s)
+{
+	char* p = (char*)gather_buffer + gather_offset * sizeof(int);
+	int i;
+
+	persist.UserData[PC_COMM_PERSIST + 1] = gather_offset; // set gather offset
+	DoPC(PC_COMM_GET_GCODE_LINE);
+
+	// now copy string
+	i = 0;
+	do
+	{
+		s[i] = p[i];
+		i++;
+	} while (s[i - 1]);
+
+	return;
+}
+
+
+// Read the Current Date Time.
+// KMotionCNC puts the string into the gather buffer at the specified offset (in words)
+// clear the persist variable.
+// GetToolTableComment Persist+1 = gather buffer offset (32-bit words) to where to place Comment string
+//					   Result indicating complete.  0=Not Complete, 1=Complete, -1=Error
+
+
+void GetDateTime(int gather_offset, char* s)
+{
+	char* p = (char*)gather_buffer + gather_offset * sizeof(int);
+	int i;
+
+	persist.UserData[PC_COMM_PERSIST + 1] = gather_offset; // set gather offset
+	DoPC(PC_COMM_GET_DATE_TIME);
+
+	// now copy string
+	i = 0;
+	do
+	{
+		s[i] = p[i];
+		i++;
+	} while (s[i - 1]);
+
+	return;
+}
+
+
+
 int GetFixtureIndex(int *FixtureIndex)
 {
 	if (GetVars(5220,1,TMP)) return 1;  // Download to persist TMP
@@ -154,12 +265,43 @@ int SetToolDiameter(int index, double Diameter)
 	return DoPCInt(PC_COMM_SET_TOOLTABLE_DIAMETER,index); // Tool index and Cmd
 }
 
-// Request a Tool X offset, answer will be placed at persist offset
-int GetToolOffsetX(int index, double *OffsetX)
+
+// Axis indices
+#define AXIS_X 0
+#define AXIS_Y 1
+#define AXIS_Z 2
+#define AXIS_A 3
+#define AXIS_B 4
+#define AXIS_C 5
+#define AXIS_U 6
+#define AXIS_V 7
+#define NUM_AXES 8
+
+// Parameter type indices
+#define PT_VEL              0
+#define PT_ACCEL            1
+#define PT_COUNTS_PER_INCH  2
+#define PT_JOG_VEL          3	// Trajectory Planner screen Jog Speed (user units/sec)
+#define NUM_PARAM_TYPES     4
+
+
+// Set a Trajectory Planner Parameter given Type and Axis
+int SetTPParameter(int Type, int Axis, double value)
 {
-	persist.UserData[PC_COMM_PERSIST+2] = TMP;       	// persist offset (doubles)
-	if (DoPCInt(PC_COMM_GET_TOOLTABLE_OFFSETX,index)) return 1; // Tool index and Cmd
-	*OffsetX=GetUserDataDouble(TMP);
+	SetUserDataDouble(TMP, value);
+	persist.UserData[PC_COMM_PERSIST + 3] = TMP;       	// persist offset (doubles)
+	persist.UserData[PC_COMM_PERSIST + 2] = Axis;       // Axis
+	return DoPCInt(PC_COMM_SET_TP_PARAM, Type); // Parameter Type and Cmd
+}
+
+
+// Get a Trajectory Planner Parameter given Type and Axis
+int GetTPParameter(int Type, int Axis, double *value)
+{
+	persist.UserData[PC_COMM_PERSIST+3] = TMP;       	// persist offset (doubles)
+	persist.UserData[PC_COMM_PERSIST + 2] = Axis;       // Axis
+	if (DoPCInt(PC_COMM_GET_TP_PARAM, Type)) return 1; // Parameter Type and Cmd
+	*value =GetUserDataDouble(TMP);
 	return 0;
 }
 
@@ -201,6 +343,25 @@ int GetVars(int varoff, int n, int poff)
 	persist.UserData[PC_COMM_PERSIST+3] = poff;    // first VAR to get
 	return DoPCInt(PC_COMM_GET_VARS,varoff);       // Var index and Cmd
 }
+
+// Do G43 Hxx Set Tool Length Comp On for Tool xx Persist+1 = H number (integer) from G43Hxx command
+int G43(int Tool)
+{
+	return DoPCInt(PC_COMM_G43, Tool); // G43 + Tool Number
+}
+
+// Do G43.4 Hxx Set Tool Length Comp On (with TCP for Tool xx Persist+1 = H number (integer) from G43Hxx command
+int G43_4(int Tool)
+{
+	return DoPCInt(PC_COMM_G43_4, Tool); // G43.4 + Tool Number
+}
+
+// Do G49 Set Tool Length Comp Off
+int G49(int Tool)
+{
+	return DoPC(PC_COMM_G49); // G49
+}
+
 
 
 #define GATH_OFF 0  // define the offset into the Gather buffer where strings are passed
@@ -257,6 +418,7 @@ int MsgBoxNoWait(char *s, int Flags)
 // Trigger a dialog box on the PC to request a floating point
 // value to be entered by Operator.  returns 1 if the Operator
 // selected cancel.  returns 0 if the operator selected "Set" 
+// Values for the drop down list can be specified as values separated by ';'
 int InputBox(char *s, float *value)
 {
 	char *p = (char *)gather_buffer + GATH_OFF * sizeof(int);

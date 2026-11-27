@@ -181,7 +181,7 @@ int no_output_printf(const char *format, ...);
 
 
 
-void main()
+int main()
 {
 	GlobalStatus = IDLE;
 	Init();

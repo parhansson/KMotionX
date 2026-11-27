@@ -9,6 +9,12 @@
 //********************************************
 
 #include "stdafx.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+
+
 
 //////////////////////////////////////////////
 // CONSTRUCTORS
@@ -171,15 +177,32 @@ int CSceneGraph3d::glBuildList()
 	return 1;
 }
 
+
+
+
 //********************************************
 // glDraw
 //********************************************
 void CSceneGraph3d::glDraw(void)
 {
+	static bool first = true;
+
+	if (first)
+	{
+		first = false;
+
+		glewExperimental = GL_TRUE;
+
+		// Initialize GLEW
+		if (glewInit() != GLEW_OK) {
+			// Handle the error
+			return;
+		}
+	}
 
 	if(!m_ListDone)
 		glBuildList();
-
+	
 	unsigned int size = m_ArrayObject3d.GetSize();
 	for(unsigned int i=0; i<size; i++)
 	{
@@ -209,16 +232,18 @@ void CSceneGraph3d::glDraw(void)
 //********************************************
 void CSceneGraph3d::glDraw(int type)
 {
-	if(!m_ListDone)
+	if (!m_ListDone)
 		glBuildList();
 
 	unsigned int size = m_ArrayObject3d.GetSize();
-	for(unsigned int i=0; i<size; i++)
+	for (unsigned int i = 0; i < size; i++)
 	{
-		CObject3d *pObject3d = m_ArrayObject3d[i];
-		if(pObject3d->GetType() == type)
+		CObject3d* pObject3d = m_ArrayObject3d[i];
+		if (pObject3d->GetType() == type)
 			pObject3d->glDraw();
 	}
+
+
 }
 
 
@@ -336,7 +361,7 @@ void CSceneGraph3d::SetColorBinding(int type)
 //********************************************
 // HasTexture
 //********************************************
-int CSceneGraph3d::HasTexture(char *name,
+int CSceneGraph3d::HasTexture(wchar_t *name,
 															int *index)
 {
 	for(int i=0;i<m_ArrayTexture.GetSize();i++)
@@ -356,12 +381,12 @@ int CSceneGraph3d::HasTexture(char *name,
 //********************************************
 // SaveFile
 //********************************************
-int CSceneGraph3d::SaveFile(char *name)
+int CSceneGraph3d::SaveFile(wchar_t *name)
 {
 	// Check
 	if(NbObject() == 0)
 	{
-		AfxMessageBox("This scene does not contain meshes");
+		AfxMessageBox(L"This scene does not contain meshes");
 		return 0;
 	}
 
@@ -372,7 +397,7 @@ int CSceneGraph3d::SaveFile(char *name)
 	// Write header
 	if(!WriteHeader(file,name))
 	{
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error during writing header"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error during writing header"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 0;
 	}
 
@@ -393,12 +418,12 @@ int CSceneGraph3d::SaveFile(char *name)
 //********************************************
 // SaveFileRaw
 //********************************************
-int CSceneGraph3d::SaveFileRaw(char *name)
+int CSceneGraph3d::SaveFileRaw(wchar_t *name)
 {
 	// Check
 	if(NbObject() == 0)
 	{
-		AfxMessageBox("This scene does not contain meshes");
+		AfxMessageBox(L"This scene does not contain meshes");
 		return 0;
 	}
 
@@ -412,7 +437,7 @@ int CSceneGraph3d::SaveFileRaw(char *name)
 		#ifdef _DEBUG
 		  afxDump << "File could not be opened " << ex.m_cause << "\n";
 		#endif
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to open file for writing"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to open file for writing"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 0;
 	}
 
@@ -439,7 +464,7 @@ int CSceneGraph3d::SaveFileRaw(char *name)
 // Do not close file
 //**********************************************
 int CSceneGraph3d::WriteHeader(CStdioFile &file,
-															 char *name)
+															 wchar_t *name)
 {
 	CFileException ex;
 	
@@ -449,24 +474,24 @@ int CSceneGraph3d::WriteHeader(CStdioFile &file,
 		#ifdef _DEBUG
 		  afxDump << "File could not be opened " << ex.m_cause << "\n";
 		#endif
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to open file for writing"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to open file for writing"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 0;
 	}
 
 	// ** Header *******************************
 	TRACE("\nSave VRML 2.0 File...\n");
-	TRACE("  name : %s\n",name);
+	TRACE("  name : %ls\n",name);
 	TRY
 	{
-		file.WriteString("#VRML V2.0 utf8\n\n");
-		file.WriteString("# Produced by 3d Toolbox 1.0 (Pierre Alliez, CNET / DIH / HDM)\n\n");
+		file.WriteString(L"#VRML V2.0 utf8\n\n");
+		file.WriteString(L"# Produced by 3d Toolbox 1.0 (Pierre Alliez, CNET / DIH / HDM)\n\n");
 	}
 	CATCH(CFileException, e)
 	{
 		#ifdef _DEBUG
 				afxDump << "Error during writing " << e->m_cause << "\n";
 		#endif
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error during writing file header"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error during writing file header"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		file.Close();
 		return 0;
 	}

@@ -117,7 +117,7 @@ Offset (G92). The commanded Machine Position will be computed as:</p>
 
 
 
-<p> <em>Machine Position = GCode 
+<p> <em>Machine Position = G Code 
 
 Program Position + Active Fixture Offset + Global Offset</em></p>
 
@@ -129,11 +129,11 @@ zero. Individual &quot;Clear&quot; Buttons will clear single offsets.</p>
 
 
 
-<p>Fixture offsets are saved into the GCode Variables file. 
+<p>Fixture offsets are saved into the G Code Variables file. 
 
 If saved they will be restored the next time KMotionCNC is started.  When &quot;Save Always&quot; is checked, the offsets are always saved to the file and will be present the next time the program is started. The file 
 
-used to save the GCode Variables can be specified in the <a href="ToolSetupScreenFiles.htm">Tool Setup</a>. When Variables are 
+used to save the G Code Variables can be specified in the <a href="ToolSetupScreenFiles.htm">Tool Setup</a>. When Variables are 
 
 saved to disk the file must already exist which determines which variables are to be 
 
@@ -183,70 +183,44 @@ selected the Units may then be changed.</p>
 
 
 
-<p>Fixture Offsets can also be changed from within GCode 
+<p>Fixture Offsets can also be changed from within G Code 
 
 using G10. For example:</p>
 
 
 
 <pre>
+	<code class="language-c">
 
 	G20 (inches mode)
-
 	F30
-
 	G10L2P1X0Y0Z0 (Set G54 offset to 0,0,0 used by default)
-
 	G10L2P2X2Y0Z0 (Set G55 offset to 2,0,0)
-
 	G10L2P3X0Y2Z0 (Set G55 offset to 0,2,0)
 
-
-
 	G54 (Set to coordinate system 1 - already by default)
-
 	G0 x0y0z0 (Draw a box) 
-
 	G1 x1
-
 	y1
-
 	x0
-
 	y0
-
-
 
 	G55 (Set to coordinate system 2)
-
 	G0 x0y0z0 (Draw a box) 
-
 	G1 x1
-
 	y1
-
 	x0
-
 	y0
-
-
 
 	G56 (Set to coordinate system 3)
-
 	G0 x0y0z0 (Draw a box) 
-
 	G1 x1
-
 	y1
-
 	x0
-
 	y0
 
-
-
 	M2
-
+	</code>
 </pre>
 
 <p>&nbsp;</p>
@@ -257,6 +231,7 @@ using G10. For example:</p>
 
 
 
+<script src="../search/searchbox.js" defer></script>
 </body>
 
 

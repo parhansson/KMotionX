@@ -18,6 +18,7 @@ static char THIS_FILE[] = __FILE__;
 CScreen::CScreen()
 {
 	EditScreenChangesCount = 0;
+	ViewBackColor = CLR_DEFAULT;
 }
 
 CScreen::~CScreen()
@@ -38,12 +39,13 @@ void CScreen::DeleteDlgControls(void)
 
 int DontChangeTextCtrls[] = { IDC_Editor, IDC_Command, IDC_FeedRateEdit, IDC_SpindleRateEdit,
 IDC_Step0, IDC_Step1, IDC_Step2, IDC_Step3, IDC_Step4, IDC_Step0, IDC_tool, IDC_fixture,
-IDC_PosX, IDC_PosY, IDC_PosZ, IDC_PosA, IDC_PosB, IDC_PosC };
+IDC_PosX, IDC_PosY, IDC_PosZ, IDC_PosA, IDC_PosB, IDC_PosC, IDC_PosU, IDC_PosV };
 
 
 int CScreen::ScriptReset()
 {
 	DeleteDlgControls();
+	SetViewBackColor(CLR_DEFAULT);
 	if (ReadResourceIDs()) return 1;  // read resource ID symbolic names/IDs
 
 	CImageButton::ErrorDisplayed = false; // display first error message
@@ -52,7 +54,7 @@ int CScreen::ScriptReset()
 	{
 		TheFrame->GCodeDlg.m_DialogFaceInUse = CUSTOM_DLG_FACE;
 		TheFrame->GCodeDlg.DestroyWindow();
-		TheFrame->GCodeDlg.Create(IDD_KMOTIONCNC_0_ORIGINAL + CUSTOM_DLG_FACE);  // put up the real main window
+		TheFrame->GCodeDlg.Create(IDD_KMOTIONCNC_0_ORIGINAL + CUSTOM_DLG_FACE, NULL);  // put up the real main window
 		TheFrame->GCodeDlg.m_LastFixtureDisplayed = TheFrame->GCodeDlg.m_LastToolDisplayed = -1;
 	}
 
@@ -66,9 +68,12 @@ int CScreen::ProcessScript(CString file, int OffX, int OffY)
 	bool SubScript = true;
 	static int NestingLevel = 0;
 	DLG_CONTROL *Dlg;
-	CStringW sw;
+	CString sw;
 
 	if (file == "") return 0;  // nothing specified do nothing
+
+	// Disable redraw
+	TheFrame->GCodeDlg.SetRedraw(FALSE);
 
 	AddRelPaths(file);  // if not absolute path find in default directories
 
@@ -80,15 +85,15 @@ int CScreen::ProcessScript(CString file, int OffX, int OffY)
 	// Open the file with the specified encoding
 	// Some editors like NotePad++ don't put BOM Byte Order Mark so better to let Windows decide
 	FILE *fStream;
-	errno_t e = _tfopen_s(&fStream, file, _T("rt,ccs=UNICODE"));
-	if (e != 0)  // failed..CString sRead;
+	_tfopen_s(&fStream, file, _T("rt,ccs=UNICODE"));
+	if (!fStream)  // failed..
 	{
-		MessageBoxW(NULL, TheFrame->KMotionDLL->Translate("Unable to open Screen Script file:\r\r") + (CStringW)file, L"KMotionCNC", MB_ICONSTOP | MB_OK);
+		MessageBox(NULL, TheFrame->KMotionDLL->Translate("Unable to open Screen Script file:\r\r") + file, L"KMotionCNC", MB_ICONSTOP | MB_OK);
 		return 1;
 	}
 
 
-	CStringW sRead;
+	CString sRead;
 
 	Dlg = new DLG_CONTROL();
 
@@ -106,7 +111,7 @@ int CScreen::ProcessScript(CString file, int OffX, int OffY)
 			{
 				FirstLine = false;
 				NestingLevel++;
-				CStringW swl = sw;
+				CString swl = sw;
 				{
 					if (swl.MakeLower().Find(L"subscript") == 0)
 					{
@@ -135,7 +140,7 @@ int CScreen::ProcessScript(CString file, int OffX, int OffY)
 			{
 				fclose(fStream);
 				if (result == 2)
-					MessageBoxW(NULL, L"Screen Script file:\r\r" + (CStringW)file + /*TRAN*/TheFrame->KMotionDLL->Translate("\r\rUnable to find ID:\r\r") + (CStringW)Dlg->Name,
+					MessageBox(NULL, L"Screen Script file:\r\r" + file + /*TRAN*/TheFrame->KMotionDLL->Translate("\r\rUnable to find ID:\r\r") + Dlg->Name,
 						L"KMotionCNC", MB_ICONSTOP | MB_OK);
 				--NestingLevel;
 				return 1;
@@ -167,11 +172,14 @@ int CScreen::ProcessScript(CString file, int OffX, int OffY)
 				if (Execute(Dlg->Script, Dlg, &NewControl, OffX, OffY))
 				{
 					CString Script = Dlg->Script;
-					MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Screen Load Label Action/Script/WinMsg.  ID:") + (CStringW) Dlg->Name + L"\r\r" + (CStringW)Script, 
+					MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Screen Load Label Action/Script/WinMsg.  ID:") +  Dlg->Name + L"\r\r" + Script, 
 						L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 				}
 		}
 	}
+
+	// Re-enable redraw
+	TheFrame->GCodeDlg.SetRedraw(TRUE);
 
 
 	if (--NestingLevel == 0 && !SubScript)
@@ -187,21 +195,21 @@ int CScreen::CreateListOfAllControlsInScriptFile(CString file)
 	bool SubScript = true;
 	static int NestingLevel = 0;
 	wchar_t wcsString[4001];
-	CStringW sw;
+	CString sw;
 	DLG_CONTROL Dlg;
 
 	// Open the file with the specified encoding
 	// Some editors like NotePad++ don't put BOM Byte Order Mark so better to let Windows decide
 	FILE* fStream;
-	errno_t e = _tfopen_s(&fStream, file, _T("rt,ccs=UNICODE"));
-	if (e != 0)  // failed..CString sRead;
+	_tfopen_s(&fStream, file, _T("rt,ccs=UTF-8"));
+	if (!fStream)  // failed
 	{
-		MessageBoxW(NULL, TheFrame->KMotionDLL->Translate("Unable to open Screen Script file:\r\r") + (CStringW)file, L"KMotionCNC", MB_ICONSTOP | MB_OK);
+		MessageBox(NULL, TheFrame->KMotionDLL->Translate("Unable to open Screen Script file:\r\r") + file, L"KMotionCNC", MB_ICONSTOP | MB_OK);
 		return 1;
 	}
 
 
-	CStringW sRead;
+	CString sRead;
 
 	bool bReadData, NewControl, FirstLine = true;
 
@@ -219,7 +227,7 @@ int CScreen::CreateListOfAllControlsInScriptFile(CString file)
 			{
 				FirstLine = false;
 				NestingLevel++;
-				CStringW swl = sw;
+				CString swl = sw;
 				{
 					if (swl.MakeLower().Find(L"subscript") == 0)
 					{
@@ -241,15 +249,25 @@ int CScreen::CreateListOfAllControlsInScriptFile(CString file)
 			{
 				fclose(fStream);
 				if (result == 2)
-					MessageBoxW(NULL, L"Screen Script file:\r\r" + (CStringW)file + /*TRAN*/TheFrame->KMotionDLL->Translate("\r\rUnable to find ID:\r\r") + (CStringW)Dlg.Name,
+					MessageBox(NULL, L"Screen Script file:\r\r" + file + /*TRAN*/TheFrame->KMotionDLL->Translate("\r\rUnable to find ID:\r\r") + Dlg.Name,
 						L"KMotionCNC", MB_ICONSTOP | MB_OK);
 				--NestingLevel;
 				return 1;
 			}
 
-			if (NewControl)
+			// every control the script mentions, whether or not it already exists
+			// from an earlier load of a screen - listing only new controls left
+			// the list empty when a screen was loaded again, so its controls were
+			// not reset when switching to another face
+			if (sw.Find(L"ID:") == 0)
 			{
-				DlgControlIDsFound.AddTail(Dlg.ID);
+				CString sid = sw, Name;
+				if (ParseString(sid, L"ID:", Name, true) == 0)
+				{
+					int ID = FindResourceIDs(Name);
+					if (ID > 0 && DlgControlIDsFound.Find(ID) == NULL)
+						DlgControlIDsFound.AddTail(ID);
+				}
 			}
 		}
 	} while (bReadData);
@@ -277,7 +295,7 @@ BOOL CScreen::SetWindowPosDPI(CWnd *W, const CWnd* pWndInsertAfter, int x, int y
 // Main: defines the Main Dialog Settings
 // 
 
-int CScreen::Execute(CStringW s, DLG_CONTROL *Dlg, bool *NewControl, int OffX, int OffY)
+int CScreen::Execute(CString s, DLG_CONTROL *Dlg, bool *NewControl, int OffX, int OffY)
 {
 	*NewControl = false;
 
@@ -315,16 +333,16 @@ int CScreen::Execute(CStringW s, DLG_CONTROL *Dlg, bool *NewControl, int OffX, i
 	return 0;
 }
 
-int CScreen::DoSScript(CStringW s, int OffX, int OffY)
+int CScreen::DoSScript(CString s, int OffX, int OffY)
 {
 	CString FileName;
 	int NX, NY;
 
-	if (ParseString(s, "SScript:", FileName)) return 1;
+	if (ParseString(s, L"SScript:", FileName)) return 1;
 	if (s.GetLength() > 2)  // XY is optional
 	{
-		if (ParseInt(s, "X:", NX)) return 1;
-		if (ParseInt(s, "Y:", NY)) return 1;
+		if (ParseInt(s, L"X:", NX)) return 1;
+		if (ParseInt(s, L"Y:", NY)) return 1;
 		OffX += NX;
 		OffY += NY;
 	}
@@ -332,11 +350,11 @@ int CScreen::DoSScript(CStringW s, int OffX, int OffY)
 	return ProcessScript(FileName, OffX, OffY);
 }
 
-int CScreen::DoWinMsg(CStringW s)
+int CScreen::DoWinMsg(CString s)
 {
 	CString Msg,DlgName;
 
-	if (ParseString(s, "WinMsg:", Msg)) return 1;
+	if (ParseString(s, L"WinMsg:", Msg)) return 1;
 
 
 	HWND Foreground = GetForegroundWindow();
@@ -355,7 +373,7 @@ int CScreen::DoWinMsg(CStringW s)
 		int ID = FindResourceIDs(name);
 		if (ID == -1)
 		{
-			MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid WinMsg ID Name: ") + (CStringW) name, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+			MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid WinMsg ID Name: ") +  name, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 			return 1;
 		}
 
@@ -386,13 +404,13 @@ int CScreen::DoWinMsg(CStringW s)
 			}
 			else
 			{
-				MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid WinMsg Message Param : ") + (CStringW) Param, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+				MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid WinMsg Message Param : ") +  Param, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 				return 1;
 			}
 		}
 		else
 		{
-			MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid WinMsg Message Code : ") + (CStringW) MessageCode, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+			MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid WinMsg Message Code : ") +  MessageCode, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 			return 1;
 		}
 
@@ -422,7 +440,7 @@ int CScreen::DoWinMsg(CStringW s)
 		WORD Key;
 		CString MessageCode = Part(2, Msg);
 		CString Param = Part(3, Msg);
-		sscanf(Param, "%d", &nParam);
+		swscanf(Param, L"%d", &nParam);
 
 		bool ShiftWasDown = (GetKeyState(VK_SHIFT) & (1<<31)) != 0;
 		bool ControlWasDown = (GetKeyState(VK_CONTROL) & (1<<31)) != 0;
@@ -464,7 +482,7 @@ int CScreen::DoWinMsg(CStringW s)
 		}
 		else
 		{
-			MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid WinMsg Message Code : ") + (CStringW) MessageCode, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+			MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid WinMsg Message Code : ") +  MessageCode, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 			return 1;
 		}
 
@@ -489,7 +507,7 @@ int CScreen::DoWinMsg(CStringW s)
 	}
 	else
 	{
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid WinMsg Type: ") + (CStringW) type, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid WinMsg Type: ") +  type, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 1;
 	}
 
@@ -530,18 +548,18 @@ int CScreen::KeyUp(WORD vkey)
 }
 
 
-int CScreen::DoAction(CStringW s)
+int CScreen::DoAction(CString s)
 {
 	int result;
 	CString Action;
 	MCODE_ACTION MCodeAction;
 
-	if (ParseString(s, "Action:", Action)) return 1;
+	if (ParseString(s, L"Action:", Action)) return 1;
 
-	result = sscanf(Action, "%d", &MCodeAction.Action);
+	result = swscanf(Action, L"%d", &MCodeAction.Action);
 	if (result != 1 || MCodeAction.Action<0 || MCodeAction.Action>M_Action_Waitbit)
 	{
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Action Code"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+		MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Action Code"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 		return 1;
 	}
 
@@ -554,10 +572,10 @@ int CScreen::DoAction(CStringW s)
 		}
 		else
 		{
-			result = sscanf(s, "%lf", &MCodeAction.dParams[i]);
+			result = swscanf(s, L"%lf", &MCodeAction.dParams[i]);
 			if (result != 1)
 			{
-				MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Action Parameter"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+				MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Action Parameter"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 				return 1;
 			}
 		}
@@ -566,31 +584,42 @@ int CScreen::DoAction(CStringW s)
 
 	AddRelPaths(Name);
 
-	strncpy(MCodeAction.String, Name, sizeof(MCodeAction.String));
+	wcsncpy(MCodeAction.String, Name, sizeof(MCodeAction.String)/sizeof(wchar_t));
 
 	return TheFrame->GCodeDlg.Interpreter->InvokeAction(-1, false, &MCodeAction);
 }
 
-int CScreen::DoMainDlg(CStringW s)
+int CScreen::DoMainDlg(CString s)
 {
 	bool CaptionSpecified = false;
 
-	if (ParseInt(s, "Main:CX:", MainCX)) return 1;
-	if (ParseInt(s, "CY:", MainCY)) return 1;
-	if (ParseIntHex(s, "BackColor:", MainBackColor)) return 1;
+	if (ParseInt(s, L"Main:CX:", MainCX)) return 1;
+	if (ParseInt(s, L"CY:", MainCY)) return 1;
+	if (ParseIntHex(s, L"BackColor:", MainBackColor)) return 1;
 
 	// Check for backward compatibilty
-	if (s.Find(L"Caption:") == 0 && ParseInt(s, "Caption:", Caption, true) == 0)
+	if (s.Find(L"Caption:") == 0 && ParseInt(s, L"Caption:", Caption, true) == 0)
 	{
 		CaptionSpecified = true;
-		if (ParseInt(s, "MaxBox:", MaxBox)) return 1;
-		if (ParseInt(s, "MinBox:", MinBox)) return 1;
-		if (ParseInt(s, "ResizeFrame:", ResizeFrame)) return 1;
-		if (ParseInt(s, "Maximize:", Maximize)) return 1;
+		if (ParseInt(s, L"MaxBox:", MaxBox)) return 1;
+		if (ParseInt(s, L"MinBox:", MinBox)) return 1;
+		if (ParseInt(s, L"ResizeFrame:", ResizeFrame)) return 1;
+		if (ParseInt(s, L"Maximize:", Maximize)) return 1;
 	}
 
 	BackBitmap = ""; // default to none
-	ParseString(s, "BackBitmap:", BackBitmap, true);
+	ParseString(s, L"BackBitmap:", BackBitmap, true);
+
+	// optional (older versions ignore it): image buttons get the text buttons'
+	// thin 1px edge, and all button edges are tinted from the button colour
+	int Thin = 0;
+	ParseInt(s, L"ThinEdges:", Thin, true);
+	if (CImageButton::ThinEdges != (Thin != 0))
+	{
+		CImageButton::ThinEdges = Thin != 0;
+		if (TheFrame->GCodeDlg.m_hWnd)
+			TheFrame->GCodeDlg.RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN);
+	}
 
 
 	MainBackColor = SwapRGB(MainBackColor);
@@ -619,10 +648,10 @@ int CScreen::DoMainDlg(CStringW s)
 		BGFile_loaded = BGFile;
 		if (BackBitmap != "")
 		{
-			HRESULT result = BGimg.Load(_T(BGFile));
+			HRESULT result = BGimg.Load(BGFile);
 			if (result == E_FAIL)
 			{
-				MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Can't open Background image:") + (CStringW) BGFile, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+				MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Can't open Background image:") + BGFile, L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 				return 1;
 			}
 			Convert24to32(&BGimg);
@@ -677,21 +706,27 @@ int CScreen::DoMainDlg(CStringW s)
 		TheFrame->GCodeDlg.ModifyStyle(WS_MAXIMIZE, 0); // off
 		TheFrame->GCodeDlg.SetWindowPos(0, 0, 0, MainCX, MainCY, SWP_NOREDRAW | SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOMOVE);
 	}
+
+	HICON 	m_hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDR_MAINFRAME));
+	TheFrame->GCodeDlg.SendMessage(WM_SETICON, ICON_SMALL, (LPARAM)m_hIcon);
+	m_hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDR_MAINFRAME));
+	TheFrame->GCodeDlg.SendMessage(WM_SETICON, ICON_BIG, (LPARAM)m_hIcon);
+
 	return 0;
 }
 
-int CScreen::DoScriptName(CStringW s)
+int CScreen::DoScriptName(CString s)
 {
-	if (ParseString(s, "ScriptName:", LastLoadedScreen, true)) return 1;
+	if (ParseString(s, L"ScriptName:", LastLoadedScreen, true)) return 1;
 	return 0;
 }
 
-int CScreen::DoControlID(CStringW s, DLG_CONTROL *Dlg, bool *NewControl, int OffX, int OffY)
+int CScreen::DoControlID(CString s, DLG_CONTROL *Dlg, bool *NewControl, int OffX, int OffY)
 {
 	int ishow, iBold, iItalic, ID;
 	CString Name;
 // ID:IDC_ZeroAll,Type:PUSHBUTTON,X:11,Y:211,CX:54,CY:23,Show:1,Var:0,BitmapFile:,Colors:,Font:,FontSize:,HotKey:,Text:zero all
-	if (ParseString(s, "ID:", Name)) return 1;
+	if (ParseString(s, L"ID:", Name)) return 1;
 	ID = FindResourceIDs(Name);
 	if (Dlg->ID == -1) return 2;
 
@@ -718,29 +753,29 @@ int CScreen::DoControlID(CStringW s, DLG_CONTROL *Dlg, bool *NewControl, int Off
 	{
 		PrevLength = s.GetLength();
 
-		if (ParseString(s, "Type:", Dlg->Type, true) == 1) return 1;
+		if (ParseString(s, L"Type:", Dlg->Type, true) == 1) return 1;
 		if (s.Find(L"X:") == 0) XSpecified = true;
-		if (ParseInt(s, "X:", Dlg->x, true) == 1) return 1;
+		if (ParseInt(s, L"X:", Dlg->x, true) == 1) return 1;
 		if (s.Find(L"Y:") == 0) YSpecified = true;
-		if (ParseInt(s, "Y:", Dlg->y, true) == 1) return 1;
-		if (ParseInt(s, "CX:", Dlg->width, true) == 1) return 1;
-		if (ParseInt(s, "CY:", Dlg->height, true) == 1) return 1;
-		if (ParseInt(s, "Show:", ishow, true) == 1) return 1;
+		if (ParseInt(s, L"Y:", Dlg->y, true) == 1) return 1;
+		if (ParseInt(s, L"CX:", Dlg->width, true) == 1) return 1;
+		if (ParseInt(s, L"CY:", Dlg->height, true) == 1) return 1;
+		if (ParseInt(s, L"Show:", ishow, true) == 1) return 1;
 		Dlg->show = ishow == 1;
-		if (ParseInt(s, "Var:", Dlg->Var, true) == 1) return 1;
-		if (ParseInt(s, "Style:", Dlg->Style, true) == 1) return 1;
+		if (ParseInt(s, L"Var:", Dlg->Var, true) == 1) return 1;
+		if (ParseInt(s, L"Style:", Dlg->Style, true) == 1) return 1;
 		if (ParseString(s, /*TRAN*/"BitmapFile:", Dlg->BitmapFile, true) == 1) return 1;
-		if (ParseString(s, "Colors:", Dlg->Colors, true) == 1) return 1;
-		if (ParseString(s, "Font:", Dlg->FontName, true) == 1) return 1;
-		if (ParseInt(s, "FontSize:", Dlg->FontSize, true) == 1) return 1;
-		if (ParseInt(s, "HotKey:", Dlg->HotKey, true) == 1) return 1;
-		if (ParseInt(s, "Bold:", iBold, true) == 1) return 1;
+		if (ParseString(s, L"Colors:", Dlg->Colors, true) == 1) return 1;
+		if (ParseString(s, L"Font:", Dlg->FontName, true) == 1) return 1;
+		if (ParseInt(s, L"FontSize:", Dlg->FontSize, true) == 1) return 1;
+		if (ParseInt(s, L"HotKey:", Dlg->HotKey, true) == 1) return 1;
+		if (ParseInt(s, L"Bold:", iBold, true) == 1) return 1;
 		Dlg->Bold = iBold == 1;
-		if (ParseInt(s, "Italic:", iItalic, true) == 1) return 1;
+		if (ParseInt(s, L"Italic:", iItalic, true) == 1) return 1;
 		Dlg->Italic = iItalic == 1;
-		if (ParseString(s, "Text:", Dlg->Text, true) == 1) return 1;
-		if (ParseString(s, "ToolTipText:", Dlg->ToolTipText, true) == 1) return 1;
-		if (ParseString(s, "Script:", Dlg->Script, true) == 1) return 1;
+		if (ParseString(s, L"Text:", Dlg->Text, true) == 1) return 1;
+		if (ParseString(s, L"ToolTipText:", Dlg->ToolTipText, true) == 1) return 1;
+		if (ParseString(s, L"Script:", Dlg->Script, true) == 1) return 1;
 	} while (s.GetLength() != PrevLength);
 
 	if (XSpecified) Dlg->x += OffX;  // Add in Offsets if they were specified, otherwise leave original
@@ -749,7 +784,7 @@ int CScreen::DoControlID(CStringW s, DLG_CONTROL *Dlg, bool *NewControl, int Off
 
 	if (s.GetLength() != 0)
 	{
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Screen Script Format. \r\r") + s, L"KMotionCNC", MB_ICONSTOP | MB_OK);
+		MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Screen Script Format. \r\r") + s, L"KMotionCNC", MB_ICONSTOP | MB_OK);
 		return 1;
 	}
 
@@ -760,17 +795,21 @@ int CScreen::DoControlID(CStringW s, DLG_CONTROL *Dlg, bool *NewControl, int Off
 
 	if (!W)
 	{
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Screen Script File.  Screen Control not found.\r\r") + (CStringW)Dlg->Name,
+		MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Screen Script File.  Screen Control not found.\r\r") + Dlg->Name,
 			L"KMotionCNC", MB_ICONSTOP | MB_OK);
 		return 1;
 	}
 
 	if (Dlg->ID == IDC_Editor)
 	{
+		// Colors are text;background and Highlight colors are the selection's.  Unspecified are standard
+		COLORREF Text = PartColor(0, Dlg->Colors), Back = PartColor(1, Dlg->Colors);
+		COLORREF SelText = PartColor(2, Dlg->Colors), SelBack = PartColor(3, Dlg->Colors);
+
 		if (Dlg->FontName != "")
-			TheFrame->GCodeDlg.m_Editor.SetupForGCode(Dlg->FontSize, Dlg->FontName);
+			TheFrame->GCodeDlg.m_Editor.SetupForGCode(Dlg->FontSize, Dlg->FontName, Text, Back, SelText, SelBack);
 		else
-			TheFrame->GCodeDlg.m_Editor.SetupForGCode(10, "Courier New");
+			TheFrame->GCodeDlg.m_Editor.SetupForGCode(10, L"Courier New", Text, Back, SelText, SelBack);
 		TheFrame->GCodeDlg.m_Editor.ReadWriteVar = Dlg->Var;
 
 		if (Dlg->Var == 0 || Dlg->Var == 2)
@@ -779,6 +818,9 @@ int CScreen::DoControlID(CStringW s, DLG_CONTROL *Dlg, bool *NewControl, int Off
 			if (Dlg->Var == 1)
 				TheFrame->GCodeDlg.m_Editor.SetReadOnly(FALSE);
 	}
+
+	if (Dlg->ID == IDC_viewctl)
+		SetViewBackColor(PartColor(0, Dlg->Colors));  // the first color is the 3D Viewer's background
 
 	CEditScreen *E=NULL;
 	CComboBoxScreen *C=NULL;
@@ -794,7 +836,7 @@ int CScreen::DoControlID(CStringW s, DLG_CONTROL *Dlg, bool *NewControl, int Off
 		AddRelPaths(Part0);
 		AddRelPaths(Part1);
 
-		I->LoadBitmaps(Part0, Part1, "");
+		I->LoadBitmaps(Part0, Part1, L"");
 
 		if (Dlg->Colors != ";;;" && Dlg->Colors != "")
 		{
@@ -833,6 +875,7 @@ int CScreen::DoControlID(CStringW s, DLG_CONTROL *Dlg, bool *NewControl, int Off
 			E->SetFont(Dlg->FontName, Dlg->FontSize, Dlg->Bold, Dlg->Italic);
 			E->ToolTipText = Dlg->ToolTipText;
 			E->Var = Dlg->Var;
+			E->SetColors(PartColor(0, Dlg->Colors), PartColor(1, Dlg->Colors));
 		}
 
 		C = FindComboBoxScreen(Dlg->ID);
@@ -841,6 +884,7 @@ int CScreen::DoControlID(CStringW s, DLG_CONTROL *Dlg, bool *NewControl, int Off
 			C->SetFont(Dlg->FontName, Dlg->FontSize, Dlg->Bold, Dlg->Italic);
 			C->ToolTipText = Dlg->ToolTipText;
 			C->Var = Dlg->Var;
+			C->SetColors(PartColor(0, Dlg->Colors), PartColor(1, Dlg->Colors), PartColor(2, Dlg->Colors), PartColor(3, Dlg->Colors));
 		}
 
 		D = FindDisplay(Dlg->ID);
@@ -849,7 +893,13 @@ int CScreen::DoControlID(CStringW s, DLG_CONTROL *Dlg, bool *NewControl, int Off
 			if (Dlg->FontName != "")
 				D->SetFont(Dlg->FontName, Dlg->FontSize, Dlg->Bold, Dlg->Italic);
 			else
-				D->SetFont("Courier New", 36, true, false);
+				D->SetFont(L"Courier New", 36, true, false);
+
+			// if Text is specified then treat it as DRO format of number to be displayed
+			// including any axis character if desired
+			// if different formats for Inches and mm are desired separate them with ;
+			// eg  X:%10.4f;X:%10.3f
+			D->SetFormat(Dlg->Text);
 
 			int Color1 = 0; // default to black background
 			if (Dlg->Colors != ";;;" && Dlg->Colors != "")
@@ -866,9 +916,19 @@ int CScreen::DoControlID(CStringW s, DLG_CONTROL *Dlg, bool *NewControl, int Off
 	// only change text of controls not dynamically updated
 	if (CheckIfOKtoChangeText(Dlg->ID))
 	{
+		if (I) I->m_GViewPos = false;
+
 		if (I && I->Style == DROLabel && Dlg->Text == "$KEEP$")
 		{
 			I->SetText(I->m_szText);
+		}
+		else if (I && Dlg->Text.CompareNoCase(L"$GViewPos$") == 0)
+		{
+			// live G Viewer cursor readout (xy, ref, del, len), which the
+			// floating viewer shows in its title bar - a viewer embedded in the
+			// screen has none.  Filled in by COpenglCtl::OnMouseMove
+			I->m_GViewPos = true;
+			I->SetText(L"");
 		}
 		else 
 		if (I && I->Style != Radio && I->Style != CheckBox)
@@ -896,9 +956,26 @@ int CScreen::DoControlID(CStringW s, DLG_CONTROL *Dlg, bool *NewControl, int Off
 	return 0;
 }
 
+// Set the 3D Viewer's background from the Screen Script (CLR_DEFAULT = standard).  Kept here for
+// SetupOpenGL rather than looked up from the list of controls because a new control is only added
+// to the list after the Viewer has been positioned.  Also update the Viewer now since changing only
+// the colors doesn't move or resize it.
+void CScreen::SetViewBackColor(COLORREF c)
+{
+	if (c == ViewBackColor) return;
+	ViewBackColor = c;
+
+	COpenglCtl *V = &TheFrame->GCodeDlg.ActualGViewParent->m_view;
+	if (V->m_hWnd && V->m_hGLContext)
+	{
+		V->SetupOpenGL();
+		V->Invalidate();
+	}
+}
+
 void CScreen::AddRelPaths(CString &FileName)
 {
-	if (FileName != "" && FileName.Find("\\\\") == -1 && FileName.Find(':') == -1)
+	if (FileName != "" && FileName.Find(L"\\\\") == -1 && FileName.Find(':') == -1)
 	{
 		// Determine from the Previous FileName (if any), the default subdirectory path, and a default name
 		// return the full path to be used to divert the Open Dialog to the right place
@@ -936,6 +1013,7 @@ void CScreen::AddRelPaths(CString &FileName)
 		Name = TheFrame->MainPathRoot + SCREEN_SCRIPTS_DIR + FileName;
 		if (CheckIfFileExists(Name))
 		{
+			cache[FileName] = TheFrame->MainPathRoot + SCREEN_SCRIPTS_DIR; // add to cache
 			FileName = Name;
 			return;
 		}
@@ -943,6 +1021,7 @@ void CScreen::AddRelPaths(CString &FileName)
 		Name = TheFrame->MainPathRoot + SCREEN_BITMAPS_DIR + FileName;
 		if (CheckIfFileExists(Name))
 		{
+			cache[FileName] = TheFrame->MainPathRoot + SCREEN_BITMAPS_DIR; // add to cache
 			FileName = Name;
 			return;
 		}
@@ -950,6 +1029,7 @@ void CScreen::AddRelPaths(CString &FileName)
 		Name = TheFrame->MainPathRoot + C_PROGRAMS_DIR + FileName;
 		if (CheckIfFileExists(Name))
 		{
+			cache[FileName] = TheFrame->MainPathRoot + C_PROGRAMS_DIR; // add to cache
 			FileName = Name;
 			return;
 		}
@@ -960,6 +1040,16 @@ void CScreen::AddRelPaths(CString &FileName)
 
 CString CScreen::Recurse(CString pstr, CString File)
 {
+	// Check cache first
+	auto it = cache.find(File);
+	if (it != cache.end()) {
+		// Confirm the cached path is still valid
+		if (CheckIfFileExists(it->second + File))
+			return it->second;
+		// If not valid, erase it
+		cache.erase(it);
+	}
+
 	CFileFind finder;
 
 	if (pstr == "") return "";
@@ -992,7 +1082,10 @@ CString CScreen::Recurse(CString pstr, CString File)
 			CString str = finder.GetFilePath() + '\\';
 			result = Recurse(str, File);
 			if (result != "")
+			{
+				cache[File] = result; // add to cache
 				break;
+			}
 		}
 	}
 
@@ -1002,7 +1095,9 @@ CString CScreen::Recurse(CString pstr, CString File)
 
 bool CScreen::CheckIfFileExists(CString Name)
 {
-	FILE *fp = fopen(Name, "rb");
+	FILE* fp;
+	_tfopen_s(&fp, Name, _T("rt,ccs=UTF-8"));
+
 	if (fp)
 	{
 		fclose(fp);
@@ -1030,6 +1125,11 @@ void CScreen::ResetAllControls()
 
 
 	int k;
+
+	// Thin Edges is a screen option: off for the standard faces and until a
+	// screen's Main line turns it on
+	CImageButton::ThinEdges = false;
+
 	POSITION position = CImageButton::ImageButtons.GetHeadPosition();
 
 	for (int i = 0; i < CImageButton::ImageButtons.GetCount(); i++)
@@ -1102,20 +1202,20 @@ DLG_CONTROL *CScreen::FindDlgControl(int ID)
 	return NULL;
 }
 
-CStringW CScreen::CreateScript(DLG_CONTROL *DlgCtrl)
+CString CScreen::CreateScript(DLG_CONTROL *DlgCtrl)
 {
-	CStringW s;
-	CStringW wName = DlgCtrl->Name;			RemoveCommasW(wName);
-	CStringW wType = DlgCtrl->Type;				RemoveCommasW(wType);
-	CStringW wBitmapFile = DlgCtrl->BitmapFile;	RemoveCommasW(wBitmapFile);
-	CStringW wColors = DlgCtrl->Colors;			RemoveCommasW(wColors);
-	CStringW wFontName = DlgCtrl->FontName;		RemoveCommasW(wFontName);
-	CStringW wToolTipText = DlgCtrl->ToolTipText;			RemoveCommasW(wToolTipText);
-	CStringW wText = DlgCtrl->Text;				RemoveCommasW(wText);
+	CString s;
+	CString wName = DlgCtrl->Name;			RemoveCommasW(wName);
+	CString wType = DlgCtrl->Type;				RemoveCommasW(wType);
+	CString wBitmapFile = DlgCtrl->BitmapFile;	RemoveCommasW(wBitmapFile);
+	CString wColors = DlgCtrl->Colors;			RemoveCommasW(wColors);
+	CString wFontName = DlgCtrl->FontName;		RemoveCommasW(wFontName);
+	CString wToolTipText = DlgCtrl->ToolTipText;			RemoveCommasW(wToolTipText);
+	CString wText = DlgCtrl->Text;				RemoveCommasW(wText);
 
 	s.GetBufferSetLength(2000);
 	
-	s.Format(L"ID:%s,Type:%s,X:%d,Y:%d,CX:%d,CY:%d,Show:%d,Var:%d,Style:%d,BitmapFile:%s,Colors:%s,Font:%s,FontSize:%d,HotKey:%d,Bold:%d,Italic:%d,Text:%s,ToolTipText:%s,Script:%s",
+	s.Format(L"ID:%ls,Type:%ls,X:%d,Y:%d,CX:%d,CY:%d,Show:%d,Var:%d,Style:%d,BitmapFile:%ls,Colors:%ls,Font:%ls,FontSize:%d,HotKey:%d,Bold:%d,Italic:%d,Text:%ls,ToolTipText:%ls,Script:%ls",
 		(LPCWSTR)wName, (LPCWSTR)wType, DlgCtrl->x, DlgCtrl->y, DlgCtrl->width, DlgCtrl->height, DlgCtrl->show ? 1 : 0, DlgCtrl->Var, DlgCtrl->Style,
 		(LPCWSTR)wBitmapFile,(LPCWSTR)wColors, wFontName, DlgCtrl->FontSize, DlgCtrl->HotKey, DlgCtrl->Bold ? 1 : 0, DlgCtrl->Italic ? 1 : 0, (LPCWSTR)wText,
 		(LPCWSTR)wToolTipText, (LPCWSTR)DlgCtrl->Script);
@@ -1123,7 +1223,7 @@ CStringW CScreen::CreateScript(DLG_CONTROL *DlgCtrl)
 	return s;
 }
 
-void CScreen::RemoveCommasW(CStringW &s)
+void CScreen::RemoveCommasW(CString &s)
 {
 	s.Replace(L",", L" ");
 }
@@ -1277,7 +1377,7 @@ int CScreen::ServiceImageButtons()
 
 				if (result)
 				{
-					MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Reading Persist Variable for Vert Bar Graph"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+					MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Reading Persist Variable for Vert Bar Graph"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 					return 1;
 				}
 
@@ -1294,21 +1394,21 @@ int CScreen::ServiceImageButtons()
 
 				if (result)
 				{
-					MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Reading Persist Variable for DRO"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+					MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Reading Persist Variable for DRO"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 					return 1;
 				}
 				
 				if (value != 0)
 				{
-					CString s;
+					CStringA s;
 					result = TheFrame->GCodeDlg.GetStringFromGather(value, &s, 50);
 					if (result)
 					{
-						MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Reading String for DRO"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+						MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Reading String for DRO"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 						return 1;
 					}
 					if (TheFrame->GCodeDlg.SetVar(p->Var, 0)) return 1;
-					CStringW sw = ConvertANSIToWide(s);
+					CString sw = ConvertANSIToWide(s);
 					p->SetText(sw.GetBuffer());
 					p->Invalidate(TRUE);
 				}
@@ -1340,21 +1440,21 @@ int CScreen::ServiceImageButtons()
 
 			if (result)
 			{
-				MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Reading Persist Variable for Edit Control"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+				MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Reading Persist Variable for Edit Control"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 				return 1;
 			}
 
 			if (value < 0)
 			{
-				CString s;
+				CStringA s;
 				result = TheFrame->GCodeDlg.GetStringFromGather(-value, &s, 50);
 				if (result)
 				{
-					MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Reading String for Edit Control"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+					MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Reading String for Edit Control"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 					return 1;
 				}
 				if (TheFrame->GCodeDlg.SetVar(p->Var, 0)) return 1;
-				CStringW sw = ConvertANSIToWide(s);
+				CString sw = ConvertANSIToWide(s);
 				p->SetWText(sw.GetBuffer());
 				p->Invalidate(TRUE);
 			}
@@ -1374,21 +1474,21 @@ int CScreen::ServiceImageButtons()
 
 			if (result)
 			{
-				MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Reading Persist Variable for Edit Control"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+				MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Reading Persist Variable for Edit Control"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 				return 1;
 			}
 
 			if (value < 0)
 			{
-				CString s;
+				CStringA s;
 				result = TheFrame->GCodeDlg.GetStringFromGather(-value, &s, 50);
 				if (result)
 				{
-					MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Reading String for Edit Control"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
+					MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Error Reading String for Edit Control"), L"KMotion", MB_ICONSTOP|MB_OK|MB_TOPMOST|MB_SETFOREGROUND|MB_SYSTEMMODAL);
 					return 1;
 				}
 				if (TheFrame->GCodeDlg.SetVar(p->Var, 0)) return 1;
-				CStringW sw = ConvertANSIToWide(s);
+				CString sw = ConvertANSIToWide(s);
 				p->SetWText(sw.GetBuffer());
 				p->Invalidate(TRUE);
 			}
@@ -1434,7 +1534,7 @@ bool CScreen::GetStatusBit(int bit)
 	// If main frame couldn't connect then don't bother
 	if (!TheFrame->GCodeDlg.m_ConnectedForStatus) return false;
 
-	if (bit >= 1024 && bit < 2047) ReadBitCached(bit);
+	if (bit >= 1024 && bit < 2047) return ReadBitCached(bit);
 
 	return false;
 }
@@ -1444,7 +1544,7 @@ bool CScreen::ReadBitCached(int bit)
 {
 	static int VirtualBitsEx[N_VIRTUAL_BITS_EX / 32];	// 1024 Expanded Virtual Bits 
 	static CHiResTimer Timer;
-	CString ch;
+	CStringA ch;
 	char  r[MAX_LINE];
 
 	// check if its been a while since we read them
@@ -1464,38 +1564,21 @@ bool CScreen::ReadBitCached(int bit)
 	}
 	// get the desired bit
 
-	return ((VirtualBitsEx[bit / 32] >> (bit % 32)) & 1) == 1;
-}
-// return 0 sucess with data
-// return 1 not found with error
-// return 2 not found error suppressed
-
-int CScreen::ParseString(CStringW &s, const CString label0, CString &r, bool NoErrors)
-{
-	CStringW wr;
-	int result = ParseString(s, label0, wr, NoErrors);
-
-	if (!result)
-		r = wr;
-
-	if (NoErrors)
-		return 0;
-	else
-		return result;
+	return ((VirtualBitsEx[(bit - 1024) / 32] >> (bit % 32)) & 1) == 1;
 }
 
 // return 0 sucess with data
 // return 1 not found with error
 // return 2 not found error suppressed
 
-int CScreen::ParseString(CStringW &s, const CString label0, CStringW &r, bool NoErrors)
+int CScreen::ParseString(CString &s, const CString label0, CString &r, bool NoErrors)
 {
-	CStringW label = label0;
+	CString label = label0;
 
 	if (s.Find(label) != 0)
 	{
 		if (!NoErrors)
-			MessageBoxW(NULL, TheFrame->KMotionDLL->Translate("Error Screen Script File.  Expecting:") + label + "\r\rFound:" + s, L"KMotionCNC", MB_ICONSTOP | MB_OK);
+			MessageBox(NULL, TheFrame->KMotionDLL->Translate("Error Screen Script File.  Expecting:") + label + "\r\rFound:" + s, L"KMotionCNC", MB_ICONSTOP | MB_OK);
 		return NoErrors ? 2 : 1;
 	}
 	s.Delete(0, label.GetLength());
@@ -1516,9 +1599,9 @@ int CScreen::ParseString(CStringW &s, const CString label0, CStringW &r, bool No
 
 
 
-int CScreen::ParseInt(CStringW &s, CString label, int &r, bool NoErrors)
+int CScreen::ParseInt(CString &s, CString label, int &r, bool NoErrors)
 {
-	CStringW v;
+	CString v;
 
 	int result = ParseString(s, label, v, NoErrors);   // must find if error then don't convert
 
@@ -1527,9 +1610,9 @@ int CScreen::ParseInt(CStringW &s, CString label, int &r, bool NoErrors)
 	if (v.IsEmpty()) return NoErrors ? 0 : 1;
 
 	CString va = v;
-	if (sscanf(va, "%d", &r) != 1)
+	if (swscanf(va, L"%d", &r) != 1)
 	{
-		MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Screen Script integer for ") + (CStringW)label, 
+		MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Invalid Screen Script integer for ") + label, 
 			L"KMotionCNC", MB_ICONSTOP | MB_OK);
 		return 1;
 	}
@@ -1537,14 +1620,14 @@ int CScreen::ParseInt(CStringW &s, CString label, int &r, bool NoErrors)
 	return 0;
 }
 
-int CScreen::ParseIntHex(CStringW &s, CString label, int &r)
+int CScreen::ParseIntHex(CString &s, CString label, int &r)
 {
-	CStringW v;
+	CString v;
 
 	if (ParseString(s, label, v)) return 1;
 
 	CString va = v;
-	sscanf(va, "%x", &r);
+	swscanf(va, L"%x", &r);
 	return 0;
 }
 
@@ -1554,21 +1637,28 @@ int CScreen::ReadResourceIDs()
 
 	CString s,Resourceh = TheFrame->MainPathRoot + "\\PC VC Examples\\KMotionCNC\\resource.h";
 
-	FILE *f = fopen(Resourceh,"rt");
+	FILE *f;
+	_tfopen_s(&f, Resourceh, _T("rt,ccs=UTF-8"));
 
 	if (!f)
 	{
-		MessageBoxW(NULL,/*TRAN*/TheFrame->KMotionDLL->Translate("Unable to open Screen resource.h file"), L"KMotionCNC",MB_ICONSTOP|MB_OK);
-		return 1;
+		Resourceh = TheFrame->MainPathDLL64 + "\\resource.h"; // also try where executble is located
+		_tfopen_s(&f, Resourceh, _T("rt,ccs=UTF-8"));
+	
+		if (!f)
+		{
+			MessageBox(NULL,/*TRAN*/TheFrame->KMotionDLL->Translate("Unable to open Screen resource.h file"), L"KMotionCNC",MB_ICONSTOP|MB_OK);
+			return 1;
+		}
 	}
 
 	Defines.RemoveAll();
 
 	while(!feof(f))
 	{
-		fgets(s.GetBufferSetLength(1000),999,f);
+		fgetws(s.GetBufferSetLength(1000),999,f);
 		s.ReleaseBuffer();
-		if (s.Find("#define")==0)
+		if (s.Find(L"#define")==0)
 		{
 			s.Delete(0,7);
 			s=s.TrimLeft(' ');
@@ -1576,8 +1666,32 @@ int CScreen::ReadResourceIDs()
 			Defines.AddTail(s);
 		}
 	}
-	Defines.AddTail("IDC_TOOLBAR 59392");  // note Windows forces this ID for Toolbars
+	Defines.AddTail(L"IDC_TOOLBAR 59392");  // note Windows forces this ID for Toolbars
 	fclose(f);
+
+// Create an ordered list by ID number
+
+#if 0
+
+	CString Resourcehs = TheFrame->MainPathRoot + "\\PC VC Examples\\KMotionCNC\\resource_sort.h";
+
+	FILE* g;
+	_tfopen_s(&g, Resourcehs, _T("wt,ccs=UTF-8"));
+
+
+	for (int i = 1000; i < 7000; i++)
+	{
+		CString r = FindResourceName(i);
+
+		if (r != "")
+		{
+			fwprintf(g, L"#define %-32ls %d\n", r.GetBuffer(), i);
+		}
+	}
+	fclose(g);
+
+#endif
+
 
 	return 0;
 }
@@ -1595,7 +1709,7 @@ CString CScreen::FindResourceName(int ID)
 		s = Defines.GetNext(p);
 		for (j = 0; j < s.GetLength(); j++) if (s[j] == ' ' || s[j] == '\t') break; // find next space
 
-		sscanf((const char *)s + j + 1, "%d", &D_ID);
+		swscanf((const wchar_t *)s + j + 1, L"%d", &D_ID);
 		if (D_ID == ID)
 		{
 			return s.Mid(0, j);
@@ -1606,6 +1720,41 @@ CString CScreen::FindResourceName(int ID)
 
 int CScreen::FindResourceIDs(CString Name)
 {
+	static bool FirstTime = true;
+	static CMapStringToOb hashTable(100);
+	static int* IDs;
+	int i, j, *ID;
+	CString s, r;
+
+	// Use Hash Table Lookup for Name to ID lookup
+	if (FirstTime)
+	{
+		CString IDName;
+		FirstTime = false;
+		if (ReadResourceIDs()) return -1;  // read resource ID symbolic names/IDs (if not already)
+
+		IDs = new int[Defines.GetSize()];
+
+		POSITION p = Defines.GetHeadPosition();
+		for (i = 0; i < Defines.GetSize(); i++)
+		{
+			s = Defines.GetNext(p);
+			for (j = 0; j < s.GetLength(); j++) if (s[j] == ' ' || s[j] == '\t') break; // find next space
+
+			IDName = s.Mid(0, j);
+			swscanf((const wchar_t*)s + j + 1, L"%d", &IDs[i]);
+
+			hashTable.SetAt(IDName, (CObject *) & IDs[i]);
+		}
+	}
+
+	int result = hashTable.Lookup(Name, ((CObject*&)ID));
+	if (result != 0) return *ID;
+	return -1;
+}
+
+#if 0 //tktk
+
 	int i, j, ID;
 	CString s, r;
 
@@ -1618,12 +1767,12 @@ int CScreen::FindResourceIDs(CString Name)
 
 		if (s.Mid(0, j) == Name)
 		{
-			sscanf((const char *)s + j + 1, "%d", &ID);
+			swscanf((const wchar_t *)s + j + 1, L"%d", &ID);
 			return ID;
 		}
 	}
 	return -1;
-}
+#endif
 
 // extract a string into parts separated by semicolons
 CString CScreen::Part(int n, CString p)
@@ -1646,8 +1795,31 @@ int CScreen::PartHex(int n, CString p)
 {
 	int i;	
 	CString s = Part(n, p);
-	if (sscanf(s.GetBuffer(), "%x", &i) != 1) i = 0;;
+	if (swscanf(s.GetBuffer(), L"%x", &i) != 1) i = 0;;
 	return i;
+}
+
+// extract a hex RGB color from parts separated by semicolons, CLR_DEFAULT if not specified
+COLORREF CScreen::PartColor(int n, CString p)
+{
+	int i;
+	CString s = Part(n, p);
+	if (s.Trim().IsEmpty() || swscanf(s, L"%x", &i) != 1) return CLR_DEFAULT;
+	return SwapRGB(i);
+}
+
+// true if light text is easier to read than black text on this color
+bool CScreen::IsDarkColor(COLORREF c)
+{
+	return GetRValue(c) * 299 + GetGValue(c) * 587 + GetBValue(c) * 114 < 128000;
+}
+
+// color the specified percentage of the way from c0 to c1
+COLORREF CScreen::BlendColor(COLORREF c0, COLORREF c1, int percent)
+{
+	return RGB(GetRValue(c0) + (GetRValue(c1) - GetRValue(c0)) * percent / 100,
+			   GetGValue(c0) + (GetGValue(c1) - GetGValue(c0)) * percent / 100,
+			   GetBValue(c0) + (GetBValue(c1) - GetBValue(c0)) * percent / 100);
 }
 
 // Change RGB to BGR 
@@ -1735,7 +1907,7 @@ bool CScreen::Find3MotionButtonsSameAxisDir(int axis, int dir, CMotionButton **B
 // Find a Control with the associated Var number
 // if found, return current text
 
-int CScreen::GetEditScreenVar(int Var, CString *s)
+int CScreen::GetEditScreenVar(int Var, CStringA *s)
 {
 	POSITION position = CEditScreen::EditScreens.GetHeadPosition();
 	for (int i = 0; i<CEditScreen::EditScreens.GetCount(); i++)
@@ -1766,10 +1938,9 @@ int CScreen::GetEditScreenVar(int Var, CString *s)
 }
 
 // Attempt to convert wide string to ANSI string if not possible include hex value instead 
-CString CScreen::ConvertWideToANSI(CStringW sw)
+CStringA CScreen::ConvertWideToANSI(CString sw)
 {
-	CString s, Result;
-	CStringW w;
+	CStringA s, Result;
 
 	for (int i = 0; i < sw.GetLength(); i++)
 	{
@@ -1799,9 +1970,9 @@ CString CScreen::ConvertWideToANSI(CStringW sw)
 }
 
 // Attempt to convert ANSI string to wide string looking for embedded hex wide characters 
-CStringW CScreen::ConvertANSIToWide(CString s)
+CString CScreen::ConvertANSIToWide(CStringA s)
 {
-	CStringW Result;
+	CString Result;
 	
 	int i = 0;
 	while (s[i] != 0)
@@ -1816,7 +1987,7 @@ CStringW CScreen::ConvertANSIToWide(CString s)
 
 			for (k = 0; k < sizeof(wc); k++) 
 			{
-				CString t = s.Mid(i + 2 + k*2, 2);  // two hex digits per byte
+				CStringA t = s.Mid(i + 2 + k*2, 2);  // two hex digits per byte
 				sscanf(t, "%x", &v);
 				p[sizeof(wc) - 1 - k] = (unsigned char)v; // little endian put the bytes in reverse order
 			}
@@ -1888,26 +2059,26 @@ void CScreen::Convert24to32(CImage *img)
 
 
 
-CStringW CScreen::GetPersistText(CString IDNameToFind)
+CString CScreen::GetPersistText(CString IDNameToFind)
 {
 	static bool FirstMessage = true;  // only display first error
 
 	// Open the file with the specified encoding
 	FILE *fStream;
 	CString file = TheFrame->MainPathRoot + EDIT_CONTROL_PERSIST_FILE;
-	errno_t e = _tfopen_s(&fStream, file, _T("rt,ccs=UNICODE"));
-	if (e != 0)  // failed..CString sRead;
+	_tfopen_s(&fStream, file, _T("rt,ccs=UNICODE"));
+	if (!fStream)  // failed;
 	{
 		if (FirstMessage)
 		{
 			FirstMessage = false;
-			MessageBoxW(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to open Screen Script file:\r\r") + (CStringW)file, 
+			MessageBox(NULL, /*TRAN*/TheFrame->KMotionDLL->Translate("Unable to open Screen Script file:\r\r") + file, 
 				L"KMotionCNC", MB_ICONSTOP | MB_OK);
 		}
 		return "";
 	}
 
-	CStringW s;
+	CString s;
 	while (!feof(fStream))
 	{
 		CString IDName;

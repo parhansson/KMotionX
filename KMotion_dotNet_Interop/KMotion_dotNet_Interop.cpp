@@ -60,15 +60,23 @@ int LocalConsoleHandler(const char* buf)
 }
 int LocalConsoleHandlerW(const wchar_t* buf)
 {
-	return ConsoleHandlerW(buf);
+	CStringA str(buf);
+	return ConsoleHandler(str);
 }
 
-netERRMSG_HANDLER *ErrorHandler=NULL;    
+
+netERRMSG_HANDLER* ErrorHandler = NULL;
+netERRMSG_HANDLER* ErrorHandlerW = NULL;
 
 //KMotion Callbacks
-void LocalErrorHandler(const char *buf)
+void LocalErrorHandler(const char* buf)
 {
 	return ErrorHandler(buf);
+}
+void LocalErrorHandlerW(const wchar_t* buf)
+{
+	CStringA str(buf);
+	return ErrorHandler(str);
 }
 
 
@@ -102,27 +110,42 @@ first_end, second_end,first_axis,second_axis,rotation,axis_end_point,a, b, c, fi
  
 //Interpreter Callbacks
 netG_COMPLETE_CALLBACK *G_CompleteHandler = NULL;
-void  Local_G_COMPLETE_CALLBACK(int status, int lineno, int sequence_number, const char *err)
+void  Local_G_COMPLETE_CALLBACKW(int status, int lineno, int sequence_number, const wchar_t* err)
 {
-  G_CompleteHandler(status, lineno, sequence_number, err);
+	CStringA errA(err);
+	G_CompleteHandler(status, lineno, sequence_number, errA);
+}
+void  Local_G_COMPLETE_CALLBACK(int status, int lineno, int sequence_number, const char* err)
+{
+	G_CompleteHandler(status, lineno, sequence_number, err);
 }
 
 netG_STATUS_CALLBACK *G_StatusHandler = NULL;
-void Local_G_STATUS_CALLBACK(int line_no, const char *msg)
+void Local_G_STATUS_CALLBACKW(int line_no, const wchar_t* msg)
 {
-  G_StatusHandler(line_no, msg);
+	CStringA msgA(msg);
+	G_StatusHandler(line_no, msgA);
+}
+void Local_G_STATUS_CALLBACK(int line_no, const char* msg)
+{
+	G_StatusHandler(line_no, msg);
 }
 
 netG_USER_CALLBACK *G_UserCallbackHandler = NULL;
-int Local_G_USER_CALLBACK(const char *msg)
+int Local_G_USER_CALLBACKW(const wchar_t* msg)
 {
-  return G_UserCallbackHandler(msg);
+	CStringA msgA(msg);
+	return G_UserCallbackHandler(msgA);
+}
+int Local_G_USER_CALLBACK(const char* msg)
+{
+	return G_UserCallbackHandler(msg);
 }
 
 netG_USER_MCODE_CALLBACK *G_UserMCodeCallbackHandler = NULL;
 int Local_G_USER_MCODE_CALLBACK(int mCode)
 {
-  return G_UserMCodeCallbackHandler(mCode);
+	return G_UserMCodeCallbackHandler(mCode);
 }
 
 netSTRAIGHT_TRAVERSE_CALLBACK *InterpreterStraightTransverseHandler=NULL;
@@ -261,38 +284,44 @@ extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_CheckForReady(v
 extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_LoadCoff(void *handle, int Thread, const char *Name)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
-	int rslt=KM_dll->LoadCoff(Thread,Name, 0);
+	int rslt=KM_dll->LoadCoff(Thread,(CStringW)Name, 0);
 	return rslt;
 }
 
 extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_LoadCoffPack(void *handle, int Thread, const char *Name, int PackToFlash)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
-	int rslt=KM_dll->LoadCoff(Thread,Name, PackToFlash);
+	int rslt=KM_dll->LoadCoff(Thread,(CStringW)Name, PackToFlash);
 	return rslt;
 }
 
 extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_SimpleCompileAndLoadCoff(void* handle, int Thread, const char* Name)
 {
 	CKMotionDLL* KM_dll = (CKMotionDLL*)handle;
-	int rslt = KM_dll->CompileAndLoadCoff(Name, Thread);
+	int rslt = KM_dll->CompileAndLoadCoff((CStringW)Name, Thread);
 	return rslt;
 }
 
 extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_CompileAndLoadCoff(void *handle, int Thread, const char *Name, char **Err, int MaxErrLen)
 {
+	CStringW ErrW;
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
-	int rslt=KM_dll->CompileAndLoadCoff(Name,Thread,*Err,MaxErrLen);
+	int rslt=KM_dll->CompileAndLoadCoff((CStringW)Name,Thread,ErrW.GetBufferSetLength(MaxErrLen+1), MaxErrLen);
+	CStringA ErrA(ErrW);
+	strcpy_s(*Err, MaxErrLen, ErrA);
 	return rslt;
 }
 
 extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_Compile(void *handle,const int boardtype, int Thread, const char *Name, char **Err, int MaxErrLen)
 {
-	CString OutFile;
+	CStringW ErrW;
+	CStringW OutFile;
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
-	KM_dll->ConvertToOut(Thread, Name, OutFile.GetBuffer(MAX_PATH), MAX_PATH);
+	KM_dll->ConvertToOut(Thread, (CStringW)Name, OutFile.GetBuffer(MAX_PATH), MAX_PATH);
 	OutFile.ReleaseBuffer();
-	int rslt=KM_dll->Compile(Name, OutFile, boardtype, Thread, *Err, MaxErrLen);
+	int rslt=KM_dll->Compile((CStringW)Name, OutFile, boardtype, Thread, ErrW.GetBufferSetLength(MaxErrLen+1), MaxErrLen);
+	CStringA ErrA(ErrW);
+	strcpy_s(*Err, MaxErrLen, ErrA);
 	return rslt;
 }
 
@@ -308,7 +337,7 @@ extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_SetConsoleCallb
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
 	ConsoleHandler=ch;
-	int rslt=KM_dll->SetConsoleCallback(LocalConsoleHandler);
+	int rslt=KM_dll->SetConsoleCallback(LocalConsoleHandlerW);
 	return rslt;
 }
  
@@ -316,7 +345,7 @@ extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_SetErrorCallbac
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
 	ErrorHandler=ch;
-	int rslt=KM_dll->SetErrMsgCallback(LocalErrorHandler);
+	int rslt=KM_dll->SetErrMsgCallback(LocalErrorHandlerW);
 	return rslt;
 }
 
@@ -337,7 +366,7 @@ extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_GetFirmwareVers
 extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_CheckCoffSize(void *handle, const char *Name, int *size_text, int *size_bss, int *size_data, int *size_total)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
-	int rslt=KM_dll->CheckCoffSize(Name, size_text, size_bss, size_data, size_total);
+	int rslt=KM_dll->CheckCoffSize((CStringW)Name, size_text, size_bss, size_data, size_total);
 	return rslt;
 }
 
@@ -351,7 +380,10 @@ extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_GetLoadAddress(
 extern "C" __declspec(dllexport) void __stdcall KM_dotnet_Interop_ConvertToOut(void *handle, int thread, const char *InFile, char *OutFile, int MaxLength)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
-	KM_dll->ConvertToOut(thread, InFile, OutFile, MaxLength);
+	CStringW OutFileW;
+	KM_dll->ConvertToOut(thread, (CStringW)InFile, OutFileW.GetBufferSetLength(MAX_PATH), MaxLength);
+	CStringA OutFileA(OutFileW);
+	strncpy(OutFile, OutFileA, MaxLength);
 }
 
 extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_CheckKMotionVersion(void *handle, int *type, bool GetBoardTypeOnly)
@@ -364,7 +396,7 @@ extern "C" __declspec(dllexport) int __stdcall KM_dotnet_Interop_CheckKMotionVer
 extern "C" __declspec(dllexport) void __stdcall KM_dotnet_Interop_ExtractCoffVersionString(void *handle, const char *InFile, char *Version)
 {
 	CKMotionDLL *KM_dll=(CKMotionDLL *)handle;
-	KM_dll->ExtractCoffVersionString(InFile, Version);
+	KM_dll->ExtractCoffVersionString((CStringW)InFile, Version);
 }
 
 extern "C" __declspec(dllexport) 	bool  __stdcall KM_dotnet_Interop_MainStatus_GetStatus(void* handle, bool lock, MAIN_STATUS * m)
@@ -981,7 +1013,7 @@ extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_Do
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_KinematicsReadGeoTable(HANDLE64 *handle, const char *filename)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
-	return CM_dll->Kinematics->ReadGeoTable(filename);
+	return CM_dll->Kinematics->ReadGeoTable((CStringW)filename);
 }
 
 
@@ -991,7 +1023,7 @@ extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_Ki
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_MeasurePointAppendToFile(HANDLE64 *handle, const char *name)
 {
 	CCoordMotion *CM_dll=(CCoordMotion *)handle;
-    return CM_dll->MeasurePointAppendToFile(name);
+    return CM_dll->MeasurePointAppendToFile((CStringW)name);
 }
 
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_CoordMotion_StraightTraverse
@@ -1182,8 +1214,8 @@ extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_GCodeInterpr
 	CGCodeInterpreter *GC;  
 	GC = new CGCodeInterpreter(CM_dll);
  
-	strcpy(GC->ToolFile,"");
-	strcpy(GC->SetupFile,"");
+	wcscpy(GC->ToolFile,L"");
+	wcscpy(GC->SetupFile,L"");
 	*handle=(HANDLE64)GC;  
 }
 
@@ -1222,7 +1254,8 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 	GC_dll->McodeActions[index].dParams[2] = val3;
 	GC_dll->McodeActions[index].dParams[3] = val4;
 	GC_dll->McodeActions[index].dParams[4] = val5;
-	strncpy(GC_dll->McodeActions[index].String,string, 255); 
+	CStringW str(string);
+	wcsncpy(GC_dll->McodeActions[index].String, str, 255);
 }
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_M_CodeAction(HANDLE64 *handle, int index, int *type, double *val1, double *val2,double *val3,double *val4,double *val5, char **string)
 {
@@ -1233,7 +1266,8 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 	*val3 = GC_dll->McodeActions[index].dParams[2];
 	*val4 = GC_dll->McodeActions[index].dParams[3];
 	*val5 = GC_dll->McodeActions[index].dParams[4];
-	strncpy(*string,GC_dll->McodeActions[index].String, 255); 
+	CStringA str(GC_dll->McodeActions[index].String);
+	strncpy(*string,str, 255); 
 }
 
 //Setup Parameters
@@ -1594,15 +1628,22 @@ extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpret
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
 	return GC_dll->GetRealTimeState()->line_length;
 }
+
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_FileName(HANDLE64 *handle, char *file)
 {
+	static CStringA LocalSetupFilename;
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	file = GC_dll->p_setup->filename;
+	LocalSetupFilename = GC_dll->p_setup->filename;
+	file = LocalSetupFilename.GetBuffer();
 }
+
+
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Get_LineText(HANDLE64 *handle, char *line)
 {
+	static CStringA LocalLine;	
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	line = GC_dll->GetRealTimeState()->linetext;
+	LocalLine = GC_dll->GetRealTimeState()->linetext;
+	line =LocalLine.GetBuffer();
 }
 
 
@@ -2220,7 +2261,7 @@ extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpre
 {
     CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
     G_UserCallbackHandler = p;
-	GC_dll->SetUserCallback(&Local_G_USER_CALLBACK); 
+	GC_dll->SetUserCallback(&Local_G_USER_CALLBACKW); 
 }
 
 extern "C" __declspec(dllexport) 	void __stdcall KM_dotnet_Interop_GCodeInterpreter_Set_G_USER_MCODE_CALLBACK(HANDLE64 *handle, netG_USER_MCODE_CALLBACK *p)
@@ -2303,7 +2344,7 @@ extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpret
  
     CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
  
-	return GC_dll->Interpret(board_type, fname, start, end, restart, Local_G_STATUS_CALLBACK, Local_G_COMPLETE_CALLBACK);
+	return GC_dll->Interpret(board_type, (CStringW)fname, start, end, restart, Local_G_STATUS_CALLBACKW, Local_G_COMPLETE_CALLBACKW);
 }
 
 
@@ -2311,7 +2352,7 @@ extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpret
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_ExecutePC(HANDLE64 *handle, const char *Name)
 {
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	return GC_dll->ExecutePC(Name);
+	return GC_dll->ExecutePC((CStringW)Name);
 }
   
 extern "C" __declspec(dllexport) 	int __stdcall KM_dotnet_Interop_GCodeInterpreter_DoExecute(HANDLE64 *handle)
@@ -2431,16 +2472,11 @@ extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_GCodeInterpr
 }
 extern "C" __declspec(dllexport) 	char*   __stdcall KM_dotnet_Interop_GCodeInterpreter_GetToolFile(void *handle)
 {
+	static CStringA LocalToolFile;
 	CGCodeInterpreter *GC_dll=(CGCodeInterpreter *)handle;
-	char* s = GC_dll->ToolFile;
-	ULONG ulSize = (int)strlen(s) + sizeof(char);
-	char* pszReturn = NULL;
-
-	pszReturn = (char*)::CoTaskMemAlloc(ulSize);
-	// Copy the contents of s
-	// to the memory pointed to by pszReturn.
-	strcpy(pszReturn, s);
-	return pszReturn;
+	CString s(GC_dll->ToolFile);
+	LocalToolFile = s;
+	return LocalToolFile.GetBuffer();
 }
 
 
@@ -2462,16 +2498,11 @@ extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_GCodeInterpr
 
 extern "C" __declspec(dllexport) 	char*   __stdcall KM_dotnet_Interop_GCodeInterpreter_GetSetupFile(void *handle)
 {
+	static CString LocalSetupFile;
 	CGCodeInterpreter* GC_dll = (CGCodeInterpreter*)handle;
-	char* s = GC_dll->SetupFile;
-	ULONG ulSize = (int)strlen(s) + sizeof(char);
-	char* pszReturn = NULL;
-
-	pszReturn = (char*)::CoTaskMemAlloc(ulSize);
-	// Copy the contents of s
-	// to the memory pointed to by pszReturn.
-	strcpy(pszReturn, s);
-	return pszReturn;
+	CString s(GC_dll->SetupFile);
+	LocalSetupFile = s;
+	return s.GetBuffer();
 }
 
 extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_GCodeInterpreter_SetVarsFile(void *handle, char *file)
@@ -2492,16 +2523,11 @@ extern "C" __declspec(dllexport) 	void  __stdcall KM_dotnet_Interop_GCodeInterpr
 
 extern "C" __declspec(dllexport) 	char*   __stdcall KM_dotnet_Interop_GCodeInterpreter_GetVarsFile(void *handle)
 {
+	CStringA LocalVarsFile;
 	CGCodeInterpreter* GC_dll = (CGCodeInterpreter*)handle;
-	char* s = GC_dll->VarsFile;
-	ULONG ulSize = (int)strlen(s) + sizeof(char);
-	char* pszReturn = NULL;
-
-	pszReturn = (char*)::CoTaskMemAlloc(ulSize);
-	// Copy the contents of s
-	// to the memory pointed to by pszReturn.
-	strcpy(pszReturn, s);
-	return pszReturn;
+	CStringW s = GC_dll->VarsFile;
+	LocalVarsFile = s;
+	return LocalVarsFile.GetBuffer();
 }
 
 

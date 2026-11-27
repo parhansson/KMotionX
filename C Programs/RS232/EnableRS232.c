@@ -2,7 +2,7 @@
 
 // RS232 Buffered input/output example to echo out any received character
 
-main()
+int main()
 {
 	char c;
 	

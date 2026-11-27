@@ -56,7 +56,7 @@ bool FileStatus::SetFile(const char * file) {
 }
 
 int FileStatus::Update(){
-  struct stat st;
+  struct stat st = {};
   int ierr = stat (path, &st);
 
   if (ierr != 0) {

@@ -6,7 +6,7 @@
 // desired speed is passed in variable 1
 
 
-main()
+int main()
 {
 	float speed = *(float *)&persist.UserData[1];  // value stored is actually a float 
 	

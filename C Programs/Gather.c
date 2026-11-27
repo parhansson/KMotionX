@@ -7,7 +7,7 @@
 // Wait for data gather complete
 // Print the data to the console (every tenth point)
 
-main()
+int main()
 {
 	int i,n_Samples = 0.5 / TIMEBASE;
 	

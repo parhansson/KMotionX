@@ -10,7 +10,7 @@
 
 #define RAD120DEG (TWO_PI_F*0.3333333f)
 
-main()
+int main()
 {
 	int k=0,dk=1,ignore=300,zmark;
 	CHAN *ch = &chan[AXIS_CHAN];

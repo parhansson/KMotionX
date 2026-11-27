@@ -1,0 +1,1 @@
+__dynoShard("terms/t_qc",{"qclo1":[[669,0,1,[13]]]});

@@ -18,7 +18,7 @@ float FindAngle(float x, float y);
 int wraps=0;
 float LastAngle=0;
 
-main()
+int main()
 {
 	double t0,t1,dx,dy,d,Lastx, Lasty;
 	int LastReadBit=0;

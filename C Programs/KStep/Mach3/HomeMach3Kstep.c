@@ -4,7 +4,7 @@ void SimpleHome(int axis,float speed,int dir,int bit,int polarity, float offset)
 
 //Plugin calls for Mach3 Home (actually Purge) Commands
 
-main()
+int main()
 {
 	int flags = persist.UserData[5];  // Mach3 flags bit0=X, bit1=Y, Bit2=Z, etc...
 

@@ -5,7 +5,7 @@
 
 
 #define VALUE2_DVAR 11
-main()
+int main()
 {
 	double d;
 	// Read double from a KMotionCNC Edit Control

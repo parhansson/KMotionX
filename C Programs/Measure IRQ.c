@@ -12,7 +12,7 @@
 // knowing time from slice to slice and our execution Time_sec
 // remainder must be the interrupt time
 
-main()
+int main()
 {
 	int i=0;
 	double t0,t1,t2,t3;

@@ -5,7 +5,7 @@
 #define HSPEED 100 // speed and direction to home
 #define THRESHOLD 10.0 // Following Error threshold to detect hard stop
 #define INSIDE_DIST 100.0 // Distance to move and zero inside hardstop
-main()
+int main()
 {
 	Zero(AXIS);  // Zero the encoder  
 	EnableAxisDest(AXIS,0);

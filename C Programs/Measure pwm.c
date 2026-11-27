@@ -2,7 +2,7 @@
 
 // Test and Measure Digital I/O bit PWM feature
 
-main()
+int main()
 {
 	int i,n=1000;
 	double t0,t1;

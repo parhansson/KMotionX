@@ -18,7 +18,7 @@
 
 void ServiceMaxOutput(void);
 
-main()
+int main()
 {
 	for (;;)
 	{

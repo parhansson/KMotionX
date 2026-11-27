@@ -49,7 +49,7 @@ int MsgBox(char *s, int Flags)
 }
 
 
-main()
+int main()
 {
 	int Answer;
 

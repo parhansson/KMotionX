@@ -132,8 +132,8 @@ voltage. The assumption in this case is that an S value of 1000RPM
 would correspond to -2047 DAC counts or +10V. And the allowed range is 
 from -2047 to 0 counts (0V to +10V).</p>
 
-<p>An additional advantage to using I/O bits rather than C 
-Programs is that they I/O commands will be embedded within the motion stream and 
+<p>An additional advantage to using IO bits rather than C 
+Programs is that they IO commands will be embedded within the motion stream and 
 will occur synchronously with the motion and without any pause in the motion. 
 This is especially useful for faster systems with Lasers/Engravers/Extruders 
 instead of a traditional Spindle. For more information on buffered 
@@ -219,7 +219,7 @@ are used for this purpose.</p>
 <p>Constant Surface Speed allows a lathe cutting tool to 
 maintain a constant linear rate regardless of the current radius (or diameter) 
 as the spindle RPM is continuously adjusted as a function of the radius.</p>
-<p>Here is a simple GCode Program that uses G96 CSS mode</p>
+<p>Here is a simple G Code Program that uses G96 CSS mode</p>
 
 <pre>
 	<code>
@@ -252,7 +252,7 @@ variables the data will be placed:</p>
 <pre>
 	<code class="language-c">
 	// Persist Variable used with CSS Constant Surface speed for Spindle
-	// These parameters will be set when GCode switches to G97 CSS mode
+	// These parameters will be set when G Code switches to G97 CSS mode
 	// A User program in KFLOP must be running to monitor the mode an x position
 	// and alter the spindle RPM appropriately.
 	#define PC_COMM_CSS_MODE 110 		// Mode 1=Normal RPM mode. 2=CSS
@@ -268,14 +268,14 @@ variables the data will be placed:</p>
 or not. G96 sets all CSS parameters and then switches the mode to 2. 
 G97 (normal fixed RPM Mode) sets the Mode to 1. On Power up the Mode will 
 be 0. X_OFFSET allows KFLOP to relate a position in counts to a 
-radius from the spindle axis. It consists of all GCode Offsets converted 
+radius from the spindle axis. It consists of all G Code Offsets converted 
 to X axis counts. X_FACTOR is the inverse of the X axis resolution which 
 allows KFLOP to do a simple multiplication to convert X axis counts to inches. 
-S: is the desired surface speed in inches/sec (converted from GCode units of 
+S: is the desired surface speed in inches/sec (converted from G Code units of 
 feet/min or meters/min). MAX_RPM: specifies the maximum allowed RPM. 
 As the radius approaches zero the required RPM to maintain a specified surface 
 speed will approach infinity. Any computed RPM beyond this value will be 
-limited to this value. The max RPM may be specified on the line of GCode with 
+limited to this value. The max RPM may be specified on the line of G Code with 
 the D word. If no D word is specified on the same line as the G96 then the 
 limit will be sent as 1e9 RPM.</p>
 
@@ -366,7 +366,7 @@ one as shown in the comments below.</p>
 
 <h2><a name="Video">Video</a></h2>
 
-<p>Simple demo <a href="http://youtu.be/f7Ljo4LHids">Video</a> of final GCode running CSS GCode.</p>
+<p>Simple demo <a href="http://youtu.be/f7Ljo4LHids">Video</a> of final G Code running CSS G Code.</p>
 
 <p>User <a href="http://youtu.be/nWrntLmdJqY">Video</a> using CSS.</p>
 
@@ -435,6 +435,7 @@ for example if your RPM reading at 10V is 2500 RPM then configure:</p>
 
 </div>
 
+<script src="../search/searchbox.js" defer></script>
 </body>
 
 </html>

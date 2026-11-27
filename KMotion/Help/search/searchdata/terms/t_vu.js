@@ -1,0 +1,1 @@
+__dynoShard("terms/t_vu",{"vulnerable":[[629,0,1,[116]]],"vulgar":[[769,0,1,[3749]]]});

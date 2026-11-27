@@ -7,7 +7,7 @@
 //
 // Attach Service to Aux0 Port (KFLOP JP4) instead of standard Aux1 Port (KFLOP JP6)
 
-main()
+int main()
 {
 	InitAux();
 	AddKonnect_Aux0(0,&VirtualBits,VirtualBitsEx);

@@ -48,6 +48,7 @@ CGViewDlg::CGViewDlg(CWnd* pParent /*=NULL*/)
 	m_IncludeB=FALSE;
 	m_IncludeC=FALSE;
 	m_IncludeToolAngles=FALSE;
+	m_PreviewOnLoad=FALSE;
 
 
 	//{{AFX_DATA_INIT(CGViewDlg)
@@ -108,16 +109,17 @@ void CGViewDlg::RestoreOnStart(FILE * f)
 
 int CGViewDlg::SaveConfig()
 {
-	char s[81];
+	wchar_t s[81];
 	CString Name = TheFrame->MainPath + "\\data\\GViewer.txt";
 
-	FILE *f=fopen(Name.GetBuffer(0),"wb");
-	
+	FILE *f;
+	_tfopen_s(&f, Name, _T("wt,ccs=UTF-8"));
+
 	if (!f)
 	{
-		CStringW cs;
-		cs.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Error Opening Configuration File %s"), Name.GetBuffer(0));
-		MessageBoxW(NULL,cs,/*TRAN*/TheFrame->KMotionDLL->Translate("Error"),MB_ICONSTOP|MB_OK);
+		CString cs;
+		cs.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Error Opening Configuration File %ls"), Name.GetBuffer(0));
+		MessageBox(cs,/*TRAN*/TheFrame->KMotionDLL->Translate("Error"),MB_ICONSTOP|MB_OK);
 		return 1;
 	}
 
@@ -130,22 +132,23 @@ int CGViewDlg::SaveConfig()
 
 int CGViewDlg::LoadConfig()
 {
-	char s[301];
+	wchar_t s[301];
 	CString Name = TheFrame->MainPath + "\\data\\GViewer.txt";
 
-	FILE *f=fopen(Name.GetBuffer(0),"rb");
-	
+	FILE *f;
+	_tfopen_s(&f, Name, _T("rt,ccs=UTF-8"));
+
 	if (!f)
 	{
-		CStringW cs;
-		cs.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Error Opening Configuration File %s"), Name.GetBuffer(0));
-		MessageBoxW(NULL, cs,/*TRAN*/TheFrame->KMotionDLL->Translate("Error"),MB_ICONSTOP|MB_OK);
+		CString cs;
+		cs.Format(/*TRAN*/TheFrame->KMotionDLL->Translate("Error Opening Configuration File %ls"), Name.GetBuffer(0));
+		MessageBox( cs,/*TRAN*/TheFrame->KMotionDLL->Translate("Error"),MB_ICONSTOP|MB_OK);
 		return 1;
 	}
 
 	while (!feof(f))
 	{
-		fgets(s,300,f);
+		fgetws(s,300,f);
 		if (!feof(f))
 		{
 			SaveLoadConfig(f, s, false);
@@ -161,7 +164,7 @@ int CGViewDlg::LoadConfig()
 
 
 
-int CGViewDlg::SaveLoadConfig(FILE *f, char *s, bool save)
+int CGViewDlg::SaveLoadConfig(FILE *f, wchar_t *s, bool save)
 {
 	CSTRING(m_ToolShapeFile);
 	DOUBLE(m_BoxX);
@@ -183,6 +186,7 @@ int CGViewDlg::SaveLoadConfig(FILE *f, char *s, bool save)
 	INT(m_IncludeC);
 	INT(m_IncludeToolAngles);
 	INT(m_Ortho);
+	INT(m_PreviewOnLoad);
 	return 0;
 }
 
@@ -282,7 +286,7 @@ BOOL CGViewDlg::OnInitDialog()
 
 void CGViewDlg::RefreshTitle() 
 {
-	SetWindowText("G Code Viewer");
+	SetWindowText(L"G Code Viewer");
 }
 
 

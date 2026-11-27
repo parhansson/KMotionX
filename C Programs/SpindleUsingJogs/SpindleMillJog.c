@@ -1,4 +1,4 @@
-#include "KMotionDef.h"
+﻿#include "KMotionDef.h"
 
 #define SPINDLEAXIS 4
 #define FACTOR (-500.0/2007) // -500 counts = 2007 RPM
@@ -9,7 +9,7 @@
 // save in user variable 97 the last desired speed
 
 
-main()
+int main()
 {
 	float speed = *(float *)&persist.UserData[1];  // value stored is actually a float 
 	float LastSpeed = *(float *)&persist.UserData[99];  // get last speed setting 

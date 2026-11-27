@@ -9,7 +9,7 @@
 
 #include <time.h>
 
-#define _WIN32_WINNT  0x0400
+#define _WIN32_WINNT  0x0500
 #include <windows.h>
 #include <commctrl.h>
 #include <richedit.h>
@@ -1014,25 +1014,33 @@ void Window::SetPosition(PRectangle rc) {
 void Window::SetPositionRelative(PRectangle rc, Window w) {
 	LONG style = ::GetWindowLong(reinterpret_cast<HWND>(wid), GWL_STYLE);
 	if (style & WS_POPUP) {
-		RECT rcOther;
-		::GetWindowRect(reinterpret_cast<HWND>(w.GetID()), &rcOther);
-		rc.Move(rcOther.left, rcOther.top);
-
-		// Retrieve desktop bounds and make sure window popup's origin isn't left-top of the screen.
-		RECT rcDesktop = {0, 0, 0, 0};
-#ifdef SM_XVIRTUALSCREEN
-		rcDesktop.left = ::GetSystemMetrics(SM_XVIRTUALSCREEN);
-		rcDesktop.top = ::GetSystemMetrics(SM_YVIRTUALSCREEN);
-		rcDesktop.right = rcDesktop.left + ::GetSystemMetrics(SM_CXVIRTUALSCREEN);
-		rcDesktop.bottom = rcDesktop.top + ::GetSystemMetrics(SM_CYVIRTUALSCREEN);
-#endif
-
-		if (rc.left < rcDesktop.left) {
-			rc.Move(rcDesktop.left - rc.left,0);
+		// Select the monitor at the popup's anchor in the editor. Keep the
+		// anchor inside the client area when a call tip is placed above it.
+		PRectangle rcClient = w.GetClientPosition();
+		Point ptAnchor(
+			Platform::Clamp(rc.left, rcClient.left, Platform::Maximum(rcClient.left, rcClient.right - 1)),
+			Platform::Clamp(rc.top, rcClient.top, Platform::Maximum(rcClient.top, rcClient.bottom - 1)));
+		PRectangle rcMonitor = w.GetMonitorRect(ptAnchor);
+		if (!rcMonitor.Empty()) {
+			// Constrain all edges to this monitor's work area, including
+			// monitors with negative coordinates and taskbars on any edge.
+			rc.right = rc.left + Platform::Minimum(rc.Width(), rcMonitor.Width());
+			rc.bottom = rc.top + Platform::Minimum(rc.Height(), rcMonitor.Height());
+			if (rc.right > rcMonitor.right)
+				rc.Move(rcMonitor.right - rc.right, 0);
+			if (rc.bottom > rcMonitor.bottom)
+				rc.Move(0, rcMonitor.bottom - rc.bottom);
+			if (rc.left < rcMonitor.left)
+				rc.Move(rcMonitor.left - rc.left, 0);
+			if (rc.top < rcMonitor.top)
+				rc.Move(0, rcMonitor.top - rc.top);
 		}
-		if (rc.top < rcDesktop.top) {
-			rc.Move(0,rcDesktop.top - rc.top);
-		}
+
+		// Scintilla supplies client coordinates; the outer window rectangle
+		// is not the client origin when the editor has a border.
+		POINT ptOrigin = {0, 0};
+		::ClientToScreen(reinterpret_cast<HWND>(w.GetID()), &ptOrigin);
+		rc.Move(ptOrigin.x, ptOrigin.y);
 	}
 	SetPosition(rc);
 }
@@ -1116,31 +1124,25 @@ void Window::SetTitle(const char *s) {
 
 /* Returns rectangle of monitor pt is on, both rect and pt are in Window's
    coordinates */
-#ifdef MULTIPLE_MONITOR_SUPPORT
 PRectangle Window::GetMonitorRect(Point pt) {
-	// MonitorFromPoint and GetMonitorInfo are not available on Windows 95 so are not used.
-	// There could be conditional code and dynamic loading in a future version
-	// so this would work on those platforms where they are available.
-	PRectangle rcPosition = GetPosition();
-	POINT ptDesktop = {pt.x + rcPosition.left, pt.y + rcPosition.top};
+	POINT ptOrigin = {0, 0};
+	if (!::ClientToScreen(reinterpret_cast<HWND>(wid), &ptOrigin))
+		return PRectangle();
+	POINT ptDesktop = {pt.x + ptOrigin.x, pt.y + ptOrigin.y};
 	HMONITOR hMonitor = ::MonitorFromPoint(ptDesktop, MONITOR_DEFAULTTONEAREST);
-	MONITORINFOEX mi;
+	MONITORINFO mi;
 	memset(&mi, 0, sizeof(mi));
 	mi.cbSize = sizeof(mi);
 	if (::GetMonitorInfo(hMonitor, &mi)) {
 		PRectangle rcMonitor(
-			mi.rcWork.left - rcPosition.left,
-			mi.rcWork.top - rcPosition.top,
-			mi.rcWork.right - rcPosition.left,
-			mi.rcWork.bottom - rcPosition.top);
+			mi.rcWork.left - ptOrigin.x,
+			mi.rcWork.top - ptOrigin.y,
+			mi.rcWork.right - ptOrigin.x,
+			mi.rcWork.bottom - ptOrigin.y);
 		return rcMonitor;
 	}
-}
-#else
-PRectangle Window::GetMonitorRect(Point) {
 	return PRectangle();
 }
-#endif
 
 struct ListItemData {
 	const char *text;

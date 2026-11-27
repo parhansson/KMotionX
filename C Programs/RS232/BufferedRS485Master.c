@@ -4,7 +4,7 @@
 
 #define N 1024
 
-main()
+int main()
 {
 	int i,in=0,out=0;
 	unsigned char c, r;

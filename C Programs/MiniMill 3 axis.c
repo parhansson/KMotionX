@@ -2,7 +2,7 @@
 
 // Configure axes for Mini Mill
 
-void main() 
+int main() 
 {
     float k=0,A=150.0f;   // set coil current amplitude to 30 PWM units
 

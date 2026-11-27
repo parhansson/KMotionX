@@ -8,7 +8,7 @@ void SendChar(char c)
 
 
 
-main()
+int main()
 {
 	int i;
 	SetBitDirection(45,1);

@@ -3,7 +3,7 @@
 #define TOL 10		  // +/- Tolerance in counts for being in position
 #define DURATION 0.15 // duration that it must be in position
 
-main()
+int main()
 {
 	double T0,CurTime;
 	

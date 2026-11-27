@@ -1,0 +1,1 @@
+-header-filter=.* -- -std=c11 -Wall -Wno-unknown-pragmas -Wuninitialized -Wunused-variable -Wreturn-type

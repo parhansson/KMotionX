@@ -27,6 +27,7 @@ protected:
 	void PutToolsToScreen(int page);
 	void GetToolsFromScreen(int page);
 	void SortToolTable();
+	int CheckDuplicateToolID(int* BadRow, int* BadRow2, int* BadID);
 	void DoImageDir(CString &Image);
 	void DoResetFeed(int i);
 	void DDX_Text_Blank(CDataExchange* pDX, int nIDC, int& value);
@@ -58,6 +59,7 @@ public:
 	void ChangeDiameter(int Tool, double Diameter);
 	void ChangeOffsetX(int Tool, double OffsetX);
 	void ChangeOffsetY(int Tool, double OffsetY);
+	void ChangeComment(int Tool, CString NewComment);
 	void ChangeFeedTime(int Tool, double FeedTime);
 	void ChangeFeedDist(int Tool, double FeedDist);
 
@@ -314,4 +316,5 @@ public:
 	afx_msg void OnBnClickedResetFeed18();
 	afx_msg void OnBnClickedResetFeed19();
 	afx_msg void OnBnClickedResetallfeed();
+	afx_msg void OnBnClickedOk();
 };

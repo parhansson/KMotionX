@@ -11,6 +11,11 @@ int AfxMessageBox(const char *value, int type)
 	return mb_callback(L"AfxMessageBox", kmx::strtowstr(value).c_str(), type);
 }
 
+int AfxMessageBox(const wchar_t *value, int type)
+{
+	return mb_callback(L"AfxMessageBox", value, type);
+}
+
 int MessageBox(long hwnd, const char *value, const char *title, int type)
 {
 	return mb_callback(kmx::strtowstr(title).c_str(), kmx::strtowstr(value).c_str(), type);

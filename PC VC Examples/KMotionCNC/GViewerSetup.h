@@ -39,8 +39,10 @@ public:
 	BOOL m_IncludeB;
 	BOOL m_IncludeC;
 	BOOL m_IncludeToolAngles;
+	BOOL m_PreviewOnLoad;
 	//}}AFX_DATA
 
+	BOOL ConfigUnitsMM;
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -51,6 +53,7 @@ public:
 
 // Implementation
 protected:
+	void SetStatics();
 
 	// Generated message map functions
 	//{{AFX_MSG(CGViewerSetup)
@@ -58,6 +61,10 @@ protected:
 	virtual void OnOK();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnHelp();
+	afx_msg void Onmm();
+	afx_msg void Oninch();
+
+
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:

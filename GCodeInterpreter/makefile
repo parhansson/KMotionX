@@ -10,10 +10,11 @@ W_FLAGS+=-Wno-unused-variable
 W_FLAGS+=-Wno-unknown-pragmas
 W_FLAGS+=-Wno-unused-private-field
 W_FLAGS+=-Wno-register
+W_FLAGS+=-Wno-writable-strings
 
-SOURCES=canon_stand_alone.cpp CoordMotion.cpp driver.cpp GCodeInterpreter.cpp Kinematics.cpp Kinematics3Rod.cpp PT2D.cpp PT3D.cpp rs274ngc.cpp SetupTracker.cpp TrajectoryPlanner.cpp
+SOURCES=canon_stand_alone.cpp CoordMotion.cpp driver.cpp GCodeInterpreter.cpp Kinematics.cpp Kinematics3Rod.cpp PT2D.cpp PT3D.cpp rs274ngc.cpp SetupTracker.cpp TrajectoryPlanner.cpp TrajectoryPlanner3.cpp
 SOURCES+=KinematicsGeppetto.cpp KinematicsGeppettoExtrude.cpp Kinematics5AxisGimbalAB.cpp Kinematics5AxisGimbalCB.cpp
-SOURCES+=Kinematics5AxisTableAB.cpp Kinematics5AxisTableAC.cpp Kinematics5AxisTableAGimbalB.cpp Kinematics5AxisTableBC.cpp KinematicsScara.cpp Kinematics2AxisRobot.cpp
+SOURCES+=Kinematics5AxisTableAB.cpp Kinematics5AxisTableAC.cpp Kinematics5AxisTableAGimbalB.cpp Kinematics5AxisTableBC.cpp KinematicsScara.cpp Kinematics2AxisRobot.cpp Kinematics3Link.cpp
 
 
 IDIR+=$(BUILD_ROOT)/KMotionDLL

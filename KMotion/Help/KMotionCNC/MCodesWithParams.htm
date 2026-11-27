@@ -73,13 +73,13 @@ if (navigator.userAgent.indexOf("NT 6.2") == -1) {
 
 <p>KMotionCNC allows MCodes 100-119 with parameters when 
 configured to Execute a KFLOP User C Program. The P Q and R words in the 
-GCode block will be downloaded to KFLOP's persist.UserData variables before the 
+G Code block will be downloaded to KFLOP's persist.UserData variables before the 
 C program is executed. The parameters will be placed into consecutive 
 KFLOP variables as 32-bit floating point values starting with the variable 
 specified in the MCode Configuration. Zero, one, two, or all three 
-parameters may be specified in the GCode block (line). The order they are 
+parameters may be specified in the G Code block (line). The order they are 
 placed into the variables will always be in the P Q R order where any or all of 
-the parameters will be omitted if they are not explicitly specified in the GCode 
+the parameters will be omitted if they are not explicitly specified in the G Code 
 Block. If no parameters are specified then the MCode number will be stored 
 into the one Var specified.</p>
 
@@ -117,6 +117,7 @@ into the one Var specified.</p>
 <p></p>
 	</div>
 	
+<script src="../search/searchbox.js" defer></script>
 </body>
 
 </html>

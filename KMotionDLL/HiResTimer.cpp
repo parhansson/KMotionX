@@ -102,12 +102,12 @@ void CHiResTimer::DisplayDiff(int t1, int t0)
 {
 	CString s;
 
-	s.Format("From sample %d to %d was %f us",t1,t0,Diff_us(t1,t0));
+	s.Format(_T("From sample %d to %d was %f us"),t1,t0,Diff_us(t1,t0));
 
 	if (MessageDisplayed) return;
 
 	MessageDisplayed=true;
-	MessageBox(NULL,s,"Timer",MB_OK|MB_SYSTEMMODAL);
+	MessageBox(NULL,s,_T("Timer"),MB_OK|MB_SYSTEMMODAL);
 	MessageDisplayed=false;
 }
 
@@ -118,7 +118,7 @@ void CHiResTimer::DisplaySplit()
 
 	for (int i=0; i<nSplit-1; i++)
 	{
-		s.Format("From sample %d to %d was %10.2f us %s",i+1,i,Diff_us(i+1,i),Desc[i+1].GetBuffer());
+		s.Format(_T("From sample %d to %d was %10.2f us %ls"),i+1,i,Diff_us(i+1,i),(CStringW)(Desc[i+1]));
 
 		s2= s2+s+"\r";
 	}
@@ -126,6 +126,6 @@ void CHiResTimer::DisplaySplit()
 	if (MessageDisplayed) return;
 
 	MessageDisplayed=true;
-	MessageBox(NULL,s2,"Timer",MB_OK|MB_SYSTEMMODAL);
+	MessageBox(NULL,s2,_T("Timer"),MB_OK|MB_SYSTEMMODAL);
 	MessageDisplayed=false;
 }

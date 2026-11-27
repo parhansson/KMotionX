@@ -51,10 +51,10 @@ BOOL CKMotionCNCApp::InitInstance()
 
 	// Get the info for this class.
          // #32770 is the default class name for dialogs boxes.
-	::GetClassInfo(AfxGetInstanceHandle(), "#32770", &wc);
+	::GetClassInfo(AfxGetInstanceHandle(), L"#32770", &wc);
 
 	// Change the name of the class.
-	wc.lpszClassName = "KMotionCNC";
+	wc.lpszClassName = L"KMotionCNC";
 
 	// Register this class so that MFC can use it.
 	AfxRegisterClass(&wc);	
@@ -64,8 +64,8 @@ BOOL CKMotionCNCApp::InitInstance()
 
 
 	//Set up date and time defaults so they're the same as system defaults
-	setlocale(LC_ALL, "");
-	setlocale( LC_NUMERIC, "English" );
+	_wsetlocale(LC_ALL, L"");
+	_wsetlocale( LC_NUMERIC, L"English" );
 
 	AfxEnableControlContainer();
 	InitCommonControls();    // initialize common control library
@@ -92,7 +92,7 @@ BOOL CKMotionCNCApp::InitInstance()
 
 	int n = TheFrame->GCodeDlg.m_DialogFaceInUse;
 
-	TheFrame->GCodeDlg.Create(IDD_KMOTIONCNC_0_ORIGINAL+n);  // put up the real main window
+	TheFrame->GCodeDlg.Create(IDD_KMOTIONCNC_0_ORIGINAL+n, NULL);  // put up the real main window
 
 	
 	// Since the dialog has been closed, return FALSE so that we exit the

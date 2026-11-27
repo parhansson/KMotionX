@@ -8,7 +8,7 @@
 
 #define CLOCK 16.6666e6
 
-main()
+int main()
 {
 	double DutyCycle, Period;
 	int Frequency;

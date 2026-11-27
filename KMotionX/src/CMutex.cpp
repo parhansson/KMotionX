@@ -70,6 +70,11 @@ Name of the CMutex object.
 lpsaAttribute
 Security attributes for the mutex object. Not used in this implemenation
 */
+CMutex::CMutex(int initiallyOwn, const wchar_t *wname, lpsecurityAttr lpsaAttribute)
+	: CMutex(initiallyOwn, wname ? kmx::wstrtostr(wname).c_str() : (const char *)NULL, lpsaAttribute)
+{
+}
+
 CMutex::CMutex(int initiallyOwn, const char *name, lpsecurityAttr lpsaAttribute)
 {
 	if (name)

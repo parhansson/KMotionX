@@ -1,0 +1,1 @@
+__dynoShard("terms/t_vq",{"vqc":[[618,1,0,[1]]]});

@@ -1,0 +1,1 @@
+__dynoShard("terms/t_jy",{"jykke":[[681,0,2,[12,241]]]});

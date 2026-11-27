@@ -585,7 +585,7 @@ void ModbusSlave_Monitor()
 	}
 }
 
-main()
+int main()
 {
 	ModbusSlave_Init();
 

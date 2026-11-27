@@ -6,7 +6,7 @@
 
 
 #ifdef _KMOTIONX
-#include "StdAfx.h"
+#include "stdafx.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

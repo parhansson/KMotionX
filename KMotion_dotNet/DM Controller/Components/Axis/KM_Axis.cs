@@ -55,9 +55,21 @@ namespace KMotion_dotNet
         /// </summary>
         protected double _Velocity = 0.0;
         /// <summary>
-        /// Multiplier for the velocity
+        /// Velocity to use during Coordinated Motion using Trajectory Planner
         /// </summary>
-        protected double _CPU = 1.0; 
+        protected double _CoordVelocity = 0.0;
+        /// <summary>
+        /// Acceleration to use during Coordinated Motion using Trajectory Planner
+        /// </summary>
+        protected double _CoordAccel = 0.0;
+        /// <summary>
+        /// Multiplier for the velocity in counts/unit
+        /// </summary>
+        protected double _CPU = 1.0;
+        /// <summary>
+        /// The level of jog percenatage computed from the commanded jog velocity
+        /// </summary>
+        protected bool _CPU_is_mm = false;
         /// <summary>
         /// The level of jog percenatage computed from the commanded jog velocity
         /// </summary>
@@ -114,7 +126,37 @@ namespace KMotion_dotNet
         }
 
         /// <summary>
-        /// Commanded velocity to use during positioning 
+        /// Max Commanded velocity to use during Coordinated Motion Feeds
+        /// </summary>
+        public double CoordVelocity
+        {
+            get
+            {
+                return _CoordVelocity;
+            }
+            set
+            {
+                _CoordVelocity = value;
+            }
+        }
+
+
+        /// <summary>
+        /// Max Acceleration to to use during Coordinated Motion Feeds
+        /// </summary>
+        public double CoordAccel
+        {
+            get
+            {
+                return _CoordAccel;
+            }
+            set
+            {
+                _CoordAccel = value;
+            }
+        }
+        /// <summary>
+        /// Commanded velocity to use during Rapids and Independent Motion
         /// </summary>
         public double Velocity
         {
@@ -125,30 +167,45 @@ namespace KMotion_dotNet
             set
             {
                 _Velocity = value;
-                _Controller.WriteLine(String.Format("Vel{0}={1}", _ID, _Velocity));
+                _Controller.WriteLine(String.Format("Vel{0}={1}", _ID, _Velocity * _CPU));
             }
         }
 
 
         /// <summary>
-        /// Acceleration to use during positioning
-        /// Jogging uses its own velocity passed in
+        /// Acceleration to use during Rapids and Independent Motion
         /// </summary>
         public double Acceleration
         {
             get
             {
-                return _Controller.GetCommandValue<double>(String.Format("Accel{0}", _ID), true);
+                return _Controller.GetCommandValue<double>(String.Format("Accel{0}", _ID), true) / _CPU;
             }
             set
-            { 
-                _Controller.WriteLine(String.Format("Accel{0}={1}", _ID, value));
+            {
+                _Controller.WriteLine(String.Format("Accel{0}={1}", _ID, value * _CPU));
             }
         }
 
 
         /// <summary>
-        /// Counts per unit
+        /// Jerk to to use during Rapids and Independent Motion
+        /// </summary>
+        public double Jerk
+        {
+            get
+            {
+                return _Controller.GetCommandValue<double>(String.Format("Jerk{0}", _ID), true) / _CPU;
+            }
+            set
+            {
+                _Controller.WriteLine(String.Format("Jerk{0}={1}", _ID, value * _CPU));
+            }
+        }
+
+
+        /// <summary>
+        /// Counts per unit, must set before Velocity, Acceleration, and Jerk
         /// </summary>
         public double CPU
         {
@@ -159,6 +216,21 @@ namespace KMotion_dotNet
             set
             {
                 _CPU = value;
+            }
+        }
+
+        /// <summary>
+        /// Indicates if CPU (Counts/unit) is mm otherwise inches
+        /// </summary>
+        public bool CPU_is_mm
+        {
+            get
+            {
+                return _CPU_is_mm;
+            }
+            set
+            {
+                _CPU_is_mm = value;
             }
         }
 

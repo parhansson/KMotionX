@@ -1,0 +1,3 @@
+BasedOnStyle : Microsoft
+IndentWidth : 4
+SpaceBeforeAssignmentOperators : true

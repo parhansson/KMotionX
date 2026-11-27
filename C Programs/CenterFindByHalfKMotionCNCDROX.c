@@ -3,7 +3,7 @@
 #define TMP 10 // which spare persist to use to transfer data
 #include "KflopToKMotionCNCFunctions.c"
 
-main()
+int main()
 {
 	double DROx, DROy, DROz, DROa, DROb, DROc;
 	GetDROs(&DROx, &DROy, &DROz, &DROa, &DROb, &DROc);
