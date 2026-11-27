@@ -1,107 +1,131 @@
-KMotionX
-========
+# KMotionX
 
-Linux/Unix (Mac OS) port of Dynomotions KMotion
+KMotionX is a Linux and macOS port of Dynomotion's KMotion libraries and
+controller tools, based on **KMotion 5.5.1**.
 
-KMotionX is a port to Dynomotions KMotion libraries.
-This is just the core functionality of the libraries. I think it's all there an no features should be missing.
-Please raise an issue if you find something.
-The complicated features found in CNC control applications such as KMotionCNC is not in this repository. 
-See [KMotionXCNC](https://github.com/parhansson/KMotionXCNC "CNC application")
+For the CNC application, see [KMotionXCNC](https://github.com/parhansson/KMotionXCNC).
 
-#### Current status KMotion 5.3.2
+## Components
 
-Runs on Linux and Mac OS.
+| Component | Purpose |
+|-----------|---------|
+| `libKMotionX` | Platform compatibility and runtime support |
+| `libKMotion` | Controller communication and program loading |
+| `libGCodeInterpreter` | G-code interpretation, coordinate motion and kinematics |
+| `KMotionServer` | Controller communication server |
+| `tcc67` | Bundled compiler for controller C programs |
 
-Ported libraries and executables
-KMotionDLL.dll -> libKMotion
-GCodeInterpreter.dll -> libGCodeInterpeter
-KMotionServer.exe -> KMotionServer
-TCC.exe > tcc67
+The repository also includes examples and the `kmxWeb` executable.
 
+### API compatibility
 
-See it in action on youtube
-https://www.youtube.com/watch?v=oPTJwcre0hA
+The 5.5.1 port uses wide-character filenames and callbacks (`wchar_t`) in the
+native library API. Applications written against earlier KMotionX versions
+may need changes to their calls and callback signatures.
 
 ## Build and install
-This guide contains four sections. How to install on Mac OS X, Ubuntu, Rasbian (Raspberry Pi) and a common section for KMotion libraries.
 
-Setup and install required dependencies on your platform
+### 1. Install prerequisites
 
-The default libftdi build uses `pkg-config` to locate libftdi1 and libusb. Install
-`pkg-config` (or `pkgconf`) and the development packages described in the
-platform guides below before running `./configure`.
+You need Git, a C++20-capable compiler, Make, and the USB library development
+packages for your platform. Follow the relevant platform guide:
 
-[Mac OS X](KMotionX/doc/MacOSX.md)
+- [macOS](KMotionX/doc/MacOSX.md)
+- [Ubuntu](KMotionX/doc/Ubuntu.md)
+- [Raspberry Pi](KMotionX/doc/RaspberryPi.md)
 
-[Ubuntu](KMotionX/doc/Ubuntu.md)
+The default build uses `pkg-config` (or `pkgconf`) to locate `libftdi1` and
+`libusb-1.0`. Check that both are available:
 
-[Raspberry Pi](KMotionX/doc/RaspberryPi.md)
-
-## Install TI compiler
-
-[Download compiler](https://www.ti.com/tool/C6000-CGT)
-
-## Install KMotionX
-
-###### 1. Build KMotionX
-Install git if not already installed
-```
-sudo apt-get install git
+```sh
+pkg-config --modversion libftdi1 libusb-1.0
 ```
 
-Clone repository
+If these dependencies are installed under a custom prefix, expose their
+`.pc` files before configuring:
+
+```sh
+export PKG_CONFIG_PATH="/path/to/dependencies/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
 ```
+
+### 2. Download and build
+
+```sh
 git clone https://github.com/parhansson/KMotionX.git
-```
-
-```
 cd KMotionX
-```
-Configure build for your platform and flavours
-```
 ./configure
-```
-By default, KMotionX installs under `$HOME/.local` and `make install` does
-not need `sudo`. To install system-wide instead, configure with
-`--prefix=/usr/local` and use `sudo make install`.
-If the libraries are installed under a custom prefix, make their `.pc` files
-visible before configuring:
-```
-export PKG_CONFIG_PATH="/path/to/prefix/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
-./configure
-```
-You can check discovery with `pkg-config --modversion libftdi1 libusb-1.0`.
-For the proprietary ftd2xx driver instead, run `./configure --ftd2xx`.
-If the driver is outside your compiler's library search path, specify its
-directory with `./configure --ftd2xx --ftd2xx-libdir=/path/to/driver/lib`.
-`--libdir` controls where KMotionX installs its own libraries; it is not a
-search path for dependencies. The build uses the build directory and the
-configured KMotionX installation directory to locate its libraries at runtime.
-Build project
-```
 make
 ```
-Install project
-```
+
+Use `./configure --help` to see the available build and directory options.
+Build outputs are placed in the repository's `bin/` directory.
+
+### 3. Install
+
+```sh
 make install
 ```
-Add `$HOME/.local/bin` to your `PATH` if you want to run the installed commands
-by name.
 
-The installed `kmxWeb` command lives in `bin`. Private `KMotionServer` and
-`tcc67` helpers live in `libexec/kmx` and need not be on `PATH`; shared
-libraries live in `lib/kmx`, and bundled DSP files and headers live in
-`share/kmx/DSP_KFLOP` and `share/kmx/DSP_KOGNA`. These directories follow
-`--prefix` (or the corresponding configure directory options).
+The default prefix is `$HOME/.local`; application installation does not require
+`sudo`. Add `$HOME/.local/bin` to your `PATH` if you want to invoke installed
+commands by name.
 
-Machine configuration is separate from installed application files. An ordinary
-`make install` seeds `$HOME/.kmotionx/default-machine/data` with `emc.var`,
-`Default.tbl`, and `Kinematics.txt` (which selects `Kinematics3Rod`), and
-`$HOME/.kmotionx/default-machine/c-programs` with `BlinkKFLOP.c`. Existing
-machine files are never overwritten on reinstall or removed on uninstall.
-`make install DESTDIR=...` stages only prefix-owned files and skips machine
-seeding. The default machine layout is:
+For a system-wide installation:
+
+```sh
+./configure --prefix=/usr/local
+make
+sudo make install
+```
+
+Machine-file seeding uses the HOME visible to `make install`. For a system-wide
+installation, prepare each user's machine configuration separately rather than
+assuming a privileged install will populate that user's home.
+
+### 4. Configure device access on Linux
+
+Install the KFLOP udev rule:
+
+```sh
+sudo cp KMotionX/usb/etc/udev/rules.d/10.kflop.rules /etc/udev/rules.d/
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+```
+
+The supplied rule grants device access to the `plugdev` group. Ensure your
+user belongs to that group, or adapt the rule to your distribution's access
+policy. Reconnect the controller after changing the rules.
+
+## Installation layout
+
+Paths below are relative to the configured prefix:
+
+| Path | Contents |
+|------|----------|
+| `bin/` | User-invoked commands, including `kmxWeb` |
+| `lib/kmx/` | Shared libraries |
+| `libexec/kmx/` | Private helpers: `KMotionServer` and `tcc67` |
+| `share/kmx/DSP_KFLOP/` | Bundled KFLOP DSP resources and headers |
+| `share/kmx/DSP_KOGNA/` | Bundled KOGNA DSP resources and headers |
+| `include/kmx/` | Public headers |
+
+Private helpers do not need to be on `PATH`. Runtime paths follow the configure
+directory options; `--libdir` controls where KMotionX libraries are installed,
+not where dependency libraries are discovered.
+
+Package staging is supported:
+
+```sh
+make install DESTDIR=/absolute/staging
+```
+
+`DESTDIR` is not included in compiled runtime paths. Staging installs skip
+user-machine seeding.
+
+## Machine configuration
+
+Writable machine files are separate from installed libraries and resources.
+A normal `make install` seeds this default machine root:
 
 ```text
 $HOME/.kmotionx/default-machine/
@@ -113,59 +137,96 @@ $HOME/.kmotionx/default-machine/
     └── BlinkKFLOP.c
 ```
 
-To select another machine, create `$HOME/.kmxrc` with, for example:
+Each template is copied only if its destination does not exist. Reinstalling
+does not overwrite edited machine files.
+
+The supplied `Kinematics.txt` selects `Kinematics3Rod`. This is not a universal
+machine default: check the kinematics, variables and tool table against your
+hardware before running controller programs.
+
+To select a different machine root, create or edit `$HOME/.kmxrc`:
 
 ```ini
-machineDataPath=/home/user/machines/router
+machineDataPath=/home/alex/machines/router
 ```
 
-The value names the **machine root**, not its `data` directory. In this example,
-the selected machine has this layout:
+Replace the example with your own absolute path. The value names the machine
+root, not its `data/` subdirectory. Do not use quotes, `$HOME` or `~` in the
+value; they are not expanded. Replace an existing `machineDataPath` entry rather
+than adding a duplicate.
 
-```text
-/home/user/machines/router/
-├── data/
-│   ├── emc.var
-│   ├── Default.tbl
-│   └── Kinematics.txt
-└── c-programs/
+Every selected root must contain readable `data/emc.var`, `data/Default.tbl`
+and `data/Kinematics.txt`. Default relative C-program names resolve under
+`c-programs/`. Without an override, the default root above is used.
+
+Optional user-wide language preferences belong in
+`$HOME/.kmotionx/data/LocalLanguage.txt`, outside the machine root.
+
+### Migrating older configurations
+
+Back up your existing files before changing the layout. Copy the machine files
+you need from legacy `Data` and `C Programs` directories into the new root's
+lowercase `data/` and `c-programs/` directories, reviewing existing destinations
+before replacing anything.
+
+DSP resources are loaded from the installed `share/kmx` directories, not from
+per-user `DSP_KFLOP` or `DSP_KOGNA` directories. Legacy uppercase language paths
+are not used.
+
+## Driver options
+
+The default USB driver is libftdi. To build with the proprietary ftd2xx driver:
+
+```sh
+./configure --ftd2xx --ftd2xx-libdir=/absolute/path/to/driver/lib
+make
 ```
 
-Every selected machine requires those three files in `data`; `c-programs` holds
-default relative C-program names. Without `$HOME/.kmxrc`, the default machine
-root above is used. Directory names are lowercase.
+The explicit driver directory is needed when the library is outside the
+compiler's normal search path. `PKG_CONFIG` or `--pkg-config` can select the
+pkg-config executable for libftdi builds.
 
-The optional user-wide language file is `$HOME/.kmotionx/data/LocalLanguage.txt`
-(lowercase `data`), not part of a machine. Older files under
-`$HOME/.kmotionx/Data`, `C Programs`, or `DSP_*` are not automatically used:
-copy any machine files you need into the corresponding lowercase directories
-under `default-machine`. DSP files now always come from installed `share/kmx`.
+## Running examples
 
-###### 2. Install KFLOP device rules (Linux only)
-This will install a rule that tell your system to grant read and write access to the kflop device for users in group "plugdev"
-If your user is not in that group fix users groups or change the rule before pluging the device in.
-```
-sudo cp KMotionX/usb/etc/udev/rules.d/10.kflop.rules /etc/udev/rules.d/
-```
-Reload rules
-```
-sudo udevadm control --reload-rules && udevadm trigger
+Examples are built into `bin/`. Review their source and machine settings before
+running them: examples can communicate with the controller and execute programs.
+Ensure the machine is ready and its physical safety controls are available.
+
+For example, from the repository root:
+
+```sh
+./bin/executeGCode
 ```
 
-###### 3. Execute examples or install [KMotionXCNC](https://github.com/parhansson/KMotionXCNC "CNC application")
-Plug in your KFlop to an available USB port.
-KMotionServer will start automatically in background when needed.
-When KMotionDLL is rebuilt make sure to kill running server 'killall KMotionServer'
+`KMotionServer` starts automatically when controller communication requires it.
+After updating the libraries, stop the existing server and restart client
+applications so they use the matching versions. Do this only when the machine
+is idle; do not interrupt a running operation.
 
-Start executeGCode example
+## Updating and uninstalling
+
+After updating the source, configure, rebuild and reinstall:
+
+```sh
+./configure
+make
+make install
 ```
-cd bin
-./executeGCode
+
+Repeat any custom configure options used for your original installation.
+Restart applications after updating.
+
+To remove the installed KMotionX components:
+
+```sh
+make uninstall
 ```
 
-## Extra
+Use the configuration corresponding to the installation you want to remove.
+Uninstall preserves machine files and user-wide preferences.
 
-[It still doesn't work. Troubleshoot](KMotionX/doc/Troubleshooting.md)
+## Further documentation
 
-
-[Advanced stuff](KMotionX/doc/Advanced.md)
+- [Troubleshooting](KMotionX/doc/Troubleshooting.md)
+- [Advanced configuration](KMotionX/doc/Advanced.md)
+- [Demonstration video](https://www.youtube.com/watch?v=oPTJwcre0hA)
