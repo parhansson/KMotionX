@@ -20,8 +20,12 @@ void initHandler() {
   Interpreter->SetUserMCodeCallback(MUserCallback);
   Interpreter->SetUserCallback(UserCallback);
   km->SetErrMsgCallback(ErrMsgHandler);
-  km->SetConsoleCallback(ConsoleHandler);
-  kmxCtrl->Initialize();
+  // This registers with KMotionServer through PipeCmd, not just a local callback.
+  if (!kmxCtrl->offline) km->SetConsoleCallback(ConsoleHandler);
+  if (kmxCtrl->Initialize()) {
+    fprintf(stderr, "Failed to initialize machine configuration\n");
+    exit(EXIT_FAILURE);
+  }
   running = true;
 }
 
@@ -88,4 +92,3 @@ int UserCallback(const wchar_t *msg) {
 int MUserCallback(int mCode) {
   return kmxCtrl->OnMcodeUserCallback(mCode);
 }
-

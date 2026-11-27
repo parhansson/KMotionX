@@ -46,25 +46,23 @@ WebController::~WebController() {
 int WebController::Setup(){
   log_info("Initialize");
   char fileName[256];
-  char absolute_path[256];
-  absolutePath("settings/setup.cnf", fileName);
+  if (!absolutePath("settings/machine.json", fileName)) return -1;
   MappedFile mmFile;
   if(mmapNamedFile(mmFile, fileName)){
-    log_info("Failed to read setup file");
+    log_info("Failed to read machine settings: %s", fileName);
     return -1;
   }
 
-  json_token *setup = NULL;
-  setup = parse_json2(mmFile.addr, mmFile.filesize);
-
-  json_str(setup,"machine",fileName);
-  absolutePath(fileName, absolute_path);
-  settings_file->SetFile(absolute_path);
-
-  json_str(setup,"gcodefile",fileName);
-  absolutePath(fileName, absolute_path);
-  current_gcode_file->SetFile(absolute_path);
-
+  json_token *setup = parse_json2(mmFile.addr, mmFile.filesize);
+  if (!setup) {
+    log_info("Invalid machine settings JSON: %s", fileName);
+    unmapFile(mmFile);
+    return -1;
+  }
+  settings_file->SetFile(fileName);
+  if (absolutePath("data/Default.tbl", fileName))
+    wcscpy_s(Interpreter->ToolFile, MAX_PATH, kmx::strtowstr(fileName));
+  // Start with no selected program. Selecting a machine must not select/run G-code.
   free(setup);
   unmapFile(mmFile);
   return 0;
@@ -258,7 +256,11 @@ int WebController::OnEventRequest(struct mg_connection *conn) {
       //It is possible to define MONGOOSE_USE_EXTRA_HTTP_HEADERS
       //to force extra headers but that wont be dynamic if needed
       char file[MAX_PATH];
-      snprintf(file, sizeof(file), ".%s", conn->uri);
+       if (!absolutePath(conn->uri + 1, file)) {
+         mg_send_status(conn, 403);
+         mg_printf_data(conn, "%s", "Machine resource path denied");
+         return MG_TRUE;
+       }
       char headers[128];
       snprintf(headers, sizeof(headers), "%s: %s\r\n", "Access-Control-Allow-Origin", ALLOWED_ORIGIN);
       mg_send_file(conn, file, headers);
@@ -267,9 +269,9 @@ int WebController::OnEventRequest(struct mg_connection *conn) {
     //This might be removed. Will be handled in nginx
     // Might also come in hande when developing
     //const char * file = "index.html";
-    const char * file = "kmx/index.html";
+    std::string file = std::string(mg_get_option(server, "document_root")) + "/index.html";
     const char * headers ="";
-    mg_send_file(conn, file, headers);
+    mg_send_file(conn, file.c_str(), headers);
     return MG_MORE;
   }
   return MG_FALSE;
@@ -342,13 +344,18 @@ bool WebController::isUploadRequest(struct mg_connection *conn){
   return strstr(conn->uri, "/upload") == conn->uri;
 }
 bool WebController::isMachineDataRequest(struct mg_connection *conn){
-  return strstr(conn->uri, "/settings") == conn->uri;
+  return strncmp(conn->uri, "/settings/fonts/", 16) == 0 ||
+      strncmp(conn->uri, "/settings/textures/", 19) == 0;
 }
 bool WebController::isApiRequest(struct mg_connection *conn){
   return strstr(conn->uri, "/api") == conn->uri;
 }
 bool WebController::isRegisteredRoute(struct mg_connection *conn){
-  if(strstr(conn->uri, "/kmx/gcode") == conn->uri || 
+   if(!strcmp(conn->uri, "/") || !strcmp(conn->uri, "/gcode") ||
+       !strcmp(conn->uri, "/debug") || !strcmp(conn->uri, "/ccode") ||
+       !strcmp(conn->uri, "/laser") || !strcmp(conn->uri, "/import") ||
+       !strcmp(conn->uri, "/settings") ||
+       strstr(conn->uri, "/kmx/gcode") == conn->uri ||
       strstr(conn->uri, "/kmx/debug") == conn->uri || 
       strstr(conn->uri, "/kmx/ccode") == conn->uri ||
       strstr(conn->uri, "/kmx/laser") == conn->uri ||
@@ -377,10 +384,6 @@ void WebController::HandleUploadRequest(struct mg_connection *conn){
   FILE *fp = (FILE *) conn->connection_param;
   if (fp != NULL) {
 
-    //Sends HTTP/1.1 200 OK
-    mg_send_header(conn, "Access-Control-Allow-Origin", ALLOWED_ORIGIN);
-    mg_send_header(conn, "Content-Type", "text/plain");
-
     // Temp file will be destroyed after fclose(), do something with the
     // data here -- for example, parse it and extract uploaded files.
     // As an example, we just echo the whole POST buffer back to the client.
@@ -395,15 +398,22 @@ void WebController::HandleUploadRequest(struct mg_connection *conn){
     const char *data;
     int data_len, ofs = 0, mapOffset = 0;
     char var_name[100], file_name[256];
-    char absoluteFile[256];
+    char absoluteFile[256] = {0};
     FILE * pFile; 
-    while ((ofs = mg_parse_multipart(mmFile.addr + mapOffset, mmFile.mapsize - mapOffset,
+    while ((ofs = mg_parse_multipart(mmFile.addr + mapOffset, mmFile.filesize - mapOffset,
                                      var_name, sizeof(var_name),
                                      file_name, sizeof(file_name),
                                      &data, &data_len)) > 0) {
       mapOffset += ofs;
      
-      absolutePath(file_name, absoluteFile);
+      if (!absolutePath(file_name, absoluteFile)) {
+        unmapFile(mmFile);
+        mg_send_status(conn, 403);
+        mg_send_header(conn, "Access-Control-Allow-Origin", ALLOWED_ORIGIN);
+        mg_printf_data(conn, "%s", "Machine file path denied");
+        OnEventClose(conn);
+        return;
+      }
       
       //TODO open file only when file_name changes 
       pFile = fopen (absoluteFile, "w+");
@@ -425,6 +435,11 @@ void WebController::HandleUploadRequest(struct mg_connection *conn){
         snprintf(msg,sizeof(msg)-1, "Failed to open file %s\n",absoluteFile);
         this->DoErrorMessage(msg);
         this->DoErrorMessage(strerror(errno));
+        unmapFile(mmFile);
+        mg_send_status(conn, 400);
+        mg_printf_data(conn, "%s", "Unable to write machine file");
+        OnEventClose(conn);
+        return;
       }
     }
     unmapFile(mmFile);
@@ -437,6 +452,8 @@ void WebController::HandleUploadRequest(struct mg_connection *conn){
       current_gcode_file->Update();
     }
     //need to send response back to client to avoid wating connection
+    mg_send_header(conn, "Access-Control-Allow-Origin", ALLOWED_ORIGIN);
+    mg_send_header(conn, "Content-Type", "text/plain");
     mg_printf_data(conn,
         "Written %ld bytes to file: %s\n\n",
         filesize,
@@ -483,6 +500,13 @@ int WebController::HandleApiRequest(struct mg_connection *conn) {
 //function should be called from another thread.
 
 int WebController::HandleJsonRequest(struct mg_connection *conn, const char *object, const char *func) {
+  if (offline && strcmp(func, "openFile") && strcmp(func, "listDir") &&
+      strcmp(func, "setGcodeFile") && strcmp(func, "onUpdateMotionParams") &&
+      strcmp(func, "setMachineFile")) {
+    mg_send_status(conn, 403);
+    mg_printf_data(conn, "%s", "Motion API disabled in offline preview");
+    return MG_TRUE;
+  }
 
   json_token *data = NULL;
   json_token *paramtoken;
@@ -523,17 +547,28 @@ int WebController::HandleJsonRequest(struct mg_connection *conn, const char *obj
     if(FUNC_SIGP("setGcodeFile", 1)){
       char * file = NULL;
       toks(paramtoken, &file, 0);
-      this->LoadGcode(file);
+      char resolved[256];
+      if (!absolutePath(file, resolved)) {
+        free(file);
+        free(data);
+        mg_send_status(conn, 403);
+        mg_printf_data(conn, "%s", "Machine file path denied");
+        return MG_TRUE;
+      }
+      this->LoadGcode(resolved);
       free(file);
     } else if(FUNC_SIGP("setMachineFile", 1)){
-      char * file = NULL;
-      toks(paramtoken, &file, 0);
-      this->LoadMachineConfiguration(file);
-      free(file);
+      // Machine selection is exclusively through ~/.kmxrc, not browser input.
+      free(data);
+      mg_send_status(conn, 409);
+      mg_printf_data(conn, "%s", "Machine selection is configured through ~/.kmxrc");
+      return MG_TRUE;
     } else if(FUNC_SIGP("listDir", 1)){
       ListDir(paramtoken);
     } else if(FUNC_SIGP("openFile", 1)){
-      return OpenFile(conn, paramtoken);
+      int result = OpenFile(conn, paramtoken);
+      free(data);
+      return result;
     } else if (FUNC_SIGP("jog", 2)) {
       int axis;
       int speed;
@@ -593,9 +628,17 @@ int WebController::OpenFile(struct mg_connection *conn, struct json_token *param
   char * file = NULL;//"ng2/index.html";
   toks(paramtoken, &file, 0);
   if (file != NULL) {
+    char resolved[256];
+    if (!absolutePath(file, resolved)) {
+      free(file);
+      mg_send_status(conn, 403);
+      mg_send_header(conn, "Access-Control-Allow-Origin", ALLOWED_ORIGIN);
+      mg_printf_data(conn, "%s", "Machine file path denied");
+      return MG_TRUE;
+    }
     char headers[128];
     snprintf(headers, sizeof(headers), "%s: %s\r\n", "Access-Control-Allow-Origin", ALLOWED_ORIGIN);
-    mg_send_file(conn, file, headers);
+    mg_send_file(conn, resolved, headers);
     free(file);
     return MG_MORE;
   }
@@ -612,12 +655,18 @@ void WebController::ListDir(struct json_token *paramtoken){
       DIR *dp;
       struct dirent *ep;
       int w = 0,first=1;
-      absolutePath(dir, absoluteDir);
+      if (!absolutePath(dir, absoluteDir)) {
+        free(dir);
+        json_emit(gp_response, MAX_RESPONSE, "{s:s,s:[]}", "error",
+                  "Machine directory path denied", "files");
+        return;
+      }
       dp = opendir (absoluteDir);
       if (dp != NULL){
           w += json_emit(gp_response+w, MAX_RESPONSE-w, "{s: s, s: [", "dir", absoluteDir,"files");
           //w += snprintf(gp_response+w, MAX_RESPONSE-w, "[");
           while ((ep = readdir(dp))){
+            if (!strcmp(ep->d_name, ".") || !strcmp(ep->d_name, "..")) continue;
             //printf("%d %s\n", ep->d_type, ep->d_name);
             if(first){
               first = 0;
@@ -815,7 +864,12 @@ void WebController::setInterpreterActionParams(struct json_token *jsontoken, int
         Interpreter->McodeActions[actionIndex].String[0] = 0;
       } else {
         char absoluteFile[256];
-        absolutePath(file, absoluteFile);
+        if (!absolutePath(file, absoluteFile)) {
+          Interpreter->McodeActions[actionIndex].Action = 0;
+          Interpreter->McodeActions[actionIndex].String[0] = 0;
+          DoErrorMessage("Action file path outside the machine root or invalid");
+          continue;
+        }
         wcscpy_s(Interpreter->McodeActions[actionIndex].String, 256, kmx::strtowstr(absoluteFile));
       }
 
@@ -943,4 +997,3 @@ int WebController::CreateMcodeUserCallbackData(int mCode, bool blocking, char **
       "code", mCode);
   return id;
 }
-
